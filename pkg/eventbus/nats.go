@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/nats-io/nats.go"
+	"github.com/sk1fy/team-os-backend/pkg/httpx"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/propagation"
 )
@@ -207,13 +208,31 @@ func (b *Bus) Subscribe(ctx context.Context, config ConsumerConfig, handler Idem
 	}
 
 	go func() {
-		<-ctx.Done()
-		if err := subscription.Drain(); err != nil {
-			reportConsumerError(config, fmt.Errorf("drain subscription: %w", err))
+		ticker := time.NewTicker(15 * time.Second)
+		defer ticker.Stop()
+		for {
+			b.updateConsumerMetrics(subscription, config)
+			select {
+			case <-ctx.Done():
+				if err := subscription.Drain(); err != nil {
+					reportConsumerError(config, fmt.Errorf("drain subscription: %w", err))
+				}
+				return
+			case <-ticker.C:
+			}
 		}
 	}()
 
 	return subscription, nil
+}
+
+func (b *Bus) updateConsumerMetrics(subscription *nats.Subscription, config ConsumerConfig) {
+	info, err := subscription.ConsumerInfo()
+	if err != nil {
+		return
+	}
+	consumer := strings.NewReplacer(`\`, `\\`, `"`, `\"`, "\n", `\n`).Replace(config.Durable)
+	httpx.SetGauge("teamos_consumer_lag_messages", `consumer="`+consumer+`"`, float64(info.NumPending))
 }
 
 func (b *Bus) consumeMessage(ctx context.Context, config ConsumerConfig, handler IdempotentHandler, message *nats.Msg) {
@@ -308,6 +327,8 @@ func (b *Bus) moveToDLQ(ctx context.Context, subject string, original *nats.Msg)
 	if _, err := b.jetStream.PublishMsg(message, nats.Context(ctx)); err != nil {
 		return fmt.Errorf("publish event to DLQ %s: %w", subject, err)
 	}
+	label := strings.NewReplacer(`\`, `\\`, `"`, `\"`, "\n", `\n`).Replace(subject)
+	httpx.AddGauge("teamos_dlq_messages", `subject="`+label+`"`, 1)
 	return nil
 }
 

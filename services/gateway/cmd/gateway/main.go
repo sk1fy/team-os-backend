@@ -15,6 +15,7 @@ import (
 	"github.com/go-chi/cors"
 	academyv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/academy/v1"
 	companyv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v1"
+	filesv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/files/v1"
 	kbv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/kb/v1"
 	notificationsv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/notifications/v1"
 	tasksv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/tasks/v1"
@@ -51,6 +52,15 @@ func run(logger *slog.Logger) error {
 	if err != nil {
 		return err
 	}
+	shutdownTelemetry, err := httpx.SetupTelemetry("gateway")
+	if err != nil {
+		return fmt.Errorf("настроить телеметрию: %w", err)
+	}
+	defer func() {
+		if shutdownErr := shutdownTelemetry(); shutdownErr != nil {
+			logger.Error("shutdown telemetry", "error", shutdownErr)
+		}
+	}()
 	publicKey, err := sharedauth.ParsePublicKey(configuration.JWTPublicKey)
 	if err != nil {
 		return fmt.Errorf("GATEWAY_JWT_PUBLIC_KEY: %w", err)
@@ -122,6 +132,16 @@ func run(logger *slog.Logger) error {
 		}
 	}()
 	notificationsClient := notificationsv1.NewNotificationsServiceClient(notificationsConnection)
+	filesConnection, err := grpc.NewClient(configuration.FilesGRPCAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return fmt.Errorf("connect to files: %w", err)
+	}
+	defer func() {
+		if closeErr := filesConnection.Close(); closeErr != nil {
+			logger.Error("close files gRPC connection", "error", closeErr)
+		}
+	}()
+	filesClient := filesv1.NewFilesServiceClient(filesConnection)
 	handler := transport.NewHandler(
 		companyClient,
 		kbClient,
@@ -131,6 +151,7 @@ func run(logger *slog.Logger) error {
 		logger,
 		notificationsClient,
 	)
+	handler.SetFilesClient(filesClient)
 
 	router := chi.NewRouter()
 	router.Use(cors.Handler(cors.Options{
@@ -141,14 +162,28 @@ func run(logger *slog.Logger) error {
 		AllowCredentials: true,
 		MaxAge:           300,
 	}))
-	router.Use(httpx.RequestID, httpx.Recoverer(logger), httpx.Tracing("gateway"), httpx.Logging(logger))
+	router.Use(httpx.RequestID, httpx.Recoverer(logger), httpx.Tracing("gateway"), httpx.Metrics, httpx.Logging(logger))
 	router.Get("/healthz", httpx.Healthz().ServeHTTP)
+	router.Get("/metrics", httpx.MetricsHandler().ServeHTTP)
 	companyHealthClient := grpc_health_v1.NewHealthClient(companyConnection)
 	kbHealthClient := grpc_health_v1.NewHealthClient(kbConnection)
 	tasksHealthClient := grpc_health_v1.NewHealthClient(tasksConnection)
 	academyHealthClient := grpc_health_v1.NewHealthClient(academyConnection)
 	notificationsHealthClient := grpc_health_v1.NewHealthClient(notificationsConnection)
+	filesHealthClient := grpc_health_v1.NewHealthClient(filesConnection)
 	router.Get("/readyz", httpx.Readyz(map[string]httpx.ReadinessCheck{
+		"files": func(ctx context.Context) error {
+			checkContext, cancel := context.WithTimeout(ctx, time.Second)
+			defer cancel()
+			response, checkErr := filesHealthClient.Check(checkContext, &grpc_health_v1.HealthCheckRequest{})
+			if checkErr != nil {
+				return checkErr
+			}
+			if response.GetStatus() != grpc_health_v1.HealthCheckResponse_SERVING {
+				return errors.New("files is not serving")
+			}
+			return nil
+		},
 		"academy": func(ctx context.Context) error {
 			checkContext, cancel := context.WithTimeout(ctx, time.Second)
 			defer cancel()

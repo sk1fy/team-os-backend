@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package teamos.files.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/sk1fy/team-os-backend/contracts/gen/go/files/v1;filesv1";
+
+service FilesService {
+  rpc UploadFile(stream UploadFileRequest) returns (UploadFileResponse);
+  rpc GetFile(GetFileRequest) returns (GetFileResponse);
+  rpc DeleteFile(DeleteFileRequest) returns (DeleteFileResponse);
+}
+
+enum FilePurpose {
+  FILE_PURPOSE_UNSPECIFIED = 0;
+  FILE_PURPOSE_ATTACHMENT = 1;
+  FILE_PURPOSE_AVATAR = 2;
+  FILE_PURPOSE_LOGO = 3;
+}
+
+message FileMetadata {
+  string id = 1;
+  string company_id = 2;
+  string uploaded_by = 3;
+  string name = 4;
+  string content_type = 5;
+  uint64 size = 6;
+  FilePurpose purpose = 7;
+  google.protobuf.Timestamp created_at = 8;
+}
+
+message UploadFileInfo {
+  string name = 1;
+  string content_type = 2;
+  uint64 size = 3;
+  FilePurpose purpose = 4;
+}
+
+message UploadFileRequest {
+  oneof payload {
+    UploadFileInfo info = 1;
+    bytes chunk = 2;
+  }
+}
+
+message UploadFileResponse { FileMetadata file = 1; }
+message GetFileRequest { string id = 1; }
+message GetFileResponse {
+  FileMetadata file = 1;
+  string download_url = 2;
+}
+message DeleteFileRequest { string id = 1; }
+message DeleteFileResponse {}

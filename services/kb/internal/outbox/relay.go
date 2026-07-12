@@ -12,6 +12,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/sk1fy/team-os-backend/pkg/eventbus"
+	"github.com/sk1fy/team-os-backend/pkg/httpx"
 )
 
 const (
@@ -171,7 +172,19 @@ func (r *Relay) publishBatch(ctx context.Context) (int, error) {
 	if err = tx.Commit(ctx); err != nil {
 		return 0, fmt.Errorf("commit outbox transaction: %w", err)
 	}
+	r.updateMetrics(ctx)
 	return len(batch), nil
+}
+
+func (r *Relay) updateMetrics(ctx context.Context) {
+	var age float64
+	if err := r.pool.QueryRow(ctx, `SELECT COALESCE(EXTRACT(EPOCH FROM now() - MIN(occurred_at)), 0) FROM outbox WHERE published_at IS NULL`).Scan(&age); err == nil {
+		httpx.SetGauge("teamos_outbox_oldest_pending_age_seconds", "", age)
+	}
+	var deadLettered float64
+	if err := r.pool.QueryRow(ctx, `SELECT count(*)::double precision FROM outbox WHERE published_at IS NOT NULL AND last_error IS NOT NULL`).Scan(&deadLettered); err == nil {
+		httpx.SetGauge("teamos_dlq_messages", `subject="teamos.dlq.kb.publisher.v1"`, deadLettered)
+	}
 }
 
 func markDeadLettered(ctx context.Context, tx pgx.Tx, id uuid.UUID, cause error) error {

@@ -1,0 +1,68 @@
+groups:
+  - name: teamos-red
+    interval: 30s
+    rules:
+      - alert: TeamOSHighHTTPErrorRate
+        expr: |
+          (
+            sum by (service_name) (rate(teamos_http_requests_total{status=~"5.."}[5m]))
+            /
+            clamp_min(sum by (service_name) (rate(teamos_http_requests_total[5m])), 0.001)
+          ) > 0.01
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "У сервиса {{ $labels.service_name }} более 1% ответов 5xx"
+          description: "Доля ошибок 5xx держится выше 1% в течение пяти минут (сейчас {{ $value | humanizePercentage }})."
+
+      - alert: TeamOSHighHTTPP95Latency
+        expr: |
+          histogram_quantile(0.95,
+            sum by (le, service_name) (rate(teamos_http_request_duration_seconds_bucket[5m]))
+          ) > 1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Высокая задержка HTTP у {{ $labels.service_name }}"
+          description: "p95 времени ответа больше секунды в течение десяти минут (сейчас {{ $value | humanizeDuration }})."
+
+      - alert: TeamOSServiceDown
+        expr: up{job="teamos"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Сервис {{ $labels.instance }} недоступен для Prometheus"
+          description: "Endpoint /metrics не отвечает более двух минут."
+
+  - name: teamos-messaging
+    interval: 15s
+    rules:
+      - alert: TeamOSOutboxLag
+        expr: teamos_outbox_oldest_pending_age_seconds > 30
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Отставание outbox у {{ $labels.service_name }} больше 30 секунд"
+          description: "Самое старое неопубликованное событие ожидает {{ $value | humanizeDuration }}."
+
+      - alert: TeamOSDLQNotEmpty
+        expr: teamos_dlq_messages > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "В DLQ сервиса {{ $labels.service_name }} есть сообщения"
+          description: "В очереди ошибок {{ $labels.subject }} находится {{ $value }} сообщений."
+
+      - alert: TeamOSConsumerLag
+        expr: teamos_consumer_lag_messages > 100
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Консьюмер {{ $labels.consumer }} отстаёт"
+          description: "Накопилось {{ $value }} необработанных сообщений."

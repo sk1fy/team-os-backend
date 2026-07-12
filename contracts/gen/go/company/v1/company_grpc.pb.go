@@ -19,38 +19,49 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	CompanyService_Register_FullMethodName               = "/teamos.company.v1.CompanyService/Register"
-	CompanyService_Login_FullMethodName                  = "/teamos.company.v1.CompanyService/Login"
-	CompanyService_Refresh_FullMethodName                = "/teamos.company.v1.CompanyService/Refresh"
-	CompanyService_Logout_FullMethodName                 = "/teamos.company.v1.CompanyService/Logout"
-	CompanyService_GetInviteByToken_FullMethodName       = "/teamos.company.v1.CompanyService/GetInviteByToken"
-	CompanyService_AcceptInvite_FullMethodName           = "/teamos.company.v1.CompanyService/AcceptInvite"
-	CompanyService_GetCurrentUser_FullMethodName         = "/teamos.company.v1.CompanyService/GetCurrentUser"
-	CompanyService_UpdateCurrentUser_FullMethodName      = "/teamos.company.v1.CompanyService/UpdateCurrentUser"
-	CompanyService_GetCompany_FullMethodName             = "/teamos.company.v1.CompanyService/GetCompany"
-	CompanyService_UpdateCompany_FullMethodName          = "/teamos.company.v1.CompanyService/UpdateCompany"
-	CompanyService_GetDepartments_FullMethodName         = "/teamos.company.v1.CompanyService/GetDepartments"
-	CompanyService_CreateDepartment_FullMethodName       = "/teamos.company.v1.CompanyService/CreateDepartment"
-	CompanyService_UpdateDepartment_FullMethodName       = "/teamos.company.v1.CompanyService/UpdateDepartment"
-	CompanyService_DeleteDepartment_FullMethodName       = "/teamos.company.v1.CompanyService/DeleteDepartment"
-	CompanyService_MoveDepartment_FullMethodName         = "/teamos.company.v1.CompanyService/MoveDepartment"
-	CompanyService_GetPositions_FullMethodName           = "/teamos.company.v1.CompanyService/GetPositions"
-	CompanyService_GetPosition_FullMethodName            = "/teamos.company.v1.CompanyService/GetPosition"
-	CompanyService_CreatePosition_FullMethodName         = "/teamos.company.v1.CompanyService/CreatePosition"
-	CompanyService_UpdatePosition_FullMethodName         = "/teamos.company.v1.CompanyService/UpdatePosition"
-	CompanyService_DeletePosition_FullMethodName         = "/teamos.company.v1.CompanyService/DeletePosition"
-	CompanyService_MovePosition_FullMethodName           = "/teamos.company.v1.CompanyService/MovePosition"
-	CompanyService_GetUsers_FullMethodName               = "/teamos.company.v1.CompanyService/GetUsers"
-	CompanyService_GetUser_FullMethodName                = "/teamos.company.v1.CompanyService/GetUser"
-	CompanyService_CreateUser_FullMethodName             = "/teamos.company.v1.CompanyService/CreateUser"
-	CompanyService_UpdateUser_FullMethodName             = "/teamos.company.v1.CompanyService/UpdateUser"
-	CompanyService_GetInvites_FullMethodName             = "/teamos.company.v1.CompanyService/GetInvites"
-	CompanyService_InviteUser_FullMethodName             = "/teamos.company.v1.CompanyService/InviteUser"
-	CompanyService_ResendInvite_FullMethodName           = "/teamos.company.v1.CompanyService/ResendInvite"
-	CompanyService_RevokeInvite_FullMethodName           = "/teamos.company.v1.CompanyService/RevokeInvite"
-	CompanyService_GetUsersByIds_FullMethodName          = "/teamos.company.v1.CompanyService/GetUsersByIds"
-	CompanyService_ResolvePositionUsers_FullMethodName   = "/teamos.company.v1.CompanyService/ResolvePositionUsers"
-	CompanyService_ResolveDepartmentUsers_FullMethodName = "/teamos.company.v1.CompanyService/ResolveDepartmentUsers"
+	CompanyService_Register_FullMethodName                 = "/teamos.company.v1.CompanyService/Register"
+	CompanyService_Login_FullMethodName                    = "/teamos.company.v1.CompanyService/Login"
+	CompanyService_Refresh_FullMethodName                  = "/teamos.company.v1.CompanyService/Refresh"
+	CompanyService_Logout_FullMethodName                   = "/teamos.company.v1.CompanyService/Logout"
+	CompanyService_GetInviteByToken_FullMethodName         = "/teamos.company.v1.CompanyService/GetInviteByToken"
+	CompanyService_AcceptInvite_FullMethodName             = "/teamos.company.v1.CompanyService/AcceptInvite"
+	CompanyService_GetCurrentUser_FullMethodName           = "/teamos.company.v1.CompanyService/GetCurrentUser"
+	CompanyService_UpdateCurrentUser_FullMethodName        = "/teamos.company.v1.CompanyService/UpdateCurrentUser"
+	CompanyService_GetCompany_FullMethodName               = "/teamos.company.v1.CompanyService/GetCompany"
+	CompanyService_UpdateCompany_FullMethodName            = "/teamos.company.v1.CompanyService/UpdateCompany"
+	CompanyService_GetDepartments_FullMethodName           = "/teamos.company.v1.CompanyService/GetDepartments"
+	CompanyService_CreateDepartment_FullMethodName         = "/teamos.company.v1.CompanyService/CreateDepartment"
+	CompanyService_UpdateDepartment_FullMethodName         = "/teamos.company.v1.CompanyService/UpdateDepartment"
+	CompanyService_DeleteDepartment_FullMethodName         = "/teamos.company.v1.CompanyService/DeleteDepartment"
+	CompanyService_MoveDepartment_FullMethodName           = "/teamos.company.v1.CompanyService/MoveDepartment"
+	CompanyService_GetPositions_FullMethodName             = "/teamos.company.v1.CompanyService/GetPositions"
+	CompanyService_GetPosition_FullMethodName              = "/teamos.company.v1.CompanyService/GetPosition"
+	CompanyService_CreatePosition_FullMethodName           = "/teamos.company.v1.CompanyService/CreatePosition"
+	CompanyService_UpdatePosition_FullMethodName           = "/teamos.company.v1.CompanyService/UpdatePosition"
+	CompanyService_DeletePosition_FullMethodName           = "/teamos.company.v1.CompanyService/DeletePosition"
+	CompanyService_MovePosition_FullMethodName             = "/teamos.company.v1.CompanyService/MovePosition"
+	CompanyService_GetUsers_FullMethodName                 = "/teamos.company.v1.CompanyService/GetUsers"
+	CompanyService_GetUser_FullMethodName                  = "/teamos.company.v1.CompanyService/GetUser"
+	CompanyService_CreateUser_FullMethodName               = "/teamos.company.v1.CompanyService/CreateUser"
+	CompanyService_UpdateUser_FullMethodName               = "/teamos.company.v1.CompanyService/UpdateUser"
+	CompanyService_GetInvites_FullMethodName               = "/teamos.company.v1.CompanyService/GetInvites"
+	CompanyService_InviteUser_FullMethodName               = "/teamos.company.v1.CompanyService/InviteUser"
+	CompanyService_ResendInvite_FullMethodName             = "/teamos.company.v1.CompanyService/ResendInvite"
+	CompanyService_RevokeInvite_FullMethodName             = "/teamos.company.v1.CompanyService/RevokeInvite"
+	CompanyService_GetUsersByIds_FullMethodName            = "/teamos.company.v1.CompanyService/GetUsersByIds"
+	CompanyService_ResolvePositionUsers_FullMethodName     = "/teamos.company.v1.CompanyService/ResolvePositionUsers"
+	CompanyService_ResolveDepartmentUsers_FullMethodName   = "/teamos.company.v1.CompanyService/ResolveDepartmentUsers"
+	CompanyService_GetSchedules_FullMethodName             = "/teamos.company.v1.CompanyService/GetSchedules"
+	CompanyService_SaveSchedule_FullMethodName             = "/teamos.company.v1.CompanyService/SaveSchedule"
+	CompanyService_GetShiftExceptions_FullMethodName       = "/teamos.company.v1.CompanyService/GetShiftExceptions"
+	CompanyService_SaveShiftExceptions_FullMethodName      = "/teamos.company.v1.CompanyService/SaveShiftExceptions"
+	CompanyService_GetDistributionGroups_FullMethodName    = "/teamos.company.v1.CompanyService/GetDistributionGroups"
+	CompanyService_CreateDistributionGroup_FullMethodName  = "/teamos.company.v1.CompanyService/CreateDistributionGroup"
+	CompanyService_UpdateDistributionGroup_FullMethodName  = "/teamos.company.v1.CompanyService/UpdateDistributionGroup"
+	CompanyService_DeleteDistributionGroup_FullMethodName  = "/teamos.company.v1.CompanyService/DeleteDistributionGroup"
+	CompanyService_GetDistributionEvents_FullMethodName    = "/teamos.company.v1.CompanyService/GetDistributionEvents"
+	CompanyService_SimulateDistributionDeal_FullMethodName = "/teamos.company.v1.CompanyService/SimulateDistributionDeal"
+	CompanyService_ResetDistributionEvents_FullMethodName  = "/teamos.company.v1.CompanyService/ResetDistributionEvents"
 )
 
 // CompanyServiceClient is the client API for CompanyService service.
@@ -93,6 +104,17 @@ type CompanyServiceClient interface {
 	GetUsersByIds(ctx context.Context, in *GetUsersByIdsRequest, opts ...grpc.CallOption) (*GetUsersByIdsResponse, error)
 	ResolvePositionUsers(ctx context.Context, in *ResolvePositionUsersRequest, opts ...grpc.CallOption) (*ResolvePositionUsersResponse, error)
 	ResolveDepartmentUsers(ctx context.Context, in *ResolveDepartmentUsersRequest, opts ...grpc.CallOption) (*ResolveDepartmentUsersResponse, error)
+	GetSchedules(ctx context.Context, in *GetSchedulesRequest, opts ...grpc.CallOption) (*GetSchedulesResponse, error)
+	SaveSchedule(ctx context.Context, in *SaveScheduleRequest, opts ...grpc.CallOption) (*SaveScheduleResponse, error)
+	GetShiftExceptions(ctx context.Context, in *GetShiftExceptionsRequest, opts ...grpc.CallOption) (*GetShiftExceptionsResponse, error)
+	SaveShiftExceptions(ctx context.Context, in *SaveShiftExceptionsRequest, opts ...grpc.CallOption) (*SaveShiftExceptionsResponse, error)
+	GetDistributionGroups(ctx context.Context, in *GetDistributionGroupsRequest, opts ...grpc.CallOption) (*GetDistributionGroupsResponse, error)
+	CreateDistributionGroup(ctx context.Context, in *CreateDistributionGroupRequest, opts ...grpc.CallOption) (*CreateDistributionGroupResponse, error)
+	UpdateDistributionGroup(ctx context.Context, in *UpdateDistributionGroupRequest, opts ...grpc.CallOption) (*UpdateDistributionGroupResponse, error)
+	DeleteDistributionGroup(ctx context.Context, in *DeleteDistributionGroupRequest, opts ...grpc.CallOption) (*DeleteDistributionGroupResponse, error)
+	GetDistributionEvents(ctx context.Context, in *GetDistributionEventsRequest, opts ...grpc.CallOption) (*GetDistributionEventsResponse, error)
+	SimulateDistributionDeal(ctx context.Context, in *SimulateDistributionDealRequest, opts ...grpc.CallOption) (*SimulateDistributionDealResponse, error)
+	ResetDistributionEvents(ctx context.Context, in *ResetDistributionEventsRequest, opts ...grpc.CallOption) (*ResetDistributionEventsResponse, error)
 }
 
 type companyServiceClient struct {
@@ -423,6 +445,116 @@ func (c *companyServiceClient) ResolveDepartmentUsers(ctx context.Context, in *R
 	return out, nil
 }
 
+func (c *companyServiceClient) GetSchedules(ctx context.Context, in *GetSchedulesRequest, opts ...grpc.CallOption) (*GetSchedulesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetSchedulesResponse)
+	err := c.cc.Invoke(ctx, CompanyService_GetSchedules_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) SaveSchedule(ctx context.Context, in *SaveScheduleRequest, opts ...grpc.CallOption) (*SaveScheduleResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SaveScheduleResponse)
+	err := c.cc.Invoke(ctx, CompanyService_SaveSchedule_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) GetShiftExceptions(ctx context.Context, in *GetShiftExceptionsRequest, opts ...grpc.CallOption) (*GetShiftExceptionsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetShiftExceptionsResponse)
+	err := c.cc.Invoke(ctx, CompanyService_GetShiftExceptions_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) SaveShiftExceptions(ctx context.Context, in *SaveShiftExceptionsRequest, opts ...grpc.CallOption) (*SaveShiftExceptionsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SaveShiftExceptionsResponse)
+	err := c.cc.Invoke(ctx, CompanyService_SaveShiftExceptions_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) GetDistributionGroups(ctx context.Context, in *GetDistributionGroupsRequest, opts ...grpc.CallOption) (*GetDistributionGroupsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetDistributionGroupsResponse)
+	err := c.cc.Invoke(ctx, CompanyService_GetDistributionGroups_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) CreateDistributionGroup(ctx context.Context, in *CreateDistributionGroupRequest, opts ...grpc.CallOption) (*CreateDistributionGroupResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateDistributionGroupResponse)
+	err := c.cc.Invoke(ctx, CompanyService_CreateDistributionGroup_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) UpdateDistributionGroup(ctx context.Context, in *UpdateDistributionGroupRequest, opts ...grpc.CallOption) (*UpdateDistributionGroupResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateDistributionGroupResponse)
+	err := c.cc.Invoke(ctx, CompanyService_UpdateDistributionGroup_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) DeleteDistributionGroup(ctx context.Context, in *DeleteDistributionGroupRequest, opts ...grpc.CallOption) (*DeleteDistributionGroupResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteDistributionGroupResponse)
+	err := c.cc.Invoke(ctx, CompanyService_DeleteDistributionGroup_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) GetDistributionEvents(ctx context.Context, in *GetDistributionEventsRequest, opts ...grpc.CallOption) (*GetDistributionEventsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetDistributionEventsResponse)
+	err := c.cc.Invoke(ctx, CompanyService_GetDistributionEvents_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) SimulateDistributionDeal(ctx context.Context, in *SimulateDistributionDealRequest, opts ...grpc.CallOption) (*SimulateDistributionDealResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SimulateDistributionDealResponse)
+	err := c.cc.Invoke(ctx, CompanyService_SimulateDistributionDeal_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) ResetDistributionEvents(ctx context.Context, in *ResetDistributionEventsRequest, opts ...grpc.CallOption) (*ResetDistributionEventsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ResetDistributionEventsResponse)
+	err := c.cc.Invoke(ctx, CompanyService_ResetDistributionEvents_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CompanyServiceServer is the server API for CompanyService service.
 // All implementations must embed UnimplementedCompanyServiceServer
 // for forward compatibility.
@@ -463,6 +595,17 @@ type CompanyServiceServer interface {
 	GetUsersByIds(context.Context, *GetUsersByIdsRequest) (*GetUsersByIdsResponse, error)
 	ResolvePositionUsers(context.Context, *ResolvePositionUsersRequest) (*ResolvePositionUsersResponse, error)
 	ResolveDepartmentUsers(context.Context, *ResolveDepartmentUsersRequest) (*ResolveDepartmentUsersResponse, error)
+	GetSchedules(context.Context, *GetSchedulesRequest) (*GetSchedulesResponse, error)
+	SaveSchedule(context.Context, *SaveScheduleRequest) (*SaveScheduleResponse, error)
+	GetShiftExceptions(context.Context, *GetShiftExceptionsRequest) (*GetShiftExceptionsResponse, error)
+	SaveShiftExceptions(context.Context, *SaveShiftExceptionsRequest) (*SaveShiftExceptionsResponse, error)
+	GetDistributionGroups(context.Context, *GetDistributionGroupsRequest) (*GetDistributionGroupsResponse, error)
+	CreateDistributionGroup(context.Context, *CreateDistributionGroupRequest) (*CreateDistributionGroupResponse, error)
+	UpdateDistributionGroup(context.Context, *UpdateDistributionGroupRequest) (*UpdateDistributionGroupResponse, error)
+	DeleteDistributionGroup(context.Context, *DeleteDistributionGroupRequest) (*DeleteDistributionGroupResponse, error)
+	GetDistributionEvents(context.Context, *GetDistributionEventsRequest) (*GetDistributionEventsResponse, error)
+	SimulateDistributionDeal(context.Context, *SimulateDistributionDealRequest) (*SimulateDistributionDealResponse, error)
+	ResetDistributionEvents(context.Context, *ResetDistributionEventsRequest) (*ResetDistributionEventsResponse, error)
 	mustEmbedUnimplementedCompanyServiceServer()
 }
 
@@ -568,6 +711,39 @@ func (UnimplementedCompanyServiceServer) ResolvePositionUsers(context.Context, *
 }
 func (UnimplementedCompanyServiceServer) ResolveDepartmentUsers(context.Context, *ResolveDepartmentUsersRequest) (*ResolveDepartmentUsersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ResolveDepartmentUsers not implemented")
+}
+func (UnimplementedCompanyServiceServer) GetSchedules(context.Context, *GetSchedulesRequest) (*GetSchedulesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSchedules not implemented")
+}
+func (UnimplementedCompanyServiceServer) SaveSchedule(context.Context, *SaveScheduleRequest) (*SaveScheduleResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SaveSchedule not implemented")
+}
+func (UnimplementedCompanyServiceServer) GetShiftExceptions(context.Context, *GetShiftExceptionsRequest) (*GetShiftExceptionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetShiftExceptions not implemented")
+}
+func (UnimplementedCompanyServiceServer) SaveShiftExceptions(context.Context, *SaveShiftExceptionsRequest) (*SaveShiftExceptionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SaveShiftExceptions not implemented")
+}
+func (UnimplementedCompanyServiceServer) GetDistributionGroups(context.Context, *GetDistributionGroupsRequest) (*GetDistributionGroupsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDistributionGroups not implemented")
+}
+func (UnimplementedCompanyServiceServer) CreateDistributionGroup(context.Context, *CreateDistributionGroupRequest) (*CreateDistributionGroupResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateDistributionGroup not implemented")
+}
+func (UnimplementedCompanyServiceServer) UpdateDistributionGroup(context.Context, *UpdateDistributionGroupRequest) (*UpdateDistributionGroupResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateDistributionGroup not implemented")
+}
+func (UnimplementedCompanyServiceServer) DeleteDistributionGroup(context.Context, *DeleteDistributionGroupRequest) (*DeleteDistributionGroupResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteDistributionGroup not implemented")
+}
+func (UnimplementedCompanyServiceServer) GetDistributionEvents(context.Context, *GetDistributionEventsRequest) (*GetDistributionEventsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDistributionEvents not implemented")
+}
+func (UnimplementedCompanyServiceServer) SimulateDistributionDeal(context.Context, *SimulateDistributionDealRequest) (*SimulateDistributionDealResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SimulateDistributionDeal not implemented")
+}
+func (UnimplementedCompanyServiceServer) ResetDistributionEvents(context.Context, *ResetDistributionEventsRequest) (*ResetDistributionEventsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ResetDistributionEvents not implemented")
 }
 func (UnimplementedCompanyServiceServer) mustEmbedUnimplementedCompanyServiceServer() {}
 func (UnimplementedCompanyServiceServer) testEmbeddedByValue()                        {}
@@ -1166,6 +1342,204 @@ func _CompanyService_ResolveDepartmentUsers_Handler(srv interface{}, ctx context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CompanyService_GetSchedules_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSchedulesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).GetSchedules(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_GetSchedules_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).GetSchedules(ctx, req.(*GetSchedulesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_SaveSchedule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SaveScheduleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).SaveSchedule(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_SaveSchedule_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).SaveSchedule(ctx, req.(*SaveScheduleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_GetShiftExceptions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetShiftExceptionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).GetShiftExceptions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_GetShiftExceptions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).GetShiftExceptions(ctx, req.(*GetShiftExceptionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_SaveShiftExceptions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SaveShiftExceptionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).SaveShiftExceptions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_SaveShiftExceptions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).SaveShiftExceptions(ctx, req.(*SaveShiftExceptionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_GetDistributionGroups_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetDistributionGroupsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).GetDistributionGroups(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_GetDistributionGroups_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).GetDistributionGroups(ctx, req.(*GetDistributionGroupsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_CreateDistributionGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateDistributionGroupRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).CreateDistributionGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_CreateDistributionGroup_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).CreateDistributionGroup(ctx, req.(*CreateDistributionGroupRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_UpdateDistributionGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateDistributionGroupRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).UpdateDistributionGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_UpdateDistributionGroup_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).UpdateDistributionGroup(ctx, req.(*UpdateDistributionGroupRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_DeleteDistributionGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteDistributionGroupRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).DeleteDistributionGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_DeleteDistributionGroup_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).DeleteDistributionGroup(ctx, req.(*DeleteDistributionGroupRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_GetDistributionEvents_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetDistributionEventsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).GetDistributionEvents(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_GetDistributionEvents_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).GetDistributionEvents(ctx, req.(*GetDistributionEventsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_SimulateDistributionDeal_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SimulateDistributionDealRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).SimulateDistributionDeal(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_SimulateDistributionDeal_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).SimulateDistributionDeal(ctx, req.(*SimulateDistributionDealRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_ResetDistributionEvents_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ResetDistributionEventsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).ResetDistributionEvents(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_ResetDistributionEvents_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).ResetDistributionEvents(ctx, req.(*ResetDistributionEventsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CompanyService_ServiceDesc is the grpc.ServiceDesc for CompanyService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1300,6 +1674,50 @@ var CompanyService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ResolveDepartmentUsers",
 			Handler:    _CompanyService_ResolveDepartmentUsers_Handler,
+		},
+		{
+			MethodName: "GetSchedules",
+			Handler:    _CompanyService_GetSchedules_Handler,
+		},
+		{
+			MethodName: "SaveSchedule",
+			Handler:    _CompanyService_SaveSchedule_Handler,
+		},
+		{
+			MethodName: "GetShiftExceptions",
+			Handler:    _CompanyService_GetShiftExceptions_Handler,
+		},
+		{
+			MethodName: "SaveShiftExceptions",
+			Handler:    _CompanyService_SaveShiftExceptions_Handler,
+		},
+		{
+			MethodName: "GetDistributionGroups",
+			Handler:    _CompanyService_GetDistributionGroups_Handler,
+		},
+		{
+			MethodName: "CreateDistributionGroup",
+			Handler:    _CompanyService_CreateDistributionGroup_Handler,
+		},
+		{
+			MethodName: "UpdateDistributionGroup",
+			Handler:    _CompanyService_UpdateDistributionGroup_Handler,
+		},
+		{
+			MethodName: "DeleteDistributionGroup",
+			Handler:    _CompanyService_DeleteDistributionGroup_Handler,
+		},
+		{
+			MethodName: "GetDistributionEvents",
+			Handler:    _CompanyService_GetDistributionEvents_Handler,
+		},
+		{
+			MethodName: "SimulateDistributionDeal",
+			Handler:    _CompanyService_SimulateDistributionDeal_Handler,
+		},
+		{
+			MethodName: "ResetDistributionEvents",
+			Handler:    _CompanyService_ResetDistributionEvents_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

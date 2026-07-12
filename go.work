@@ -3,10 +3,11 @@ go 1.25.0
 use (
 	./contracts/gen/go
 	./pkg
+	./services/academy
 	./services/company
+	./services/files
 	./services/gateway
 	./services/kb
-	./services/academy
 	./services/notifications
 	./services/tasks
 )

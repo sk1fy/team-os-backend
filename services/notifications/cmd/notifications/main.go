@@ -38,6 +38,15 @@ func run(logger *slog.Logger) error {
 	if err != nil {
 		return err
 	}
+	shutdownTelemetry, err := httpx.SetupTelemetry("notifications")
+	if err != nil {
+		return fmt.Errorf("настроить телеметрию: %w", err)
+	}
+	defer func() {
+		if shutdownErr := shutdownTelemetry(); shutdownErr != nil {
+			logger.Error("shutdown telemetry", "error", shutdownErr)
+		}
+	}()
 	key, err := sharedauth.ParsePublicKey(c.JWTPublicKey)
 	if err != nil {
 		return err
@@ -75,9 +84,9 @@ func run(logger *slog.Logger) error {
 	h.SetServingStatus("", healthv1.HealthCheckResponse_SERVING)
 	healthv1.RegisterHealthServer(g, h)
 	mux := http.NewServeMux()
-	mux.Handle("GET /healthz", httpx.Healthz())
+	mux.Handle("GET /metrics", httpx.MetricsHandler())
 	mux.Handle("GET /readyz", httpx.Readyz(map[string]httpx.ReadinessCheck{"postgres": func(ctx context.Context) error { return pool.Ping(ctx) }, "nats": func(ctx context.Context) error { return bus.Ready(ctx) }}))
-	httpServer := &http.Server{Addr: c.HTTPAddr, Handler: httpx.Chain(mux, httpx.RequestID, httpx.Recoverer(logger), httpx.Logging(logger)), ReadHeaderTimeout: 5 * time.Second}
+	httpServer := &http.Server{Addr: c.HTTPAddr, Handler: httpx.Chain(mux, httpx.RequestID, httpx.Recoverer(logger), httpx.Tracing("notifications"), httpx.Metrics, httpx.Logging(logger)), ReadHeaderTimeout: 5 * time.Second}
 	errs := make(chan error, 2)
 	go func() { errs <- g.Serve(listener) }()
 	go func() { errs <- httpServer.ListenAndServe() }()

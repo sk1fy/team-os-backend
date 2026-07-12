@@ -40,6 +40,32 @@ type Department struct {
 	UpdatedAt            time.Time     `json:"updated_at"`
 }
 
+type DistributionEvent struct {
+	ID         uuid.UUID `json:"id"`
+	CompanyID  uuid.UUID `json:"company_id"`
+	GroupID    uuid.UUID `json:"group_id"`
+	DealNumber int64     `json:"deal_number"`
+	UserID     uuid.UUID `json:"user_id"`
+	Status     string    `json:"status"`
+	CreatedAt  time.Time `json:"created_at"`
+}
+
+type DistributionGroup struct {
+	ID                uuid.UUID   `json:"id"`
+	CompanyID         uuid.UUID   `json:"company_id"`
+	Name              string      `json:"name"`
+	Description       pgtype.Text `json:"description"`
+	Active            bool        `json:"active"`
+	Algorithm         string      `json:"algorithm"`
+	MemberIds         []uuid.UUID `json:"member_ids"`
+	DisabledMemberIds []uuid.UUID `json:"disabled_member_ids"`
+	Source            string      `json:"source"`
+	DealLimit         int32       `json:"deal_limit"`
+	UnclaimedMinutes  int32       `json:"unclaimed_minutes"`
+	CreatedAt         time.Time   `json:"created_at"`
+	UpdatedAt         time.Time   `json:"updated_at"`
+}
+
 type Invite struct {
 	ID           uuid.UUID     `json:"id"`
 	CompanyID    uuid.UUID     `json:"company_id"`

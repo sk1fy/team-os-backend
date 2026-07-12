@@ -1,7 +1,9 @@
 version: "2"
 sql:
   - engine: postgresql
-    schema: migrations/000001_init.up.sql
+    schema:
+      - migrations/000001_init.up.sql
+      - migrations/000002_phase6_schedule_distribution.up.sql
     queries: internal/storage/queries
     gen:
       go:
@@ -29,3 +31,8 @@ sql:
             go_type:
               import: time
               type: Time
+          - db_type: "uuid[]"
+            go_type:
+              import: github.com/google/uuid
+              type: UUID
+              slice: true

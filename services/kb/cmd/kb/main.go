@@ -46,6 +46,15 @@ func run(logger *slog.Logger) error {
 	if err != nil {
 		return err
 	}
+	shutdownTelemetry, err := httpx.SetupTelemetry("kb")
+	if err != nil {
+		return fmt.Errorf("настроить телеметрию: %w", err)
+	}
+	defer func() {
+		if shutdownErr := shutdownTelemetry(); shutdownErr != nil {
+			logger.Error("shutdown telemetry", "error", shutdownErr)
+		}
+	}()
 	publicKey, err := sharedauth.ParsePublicKey(configuration.JWTPublicKey)
 	if err != nil {
 		return fmt.Errorf("KB_JWT_PUBLIC_KEY: %w", err)
@@ -98,7 +107,7 @@ func run(logger *slog.Logger) error {
 	grpc_health_v1.RegisterHealthServer(grpcServer, healthServer)
 
 	httpRouter := http.NewServeMux()
-	httpRouter.Handle("GET /healthz", httpx.Healthz())
+	httpRouter.Handle("GET /metrics", httpx.MetricsHandler())
 	httpRouter.Handle("GET /readyz", httpx.Readyz(map[string]httpx.ReadinessCheck{
 		"postgres": func(ctx context.Context) error {
 			checkContext, cancel := context.WithTimeout(ctx, time.Second)
@@ -118,6 +127,7 @@ func run(logger *slog.Logger) error {
 			httpx.RequestID,
 			httpx.Recoverer(logger),
 			httpx.Tracing("kb"),
+			httpx.Metrics,
 			httpx.Logging(logger),
 		),
 		ReadHeaderTimeout: 5 * time.Second,

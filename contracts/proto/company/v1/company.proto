@@ -47,6 +47,19 @@ service CompanyService {
   rpc GetUsersByIds(GetUsersByIdsRequest) returns (GetUsersByIdsResponse);
   rpc ResolvePositionUsers(ResolvePositionUsersRequest) returns (ResolvePositionUsersResponse);
   rpc ResolveDepartmentUsers(ResolveDepartmentUsersRequest) returns (ResolveDepartmentUsersResponse);
+
+  rpc GetSchedules(GetSchedulesRequest) returns (GetSchedulesResponse);
+  rpc SaveSchedule(SaveScheduleRequest) returns (SaveScheduleResponse);
+  rpc GetShiftExceptions(GetShiftExceptionsRequest) returns (GetShiftExceptionsResponse);
+  rpc SaveShiftExceptions(SaveShiftExceptionsRequest) returns (SaveShiftExceptionsResponse);
+
+  rpc GetDistributionGroups(GetDistributionGroupsRequest) returns (GetDistributionGroupsResponse);
+  rpc CreateDistributionGroup(CreateDistributionGroupRequest) returns (CreateDistributionGroupResponse);
+  rpc UpdateDistributionGroup(UpdateDistributionGroupRequest) returns (UpdateDistributionGroupResponse);
+  rpc DeleteDistributionGroup(DeleteDistributionGroupRequest) returns (DeleteDistributionGroupResponse);
+  rpc GetDistributionEvents(GetDistributionEventsRequest) returns (GetDistributionEventsResponse);
+  rpc SimulateDistributionDeal(SimulateDistributionDealRequest) returns (SimulateDistributionDealResponse);
+  rpc ResetDistributionEvents(ResetDistributionEventsRequest) returns (ResetDistributionEventsResponse);
 }
 
 enum UserRole {
@@ -428,3 +441,121 @@ message ResolveDepartmentUsersRequest {
 message ResolveDepartmentUsersResponse {
   repeated string user_ids = 1;
 }
+
+message ScheduleTemplate {
+  string type = 1;
+  repeated uint32 days = 2;
+  optional uint32 on = 3;
+  optional uint32 off = 4;
+  string start = 5;
+  string end = 6;
+  optional string cycle_start = 7;
+}
+
+message UserSchedule {
+  string user_id = 1;
+  ScheduleTemplate template = 2;
+}
+
+enum ShiftType {
+  SHIFT_TYPE_UNSPECIFIED = 0;
+  SHIFT_TYPE_WORK = 1;
+  SHIFT_TYPE_OFF = 2;
+  SHIFT_TYPE_VACATION = 3;
+  SHIFT_TYPE_SICK = 4;
+  SHIFT_TYPE_TRIP = 5;
+}
+
+message ShiftException {
+  string id = 1;
+  string user_id = 2;
+  string date = 3;
+  ShiftType type = 4;
+  optional string start = 5;
+  optional string end = 6;
+  optional string note = 7;
+}
+
+message GetSchedulesRequest {}
+message GetSchedulesResponse { repeated UserSchedule schedules = 1; }
+message SaveScheduleRequest { string user_id = 1; ScheduleTemplate template = 2; }
+message SaveScheduleResponse { UserSchedule schedule = 1; }
+message GetShiftExceptionsRequest { string month = 1; }
+message GetShiftExceptionsResponse { repeated ShiftException exceptions = 1; }
+message SaveShiftExceptionInput {
+  string user_id = 1;
+  string date = 2;
+  ShiftType type = 3;
+  optional string start = 4;
+  optional string end = 5;
+  optional string note = 6;
+}
+message SaveShiftExceptionsRequest { repeated SaveShiftExceptionInput exceptions = 1; }
+message SaveShiftExceptionsResponse { repeated ShiftException exceptions = 1; }
+
+enum DistributionAlgorithm {
+  DISTRIBUTION_ALGORITHM_UNSPECIFIED = 0;
+  DISTRIBUTION_ALGORITHM_ROUND_ROBIN = 1;
+  DISTRIBUTION_ALGORITHM_LEAST_LOADED = 2;
+  DISTRIBUTION_ALGORITHM_PRIORITY = 3;
+}
+
+enum DistributionEventStatus {
+  DISTRIBUTION_EVENT_STATUS_UNSPECIFIED = 0;
+  DISTRIBUTION_EVENT_STATUS_ACCEPTED = 1;
+  DISTRIBUTION_EVENT_STATUS_IN_PROGRESS = 2;
+  DISTRIBUTION_EVENT_STATUS_REASSIGNED = 3;
+  DISTRIBUTION_EVENT_STATUS_DECLINED = 4;
+}
+
+message DistributionGroup {
+  string id = 1;
+  string name = 2;
+  optional string description = 3;
+  bool active = 4;
+  DistributionAlgorithm algorithm = 5;
+  repeated string member_ids = 6;
+  repeated string disabled_member_ids = 7;
+  string source = 8;
+  uint32 deal_limit = 9;
+  uint32 unclaimed_minutes = 10;
+  google.protobuf.Timestamp created_at = 11;
+}
+
+message DistributionEvent {
+  string id = 1;
+  string group_id = 2;
+  uint64 deal_number = 3;
+  string user_id = 4;
+  DistributionEventStatus status = 5;
+  google.protobuf.Timestamp created_at = 6;
+}
+
+message GetDistributionGroupsRequest {}
+message GetDistributionGroupsResponse { repeated DistributionGroup groups = 1; }
+message CreateDistributionGroupRequest { string name = 1; optional string description = 2; repeated string member_ids = 3; }
+message CreateDistributionGroupResponse { DistributionGroup group = 1; }
+message UpdateDistributionGroupRequest {
+  string id = 1;
+  optional string name = 2;
+  optional string description = 3;
+  bool clear_description = 4;
+  optional bool active = 5;
+  optional DistributionAlgorithm algorithm = 6;
+  repeated string member_ids = 7;
+  bool set_member_ids = 8;
+  repeated string disabled_member_ids = 9;
+  bool set_disabled_member_ids = 10;
+  optional string source = 11;
+  optional uint32 deal_limit = 12;
+  optional uint32 unclaimed_minutes = 13;
+}
+message UpdateDistributionGroupResponse { DistributionGroup group = 1; }
+message DeleteDistributionGroupRequest { string id = 1; }
+message DeleteDistributionGroupResponse {}
+message GetDistributionEventsRequest { string group_id = 1; }
+message GetDistributionEventsResponse { repeated DistributionEvent events = 1; }
+message SimulateDistributionDealRequest { string group_id = 1; }
+message SimulateDistributionDealResponse { DistributionEvent event = 1; }
+message ResetDistributionEventsRequest { string group_id = 1; }
+message ResetDistributionEventsResponse {}

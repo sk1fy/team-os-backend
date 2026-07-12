@@ -12,6 +12,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/sk1fy/team-os-backend/pkg/eventbus"
+	"github.com/sk1fy/team-os-backend/pkg/httpx"
 )
 
 const defaultPollInterval = 500 * time.Millisecond
@@ -129,7 +130,15 @@ func (r *Relay) publishBatch(ctx context.Context) (int, error) {
 	if err = tx.Commit(ctx); err != nil {
 		return 0, fmt.Errorf("commit outbox transaction: %w", err)
 	}
+	r.updateMetrics(ctx)
 	return len(batch), nil
+}
+
+func (r *Relay) updateMetrics(ctx context.Context) {
+	var age float64
+	if err := r.pool.QueryRow(ctx, `SELECT COALESCE(EXTRACT(EPOCH FROM now() - MIN(occurred_at)), 0) FROM outbox WHERE published_at IS NULL`).Scan(&age); err == nil {
+		httpx.SetGauge("teamos_outbox_oldest_pending_age_seconds", "", age)
+	}
 }
 
 func markFailure(ctx context.Context, tx pgx.Tx, id uuid.UUID, cause error) error {

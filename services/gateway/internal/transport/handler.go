@@ -12,6 +12,7 @@ import (
 	"github.com/google/uuid"
 	academyv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/academy/v1"
 	companyv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v1"
+	filesv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/files/v1"
 	kbv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/kb/v1"
 	notificationsv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/notifications/v1"
 	tasksv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/tasks/v1"
@@ -37,9 +38,12 @@ type Handler struct {
 	tasks         tasksv1.TasksServiceClient
 	academy       academyv1.AcademyServiceClient
 	notifications notificationsv1.NotificationsServiceClient
+	files         filesv1.FilesServiceClient
 	cookie        CookieConfig
 	logger        *slog.Logger
 }
+
+func (h *Handler) SetFilesClient(client filesv1.FilesServiceClient) { h.files = client }
 
 func NewHandler(
 	companyClient companyv1.CompanyServiceClient,
