@@ -181,6 +181,171 @@ func (InviteStatus) EnumDescriptor() ([]byte, []int) {
 	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{2}
 }
 
+type ShiftType int32
+
+const (
+	ShiftType_SHIFT_TYPE_UNSPECIFIED ShiftType = 0
+	ShiftType_SHIFT_TYPE_WORK        ShiftType = 1
+	ShiftType_SHIFT_TYPE_OFF         ShiftType = 2
+	ShiftType_SHIFT_TYPE_VACATION    ShiftType = 3
+	ShiftType_SHIFT_TYPE_SICK        ShiftType = 4
+	ShiftType_SHIFT_TYPE_TRIP        ShiftType = 5
+)
+
+// Enum value maps for ShiftType.
+var (
+	ShiftType_name = map[int32]string{
+		0: "SHIFT_TYPE_UNSPECIFIED",
+		1: "SHIFT_TYPE_WORK",
+		2: "SHIFT_TYPE_OFF",
+		3: "SHIFT_TYPE_VACATION",
+		4: "SHIFT_TYPE_SICK",
+		5: "SHIFT_TYPE_TRIP",
+	}
+	ShiftType_value = map[string]int32{
+		"SHIFT_TYPE_UNSPECIFIED": 0,
+		"SHIFT_TYPE_WORK":        1,
+		"SHIFT_TYPE_OFF":         2,
+		"SHIFT_TYPE_VACATION":    3,
+		"SHIFT_TYPE_SICK":        4,
+		"SHIFT_TYPE_TRIP":        5,
+	}
+)
+
+func (x ShiftType) Enum() *ShiftType {
+	p := new(ShiftType)
+	*p = x
+	return p
+}
+
+func (x ShiftType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ShiftType) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_company_v1_company_proto_enumTypes[3].Descriptor()
+}
+
+func (ShiftType) Type() protoreflect.EnumType {
+	return &file_proto_company_v1_company_proto_enumTypes[3]
+}
+
+func (x ShiftType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ShiftType.Descriptor instead.
+func (ShiftType) EnumDescriptor() ([]byte, []int) {
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{3}
+}
+
+type DistributionAlgorithm int32
+
+const (
+	DistributionAlgorithm_DISTRIBUTION_ALGORITHM_UNSPECIFIED  DistributionAlgorithm = 0
+	DistributionAlgorithm_DISTRIBUTION_ALGORITHM_ROUND_ROBIN  DistributionAlgorithm = 1
+	DistributionAlgorithm_DISTRIBUTION_ALGORITHM_LEAST_LOADED DistributionAlgorithm = 2
+	DistributionAlgorithm_DISTRIBUTION_ALGORITHM_PRIORITY     DistributionAlgorithm = 3
+)
+
+// Enum value maps for DistributionAlgorithm.
+var (
+	DistributionAlgorithm_name = map[int32]string{
+		0: "DISTRIBUTION_ALGORITHM_UNSPECIFIED",
+		1: "DISTRIBUTION_ALGORITHM_ROUND_ROBIN",
+		2: "DISTRIBUTION_ALGORITHM_LEAST_LOADED",
+		3: "DISTRIBUTION_ALGORITHM_PRIORITY",
+	}
+	DistributionAlgorithm_value = map[string]int32{
+		"DISTRIBUTION_ALGORITHM_UNSPECIFIED":  0,
+		"DISTRIBUTION_ALGORITHM_ROUND_ROBIN":  1,
+		"DISTRIBUTION_ALGORITHM_LEAST_LOADED": 2,
+		"DISTRIBUTION_ALGORITHM_PRIORITY":     3,
+	}
+)
+
+func (x DistributionAlgorithm) Enum() *DistributionAlgorithm {
+	p := new(DistributionAlgorithm)
+	*p = x
+	return p
+}
+
+func (x DistributionAlgorithm) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (DistributionAlgorithm) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_company_v1_company_proto_enumTypes[4].Descriptor()
+}
+
+func (DistributionAlgorithm) Type() protoreflect.EnumType {
+	return &file_proto_company_v1_company_proto_enumTypes[4]
+}
+
+func (x DistributionAlgorithm) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use DistributionAlgorithm.Descriptor instead.
+func (DistributionAlgorithm) EnumDescriptor() ([]byte, []int) {
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{4}
+}
+
+type DistributionEventStatus int32
+
+const (
+	DistributionEventStatus_DISTRIBUTION_EVENT_STATUS_UNSPECIFIED DistributionEventStatus = 0
+	DistributionEventStatus_DISTRIBUTION_EVENT_STATUS_ACCEPTED    DistributionEventStatus = 1
+	DistributionEventStatus_DISTRIBUTION_EVENT_STATUS_IN_PROGRESS DistributionEventStatus = 2
+	DistributionEventStatus_DISTRIBUTION_EVENT_STATUS_REASSIGNED  DistributionEventStatus = 3
+	DistributionEventStatus_DISTRIBUTION_EVENT_STATUS_DECLINED    DistributionEventStatus = 4
+)
+
+// Enum value maps for DistributionEventStatus.
+var (
+	DistributionEventStatus_name = map[int32]string{
+		0: "DISTRIBUTION_EVENT_STATUS_UNSPECIFIED",
+		1: "DISTRIBUTION_EVENT_STATUS_ACCEPTED",
+		2: "DISTRIBUTION_EVENT_STATUS_IN_PROGRESS",
+		3: "DISTRIBUTION_EVENT_STATUS_REASSIGNED",
+		4: "DISTRIBUTION_EVENT_STATUS_DECLINED",
+	}
+	DistributionEventStatus_value = map[string]int32{
+		"DISTRIBUTION_EVENT_STATUS_UNSPECIFIED": 0,
+		"DISTRIBUTION_EVENT_STATUS_ACCEPTED":    1,
+		"DISTRIBUTION_EVENT_STATUS_IN_PROGRESS": 2,
+		"DISTRIBUTION_EVENT_STATUS_REASSIGNED":  3,
+		"DISTRIBUTION_EVENT_STATUS_DECLINED":    4,
+	}
+)
+
+func (x DistributionEventStatus) Enum() *DistributionEventStatus {
+	p := new(DistributionEventStatus)
+	*p = x
+	return p
+}
+
+func (x DistributionEventStatus) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (DistributionEventStatus) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_company_v1_company_proto_enumTypes[5].Descriptor()
+}
+
+func (DistributionEventStatus) Type() protoreflect.EnumType {
+	return &file_proto_company_v1_company_proto_enumTypes[5]
+}
+
+func (x DistributionEventStatus) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use DistributionEventStatus.Descriptor instead.
+func (DistributionEventStatus) EnumDescriptor() ([]byte, []int) {
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{5}
+}
+
 type Company struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -3888,6 +4053,1590 @@ func (x *ResolveDepartmentUsersResponse) GetUserIds() []string {
 	return nil
 }
 
+type ScheduleTemplate struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Type          string                 `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
+	Days          []uint32               `protobuf:"varint,2,rep,packed,name=days,proto3" json:"days,omitempty"`
+	On            *uint32                `protobuf:"varint,3,opt,name=on,proto3,oneof" json:"on,omitempty"`
+	Off           *uint32                `protobuf:"varint,4,opt,name=off,proto3,oneof" json:"off,omitempty"`
+	Start         string                 `protobuf:"bytes,5,opt,name=start,proto3" json:"start,omitempty"`
+	End           string                 `protobuf:"bytes,6,opt,name=end,proto3" json:"end,omitempty"`
+	CycleStart    *string                `protobuf:"bytes,7,opt,name=cycle_start,json=cycleStart,proto3,oneof" json:"cycle_start,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ScheduleTemplate) Reset() {
+	*x = ScheduleTemplate{}
+	mi := &file_proto_company_v1_company_proto_msgTypes[70]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ScheduleTemplate) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ScheduleTemplate) ProtoMessage() {}
+
+func (x *ScheduleTemplate) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_company_v1_company_proto_msgTypes[70]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ScheduleTemplate.ProtoReflect.Descriptor instead.
+func (*ScheduleTemplate) Descriptor() ([]byte, []int) {
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{70}
+}
+
+func (x *ScheduleTemplate) GetType() string {
+	if x != nil {
+		return x.Type
+	}
+	return ""
+}
+
+func (x *ScheduleTemplate) GetDays() []uint32 {
+	if x != nil {
+		return x.Days
+	}
+	return nil
+}
+
+func (x *ScheduleTemplate) GetOn() uint32 {
+	if x != nil && x.On != nil {
+		return *x.On
+	}
+	return 0
+}
+
+func (x *ScheduleTemplate) GetOff() uint32 {
+	if x != nil && x.Off != nil {
+		return *x.Off
+	}
+	return 0
+}
+
+func (x *ScheduleTemplate) GetStart() string {
+	if x != nil {
+		return x.Start
+	}
+	return ""
+}
+
+func (x *ScheduleTemplate) GetEnd() string {
+	if x != nil {
+		return x.End
+	}
+	return ""
+}
+
+func (x *ScheduleTemplate) GetCycleStart() string {
+	if x != nil && x.CycleStart != nil {
+		return *x.CycleStart
+	}
+	return ""
+}
+
+type UserSchedule struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Template      *ScheduleTemplate      `protobuf:"bytes,2,opt,name=template,proto3" json:"template,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UserSchedule) Reset() {
+	*x = UserSchedule{}
+	mi := &file_proto_company_v1_company_proto_msgTypes[71]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UserSchedule) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UserSchedule) ProtoMessage() {}
+
+func (x *UserSchedule) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_company_v1_company_proto_msgTypes[71]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UserSchedule.ProtoReflect.Descriptor instead.
+func (*UserSchedule) Descriptor() ([]byte, []int) {
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{71}
+}
+
+func (x *UserSchedule) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *UserSchedule) GetTemplate() *ScheduleTemplate {
+	if x != nil {
+		return x.Template
+	}
+	return nil
+}
+
+type ShiftException struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	UserId        string                 `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Date          string                 `protobuf:"bytes,3,opt,name=date,proto3" json:"date,omitempty"`
+	Type          ShiftType              `protobuf:"varint,4,opt,name=type,proto3,enum=teamos.company.v1.ShiftType" json:"type,omitempty"`
+	Start         *string                `protobuf:"bytes,5,opt,name=start,proto3,oneof" json:"start,omitempty"`
+	End           *string                `protobuf:"bytes,6,opt,name=end,proto3,oneof" json:"end,omitempty"`
+	Note          *string                `protobuf:"bytes,7,opt,name=note,proto3,oneof" json:"note,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ShiftException) Reset() {
+	*x = ShiftException{}
+	mi := &file_proto_company_v1_company_proto_msgTypes[72]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ShiftException) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ShiftException) ProtoMessage() {}
+
+func (x *ShiftException) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_company_v1_company_proto_msgTypes[72]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ShiftException.ProtoReflect.Descriptor instead.
+func (*ShiftException) Descriptor() ([]byte, []int) {
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{72}
+}
+
+func (x *ShiftException) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *ShiftException) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *ShiftException) GetDate() string {
+	if x != nil {
+		return x.Date
+	}
+	return ""
+}
+
+func (x *ShiftException) GetType() ShiftType {
+	if x != nil {
+		return x.Type
+	}
+	return ShiftType_SHIFT_TYPE_UNSPECIFIED
+}
+
+func (x *ShiftException) GetStart() string {
+	if x != nil && x.Start != nil {
+		return *x.Start
+	}
+	return ""
+}
+
+func (x *ShiftException) GetEnd() string {
+	if x != nil && x.End != nil {
+		return *x.End
+	}
+	return ""
+}
+
+func (x *ShiftException) GetNote() string {
+	if x != nil && x.Note != nil {
+		return *x.Note
+	}
+	return ""
+}
+
+type GetSchedulesRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetSchedulesRequest) Reset() {
+	*x = GetSchedulesRequest{}
+	mi := &file_proto_company_v1_company_proto_msgTypes[73]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetSchedulesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetSchedulesRequest) ProtoMessage() {}
+
+func (x *GetSchedulesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_company_v1_company_proto_msgTypes[73]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetSchedulesRequest.ProtoReflect.Descriptor instead.
+func (*GetSchedulesRequest) Descriptor() ([]byte, []int) {
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{73}
+}
+
+type GetSchedulesResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Schedules     []*UserSchedule        `protobuf:"bytes,1,rep,name=schedules,proto3" json:"schedules,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetSchedulesResponse) Reset() {
+	*x = GetSchedulesResponse{}
+	mi := &file_proto_company_v1_company_proto_msgTypes[74]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetSchedulesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetSchedulesResponse) ProtoMessage() {}
+
+func (x *GetSchedulesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_company_v1_company_proto_msgTypes[74]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetSchedulesResponse.ProtoReflect.Descriptor instead.
+func (*GetSchedulesResponse) Descriptor() ([]byte, []int) {
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{74}
+}
+
+func (x *GetSchedulesResponse) GetSchedules() []*UserSchedule {
+	if x != nil {
+		return x.Schedules
+	}
+	return nil
+}
+
+type SaveScheduleRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Template      *ScheduleTemplate      `protobuf:"bytes,2,opt,name=template,proto3" json:"template,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SaveScheduleRequest) Reset() {
+	*x = SaveScheduleRequest{}
+	mi := &file_proto_company_v1_company_proto_msgTypes[75]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SaveScheduleRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SaveScheduleRequest) ProtoMessage() {}
+
+func (x *SaveScheduleRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_company_v1_company_proto_msgTypes[75]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SaveScheduleRequest.ProtoReflect.Descriptor instead.
+func (*SaveScheduleRequest) Descriptor() ([]byte, []int) {
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{75}
+}
+
+func (x *SaveScheduleRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *SaveScheduleRequest) GetTemplate() *ScheduleTemplate {
+	if x != nil {
+		return x.Template
+	}
+	return nil
+}
+
+type SaveScheduleResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Schedule      *UserSchedule          `protobuf:"bytes,1,opt,name=schedule,proto3" json:"schedule,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SaveScheduleResponse) Reset() {
+	*x = SaveScheduleResponse{}
+	mi := &file_proto_company_v1_company_proto_msgTypes[76]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SaveScheduleResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SaveScheduleResponse) ProtoMessage() {}
+
+func (x *SaveScheduleResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_company_v1_company_proto_msgTypes[76]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SaveScheduleResponse.ProtoReflect.Descriptor instead.
+func (*SaveScheduleResponse) Descriptor() ([]byte, []int) {
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{76}
+}
+
+func (x *SaveScheduleResponse) GetSchedule() *UserSchedule {
+	if x != nil {
+		return x.Schedule
+	}
+	return nil
+}
+
+type GetShiftExceptionsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Month         string                 `protobuf:"bytes,1,opt,name=month,proto3" json:"month,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetShiftExceptionsRequest) Reset() {
+	*x = GetShiftExceptionsRequest{}
+	mi := &file_proto_company_v1_company_proto_msgTypes[77]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetShiftExceptionsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetShiftExceptionsRequest) ProtoMessage() {}
+
+func (x *GetShiftExceptionsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_company_v1_company_proto_msgTypes[77]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetShiftExceptionsRequest.ProtoReflect.Descriptor instead.
+func (*GetShiftExceptionsRequest) Descriptor() ([]byte, []int) {
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{77}
+}
+
+func (x *GetShiftExceptionsRequest) GetMonth() string {
+	if x != nil {
+		return x.Month
+	}
+	return ""
+}
+
+type GetShiftExceptionsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Exceptions    []*ShiftException      `protobuf:"bytes,1,rep,name=exceptions,proto3" json:"exceptions,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetShiftExceptionsResponse) Reset() {
+	*x = GetShiftExceptionsResponse{}
+	mi := &file_proto_company_v1_company_proto_msgTypes[78]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetShiftExceptionsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetShiftExceptionsResponse) ProtoMessage() {}
+
+func (x *GetShiftExceptionsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_company_v1_company_proto_msgTypes[78]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetShiftExceptionsResponse.ProtoReflect.Descriptor instead.
+func (*GetShiftExceptionsResponse) Descriptor() ([]byte, []int) {
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{78}
+}
+
+func (x *GetShiftExceptionsResponse) GetExceptions() []*ShiftException {
+	if x != nil {
+		return x.Exceptions
+	}
+	return nil
+}
+
+type SaveShiftExceptionInput struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Date          string                 `protobuf:"bytes,2,opt,name=date,proto3" json:"date,omitempty"`
+	Type          ShiftType              `protobuf:"varint,3,opt,name=type,proto3,enum=teamos.company.v1.ShiftType" json:"type,omitempty"`
+	Start         *string                `protobuf:"bytes,4,opt,name=start,proto3,oneof" json:"start,omitempty"`
+	End           *string                `protobuf:"bytes,5,opt,name=end,proto3,oneof" json:"end,omitempty"`
+	Note          *string                `protobuf:"bytes,6,opt,name=note,proto3,oneof" json:"note,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SaveShiftExceptionInput) Reset() {
+	*x = SaveShiftExceptionInput{}
+	mi := &file_proto_company_v1_company_proto_msgTypes[79]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SaveShiftExceptionInput) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SaveShiftExceptionInput) ProtoMessage() {}
+
+func (x *SaveShiftExceptionInput) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_company_v1_company_proto_msgTypes[79]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SaveShiftExceptionInput.ProtoReflect.Descriptor instead.
+func (*SaveShiftExceptionInput) Descriptor() ([]byte, []int) {
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{79}
+}
+
+func (x *SaveShiftExceptionInput) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *SaveShiftExceptionInput) GetDate() string {
+	if x != nil {
+		return x.Date
+	}
+	return ""
+}
+
+func (x *SaveShiftExceptionInput) GetType() ShiftType {
+	if x != nil {
+		return x.Type
+	}
+	return ShiftType_SHIFT_TYPE_UNSPECIFIED
+}
+
+func (x *SaveShiftExceptionInput) GetStart() string {
+	if x != nil && x.Start != nil {
+		return *x.Start
+	}
+	return ""
+}
+
+func (x *SaveShiftExceptionInput) GetEnd() string {
+	if x != nil && x.End != nil {
+		return *x.End
+	}
+	return ""
+}
+
+func (x *SaveShiftExceptionInput) GetNote() string {
+	if x != nil && x.Note != nil {
+		return *x.Note
+	}
+	return ""
+}
+
+type SaveShiftExceptionsRequest struct {
+	state         protoimpl.MessageState     `protogen:"open.v1"`
+	Exceptions    []*SaveShiftExceptionInput `protobuf:"bytes,1,rep,name=exceptions,proto3" json:"exceptions,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SaveShiftExceptionsRequest) Reset() {
+	*x = SaveShiftExceptionsRequest{}
+	mi := &file_proto_company_v1_company_proto_msgTypes[80]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SaveShiftExceptionsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SaveShiftExceptionsRequest) ProtoMessage() {}
+
+func (x *SaveShiftExceptionsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_company_v1_company_proto_msgTypes[80]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SaveShiftExceptionsRequest.ProtoReflect.Descriptor instead.
+func (*SaveShiftExceptionsRequest) Descriptor() ([]byte, []int) {
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{80}
+}
+
+func (x *SaveShiftExceptionsRequest) GetExceptions() []*SaveShiftExceptionInput {
+	if x != nil {
+		return x.Exceptions
+	}
+	return nil
+}
+
+type SaveShiftExceptionsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Exceptions    []*ShiftException      `protobuf:"bytes,1,rep,name=exceptions,proto3" json:"exceptions,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SaveShiftExceptionsResponse) Reset() {
+	*x = SaveShiftExceptionsResponse{}
+	mi := &file_proto_company_v1_company_proto_msgTypes[81]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SaveShiftExceptionsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SaveShiftExceptionsResponse) ProtoMessage() {}
+
+func (x *SaveShiftExceptionsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_company_v1_company_proto_msgTypes[81]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SaveShiftExceptionsResponse.ProtoReflect.Descriptor instead.
+func (*SaveShiftExceptionsResponse) Descriptor() ([]byte, []int) {
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{81}
+}
+
+func (x *SaveShiftExceptionsResponse) GetExceptions() []*ShiftException {
+	if x != nil {
+		return x.Exceptions
+	}
+	return nil
+}
+
+type DistributionGroup struct {
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	Id                string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name              string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Description       *string                `protobuf:"bytes,3,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	Active            bool                   `protobuf:"varint,4,opt,name=active,proto3" json:"active,omitempty"`
+	Algorithm         DistributionAlgorithm  `protobuf:"varint,5,opt,name=algorithm,proto3,enum=teamos.company.v1.DistributionAlgorithm" json:"algorithm,omitempty"`
+	MemberIds         []string               `protobuf:"bytes,6,rep,name=member_ids,json=memberIds,proto3" json:"member_ids,omitempty"`
+	DisabledMemberIds []string               `protobuf:"bytes,7,rep,name=disabled_member_ids,json=disabledMemberIds,proto3" json:"disabled_member_ids,omitempty"`
+	Source            string                 `protobuf:"bytes,8,opt,name=source,proto3" json:"source,omitempty"`
+	DealLimit         uint32                 `protobuf:"varint,9,opt,name=deal_limit,json=dealLimit,proto3" json:"deal_limit,omitempty"`
+	UnclaimedMinutes  uint32                 `protobuf:"varint,10,opt,name=unclaimed_minutes,json=unclaimedMinutes,proto3" json:"unclaimed_minutes,omitempty"`
+	CreatedAt         *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *DistributionGroup) Reset() {
+	*x = DistributionGroup{}
+	mi := &file_proto_company_v1_company_proto_msgTypes[82]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DistributionGroup) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DistributionGroup) ProtoMessage() {}
+
+func (x *DistributionGroup) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_company_v1_company_proto_msgTypes[82]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DistributionGroup.ProtoReflect.Descriptor instead.
+func (*DistributionGroup) Descriptor() ([]byte, []int) {
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{82}
+}
+
+func (x *DistributionGroup) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *DistributionGroup) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *DistributionGroup) GetDescription() string {
+	if x != nil && x.Description != nil {
+		return *x.Description
+	}
+	return ""
+}
+
+func (x *DistributionGroup) GetActive() bool {
+	if x != nil {
+		return x.Active
+	}
+	return false
+}
+
+func (x *DistributionGroup) GetAlgorithm() DistributionAlgorithm {
+	if x != nil {
+		return x.Algorithm
+	}
+	return DistributionAlgorithm_DISTRIBUTION_ALGORITHM_UNSPECIFIED
+}
+
+func (x *DistributionGroup) GetMemberIds() []string {
+	if x != nil {
+		return x.MemberIds
+	}
+	return nil
+}
+
+func (x *DistributionGroup) GetDisabledMemberIds() []string {
+	if x != nil {
+		return x.DisabledMemberIds
+	}
+	return nil
+}
+
+func (x *DistributionGroup) GetSource() string {
+	if x != nil {
+		return x.Source
+	}
+	return ""
+}
+
+func (x *DistributionGroup) GetDealLimit() uint32 {
+	if x != nil {
+		return x.DealLimit
+	}
+	return 0
+}
+
+func (x *DistributionGroup) GetUnclaimedMinutes() uint32 {
+	if x != nil {
+		return x.UnclaimedMinutes
+	}
+	return 0
+}
+
+func (x *DistributionGroup) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+type DistributionEvent struct {
+	state         protoimpl.MessageState  `protogen:"open.v1"`
+	Id            string                  `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	GroupId       string                  `protobuf:"bytes,2,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
+	DealNumber    uint64                  `protobuf:"varint,3,opt,name=deal_number,json=dealNumber,proto3" json:"deal_number,omitempty"`
+	UserId        string                  `protobuf:"bytes,4,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Status        DistributionEventStatus `protobuf:"varint,5,opt,name=status,proto3,enum=teamos.company.v1.DistributionEventStatus" json:"status,omitempty"`
+	CreatedAt     *timestamppb.Timestamp  `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DistributionEvent) Reset() {
+	*x = DistributionEvent{}
+	mi := &file_proto_company_v1_company_proto_msgTypes[83]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DistributionEvent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DistributionEvent) ProtoMessage() {}
+
+func (x *DistributionEvent) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_company_v1_company_proto_msgTypes[83]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DistributionEvent.ProtoReflect.Descriptor instead.
+func (*DistributionEvent) Descriptor() ([]byte, []int) {
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{83}
+}
+
+func (x *DistributionEvent) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *DistributionEvent) GetGroupId() string {
+	if x != nil {
+		return x.GroupId
+	}
+	return ""
+}
+
+func (x *DistributionEvent) GetDealNumber() uint64 {
+	if x != nil {
+		return x.DealNumber
+	}
+	return 0
+}
+
+func (x *DistributionEvent) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *DistributionEvent) GetStatus() DistributionEventStatus {
+	if x != nil {
+		return x.Status
+	}
+	return DistributionEventStatus_DISTRIBUTION_EVENT_STATUS_UNSPECIFIED
+}
+
+func (x *DistributionEvent) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+type GetDistributionGroupsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetDistributionGroupsRequest) Reset() {
+	*x = GetDistributionGroupsRequest{}
+	mi := &file_proto_company_v1_company_proto_msgTypes[84]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetDistributionGroupsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetDistributionGroupsRequest) ProtoMessage() {}
+
+func (x *GetDistributionGroupsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_company_v1_company_proto_msgTypes[84]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetDistributionGroupsRequest.ProtoReflect.Descriptor instead.
+func (*GetDistributionGroupsRequest) Descriptor() ([]byte, []int) {
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{84}
+}
+
+type GetDistributionGroupsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Groups        []*DistributionGroup   `protobuf:"bytes,1,rep,name=groups,proto3" json:"groups,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetDistributionGroupsResponse) Reset() {
+	*x = GetDistributionGroupsResponse{}
+	mi := &file_proto_company_v1_company_proto_msgTypes[85]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetDistributionGroupsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetDistributionGroupsResponse) ProtoMessage() {}
+
+func (x *GetDistributionGroupsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_company_v1_company_proto_msgTypes[85]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetDistributionGroupsResponse.ProtoReflect.Descriptor instead.
+func (*GetDistributionGroupsResponse) Descriptor() ([]byte, []int) {
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{85}
+}
+
+func (x *GetDistributionGroupsResponse) GetGroups() []*DistributionGroup {
+	if x != nil {
+		return x.Groups
+	}
+	return nil
+}
+
+type CreateDistributionGroupRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Description   *string                `protobuf:"bytes,2,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	MemberIds     []string               `protobuf:"bytes,3,rep,name=member_ids,json=memberIds,proto3" json:"member_ids,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateDistributionGroupRequest) Reset() {
+	*x = CreateDistributionGroupRequest{}
+	mi := &file_proto_company_v1_company_proto_msgTypes[86]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateDistributionGroupRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateDistributionGroupRequest) ProtoMessage() {}
+
+func (x *CreateDistributionGroupRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_company_v1_company_proto_msgTypes[86]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateDistributionGroupRequest.ProtoReflect.Descriptor instead.
+func (*CreateDistributionGroupRequest) Descriptor() ([]byte, []int) {
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{86}
+}
+
+func (x *CreateDistributionGroupRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *CreateDistributionGroupRequest) GetDescription() string {
+	if x != nil && x.Description != nil {
+		return *x.Description
+	}
+	return ""
+}
+
+func (x *CreateDistributionGroupRequest) GetMemberIds() []string {
+	if x != nil {
+		return x.MemberIds
+	}
+	return nil
+}
+
+type CreateDistributionGroupResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Group         *DistributionGroup     `protobuf:"bytes,1,opt,name=group,proto3" json:"group,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateDistributionGroupResponse) Reset() {
+	*x = CreateDistributionGroupResponse{}
+	mi := &file_proto_company_v1_company_proto_msgTypes[87]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateDistributionGroupResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateDistributionGroupResponse) ProtoMessage() {}
+
+func (x *CreateDistributionGroupResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_company_v1_company_proto_msgTypes[87]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateDistributionGroupResponse.ProtoReflect.Descriptor instead.
+func (*CreateDistributionGroupResponse) Descriptor() ([]byte, []int) {
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{87}
+}
+
+func (x *CreateDistributionGroupResponse) GetGroup() *DistributionGroup {
+	if x != nil {
+		return x.Group
+	}
+	return nil
+}
+
+type UpdateDistributionGroupRequest struct {
+	state                protoimpl.MessageState `protogen:"open.v1"`
+	Id                   string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name                 *string                `protobuf:"bytes,2,opt,name=name,proto3,oneof" json:"name,omitempty"`
+	Description          *string                `protobuf:"bytes,3,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	ClearDescription     bool                   `protobuf:"varint,4,opt,name=clear_description,json=clearDescription,proto3" json:"clear_description,omitempty"`
+	Active               *bool                  `protobuf:"varint,5,opt,name=active,proto3,oneof" json:"active,omitempty"`
+	Algorithm            *DistributionAlgorithm `protobuf:"varint,6,opt,name=algorithm,proto3,enum=teamos.company.v1.DistributionAlgorithm,oneof" json:"algorithm,omitempty"`
+	MemberIds            []string               `protobuf:"bytes,7,rep,name=member_ids,json=memberIds,proto3" json:"member_ids,omitempty"`
+	SetMemberIds         bool                   `protobuf:"varint,8,opt,name=set_member_ids,json=setMemberIds,proto3" json:"set_member_ids,omitempty"`
+	DisabledMemberIds    []string               `protobuf:"bytes,9,rep,name=disabled_member_ids,json=disabledMemberIds,proto3" json:"disabled_member_ids,omitempty"`
+	SetDisabledMemberIds bool                   `protobuf:"varint,10,opt,name=set_disabled_member_ids,json=setDisabledMemberIds,proto3" json:"set_disabled_member_ids,omitempty"`
+	Source               *string                `protobuf:"bytes,11,opt,name=source,proto3,oneof" json:"source,omitempty"`
+	DealLimit            *uint32                `protobuf:"varint,12,opt,name=deal_limit,json=dealLimit,proto3,oneof" json:"deal_limit,omitempty"`
+	UnclaimedMinutes     *uint32                `protobuf:"varint,13,opt,name=unclaimed_minutes,json=unclaimedMinutes,proto3,oneof" json:"unclaimed_minutes,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
+}
+
+func (x *UpdateDistributionGroupRequest) Reset() {
+	*x = UpdateDistributionGroupRequest{}
+	mi := &file_proto_company_v1_company_proto_msgTypes[88]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateDistributionGroupRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateDistributionGroupRequest) ProtoMessage() {}
+
+func (x *UpdateDistributionGroupRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_company_v1_company_proto_msgTypes[88]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateDistributionGroupRequest.ProtoReflect.Descriptor instead.
+func (*UpdateDistributionGroupRequest) Descriptor() ([]byte, []int) {
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{88}
+}
+
+func (x *UpdateDistributionGroupRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *UpdateDistributionGroupRequest) GetName() string {
+	if x != nil && x.Name != nil {
+		return *x.Name
+	}
+	return ""
+}
+
+func (x *UpdateDistributionGroupRequest) GetDescription() string {
+	if x != nil && x.Description != nil {
+		return *x.Description
+	}
+	return ""
+}
+
+func (x *UpdateDistributionGroupRequest) GetClearDescription() bool {
+	if x != nil {
+		return x.ClearDescription
+	}
+	return false
+}
+
+func (x *UpdateDistributionGroupRequest) GetActive() bool {
+	if x != nil && x.Active != nil {
+		return *x.Active
+	}
+	return false
+}
+
+func (x *UpdateDistributionGroupRequest) GetAlgorithm() DistributionAlgorithm {
+	if x != nil && x.Algorithm != nil {
+		return *x.Algorithm
+	}
+	return DistributionAlgorithm_DISTRIBUTION_ALGORITHM_UNSPECIFIED
+}
+
+func (x *UpdateDistributionGroupRequest) GetMemberIds() []string {
+	if x != nil {
+		return x.MemberIds
+	}
+	return nil
+}
+
+func (x *UpdateDistributionGroupRequest) GetSetMemberIds() bool {
+	if x != nil {
+		return x.SetMemberIds
+	}
+	return false
+}
+
+func (x *UpdateDistributionGroupRequest) GetDisabledMemberIds() []string {
+	if x != nil {
+		return x.DisabledMemberIds
+	}
+	return nil
+}
+
+func (x *UpdateDistributionGroupRequest) GetSetDisabledMemberIds() bool {
+	if x != nil {
+		return x.SetDisabledMemberIds
+	}
+	return false
+}
+
+func (x *UpdateDistributionGroupRequest) GetSource() string {
+	if x != nil && x.Source != nil {
+		return *x.Source
+	}
+	return ""
+}
+
+func (x *UpdateDistributionGroupRequest) GetDealLimit() uint32 {
+	if x != nil && x.DealLimit != nil {
+		return *x.DealLimit
+	}
+	return 0
+}
+
+func (x *UpdateDistributionGroupRequest) GetUnclaimedMinutes() uint32 {
+	if x != nil && x.UnclaimedMinutes != nil {
+		return *x.UnclaimedMinutes
+	}
+	return 0
+}
+
+type UpdateDistributionGroupResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Group         *DistributionGroup     `protobuf:"bytes,1,opt,name=group,proto3" json:"group,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateDistributionGroupResponse) Reset() {
+	*x = UpdateDistributionGroupResponse{}
+	mi := &file_proto_company_v1_company_proto_msgTypes[89]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateDistributionGroupResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateDistributionGroupResponse) ProtoMessage() {}
+
+func (x *UpdateDistributionGroupResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_company_v1_company_proto_msgTypes[89]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateDistributionGroupResponse.ProtoReflect.Descriptor instead.
+func (*UpdateDistributionGroupResponse) Descriptor() ([]byte, []int) {
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{89}
+}
+
+func (x *UpdateDistributionGroupResponse) GetGroup() *DistributionGroup {
+	if x != nil {
+		return x.Group
+	}
+	return nil
+}
+
+type DeleteDistributionGroupRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteDistributionGroupRequest) Reset() {
+	*x = DeleteDistributionGroupRequest{}
+	mi := &file_proto_company_v1_company_proto_msgTypes[90]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteDistributionGroupRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteDistributionGroupRequest) ProtoMessage() {}
+
+func (x *DeleteDistributionGroupRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_company_v1_company_proto_msgTypes[90]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteDistributionGroupRequest.ProtoReflect.Descriptor instead.
+func (*DeleteDistributionGroupRequest) Descriptor() ([]byte, []int) {
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{90}
+}
+
+func (x *DeleteDistributionGroupRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+type DeleteDistributionGroupResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteDistributionGroupResponse) Reset() {
+	*x = DeleteDistributionGroupResponse{}
+	mi := &file_proto_company_v1_company_proto_msgTypes[91]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteDistributionGroupResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteDistributionGroupResponse) ProtoMessage() {}
+
+func (x *DeleteDistributionGroupResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_company_v1_company_proto_msgTypes[91]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteDistributionGroupResponse.ProtoReflect.Descriptor instead.
+func (*DeleteDistributionGroupResponse) Descriptor() ([]byte, []int) {
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{91}
+}
+
+type GetDistributionEventsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	GroupId       string                 `protobuf:"bytes,1,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetDistributionEventsRequest) Reset() {
+	*x = GetDistributionEventsRequest{}
+	mi := &file_proto_company_v1_company_proto_msgTypes[92]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetDistributionEventsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetDistributionEventsRequest) ProtoMessage() {}
+
+func (x *GetDistributionEventsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_company_v1_company_proto_msgTypes[92]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetDistributionEventsRequest.ProtoReflect.Descriptor instead.
+func (*GetDistributionEventsRequest) Descriptor() ([]byte, []int) {
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{92}
+}
+
+func (x *GetDistributionEventsRequest) GetGroupId() string {
+	if x != nil {
+		return x.GroupId
+	}
+	return ""
+}
+
+type GetDistributionEventsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Events        []*DistributionEvent   `protobuf:"bytes,1,rep,name=events,proto3" json:"events,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetDistributionEventsResponse) Reset() {
+	*x = GetDistributionEventsResponse{}
+	mi := &file_proto_company_v1_company_proto_msgTypes[93]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetDistributionEventsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetDistributionEventsResponse) ProtoMessage() {}
+
+func (x *GetDistributionEventsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_company_v1_company_proto_msgTypes[93]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetDistributionEventsResponse.ProtoReflect.Descriptor instead.
+func (*GetDistributionEventsResponse) Descriptor() ([]byte, []int) {
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{93}
+}
+
+func (x *GetDistributionEventsResponse) GetEvents() []*DistributionEvent {
+	if x != nil {
+		return x.Events
+	}
+	return nil
+}
+
+type SimulateDistributionDealRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	GroupId       string                 `protobuf:"bytes,1,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SimulateDistributionDealRequest) Reset() {
+	*x = SimulateDistributionDealRequest{}
+	mi := &file_proto_company_v1_company_proto_msgTypes[94]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SimulateDistributionDealRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SimulateDistributionDealRequest) ProtoMessage() {}
+
+func (x *SimulateDistributionDealRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_company_v1_company_proto_msgTypes[94]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SimulateDistributionDealRequest.ProtoReflect.Descriptor instead.
+func (*SimulateDistributionDealRequest) Descriptor() ([]byte, []int) {
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{94}
+}
+
+func (x *SimulateDistributionDealRequest) GetGroupId() string {
+	if x != nil {
+		return x.GroupId
+	}
+	return ""
+}
+
+type SimulateDistributionDealResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Event         *DistributionEvent     `protobuf:"bytes,1,opt,name=event,proto3" json:"event,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SimulateDistributionDealResponse) Reset() {
+	*x = SimulateDistributionDealResponse{}
+	mi := &file_proto_company_v1_company_proto_msgTypes[95]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SimulateDistributionDealResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SimulateDistributionDealResponse) ProtoMessage() {}
+
+func (x *SimulateDistributionDealResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_company_v1_company_proto_msgTypes[95]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SimulateDistributionDealResponse.ProtoReflect.Descriptor instead.
+func (*SimulateDistributionDealResponse) Descriptor() ([]byte, []int) {
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{95}
+}
+
+func (x *SimulateDistributionDealResponse) GetEvent() *DistributionEvent {
+	if x != nil {
+		return x.Event
+	}
+	return nil
+}
+
+type ResetDistributionEventsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	GroupId       string                 `protobuf:"bytes,1,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ResetDistributionEventsRequest) Reset() {
+	*x = ResetDistributionEventsRequest{}
+	mi := &file_proto_company_v1_company_proto_msgTypes[96]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResetDistributionEventsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResetDistributionEventsRequest) ProtoMessage() {}
+
+func (x *ResetDistributionEventsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_company_v1_company_proto_msgTypes[96]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResetDistributionEventsRequest.ProtoReflect.Descriptor instead.
+func (*ResetDistributionEventsRequest) Descriptor() ([]byte, []int) {
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{96}
+}
+
+func (x *ResetDistributionEventsRequest) GetGroupId() string {
+	if x != nil {
+		return x.GroupId
+	}
+	return ""
+}
+
+type ResetDistributionEventsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ResetDistributionEventsResponse) Reset() {
+	*x = ResetDistributionEventsResponse{}
+	mi := &file_proto_company_v1_company_proto_msgTypes[97]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResetDistributionEventsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResetDistributionEventsResponse) ProtoMessage() {}
+
+func (x *ResetDistributionEventsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_company_v1_company_proto_msgTypes[97]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResetDistributionEventsResponse.ProtoReflect.Descriptor instead.
+func (*ResetDistributionEventsResponse) Descriptor() ([]byte, []int) {
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{97}
+}
+
 var File_proto_company_v1_company_proto protoreflect.FileDescriptor
 
 const file_proto_company_v1_company_proto_rawDesc = "" +
@@ -4189,7 +5938,143 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\rdepartment_id\x18\x01 \x01(\tR\fdepartmentId\x12/\n" +
 	"\x13include_descendants\x18\x02 \x01(\bR\x12includeDescendants\";\n" +
 	"\x1eResolveDepartmentUsersResponse\x12\x19\n" +
-	"\buser_ids\x18\x01 \x03(\tR\auserIds*~\n" +
+	"\buser_ids\x18\x01 \x03(\tR\auserIds\"\xd3\x01\n" +
+	"\x10ScheduleTemplate\x12\x12\n" +
+	"\x04type\x18\x01 \x01(\tR\x04type\x12\x12\n" +
+	"\x04days\x18\x02 \x03(\rR\x04days\x12\x13\n" +
+	"\x02on\x18\x03 \x01(\rH\x00R\x02on\x88\x01\x01\x12\x15\n" +
+	"\x03off\x18\x04 \x01(\rH\x01R\x03off\x88\x01\x01\x12\x14\n" +
+	"\x05start\x18\x05 \x01(\tR\x05start\x12\x10\n" +
+	"\x03end\x18\x06 \x01(\tR\x03end\x12$\n" +
+	"\vcycle_start\x18\a \x01(\tH\x02R\n" +
+	"cycleStart\x88\x01\x01B\x05\n" +
+	"\x03_onB\x06\n" +
+	"\x04_offB\x0e\n" +
+	"\f_cycle_start\"h\n" +
+	"\fUserSchedule\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\x12?\n" +
+	"\btemplate\x18\x02 \x01(\v2#.teamos.company.v1.ScheduleTemplateR\btemplate\"\xe5\x01\n" +
+	"\x0eShiftException\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
+	"\auser_id\x18\x02 \x01(\tR\x06userId\x12\x12\n" +
+	"\x04date\x18\x03 \x01(\tR\x04date\x120\n" +
+	"\x04type\x18\x04 \x01(\x0e2\x1c.teamos.company.v1.ShiftTypeR\x04type\x12\x19\n" +
+	"\x05start\x18\x05 \x01(\tH\x00R\x05start\x88\x01\x01\x12\x15\n" +
+	"\x03end\x18\x06 \x01(\tH\x01R\x03end\x88\x01\x01\x12\x17\n" +
+	"\x04note\x18\a \x01(\tH\x02R\x04note\x88\x01\x01B\b\n" +
+	"\x06_startB\x06\n" +
+	"\x04_endB\a\n" +
+	"\x05_note\"\x15\n" +
+	"\x13GetSchedulesRequest\"U\n" +
+	"\x14GetSchedulesResponse\x12=\n" +
+	"\tschedules\x18\x01 \x03(\v2\x1f.teamos.company.v1.UserScheduleR\tschedules\"o\n" +
+	"\x13SaveScheduleRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\x12?\n" +
+	"\btemplate\x18\x02 \x01(\v2#.teamos.company.v1.ScheduleTemplateR\btemplate\"S\n" +
+	"\x14SaveScheduleResponse\x12;\n" +
+	"\bschedule\x18\x01 \x01(\v2\x1f.teamos.company.v1.UserScheduleR\bschedule\"1\n" +
+	"\x19GetShiftExceptionsRequest\x12\x14\n" +
+	"\x05month\x18\x01 \x01(\tR\x05month\"_\n" +
+	"\x1aGetShiftExceptionsResponse\x12A\n" +
+	"\n" +
+	"exceptions\x18\x01 \x03(\v2!.teamos.company.v1.ShiftExceptionR\n" +
+	"exceptions\"\xde\x01\n" +
+	"\x17SaveShiftExceptionInput\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x12\n" +
+	"\x04date\x18\x02 \x01(\tR\x04date\x120\n" +
+	"\x04type\x18\x03 \x01(\x0e2\x1c.teamos.company.v1.ShiftTypeR\x04type\x12\x19\n" +
+	"\x05start\x18\x04 \x01(\tH\x00R\x05start\x88\x01\x01\x12\x15\n" +
+	"\x03end\x18\x05 \x01(\tH\x01R\x03end\x88\x01\x01\x12\x17\n" +
+	"\x04note\x18\x06 \x01(\tH\x02R\x04note\x88\x01\x01B\b\n" +
+	"\x06_startB\x06\n" +
+	"\x04_endB\a\n" +
+	"\x05_note\"h\n" +
+	"\x1aSaveShiftExceptionsRequest\x12J\n" +
+	"\n" +
+	"exceptions\x18\x01 \x03(\v2*.teamos.company.v1.SaveShiftExceptionInputR\n" +
+	"exceptions\"`\n" +
+	"\x1bSaveShiftExceptionsResponse\x12A\n" +
+	"\n" +
+	"exceptions\x18\x01 \x03(\v2!.teamos.company.v1.ShiftExceptionR\n" +
+	"exceptions\"\xbc\x03\n" +
+	"\x11DistributionGroup\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12%\n" +
+	"\vdescription\x18\x03 \x01(\tH\x00R\vdescription\x88\x01\x01\x12\x16\n" +
+	"\x06active\x18\x04 \x01(\bR\x06active\x12F\n" +
+	"\talgorithm\x18\x05 \x01(\x0e2(.teamos.company.v1.DistributionAlgorithmR\talgorithm\x12\x1d\n" +
+	"\n" +
+	"member_ids\x18\x06 \x03(\tR\tmemberIds\x12.\n" +
+	"\x13disabled_member_ids\x18\a \x03(\tR\x11disabledMemberIds\x12\x16\n" +
+	"\x06source\x18\b \x01(\tR\x06source\x12\x1d\n" +
+	"\n" +
+	"deal_limit\x18\t \x01(\rR\tdealLimit\x12+\n" +
+	"\x11unclaimed_minutes\x18\n" +
+	" \x01(\rR\x10unclaimedMinutes\x129\n" +
+	"\n" +
+	"created_at\x18\v \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAtB\x0e\n" +
+	"\f_description\"\xf7\x01\n" +
+	"\x11DistributionEvent\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x19\n" +
+	"\bgroup_id\x18\x02 \x01(\tR\agroupId\x12\x1f\n" +
+	"\vdeal_number\x18\x03 \x01(\x04R\n" +
+	"dealNumber\x12\x17\n" +
+	"\auser_id\x18\x04 \x01(\tR\x06userId\x12B\n" +
+	"\x06status\x18\x05 \x01(\x0e2*.teamos.company.v1.DistributionEventStatusR\x06status\x129\n" +
+	"\n" +
+	"created_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"\x1e\n" +
+	"\x1cGetDistributionGroupsRequest\"]\n" +
+	"\x1dGetDistributionGroupsResponse\x12<\n" +
+	"\x06groups\x18\x01 \x03(\v2$.teamos.company.v1.DistributionGroupR\x06groups\"\x8a\x01\n" +
+	"\x1eCreateDistributionGroupRequest\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12%\n" +
+	"\vdescription\x18\x02 \x01(\tH\x00R\vdescription\x88\x01\x01\x12\x1d\n" +
+	"\n" +
+	"member_ids\x18\x03 \x03(\tR\tmemberIdsB\x0e\n" +
+	"\f_description\"]\n" +
+	"\x1fCreateDistributionGroupResponse\x12:\n" +
+	"\x05group\x18\x01 \x01(\v2$.teamos.company.v1.DistributionGroupR\x05group\"\x88\x05\n" +
+	"\x1eUpdateDistributionGroupRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
+	"\x04name\x18\x02 \x01(\tH\x00R\x04name\x88\x01\x01\x12%\n" +
+	"\vdescription\x18\x03 \x01(\tH\x01R\vdescription\x88\x01\x01\x12+\n" +
+	"\x11clear_description\x18\x04 \x01(\bR\x10clearDescription\x12\x1b\n" +
+	"\x06active\x18\x05 \x01(\bH\x02R\x06active\x88\x01\x01\x12K\n" +
+	"\talgorithm\x18\x06 \x01(\x0e2(.teamos.company.v1.DistributionAlgorithmH\x03R\talgorithm\x88\x01\x01\x12\x1d\n" +
+	"\n" +
+	"member_ids\x18\a \x03(\tR\tmemberIds\x12$\n" +
+	"\x0eset_member_ids\x18\b \x01(\bR\fsetMemberIds\x12.\n" +
+	"\x13disabled_member_ids\x18\t \x03(\tR\x11disabledMemberIds\x125\n" +
+	"\x17set_disabled_member_ids\x18\n" +
+	" \x01(\bR\x14setDisabledMemberIds\x12\x1b\n" +
+	"\x06source\x18\v \x01(\tH\x04R\x06source\x88\x01\x01\x12\"\n" +
+	"\n" +
+	"deal_limit\x18\f \x01(\rH\x05R\tdealLimit\x88\x01\x01\x120\n" +
+	"\x11unclaimed_minutes\x18\r \x01(\rH\x06R\x10unclaimedMinutes\x88\x01\x01B\a\n" +
+	"\x05_nameB\x0e\n" +
+	"\f_descriptionB\t\n" +
+	"\a_activeB\f\n" +
+	"\n" +
+	"_algorithmB\t\n" +
+	"\a_sourceB\r\n" +
+	"\v_deal_limitB\x14\n" +
+	"\x12_unclaimed_minutes\"]\n" +
+	"\x1fUpdateDistributionGroupResponse\x12:\n" +
+	"\x05group\x18\x01 \x01(\v2$.teamos.company.v1.DistributionGroupR\x05group\"0\n" +
+	"\x1eDeleteDistributionGroupRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"!\n" +
+	"\x1fDeleteDistributionGroupResponse\"9\n" +
+	"\x1cGetDistributionEventsRequest\x12\x19\n" +
+	"\bgroup_id\x18\x01 \x01(\tR\agroupId\"]\n" +
+	"\x1dGetDistributionEventsResponse\x12<\n" +
+	"\x06events\x18\x01 \x03(\v2$.teamos.company.v1.DistributionEventR\x06events\"<\n" +
+	"\x1fSimulateDistributionDealRequest\x12\x19\n" +
+	"\bgroup_id\x18\x01 \x01(\tR\agroupId\"^\n" +
+	" SimulateDistributionDealResponse\x12:\n" +
+	"\x05event\x18\x01 \x01(\v2$.teamos.company.v1.DistributionEventR\x05event\";\n" +
+	"\x1eResetDistributionEventsRequest\x12\x19\n" +
+	"\bgroup_id\x18\x01 \x01(\tR\agroupId\"!\n" +
+	"\x1fResetDistributionEventsResponse*~\n" +
 	"\bUserRole\x12\x19\n" +
 	"\x15USER_ROLE_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fUSER_ROLE_OWNER\x10\x01\x12\x13\n" +
@@ -4206,7 +6091,25 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\x19INVITE_STATUS_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15INVITE_STATUS_PENDING\x10\x01\x12\x1a\n" +
 	"\x16INVITE_STATUS_ACCEPTED\x10\x02\x12\x19\n" +
-	"\x15INVITE_STATUS_EXPIRED\x10\x032\xd1\x18\n" +
+	"\x15INVITE_STATUS_EXPIRED\x10\x03*\x93\x01\n" +
+	"\tShiftType\x12\x1a\n" +
+	"\x16SHIFT_TYPE_UNSPECIFIED\x10\x00\x12\x13\n" +
+	"\x0fSHIFT_TYPE_WORK\x10\x01\x12\x12\n" +
+	"\x0eSHIFT_TYPE_OFF\x10\x02\x12\x17\n" +
+	"\x13SHIFT_TYPE_VACATION\x10\x03\x12\x13\n" +
+	"\x0fSHIFT_TYPE_SICK\x10\x04\x12\x13\n" +
+	"\x0fSHIFT_TYPE_TRIP\x10\x05*\xb5\x01\n" +
+	"\x15DistributionAlgorithm\x12&\n" +
+	"\"DISTRIBUTION_ALGORITHM_UNSPECIFIED\x10\x00\x12&\n" +
+	"\"DISTRIBUTION_ALGORITHM_ROUND_ROBIN\x10\x01\x12'\n" +
+	"#DISTRIBUTION_ALGORITHM_LEAST_LOADED\x10\x02\x12#\n" +
+	"\x1fDISTRIBUTION_ALGORITHM_PRIORITY\x10\x03*\xe9\x01\n" +
+	"\x17DistributionEventStatus\x12)\n" +
+	"%DISTRIBUTION_EVENT_STATUS_UNSPECIFIED\x10\x00\x12&\n" +
+	"\"DISTRIBUTION_EVENT_STATUS_ACCEPTED\x10\x01\x12)\n" +
+	"%DISTRIBUTION_EVENT_STATUS_IN_PROGRESS\x10\x02\x12(\n" +
+	"$DISTRIBUTION_EVENT_STATUS_REASSIGNED\x10\x03\x12&\n" +
+	"\"DISTRIBUTION_EVENT_STATUS_DECLINED\x10\x042\x86#\n" +
 	"\x0eCompanyService\x12S\n" +
 	"\bRegister\x12\".teamos.company.v1.RegisterRequest\x1a#.teamos.company.v1.RegisterResponse\x12J\n" +
 	"\x05Login\x12\x1f.teamos.company.v1.LoginRequest\x1a .teamos.company.v1.LoginResponse\x12P\n" +
@@ -4244,7 +6147,18 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\fRevokeInvite\x12&.teamos.company.v1.RevokeInviteRequest\x1a'.teamos.company.v1.RevokeInviteResponse\x12b\n" +
 	"\rGetUsersByIds\x12'.teamos.company.v1.GetUsersByIdsRequest\x1a(.teamos.company.v1.GetUsersByIdsResponse\x12w\n" +
 	"\x14ResolvePositionUsers\x12..teamos.company.v1.ResolvePositionUsersRequest\x1a/.teamos.company.v1.ResolvePositionUsersResponse\x12}\n" +
-	"\x16ResolveDepartmentUsers\x120.teamos.company.v1.ResolveDepartmentUsersRequest\x1a1.teamos.company.v1.ResolveDepartmentUsersResponseBHZFgithub.com/sk1fy/team-os-backend/contracts/gen/go/company/v1;companyv1b\x06proto3"
+	"\x16ResolveDepartmentUsers\x120.teamos.company.v1.ResolveDepartmentUsersRequest\x1a1.teamos.company.v1.ResolveDepartmentUsersResponse\x12_\n" +
+	"\fGetSchedules\x12&.teamos.company.v1.GetSchedulesRequest\x1a'.teamos.company.v1.GetSchedulesResponse\x12_\n" +
+	"\fSaveSchedule\x12&.teamos.company.v1.SaveScheduleRequest\x1a'.teamos.company.v1.SaveScheduleResponse\x12q\n" +
+	"\x12GetShiftExceptions\x12,.teamos.company.v1.GetShiftExceptionsRequest\x1a-.teamos.company.v1.GetShiftExceptionsResponse\x12t\n" +
+	"\x13SaveShiftExceptions\x12-.teamos.company.v1.SaveShiftExceptionsRequest\x1a..teamos.company.v1.SaveShiftExceptionsResponse\x12z\n" +
+	"\x15GetDistributionGroups\x12/.teamos.company.v1.GetDistributionGroupsRequest\x1a0.teamos.company.v1.GetDistributionGroupsResponse\x12\x80\x01\n" +
+	"\x17CreateDistributionGroup\x121.teamos.company.v1.CreateDistributionGroupRequest\x1a2.teamos.company.v1.CreateDistributionGroupResponse\x12\x80\x01\n" +
+	"\x17UpdateDistributionGroup\x121.teamos.company.v1.UpdateDistributionGroupRequest\x1a2.teamos.company.v1.UpdateDistributionGroupResponse\x12\x80\x01\n" +
+	"\x17DeleteDistributionGroup\x121.teamos.company.v1.DeleteDistributionGroupRequest\x1a2.teamos.company.v1.DeleteDistributionGroupResponse\x12z\n" +
+	"\x15GetDistributionEvents\x12/.teamos.company.v1.GetDistributionEventsRequest\x1a0.teamos.company.v1.GetDistributionEventsResponse\x12\x83\x01\n" +
+	"\x18SimulateDistributionDeal\x122.teamos.company.v1.SimulateDistributionDealRequest\x1a3.teamos.company.v1.SimulateDistributionDealResponse\x12\x80\x01\n" +
+	"\x17ResetDistributionEvents\x121.teamos.company.v1.ResetDistributionEventsRequest\x1a2.teamos.company.v1.ResetDistributionEventsResponseBHZFgithub.com/sk1fy/team-os-backend/contracts/gen/go/company/v1;companyv1b\x06proto3"
 
 var (
 	file_proto_company_v1_company_proto_rawDescOnce sync.Once
@@ -4258,193 +6172,265 @@ func file_proto_company_v1_company_proto_rawDescGZIP() []byte {
 	return file_proto_company_v1_company_proto_rawDescData
 }
 
-var file_proto_company_v1_company_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_proto_company_v1_company_proto_msgTypes = make([]protoimpl.MessageInfo, 70)
+var file_proto_company_v1_company_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
+var file_proto_company_v1_company_proto_msgTypes = make([]protoimpl.MessageInfo, 98)
 var file_proto_company_v1_company_proto_goTypes = []any{
-	(UserRole)(0),                          // 0: teamos.company.v1.UserRole
-	(UserStatus)(0),                        // 1: teamos.company.v1.UserStatus
-	(InviteStatus)(0),                      // 2: teamos.company.v1.InviteStatus
-	(*Company)(nil),                        // 3: teamos.company.v1.Company
-	(*User)(nil),                           // 4: teamos.company.v1.User
-	(*Department)(nil),                     // 5: teamos.company.v1.Department
-	(*Position)(nil),                       // 6: teamos.company.v1.Position
-	(*Invite)(nil),                         // 7: teamos.company.v1.Invite
-	(*AuthSession)(nil),                    // 8: teamos.company.v1.AuthSession
-	(*RegisterRequest)(nil),                // 9: teamos.company.v1.RegisterRequest
-	(*RegisterResponse)(nil),               // 10: teamos.company.v1.RegisterResponse
-	(*LoginRequest)(nil),                   // 11: teamos.company.v1.LoginRequest
-	(*LoginResponse)(nil),                  // 12: teamos.company.v1.LoginResponse
-	(*RefreshRequest)(nil),                 // 13: teamos.company.v1.RefreshRequest
-	(*RefreshResponse)(nil),                // 14: teamos.company.v1.RefreshResponse
-	(*LogoutRequest)(nil),                  // 15: teamos.company.v1.LogoutRequest
-	(*LogoutResponse)(nil),                 // 16: teamos.company.v1.LogoutResponse
-	(*GetInviteByTokenRequest)(nil),        // 17: teamos.company.v1.GetInviteByTokenRequest
-	(*GetInviteByTokenResponse)(nil),       // 18: teamos.company.v1.GetInviteByTokenResponse
-	(*AcceptInviteRequest)(nil),            // 19: teamos.company.v1.AcceptInviteRequest
-	(*AcceptInviteResponse)(nil),           // 20: teamos.company.v1.AcceptInviteResponse
-	(*GetCurrentUserRequest)(nil),          // 21: teamos.company.v1.GetCurrentUserRequest
-	(*GetCurrentUserResponse)(nil),         // 22: teamos.company.v1.GetCurrentUserResponse
-	(*UpdateCurrentUserRequest)(nil),       // 23: teamos.company.v1.UpdateCurrentUserRequest
-	(*UpdateCurrentUserResponse)(nil),      // 24: teamos.company.v1.UpdateCurrentUserResponse
-	(*GetCompanyRequest)(nil),              // 25: teamos.company.v1.GetCompanyRequest
-	(*GetCompanyResponse)(nil),             // 26: teamos.company.v1.GetCompanyResponse
-	(*UpdateCompanyRequest)(nil),           // 27: teamos.company.v1.UpdateCompanyRequest
-	(*UpdateCompanyResponse)(nil),          // 28: teamos.company.v1.UpdateCompanyResponse
-	(*GetDepartmentsRequest)(nil),          // 29: teamos.company.v1.GetDepartmentsRequest
-	(*GetDepartmentsResponse)(nil),         // 30: teamos.company.v1.GetDepartmentsResponse
-	(*CreateDepartmentRequest)(nil),        // 31: teamos.company.v1.CreateDepartmentRequest
-	(*CreateDepartmentResponse)(nil),       // 32: teamos.company.v1.CreateDepartmentResponse
-	(*UpdateDepartmentRequest)(nil),        // 33: teamos.company.v1.UpdateDepartmentRequest
-	(*UpdateDepartmentResponse)(nil),       // 34: teamos.company.v1.UpdateDepartmentResponse
-	(*DeleteDepartmentRequest)(nil),        // 35: teamos.company.v1.DeleteDepartmentRequest
-	(*DeleteDepartmentResponse)(nil),       // 36: teamos.company.v1.DeleteDepartmentResponse
-	(*MoveDepartmentRequest)(nil),          // 37: teamos.company.v1.MoveDepartmentRequest
-	(*MoveDepartmentResponse)(nil),         // 38: teamos.company.v1.MoveDepartmentResponse
-	(*GetPositionsRequest)(nil),            // 39: teamos.company.v1.GetPositionsRequest
-	(*GetPositionsResponse)(nil),           // 40: teamos.company.v1.GetPositionsResponse
-	(*GetPositionRequest)(nil),             // 41: teamos.company.v1.GetPositionRequest
-	(*GetPositionResponse)(nil),            // 42: teamos.company.v1.GetPositionResponse
-	(*CreatePositionRequest)(nil),          // 43: teamos.company.v1.CreatePositionRequest
-	(*CreatePositionResponse)(nil),         // 44: teamos.company.v1.CreatePositionResponse
-	(*UpdatePositionRequest)(nil),          // 45: teamos.company.v1.UpdatePositionRequest
-	(*UpdatePositionResponse)(nil),         // 46: teamos.company.v1.UpdatePositionResponse
-	(*DeletePositionRequest)(nil),          // 47: teamos.company.v1.DeletePositionRequest
-	(*DeletePositionResponse)(nil),         // 48: teamos.company.v1.DeletePositionResponse
-	(*MovePositionRequest)(nil),            // 49: teamos.company.v1.MovePositionRequest
-	(*MovePositionResponse)(nil),           // 50: teamos.company.v1.MovePositionResponse
-	(*GetUsersRequest)(nil),                // 51: teamos.company.v1.GetUsersRequest
-	(*GetUsersResponse)(nil),               // 52: teamos.company.v1.GetUsersResponse
-	(*GetUserRequest)(nil),                 // 53: teamos.company.v1.GetUserRequest
-	(*GetUserResponse)(nil),                // 54: teamos.company.v1.GetUserResponse
-	(*CreateUserRequest)(nil),              // 55: teamos.company.v1.CreateUserRequest
-	(*CreateUserResponse)(nil),             // 56: teamos.company.v1.CreateUserResponse
-	(*UpdateUserRequest)(nil),              // 57: teamos.company.v1.UpdateUserRequest
-	(*UpdateUserResponse)(nil),             // 58: teamos.company.v1.UpdateUserResponse
-	(*GetInvitesRequest)(nil),              // 59: teamos.company.v1.GetInvitesRequest
-	(*GetInvitesResponse)(nil),             // 60: teamos.company.v1.GetInvitesResponse
-	(*InviteUserRequest)(nil),              // 61: teamos.company.v1.InviteUserRequest
-	(*InviteUserResponse)(nil),             // 62: teamos.company.v1.InviteUserResponse
-	(*ResendInviteRequest)(nil),            // 63: teamos.company.v1.ResendInviteRequest
-	(*ResendInviteResponse)(nil),           // 64: teamos.company.v1.ResendInviteResponse
-	(*RevokeInviteRequest)(nil),            // 65: teamos.company.v1.RevokeInviteRequest
-	(*RevokeInviteResponse)(nil),           // 66: teamos.company.v1.RevokeInviteResponse
-	(*GetUsersByIdsRequest)(nil),           // 67: teamos.company.v1.GetUsersByIdsRequest
-	(*GetUsersByIdsResponse)(nil),          // 68: teamos.company.v1.GetUsersByIdsResponse
-	(*ResolvePositionUsersRequest)(nil),    // 69: teamos.company.v1.ResolvePositionUsersRequest
-	(*ResolvePositionUsersResponse)(nil),   // 70: teamos.company.v1.ResolvePositionUsersResponse
-	(*ResolveDepartmentUsersRequest)(nil),  // 71: teamos.company.v1.ResolveDepartmentUsersRequest
-	(*ResolveDepartmentUsersResponse)(nil), // 72: teamos.company.v1.ResolveDepartmentUsersResponse
-	(*timestamppb.Timestamp)(nil),          // 73: google.protobuf.Timestamp
+	(UserRole)(0),                            // 0: teamos.company.v1.UserRole
+	(UserStatus)(0),                          // 1: teamos.company.v1.UserStatus
+	(InviteStatus)(0),                        // 2: teamos.company.v1.InviteStatus
+	(ShiftType)(0),                           // 3: teamos.company.v1.ShiftType
+	(DistributionAlgorithm)(0),               // 4: teamos.company.v1.DistributionAlgorithm
+	(DistributionEventStatus)(0),             // 5: teamos.company.v1.DistributionEventStatus
+	(*Company)(nil),                          // 6: teamos.company.v1.Company
+	(*User)(nil),                             // 7: teamos.company.v1.User
+	(*Department)(nil),                       // 8: teamos.company.v1.Department
+	(*Position)(nil),                         // 9: teamos.company.v1.Position
+	(*Invite)(nil),                           // 10: teamos.company.v1.Invite
+	(*AuthSession)(nil),                      // 11: teamos.company.v1.AuthSession
+	(*RegisterRequest)(nil),                  // 12: teamos.company.v1.RegisterRequest
+	(*RegisterResponse)(nil),                 // 13: teamos.company.v1.RegisterResponse
+	(*LoginRequest)(nil),                     // 14: teamos.company.v1.LoginRequest
+	(*LoginResponse)(nil),                    // 15: teamos.company.v1.LoginResponse
+	(*RefreshRequest)(nil),                   // 16: teamos.company.v1.RefreshRequest
+	(*RefreshResponse)(nil),                  // 17: teamos.company.v1.RefreshResponse
+	(*LogoutRequest)(nil),                    // 18: teamos.company.v1.LogoutRequest
+	(*LogoutResponse)(nil),                   // 19: teamos.company.v1.LogoutResponse
+	(*GetInviteByTokenRequest)(nil),          // 20: teamos.company.v1.GetInviteByTokenRequest
+	(*GetInviteByTokenResponse)(nil),         // 21: teamos.company.v1.GetInviteByTokenResponse
+	(*AcceptInviteRequest)(nil),              // 22: teamos.company.v1.AcceptInviteRequest
+	(*AcceptInviteResponse)(nil),             // 23: teamos.company.v1.AcceptInviteResponse
+	(*GetCurrentUserRequest)(nil),            // 24: teamos.company.v1.GetCurrentUserRequest
+	(*GetCurrentUserResponse)(nil),           // 25: teamos.company.v1.GetCurrentUserResponse
+	(*UpdateCurrentUserRequest)(nil),         // 26: teamos.company.v1.UpdateCurrentUserRequest
+	(*UpdateCurrentUserResponse)(nil),        // 27: teamos.company.v1.UpdateCurrentUserResponse
+	(*GetCompanyRequest)(nil),                // 28: teamos.company.v1.GetCompanyRequest
+	(*GetCompanyResponse)(nil),               // 29: teamos.company.v1.GetCompanyResponse
+	(*UpdateCompanyRequest)(nil),             // 30: teamos.company.v1.UpdateCompanyRequest
+	(*UpdateCompanyResponse)(nil),            // 31: teamos.company.v1.UpdateCompanyResponse
+	(*GetDepartmentsRequest)(nil),            // 32: teamos.company.v1.GetDepartmentsRequest
+	(*GetDepartmentsResponse)(nil),           // 33: teamos.company.v1.GetDepartmentsResponse
+	(*CreateDepartmentRequest)(nil),          // 34: teamos.company.v1.CreateDepartmentRequest
+	(*CreateDepartmentResponse)(nil),         // 35: teamos.company.v1.CreateDepartmentResponse
+	(*UpdateDepartmentRequest)(nil),          // 36: teamos.company.v1.UpdateDepartmentRequest
+	(*UpdateDepartmentResponse)(nil),         // 37: teamos.company.v1.UpdateDepartmentResponse
+	(*DeleteDepartmentRequest)(nil),          // 38: teamos.company.v1.DeleteDepartmentRequest
+	(*DeleteDepartmentResponse)(nil),         // 39: teamos.company.v1.DeleteDepartmentResponse
+	(*MoveDepartmentRequest)(nil),            // 40: teamos.company.v1.MoveDepartmentRequest
+	(*MoveDepartmentResponse)(nil),           // 41: teamos.company.v1.MoveDepartmentResponse
+	(*GetPositionsRequest)(nil),              // 42: teamos.company.v1.GetPositionsRequest
+	(*GetPositionsResponse)(nil),             // 43: teamos.company.v1.GetPositionsResponse
+	(*GetPositionRequest)(nil),               // 44: teamos.company.v1.GetPositionRequest
+	(*GetPositionResponse)(nil),              // 45: teamos.company.v1.GetPositionResponse
+	(*CreatePositionRequest)(nil),            // 46: teamos.company.v1.CreatePositionRequest
+	(*CreatePositionResponse)(nil),           // 47: teamos.company.v1.CreatePositionResponse
+	(*UpdatePositionRequest)(nil),            // 48: teamos.company.v1.UpdatePositionRequest
+	(*UpdatePositionResponse)(nil),           // 49: teamos.company.v1.UpdatePositionResponse
+	(*DeletePositionRequest)(nil),            // 50: teamos.company.v1.DeletePositionRequest
+	(*DeletePositionResponse)(nil),           // 51: teamos.company.v1.DeletePositionResponse
+	(*MovePositionRequest)(nil),              // 52: teamos.company.v1.MovePositionRequest
+	(*MovePositionResponse)(nil),             // 53: teamos.company.v1.MovePositionResponse
+	(*GetUsersRequest)(nil),                  // 54: teamos.company.v1.GetUsersRequest
+	(*GetUsersResponse)(nil),                 // 55: teamos.company.v1.GetUsersResponse
+	(*GetUserRequest)(nil),                   // 56: teamos.company.v1.GetUserRequest
+	(*GetUserResponse)(nil),                  // 57: teamos.company.v1.GetUserResponse
+	(*CreateUserRequest)(nil),                // 58: teamos.company.v1.CreateUserRequest
+	(*CreateUserResponse)(nil),               // 59: teamos.company.v1.CreateUserResponse
+	(*UpdateUserRequest)(nil),                // 60: teamos.company.v1.UpdateUserRequest
+	(*UpdateUserResponse)(nil),               // 61: teamos.company.v1.UpdateUserResponse
+	(*GetInvitesRequest)(nil),                // 62: teamos.company.v1.GetInvitesRequest
+	(*GetInvitesResponse)(nil),               // 63: teamos.company.v1.GetInvitesResponse
+	(*InviteUserRequest)(nil),                // 64: teamos.company.v1.InviteUserRequest
+	(*InviteUserResponse)(nil),               // 65: teamos.company.v1.InviteUserResponse
+	(*ResendInviteRequest)(nil),              // 66: teamos.company.v1.ResendInviteRequest
+	(*ResendInviteResponse)(nil),             // 67: teamos.company.v1.ResendInviteResponse
+	(*RevokeInviteRequest)(nil),              // 68: teamos.company.v1.RevokeInviteRequest
+	(*RevokeInviteResponse)(nil),             // 69: teamos.company.v1.RevokeInviteResponse
+	(*GetUsersByIdsRequest)(nil),             // 70: teamos.company.v1.GetUsersByIdsRequest
+	(*GetUsersByIdsResponse)(nil),            // 71: teamos.company.v1.GetUsersByIdsResponse
+	(*ResolvePositionUsersRequest)(nil),      // 72: teamos.company.v1.ResolvePositionUsersRequest
+	(*ResolvePositionUsersResponse)(nil),     // 73: teamos.company.v1.ResolvePositionUsersResponse
+	(*ResolveDepartmentUsersRequest)(nil),    // 74: teamos.company.v1.ResolveDepartmentUsersRequest
+	(*ResolveDepartmentUsersResponse)(nil),   // 75: teamos.company.v1.ResolveDepartmentUsersResponse
+	(*ScheduleTemplate)(nil),                 // 76: teamos.company.v1.ScheduleTemplate
+	(*UserSchedule)(nil),                     // 77: teamos.company.v1.UserSchedule
+	(*ShiftException)(nil),                   // 78: teamos.company.v1.ShiftException
+	(*GetSchedulesRequest)(nil),              // 79: teamos.company.v1.GetSchedulesRequest
+	(*GetSchedulesResponse)(nil),             // 80: teamos.company.v1.GetSchedulesResponse
+	(*SaveScheduleRequest)(nil),              // 81: teamos.company.v1.SaveScheduleRequest
+	(*SaveScheduleResponse)(nil),             // 82: teamos.company.v1.SaveScheduleResponse
+	(*GetShiftExceptionsRequest)(nil),        // 83: teamos.company.v1.GetShiftExceptionsRequest
+	(*GetShiftExceptionsResponse)(nil),       // 84: teamos.company.v1.GetShiftExceptionsResponse
+	(*SaveShiftExceptionInput)(nil),          // 85: teamos.company.v1.SaveShiftExceptionInput
+	(*SaveShiftExceptionsRequest)(nil),       // 86: teamos.company.v1.SaveShiftExceptionsRequest
+	(*SaveShiftExceptionsResponse)(nil),      // 87: teamos.company.v1.SaveShiftExceptionsResponse
+	(*DistributionGroup)(nil),                // 88: teamos.company.v1.DistributionGroup
+	(*DistributionEvent)(nil),                // 89: teamos.company.v1.DistributionEvent
+	(*GetDistributionGroupsRequest)(nil),     // 90: teamos.company.v1.GetDistributionGroupsRequest
+	(*GetDistributionGroupsResponse)(nil),    // 91: teamos.company.v1.GetDistributionGroupsResponse
+	(*CreateDistributionGroupRequest)(nil),   // 92: teamos.company.v1.CreateDistributionGroupRequest
+	(*CreateDistributionGroupResponse)(nil),  // 93: teamos.company.v1.CreateDistributionGroupResponse
+	(*UpdateDistributionGroupRequest)(nil),   // 94: teamos.company.v1.UpdateDistributionGroupRequest
+	(*UpdateDistributionGroupResponse)(nil),  // 95: teamos.company.v1.UpdateDistributionGroupResponse
+	(*DeleteDistributionGroupRequest)(nil),   // 96: teamos.company.v1.DeleteDistributionGroupRequest
+	(*DeleteDistributionGroupResponse)(nil),  // 97: teamos.company.v1.DeleteDistributionGroupResponse
+	(*GetDistributionEventsRequest)(nil),     // 98: teamos.company.v1.GetDistributionEventsRequest
+	(*GetDistributionEventsResponse)(nil),    // 99: teamos.company.v1.GetDistributionEventsResponse
+	(*SimulateDistributionDealRequest)(nil),  // 100: teamos.company.v1.SimulateDistributionDealRequest
+	(*SimulateDistributionDealResponse)(nil), // 101: teamos.company.v1.SimulateDistributionDealResponse
+	(*ResetDistributionEventsRequest)(nil),   // 102: teamos.company.v1.ResetDistributionEventsRequest
+	(*ResetDistributionEventsResponse)(nil),  // 103: teamos.company.v1.ResetDistributionEventsResponse
+	(*timestamppb.Timestamp)(nil),            // 104: google.protobuf.Timestamp
 }
 var file_proto_company_v1_company_proto_depIdxs = []int32{
-	73, // 0: teamos.company.v1.Company.created_at:type_name -> google.protobuf.Timestamp
-	0,  // 1: teamos.company.v1.User.role:type_name -> teamos.company.v1.UserRole
-	1,  // 2: teamos.company.v1.User.status:type_name -> teamos.company.v1.UserStatus
-	73, // 3: teamos.company.v1.User.created_at:type_name -> google.protobuf.Timestamp
-	0,  // 4: teamos.company.v1.Invite.role:type_name -> teamos.company.v1.UserRole
-	2,  // 5: teamos.company.v1.Invite.status:type_name -> teamos.company.v1.InviteStatus
-	73, // 6: teamos.company.v1.Invite.created_at:type_name -> google.protobuf.Timestamp
-	73, // 7: teamos.company.v1.AuthSession.refresh_expires_at:type_name -> google.protobuf.Timestamp
-	4,  // 8: teamos.company.v1.AuthSession.user:type_name -> teamos.company.v1.User
-	8,  // 9: teamos.company.v1.RegisterResponse.session:type_name -> teamos.company.v1.AuthSession
-	8,  // 10: teamos.company.v1.LoginResponse.session:type_name -> teamos.company.v1.AuthSession
-	8,  // 11: teamos.company.v1.RefreshResponse.session:type_name -> teamos.company.v1.AuthSession
-	7,  // 12: teamos.company.v1.GetInviteByTokenResponse.invite:type_name -> teamos.company.v1.Invite
-	8,  // 13: teamos.company.v1.AcceptInviteResponse.session:type_name -> teamos.company.v1.AuthSession
-	4,  // 14: teamos.company.v1.GetCurrentUserResponse.user:type_name -> teamos.company.v1.User
-	4,  // 15: teamos.company.v1.UpdateCurrentUserResponse.user:type_name -> teamos.company.v1.User
-	3,  // 16: teamos.company.v1.GetCompanyResponse.company:type_name -> teamos.company.v1.Company
-	3,  // 17: teamos.company.v1.UpdateCompanyResponse.company:type_name -> teamos.company.v1.Company
-	5,  // 18: teamos.company.v1.GetDepartmentsResponse.departments:type_name -> teamos.company.v1.Department
-	5,  // 19: teamos.company.v1.CreateDepartmentResponse.department:type_name -> teamos.company.v1.Department
-	5,  // 20: teamos.company.v1.UpdateDepartmentResponse.department:type_name -> teamos.company.v1.Department
-	5,  // 21: teamos.company.v1.MoveDepartmentResponse.department:type_name -> teamos.company.v1.Department
-	6,  // 22: teamos.company.v1.GetPositionsResponse.positions:type_name -> teamos.company.v1.Position
-	6,  // 23: teamos.company.v1.GetPositionResponse.position:type_name -> teamos.company.v1.Position
-	6,  // 24: teamos.company.v1.CreatePositionResponse.position:type_name -> teamos.company.v1.Position
-	6,  // 25: teamos.company.v1.UpdatePositionResponse.position:type_name -> teamos.company.v1.Position
-	6,  // 26: teamos.company.v1.MovePositionResponse.position:type_name -> teamos.company.v1.Position
-	4,  // 27: teamos.company.v1.GetUsersResponse.users:type_name -> teamos.company.v1.User
-	4,  // 28: teamos.company.v1.GetUserResponse.user:type_name -> teamos.company.v1.User
-	0,  // 29: teamos.company.v1.CreateUserRequest.role:type_name -> teamos.company.v1.UserRole
-	4,  // 30: teamos.company.v1.CreateUserResponse.user:type_name -> teamos.company.v1.User
-	0,  // 31: teamos.company.v1.UpdateUserRequest.role:type_name -> teamos.company.v1.UserRole
-	1,  // 32: teamos.company.v1.UpdateUserRequest.status:type_name -> teamos.company.v1.UserStatus
-	4,  // 33: teamos.company.v1.UpdateUserResponse.user:type_name -> teamos.company.v1.User
-	7,  // 34: teamos.company.v1.GetInvitesResponse.invites:type_name -> teamos.company.v1.Invite
-	0,  // 35: teamos.company.v1.InviteUserRequest.role:type_name -> teamos.company.v1.UserRole
-	7,  // 36: teamos.company.v1.InviteUserResponse.invite:type_name -> teamos.company.v1.Invite
-	7,  // 37: teamos.company.v1.ResendInviteResponse.invite:type_name -> teamos.company.v1.Invite
-	4,  // 38: teamos.company.v1.GetUsersByIdsResponse.users:type_name -> teamos.company.v1.User
-	9,  // 39: teamos.company.v1.CompanyService.Register:input_type -> teamos.company.v1.RegisterRequest
-	11, // 40: teamos.company.v1.CompanyService.Login:input_type -> teamos.company.v1.LoginRequest
-	13, // 41: teamos.company.v1.CompanyService.Refresh:input_type -> teamos.company.v1.RefreshRequest
-	15, // 42: teamos.company.v1.CompanyService.Logout:input_type -> teamos.company.v1.LogoutRequest
-	17, // 43: teamos.company.v1.CompanyService.GetInviteByToken:input_type -> teamos.company.v1.GetInviteByTokenRequest
-	19, // 44: teamos.company.v1.CompanyService.AcceptInvite:input_type -> teamos.company.v1.AcceptInviteRequest
-	21, // 45: teamos.company.v1.CompanyService.GetCurrentUser:input_type -> teamos.company.v1.GetCurrentUserRequest
-	23, // 46: teamos.company.v1.CompanyService.UpdateCurrentUser:input_type -> teamos.company.v1.UpdateCurrentUserRequest
-	25, // 47: teamos.company.v1.CompanyService.GetCompany:input_type -> teamos.company.v1.GetCompanyRequest
-	27, // 48: teamos.company.v1.CompanyService.UpdateCompany:input_type -> teamos.company.v1.UpdateCompanyRequest
-	29, // 49: teamos.company.v1.CompanyService.GetDepartments:input_type -> teamos.company.v1.GetDepartmentsRequest
-	31, // 50: teamos.company.v1.CompanyService.CreateDepartment:input_type -> teamos.company.v1.CreateDepartmentRequest
-	33, // 51: teamos.company.v1.CompanyService.UpdateDepartment:input_type -> teamos.company.v1.UpdateDepartmentRequest
-	35, // 52: teamos.company.v1.CompanyService.DeleteDepartment:input_type -> teamos.company.v1.DeleteDepartmentRequest
-	37, // 53: teamos.company.v1.CompanyService.MoveDepartment:input_type -> teamos.company.v1.MoveDepartmentRequest
-	39, // 54: teamos.company.v1.CompanyService.GetPositions:input_type -> teamos.company.v1.GetPositionsRequest
-	41, // 55: teamos.company.v1.CompanyService.GetPosition:input_type -> teamos.company.v1.GetPositionRequest
-	43, // 56: teamos.company.v1.CompanyService.CreatePosition:input_type -> teamos.company.v1.CreatePositionRequest
-	45, // 57: teamos.company.v1.CompanyService.UpdatePosition:input_type -> teamos.company.v1.UpdatePositionRequest
-	47, // 58: teamos.company.v1.CompanyService.DeletePosition:input_type -> teamos.company.v1.DeletePositionRequest
-	49, // 59: teamos.company.v1.CompanyService.MovePosition:input_type -> teamos.company.v1.MovePositionRequest
-	51, // 60: teamos.company.v1.CompanyService.GetUsers:input_type -> teamos.company.v1.GetUsersRequest
-	53, // 61: teamos.company.v1.CompanyService.GetUser:input_type -> teamos.company.v1.GetUserRequest
-	55, // 62: teamos.company.v1.CompanyService.CreateUser:input_type -> teamos.company.v1.CreateUserRequest
-	57, // 63: teamos.company.v1.CompanyService.UpdateUser:input_type -> teamos.company.v1.UpdateUserRequest
-	59, // 64: teamos.company.v1.CompanyService.GetInvites:input_type -> teamos.company.v1.GetInvitesRequest
-	61, // 65: teamos.company.v1.CompanyService.InviteUser:input_type -> teamos.company.v1.InviteUserRequest
-	63, // 66: teamos.company.v1.CompanyService.ResendInvite:input_type -> teamos.company.v1.ResendInviteRequest
-	65, // 67: teamos.company.v1.CompanyService.RevokeInvite:input_type -> teamos.company.v1.RevokeInviteRequest
-	67, // 68: teamos.company.v1.CompanyService.GetUsersByIds:input_type -> teamos.company.v1.GetUsersByIdsRequest
-	69, // 69: teamos.company.v1.CompanyService.ResolvePositionUsers:input_type -> teamos.company.v1.ResolvePositionUsersRequest
-	71, // 70: teamos.company.v1.CompanyService.ResolveDepartmentUsers:input_type -> teamos.company.v1.ResolveDepartmentUsersRequest
-	10, // 71: teamos.company.v1.CompanyService.Register:output_type -> teamos.company.v1.RegisterResponse
-	12, // 72: teamos.company.v1.CompanyService.Login:output_type -> teamos.company.v1.LoginResponse
-	14, // 73: teamos.company.v1.CompanyService.Refresh:output_type -> teamos.company.v1.RefreshResponse
-	16, // 74: teamos.company.v1.CompanyService.Logout:output_type -> teamos.company.v1.LogoutResponse
-	18, // 75: teamos.company.v1.CompanyService.GetInviteByToken:output_type -> teamos.company.v1.GetInviteByTokenResponse
-	20, // 76: teamos.company.v1.CompanyService.AcceptInvite:output_type -> teamos.company.v1.AcceptInviteResponse
-	22, // 77: teamos.company.v1.CompanyService.GetCurrentUser:output_type -> teamos.company.v1.GetCurrentUserResponse
-	24, // 78: teamos.company.v1.CompanyService.UpdateCurrentUser:output_type -> teamos.company.v1.UpdateCurrentUserResponse
-	26, // 79: teamos.company.v1.CompanyService.GetCompany:output_type -> teamos.company.v1.GetCompanyResponse
-	28, // 80: teamos.company.v1.CompanyService.UpdateCompany:output_type -> teamos.company.v1.UpdateCompanyResponse
-	30, // 81: teamos.company.v1.CompanyService.GetDepartments:output_type -> teamos.company.v1.GetDepartmentsResponse
-	32, // 82: teamos.company.v1.CompanyService.CreateDepartment:output_type -> teamos.company.v1.CreateDepartmentResponse
-	34, // 83: teamos.company.v1.CompanyService.UpdateDepartment:output_type -> teamos.company.v1.UpdateDepartmentResponse
-	36, // 84: teamos.company.v1.CompanyService.DeleteDepartment:output_type -> teamos.company.v1.DeleteDepartmentResponse
-	38, // 85: teamos.company.v1.CompanyService.MoveDepartment:output_type -> teamos.company.v1.MoveDepartmentResponse
-	40, // 86: teamos.company.v1.CompanyService.GetPositions:output_type -> teamos.company.v1.GetPositionsResponse
-	42, // 87: teamos.company.v1.CompanyService.GetPosition:output_type -> teamos.company.v1.GetPositionResponse
-	44, // 88: teamos.company.v1.CompanyService.CreatePosition:output_type -> teamos.company.v1.CreatePositionResponse
-	46, // 89: teamos.company.v1.CompanyService.UpdatePosition:output_type -> teamos.company.v1.UpdatePositionResponse
-	48, // 90: teamos.company.v1.CompanyService.DeletePosition:output_type -> teamos.company.v1.DeletePositionResponse
-	50, // 91: teamos.company.v1.CompanyService.MovePosition:output_type -> teamos.company.v1.MovePositionResponse
-	52, // 92: teamos.company.v1.CompanyService.GetUsers:output_type -> teamos.company.v1.GetUsersResponse
-	54, // 93: teamos.company.v1.CompanyService.GetUser:output_type -> teamos.company.v1.GetUserResponse
-	56, // 94: teamos.company.v1.CompanyService.CreateUser:output_type -> teamos.company.v1.CreateUserResponse
-	58, // 95: teamos.company.v1.CompanyService.UpdateUser:output_type -> teamos.company.v1.UpdateUserResponse
-	60, // 96: teamos.company.v1.CompanyService.GetInvites:output_type -> teamos.company.v1.GetInvitesResponse
-	62, // 97: teamos.company.v1.CompanyService.InviteUser:output_type -> teamos.company.v1.InviteUserResponse
-	64, // 98: teamos.company.v1.CompanyService.ResendInvite:output_type -> teamos.company.v1.ResendInviteResponse
-	66, // 99: teamos.company.v1.CompanyService.RevokeInvite:output_type -> teamos.company.v1.RevokeInviteResponse
-	68, // 100: teamos.company.v1.CompanyService.GetUsersByIds:output_type -> teamos.company.v1.GetUsersByIdsResponse
-	70, // 101: teamos.company.v1.CompanyService.ResolvePositionUsers:output_type -> teamos.company.v1.ResolvePositionUsersResponse
-	72, // 102: teamos.company.v1.CompanyService.ResolveDepartmentUsers:output_type -> teamos.company.v1.ResolveDepartmentUsersResponse
-	71, // [71:103] is the sub-list for method output_type
-	39, // [39:71] is the sub-list for method input_type
-	39, // [39:39] is the sub-list for extension type_name
-	39, // [39:39] is the sub-list for extension extendee
-	0,  // [0:39] is the sub-list for field type_name
+	104, // 0: teamos.company.v1.Company.created_at:type_name -> google.protobuf.Timestamp
+	0,   // 1: teamos.company.v1.User.role:type_name -> teamos.company.v1.UserRole
+	1,   // 2: teamos.company.v1.User.status:type_name -> teamos.company.v1.UserStatus
+	104, // 3: teamos.company.v1.User.created_at:type_name -> google.protobuf.Timestamp
+	0,   // 4: teamos.company.v1.Invite.role:type_name -> teamos.company.v1.UserRole
+	2,   // 5: teamos.company.v1.Invite.status:type_name -> teamos.company.v1.InviteStatus
+	104, // 6: teamos.company.v1.Invite.created_at:type_name -> google.protobuf.Timestamp
+	104, // 7: teamos.company.v1.AuthSession.refresh_expires_at:type_name -> google.protobuf.Timestamp
+	7,   // 8: teamos.company.v1.AuthSession.user:type_name -> teamos.company.v1.User
+	11,  // 9: teamos.company.v1.RegisterResponse.session:type_name -> teamos.company.v1.AuthSession
+	11,  // 10: teamos.company.v1.LoginResponse.session:type_name -> teamos.company.v1.AuthSession
+	11,  // 11: teamos.company.v1.RefreshResponse.session:type_name -> teamos.company.v1.AuthSession
+	10,  // 12: teamos.company.v1.GetInviteByTokenResponse.invite:type_name -> teamos.company.v1.Invite
+	11,  // 13: teamos.company.v1.AcceptInviteResponse.session:type_name -> teamos.company.v1.AuthSession
+	7,   // 14: teamos.company.v1.GetCurrentUserResponse.user:type_name -> teamos.company.v1.User
+	7,   // 15: teamos.company.v1.UpdateCurrentUserResponse.user:type_name -> teamos.company.v1.User
+	6,   // 16: teamos.company.v1.GetCompanyResponse.company:type_name -> teamos.company.v1.Company
+	6,   // 17: teamos.company.v1.UpdateCompanyResponse.company:type_name -> teamos.company.v1.Company
+	8,   // 18: teamos.company.v1.GetDepartmentsResponse.departments:type_name -> teamos.company.v1.Department
+	8,   // 19: teamos.company.v1.CreateDepartmentResponse.department:type_name -> teamos.company.v1.Department
+	8,   // 20: teamos.company.v1.UpdateDepartmentResponse.department:type_name -> teamos.company.v1.Department
+	8,   // 21: teamos.company.v1.MoveDepartmentResponse.department:type_name -> teamos.company.v1.Department
+	9,   // 22: teamos.company.v1.GetPositionsResponse.positions:type_name -> teamos.company.v1.Position
+	9,   // 23: teamos.company.v1.GetPositionResponse.position:type_name -> teamos.company.v1.Position
+	9,   // 24: teamos.company.v1.CreatePositionResponse.position:type_name -> teamos.company.v1.Position
+	9,   // 25: teamos.company.v1.UpdatePositionResponse.position:type_name -> teamos.company.v1.Position
+	9,   // 26: teamos.company.v1.MovePositionResponse.position:type_name -> teamos.company.v1.Position
+	7,   // 27: teamos.company.v1.GetUsersResponse.users:type_name -> teamos.company.v1.User
+	7,   // 28: teamos.company.v1.GetUserResponse.user:type_name -> teamos.company.v1.User
+	0,   // 29: teamos.company.v1.CreateUserRequest.role:type_name -> teamos.company.v1.UserRole
+	7,   // 30: teamos.company.v1.CreateUserResponse.user:type_name -> teamos.company.v1.User
+	0,   // 31: teamos.company.v1.UpdateUserRequest.role:type_name -> teamos.company.v1.UserRole
+	1,   // 32: teamos.company.v1.UpdateUserRequest.status:type_name -> teamos.company.v1.UserStatus
+	7,   // 33: teamos.company.v1.UpdateUserResponse.user:type_name -> teamos.company.v1.User
+	10,  // 34: teamos.company.v1.GetInvitesResponse.invites:type_name -> teamos.company.v1.Invite
+	0,   // 35: teamos.company.v1.InviteUserRequest.role:type_name -> teamos.company.v1.UserRole
+	10,  // 36: teamos.company.v1.InviteUserResponse.invite:type_name -> teamos.company.v1.Invite
+	10,  // 37: teamos.company.v1.ResendInviteResponse.invite:type_name -> teamos.company.v1.Invite
+	7,   // 38: teamos.company.v1.GetUsersByIdsResponse.users:type_name -> teamos.company.v1.User
+	76,  // 39: teamos.company.v1.UserSchedule.template:type_name -> teamos.company.v1.ScheduleTemplate
+	3,   // 40: teamos.company.v1.ShiftException.type:type_name -> teamos.company.v1.ShiftType
+	77,  // 41: teamos.company.v1.GetSchedulesResponse.schedules:type_name -> teamos.company.v1.UserSchedule
+	76,  // 42: teamos.company.v1.SaveScheduleRequest.template:type_name -> teamos.company.v1.ScheduleTemplate
+	77,  // 43: teamos.company.v1.SaveScheduleResponse.schedule:type_name -> teamos.company.v1.UserSchedule
+	78,  // 44: teamos.company.v1.GetShiftExceptionsResponse.exceptions:type_name -> teamos.company.v1.ShiftException
+	3,   // 45: teamos.company.v1.SaveShiftExceptionInput.type:type_name -> teamos.company.v1.ShiftType
+	85,  // 46: teamos.company.v1.SaveShiftExceptionsRequest.exceptions:type_name -> teamos.company.v1.SaveShiftExceptionInput
+	78,  // 47: teamos.company.v1.SaveShiftExceptionsResponse.exceptions:type_name -> teamos.company.v1.ShiftException
+	4,   // 48: teamos.company.v1.DistributionGroup.algorithm:type_name -> teamos.company.v1.DistributionAlgorithm
+	104, // 49: teamos.company.v1.DistributionGroup.created_at:type_name -> google.protobuf.Timestamp
+	5,   // 50: teamos.company.v1.DistributionEvent.status:type_name -> teamos.company.v1.DistributionEventStatus
+	104, // 51: teamos.company.v1.DistributionEvent.created_at:type_name -> google.protobuf.Timestamp
+	88,  // 52: teamos.company.v1.GetDistributionGroupsResponse.groups:type_name -> teamos.company.v1.DistributionGroup
+	88,  // 53: teamos.company.v1.CreateDistributionGroupResponse.group:type_name -> teamos.company.v1.DistributionGroup
+	4,   // 54: teamos.company.v1.UpdateDistributionGroupRequest.algorithm:type_name -> teamos.company.v1.DistributionAlgorithm
+	88,  // 55: teamos.company.v1.UpdateDistributionGroupResponse.group:type_name -> teamos.company.v1.DistributionGroup
+	89,  // 56: teamos.company.v1.GetDistributionEventsResponse.events:type_name -> teamos.company.v1.DistributionEvent
+	89,  // 57: teamos.company.v1.SimulateDistributionDealResponse.event:type_name -> teamos.company.v1.DistributionEvent
+	12,  // 58: teamos.company.v1.CompanyService.Register:input_type -> teamos.company.v1.RegisterRequest
+	14,  // 59: teamos.company.v1.CompanyService.Login:input_type -> teamos.company.v1.LoginRequest
+	16,  // 60: teamos.company.v1.CompanyService.Refresh:input_type -> teamos.company.v1.RefreshRequest
+	18,  // 61: teamos.company.v1.CompanyService.Logout:input_type -> teamos.company.v1.LogoutRequest
+	20,  // 62: teamos.company.v1.CompanyService.GetInviteByToken:input_type -> teamos.company.v1.GetInviteByTokenRequest
+	22,  // 63: teamos.company.v1.CompanyService.AcceptInvite:input_type -> teamos.company.v1.AcceptInviteRequest
+	24,  // 64: teamos.company.v1.CompanyService.GetCurrentUser:input_type -> teamos.company.v1.GetCurrentUserRequest
+	26,  // 65: teamos.company.v1.CompanyService.UpdateCurrentUser:input_type -> teamos.company.v1.UpdateCurrentUserRequest
+	28,  // 66: teamos.company.v1.CompanyService.GetCompany:input_type -> teamos.company.v1.GetCompanyRequest
+	30,  // 67: teamos.company.v1.CompanyService.UpdateCompany:input_type -> teamos.company.v1.UpdateCompanyRequest
+	32,  // 68: teamos.company.v1.CompanyService.GetDepartments:input_type -> teamos.company.v1.GetDepartmentsRequest
+	34,  // 69: teamos.company.v1.CompanyService.CreateDepartment:input_type -> teamos.company.v1.CreateDepartmentRequest
+	36,  // 70: teamos.company.v1.CompanyService.UpdateDepartment:input_type -> teamos.company.v1.UpdateDepartmentRequest
+	38,  // 71: teamos.company.v1.CompanyService.DeleteDepartment:input_type -> teamos.company.v1.DeleteDepartmentRequest
+	40,  // 72: teamos.company.v1.CompanyService.MoveDepartment:input_type -> teamos.company.v1.MoveDepartmentRequest
+	42,  // 73: teamos.company.v1.CompanyService.GetPositions:input_type -> teamos.company.v1.GetPositionsRequest
+	44,  // 74: teamos.company.v1.CompanyService.GetPosition:input_type -> teamos.company.v1.GetPositionRequest
+	46,  // 75: teamos.company.v1.CompanyService.CreatePosition:input_type -> teamos.company.v1.CreatePositionRequest
+	48,  // 76: teamos.company.v1.CompanyService.UpdatePosition:input_type -> teamos.company.v1.UpdatePositionRequest
+	50,  // 77: teamos.company.v1.CompanyService.DeletePosition:input_type -> teamos.company.v1.DeletePositionRequest
+	52,  // 78: teamos.company.v1.CompanyService.MovePosition:input_type -> teamos.company.v1.MovePositionRequest
+	54,  // 79: teamos.company.v1.CompanyService.GetUsers:input_type -> teamos.company.v1.GetUsersRequest
+	56,  // 80: teamos.company.v1.CompanyService.GetUser:input_type -> teamos.company.v1.GetUserRequest
+	58,  // 81: teamos.company.v1.CompanyService.CreateUser:input_type -> teamos.company.v1.CreateUserRequest
+	60,  // 82: teamos.company.v1.CompanyService.UpdateUser:input_type -> teamos.company.v1.UpdateUserRequest
+	62,  // 83: teamos.company.v1.CompanyService.GetInvites:input_type -> teamos.company.v1.GetInvitesRequest
+	64,  // 84: teamos.company.v1.CompanyService.InviteUser:input_type -> teamos.company.v1.InviteUserRequest
+	66,  // 85: teamos.company.v1.CompanyService.ResendInvite:input_type -> teamos.company.v1.ResendInviteRequest
+	68,  // 86: teamos.company.v1.CompanyService.RevokeInvite:input_type -> teamos.company.v1.RevokeInviteRequest
+	70,  // 87: teamos.company.v1.CompanyService.GetUsersByIds:input_type -> teamos.company.v1.GetUsersByIdsRequest
+	72,  // 88: teamos.company.v1.CompanyService.ResolvePositionUsers:input_type -> teamos.company.v1.ResolvePositionUsersRequest
+	74,  // 89: teamos.company.v1.CompanyService.ResolveDepartmentUsers:input_type -> teamos.company.v1.ResolveDepartmentUsersRequest
+	79,  // 90: teamos.company.v1.CompanyService.GetSchedules:input_type -> teamos.company.v1.GetSchedulesRequest
+	81,  // 91: teamos.company.v1.CompanyService.SaveSchedule:input_type -> teamos.company.v1.SaveScheduleRequest
+	83,  // 92: teamos.company.v1.CompanyService.GetShiftExceptions:input_type -> teamos.company.v1.GetShiftExceptionsRequest
+	86,  // 93: teamos.company.v1.CompanyService.SaveShiftExceptions:input_type -> teamos.company.v1.SaveShiftExceptionsRequest
+	90,  // 94: teamos.company.v1.CompanyService.GetDistributionGroups:input_type -> teamos.company.v1.GetDistributionGroupsRequest
+	92,  // 95: teamos.company.v1.CompanyService.CreateDistributionGroup:input_type -> teamos.company.v1.CreateDistributionGroupRequest
+	94,  // 96: teamos.company.v1.CompanyService.UpdateDistributionGroup:input_type -> teamos.company.v1.UpdateDistributionGroupRequest
+	96,  // 97: teamos.company.v1.CompanyService.DeleteDistributionGroup:input_type -> teamos.company.v1.DeleteDistributionGroupRequest
+	98,  // 98: teamos.company.v1.CompanyService.GetDistributionEvents:input_type -> teamos.company.v1.GetDistributionEventsRequest
+	100, // 99: teamos.company.v1.CompanyService.SimulateDistributionDeal:input_type -> teamos.company.v1.SimulateDistributionDealRequest
+	102, // 100: teamos.company.v1.CompanyService.ResetDistributionEvents:input_type -> teamos.company.v1.ResetDistributionEventsRequest
+	13,  // 101: teamos.company.v1.CompanyService.Register:output_type -> teamos.company.v1.RegisterResponse
+	15,  // 102: teamos.company.v1.CompanyService.Login:output_type -> teamos.company.v1.LoginResponse
+	17,  // 103: teamos.company.v1.CompanyService.Refresh:output_type -> teamos.company.v1.RefreshResponse
+	19,  // 104: teamos.company.v1.CompanyService.Logout:output_type -> teamos.company.v1.LogoutResponse
+	21,  // 105: teamos.company.v1.CompanyService.GetInviteByToken:output_type -> teamos.company.v1.GetInviteByTokenResponse
+	23,  // 106: teamos.company.v1.CompanyService.AcceptInvite:output_type -> teamos.company.v1.AcceptInviteResponse
+	25,  // 107: teamos.company.v1.CompanyService.GetCurrentUser:output_type -> teamos.company.v1.GetCurrentUserResponse
+	27,  // 108: teamos.company.v1.CompanyService.UpdateCurrentUser:output_type -> teamos.company.v1.UpdateCurrentUserResponse
+	29,  // 109: teamos.company.v1.CompanyService.GetCompany:output_type -> teamos.company.v1.GetCompanyResponse
+	31,  // 110: teamos.company.v1.CompanyService.UpdateCompany:output_type -> teamos.company.v1.UpdateCompanyResponse
+	33,  // 111: teamos.company.v1.CompanyService.GetDepartments:output_type -> teamos.company.v1.GetDepartmentsResponse
+	35,  // 112: teamos.company.v1.CompanyService.CreateDepartment:output_type -> teamos.company.v1.CreateDepartmentResponse
+	37,  // 113: teamos.company.v1.CompanyService.UpdateDepartment:output_type -> teamos.company.v1.UpdateDepartmentResponse
+	39,  // 114: teamos.company.v1.CompanyService.DeleteDepartment:output_type -> teamos.company.v1.DeleteDepartmentResponse
+	41,  // 115: teamos.company.v1.CompanyService.MoveDepartment:output_type -> teamos.company.v1.MoveDepartmentResponse
+	43,  // 116: teamos.company.v1.CompanyService.GetPositions:output_type -> teamos.company.v1.GetPositionsResponse
+	45,  // 117: teamos.company.v1.CompanyService.GetPosition:output_type -> teamos.company.v1.GetPositionResponse
+	47,  // 118: teamos.company.v1.CompanyService.CreatePosition:output_type -> teamos.company.v1.CreatePositionResponse
+	49,  // 119: teamos.company.v1.CompanyService.UpdatePosition:output_type -> teamos.company.v1.UpdatePositionResponse
+	51,  // 120: teamos.company.v1.CompanyService.DeletePosition:output_type -> teamos.company.v1.DeletePositionResponse
+	53,  // 121: teamos.company.v1.CompanyService.MovePosition:output_type -> teamos.company.v1.MovePositionResponse
+	55,  // 122: teamos.company.v1.CompanyService.GetUsers:output_type -> teamos.company.v1.GetUsersResponse
+	57,  // 123: teamos.company.v1.CompanyService.GetUser:output_type -> teamos.company.v1.GetUserResponse
+	59,  // 124: teamos.company.v1.CompanyService.CreateUser:output_type -> teamos.company.v1.CreateUserResponse
+	61,  // 125: teamos.company.v1.CompanyService.UpdateUser:output_type -> teamos.company.v1.UpdateUserResponse
+	63,  // 126: teamos.company.v1.CompanyService.GetInvites:output_type -> teamos.company.v1.GetInvitesResponse
+	65,  // 127: teamos.company.v1.CompanyService.InviteUser:output_type -> teamos.company.v1.InviteUserResponse
+	67,  // 128: teamos.company.v1.CompanyService.ResendInvite:output_type -> teamos.company.v1.ResendInviteResponse
+	69,  // 129: teamos.company.v1.CompanyService.RevokeInvite:output_type -> teamos.company.v1.RevokeInviteResponse
+	71,  // 130: teamos.company.v1.CompanyService.GetUsersByIds:output_type -> teamos.company.v1.GetUsersByIdsResponse
+	73,  // 131: teamos.company.v1.CompanyService.ResolvePositionUsers:output_type -> teamos.company.v1.ResolvePositionUsersResponse
+	75,  // 132: teamos.company.v1.CompanyService.ResolveDepartmentUsers:output_type -> teamos.company.v1.ResolveDepartmentUsersResponse
+	80,  // 133: teamos.company.v1.CompanyService.GetSchedules:output_type -> teamos.company.v1.GetSchedulesResponse
+	82,  // 134: teamos.company.v1.CompanyService.SaveSchedule:output_type -> teamos.company.v1.SaveScheduleResponse
+	84,  // 135: teamos.company.v1.CompanyService.GetShiftExceptions:output_type -> teamos.company.v1.GetShiftExceptionsResponse
+	87,  // 136: teamos.company.v1.CompanyService.SaveShiftExceptions:output_type -> teamos.company.v1.SaveShiftExceptionsResponse
+	91,  // 137: teamos.company.v1.CompanyService.GetDistributionGroups:output_type -> teamos.company.v1.GetDistributionGroupsResponse
+	93,  // 138: teamos.company.v1.CompanyService.CreateDistributionGroup:output_type -> teamos.company.v1.CreateDistributionGroupResponse
+	95,  // 139: teamos.company.v1.CompanyService.UpdateDistributionGroup:output_type -> teamos.company.v1.UpdateDistributionGroupResponse
+	97,  // 140: teamos.company.v1.CompanyService.DeleteDistributionGroup:output_type -> teamos.company.v1.DeleteDistributionGroupResponse
+	99,  // 141: teamos.company.v1.CompanyService.GetDistributionEvents:output_type -> teamos.company.v1.GetDistributionEventsResponse
+	101, // 142: teamos.company.v1.CompanyService.SimulateDistributionDeal:output_type -> teamos.company.v1.SimulateDistributionDealResponse
+	103, // 143: teamos.company.v1.CompanyService.ResetDistributionEvents:output_type -> teamos.company.v1.ResetDistributionEventsResponse
+	101, // [101:144] is the sub-list for method output_type
+	58,  // [58:101] is the sub-list for method input_type
+	58,  // [58:58] is the sub-list for extension type_name
+	58,  // [58:58] is the sub-list for extension extendee
+	0,   // [0:58] is the sub-list for field type_name
 }
 
 func init() { file_proto_company_v1_company_proto_init() }
@@ -4468,13 +6454,19 @@ func file_proto_company_v1_company_proto_init() {
 	file_proto_company_v1_company_proto_msgTypes[52].OneofWrappers = []any{}
 	file_proto_company_v1_company_proto_msgTypes[54].OneofWrappers = []any{}
 	file_proto_company_v1_company_proto_msgTypes[58].OneofWrappers = []any{}
+	file_proto_company_v1_company_proto_msgTypes[70].OneofWrappers = []any{}
+	file_proto_company_v1_company_proto_msgTypes[72].OneofWrappers = []any{}
+	file_proto_company_v1_company_proto_msgTypes[79].OneofWrappers = []any{}
+	file_proto_company_v1_company_proto_msgTypes[82].OneofWrappers = []any{}
+	file_proto_company_v1_company_proto_msgTypes[86].OneofWrappers = []any{}
+	file_proto_company_v1_company_proto_msgTypes[88].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_company_v1_company_proto_rawDesc), len(file_proto_company_v1_company_proto_rawDesc)),
-			NumEnums:      3,
-			NumMessages:   70,
+			NumEnums:      6,
+			NumMessages:   98,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

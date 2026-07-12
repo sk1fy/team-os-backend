@@ -16,6 +16,7 @@ type Config struct {
 	TasksGRPCAddr         string
 	AcademyGRPCAddr       string
 	NotificationsGRPCAddr string
+	FilesGRPCAddr         string
 	JWTPublicKey          string
 	JWTIssuer             string
 	JWTAudience           string
@@ -32,6 +33,7 @@ func Load() (Config, error) {
 		TasksGRPCAddr:         strings.TrimSpace(os.Getenv("GATEWAY_TASKS_GRPC_ADDR")),
 		AcademyGRPCAddr:       strings.TrimSpace(os.Getenv("GATEWAY_ACADEMY_GRPC_ADDR")),
 		NotificationsGRPCAddr: strings.TrimSpace(os.Getenv("GATEWAY_NOTIFICATIONS_GRPC_ADDR")),
+		FilesGRPCAddr:         strings.TrimSpace(os.Getenv("GATEWAY_FILES_GRPC_ADDR")),
 		JWTPublicKey:          strings.TrimSpace(os.Getenv("GATEWAY_JWT_PUBLIC_KEY")),
 		JWTIssuer:             envOr("GATEWAY_JWT_ISSUER", "teamos-company"),
 		JWTAudience:           envOr("GATEWAY_JWT_AUDIENCE", "teamos-api"),
@@ -66,6 +68,9 @@ func Load() (Config, error) {
 	}
 	if config.NotificationsGRPCAddr == "" {
 		missing = append(missing, "GATEWAY_NOTIFICATIONS_GRPC_ADDR")
+	}
+	if config.FilesGRPCAddr == "" {
+		missing = append(missing, "GATEWAY_FILES_GRPC_ADDR")
 	}
 	if config.JWTPublicKey == "" {
 		missing = append(missing, "GATEWAY_JWT_PUBLIC_KEY")

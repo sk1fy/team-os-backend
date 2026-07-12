@@ -1521,6 +1521,53 @@ paths:
         default:
           $ref: '#/components/responses/Error'
 
+  /api/v1/files:
+    post:
+      tags: [Files]
+      operationId: uploadFile
+      summary: Загрузить вложение, аватар или логотип
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [file, purpose]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                purpose:
+                  $ref: '#/components/schemas/FilePurpose'
+      responses:
+        '201':
+          $ref: '#/components/responses/UploadedFile'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/files/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    get:
+      tags: [Files]
+      operationId: getFile
+      summary: Получить метаданные и временную ссылку на файл
+      responses:
+        '200':
+          $ref: '#/components/responses/FileDownload'
+        default:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags: [Files]
+      operationId: deleteFile
+      summary: Удалить файл
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        default:
+          $ref: '#/components/responses/Error'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -1910,6 +1957,18 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/DistributionEvent'
+    UploadedFile:
+      description: Метаданные загруженного файла
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UploadedFile'
+    FileDownload:
+      description: Метаданные и временная ссылка на скачивание
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FileDownload'
 
   schemas:
     ID:
@@ -1997,6 +2056,38 @@ components:
           $ref: '#/components/schemas/ID'
         createdAt:
           $ref: '#/components/schemas/ISODateTime'
+    FilePurpose:
+      type: string
+      enum: [attachment, avatar, logo]
+    UploadedFile:
+      type: object
+      additionalProperties: false
+      required: [id, name, contentType, size, purpose, createdAt]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        name:
+          type: string
+        contentType:
+          type: string
+        size:
+          type: integer
+          format: int64
+          minimum: 1
+        purpose:
+          $ref: '#/components/schemas/FilePurpose'
+        createdAt:
+          $ref: '#/components/schemas/ISODateTime'
+    FileDownload:
+      type: object
+      additionalProperties: false
+      required: [file, downloadUrl]
+      properties:
+        file:
+          $ref: '#/components/schemas/UploadedFile'
+        downloadUrl:
+          type: string
+          format: uri
 
     User:
       type: object

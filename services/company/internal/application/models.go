@@ -182,3 +182,82 @@ type InviteUserInput struct {
 	PositionID   *uuid.UUID
 	DepartmentID *uuid.UUID
 }
+
+type ScheduleTemplate struct {
+	Type       string
+	Days       []int
+	On         int
+	Off        int
+	Start      string
+	End        string
+	CycleStart string
+}
+
+type UserSchedule struct {
+	UserID   uuid.UUID
+	Template ScheduleTemplate
+}
+
+type ShiftException struct {
+	ID     uuid.UUID
+	UserID uuid.UUID
+	Date   string
+	Type   string
+	Start  *string
+	End    *string
+	Note   *string
+}
+
+type SaveShiftExceptionInput struct {
+	UserID uuid.UUID
+	Date   string
+	Type   string
+	Start  *string
+	End    *string
+	Note   *string
+}
+
+type DistributionGroup struct {
+	ID                uuid.UUID
+	Name              string
+	Description       *string
+	Active            bool
+	Algorithm         string
+	MemberIDs         []uuid.UUID
+	DisabledMemberIDs []uuid.UUID
+	Source            string
+	DealLimit         int32
+	UnclaimedMinutes  int32
+	CreatedAt         time.Time
+}
+
+type DistributionEvent struct {
+	ID         uuid.UUID
+	GroupID    uuid.UUID
+	DealNumber int64
+	UserID     uuid.UUID
+	Status     string
+	CreatedAt  time.Time
+}
+
+type CreateDistributionGroupInput struct {
+	Name        string
+	Description *string
+	MemberIDs   []uuid.UUID
+}
+
+type UpdateDistributionGroupInput struct {
+	ID                   uuid.UUID
+	Name                 *string
+	SetDescription       bool
+	Description          *string
+	Active               *bool
+	Algorithm            *string
+	SetMemberIDs         bool
+	MemberIDs            []uuid.UUID
+	SetDisabledMemberIDs bool
+	DisabledMemberIDs    []uuid.UUID
+	Source               *string
+	DealLimit            *int32
+	UnclaimedMinutes     *int32
+}

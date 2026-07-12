@@ -2,7 +2,7 @@ SHELL := /usr/bin/env bash
 
 GO ?= go
 COMPOSE_BIN ?= $(shell if docker compose version >/dev/null 2>&1; then printf 'docker compose'; else printf 'docker-compose'; fi)
-COMPOSE ?= $(COMPOSE_BIN) -f deploy/docker-compose.yaml
+COMPOSE ?= $(COMPOSE_BIN) --file deploy/docker-compose.yaml
 FRONTEND_DIR ?= /Users/nikpeskov/Projects/team-os
 SEED_DIR ?= $(CURDIR)/.seed
 SERVICE ?=
@@ -18,7 +18,7 @@ MODULE_DIRS = pkg $(sort $(patsubst %/go.mod,%,$(wildcard services/*/go.mod)))
 
 .DEFAULT_GOAL := help
 
-.PHONY: help up down logs compose-config migrate seed export-fixtures gen test test-race lint fmt check-contract dev dev-keys ensure-env
+.PHONY: help up down logs compose-config migrate seed export-fixtures gen test test-race lint fmt check-contract dev dev-keys ensure-env e2e load-test load-kb load-tasks load-move observability-up observability-down
 
 help: ## Show available commands.
 	@awk 'BEGIN {FS = ":.*## "} /^[a-zA-Z0-9_-]+:.*## / {printf "  %-18s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -44,6 +44,7 @@ migrate: ensure-env ## Apply all currently registered service migrations.
 	$(COMPOSE) run --rm tasks-migrate
 	$(COMPOSE) run --rm academy-migrate
 	$(COMPOSE) run --rm notifications-migrate
+	$(COMPOSE) run --rm files-migrate
 
 seed: ## Load already exported JSON fixtures from SEED_DIR.
 	@test -d "$(SEED_DIR_ABS)" || { echo "SEED_DIR does not exist: $(SEED_DIR_ABS)" >&2; exit 1; }
@@ -109,3 +110,23 @@ dev-keys: ## Create .env with a fresh Ed25519 development key pair.
 		'/^COMPANY_JWT_PRIVATE_KEY=/{print "COMPANY_JWT_PRIVATE_KEY=" private; next} /^GATEWAY_JWT_PUBLIC_KEY=/{print "GATEWAY_JWT_PUBLIC_KEY=" public; next} {print}' \
 		.env.example > .env; \
 	echo "Created .env with development-only signing keys"
+
+observability-up: ensure-env ## Start the stack with Prometheus, Grafana, Loki and Tempo.
+	$(COMPOSE_BIN) --file deploy/docker-compose.yaml --file deploy/docker-compose.observability.yaml --profile observability up --build -d
+
+observability-down: ## Stop the stack including the observability profile.
+	$(COMPOSE_BIN) --file deploy/docker-compose.yaml --file deploy/docker-compose.observability.yaml --profile observability down --remove-orphans
+
+e2e: ## Run the backend smoke scenario against a running gateway.
+	bash tests/e2e/smoke.sh
+
+load-test: load-kb load-tasks load-move ## Run all k6 profiles against a running gateway.
+
+load-kb: ## Run the k6 knowledge-base read profile.
+	k6 run tests/k6/read-kb.js
+
+load-tasks: ## Run the k6 task read profile.
+	k6 run tests/k6/read-tasks.js
+
+load-move: ## Run the concurrent moveTask k6 profile.
+	k6 run tests/k6/move-task.js

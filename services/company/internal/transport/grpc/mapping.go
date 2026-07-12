@@ -306,3 +306,146 @@ func uuidStrings(values []uuid.UUID) []string {
 	}
 	return result
 }
+
+func scheduleTemplateFromProto(value *companyv1.ScheduleTemplate) (application.ScheduleTemplate, error) {
+	if value == nil {
+		return application.ScheduleTemplate{}, invalidArgument("Шаблон графика обязателен")
+	}
+	days := make([]int, len(value.Days))
+	for i, day := range value.Days {
+		days[i] = int(day)
+	}
+	result := application.ScheduleTemplate{Type: value.Type, Days: days, Start: value.Start, End: value.End}
+	if value.On != nil {
+		result.On = int(*value.On)
+	}
+	if value.Off != nil {
+		result.Off = int(*value.Off)
+	}
+	if value.CycleStart != nil {
+		result.CycleStart = *value.CycleStart
+	}
+	return result, nil
+}
+func scheduleTemplateToProto(value application.ScheduleTemplate) *companyv1.ScheduleTemplate {
+	days := make([]uint32, len(value.Days))
+	for i, day := range value.Days {
+		days[i] = uint32(day)
+	}
+	result := &companyv1.ScheduleTemplate{Type: value.Type, Days: days, Start: value.Start, End: value.End}
+	if value.Type == "cycle" {
+		on, off, start := uint32(value.On), uint32(value.Off), value.CycleStart
+		result.On, result.Off, result.CycleStart = &on, &off, &start
+	}
+	return result
+}
+func scheduleToProto(value application.UserSchedule) *companyv1.UserSchedule {
+	return &companyv1.UserSchedule{UserId: value.UserID.String(), Template: scheduleTemplateToProto(value.Template)}
+}
+func schedulesToProto(values []application.UserSchedule) []*companyv1.UserSchedule {
+	result := make([]*companyv1.UserSchedule, len(values))
+	for i, value := range values {
+		result[i] = scheduleToProto(value)
+	}
+	return result
+}
+func shiftTypeToProto(value string) companyv1.ShiftType {
+	switch value {
+	case "work":
+		return companyv1.ShiftType_SHIFT_TYPE_WORK
+	case "off":
+		return companyv1.ShiftType_SHIFT_TYPE_OFF
+	case "vacation":
+		return companyv1.ShiftType_SHIFT_TYPE_VACATION
+	case "sick":
+		return companyv1.ShiftType_SHIFT_TYPE_SICK
+	case "trip":
+		return companyv1.ShiftType_SHIFT_TYPE_TRIP
+	default:
+		return companyv1.ShiftType_SHIFT_TYPE_UNSPECIFIED
+	}
+}
+func shiftTypeFromProto(value companyv1.ShiftType) (string, error) {
+	switch value {
+	case companyv1.ShiftType_SHIFT_TYPE_WORK:
+		return "work", nil
+	case companyv1.ShiftType_SHIFT_TYPE_OFF:
+		return "off", nil
+	case companyv1.ShiftType_SHIFT_TYPE_VACATION:
+		return "vacation", nil
+	case companyv1.ShiftType_SHIFT_TYPE_SICK:
+		return "sick", nil
+	case companyv1.ShiftType_SHIFT_TYPE_TRIP:
+		return "trip", nil
+	default:
+		return "", invalidArgument("Некорректный тип смены")
+	}
+}
+func exceptionToProto(value application.ShiftException) *companyv1.ShiftException {
+	return &companyv1.ShiftException{Id: value.ID.String(), UserId: value.UserID.String(), Date: value.Date, Type: shiftTypeToProto(value.Type), Start: cloneString(value.Start), End: cloneString(value.End), Note: cloneString(value.Note)}
+}
+func exceptionsToProto(values []application.ShiftException) []*companyv1.ShiftException {
+	result := make([]*companyv1.ShiftException, len(values))
+	for i, value := range values {
+		result[i] = exceptionToProto(value)
+	}
+	return result
+}
+func distributionAlgorithmToProto(value string) companyv1.DistributionAlgorithm {
+	switch value {
+	case "round_robin":
+		return companyv1.DistributionAlgorithm_DISTRIBUTION_ALGORITHM_ROUND_ROBIN
+	case "least_loaded":
+		return companyv1.DistributionAlgorithm_DISTRIBUTION_ALGORITHM_LEAST_LOADED
+	case "priority":
+		return companyv1.DistributionAlgorithm_DISTRIBUTION_ALGORITHM_PRIORITY
+	default:
+		return companyv1.DistributionAlgorithm_DISTRIBUTION_ALGORITHM_UNSPECIFIED
+	}
+}
+func distributionAlgorithmFromProto(value companyv1.DistributionAlgorithm) (string, error) {
+	switch value {
+	case companyv1.DistributionAlgorithm_DISTRIBUTION_ALGORITHM_ROUND_ROBIN:
+		return "round_robin", nil
+	case companyv1.DistributionAlgorithm_DISTRIBUTION_ALGORITHM_LEAST_LOADED:
+		return "least_loaded", nil
+	case companyv1.DistributionAlgorithm_DISTRIBUTION_ALGORITHM_PRIORITY:
+		return "priority", nil
+	default:
+		return "", invalidArgument("Некорректный алгоритм распределения")
+	}
+}
+func distributionEventStatusToProto(value string) companyv1.DistributionEventStatus {
+	switch value {
+	case "accepted":
+		return companyv1.DistributionEventStatus_DISTRIBUTION_EVENT_STATUS_ACCEPTED
+	case "in_progress":
+		return companyv1.DistributionEventStatus_DISTRIBUTION_EVENT_STATUS_IN_PROGRESS
+	case "reassigned":
+		return companyv1.DistributionEventStatus_DISTRIBUTION_EVENT_STATUS_REASSIGNED
+	case "declined":
+		return companyv1.DistributionEventStatus_DISTRIBUTION_EVENT_STATUS_DECLINED
+	default:
+		return companyv1.DistributionEventStatus_DISTRIBUTION_EVENT_STATUS_UNSPECIFIED
+	}
+}
+func distributionGroupToProto(value application.DistributionGroup) *companyv1.DistributionGroup {
+	return &companyv1.DistributionGroup{Id: value.ID.String(), Name: value.Name, Description: cloneString(value.Description), Active: value.Active, Algorithm: distributionAlgorithmToProto(value.Algorithm), MemberIds: uuidStrings(value.MemberIDs), DisabledMemberIds: uuidStrings(value.DisabledMemberIDs), Source: value.Source, DealLimit: uint32(value.DealLimit), UnclaimedMinutes: uint32(value.UnclaimedMinutes), CreatedAt: timestamppb.New(value.CreatedAt.UTC())}
+}
+func distributionGroupsToProto(values []application.DistributionGroup) []*companyv1.DistributionGroup {
+	result := make([]*companyv1.DistributionGroup, len(values))
+	for i, value := range values {
+		result[i] = distributionGroupToProto(value)
+	}
+	return result
+}
+func distributionEventToProto(value application.DistributionEvent) *companyv1.DistributionEvent {
+	return &companyv1.DistributionEvent{Id: value.ID.String(), GroupId: value.GroupID.String(), DealNumber: uint64(value.DealNumber), UserId: value.UserID.String(), Status: distributionEventStatusToProto(value.Status), CreatedAt: timestamppb.New(value.CreatedAt.UTC())}
+}
+func distributionEventsToProto(values []application.DistributionEvent) []*companyv1.DistributionEvent {
+	result := make([]*companyv1.DistributionEvent, len(values))
+	for i, value := range values {
+		result[i] = distributionEventToProto(value)
+	}
+	return result
+}

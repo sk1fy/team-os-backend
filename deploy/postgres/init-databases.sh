@@ -8,7 +8,8 @@ for database in \
   teamos_kb \
   teamos_tasks \
   teamos_academy \
-  teamos_notifications; do
+  teamos_notifications \
+  teamos_files; do
   psql --variable=ON_ERROR_STOP=1 \
     --username "$POSTGRES_USER" \
     --dbname "$POSTGRES_DB" \
