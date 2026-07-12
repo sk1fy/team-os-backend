@@ -2,23 +2,24 @@ package application
 
 import (
 	"context"
-	"strings"
 
 	"github.com/google/uuid"
+	eventsv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/events/v1"
 	"github.com/sk1fy/team-os-backend/pkg/richtext"
 	"github.com/sk1fy/team-os-backend/services/tasks/internal/storage/db"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const tasksLink = "/tasks"
 
-func assigneeRecipients(task Task, exclude ...uuid.UUID) []string {
+func assigneeRecipients(assigneeIDs []uuid.UUID, exclude ...uuid.UUID) []string {
 	excluded := make(map[uuid.UUID]struct{}, len(exclude))
 	for _, id := range exclude {
 		excluded[id] = struct{}{}
 	}
-	seen := make(map[uuid.UUID]struct{}, len(task.AssigneeIDs))
-	result := make([]string, 0, len(task.AssigneeIDs))
-	for _, assigneeID := range task.AssigneeIDs {
+	seen := make(map[uuid.UUID]struct{}, len(assigneeIDs))
+	result := make([]string, 0, len(assigneeIDs))
+	for _, assigneeID := range assigneeIDs {
 		if _, skip := excluded[assigneeID]; skip {
 			continue
 		}
@@ -79,21 +80,30 @@ func (s *Service) emitTaskAssigned(
 	actor Actor,
 	task Task,
 ) error {
-	recipients := assigneeRecipients(task, task.AuthorID)
-	if len(recipients) == 0 && task.AssigneePositionID == nil {
+	return s.emitTaskAssignedTo(ctx, queries, actor, task, task.AssigneeIDs, task.AssigneePositionID)
+}
+
+func (s *Service) emitTaskAssignedTo(
+	ctx context.Context,
+	queries *db.Queries,
+	actor Actor,
+	task Task,
+	assigneeIDs []uuid.UUID,
+	assigneePositionID *uuid.UUID,
+) error {
+	recipients := assigneeRecipients(assigneeIDs, task.AuthorID)
+	if len(recipients) == 0 && assigneePositionID == nil {
 		return nil
 	}
-	payload := map[string]any{
-		"taskId": task.ID.String(),
-		"title":  task.Title,
-		"authorId": task.AuthorID.String(),
-		"assigneeUserIds": recipients,
-		"link": tasksLink,
+	payload := &eventsv1.TasksTaskAssignedPayload{
+		TaskId: task.ID.String(), Title: task.Title, AuthorId: task.AuthorID.String(),
+		AssigneeUserIds: recipients, Link: tasksLink,
 	}
-	if task.AssigneePositionID != nil {
-		payload["assigneePositionId"] = task.AssigneePositionID.String()
+	if assigneePositionID != nil {
+		value := assigneePositionID.String()
+		payload.AssigneePositionId = &value
 	}
-	return s.emit(ctx, queries, actor.CompanyID, actor.UserID, "teamos.tasks.task.assigned.v1", payload)
+	return s.emit(ctx, queries, actor.CompanyID, task.ID, actor.UserID, "teamos.tasks.task.assigned.v1", payload)
 }
 
 func (s *Service) emitCommentAdded(
@@ -103,13 +113,10 @@ func (s *Service) emitCommentAdded(
 	task Task,
 	comment Comment,
 ) error {
-	return s.emit(ctx, queries, actor.CompanyID, actor.UserID, "teamos.tasks.comment.added.v1", map[string]any{
-		"commentId": comment.ID.String(),
-		"taskId": task.ID.String(),
-		"taskTitle": task.Title,
-		"authorId": comment.AuthorID.String(),
-		"recipientUserIds": commentRecipients(task, comment.AuthorID),
-		"link": tasksLink,
+	return s.emit(ctx, queries, actor.CompanyID, task.ID, actor.UserID, "teamos.tasks.comment.added.v1", &eventsv1.TasksCommentAddedPayload{
+		CommentId: comment.ID.String(), TaskId: task.ID.String(), TaskTitle: task.Title,
+		AuthorId: comment.AuthorID.String(), RecipientUserIds: commentRecipients(task, comment.AuthorID),
+		Link: tasksLink,
 	})
 }
 
@@ -121,19 +128,38 @@ func (s *Service) emitMentions(
 	comment Comment,
 	content []byte,
 ) error {
-	for _, mentionedUserID := range richtext.Mentions(content) {
-		mentionedUserID = strings.TrimSpace(mentionedUserID)
-		if mentionedUserID == "" {
+	return s.emitMentionsForEntity(ctx, queries, actor, task, "comment", comment.ID, content)
+}
+
+func (s *Service) emitTaskMentions(
+	ctx context.Context,
+	queries *db.Queries,
+	actor Actor,
+	task Task,
+	content []byte,
+) error {
+	return s.emitMentionsForEntity(ctx, queries, actor, task, "task", task.ID, content)
+}
+
+func (s *Service) emitMentionsForEntity(
+	ctx context.Context,
+	queries *db.Queries,
+	actor Actor,
+	task Task,
+	entity string,
+	entityID uuid.UUID,
+	content []byte,
+) error {
+	for _, rawUserID := range richtext.Mentions(content) {
+		mentionedUserID, err := uuid.Parse(rawUserID)
+		if err != nil || mentionedUserID == actor.UserID {
 			continue
 		}
-		if err := s.emit(ctx, queries, actor.CompanyID, actor.UserID, "teamos.tasks.mention.created.v1", map[string]any{
-			"sourceService": "MENTION_SOURCE_SERVICE_TASKS",
-			"sourceEntity": "comment",
-			"sourceEntityId": comment.ID.String(),
-			"mentionedUserId": mentionedUserID,
-			"authorId": actor.UserID.String(),
-			"title": task.Title,
-			"link": tasksLink,
+		if err = s.emit(ctx, queries, actor.CompanyID, task.ID, actor.UserID, "teamos.tasks.mention.created.v1", &eventsv1.MentionCreatedPayload{
+			SourceService: eventsv1.MentionSourceService_MENTION_SOURCE_SERVICE_TASKS,
+			SourceEntity:  entity, SourceEntityId: entityID.String(),
+			MentionedUserId: mentionedUserID.String(), AuthorId: actor.UserID.String(),
+			Title: task.Title, Link: tasksLink,
 		}); err != nil {
 			return err
 		}
@@ -153,27 +179,23 @@ func (s *Service) emitTaskDueSoon(
 	if len(recipients) == 0 {
 		return nil
 	}
-	return s.emit(ctx, queries, task.CompanyID, task.AuthorID, "teamos.tasks.task.due_soon.v1", map[string]any{
-		"taskId": task.ID.String(),
-		"title": task.Title,
-		"dueDate": task.DueDate.UTC().Format("2006-01-02T15:04:05Z07:00"),
-		"recipientUserIds": recipients,
-		"link": tasksLink,
+	return s.emit(ctx, queries, task.CompanyID, task.ID, task.AuthorID, "teamos.tasks.task.due_soon.v1", &eventsv1.TasksTaskDueSoonPayload{
+		TaskId: task.ID.String(), Title: task.Title,
+		DueDate: timestamppb.New(task.DueDate.UTC()), RecipientUserIds: recipients,
+		Link: tasksLink,
 	})
 }
 
-func assigneesChanged(before, after []uuid.UUID) bool {
-	if len(before) != len(after) {
-		return true
-	}
+func addedUUIDs(before, after []uuid.UUID) []uuid.UUID {
 	seen := make(map[uuid.UUID]struct{}, len(before))
 	for _, id := range before {
 		seen[id] = struct{}{}
 	}
+	result := make([]uuid.UUID, 0, len(after))
 	for _, id := range after {
-		if _, ok := seen[id]; !ok {
-			return true
+		if _, exists := seen[id]; !exists {
+			result = append(result, id)
 		}
 	}
-	return false
+	return result
 }

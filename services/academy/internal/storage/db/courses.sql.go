@@ -200,6 +200,15 @@ func (q *Queries) GetCoursesByIds(ctx context.Context, arg GetCoursesByIdsParams
 	return items, nil
 }
 
+const lockCourseOrder = `-- name: LockCourseOrder :exec
+SELECT pg_advisory_xact_lock(hashtextextended($1::uuid::text, 0))
+`
+
+func (q *Queries) LockCourseOrder(ctx context.Context, courseID uuid.UUID) error {
+	_, err := q.db.Exec(ctx, lockCourseOrder, courseID)
+	return err
+}
+
 const updateCourse = `-- name: UpdateCourse :one
 UPDATE courses
 SET title = coalesce($3, title),

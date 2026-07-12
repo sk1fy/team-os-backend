@@ -16,6 +16,7 @@ import (
 	academyv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/academy/v1"
 	companyv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v1"
 	kbv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/kb/v1"
+	notificationsv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/notifications/v1"
 	tasksv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/tasks/v1"
 	"github.com/sk1fy/team-os-backend/pkg/apierror"
 	sharedauth "github.com/sk1fy/team-os-backend/pkg/auth"
@@ -111,6 +112,16 @@ func run(logger *slog.Logger) error {
 		}
 	}()
 	academyClient := academyv1.NewAcademyServiceClient(academyConnection)
+	notificationsConnection, err := grpc.NewClient(configuration.NotificationsGRPCAddr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithUnaryInterceptor(defaultUnaryTimeout(5*time.Second)))
+	if err != nil {
+		return fmt.Errorf("connect to notifications: %w", err)
+	}
+	defer func() {
+		if closeErr := notificationsConnection.Close(); closeErr != nil {
+			logger.Error("close notifications gRPC connection", "error", closeErr)
+		}
+	}()
+	notificationsClient := notificationsv1.NewNotificationsServiceClient(notificationsConnection)
 	handler := transport.NewHandler(
 		companyClient,
 		kbClient,
@@ -118,6 +129,7 @@ func run(logger *slog.Logger) error {
 		academyClient,
 		transport.CookieConfig{Secure: configuration.CookieSecure},
 		logger,
+		notificationsClient,
 	)
 
 	router := chi.NewRouter()
@@ -135,6 +147,7 @@ func run(logger *slog.Logger) error {
 	kbHealthClient := grpc_health_v1.NewHealthClient(kbConnection)
 	tasksHealthClient := grpc_health_v1.NewHealthClient(tasksConnection)
 	academyHealthClient := grpc_health_v1.NewHealthClient(academyConnection)
+	notificationsHealthClient := grpc_health_v1.NewHealthClient(notificationsConnection)
 	router.Get("/readyz", httpx.Readyz(map[string]httpx.ReadinessCheck{
 		"academy": func(ctx context.Context) error {
 			checkContext, cancel := context.WithTimeout(ctx, time.Second)
@@ -145,6 +158,18 @@ func run(logger *slog.Logger) error {
 			}
 			if response.GetStatus() != grpc_health_v1.HealthCheckResponse_SERVING {
 				return errors.New("academy is not serving")
+			}
+			return nil
+		},
+		"notifications": func(ctx context.Context) error {
+			checkContext, cancel := context.WithTimeout(ctx, time.Second)
+			defer cancel()
+			response, checkErr := notificationsHealthClient.Check(checkContext, &grpc_health_v1.HealthCheckRequest{})
+			if checkErr != nil {
+				return checkErr
+			}
+			if response.GetStatus() != grpc_health_v1.HealthCheckResponse_SERVING {
+				return errors.New("notifications is not serving")
 			}
 			return nil
 		},

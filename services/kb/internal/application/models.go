@@ -45,7 +45,7 @@ func (s Section) domain(byID map[uuid.UUID]Section) domainaccess.Section {
 	return domainaccess.Section{
 		ID: s.ID, ParentID: s.ParentID,
 		Access: domainaccess.Settings{
-			Scope: s.Access.Scope,
+			Scope:         s.Access.Scope,
 			DepartmentIDs: append([]uuid.UUID(nil), s.Access.DepartmentIDs...),
 			PositionIDs:   append([]uuid.UUID(nil), s.Access.PositionIDs...),
 			UserIDs:       append([]uuid.UUID(nil), s.Access.UserIDs...),
@@ -80,7 +80,7 @@ type ArticleVersion struct {
 }
 
 type Acknowledgement struct {
-	ArticleID       uuid.UUID
-	UserID          uuid.UUID
-	AcknowledgedAt  time.Time
+	ArticleID      uuid.UUID
+	UserID         uuid.UUID
+	AcknowledgedAt time.Time
 }

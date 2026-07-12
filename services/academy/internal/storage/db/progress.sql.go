@@ -157,7 +157,7 @@ func (q *Queries) GetUserProgressRows(ctx context.Context, arg GetUserProgressRo
 
 const insertOverdueProgress = `-- name: InsertOverdueProgress :exec
 INSERT INTO progress (company_id, user_id, course_id, status, completed_lesson_ids)
-SELECT $1, candidate, $2, 'overdue', '{}'
+SELECT $1, candidate, $2, 'overdue', '{}'::uuid[]
 FROM unnest($3::uuid[]) AS candidate
 ON CONFLICT (user_id, course_id) DO NOTHING
 `
@@ -232,6 +232,45 @@ func (q *Queries) MarkProgressOverdue(ctx context.Context, arg MarkProgressOverd
 		return 0, err
 	}
 	return result.RowsAffected(), nil
+}
+
+const recomputeCourseProgressAfterLessonDelete = `-- name: RecomputeCourseProgressAfterLessonDelete :exec
+UPDATE progress AS p
+SET status = CASE
+        WHEN EXISTS (
+            SELECT 1 FROM lessons l
+            WHERE l.company_id = p.company_id AND l.course_id = p.course_id
+        ) AND NOT EXISTS (
+            SELECT 1 FROM lessons l
+            WHERE l.company_id = p.company_id AND l.course_id = p.course_id
+              AND NOT (l.id = ANY(p.completed_lesson_ids))
+        ) THEN 'completed'
+        WHEN p.status = 'completed' THEN 'in_progress'
+        ELSE p.status
+    END,
+    completed_at = CASE
+        WHEN EXISTS (
+            SELECT 1 FROM lessons l
+            WHERE l.company_id = p.company_id AND l.course_id = p.course_id
+        ) AND NOT EXISTS (
+            SELECT 1 FROM lessons l
+            WHERE l.company_id = p.company_id AND l.course_id = p.course_id
+              AND NOT (l.id = ANY(p.completed_lesson_ids))
+        ) THEN coalesce(p.completed_at, now())
+        WHEN p.status = 'completed' THEN NULL
+        ELSE p.completed_at
+    END
+WHERE p.company_id = $1 AND p.course_id = $2
+`
+
+type RecomputeCourseProgressAfterLessonDeleteParams struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	CourseID  uuid.UUID `json:"course_id"`
+}
+
+func (q *Queries) RecomputeCourseProgressAfterLessonDelete(ctx context.Context, arg RecomputeCourseProgressAfterLessonDeleteParams) error {
+	_, err := q.db.Exec(ctx, recomputeCourseProgressAfterLessonDelete, arg.CompanyID, arg.CourseID)
+	return err
 }
 
 const removeLessonsFromProgress = `-- name: RemoveLessonsFromProgress :exec

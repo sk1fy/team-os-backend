@@ -12,8 +12,39 @@ import (
 func (s *Service) GetQuizzes(ctx context.Context, actor Actor, lessonID *uuid.UUID) ([]Quiz, error) {
 	queries := db.New(s.pool)
 	if lessonID != nil {
+		lesson, err := queries.GetLesson(ctx, db.GetLessonParams{
+			CompanyID: actor.CompanyID, ID: *lessonID,
+		})
+		if err != nil {
+			if isNoRows(err) {
+				return nil, notFound("Урок")
+			}
+			return nil, internal("Не удалось проверить урок", err)
+		}
+		if err = s.requireCourseAccess(ctx, queries, actor, lesson.CourseID); err != nil {
+			return nil, err
+		}
 		rows, err := queries.GetLessonQuizzes(ctx, db.GetLessonQuizzesParams{
 			CompanyID: actor.CompanyID, LessonID: *lessonID,
+		})
+		if err != nil {
+			return nil, internal("Не удалось получить тесты", err)
+		}
+		return quizzesFromRows(rows), nil
+	}
+	if !canReadAcademy(actor) {
+		return nil, forbidden("Недостаточно прав для просмотра академии")
+	}
+	if actor.Role == "partner" {
+		courseIDs, err := s.assignedCourseIDs(ctx, queries, actor)
+		if err != nil {
+			return nil, err
+		}
+		if len(courseIDs) == 0 {
+			return []Quiz{}, nil
+		}
+		rows, err := queries.GetQuizzesByCourseIds(ctx, db.GetQuizzesByCourseIdsParams{
+			CompanyID: actor.CompanyID, CourseIds: courseIDs,
 		})
 		if err != nil {
 			return nil, internal("Не удалось получить тесты", err)

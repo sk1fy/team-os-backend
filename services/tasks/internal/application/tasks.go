@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/sk1fy/team-os-backend/pkg/richtext"
 	domainboard "github.com/sk1fy/team-os-backend/services/tasks/internal/domain/board"
 	domainrecurrence "github.com/sk1fy/team-os-backend/services/tasks/internal/domain/recurrence"
 	"github.com/sk1fy/team-os-backend/services/tasks/internal/storage/db"
@@ -28,7 +29,9 @@ func (s *Service) GetTasks(ctx context.Context, actor Actor, boardID *uuid.UUID)
 		if mapErr != nil {
 			return nil, mapErr
 		}
-		tasks = append(tasks, task)
+		if canAccessTask(actor, task) {
+			tasks = append(tasks, task)
+		}
 	}
 	return tasks, nil
 }
@@ -41,7 +44,14 @@ func (s *Service) GetTask(ctx context.Context, actor Actor, id uuid.UUID) (Task,
 		}
 		return Task{}, internal("Не удалось получить задачу", err)
 	}
-	return taskFromDB(row)
+	task, err := taskFromDB(row)
+	if err != nil {
+		return Task{}, err
+	}
+	if !canAccessTask(actor, task) {
+		return Task{}, forbidden("Недостаточно прав для просмотра задачи")
+	}
+	return task, nil
 }
 
 type CreateTaskInput struct {
@@ -52,6 +62,9 @@ type CreateTaskInput struct {
 }
 
 func (s *Service) CreateTask(ctx context.Context, actor Actor, input CreateTaskInput) (Task, error) {
+	if !canCreateTask(actor) {
+		return Task{}, forbidden("Недостаточно прав для создания задачи")
+	}
 	title, err := requiredText(input.Title, "Укажите название задачи")
 	if err != nil {
 		return Task{}, err
@@ -63,7 +76,16 @@ func (s *Service) CreateTask(ctx context.Context, actor Actor, input CreateTaskI
 	if err = validatePriority(priority); err != nil {
 		return Task{}, err
 	}
-	column, err := db.New(s.pool).GetColumn(ctx, db.GetColumnParams{
+	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{})
+	if err != nil {
+		return Task{}, internal("Не удалось начать транзакцию", err)
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+	queries := db.New(tx)
+	if err = queries.LockBoardOrder(ctx, input.BoardID); err != nil {
+		return Task{}, internal("Не удалось заблокировать порядок доски", err)
+	}
+	column, err := queries.GetColumn(ctx, db.GetColumnParams{
 		CompanyID: actor.CompanyID, ID: input.ColumnID,
 	})
 	if err != nil {
@@ -75,17 +97,10 @@ func (s *Service) CreateTask(ctx context.Context, actor Actor, input CreateTaskI
 	if column.BoardID != input.BoardID {
 		return Task{}, validation("Колонка не принадлежит указанной доске")
 	}
-	count, err := db.New(s.pool).CountTasksInColumn(ctx, input.ColumnID)
+	count, err := queries.CountTasksInColumn(ctx, input.ColumnID)
 	if err != nil {
 		return Task{}, internal("Не удалось определить порядок задачи", err)
 	}
-
-	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{})
-	if err != nil {
-		return Task{}, internal("Не удалось начать транзакцию", err)
-	}
-	defer func() { _ = tx.Rollback(ctx) }()
-	queries := db.New(tx)
 
 	checklistJSON, err := checklistToJSON(nil)
 	if err != nil {
@@ -158,8 +173,23 @@ func (s *Service) UpdateTask(ctx context.Context, actor Actor, input UpdateTaskI
 		input.Recurrence == nil && !input.ClearRecurrence && input.CompletedAt == nil && !input.ClearCompletedAt {
 		return Task{}, validation("Укажите хотя бы одно поле для обновления")
 	}
-	if len(input.Description) > 0 && !json.Valid(input.Description) {
+	if len(input.Description) > 0 && richtext.Validate(input.Description) != nil {
 		return Task{}, validation("Некорректное описание задачи")
+	}
+	if input.AssigneeIDsSet {
+		input.AssigneeIDs = normalizeUUIDs(input.AssigneeIDs)
+	}
+	if input.WatcherIDsSet {
+		input.WatcherIDs = normalizeUUIDs(input.WatcherIDs)
+	}
+	if input.LabelIDsSet {
+		input.LabelIDs = normalizeUUIDs(input.LabelIDs)
+	}
+	if input.LinkedArticleIDsSet {
+		input.LinkedArticleIDs = normalizeUUIDs(input.LinkedArticleIDs)
+	}
+	if err := normalizeRecurrence(input.Recurrence); err != nil {
+		return Task{}, err
 	}
 	if input.Priority != nil {
 		if err := validatePriority(*input.Priority); err != nil {
@@ -186,6 +216,9 @@ func (s *Service) UpdateTask(ctx context.Context, actor Actor, input UpdateTaskI
 	current, err := taskFromDB(currentRow)
 	if err != nil {
 		return Task{}, err
+	}
+	if !canAccessTask(actor, current) {
+		return Task{}, forbidden("Недостаточно прав для изменения задачи")
 	}
 
 	params := db.UpdateTaskParams{
@@ -260,18 +293,26 @@ func (s *Service) UpdateTask(ctx context.Context, actor Actor, input UpdateTaskI
 		return Task{}, err
 	}
 
-	shouldEmitAssigned := assigneesChanged(current.AssigneeIDs, task.AssigneeIDs) ||
-		(current.AssigneePositionID == nil) != (task.AssigneePositionID == nil) ||
-		(current.AssigneePositionID != nil && task.AssigneePositionID != nil && *current.AssigneePositionID != *task.AssigneePositionID)
-	if shouldEmitAssigned {
-		if err = s.emitTaskAssigned(ctx, queries, actor, task); err != nil {
+	addedAssignees := addedUUIDs(current.AssigneeIDs, task.AssigneeIDs)
+	var addedPosition *uuid.UUID
+	if task.AssigneePositionID != nil &&
+		(current.AssigneePositionID == nil || *current.AssigneePositionID != *task.AssigneePositionID) {
+		addedPosition = task.AssigneePositionID
+	}
+	if len(addedAssignees) > 0 || addedPosition != nil {
+		if err = s.emitTaskAssignedTo(ctx, queries, actor, task, addedAssignees, addedPosition); err != nil {
+			return Task{}, err
+		}
+	}
+	if len(input.Description) > 0 {
+		if err = s.emitTaskMentions(ctx, queries, actor, task, task.Description); err != nil {
 			return Task{}, err
 		}
 	}
 
 	completedNow := current.CompletedAt == nil && task.CompletedAt != nil
 	if completedNow && task.Recurrence != nil && s.recurrenceEnqueuer != nil {
-		if err = s.recurrenceEnqueuer.EnqueueRecurrence(ctx, actor.CompanyID, task.ID); err != nil {
+		if err = s.recurrenceEnqueuer.EnqueueRecurrenceTx(ctx, tx, actor.CompanyID, task.ID); err != nil {
 			return Task{}, internal("Не удалось поставить задачу повторения в очередь", err)
 		}
 	}
@@ -300,6 +341,25 @@ func (s *Service) MoveTask(ctx context.Context, actor Actor, input MoveTaskInput
 	defer func() { _ = tx.Rollback(ctx) }()
 	queries := db.New(tx)
 
+	initialRow, err := queries.GetTask(ctx, db.GetTaskParams{
+		CompanyID: actor.CompanyID, ID: input.TaskID,
+	})
+	if err != nil {
+		if isNoRows(err) {
+			return Task{}, notFound("Задача")
+		}
+		return Task{}, internal("Не удалось получить задачу", err)
+	}
+	initial, err := taskFromDB(initialRow)
+	if err != nil {
+		return Task{}, err
+	}
+	if !canAccessTask(actor, initial) {
+		return Task{}, forbidden("Недостаточно прав для перемещения задачи")
+	}
+	if err = queries.LockBoardOrder(ctx, initial.BoardID); err != nil {
+		return Task{}, internal("Не удалось заблокировать порядок доски", err)
+	}
 	currentRow, err := queries.GetTaskForUpdate(ctx, db.GetTaskForUpdateParams{
 		CompanyID: actor.CompanyID, ID: input.TaskID,
 	})
@@ -312,6 +372,9 @@ func (s *Service) MoveTask(ctx context.Context, actor Actor, input MoveTaskInput
 	current, err := taskFromDB(currentRow)
 	if err != nil {
 		return Task{}, err
+	}
+	if !canAccessTask(actor, current) {
+		return Task{}, forbidden("Недостаточно прав для перемещения задачи")
 	}
 
 	targetColumn, err := queries.GetColumn(ctx, db.GetColumnParams{
@@ -388,6 +451,20 @@ func (s *Service) ProcessRecurrence(ctx context.Context, companyID, taskID uuid.
 	defer func() { _ = tx.Rollback(ctx) }()
 	queries := db.New(tx)
 
+	initialRow, err := queries.GetTask(ctx, db.GetTaskParams{CompanyID: companyID, ID: taskID})
+	if err != nil {
+		if isNoRows(err) {
+			return notFound("Задача")
+		}
+		return internal("Не удалось получить задачу", err)
+	}
+	initial, err := taskFromDB(initialRow)
+	if err != nil {
+		return err
+	}
+	if err = queries.LockBoardOrder(ctx, initial.BoardID); err != nil {
+		return internal("Не удалось заблокировать порядок доски", err)
+	}
 	row, err := queries.GetTaskForUpdate(ctx, db.GetTaskForUpdateParams{CompanyID: companyID, ID: taskID})
 	if err != nil {
 		if isNoRows(err) {
@@ -400,6 +477,15 @@ func (s *Service) ProcessRecurrence(ctx context.Context, companyID, taskID uuid.
 		return err
 	}
 	if task.CompletedAt == nil || task.Recurrence == nil {
+		return nil
+	}
+	generated, err := queries.IsRecurrenceGenerated(ctx, db.IsRecurrenceGeneratedParams{
+		CompanyID: companyID, ID: taskID,
+	})
+	if err != nil {
+		return internal("Не удалось проверить повтор задачи", err)
+	}
+	if generated {
 		return nil
 	}
 
@@ -439,15 +525,15 @@ func (s *Service) ProcessRecurrence(ctx context.Context, companyID, taskID uuid.
 		return err
 	}
 
-	_, err = queries.CreateTask(ctx, db.CreateTaskParams{
+	createdRow, err := queries.CreateTask(ctx, db.CreateTaskParams{
 		ID: uuid.New(), CompanyID: task.CompanyID, BoardID: task.BoardID,
 		ColumnID: task.ColumnID, Order: count, Title: task.Title,
 		Description: description, AuthorID: task.AuthorID,
-		AssigneeIds: append([]uuid.UUID(nil), task.AssigneeIDs...),
+		AssigneeIds:        append([]uuid.UUID(nil), task.AssigneeIDs...),
 		AssigneePositionID: nullableUUID(task.AssigneePositionID),
-		WatcherIds: append([]uuid.UUID(nil), task.WatcherIDs...),
-		DueDate: nullableTime(&nextDue), Priority: task.Priority,
-		LabelIds: append([]uuid.UUID(nil), task.LabelIDs...),
+		WatcherIds:         append([]uuid.UUID(nil), task.WatcherIDs...),
+		DueDate:            nullableTime(&nextDue), Priority: task.Priority,
+		LabelIds:  append([]uuid.UUID(nil), task.LabelIDs...),
 		Checklist: checklistJSON, Attachments: attachmentsJSON,
 		Source: sourceJSON, LinkedArticleIds: append([]uuid.UUID(nil), task.LinkedArticleIDs...),
 		Recurrence: recurrenceJSON, CompletedAt: pgtype.Timestamptz{},
@@ -455,7 +541,23 @@ func (s *Service) ProcessRecurrence(ctx context.Context, companyID, taskID uuid.
 	if err != nil {
 		return internal("Не удалось создать повторяющуюся задачу", err)
 	}
-	return tx.Commit(ctx)
+	created, err := taskFromDB(createdRow)
+	if err != nil {
+		return err
+	}
+	actor := Actor{CompanyID: companyID, UserID: task.AuthorID, Role: "employee"}
+	if err = s.emitTaskAssigned(ctx, queries, actor, created); err != nil {
+		return err
+	}
+	if err = queries.MarkRecurrenceGenerated(ctx, db.MarkRecurrenceGeneratedParams{
+		CompanyID: companyID, ID: taskID,
+	}); err != nil {
+		return internal("Не удалось отметить созданный повтор задачи", err)
+	}
+	if err = tx.Commit(ctx); err != nil {
+		return internal("Не удалось сохранить повторяющуюся задачу", err)
+	}
+	return nil
 }
 
 func (s *Service) ProcessDueSoon(ctx context.Context) error {

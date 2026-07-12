@@ -130,18 +130,19 @@ func (x *AcademyCourseAssignedEvent) GetPayload() *AcademyCourseAssignedPayload 
 }
 
 type AcademyCourseAssignedPayload struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	AssignmentId  string                 `protobuf:"bytes,1,opt,name=assignment_id,json=assignmentId,proto3" json:"assignment_id,omitempty"`
-	CourseId      string                 `protobuf:"bytes,2,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
-	CourseTitle   string                 `protobuf:"bytes,3,opt,name=course_title,json=courseTitle,proto3" json:"course_title,omitempty"`
-	AssigneeType  CourseAssigneeType     `protobuf:"varint,4,opt,name=assignee_type,json=assigneeType,proto3,enum=teamos.events.v1.CourseAssigneeType" json:"assignee_type,omitempty"`
-	AssigneeId    *string                `protobuf:"bytes,5,opt,name=assignee_id,json=assigneeId,proto3,oneof" json:"assignee_id,omitempty"`
-	InviteToken   *string                `protobuf:"bytes,6,opt,name=invite_token,json=inviteToken,proto3,oneof" json:"invite_token,omitempty"`
-	DueDate       *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=due_date,json=dueDate,proto3,oneof" json:"due_date,omitempty"`
-	AssignedById  string                 `protobuf:"bytes,8,opt,name=assigned_by_id,json=assignedById,proto3" json:"assigned_by_id,omitempty"`
-	Link          string                 `protobuf:"bytes,9,opt,name=link,proto3" json:"link,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	AssignmentId     string                 `protobuf:"bytes,1,opt,name=assignment_id,json=assignmentId,proto3" json:"assignment_id,omitempty"`
+	CourseId         string                 `protobuf:"bytes,2,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	CourseTitle      string                 `protobuf:"bytes,3,opt,name=course_title,json=courseTitle,proto3" json:"course_title,omitempty"`
+	AssigneeType     CourseAssigneeType     `protobuf:"varint,4,opt,name=assignee_type,json=assigneeType,proto3,enum=teamos.events.v1.CourseAssigneeType" json:"assignee_type,omitempty"`
+	AssigneeId       *string                `protobuf:"bytes,5,opt,name=assignee_id,json=assigneeId,proto3,oneof" json:"assignee_id,omitempty"`
+	InviteToken      *string                `protobuf:"bytes,6,opt,name=invite_token,json=inviteToken,proto3,oneof" json:"invite_token,omitempty"`
+	DueDate          *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=due_date,json=dueDate,proto3,oneof" json:"due_date,omitempty"`
+	AssignedById     string                 `protobuf:"bytes,8,opt,name=assigned_by_id,json=assignedById,proto3" json:"assigned_by_id,omitempty"`
+	Link             string                 `protobuf:"bytes,9,opt,name=link,proto3" json:"link,omitempty"`
+	RecipientUserIds []string               `protobuf:"bytes,10,rep,name=recipient_user_ids,json=recipientUserIds,proto3" json:"recipient_user_ids,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *AcademyCourseAssignedPayload) Reset() {
@@ -237,6 +238,13 @@ func (x *AcademyCourseAssignedPayload) GetLink() string {
 	return ""
 }
 
+func (x *AcademyCourseAssignedPayload) GetRecipientUserIds() []string {
+	if x != nil {
+		return x.RecipientUserIds
+	}
+	return nil
+}
+
 type AcademyCourseDueSoonEvent struct {
 	state         protoimpl.MessageState       `protogen:"open.v1"`
 	Metadata      *EventMetadata               `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
@@ -297,6 +305,8 @@ type AcademyCourseDueSoonPayload struct {
 	DueDate          *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=due_date,json=dueDate,proto3" json:"due_date,omitempty"`
 	RecipientUserIds []string               `protobuf:"bytes,5,rep,name=recipient_user_ids,json=recipientUserIds,proto3" json:"recipient_user_ids,omitempty"`
 	Link             string                 `protobuf:"bytes,6,opt,name=link,proto3" json:"link,omitempty"`
+	AssigneeType     CourseAssigneeType     `protobuf:"varint,7,opt,name=assignee_type,json=assigneeType,proto3,enum=teamos.events.v1.CourseAssigneeType" json:"assignee_type,omitempty"`
+	AssigneeId       *string                `protobuf:"bytes,8,opt,name=assignee_id,json=assigneeId,proto3,oneof" json:"assignee_id,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -369,6 +379,20 @@ func (x *AcademyCourseDueSoonPayload) GetRecipientUserIds() []string {
 func (x *AcademyCourseDueSoonPayload) GetLink() string {
 	if x != nil {
 		return x.Link
+	}
+	return ""
+}
+
+func (x *AcademyCourseDueSoonPayload) GetAssigneeType() CourseAssigneeType {
+	if x != nil {
+		return x.AssigneeType
+	}
+	return CourseAssigneeType_COURSE_ASSIGNEE_TYPE_UNSPECIFIED
+}
+
+func (x *AcademyCourseDueSoonPayload) GetAssigneeId() string {
+	if x != nil && x.AssigneeId != nil {
+		return *x.AssigneeId
 	}
 	return ""
 }
@@ -476,7 +500,7 @@ const file_events_academy_proto_rawDesc = "" +
 	"\x14events/academy.proto\x12\x10teamos.events.v1\x1a\x13events/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa3\x01\n" +
 	"\x1aAcademyCourseAssignedEvent\x12;\n" +
 	"\bmetadata\x18\x01 \x01(\v2\x1f.teamos.events.v1.EventMetadataR\bmetadata\x12H\n" +
-	"\apayload\x18\x02 \x01(\v2..teamos.events.v1.AcademyCourseAssignedPayloadR\apayload\"\xc0\x03\n" +
+	"\apayload\x18\x02 \x01(\v2..teamos.events.v1.AcademyCourseAssignedPayloadR\apayload\"\xee\x03\n" +
 	"\x1cAcademyCourseAssignedPayload\x12#\n" +
 	"\rassignment_id\x18\x01 \x01(\tR\fassignmentId\x12\x1b\n" +
 	"\tcourse_id\x18\x02 \x01(\tR\bcourseId\x12!\n" +
@@ -487,20 +511,26 @@ const file_events_academy_proto_rawDesc = "" +
 	"\finvite_token\x18\x06 \x01(\tH\x01R\vinviteToken\x88\x01\x01\x12:\n" +
 	"\bdue_date\x18\a \x01(\v2\x1a.google.protobuf.TimestampH\x02R\adueDate\x88\x01\x01\x12$\n" +
 	"\x0eassigned_by_id\x18\b \x01(\tR\fassignedById\x12\x12\n" +
-	"\x04link\x18\t \x01(\tR\x04linkB\x0e\n" +
+	"\x04link\x18\t \x01(\tR\x04link\x12,\n" +
+	"\x12recipient_user_ids\x18\n" +
+	" \x03(\tR\x10recipientUserIdsB\x0e\n" +
 	"\f_assignee_idB\x0f\n" +
 	"\r_invite_tokenB\v\n" +
 	"\t_due_date\"\xa1\x01\n" +
 	"\x19AcademyCourseDueSoonEvent\x12;\n" +
 	"\bmetadata\x18\x01 \x01(\v2\x1f.teamos.events.v1.EventMetadataR\bmetadata\x12G\n" +
-	"\apayload\x18\x02 \x01(\v2-.teamos.events.v1.AcademyCourseDueSoonPayloadR\apayload\"\xfb\x01\n" +
+	"\apayload\x18\x02 \x01(\v2-.teamos.events.v1.AcademyCourseDueSoonPayloadR\apayload\"\xfc\x02\n" +
 	"\x1bAcademyCourseDueSoonPayload\x12#\n" +
 	"\rassignment_id\x18\x01 \x01(\tR\fassignmentId\x12\x1b\n" +
 	"\tcourse_id\x18\x02 \x01(\tR\bcourseId\x12!\n" +
 	"\fcourse_title\x18\x03 \x01(\tR\vcourseTitle\x125\n" +
 	"\bdue_date\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\adueDate\x12,\n" +
 	"\x12recipient_user_ids\x18\x05 \x03(\tR\x10recipientUserIds\x12\x12\n" +
-	"\x04link\x18\x06 \x01(\tR\x04link\"\xa1\x01\n" +
+	"\x04link\x18\x06 \x01(\tR\x04link\x12I\n" +
+	"\rassignee_type\x18\a \x01(\x0e2$.teamos.events.v1.CourseAssigneeTypeR\fassigneeType\x12$\n" +
+	"\vassignee_id\x18\b \x01(\tH\x00R\n" +
+	"assigneeId\x88\x01\x01B\x0e\n" +
+	"\f_assignee_id\"\xa1\x01\n" +
 	"\x19AcademyCourseDeletedEvent\x12;\n" +
 	"\bmetadata\x18\x01 \x01(\v2\x1f.teamos.events.v1.EventMetadataR\bmetadata\x12G\n" +
 	"\apayload\x18\x02 \x01(\v2-.teamos.events.v1.AcademyCourseDeletedPayloadR\apayload\":\n" +
@@ -539,20 +569,21 @@ var file_events_academy_proto_goTypes = []any{
 	(*timestamppb.Timestamp)(nil),        // 8: google.protobuf.Timestamp
 }
 var file_events_academy_proto_depIdxs = []int32{
-	7, // 0: teamos.events.v1.AcademyCourseAssignedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
-	2, // 1: teamos.events.v1.AcademyCourseAssignedEvent.payload:type_name -> teamos.events.v1.AcademyCourseAssignedPayload
-	0, // 2: teamos.events.v1.AcademyCourseAssignedPayload.assignee_type:type_name -> teamos.events.v1.CourseAssigneeType
-	8, // 3: teamos.events.v1.AcademyCourseAssignedPayload.due_date:type_name -> google.protobuf.Timestamp
-	7, // 4: teamos.events.v1.AcademyCourseDueSoonEvent.metadata:type_name -> teamos.events.v1.EventMetadata
-	4, // 5: teamos.events.v1.AcademyCourseDueSoonEvent.payload:type_name -> teamos.events.v1.AcademyCourseDueSoonPayload
-	8, // 6: teamos.events.v1.AcademyCourseDueSoonPayload.due_date:type_name -> google.protobuf.Timestamp
-	7, // 7: teamos.events.v1.AcademyCourseDeletedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
-	6, // 8: teamos.events.v1.AcademyCourseDeletedEvent.payload:type_name -> teamos.events.v1.AcademyCourseDeletedPayload
-	9, // [9:9] is the sub-list for method output_type
-	9, // [9:9] is the sub-list for method input_type
-	9, // [9:9] is the sub-list for extension type_name
-	9, // [9:9] is the sub-list for extension extendee
-	0, // [0:9] is the sub-list for field type_name
+	7,  // 0: teamos.events.v1.AcademyCourseAssignedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	2,  // 1: teamos.events.v1.AcademyCourseAssignedEvent.payload:type_name -> teamos.events.v1.AcademyCourseAssignedPayload
+	0,  // 2: teamos.events.v1.AcademyCourseAssignedPayload.assignee_type:type_name -> teamos.events.v1.CourseAssigneeType
+	8,  // 3: teamos.events.v1.AcademyCourseAssignedPayload.due_date:type_name -> google.protobuf.Timestamp
+	7,  // 4: teamos.events.v1.AcademyCourseDueSoonEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	4,  // 5: teamos.events.v1.AcademyCourseDueSoonEvent.payload:type_name -> teamos.events.v1.AcademyCourseDueSoonPayload
+	8,  // 6: teamos.events.v1.AcademyCourseDueSoonPayload.due_date:type_name -> google.protobuf.Timestamp
+	0,  // 7: teamos.events.v1.AcademyCourseDueSoonPayload.assignee_type:type_name -> teamos.events.v1.CourseAssigneeType
+	7,  // 8: teamos.events.v1.AcademyCourseDeletedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	6,  // 9: teamos.events.v1.AcademyCourseDeletedEvent.payload:type_name -> teamos.events.v1.AcademyCourseDeletedPayload
+	10, // [10:10] is the sub-list for method output_type
+	10, // [10:10] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_events_academy_proto_init() }
@@ -562,6 +593,7 @@ func file_events_academy_proto_init() {
 	}
 	file_events_common_proto_init()
 	file_events_academy_proto_msgTypes[1].OneofWrappers = []any{}
+	file_events_academy_proto_msgTypes[3].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

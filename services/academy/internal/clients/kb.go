@@ -8,30 +8,27 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/google/uuid"
 	kbv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/kb/v1"
 	"github.com/sk1fy/team-os-backend/services/academy/internal/application"
-	"google.golang.org/grpc/metadata"
 )
 
-const rpcTimeout = 500 * time.Millisecond
-
 type Kb struct {
-	client kbv1.KbServiceClient
+	client  kbv1.KbServiceClient
+	breaker *circuitBreaker
 }
 
 func NewKb(client kbv1.KbServiceClient) *Kb {
-	return &Kb{client: client}
+	return &Kb{client: client, breaker: newCircuitBreaker()}
 }
 
 var _ application.KbClient = (*Kb)(nil)
 
 func (k *Kb) GetArticle(ctx context.Context, token string, id uuid.UUID) (application.KbArticle, error) {
-	callContext, cancel := outgoing(ctx, token)
-	defer cancel()
-	response, err := k.client.GetArticle(callContext, &kbv1.GetArticleRequest{Id: id.String()})
+	response, err := callWithResilience(ctx, token, k.breaker, func(callContext context.Context) (*kbv1.GetArticleResponse, error) {
+		return k.client.GetArticle(callContext, &kbv1.GetArticleRequest{Id: id.String()})
+	})
 	if err != nil {
 		return application.KbArticle{}, fmt.Errorf("kb.GetArticle: %w", err)
 	}
@@ -39,13 +36,13 @@ func (k *Kb) GetArticle(ctx context.Context, token string, id uuid.UUID) (applic
 }
 
 func (k *Kb) GetArticlesByIds(ctx context.Context, token string, ids []uuid.UUID) ([]application.KbArticle, error) {
-	callContext, cancel := outgoing(ctx, token)
-	defer cancel()
 	request := &kbv1.GetArticlesByIdsRequest{Ids: make([]string, len(ids))}
 	for index := range ids {
 		request.Ids[index] = ids[index].String()
 	}
-	response, err := k.client.GetArticlesByIds(callContext, request)
+	response, err := callWithResilience(ctx, token, k.breaker, func(callContext context.Context) (*kbv1.GetArticlesByIdsResponse, error) {
+		return k.client.GetArticlesByIds(callContext, request)
+	})
 	if err != nil {
 		return nil, fmt.Errorf("kb.GetArticlesByIds: %w", err)
 	}
@@ -61,9 +58,9 @@ func (k *Kb) GetArticlesByIds(ctx context.Context, token string, ids []uuid.UUID
 }
 
 func (k *Kb) GetSections(ctx context.Context, token string) ([]application.KbSection, error) {
-	callContext, cancel := outgoing(ctx, token)
-	defer cancel()
-	response, err := k.client.GetSections(callContext, &kbv1.GetSectionsRequest{})
+	response, err := callWithResilience(ctx, token, k.breaker, func(callContext context.Context) (*kbv1.GetSectionsResponse, error) {
+		return k.client.GetSections(callContext, &kbv1.GetSectionsRequest{})
+	})
 	if err != nil {
 		return nil, fmt.Errorf("kb.GetSections: %w", err)
 	}
@@ -97,11 +94,4 @@ func articleFromProto(article *kbv1.Article) (application.KbArticle, error) {
 	return application.KbArticle{
 		ID: id, SectionID: sectionID, Title: article.GetTitle(), Content: content,
 	}, nil
-}
-
-func outgoing(ctx context.Context, token string) (context.Context, context.CancelFunc) {
-	if token != "" {
-		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", "Bearer "+token)
-	}
-	return context.WithTimeout(ctx, rpcTimeout)
 }

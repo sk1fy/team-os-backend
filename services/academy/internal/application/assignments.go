@@ -2,15 +2,21 @@ package application
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	eventsv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/events/v1"
 	"github.com/sk1fy/team-os-backend/services/academy/internal/storage/db"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func (s *Service) GetAssignments(ctx context.Context, actor Actor) ([]Assignment, error) {
 	queries := db.New(s.pool)
+	if !canReadAcademy(actor) {
+		return nil, forbidden("Недостаточно прав для просмотра академии")
+	}
 	if actor.Role == "partner" {
 		rows, err := queries.GetUserAssignments(ctx, db.GetUserAssignmentsParams{
 			CompanyID: actor.CompanyID, UserID: actor.UserID,
@@ -44,22 +50,14 @@ func (s *Service) AssignCourse(ctx context.Context, actor Actor, input AssignCou
 			return Assignment{}, validation("Укажите, кому назначается курс")
 		}
 	case "external":
+		if input.AssigneeID != nil {
+			return Assignment{}, validation("Для внешнего назначения не указывайте получателя")
+		}
 	default:
 		return Assignment{}, validation("Некорректный тип назначения")
 	}
 
-	// The user list is resolved once, at assignment time (§9). A company outage
-	// degrades to an empty snapshot instead of failing the assignment.
-	resolvedUserIDs := s.resolveAssignees(ctx, actor, input.AssigneeType, input.AssigneeID)
-
-	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{})
-	if err != nil {
-		return Assignment{}, internal("Не удалось начать транзакцию", err)
-	}
-	defer func() { _ = tx.Rollback(ctx) }()
-	queries := db.New(tx)
-
-	course, err := queries.GetCourse(ctx, db.GetCourseParams{
+	course, err := db.New(s.pool).GetCourse(ctx, db.GetCourseParams{
 		CompanyID: actor.CompanyID, ID: input.CourseID,
 	})
 	if err != nil {
@@ -68,6 +66,17 @@ func (s *Service) AssignCourse(ctx context.Context, actor Actor, input AssignCou
 		}
 		return Assignment{}, internal("Не удалось проверить курс", err)
 	}
+	resolvedUserIDs, err := s.resolveAssignees(ctx, actor, input.AssigneeType, input.AssigneeID)
+	if err != nil {
+		return Assignment{}, unavailable("Не удалось определить получателей курса", err)
+	}
+
+	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{})
+	if err != nil {
+		return Assignment{}, internal("Не удалось начать транзакцию", err)
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+	queries := db.New(tx)
 
 	var inviteToken *string
 	if input.AssigneeType == "external" {
@@ -86,26 +95,23 @@ func (s *Service) AssignCourse(ctx context.Context, actor Actor, input AssignCou
 	}
 	assignment := assignmentFromRow(row)
 
-	payload := map[string]any{
-		"assignmentId": assignment.ID.String(),
-		"courseId":     assignment.CourseID.String(),
-		"courseTitle":  course.Title,
-		"assigneeType": assignment.AssigneeType,
-		"assignedById": assignment.AssignedByID.String(),
-		"link":         academyLink,
-		// Snapshot for consumers that must not call company back (§10.1).
-		"recipientUserIds": uuidStrings(resolvedUserIDs),
+	payload := &eventsv1.AcademyCourseAssignedPayload{
+		AssignmentId: assignment.ID.String(), CourseId: assignment.CourseID.String(),
+		CourseTitle: course.Title, AssigneeType: assigneeTypeToEvent(assignment.AssigneeType),
+		AssignedById: assignment.AssignedByID.String(), Link: academyLink,
+		RecipientUserIds: uuidStrings(resolvedUserIDs),
 	}
 	if assignment.AssigneeID != nil {
-		payload["assigneeId"] = assignment.AssigneeID.String()
+		value := assignment.AssigneeID.String()
+		payload.AssigneeId = &value
 	}
 	if assignment.InviteToken != nil {
-		payload["inviteToken"] = *assignment.InviteToken
+		payload.InviteToken = assignment.InviteToken
 	}
 	if assignment.DueDate != nil {
-		payload["dueDate"] = assignment.DueDate.UTC().Format(time.RFC3339Nano)
+		payload.DueDate = timestamppb.New(assignment.DueDate.UTC())
 	}
-	if err = s.emit(ctx, queries, actor.CompanyID, actor.UserID, "teamos.academy.course.assigned.v1", payload); err != nil {
+	if err = s.emit(ctx, queries, actor.CompanyID, assignment.CourseID, actor.UserID, "teamos.academy.course.assigned.v1", payload); err != nil {
 		return Assignment{}, err
 	}
 	if err = tx.Commit(ctx); err != nil {
@@ -114,30 +120,48 @@ func (s *Service) AssignCourse(ctx context.Context, actor Actor, input AssignCou
 	return assignment, nil
 }
 
-func (s *Service) resolveAssignees(ctx context.Context, actor Actor, assigneeType string, assigneeID *uuid.UUID) []uuid.UUID {
+func (s *Service) resolveAssignees(
+	ctx context.Context,
+	actor Actor,
+	assigneeType string,
+	assigneeID *uuid.UUID,
+) ([]uuid.UUID, error) {
 	switch assigneeType {
 	case "user":
-		if assigneeID != nil {
-			return []uuid.UUID{*assigneeID}
+		if assigneeID == nil || s.company == nil {
+			return nil, errors.New("company client is unavailable")
 		}
+		if err := s.company.ValidateUser(ctx, actor.Token, *assigneeID); err != nil {
+			return nil, err
+		}
+		return []uuid.UUID{*assigneeID}, nil
 	case "position":
-		if assigneeID != nil && s.company != nil {
-			userIDs, err := s.company.ResolvePositionUsers(ctx, actor.Token, *assigneeID)
-			if err == nil {
-				return userIDs
-			}
-			s.logger.WarnContext(ctx, "position resolve degraded to empty snapshot", "error", err)
+		if assigneeID == nil || s.company == nil {
+			return nil, errors.New("company client is unavailable")
 		}
+		return s.company.ResolvePositionUsers(ctx, actor.Token, *assigneeID)
 	case "department":
-		if assigneeID != nil && s.company != nil {
-			userIDs, err := s.company.ResolveDepartmentUsers(ctx, actor.Token, *assigneeID)
-			if err == nil {
-				return userIDs
-			}
-			s.logger.WarnContext(ctx, "department resolve degraded to empty snapshot", "error", err)
+		if assigneeID == nil || s.company == nil {
+			return nil, errors.New("company client is unavailable")
 		}
+		return s.company.ResolveDepartmentUsers(ctx, actor.Token, *assigneeID)
 	}
-	return []uuid.UUID{}
+	return []uuid.UUID{}, nil
+}
+
+func assigneeTypeToEvent(value string) eventsv1.CourseAssigneeType {
+	switch value {
+	case "user":
+		return eventsv1.CourseAssigneeType_COURSE_ASSIGNEE_TYPE_USER
+	case "position":
+		return eventsv1.CourseAssigneeType_COURSE_ASSIGNEE_TYPE_POSITION
+	case "department":
+		return eventsv1.CourseAssigneeType_COURSE_ASSIGNEE_TYPE_DEPARTMENT
+	case "external":
+		return eventsv1.CourseAssigneeType_COURSE_ASSIGNEE_TYPE_EXTERNAL
+	default:
+		return eventsv1.CourseAssigneeType_COURSE_ASSIGNEE_TYPE_UNSPECIFIED
+	}
 }
 
 func uuidStrings(values []uuid.UUID) []string {

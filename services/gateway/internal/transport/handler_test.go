@@ -375,7 +375,7 @@ func serveGatewayRequest(
 }
 
 func performRequest(handler http.Handler, method, path, body string, cookies []*http.Cookie) *httptest.ResponseRecorder {
-	request := httptest.NewRequest(method, path, strings.NewReader(body))
+	request := httptest.NewRequestWithContext(context.Background(), method, path, strings.NewReader(body))
 	if body != "" {
 		request.Header.Set("Content-Type", "application/json")
 	}

@@ -7,5 +7,6 @@ use (
 	./services/gateway
 	./services/kb
 	./services/academy
+	./services/notifications
 	./services/tasks
 )

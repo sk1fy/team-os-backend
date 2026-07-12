@@ -12,20 +12,39 @@ import (
 )
 
 func (s *Service) GetSections(ctx context.Context, actor Actor) ([]Section, error) {
-	queries := db.New(s.pool)
-	rows, err := queries.ListSections(ctx, actor.CompanyID)
+	sections, byID, err := s.loadSections(ctx, actor.CompanyID)
 	if err != nil {
-		return nil, internal("Не удалось получить разделы", err)
+		return nil, err
 	}
-	sections := make([]Section, 0, len(rows))
-	for _, row := range rows {
-		section, mapErr := sectionFromDB(row)
-		if mapErr != nil {
-			return nil, mapErr
+	return readableSections(actor, sections, byID), nil
+}
+
+func readableSections(actor Actor, sections []Section, byID map[uuid.UUID]Section) []Section {
+	if domainaccess.CanManage(actor.subject()) {
+		return sections
+	}
+	domainSections := domainIndex(byID)
+	allowed := make(map[uuid.UUID]struct{}, len(sections))
+	for _, section := range sections {
+		effective := domainaccess.EffectiveAccess(section.domain(byID), domainSections)
+		if domainaccess.Allowed(actor.subject(), effective) {
+			allowed[section.ID] = struct{}{}
 		}
-		sections = append(sections, section)
 	}
-	return sections, nil
+
+	result := make([]Section, 0, len(allowed))
+	for _, section := range sections {
+		if _, ok := allowed[section.ID]; !ok {
+			continue
+		}
+		if section.ParentID != nil {
+			if _, parentAllowed := allowed[*section.ParentID]; !parentAllowed {
+				section.ParentID = nil
+			}
+		}
+		result = append(result, section)
+	}
+	return result
 }
 
 type CreateSectionInput struct {

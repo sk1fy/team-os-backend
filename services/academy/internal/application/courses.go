@@ -6,11 +6,15 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	eventsv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/events/v1"
 	"github.com/sk1fy/team-os-backend/services/academy/internal/storage/db"
 )
 
 func (s *Service) GetCourses(ctx context.Context, actor Actor) ([]Course, error) {
 	queries := db.New(s.pool)
+	if !canReadAcademy(actor) {
+		return nil, forbidden("Недостаточно прав для просмотра академии")
+	}
 	if actor.Role == "partner" {
 		return s.partnerCourses(ctx, queries, actor)
 	}
@@ -51,7 +55,11 @@ func (s *Service) partnerCourses(ctx context.Context, queries *db.Queries, actor
 }
 
 func (s *Service) GetCourse(ctx context.Context, actor Actor, id uuid.UUID) (Course, error) {
-	row, err := db.New(s.pool).GetCourse(ctx, db.GetCourseParams{CompanyID: actor.CompanyID, ID: id})
+	queries := db.New(s.pool)
+	if err := s.requireCourseAccess(ctx, queries, actor, id); err != nil {
+		return Course{}, err
+	}
+	row, err := queries.GetCourse(ctx, db.GetCourseParams{CompanyID: actor.CompanyID, ID: id})
 	if err != nil {
 		if isNoRows(err) {
 			return Course{}, notFound("Курс")
@@ -309,9 +317,8 @@ func (s *Service) DeleteCourse(ctx context.Context, actor Actor, id uuid.UUID) e
 	if deleted == 0 {
 		return notFound("Курс")
 	}
-	if err = s.emit(ctx, queries, actor.CompanyID, actor.UserID, "teamos.academy.course.deleted.v1", map[string]any{
-		"courseId": id.String(),
-	}); err != nil {
+	if err = s.emit(ctx, queries, actor.CompanyID, id, actor.UserID, "teamos.academy.course.deleted.v1",
+		&eventsv1.AcademyCourseDeletedPayload{CourseId: id.String()}); err != nil {
 		return err
 	}
 	if err = tx.Commit(ctx); err != nil {

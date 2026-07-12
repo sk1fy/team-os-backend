@@ -116,7 +116,7 @@ func Run(ctx context.Context, pool *pgxpool.Pool, directory string) (Summary, er
 	}
 	return Summary{
 		CompanyID: dataset.CompanyID.String(),
-		Boards: len(dataset.Boards), Columns: len(dataset.Columns),
+		Boards:    len(dataset.Boards), Columns: len(dataset.Columns),
 		Tasks: len(dataset.Tasks), Labels: len(dataset.Labels),
 		Comments: len(dataset.Comments),
 	}, nil
@@ -129,7 +129,9 @@ func Load(directory string) (Fixtures, error) {
 	}
 	var fixtures Fixtures
 	if raw, err := os.ReadFile(filepath.Join(directory, "company.json")); err == nil {
-		var payload struct{ ID string `json:"id"` }
+		var payload struct {
+			ID string `json:"id"`
+		}
 		if err := json.Unmarshal(raw, &payload); err != nil {
 			return Fixtures{}, fmt.Errorf("company.json: %w", err)
 		}
@@ -139,7 +141,9 @@ func Load(directory string) (Fixtures, error) {
 		if err := readWrapped(directory, []string{"fixtures.json", "seed.json", "manifest.json"}, func(key string, raw json.RawMessage) error {
 			switch key {
 			case "company":
-				var payload struct{ ID string `json:"id"` }
+				var payload struct {
+					ID string `json:"id"`
+				}
 				if err := json.Unmarshal(raw, &payload); err != nil {
 					return err
 				}
@@ -240,11 +244,11 @@ type Dataset struct {
 }
 
 type boardRow struct {
-	ID, CompanyID     uuid.UUID
-	Name, Type        string
-	DepartmentID      *uuid.UUID
-	OwnerID           *uuid.UUID
-	CreatedAt         time.Time
+	ID, CompanyID uuid.UUID
+	Name, Type    string
+	DepartmentID  *uuid.UUID
+	OwnerID       *uuid.UUID
+	CreatedAt     time.Time
 }
 
 type columnRow struct {
@@ -255,9 +259,9 @@ type columnRow struct {
 }
 
 type taskRow struct {
-	ID, CompanyID, BoardID, ColumnID, AuthorID uuid.UUID
-	Order                                      int32
-	Title, Priority                            string
+	ID, CompanyID, BoardID, ColumnID, AuthorID              uuid.UUID
+	Order                                                   int32
+	Title, Priority                                         string
 	Description, Checklist, Attachments, Source, Recurrence []byte
 	AssigneeIDs, WatcherIDs, LabelIDs, LinkedArticleIDs     []uuid.UUID
 	AssigneePositionID                                      *uuid.UUID

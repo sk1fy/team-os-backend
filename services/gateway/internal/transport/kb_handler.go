@@ -2,7 +2,6 @@ package transport
 
 import (
 	"net/http"
-	"strconv"
 
 	kbv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/kb/v1"
 	"github.com/sk1fy/team-os-backend/pkg/apierror"
@@ -197,6 +196,10 @@ func (h *Handler) UpdateArticle(w http.ResponseWriter, r *http.Request, id api.I
 		request.RequiresAcknowledgement = input.RequiresAcknowledgement
 	}
 	if params.IfMatch != nil {
+		if *params.IfMatch < 1 || int64(*params.IfMatch) > int64(1<<31-1) {
+			apierror.Write(w, apierror.BadRequest("Некорректный заголовок If-Match"))
+			return
+		}
 		version := uint32(*params.IfMatch)
 		request.ExpectedVersion = &version
 	}
@@ -213,21 +216,20 @@ func (h *Handler) UpdateArticle(w http.ResponseWriter, r *http.Request, id api.I
 	writeJSON(w, http.StatusOK, converted)
 }
 
-func (h *Handler) RollbackArticle(w http.ResponseWriter, r *http.Request, articleId api.Id) {
+func (h *Handler) RollbackArticle(w http.ResponseWriter, r *http.Request, articleID api.Id, params api.RollbackArticleParams) {
 	var input api.RollbackArticleInput
 	if !decode(w, r, &input) {
 		return
 	}
 	request := &kbv1.RollbackArticleRequest{
-		ArticleId: articleId.String(), VersionId: input.VersionId.String(),
+		ArticleId: articleID.String(), VersionId: input.VersionId.String(),
 	}
-	if header := r.Header.Get("If-Match"); header != "" {
-		parsed, err := strconv.Atoi(header)
-		if err != nil || parsed < 1 {
+	if params.IfMatch != nil {
+		if *params.IfMatch < 1 || int64(*params.IfMatch) > int64(1<<31-1) {
 			apierror.Write(w, apierror.BadRequest("Некорректный заголовок If-Match"))
 			return
 		}
-		version := uint32(parsed)
+		version := uint32(*params.IfMatch)
 		request.ExpectedVersion = &version
 	}
 	response, err := h.kb.RollbackArticle(outgoingContext(r), request)

@@ -6,6 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/sk1fy/team-os-backend/pkg/richtext"
 	"github.com/sk1fy/team-os-backend/services/academy/internal/storage/db"
 )
 
@@ -15,8 +16,30 @@ var defaultLessonContent = json.RawMessage(`{"type":"doc","content":[{"type":"pa
 func (s *Service) GetLessons(ctx context.Context, actor Actor, courseID *uuid.UUID) ([]Lesson, error) {
 	queries := db.New(s.pool)
 	if courseID != nil {
+		if err := s.requireCourseAccess(ctx, queries, actor, *courseID); err != nil {
+			return nil, err
+		}
 		rows, err := queries.GetCourseLessons(ctx, db.GetCourseLessonsParams{
 			CompanyID: actor.CompanyID, CourseID: *courseID,
+		})
+		if err != nil {
+			return nil, internal("Не удалось получить уроки", err)
+		}
+		return lessonsFromRows(rows), nil
+	}
+	if !canReadAcademy(actor) {
+		return nil, forbidden("Недостаточно прав для просмотра академии")
+	}
+	if actor.Role == "partner" {
+		courseIDs, err := s.assignedCourseIDs(ctx, queries, actor)
+		if err != nil {
+			return nil, err
+		}
+		if len(courseIDs) == 0 {
+			return []Lesson{}, nil
+		}
+		rows, err := queries.GetLessonsByCourseIds(ctx, db.GetLessonsByCourseIdsParams{
+			CompanyID: actor.CompanyID, CourseIds: courseIDs,
 		})
 		if err != nil {
 			return nil, internal("Не удалось получить уроки", err)
@@ -50,7 +73,7 @@ func (s *Service) CreateLesson(ctx context.Context, actor Actor, input CreateLes
 	if input.SourceMode != nil && *input.SourceMode != "link" && *input.SourceMode != "copy" {
 		return Lesson{}, validation("Некорректный режим импорта статьи")
 	}
-	if len(input.Content) > 0 && !json.Valid(input.Content) {
+	if len(input.Content) > 0 && richtext.Validate(input.Content) != nil {
 		return Lesson{}, validation("Некорректное содержимое урока")
 	}
 
@@ -84,6 +107,9 @@ func (s *Service) CreateLesson(ctx context.Context, actor Actor, input CreateLes
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
 	queries := db.New(tx)
+	if err = queries.LockCourseOrder(ctx, input.CourseID); err != nil {
+		return Lesson{}, internal("Не удалось заблокировать порядок курса", err)
+	}
 
 	section, err := queries.GetCourseSection(ctx, db.GetCourseSectionParams{
 		CompanyID: actor.CompanyID, ID: input.SectionID,
@@ -140,7 +166,7 @@ func (s *Service) UpdateLesson(ctx context.Context, actor Actor, input UpdateLes
 	if input.SourceMode != nil && *input.SourceMode != "link" && *input.SourceMode != "copy" {
 		return Lesson{}, validation("Некорректный режим импорта статьи")
 	}
-	if len(input.Content) > 0 && !json.Valid(input.Content) {
+	if len(input.Content) > 0 && richtext.Validate(input.Content) != nil {
 		return Lesson{}, validation("Некорректное содержимое урока")
 	}
 
@@ -253,6 +279,11 @@ func (s *Service) DeleteLesson(ctx context.Context, actor Actor, id uuid.UUID) e
 	if _, err = queries.DeleteLesson(ctx, db.DeleteLessonParams{CompanyID: actor.CompanyID, ID: id}); err != nil {
 		return internal("Не удалось удалить урок", err)
 	}
+	if err = queries.RecomputeCourseProgressAfterLessonDelete(ctx, db.RecomputeCourseProgressAfterLessonDeleteParams{
+		CompanyID: actor.CompanyID, CourseID: lesson.CourseID,
+	}); err != nil {
+		return internal("Не удалось пересчитать прогресс", err)
+	}
 	if err = tx.Commit(ctx); err != nil {
 		return internal("Не удалось удалить урок", err)
 	}
@@ -286,6 +317,9 @@ func (s *Service) MoveLesson(ctx context.Context, actor Actor, input MoveLessonI
 		}
 		return Lesson{}, internal("Не удалось получить урок", err)
 	}
+	if err = queries.LockCourseOrder(ctx, lesson.CourseID); err != nil {
+		return Lesson{}, internal("Не удалось заблокировать порядок курса", err)
+	}
 	section, err := queries.GetCourseSection(ctx, db.GetCourseSectionParams{
 		CompanyID: actor.CompanyID, ID: input.SectionID,
 	})
@@ -298,6 +332,7 @@ func (s *Service) MoveLesson(ctx context.Context, actor Actor, input MoveLessonI
 	if section.CourseID != lesson.CourseID {
 		return Lesson{}, validation("Раздел не принадлежит курсу урока")
 	}
+	oldSectionID := lesson.SectionID
 
 	// Same renumbering as the mock: siblings at or past the slot shift by one.
 	siblings, err := queries.GetSectionLessonsForUpdate(ctx, db.GetSectionLessonsForUpdateParams{
@@ -305,6 +340,13 @@ func (s *Service) MoveLesson(ctx context.Context, actor Actor, input MoveLessonI
 	})
 	if err != nil {
 		return Lesson{}, internal("Не удалось получить уроки раздела", err)
+	}
+	maxOrder := int32(len(siblings))
+	if oldSectionID == input.SectionID && maxOrder > 0 {
+		maxOrder--
+	}
+	if input.Order > maxOrder {
+		input.Order = maxOrder
 	}
 	moved, err := queries.MoveLessonRow(ctx, db.MoveLessonRowParams{
 		CompanyID: actor.CompanyID, ID: input.ID,
@@ -330,6 +372,13 @@ func (s *Service) MoveLesson(ctx context.Context, actor Actor, input MoveLessonI
 			}
 		}
 		index++
+	}
+	if oldSectionID != input.SectionID {
+		if err = queries.NormalizeSectionLessonOrder(ctx, db.NormalizeSectionLessonOrderParams{
+			CompanyID: actor.CompanyID, SectionID: oldSectionID,
+		}); err != nil {
+			return Lesson{}, internal("Не удалось перенумеровать исходный раздел", err)
+		}
 	}
 	if err = tx.Commit(ctx); err != nil {
 		return Lesson{}, internal("Не удалось сохранить порядок уроков", err)

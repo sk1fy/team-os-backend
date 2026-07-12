@@ -12,6 +12,7 @@ import (
 )
 
 type Querier interface {
+	ClearDeletedPositionAssignment(ctx context.Context, arg ClearDeletedPositionAssignmentParams) error
 	CountCourseSections(ctx context.Context, arg CountCourseSectionsParams) (int64, error)
 	CountSectionLessons(ctx context.Context, arg CountSectionLessonsParams) (int64, error)
 	CreateAssignment(ctx context.Context, arg CreateAssignmentParams) (Assignment, error)
@@ -23,7 +24,7 @@ type Querier interface {
 	DeleteCourse(ctx context.Context, arg DeleteCourseParams) (int64, error)
 	DeleteCourseSection(ctx context.Context, arg DeleteCourseSectionParams) (int64, error)
 	DeleteLesson(ctx context.Context, arg DeleteLessonParams) (int64, error)
-	DetachLinkedArticle(ctx context.Context, articleID uuid.NullUUID) (int64, error)
+	DetachLinkedArticle(ctx context.Context, arg DetachLinkedArticleParams) (int64, error)
 	GetAssignments(ctx context.Context, companyID uuid.UUID) ([]Assignment, error)
 	GetCourse(ctx context.Context, arg GetCourseParams) (Course, error)
 	GetCourseLessonIds(ctx context.Context, arg GetCourseLessonIdsParams) ([]uuid.UUID, error)
@@ -37,12 +38,14 @@ type Querier interface {
 	GetLesson(ctx context.Context, arg GetLessonParams) (Lesson, error)
 	GetLessonQuizzes(ctx context.Context, arg GetLessonQuizzesParams) ([]Quiz, error)
 	GetLessons(ctx context.Context, companyID uuid.UUID) ([]Lesson, error)
+	GetLessonsByCourseIds(ctx context.Context, arg GetLessonsByCourseIdsParams) ([]Lesson, error)
 	GetOverdueAssignments(ctx context.Context, now time.Time) ([]GetOverdueAssignmentsRow, error)
 	GetProgress(ctx context.Context, companyID uuid.UUID) ([]Progress, error)
 	GetQuiz(ctx context.Context, arg GetQuizParams) (Quiz, error)
 	GetQuizAttempts(ctx context.Context, companyID uuid.UUID) ([]QuizAttempt, error)
 	GetQuizAttemptsWithCourse(ctx context.Context, companyID uuid.UUID) ([]GetQuizAttemptsWithCourseRow, error)
 	GetQuizzes(ctx context.Context, companyID uuid.UUID) ([]Quiz, error)
+	GetQuizzesByCourseIds(ctx context.Context, arg GetQuizzesByCourseIdsParams) ([]Quiz, error)
 	GetSectionLessonIds(ctx context.Context, arg GetSectionLessonIdsParams) ([]uuid.UUID, error)
 	GetSectionLessonsForUpdate(ctx context.Context, arg GetSectionLessonsForUpdateParams) ([]GetSectionLessonsForUpdateRow, error)
 	GetUserAssignments(ctx context.Context, arg GetUserAssignmentsParams) ([]Assignment, error)
@@ -50,10 +53,14 @@ type Querier interface {
 	GetUserProgressRows(ctx context.Context, arg GetUserProgressRowsParams) ([]Progress, error)
 	InsertOverdueProgress(ctx context.Context, arg InsertOverdueProgressParams) error
 	InsertProgress(ctx context.Context, arg InsertProgressParams) (Progress, error)
+	LockCourseOrder(ctx context.Context, courseID uuid.UUID) error
 	MarkAssignmentDueSoonSent(ctx context.Context, arg MarkAssignmentDueSoonSentParams) error
 	MarkEventProcessed(ctx context.Context, arg MarkEventProcessedParams) (int64, error)
 	MarkProgressOverdue(ctx context.Context, arg MarkProgressOverdueParams) (int64, error)
 	MoveLessonRow(ctx context.Context, arg MoveLessonRowParams) (Lesson, error)
+	NormalizeSectionLessonOrder(ctx context.Context, arg NormalizeSectionLessonOrderParams) error
+	RecomputeCourseProgressAfterLessonDelete(ctx context.Context, arg RecomputeCourseProgressAfterLessonDeleteParams) error
+	RecomputeUserAssignmentMembership(ctx context.Context, arg RecomputeUserAssignmentMembershipParams) error
 	RemoveLessonsFromProgress(ctx context.Context, arg RemoveLessonsFromProgressParams) error
 	ReplicateLinkedArticle(ctx context.Context, arg ReplicateLinkedArticleParams) (int64, error)
 	SetLessonOrder(ctx context.Context, arg SetLessonOrderParams) error

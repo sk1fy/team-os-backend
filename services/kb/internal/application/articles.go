@@ -8,9 +8,11 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-	domainaccess "github.com/sk1fy/team-os-backend/services/kb/internal/domain/access"
+	eventsv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/events/v1"
 	"github.com/sk1fy/team-os-backend/pkg/richtext"
+	domainaccess "github.com/sk1fy/team-os-backend/services/kb/internal/domain/access"
 	"github.com/sk1fy/team-os-backend/services/kb/internal/storage/db"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 func (s *Service) loadSections(ctx context.Context, companyID uuid.UUID) ([]Section, map[uuid.UUID]Section, error) {
@@ -136,7 +138,7 @@ func (s *Service) CreateArticle(ctx context.Context, actor Actor, input CreateAr
 	if err = validateArticleStatus(input.Status); err != nil {
 		return Article{}, err
 	}
-	if len(input.Content) == 0 || !json.Valid(input.Content) {
+	if richtext.Validate(input.Content) != nil {
 		return Article{}, validation("Некорректное содержимое статьи")
 	}
 	plainText := richtext.PlainText(input.Content)
@@ -175,11 +177,11 @@ func (s *Service) CreateArticle(ctx context.Context, actor Actor, input CreateAr
 			return Article{}, loadErr
 		}
 		section := sections[article.SectionID]
-		if err = s.emit(ctx, queries, actor.CompanyID, actor.UserID, "teamos.kb.article.published.v1", map[string]any{
-			"articleId": article.ID.String(), "sectionId": article.SectionID.String(),
-			"title": article.Title, "version": article.Version,
-			"requiresAcknowledgement": article.RequiresAcknowledgement,
-			"audience": audiencePayload(section, sections),
+		if err = s.emit(ctx, queries, actor.CompanyID, article.ID, actor.UserID, "teamos.kb.article.published.v1", &eventsv1.KbArticlePublishedPayload{
+			ArticleId: article.ID.String(), SectionId: article.SectionID.String(),
+			Title: article.Title, Version: uint32(article.Version),
+			RequiresAcknowledgement: article.RequiresAcknowledgement,
+			Audience:                audiencePayload(section, sections),
 		}); err != nil {
 			return Article{}, err
 		}
@@ -216,7 +218,7 @@ func (s *Service) UpdateArticle(ctx context.Context, actor Actor, input UpdateAr
 	defer func() { _ = tx.Rollback(ctx) }()
 	queries := db.New(tx)
 
-	current, err := queries.GetArticle(ctx, db.GetArticleParams{CompanyID: actor.CompanyID, ID: input.ID})
+	current, err := queries.GetArticleForUpdate(ctx, db.GetArticleForUpdateParams{CompanyID: actor.CompanyID, ID: input.ID})
 	if err != nil {
 		if isNoRows(err) {
 			return Article{}, notFound("Статья")
@@ -236,7 +238,7 @@ func (s *Service) UpdateArticle(ctx context.Context, actor Actor, input UpdateAr
 	}
 	nextContent := append(json.RawMessage(nil), current.Content...)
 	if len(input.Content) > 0 {
-		if !json.Valid(input.Content) {
+		if richtext.Validate(input.Content) != nil {
 			return Article{}, validation("Некорректное содержимое статьи")
 		}
 		nextContent = append(json.RawMessage(nil), input.Content...)
@@ -317,21 +319,27 @@ func (s *Service) UpdateArticle(ctx context.Context, actor Actor, input UpdateAr
 	section := sections[article.SectionID]
 
 	if current.Status != "published" && article.Status == "published" {
-		if err = s.emit(ctx, queries, actor.CompanyID, actor.UserID, "teamos.kb.article.published.v1", map[string]any{
-			"articleId": article.ID.String(), "sectionId": article.SectionID.String(),
-			"title": article.Title, "version": article.Version,
-			"requiresAcknowledgement": article.RequiresAcknowledgement,
-			"audience": audiencePayload(section, sections),
+		if err = s.emit(ctx, queries, actor.CompanyID, article.ID, actor.UserID, "teamos.kb.article.published.v1", &eventsv1.KbArticlePublishedPayload{
+			ArticleId: article.ID.String(), SectionId: article.SectionID.String(),
+			Title: article.Title, Version: uint32(article.Version),
+			RequiresAcknowledgement: article.RequiresAcknowledgement,
+			Audience:                audiencePayload(section, sections),
 		}); err != nil {
 			return Article{}, err
 		}
 	}
 	if contentChanged {
 		var contentMap map[string]any
-		_ = json.Unmarshal(article.Content, &contentMap)
-		if err = s.emit(ctx, queries, actor.CompanyID, actor.UserID, "teamos.kb.article.updated.v1", map[string]any{
-			"articleId": article.ID.String(), "version": article.Version,
-			"title": article.Title, "content": contentMap,
+		if err = json.Unmarshal(article.Content, &contentMap); err != nil {
+			return Article{}, internal("Не удалось сформировать содержимое события", err)
+		}
+		content, structErr := structpb.NewStruct(contentMap)
+		if structErr != nil {
+			return Article{}, internal("Не удалось сформировать содержимое события", structErr)
+		}
+		if err = s.emit(ctx, queries, actor.CompanyID, article.ID, actor.UserID, "teamos.kb.article.updated.v1", &eventsv1.KbArticleUpdatedPayload{
+			ArticleId: article.ID.String(), Version: uint32(article.Version),
+			Title: article.Title, Content: content,
 		}); err != nil {
 			return Article{}, err
 		}
@@ -360,7 +368,7 @@ func (s *Service) RollbackArticle(ctx context.Context, actor Actor, input Rollba
 	defer func() { _ = tx.Rollback(ctx) }()
 	queries := db.New(tx)
 
-	current, err := queries.GetArticle(ctx, db.GetArticleParams{CompanyID: actor.CompanyID, ID: input.ArticleID})
+	current, err := queries.GetArticleForUpdate(ctx, db.GetArticleForUpdateParams{CompanyID: actor.CompanyID, ID: input.ArticleID})
 	if err != nil {
 		if isNoRows(err) {
 			return Article{}, notFound("Статья")
@@ -406,10 +414,16 @@ func (s *Service) RollbackArticle(ctx context.Context, actor Actor, input Rollba
 	article := articleFromUpdateRow(updated)
 
 	var contentMap map[string]any
-	_ = json.Unmarshal(article.Content, &contentMap)
-	if err = s.emit(ctx, queries, actor.CompanyID, actor.UserID, "teamos.kb.article.updated.v1", map[string]any{
-		"articleId": article.ID.String(), "version": article.Version,
-		"title": article.Title, "content": contentMap,
+	if err = json.Unmarshal(article.Content, &contentMap); err != nil {
+		return Article{}, internal("Не удалось сформировать содержимое события", err)
+	}
+	content, structErr := structpb.NewStruct(contentMap)
+	if structErr != nil {
+		return Article{}, internal("Не удалось сформировать содержимое события", structErr)
+	}
+	if err = s.emit(ctx, queries, actor.CompanyID, article.ID, actor.UserID, "teamos.kb.article.updated.v1", &eventsv1.KbArticleUpdatedPayload{
+		ArticleId: article.ID.String(), Version: uint32(article.Version),
+		Title: article.Title, Content: content,
 	}); err != nil {
 		return Article{}, err
 	}
@@ -478,25 +492,44 @@ func (s *Service) GetAcknowledgements(ctx context.Context, actor Actor, articleI
 }
 
 func (s *Service) AcknowledgeArticle(ctx context.Context, actor Actor, articleID uuid.UUID) error {
-	_, sections, err := s.loadSections(ctx, actor.CompanyID)
+	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
-		return err
+		return internal("Не удалось начать транзакцию", err)
 	}
-	current, err := db.New(s.pool).GetArticle(ctx, db.GetArticleParams{CompanyID: actor.CompanyID, ID: articleID})
+	defer func() { _ = tx.Rollback(ctx) }()
+	queries := db.New(tx)
+
+	current, err := queries.GetArticleForUpdate(ctx, db.GetArticleForUpdateParams{CompanyID: actor.CompanyID, ID: articleID})
 	if err != nil {
 		if isNoRows(err) {
 			return notFound("Статья")
 		}
 		return internal("Не удалось получить статью", err)
 	}
-	article := articleFromGetRow(current)
+	article := articleFromForUpdateRow(current)
+	_, sections, err := s.loadSectionsInTx(ctx, queries, actor.CompanyID)
+	if err != nil {
+		return err
+	}
 	if !s.canReadArticle(actor, article, sections) {
 		return forbidden("Недостаточно прав для ознакомления со статьёй")
 	}
-	return db.New(s.pool).UpsertAcknowledgement(ctx, db.UpsertAcknowledgementParams{
+	if article.Status != "published" {
+		return validation("Ознакомиться можно только с опубликованной статьёй")
+	}
+	if !article.RequiresAcknowledgement {
+		return validation("Статья не требует ознакомления")
+	}
+	if err = queries.UpsertAcknowledgement(ctx, db.UpsertAcknowledgementParams{
 		CompanyID: actor.CompanyID, ArticleID: articleID,
 		UserID: actor.UserID, AcknowledgedAt: s.now().UTC(),
-	})
+	}); err != nil {
+		return internal("Не удалось сохранить ознакомление", err)
+	}
+	if err = tx.Commit(ctx); err != nil {
+		return internal("Не удалось сохранить ознакомление", err)
+	}
+	return nil
 }
 
 func (s *Service) SearchArticles(ctx context.Context, actor Actor, query string) ([]Article, error) {

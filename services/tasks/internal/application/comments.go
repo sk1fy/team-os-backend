@@ -6,17 +6,26 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/sk1fy/team-os-backend/pkg/richtext"
 	"github.com/sk1fy/team-os-backend/services/tasks/internal/storage/db"
 )
 
 func (s *Service) GetComments(ctx context.Context, actor Actor, taskID uuid.UUID) ([]Comment, error) {
-	if _, err := db.New(s.pool).GetTask(ctx, db.GetTaskParams{
+	row, err := db.New(s.pool).GetTask(ctx, db.GetTaskParams{
 		CompanyID: actor.CompanyID, ID: taskID,
-	}); err != nil {
+	})
+	if err != nil {
 		if isNoRows(err) {
 			return nil, notFound("Задача")
 		}
 		return nil, internal("Не удалось проверить задачу", err)
+	}
+	task, err := taskFromDB(row)
+	if err != nil {
+		return nil, err
+	}
+	if !canAccessTask(actor, task) {
+		return nil, forbidden("Недостаточно прав для просмотра комментариев")
 	}
 	rows, err := db.New(s.pool).ListCommentsByTask(ctx, taskID)
 	if err != nil {
@@ -35,7 +44,7 @@ type AddCommentInput struct {
 }
 
 func (s *Service) AddComment(ctx context.Context, actor Actor, input AddCommentInput) (Comment, error) {
-	if len(input.Content) == 0 || !json.Valid(input.Content) {
+	if richtext.Validate(input.Content) != nil {
 		return Comment{}, validation("Некорректное содержимое комментария")
 	}
 
@@ -58,6 +67,9 @@ func (s *Service) AddComment(ctx context.Context, actor Actor, input AddCommentI
 	task, err := taskFromDB(taskRow)
 	if err != nil {
 		return Comment{}, err
+	}
+	if !canAccessTask(actor, task) {
+		return Comment{}, forbidden("Недостаточно прав для добавления комментария")
 	}
 
 	row, err := queries.CreateComment(ctx, db.CreateCommentParams{

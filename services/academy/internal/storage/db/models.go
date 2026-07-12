@@ -64,6 +64,8 @@ type Lesson struct {
 type Outbox struct {
 	ID            uuid.UUID          `json:"id"`
 	CompanyID     uuid.UUID          `json:"company_id"`
+	AggregateID   uuid.UUID          `json:"aggregate_id"`
+	EventOrder    int64              `json:"event_order"`
 	Subject       string             `json:"subject"`
 	Payload       []byte             `json:"payload"`
 	Headers       []byte             `json:"headers"`

@@ -19,19 +19,19 @@ import (
 var fixtureNamespace = uuid.MustParse("7c29d63e-2954-5e23-9cba-7b950e8cc1a8")
 
 type Summary struct {
-	CompanyID   string
-	Sections    int
-	Articles    int
-	Versions    int
+	CompanyID        string
+	Sections         int
+	Articles         int
+	Versions         int
 	Acknowledgements int
 }
 
 type Fixtures struct {
-	CompanyID         string
-	Sections          []SectionFixture
-	Articles          []ArticleFixture
-	ArticleVersions   []ArticleVersionFixture
-	Acknowledgements  []AcknowledgementFixture
+	CompanyID        string
+	Sections         []SectionFixture
+	Articles         []ArticleFixture
+	ArticleVersions  []ArticleVersionFixture
+	Acknowledgements []AcknowledgementFixture
 }
 
 type SectionFixture struct {
@@ -97,7 +97,7 @@ func Run(ctx context.Context, pool *pgxpool.Pool, directory string) (Summary, er
 	}
 	return Summary{
 		CompanyID: dataset.CompanyID.String(),
-		Sections: len(dataset.Sections), Articles: len(dataset.Articles),
+		Sections:  len(dataset.Sections), Articles: len(dataset.Articles),
 		Versions: len(dataset.Versions), Acknowledgements: len(dataset.Acknowledgements),
 	}, nil
 }
@@ -109,7 +109,9 @@ func Load(directory string) (Fixtures, error) {
 	}
 	var fixtures Fixtures
 	if raw, err := os.ReadFile(filepath.Join(directory, "company.json")); err == nil {
-		var payload struct{ ID string `json:"id"` }
+		var payload struct {
+			ID string `json:"id"`
+		}
 		if err := json.Unmarshal(raw, &payload); err != nil {
 			return Fixtures{}, fmt.Errorf("company.json: %w", err)
 		}
@@ -117,23 +119,25 @@ func Load(directory string) (Fixtures, error) {
 	}
 	if fixtures.CompanyID == "" {
 		if err := readWrapped(directory, []string{"fixtures.json", "seed.json", "manifest.json"}, func(key string, raw json.RawMessage) error {
-		switch key {
-		case "company":
-			var payload struct{ ID string `json:"id"` }
-			if err := json.Unmarshal(raw, &payload); err != nil {
-				return err
+			switch key {
+			case "company":
+				var payload struct {
+					ID string `json:"id"`
+				}
+				if err := json.Unmarshal(raw, &payload); err != nil {
+					return err
+				}
+				fixtures.CompanyID = payload.ID
+			case "articleSections", "sections":
+				return json.Unmarshal(raw, &fixtures.Sections)
+			case "articles":
+				return json.Unmarshal(raw, &fixtures.Articles)
+			case "articleVersions":
+				return json.Unmarshal(raw, &fixtures.ArticleVersions)
+			case "acknowledgements":
+				return json.Unmarshal(raw, &fixtures.Acknowledgements)
 			}
-			fixtures.CompanyID = payload.ID
-		case "articleSections", "sections":
-			return json.Unmarshal(raw, &fixtures.Sections)
-		case "articles":
-			return json.Unmarshal(raw, &fixtures.Articles)
-		case "articleVersions":
-			return json.Unmarshal(raw, &fixtures.ArticleVersions)
-		case "acknowledgements":
-			return json.Unmarshal(raw, &fixtures.Acknowledgements)
-		}
-		return nil
+			return nil
 		}); err != nil {
 			return Fixtures{}, err
 		}

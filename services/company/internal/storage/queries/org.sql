@@ -72,6 +72,13 @@ RETURNING *;
 -- name: DeletePosition :execrows
 DELETE FROM positions WHERE company_id = $1 AND id = $2;
 
+-- name: GetPositionUserIDs :many
+SELECT up.user_id
+FROM user_positions up
+JOIN users u ON u.id = up.user_id AND u.company_id = up.company_id
+WHERE up.company_id = $1 AND up.position_id = $2 AND u.status = 'active'
+ORDER BY up.user_id;
+
 -- name: ListUsers :many
 SELECT u.*,
        COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids

@@ -12,6 +12,13 @@ SELECT id, company_id, section_id, title, content, status, author_id, version,
 FROM articles
 WHERE company_id = $1 AND id = $2;
 
+-- name: GetArticleForUpdate :one
+SELECT id, company_id, section_id, title, content, status, author_id, version,
+       requires_acknowledgement, plain_text, created_at, updated_at
+FROM articles
+WHERE company_id = $1 AND id = $2
+FOR UPDATE;
+
 -- name: GetArticlesByIDs :many
 SELECT id, company_id, section_id, title, content, status, author_id, version,
        requires_acknowledgement, plain_text, created_at, updated_at

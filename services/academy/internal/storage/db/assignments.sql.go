@@ -13,6 +13,22 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const clearDeletedPositionAssignment = `-- name: ClearDeletedPositionAssignment :exec
+UPDATE assignments
+SET resolved_user_ids = '{}'
+WHERE company_id = $1 AND assignee_type = 'position' AND assignee_id = $2
+`
+
+type ClearDeletedPositionAssignmentParams struct {
+	CompanyID  uuid.UUID     `json:"company_id"`
+	AssigneeID uuid.NullUUID `json:"assignee_id"`
+}
+
+func (q *Queries) ClearDeletedPositionAssignment(ctx context.Context, arg ClearDeletedPositionAssignmentParams) error {
+	_, err := q.db.Exec(ctx, clearDeletedPositionAssignment, arg.CompanyID, arg.AssigneeID)
+	return err
+}
+
 const createAssignment = `-- name: CreateAssignment :one
 INSERT INTO assignments (
     id, company_id, course_id, assignee_type, assignee_id, invite_token,
@@ -270,5 +286,44 @@ type MarkAssignmentDueSoonSentParams struct {
 
 func (q *Queries) MarkAssignmentDueSoonSent(ctx context.Context, arg MarkAssignmentDueSoonSentParams) error {
 	_, err := q.db.Exec(ctx, markAssignmentDueSoonSent, arg.ID, arg.DueSoonSentAt)
+	return err
+}
+
+const recomputeUserAssignmentMembership = `-- name: RecomputeUserAssignmentMembership :exec
+UPDATE assignments
+SET resolved_user_ids = ARRAY(
+    SELECT DISTINCT candidate
+    FROM unnest(
+        array_remove(resolved_user_ids, $1::uuid) ||
+        CASE
+            WHEN $2::boolean AND (
+                (assignee_type = 'user' AND assignee_id = $1::uuid) OR
+                (assignee_type = 'position' AND assignee_id = ANY($3::uuid[])) OR
+                (assignee_type = 'department' AND assignee_id = ANY($4::uuid[]))
+            ) THEN ARRAY[$1::uuid]
+            ELSE '{}'::uuid[]
+        END
+    ) AS candidate
+)
+WHERE company_id = $5
+  AND assignee_type IN ('user', 'position', 'department')
+`
+
+type RecomputeUserAssignmentMembershipParams struct {
+	UserID        uuid.UUID   `json:"user_id"`
+	Active        bool        `json:"active"`
+	PositionIds   []uuid.UUID `json:"position_ids"`
+	DepartmentIds []uuid.UUID `json:"department_ids"`
+	CompanyID     uuid.UUID   `json:"company_id"`
+}
+
+func (q *Queries) RecomputeUserAssignmentMembership(ctx context.Context, arg RecomputeUserAssignmentMembershipParams) error {
+	_, err := q.db.Exec(ctx, recomputeUserAssignmentMembership,
+		arg.UserID,
+		arg.Active,
+		arg.PositionIds,
+		arg.DepartmentIds,
+		arg.CompanyID,
+	)
 	return err
 }

@@ -22,14 +22,14 @@ type enqueuer struct {
 	client *river.Client[pgx.Tx]
 }
 
-func (e *enqueuer) EnqueueRecurrence(ctx context.Context, companyID, taskID uuid.UUID) error {
+func (e *enqueuer) EnqueueRecurrenceTx(ctx context.Context, tx pgx.Tx, companyID, taskID uuid.UUID) error {
 	if e.client == nil {
 		return fmt.Errorf("очередь river не инициализирована")
 	}
-	_, err := e.client.Insert(ctx, RecurrenceArgs{
+	_, err := e.client.InsertTx(ctx, tx, RecurrenceArgs{
 		CompanyID: companyID.String(),
 		TaskID:    taskID.String(),
-	}, nil)
+	}, &river.InsertOpts{UniqueOpts: river.UniqueOpts{ByArgs: true}})
 	return err
 }
 

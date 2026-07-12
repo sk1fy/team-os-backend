@@ -13,24 +13,27 @@ import (
 )
 
 const createOutboxEvent = `-- name: CreateOutboxEvent :one
-INSERT INTO outbox (id, company_id, subject, payload, headers, occurred_at)
-VALUES ($1, $2, $3, $4, $5, $6)
-RETURNING id, company_id, subject, payload, headers, occurred_at, next_attempt_at, published_at, attempts, last_error
+INSERT INTO outbox (id, company_id, aggregate_id, subject, payload, headers, occurred_at)
+VALUES ($1, $2, $3, $4, $5, $6, $7)
+RETURNING id, company_id, aggregate_id, event_order, subject, payload, headers, occurred_at,
+    next_attempt_at, published_at, attempts, last_error
 `
 
 type CreateOutboxEventParams struct {
-	ID         uuid.UUID `json:"id"`
-	CompanyID  uuid.UUID `json:"company_id"`
-	Subject    string    `json:"subject"`
-	Payload    []byte    `json:"payload"`
-	Headers    []byte    `json:"headers"`
-	OccurredAt time.Time `json:"occurred_at"`
+	ID          uuid.UUID `json:"id"`
+	CompanyID   uuid.UUID `json:"company_id"`
+	AggregateID uuid.UUID `json:"aggregate_id"`
+	Subject     string    `json:"subject"`
+	Payload     []byte    `json:"payload"`
+	Headers     []byte    `json:"headers"`
+	OccurredAt  time.Time `json:"occurred_at"`
 }
 
 func (q *Queries) CreateOutboxEvent(ctx context.Context, arg CreateOutboxEventParams) (Outbox, error) {
 	row := q.db.QueryRow(ctx, createOutboxEvent,
 		arg.ID,
 		arg.CompanyID,
+		arg.AggregateID,
 		arg.Subject,
 		arg.Payload,
 		arg.Headers,
@@ -40,6 +43,8 @@ func (q *Queries) CreateOutboxEvent(ctx context.Context, arg CreateOutboxEventPa
 	err := row.Scan(
 		&i.ID,
 		&i.CompanyID,
+		&i.AggregateID,
+		&i.EventOrder,
 		&i.Subject,
 		&i.Payload,
 		&i.Headers,

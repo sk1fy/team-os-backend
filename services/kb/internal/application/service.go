@@ -10,6 +10,8 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/sk1fy/team-os-backend/services/kb/internal/storage/db"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
 type Service struct {
@@ -27,28 +29,32 @@ func NewService(pool *pgxpool.Pool) (*Service, error) {
 func (s *Service) emit(
 	ctx context.Context,
 	queries *db.Queries,
-	companyID, actorID uuid.UUID,
+	companyID, aggregateID, actorID uuid.UUID,
 	subject string,
-	payload any,
+	payload proto.Message,
 ) error {
 	id := uuid.New()
 	occurredAt := s.now().UTC()
+	payloadJSON, err := protojson.Marshal(payload)
+	if err != nil {
+		return internal("Не удалось сформировать payload события", err)
+	}
 	body, err := json.Marshal(struct {
-		EventID    string `json:"eventId"`
-		OccurredAt string `json:"occurredAt"`
-		CompanyID  string `json:"companyId"`
-		ActorID    string `json:"actorId"`
-		Payload    any    `json:"payload"`
+		EventID    string          `json:"eventId"`
+		OccurredAt string          `json:"occurredAt"`
+		CompanyID  string          `json:"companyId"`
+		ActorID    string          `json:"actorId"`
+		Payload    json.RawMessage `json:"payload"`
 	}{
 		EventID: id.String(), OccurredAt: occurredAt.Format(time.RFC3339Nano),
-		CompanyID: companyID.String(), ActorID: actorID.String(), Payload: payload,
+		CompanyID: companyID.String(), ActorID: actorID.String(), Payload: payloadJSON,
 	})
 	if err != nil {
 		return internal("Не удалось сформировать событие", err)
 	}
 	headers, _ := json.Marshal(map[string]string{"Nats-Msg-Id": id.String()})
 	_, err = queries.CreateOutboxEvent(ctx, db.CreateOutboxEventParams{
-		ID: id, CompanyID: companyID, Subject: subject,
+		ID: id, CompanyID: companyID, AggregateID: aggregateID, Subject: subject,
 		Payload: body, Headers: headers, OccurredAt: occurredAt,
 	})
 	if err != nil {

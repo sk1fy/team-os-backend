@@ -30,6 +30,7 @@ message AcademyCourseAssignedPayload {
   optional google.protobuf.Timestamp due_date = 7;
   string assigned_by_id = 8;
   string link = 9;
+  repeated string recipient_user_ids = 10;
 }
 
 message AcademyCourseDueSoonEvent {
@@ -44,6 +45,8 @@ message AcademyCourseDueSoonPayload {
   google.protobuf.Timestamp due_date = 4;
   repeated string recipient_user_ids = 5;
   string link = 6;
+  CourseAssigneeType assignee_type = 7;
+  optional string assignee_id = 8;
 }
 
 message AcademyCourseDeletedEvent {

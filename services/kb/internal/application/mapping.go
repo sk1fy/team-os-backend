@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	eventsv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/events/v1"
 	domainaccess "github.com/sk1fy/team-os-backend/services/kb/internal/domain/access"
 	"github.com/sk1fy/team-os-backend/services/kb/internal/storage/db"
 )
@@ -43,7 +44,7 @@ func articleFromDBRow(value articleDBFields) Article {
 		Title: value.Title, Content: append(json.RawMessage(nil), value.Content...),
 		Status: value.Status, AuthorID: value.AuthorID, Version: value.Version,
 		RequiresAcknowledgement: value.RequiresAcknowledgement,
-		PlainText: value.PlainText, CreatedAt: value.CreatedAt, UpdatedAt: value.UpdatedAt,
+		PlainText:               value.PlainText, CreatedAt: value.CreatedAt, UpdatedAt: value.UpdatedAt,
 	}
 }
 
@@ -53,7 +54,17 @@ func articleFromGetRow(value db.GetArticleRow) Article {
 		Title: value.Title, Content: value.Content, Status: value.Status,
 		AuthorID: value.AuthorID, Version: value.Version,
 		RequiresAcknowledgement: value.RequiresAcknowledgement,
-		PlainText: value.PlainText, CreatedAt: value.CreatedAt, UpdatedAt: value.UpdatedAt,
+		PlainText:               value.PlainText, CreatedAt: value.CreatedAt, UpdatedAt: value.UpdatedAt,
+	})
+}
+
+func articleFromForUpdateRow(value db.GetArticleForUpdateRow) Article {
+	return articleFromDBRow(articleDBFields{
+		ID: value.ID, CompanyID: value.CompanyID, SectionID: value.SectionID,
+		Title: value.Title, Content: value.Content, Status: value.Status,
+		AuthorID: value.AuthorID, Version: value.Version,
+		RequiresAcknowledgement: value.RequiresAcknowledgement,
+		PlainText:               value.PlainText, CreatedAt: value.CreatedAt, UpdatedAt: value.UpdatedAt,
 	})
 }
 
@@ -63,7 +74,7 @@ func articleFromCreateRow(value db.CreateArticleRow) Article {
 		Title: value.Title, Content: value.Content, Status: value.Status,
 		AuthorID: value.AuthorID, Version: value.Version,
 		RequiresAcknowledgement: value.RequiresAcknowledgement,
-		PlainText: value.PlainText, CreatedAt: value.CreatedAt, UpdatedAt: value.UpdatedAt,
+		PlainText:               value.PlainText, CreatedAt: value.CreatedAt, UpdatedAt: value.UpdatedAt,
 	})
 }
 
@@ -73,7 +84,7 @@ func articleFromUpdateRow(value db.UpdateArticleRow) Article {
 		Title: value.Title, Content: value.Content, Status: value.Status,
 		AuthorID: value.AuthorID, Version: value.Version,
 		RequiresAcknowledgement: value.RequiresAcknowledgement,
-		PlainText: value.PlainText, CreatedAt: value.CreatedAt, UpdatedAt: value.UpdatedAt,
+		PlainText:               value.PlainText, CreatedAt: value.CreatedAt, UpdatedAt: value.UpdatedAt,
 	})
 }
 
@@ -83,7 +94,7 @@ func articleFromListRow(value db.ListArticlesRow) Article {
 		Title: value.Title, Content: value.Content, Status: value.Status,
 		AuthorID: value.AuthorID, Version: value.Version,
 		RequiresAcknowledgement: value.RequiresAcknowledgement,
-		PlainText: value.PlainText, CreatedAt: value.CreatedAt, UpdatedAt: value.UpdatedAt,
+		PlainText:               value.PlainText, CreatedAt: value.CreatedAt, UpdatedAt: value.UpdatedAt,
 	})
 }
 
@@ -93,7 +104,7 @@ func articleFromSearchRow(value db.SearchArticlesRow) Article {
 		Title: value.Title, Content: value.Content, Status: value.Status,
 		AuthorID: value.AuthorID, Version: value.Version,
 		RequiresAcknowledgement: value.RequiresAcknowledgement,
-		PlainText: value.PlainText, CreatedAt: value.CreatedAt, UpdatedAt: value.UpdatedAt,
+		PlainText:               value.PlainText, CreatedAt: value.CreatedAt, UpdatedAt: value.UpdatedAt,
 	})
 }
 
@@ -103,7 +114,7 @@ func articleFromIDsRow(value db.GetArticlesByIDsRow) Article {
 		Title: value.Title, Content: value.Content, Status: value.Status,
 		AuthorID: value.AuthorID, Version: value.Version,
 		RequiresAcknowledgement: value.RequiresAcknowledgement,
-		PlainText: value.PlainText, CreatedAt: value.CreatedAt, UpdatedAt: value.UpdatedAt,
+		PlainText:               value.PlainText, CreatedAt: value.CreatedAt, UpdatedAt: value.UpdatedAt,
 	})
 }
 
@@ -111,7 +122,7 @@ func versionFromDB(value db.ArticleVersion) ArticleVersion {
 	return ArticleVersion{
 		ID: value.ID, CompanyID: value.CompanyID, ArticleID: value.ArticleID,
 		Version: value.Version, Title: value.Title,
-		Content: append(json.RawMessage(nil), value.Content...),
+		Content:  append(json.RawMessage(nil), value.Content...),
 		AuthorID: value.AuthorID, CreatedAt: value.CreatedAt,
 	}
 }
@@ -161,7 +172,7 @@ func accessToJSON(settings AccessSettings) ([]byte, error) {
 		PositionIDs   []string `json:"positionIds"`
 		UserIDs       []string `json:"userIds"`
 	}{
-		Scope: string(settings.Scope),
+		Scope:         string(settings.Scope),
 		DepartmentIDs: uuidStrings(settings.DepartmentIDs),
 		PositionIDs:   uuidStrings(settings.PositionIDs),
 		UserIDs:       uuidStrings(settings.UserIDs),
@@ -210,13 +221,13 @@ func sectionIndex(sections []Section) map[uuid.UUID]Section {
 	return result
 }
 
-func audiencePayload(section Section, sections map[uuid.UUID]Section) map[string]any {
+func audiencePayload(section Section, sections map[uuid.UUID]Section) *eventsv1.ArticleAudience {
 	effective := domainaccess.EffectiveAccess(section.domain(sections), domainIndex(sections))
-	return map[string]any{
-		"scope": audienceScopeValue(effective.Scope),
-		"departmentIds": uuidStrings(effective.DepartmentIDs),
-		"positionIds":   uuidStrings(effective.PositionIDs),
-		"userIds":       uuidStrings(effective.UserIDs),
+	return &eventsv1.ArticleAudience{
+		Scope:         audienceScopeValue(effective.Scope),
+		DepartmentIds: uuidStrings(effective.DepartmentIDs),
+		PositionIds:   uuidStrings(effective.PositionIDs),
+		UserIds:       uuidStrings(effective.UserIDs),
 	}
 }
 
@@ -228,11 +239,11 @@ func domainIndex(sections map[uuid.UUID]Section) map[uuid.UUID]domainaccess.Sect
 	return result
 }
 
-func audienceScopeValue(scope domainaccess.Scope) string {
+func audienceScopeValue(scope domainaccess.Scope) eventsv1.ArticleAudienceScope {
 	switch scope {
 	case domainaccess.ScopeCustom:
-		return "ARTICLE_AUDIENCE_SCOPE_CUSTOM"
+		return eventsv1.ArticleAudienceScope_ARTICLE_AUDIENCE_SCOPE_CUSTOM
 	default:
-		return "ARTICLE_AUDIENCE_SCOPE_COMPANY"
+		return eventsv1.ArticleAudienceScope_ARTICLE_AUDIENCE_SCOPE_COMPANY
 	}
 }

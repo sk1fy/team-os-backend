@@ -10,20 +10,38 @@ import (
 )
 
 type Company struct {
-	client companyv1.CompanyServiceClient
+	client  companyv1.CompanyServiceClient
+	breaker *circuitBreaker
 }
 
 func NewCompany(client companyv1.CompanyServiceClient) *Company {
-	return &Company{client: client}
+	return &Company{client: client, breaker: newCircuitBreaker()}
 }
 
 var _ application.CompanyClient = (*Company)(nil)
 
+func (c *Company) ValidateUser(ctx context.Context, token string, userID uuid.UUID) error {
+	response, err := callWithResilience(ctx, token, c.breaker, func(callContext context.Context) (*companyv1.GetUsersByIdsResponse, error) {
+		return c.client.GetUsersByIds(callContext, &companyv1.GetUsersByIdsRequest{
+			UserIds: []string{userID.String()},
+		})
+	})
+	if err != nil {
+		return fmt.Errorf("company.GetUsersByIds: %w", err)
+	}
+	users := response.GetUsers()
+	if len(users) != 1 || users[0].GetId() != userID.String() ||
+		users[0].GetStatus() != companyv1.UserStatus_USER_STATUS_ACTIVE {
+		return fmt.Errorf("company.GetUsersByIds: active user %s not found", userID)
+	}
+	return nil
+}
+
 func (c *Company) ResolvePositionUsers(ctx context.Context, token string, positionID uuid.UUID) ([]uuid.UUID, error) {
-	callContext, cancel := outgoing(ctx, token)
-	defer cancel()
-	response, err := c.client.ResolvePositionUsers(callContext, &companyv1.ResolvePositionUsersRequest{
-		PositionId: positionID.String(),
+	response, err := callWithResilience(ctx, token, c.breaker, func(callContext context.Context) (*companyv1.ResolvePositionUsersResponse, error) {
+		return c.client.ResolvePositionUsers(callContext, &companyv1.ResolvePositionUsersRequest{
+			PositionId: positionID.String(),
+		})
 	})
 	if err != nil {
 		return nil, fmt.Errorf("company.ResolvePositionUsers: %w", err)
@@ -32,10 +50,10 @@ func (c *Company) ResolvePositionUsers(ctx context.Context, token string, positi
 }
 
 func (c *Company) ResolveDepartmentUsers(ctx context.Context, token string, departmentID uuid.UUID) ([]uuid.UUID, error) {
-	callContext, cancel := outgoing(ctx, token)
-	defer cancel()
-	response, err := c.client.ResolveDepartmentUsers(callContext, &companyv1.ResolveDepartmentUsersRequest{
-		DepartmentId: departmentID.String(), IncludeDescendants: true,
+	response, err := callWithResilience(ctx, token, c.breaker, func(callContext context.Context) (*companyv1.ResolveDepartmentUsersResponse, error) {
+		return c.client.ResolveDepartmentUsers(callContext, &companyv1.ResolveDepartmentUsersRequest{
+			DepartmentId: departmentID.String(), IncludeDescendants: true,
+		})
 	})
 	if err != nil {
 		return nil, fmt.Errorf("company.ResolveDepartmentUsers: %w", err)

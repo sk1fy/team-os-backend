@@ -11,6 +11,14 @@ import (
 
 func (s *Service) GetProgress(ctx context.Context, actor Actor, courseID *uuid.UUID) ([]Progress, error) {
 	queries := db.New(s.pool)
+	if !canReadAcademy(actor) {
+		return nil, forbidden("Недостаточно прав для просмотра академии")
+	}
+	if actor.Role == "partner" && courseID != nil {
+		if err := s.requireCourseAccess(ctx, queries, actor, *courseID); err != nil {
+			return nil, err
+		}
+	}
 	var rows []db.Progress
 	var err error
 	switch {
@@ -28,8 +36,19 @@ func (s *Service) GetProgress(ctx context.Context, actor Actor, courseID *uuid.U
 	if err != nil {
 		return nil, internal("Не удалось получить прогресс", err)
 	}
-	if actor.Role == "partner" && courseID != nil {
-		rows = slices.DeleteFunc(rows, func(row db.Progress) bool { return row.CourseID != *courseID })
+	if actor.Role == "partner" {
+		assignedIDs, assignmentErr := s.assignedCourseIDs(ctx, queries, actor)
+		if assignmentErr != nil {
+			return nil, assignmentErr
+		}
+		assigned := make(map[uuid.UUID]struct{}, len(assignedIDs))
+		for _, assignedID := range assignedIDs {
+			assigned[assignedID] = struct{}{}
+		}
+		rows = slices.DeleteFunc(rows, func(row db.Progress) bool {
+			_, allowed := assigned[row.CourseID]
+			return !allowed
+		})
 	}
 
 	attemptRows, err := queries.GetQuizAttemptsWithCourse(ctx, actor.CompanyID)
@@ -78,6 +97,9 @@ func (s *Service) MarkLessonComplete(ctx context.Context, actor Actor, input Mar
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
 	queries := db.New(tx)
+	if err = s.requireCourseAccess(ctx, queries, actor, input.CourseID); err != nil {
+		return Progress{}, err
+	}
 
 	lesson, err := queries.GetLesson(ctx, db.GetLessonParams{CompanyID: actor.CompanyID, ID: input.LessonID})
 	if err != nil {

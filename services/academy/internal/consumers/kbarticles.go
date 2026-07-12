@@ -13,7 +13,8 @@ import (
 
 const stream = "TEAMOS"
 
-// Start subscribes to kb article events. Subscriptions drain when ctx ends.
+// Start subscribes to KB replication and organization assignment events.
+// Subscriptions drain when ctx ends.
 func Start(ctx context.Context, bus *eventbus.Bus, service *application.Service, logger *slog.Logger) error {
 	if logger == nil {
 		logger = slog.Default()
@@ -32,6 +33,26 @@ func Start(ctx context.Context, bus *eventbus.Bus, service *application.Service,
 			subject: "teamos.kb.article.deleted.v1",
 			durable: "academy-kb-article-deleted",
 			handler: service.HandleKbArticleDeleted,
+		},
+		{
+			subject: "teamos.org.user.created.v1",
+			durable: "academy-org-user-created",
+			handler: service.HandleOrgUserCreated,
+		},
+		{
+			subject: "teamos.org.user.updated.v1",
+			durable: "academy-org-user-updated",
+			handler: service.HandleOrgUserUpdated,
+		},
+		{
+			subject: "teamos.org.user.deactivated.v1",
+			durable: "academy-org-user-deactivated",
+			handler: service.HandleOrgUserDeactivated,
+		},
+		{
+			subject: "teamos.org.position.deleted.v1",
+			durable: "academy-org-position-deleted",
+			handler: service.HandleOrgPositionDeleted,
 		},
 	}
 	for _, subscription := range subscriptions {

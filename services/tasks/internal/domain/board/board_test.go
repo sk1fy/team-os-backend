@@ -323,3 +323,58 @@ func TestReorderAfterMove(t *testing.T) {
 		t.Fatalf("otherB order = %d, want 1", orders[otherB])
 	}
 }
+
+func TestReorderAfterMoveEdgeCases(t *testing.T) {
+	t.Parallel()
+	t.Run("moves forward in the same column", func(t *testing.T) {
+		moved := uuid.New()
+		first := uuid.New()
+		second := uuid.New()
+		updates := ReorderAfterMove(moved, column1, column1, 2, []MovableTask{
+			{ID: moved, ColumnID: column1, Order: 0},
+			{ID: first, ColumnID: column1, Order: 1},
+			{ID: second, ColumnID: column1, Order: 2},
+		})
+		assertOrders(t, updates, map[uuid.UUID]int32{moved: 2, first: 0, second: 1})
+	})
+	t.Run("moves backward to zero", func(t *testing.T) {
+		moved := uuid.New()
+		first := uuid.New()
+		second := uuid.New()
+		updates := ReorderAfterMove(moved, column1, column1, 0, []MovableTask{
+			{ID: first, ColumnID: column1, Order: 0},
+			{ID: second, ColumnID: column1, Order: 1},
+			{ID: moved, ColumnID: column1, Order: 2},
+		})
+		assertOrders(t, updates, map[uuid.UUID]int32{moved: 0, first: 1, second: 2})
+	})
+	t.Run("moves to empty target", func(t *testing.T) {
+		moved := uuid.New()
+		updates := ReorderAfterMove(moved, column1, column2, 5, []MovableTask{
+			{ID: moved, ColumnID: column1, Order: 0},
+		})
+		assertOrders(t, updates, map[uuid.UUID]int32{moved: 0})
+	})
+	t.Run("clamps order to target end", func(t *testing.T) {
+		moved := uuid.New()
+		target := uuid.New()
+		updates := ReorderAfterMove(moved, column1, column2, 100, []MovableTask{
+			{ID: moved, ColumnID: column1, Order: 0},
+			{ID: target, ColumnID: column2, Order: 0},
+		})
+		assertOrders(t, updates, map[uuid.UUID]int32{moved: 1})
+	})
+}
+
+func assertOrders(t *testing.T, updates []OrderUpdate, expected map[uuid.UUID]int32) {
+	t.Helper()
+	actual := make(map[uuid.UUID]int32, len(updates))
+	for _, update := range updates {
+		actual[update.ID] = update.Order
+	}
+	for id, order := range expected {
+		if actual[id] != order {
+			t.Fatalf("order[%s] = %d, want %d; updates=%+v", id, actual[id], order, updates)
+		}
+	}
+}

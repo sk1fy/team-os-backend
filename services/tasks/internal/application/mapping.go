@@ -53,16 +53,16 @@ func taskFromDB(value db.Task) (Task, error) {
 	return Task{
 		ID: value.ID, CompanyID: value.CompanyID, BoardID: value.BoardID,
 		ColumnID: value.ColumnID, Order: value.Order, Title: value.Title,
-		Description: append(json.RawMessage(nil), value.Description...),
-		AuthorID: value.AuthorID,
-		AssigneeIDs: append([]uuid.UUID(nil), value.AssigneeIds...),
+		Description:        append(json.RawMessage(nil), value.Description...),
+		AuthorID:           value.AuthorID,
+		AssigneeIDs:        append([]uuid.UUID(nil), value.AssigneeIds...),
 		AssigneePositionID: uuidPointer(value.AssigneePositionID),
-		WatcherIDs: append([]uuid.UUID(nil), value.WatcherIds...),
-		DueDate: timePointer(value.DueDate), Priority: value.Priority,
-		LabelIDs: append([]uuid.UUID(nil), value.LabelIds...),
+		WatcherIDs:         append([]uuid.UUID(nil), value.WatcherIds...),
+		DueDate:            timePointer(value.DueDate), Priority: value.Priority,
+		LabelIDs:  append([]uuid.UUID(nil), value.LabelIds...),
 		Checklist: checklist, Attachments: attachments, Source: source,
 		LinkedArticleIDs: append([]uuid.UUID(nil), value.LinkedArticleIds...),
-		Recurrence: recurrence, CompletedAt: timePointer(value.CompletedAt),
+		Recurrence:       recurrence, CompletedAt: timePointer(value.CompletedAt),
 		CreatedAt: value.CreatedAt, UpdatedAt: value.UpdatedAt,
 	}, nil
 }
@@ -70,7 +70,7 @@ func taskFromDB(value db.Task) (Task, error) {
 func commentFromDB(value db.Comment) Comment {
 	return Comment{
 		ID: value.ID, TaskID: value.TaskID, AuthorID: value.AuthorID,
-		Content: append(json.RawMessage(nil), value.Content...),
+		Content:   append(json.RawMessage(nil), value.Content...),
 		CreatedAt: value.CreatedAt,
 	}
 }
@@ -251,26 +251,6 @@ func requiredText(value, message string) (string, error) {
 		return "", validation(message)
 	}
 	return normalized, nil
-}
-
-func parseUUIDList(values []string) ([]uuid.UUID, error) {
-	result := make([]uuid.UUID, 0, len(values))
-	for _, value := range values {
-		parsed, err := uuid.Parse(value)
-		if err != nil {
-			return nil, err
-		}
-		result = append(result, parsed)
-	}
-	return result, nil
-}
-
-func uuidStrings(values []uuid.UUID) []string {
-	result := make([]string, len(values))
-	for index, value := range values {
-		result[index] = value.String()
-	}
-	return result
 }
 
 func uuidPointer(value uuid.NullUUID) *uuid.UUID {

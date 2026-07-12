@@ -13,6 +13,7 @@ import (
 	academyv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/academy/v1"
 	companyv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v1"
 	kbv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/kb/v1"
+	notificationsv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/notifications/v1"
 	tasksv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/tasks/v1"
 	"github.com/sk1fy/team-os-backend/pkg/apierror"
 	"github.com/sk1fy/team-os-backend/pkg/httpx"
@@ -31,12 +32,13 @@ type CookieConfig struct {
 
 type Handler struct {
 	api.Unimplemented
-	company companyv1.CompanyServiceClient
-	kb      kbv1.KbServiceClient
-	tasks   tasksv1.TasksServiceClient
-	academy academyv1.AcademyServiceClient
-	cookie  CookieConfig
-	logger  *slog.Logger
+	company       companyv1.CompanyServiceClient
+	kb            kbv1.KbServiceClient
+	tasks         tasksv1.TasksServiceClient
+	academy       academyv1.AcademyServiceClient
+	notifications notificationsv1.NotificationsServiceClient
+	cookie        CookieConfig
+	logger        *slog.Logger
 }
 
 func NewHandler(
@@ -46,14 +48,19 @@ func NewHandler(
 	academyClient academyv1.AcademyServiceClient,
 	cookie CookieConfig,
 	logger *slog.Logger,
+	notificationClients ...notificationsv1.NotificationsServiceClient,
 ) *Handler {
 	if logger == nil {
 		logger = slog.Default()
 	}
-	return &Handler{
+	h := &Handler{
 		company: companyClient, kb: kbClient, tasks: tasksClient, academy: academyClient,
 		cookie: cookie, logger: logger,
 	}
+	if len(notificationClients) > 0 {
+		h.notifications = notificationClients[0]
+	}
+	return h
 }
 
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {

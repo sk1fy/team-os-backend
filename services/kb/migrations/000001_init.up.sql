@@ -59,6 +59,8 @@ CREATE TABLE acknowledgements (
 CREATE TABLE outbox (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     company_id uuid NOT NULL,
+    aggregate_id uuid NOT NULL,
+    event_order bigserial NOT NULL,
     subject text NOT NULL,
     payload jsonb NOT NULL,
     headers jsonb NOT NULL DEFAULT '{}',
@@ -69,7 +71,7 @@ CREATE TABLE outbox (
     last_error text
 );
 
-CREATE INDEX outbox_unpublished_idx ON outbox (next_attempt_at, occurred_at)
+CREATE INDEX outbox_unpublished_idx ON outbox (company_id, aggregate_id, event_order, next_attempt_at)
     WHERE published_at IS NULL;
 
 CREATE TABLE processed_events (

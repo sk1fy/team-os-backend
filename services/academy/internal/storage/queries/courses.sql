@@ -18,6 +18,9 @@ SELECT id, company_id, title, description, cover_url, status, author_id,
 FROM courses
 WHERE company_id = $1 AND id = $2;
 
+-- name: LockCourseOrder :exec
+SELECT pg_advisory_xact_lock(hashtextextended(sqlc.arg(course_id)::uuid::text, 0));
+
 -- name: CreateCourse :one
 INSERT INTO courses (
     id, company_id, title, description, cover_url, status, author_id,

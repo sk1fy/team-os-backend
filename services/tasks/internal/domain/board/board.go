@@ -43,10 +43,10 @@ type ColumnView struct {
 }
 
 type Stats struct {
-	InWork         int
-	Today          int
-	Overdue        int
-	DoneLast7Days  int
+	InWork        int
+	Today         int
+	Overdue       int
+	DoneLast7Days int
 }
 
 type MovableTask struct {
@@ -206,6 +206,18 @@ func ReorderAfterMove(
 	newOrder int32,
 	tasks []MovableTask,
 ) []OrderUpdate {
+	targetSize := int32(0)
+	for _, task := range tasks {
+		if task.ID != movedID && task.ColumnID == newColumnID {
+			targetSize++
+		}
+	}
+	if newOrder < 0 {
+		newOrder = 0
+	}
+	if newOrder > targetSize {
+		newOrder = targetSize
+	}
 	updates := []OrderUpdate{{ID: movedID, ColumnID: newColumnID, Order: newOrder}}
 
 	columnIDs := []uuid.UUID{oldColumnID}

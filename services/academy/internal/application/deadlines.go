@@ -5,7 +5,9 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5"
+	eventsv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/events/v1"
 	"github.com/sk1fy/team-os-backend/services/academy/internal/storage/db"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const dueSoonWindow = 72 * time.Hour
@@ -39,19 +41,17 @@ func (s *Service) ProcessDeadlines(ctx context.Context) error {
 			// about the near deadline would be misleading.
 			continue
 		}
-		payload := map[string]any{
-			"assignmentId":     assignment.ID.String(),
-			"courseId":         assignment.CourseID.String(),
-			"courseTitle":      assignment.CourseTitle,
-			"dueDate":          dueDate.Time.UTC().Format(time.RFC3339Nano),
-			"recipientUserIds": uuidStrings(assignment.ResolvedUserIds),
-			"assigneeType":     assignment.AssigneeType,
-			"link":             academyLink,
+		payload := &eventsv1.AcademyCourseDueSoonPayload{
+			AssignmentId: assignment.ID.String(), CourseId: assignment.CourseID.String(),
+			CourseTitle: assignment.CourseTitle, DueDate: timestamppb.New(dueDate.Time.UTC()),
+			RecipientUserIds: uuidStrings(assignment.ResolvedUserIds), Link: academyLink,
+			AssigneeType: assigneeTypeToEvent(assignment.AssigneeType),
 		}
 		if assignment.AssigneeID.Valid {
-			payload["assigneeId"] = assignment.AssigneeID.UUID.String()
+			value := assignment.AssigneeID.UUID.String()
+			payload.AssigneeId = &value
 		}
-		if err = s.emit(ctx, queries, assignment.CompanyID, assignment.AssignedByID,
+		if err = s.emit(ctx, queries, assignment.CompanyID, assignment.CourseID, assignment.AssignedByID,
 			"teamos.academy.course.due_soon.v1", payload); err != nil {
 			return err
 		}

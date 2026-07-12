@@ -85,7 +85,7 @@ func articleFromProto(value *kbv1.Article) (api.Article, error) {
 		Id: id, SectionId: sectionID, Title: value.GetTitle(), Content: content,
 		Status: status, AuthorId: authorID, Version: int(value.GetVersion()),
 		RequiresAcknowledgement: value.GetRequiresAcknowledgement(),
-		CreatedAt: createdAt, UpdatedAt: updatedAt,
+		CreatedAt:               createdAt, UpdatedAt: updatedAt,
 	}, nil
 }
 
@@ -208,7 +208,7 @@ func accessToProto(value api.AccessSettings) (*kbv1.AccessSettings, error) {
 		return nil, err
 	}
 	return &kbv1.AccessSettings{
-		Scope: scope,
+		Scope:         scope,
 		DepartmentIds: idStrings(value.DepartmentIds),
 		PositionIds:   idStrings(value.PositionIds),
 		UserIds:       idStrings(value.UserIds),

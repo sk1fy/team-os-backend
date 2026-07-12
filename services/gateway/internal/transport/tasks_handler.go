@@ -6,6 +6,7 @@ import (
 	tasksv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/tasks/v1"
 	"github.com/sk1fy/team-os-backend/pkg/apierror"
 	"github.com/sk1fy/team-os-backend/services/gateway/internal/api"
+	"github.com/sk1fy/team-os-backend/services/gateway/internal/authmw"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -24,9 +25,9 @@ func (h *Handler) GetBoards(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, converted)
 }
 
-func (h *Handler) GetColumns(w http.ResponseWriter, r *http.Request, boardId api.ID) {
+func (h *Handler) GetColumns(w http.ResponseWriter, r *http.Request, boardID api.ID) {
 	response, err := h.tasks.GetColumns(outgoingContext(r), &tasksv1.GetColumnsRequest{
-		BoardId: boardId.String(),
+		BoardId: boardID.String(),
 	})
 	if err != nil {
 		h.writeTasksRPCError(w, r, err)
@@ -40,12 +41,15 @@ func (h *Handler) GetColumns(w http.ResponseWriter, r *http.Request, boardId api
 	writeJSON(w, http.StatusOK, converted)
 }
 
-func (h *Handler) CreateColumn(w http.ResponseWriter, r *http.Request, boardId api.ID) {
+func (h *Handler) CreateColumn(w http.ResponseWriter, r *http.Request, boardID api.ID) {
+	if !requireBoardManager(w, r) {
+		return
+	}
 	var input api.CreateTaskColumnInput
 	if !decode(w, r, &input) {
 		return
 	}
-	request := &tasksv1.CreateColumnRequest{BoardId: boardId.String(), Name: input.Name, Color: input.Color}
+	request := &tasksv1.CreateColumnRequest{BoardId: boardID.String(), Name: input.Name, Color: input.Color}
 	response, err := h.tasks.CreateColumn(outgoingContext(r), request)
 	if err != nil {
 		h.writeTasksRPCError(w, r, err)
@@ -60,6 +64,9 @@ func (h *Handler) CreateColumn(w http.ResponseWriter, r *http.Request, boardId a
 }
 
 func (h *Handler) UpdateColumn(w http.ResponseWriter, r *http.Request, id api.Id) {
+	if !requireBoardManager(w, r) {
+		return
+	}
 	var input api.UpdateTaskColumnInput
 	if !decode(w, r, &input) {
 		return
@@ -76,6 +83,19 @@ func (h *Handler) UpdateColumn(w http.ResponseWriter, r *http.Request, id api.Id
 		return
 	}
 	writeJSON(w, http.StatusOK, converted)
+}
+
+func requireBoardManager(w http.ResponseWriter, r *http.Request) bool {
+	claims, ok := authmw.Claims(r.Context())
+	if !ok {
+		apierror.Write(w, apierror.Unauthorized())
+		return false
+	}
+	if claims.Role != "owner" && claims.Role != "admin" {
+		apierror.Write(w, apierror.Forbidden("Недостаточно прав для изменения структуры доски"))
+		return false
+	}
+	return true
 }
 
 func (h *Handler) GetTasks(w http.ResponseWriter, r *http.Request, params api.GetTasksParams) {
@@ -163,7 +183,7 @@ func (h *Handler) UpdateTask(w http.ResponseWriter, r *http.Request, id api.Id) 
 	writeJSON(w, http.StatusOK, converted)
 }
 
-func (h *Handler) MoveTask(w http.ResponseWriter, r *http.Request, taskId api.ID) {
+func (h *Handler) MoveTask(w http.ResponseWriter, r *http.Request, taskID api.ID) {
 	var input api.MoveTaskInput
 	if !decode(w, r, &input) {
 		return
@@ -173,7 +193,7 @@ func (h *Handler) MoveTask(w http.ResponseWriter, r *http.Request, taskId api.ID
 		return
 	}
 	response, err := h.tasks.MoveTask(outgoingContext(r), &tasksv1.MoveTaskRequest{
-		TaskId: taskId.String(), ColumnId: input.ColumnId.String(), Order: uint32(input.Order),
+		TaskId: taskID.String(), ColumnId: input.ColumnId.String(), Order: uint32(input.Order),
 	})
 	if err != nil {
 		h.writeTasksRPCError(w, r, err)
@@ -187,9 +207,9 @@ func (h *Handler) MoveTask(w http.ResponseWriter, r *http.Request, taskId api.ID
 	writeJSON(w, http.StatusOK, converted)
 }
 
-func (h *Handler) GetComments(w http.ResponseWriter, r *http.Request, taskId api.ID) {
+func (h *Handler) GetComments(w http.ResponseWriter, r *http.Request, taskID api.ID) {
 	response, err := h.tasks.GetComments(outgoingContext(r), &tasksv1.GetCommentsRequest{
-		TaskId: taskId.String(),
+		TaskId: taskID.String(),
 	})
 	if err != nil {
 		h.writeTasksRPCError(w, r, err)
@@ -203,7 +223,7 @@ func (h *Handler) GetComments(w http.ResponseWriter, r *http.Request, taskId api
 	writeJSON(w, http.StatusOK, converted)
 }
 
-func (h *Handler) AddComment(w http.ResponseWriter, r *http.Request, taskId api.ID) {
+func (h *Handler) AddComment(w http.ResponseWriter, r *http.Request, taskID api.ID) {
 	var input api.AddTaskCommentInput
 	if !decode(w, r, &input) {
 		return
@@ -214,7 +234,7 @@ func (h *Handler) AddComment(w http.ResponseWriter, r *http.Request, taskId api.
 		return
 	}
 	response, err := h.tasks.AddComment(outgoingContext(r), &tasksv1.AddCommentRequest{
-		TaskId: taskId.String(), Content: content,
+		TaskId: taskID.String(), Content: content,
 	})
 	if err != nil {
 		h.writeTasksRPCError(w, r, err)

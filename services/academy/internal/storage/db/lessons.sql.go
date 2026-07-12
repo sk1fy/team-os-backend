@@ -104,11 +104,17 @@ func (q *Queries) DeleteLesson(ctx context.Context, arg DeleteLessonParams) (int
 const detachLinkedArticle = `-- name: DetachLinkedArticle :execrows
 UPDATE lessons
 SET source_mode = 'copy'
-WHERE source_article_id = $1 AND source_mode = 'link'
+WHERE company_id = $1
+  AND source_article_id = $2 AND source_mode = 'link'
 `
 
-func (q *Queries) DetachLinkedArticle(ctx context.Context, articleID uuid.NullUUID) (int64, error) {
-	result, err := q.db.Exec(ctx, detachLinkedArticle, articleID)
+type DetachLinkedArticleParams struct {
+	CompanyID uuid.UUID     `json:"company_id"`
+	ArticleID uuid.NullUUID `json:"article_id"`
+}
+
+func (q *Queries) DetachLinkedArticle(ctx context.Context, arg DetachLinkedArticleParams) (int64, error) {
+	result, err := q.db.Exec(ctx, detachLinkedArticle, arg.CompanyID, arg.ArticleID)
 	if err != nil {
 		return 0, err
 	}
@@ -262,6 +268,51 @@ func (q *Queries) GetLessons(ctx context.Context, companyID uuid.UUID) ([]Lesson
 	return items, nil
 }
 
+const getLessonsByCourseIds = `-- name: GetLessonsByCourseIds :many
+SELECT id, company_id, course_id, section_id, title, "order", content,
+    source_article_id, source_article_title, source_mode, quiz_id
+FROM lessons
+WHERE company_id = $1 AND course_id = ANY($2::uuid[])
+ORDER BY course_id, "order", id
+`
+
+type GetLessonsByCourseIdsParams struct {
+	CompanyID uuid.UUID   `json:"company_id"`
+	CourseIds []uuid.UUID `json:"course_ids"`
+}
+
+func (q *Queries) GetLessonsByCourseIds(ctx context.Context, arg GetLessonsByCourseIdsParams) ([]Lesson, error) {
+	rows, err := q.db.Query(ctx, getLessonsByCourseIds, arg.CompanyID, arg.CourseIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Lesson{}
+	for rows.Next() {
+		var i Lesson
+		if err := rows.Scan(
+			&i.ID,
+			&i.CompanyID,
+			&i.CourseID,
+			&i.SectionID,
+			&i.Title,
+			&i.Order,
+			&i.Content,
+			&i.SourceArticleID,
+			&i.SourceArticleTitle,
+			&i.SourceMode,
+			&i.QuizID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getSectionLessonIds = `-- name: GetSectionLessonIds :many
 SELECT id
 FROM lessons
@@ -370,22 +421,51 @@ func (q *Queries) MoveLessonRow(ctx context.Context, arg MoveLessonRowParams) (L
 	return i, err
 }
 
+const normalizeSectionLessonOrder = `-- name: NormalizeSectionLessonOrder :exec
+WITH ordered AS (
+    SELECT l.id, row_number() OVER (ORDER BY l."order", l.id) - 1 AS next_order
+    FROM lessons AS l
+    WHERE l.company_id = $1 AND l.section_id = $2
+)
+UPDATE lessons
+SET "order" = ordered.next_order
+FROM ordered
+WHERE lessons.id = ordered.id
+`
+
+type NormalizeSectionLessonOrderParams struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	SectionID uuid.UUID `json:"section_id"`
+}
+
+func (q *Queries) NormalizeSectionLessonOrder(ctx context.Context, arg NormalizeSectionLessonOrderParams) error {
+	_, err := q.db.Exec(ctx, normalizeSectionLessonOrder, arg.CompanyID, arg.SectionID)
+	return err
+}
+
 const replicateLinkedArticle = `-- name: ReplicateLinkedArticle :execrows
 UPDATE lessons
 SET content = $1,
     title = CASE WHEN title = source_article_title THEN $2::text ELSE title END,
     source_article_title = $2::text
-WHERE source_article_id = $3 AND source_mode = 'link'
+WHERE company_id = $3
+  AND source_article_id = $4 AND source_mode = 'link'
 `
 
 type ReplicateLinkedArticleParams struct {
 	Content   []byte        `json:"content"`
 	NewTitle  string        `json:"new_title"`
+	CompanyID uuid.UUID     `json:"company_id"`
 	ArticleID uuid.NullUUID `json:"article_id"`
 }
 
 func (q *Queries) ReplicateLinkedArticle(ctx context.Context, arg ReplicateLinkedArticleParams) (int64, error) {
-	result, err := q.db.Exec(ctx, replicateLinkedArticle, arg.Content, arg.NewTitle, arg.ArticleID)
+	result, err := q.db.Exec(ctx, replicateLinkedArticle,
+		arg.Content,
+		arg.NewTitle,
+		arg.CompanyID,
+		arg.ArticleID,
+	)
 	if err != nil {
 		return 0, err
 	}

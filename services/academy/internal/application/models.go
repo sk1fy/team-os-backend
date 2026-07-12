@@ -119,6 +119,7 @@ type KbClient interface {
 }
 
 type CompanyClient interface {
+	ValidateUser(ctx context.Context, token string, userID uuid.UUID) error
 	ResolvePositionUsers(ctx context.Context, token string, positionID uuid.UUID) ([]uuid.UUID, error)
 	ResolveDepartmentUsers(ctx context.Context, token string, departmentID uuid.UUID) ([]uuid.UUID, error)
 }

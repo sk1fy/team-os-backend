@@ -9,7 +9,11 @@ import (
 )
 
 func (s *Service) GetCourseSections(ctx context.Context, actor Actor, courseID uuid.UUID) ([]CourseSection, error) {
-	rows, err := db.New(s.pool).GetCourseSections(ctx, db.GetCourseSectionsParams{
+	queries := db.New(s.pool)
+	if err := s.requireCourseAccess(ctx, queries, actor, courseID); err != nil {
+		return nil, err
+	}
+	rows, err := queries.GetCourseSections(ctx, db.GetCourseSectionsParams{
 		CompanyID: actor.CompanyID, CourseID: courseID,
 	})
 	if err != nil {
@@ -41,6 +45,9 @@ func (s *Service) CreateCourseSection(ctx context.Context, actor Actor, input Cr
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
 	queries := db.New(tx)
+	if err = queries.LockCourseOrder(ctx, input.CourseID); err != nil {
+		return CourseSection{}, internal("Не удалось заблокировать порядок курса", err)
+	}
 
 	if _, err = queries.GetCourse(ctx, db.GetCourseParams{
 		CompanyID: actor.CompanyID, ID: input.CourseID,
@@ -133,6 +140,11 @@ func (s *Service) DeleteCourseSection(ctx context.Context, actor Actor, id uuid.
 		CompanyID: actor.CompanyID, ID: id,
 	}); err != nil {
 		return internal("Не удалось удалить раздел курса", err)
+	}
+	if err = queries.RecomputeCourseProgressAfterLessonDelete(ctx, db.RecomputeCourseProgressAfterLessonDeleteParams{
+		CompanyID: actor.CompanyID, CourseID: section.CourseID,
+	}); err != nil {
+		return internal("Не удалось пересчитать прогресс", err)
 	}
 	if err = tx.Commit(ctx); err != nil {
 		return internal("Не удалось удалить раздел курса", err)

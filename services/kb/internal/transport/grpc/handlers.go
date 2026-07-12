@@ -6,6 +6,8 @@ import (
 	"github.com/google/uuid"
 	kbv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/kb/v1"
 	"github.com/sk1fy/team-os-backend/services/kb/internal/application"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func (s *Server) GetSections(ctx context.Context, _ *kbv1.GetSectionsRequest) (*kbv1.GetSectionsResponse, error) {
@@ -198,6 +200,9 @@ func (s *Server) UpdateArticle(ctx context.Context, request *kbv1.UpdateArticleR
 		input.RequiresAcknowledgement = request.RequiresAcknowledgement
 	}
 	if request.ExpectedVersion != nil {
+		if request.GetExpectedVersion() > uint32(1<<31-1) {
+			return nil, status.Error(codes.InvalidArgument, "Некорректная ожидаемая версия")
+		}
 		version := int32(request.GetExpectedVersion())
 		input.ExpectedVersion = &version
 	}
@@ -227,6 +232,9 @@ func (s *Server) RollbackArticle(ctx context.Context, request *kbv1.RollbackArti
 	}
 	input := application.RollbackArticleInput{ArticleID: articleID, VersionID: versionID}
 	if request.ExpectedVersion != nil {
+		if request.GetExpectedVersion() > uint32(1<<31-1) {
+			return nil, status.Error(codes.InvalidArgument, "Некорректная ожидаемая версия")
+		}
 		version := int32(request.GetExpectedVersion())
 		input.ExpectedVersion = &version
 	}

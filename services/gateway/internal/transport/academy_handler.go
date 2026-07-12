@@ -158,9 +158,9 @@ func (h *Handler) DeleteCourse(w http.ResponseWriter, r *http.Request, id api.Id
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func (h *Handler) GetCourseSections(w http.ResponseWriter, r *http.Request, courseId api.ID) {
+func (h *Handler) GetCourseSections(w http.ResponseWriter, r *http.Request, courseID api.ID) {
 	response, err := h.academy.GetCourseSections(outgoingContext(r), &academyv1.GetCourseSectionsRequest{
-		CourseId: courseId.String(),
+		CourseId: courseID.String(),
 	})
 	if err != nil {
 		h.writeAcademyRPCError(w, r, err)
@@ -174,13 +174,13 @@ func (h *Handler) GetCourseSections(w http.ResponseWriter, r *http.Request, cour
 	writeJSON(w, http.StatusOK, converted)
 }
 
-func (h *Handler) CreateCourseSection(w http.ResponseWriter, r *http.Request, courseId api.ID) {
+func (h *Handler) CreateCourseSection(w http.ResponseWriter, r *http.Request, courseID api.ID) {
 	var input api.CreateCourseSectionInput
 	if !decode(w, r, &input) {
 		return
 	}
 	response, err := h.academy.CreateCourseSection(outgoingContext(r), &academyv1.CreateCourseSectionRequest{
-		CourseId: courseId.String(), Title: input.Title,
+		CourseId: courseID.String(), Title: input.Title,
 	})
 	if err != nil {
 		h.writeAcademyRPCError(w, r, err)
@@ -485,13 +485,13 @@ func (h *Handler) GetProgress(w http.ResponseWriter, r *http.Request, params api
 	writeJSON(w, http.StatusOK, converted)
 }
 
-func (h *Handler) MarkLessonComplete(w http.ResponseWriter, r *http.Request, lessonId api.ID) {
+func (h *Handler) MarkLessonComplete(w http.ResponseWriter, r *http.Request, lessonID api.ID) {
 	var input api.MarkLessonCompleteInput
 	if !decode(w, r, &input) {
 		return
 	}
 	request := &academyv1.MarkLessonCompleteRequest{
-		LessonId: lessonId.String(), CourseId: input.CourseId.String(),
+		LessonId: lessonID.String(), CourseId: input.CourseId.String(),
 	}
 	if input.UserId != nil {
 		userID := input.UserId.String()

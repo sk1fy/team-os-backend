@@ -12,6 +12,30 @@ FROM assignments
 WHERE company_id = $1 AND sqlc.arg(user_id)::uuid = ANY(resolved_user_ids)
 ORDER BY created_at, id;
 
+-- name: RecomputeUserAssignmentMembership :exec
+UPDATE assignments
+SET resolved_user_ids = ARRAY(
+    SELECT DISTINCT candidate
+    FROM unnest(
+        array_remove(resolved_user_ids, sqlc.arg(user_id)::uuid) ||
+        CASE
+            WHEN sqlc.arg(active)::boolean AND (
+                (assignee_type = 'user' AND assignee_id = sqlc.arg(user_id)::uuid) OR
+                (assignee_type = 'position' AND assignee_id = ANY(sqlc.arg(position_ids)::uuid[])) OR
+                (assignee_type = 'department' AND assignee_id = ANY(sqlc.arg(department_ids)::uuid[]))
+            ) THEN ARRAY[sqlc.arg(user_id)::uuid]
+            ELSE '{}'::uuid[]
+        END
+    ) AS candidate
+)
+WHERE company_id = sqlc.arg(company_id)
+  AND assignee_type IN ('user', 'position', 'department');
+
+-- name: ClearDeletedPositionAssignment :exec
+UPDATE assignments
+SET resolved_user_ids = '{}'
+WHERE company_id = $1 AND assignee_type = 'position' AND assignee_id = $2;
+
 -- name: CreateAssignment :one
 INSERT INTO assignments (
     id, company_id, course_id, assignee_type, assignee_id, invite_token,

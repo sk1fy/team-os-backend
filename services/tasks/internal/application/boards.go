@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/sk1fy/team-os-backend/services/tasks/internal/storage/db"
 )
@@ -13,14 +14,44 @@ func (s *Service) GetBoards(ctx context.Context, actor Actor) ([]Board, error) {
 	if err != nil {
 		return nil, internal("Не удалось получить доски", err)
 	}
+	visibleBoardIDs := map[uuid.UUID]struct{}(nil)
+	if actor.Role == "partner" {
+		tasks, taskErr := s.GetTasks(ctx, actor, nil)
+		if taskErr != nil {
+			return nil, taskErr
+		}
+		visibleBoardIDs = make(map[uuid.UUID]struct{}, len(tasks))
+		for _, task := range tasks {
+			visibleBoardIDs[task.BoardID] = struct{}{}
+		}
+	} else if actor.Role != "owner" && actor.Role != "admin" && actor.Role != "employee" {
+		return nil, forbidden("Недостаточно прав для просмотра досок")
+	}
 	boards := make([]Board, 0, len(rows))
 	for _, row := range rows {
-		boards = append(boards, boardFromDB(row))
+		board := boardFromDB(row)
+		if visibleBoardIDs != nil {
+			if _, ok := visibleBoardIDs[board.ID]; !ok {
+				continue
+			}
+		}
+		boards = append(boards, board)
 	}
 	return boards, nil
 }
 
 func (s *Service) GetColumns(ctx context.Context, actor Actor, boardID uuid.UUID) ([]TaskColumn, error) {
+	if actor.Role == "partner" {
+		tasks, err := s.GetTasks(ctx, actor, &boardID)
+		if err != nil {
+			return nil, err
+		}
+		if len(tasks) == 0 {
+			return nil, forbidden("Недостаточно прав для просмотра доски")
+		}
+	} else if actor.Role != "owner" && actor.Role != "admin" && actor.Role != "employee" {
+		return nil, forbidden("Недостаточно прав для просмотра доски")
+	}
 	if _, err := db.New(s.pool).GetBoard(ctx, db.GetBoardParams{
 		CompanyID: actor.CompanyID, ID: boardID,
 	}); err != nil {
@@ -47,11 +78,23 @@ type CreateColumnInput struct {
 }
 
 func (s *Service) CreateColumn(ctx context.Context, actor Actor, input CreateColumnInput) (TaskColumn, error) {
+	if !canManageBoardStructure(actor) {
+		return TaskColumn{}, forbidden("Недостаточно прав для изменения структуры доски")
+	}
 	name, err := requiredText(input.Name, "Укажите название колонки")
 	if err != nil {
 		return TaskColumn{}, err
 	}
-	if _, err = db.New(s.pool).GetBoard(ctx, db.GetBoardParams{
+	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{})
+	if err != nil {
+		return TaskColumn{}, internal("Не удалось начать транзакцию", err)
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+	queries := db.New(tx)
+	if err = queries.LockBoardOrder(ctx, input.BoardID); err != nil {
+		return TaskColumn{}, internal("Не удалось заблокировать порядок доски", err)
+	}
+	if _, err = queries.GetBoard(ctx, db.GetBoardParams{
 		CompanyID: actor.CompanyID, ID: input.BoardID,
 	}); err != nil {
 		if isNoRows(err) {
@@ -59,16 +102,19 @@ func (s *Service) CreateColumn(ctx context.Context, actor Actor, input CreateCol
 		}
 		return TaskColumn{}, internal("Не удалось проверить доску", err)
 	}
-	count, err := db.New(s.pool).CountColumnsByBoard(ctx, input.BoardID)
+	count, err := queries.CountColumnsByBoard(ctx, input.BoardID)
 	if err != nil {
 		return TaskColumn{}, internal("Не удалось определить порядок колонки", err)
 	}
-	row, err := db.New(s.pool).CreateColumn(ctx, db.CreateColumnParams{
+	row, err := queries.CreateColumn(ctx, db.CreateColumnParams{
 		ID: uuid.New(), BoardID: input.BoardID, Name: name,
 		Color: nullableText(input.Color), Order: count,
 	})
 	if err != nil {
 		return TaskColumn{}, internal("Не удалось создать колонку", err)
+	}
+	if err = tx.Commit(ctx); err != nil {
+		return TaskColumn{}, internal("Не удалось сохранить колонку", err)
 	}
 	return columnFromDB(row), nil
 }
@@ -80,6 +126,9 @@ type UpdateColumnInput struct {
 }
 
 func (s *Service) UpdateColumn(ctx context.Context, actor Actor, input UpdateColumnInput) (TaskColumn, error) {
+	if !canManageBoardStructure(actor) {
+		return TaskColumn{}, forbidden("Недостаточно прав для изменения структуры доски")
+	}
 	if input.Name == nil && input.Color == nil {
 		return TaskColumn{}, validation("Укажите хотя бы одно поле для обновления")
 	}

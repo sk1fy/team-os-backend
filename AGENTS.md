@@ -60,7 +60,7 @@ UUID-колонки **без FK**. Сервисы находят друг дру
 contracts/         # источник правды по интерфейсам
   openapi/         # teamos.yaml — внешний REST-контракт
   proto/           # protobuf межсервисных сервисов
-  events/          # схемы событий NATS + catalog.md
+  events/          # protobuf-схемы событий NATS
   gen/go/          # сгенерированный protobuf на Go (отдельный модуль)
 pkg/               # общие библиотеки (отдельный модуль): apierror, auth, eventbus, httpx
 services/          # по одному Go-модулю на сервис (company, gateway, ...)
@@ -92,8 +92,8 @@ Go-модули используют префикс `github.com/sk1fy/team-os-ba
 - **Доступ к БД:** `pgx/v5` + `sqlc`. Пиши SQL в `internal/storage/queries/*.sql`, затем `make gen`.
 - **Миграции:** `golang-migrate`, версионный SQL в `migrations/` каждого сервиса. Правило
   expand → migrate → contract, чтобы rolling update двух версий мог работать одновременно (план §3.6).
-- **События:** subjects версионируются `teamos.<service>.<entity>.<action>.v1`. Регистрируй каждое
-  событие в `contracts/events/catalog.md`. Публикуй через outbox, потребляй идемпотентно.
+- **События:** subjects версионируются `teamos.<service>.<entity>.<action>.v1`. Закрепляй схему
+  каждого события в `contracts/events/*.proto`. Публикуй через outbox, потребляй идемпотентно.
 - **Авторизация:** JWT access (15 мин, EdDSA) + refresh (httpOnly-cookie, с ротацией). Claims несут
   `pos`/`dep`, чтобы `kb`/`academy` проверяли доступы без похода в `company` (план §7). Пароли: argon2id.
 - **Health:** каждый сервис отдаёт `GET /healthz` и `GET /readyz`; graceful shutdown по SIGTERM.

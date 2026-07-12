@@ -1,0 +1,1 @@
+DROP INDEX IF EXISTS article_versions_article_version_uidx;

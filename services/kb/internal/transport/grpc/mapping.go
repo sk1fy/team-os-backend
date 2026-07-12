@@ -96,7 +96,7 @@ func acknowledgementsToProto(values []application.Acknowledgement) []*kbv1.Ackno
 
 func accessToProto(value application.AccessSettings) *kbv1.AccessSettings {
 	return &kbv1.AccessSettings{
-		Scope: accessScopeToProto(value.Scope),
+		Scope:         accessScopeToProto(value.Scope),
 		DepartmentIds: uuidStrings(value.DepartmentIDs),
 		PositionIds:   uuidStrings(value.PositionIDs),
 		UserIds:       uuidStrings(value.UserIDs),

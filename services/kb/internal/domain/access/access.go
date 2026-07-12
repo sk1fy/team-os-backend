@@ -35,7 +35,13 @@ type Subject struct {
 // EffectiveAccess resolves inherited access for a section tree.
 func EffectiveAccess(section Section, byID map[uuid.UUID]Section) Settings {
 	current := section
+	visited := make(map[uuid.UUID]struct{}, len(byID))
 	for {
+		if _, exists := visited[current.ID]; exists {
+			// Corrupted hierarchies fail closed instead of hanging a request.
+			return Settings{Scope: ScopeCustom}
+		}
+		visited[current.ID] = struct{}{}
 		if current.Access.Scope == ScopeCustom {
 			return current.Access
 		}

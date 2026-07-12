@@ -688,6 +688,7 @@ paths:
           schema:
             type: integer
             minimum: 1
+            maximum: 2147483647
       requestBody:
         required: true
         content:
@@ -713,6 +714,15 @@ paths:
       tags: [Knowledge Base]
       operationId: rollbackArticle
       summary: Откатить статью к сохранённой версии
+      parameters:
+        - name: If-Match
+          in: header
+          required: false
+          description: Ожидаемый номер текущей версии для optimistic locking.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 2147483647
       requestBody:
         required: true
         content:
@@ -2698,6 +2708,7 @@ components:
           minimum: 0
         title:
           type: string
+          minLength: 1
         description:
           $ref: '#/components/schemas/RichTextContent'
         authorId:
@@ -2802,6 +2813,7 @@ components:
       properties:
         title:
           type: string
+          minLength: 1
         description:
           $ref: '#/components/schemas/RichTextContent'
         assigneeIds:

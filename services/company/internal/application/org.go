@@ -166,11 +166,37 @@ func (s *Service) MoveDepartment(ctx context.Context, actor Actor, id uuid.UUID,
 		}
 		return Department{}, validation(move.Reason)
 	}
+	affectedUserIDs, err := queries.ResolveDepartmentUserIDs(ctx, db.ResolveDepartmentUserIDsParams{
+		CompanyID: actor.CompanyID, DepartmentID: id, IncludeDescendants: true,
+	})
+	if err != nil {
+		return Department{}, internal("Не удалось получить сотрудников отдела", err)
+	}
 	row, err := queries.MoveDepartment(ctx, db.MoveDepartmentParams{
 		CompanyID: actor.CompanyID, ID: id, ParentID: nullableUUID(parentID),
 	})
 	if err != nil {
 		return Department{}, internal("Не удалось переместить отдел", err)
+	}
+	for _, userID := range affectedUserIDs {
+		userRow, userErr := queries.GetUserWithPositions(ctx, db.GetUserWithPositionsParams{
+			CompanyID: actor.CompanyID, ID: userID,
+		})
+		if userErr != nil {
+			return Department{}, internal("Не удалось получить сотрудника отдела", userErr)
+		}
+		departments, departmentsErr := queries.GetUserDepartmentClaims(ctx, db.GetUserDepartmentClaimsParams{
+			CompanyID: actor.CompanyID, UserID: userID,
+		})
+		if departmentsErr != nil {
+			return Department{}, internal("Не удалось получить отделы сотрудника", departmentsErr)
+		}
+		if err = s.emit(ctx, queries, actor.CompanyID, actor.UserID, "teamos.org.user.updated.v1", map[string]any{
+			"user":          userEventSnapshot(userFromJoinedRow(userRow), departments),
+			"changedFields": []string{"departmentIds"},
+		}); err != nil {
+			return Department{}, err
+		}
 	}
 	if err = tx.Commit(ctx); err != nil {
 		return Department{}, internal("Не удалось переместить отдел", err)
@@ -247,12 +273,26 @@ func (s *Service) UpdatePosition(ctx context.Context, actor Actor, input UpdateP
 	if input.Level != nil && (*input.Level < 0 || *input.Level > 4) {
 		return Position{}, validation("Уровень должности должен быть от 0 до 4")
 	}
-	queries := db.New(s.pool)
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return Position{}, internal("Не удалось обновить должность", err)
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+	queries := db.New(tx)
 	if input.DepartmentID != nil {
-		if _, err := queries.GetDepartment(ctx, db.GetDepartmentParams{CompanyID: actor.CompanyID, ID: *input.DepartmentID}); isNoRows(err) {
+		if _, err = queries.GetDepartment(ctx, db.GetDepartmentParams{CompanyID: actor.CompanyID, ID: *input.DepartmentID}); isNoRows(err) {
 			return Position{}, notFound("Отдел")
 		} else if err != nil {
 			return Position{}, internal("Не удалось проверить отдел", err)
+		}
+	}
+	affectedUserIDs := []uuid.UUID{}
+	if input.DepartmentID != nil {
+		affectedUserIDs, err = queries.GetPositionUserIDs(ctx, db.GetPositionUserIDsParams{
+			CompanyID: actor.CompanyID, PositionID: input.ID,
+		})
+		if err != nil {
+			return Position{}, internal("Не удалось получить сотрудников должности", err)
 		}
 	}
 	description := trimmedOptional(input.Description)
@@ -265,6 +305,29 @@ func (s *Service) UpdatePosition(ctx context.Context, actor Actor, input UpdateP
 		return Position{}, notFound("Должность")
 	}
 	if err != nil {
+		return Position{}, internal("Не удалось обновить должность", err)
+	}
+	for _, userID := range affectedUserIDs {
+		userRow, userErr := queries.GetUserWithPositions(ctx, db.GetUserWithPositionsParams{
+			CompanyID: actor.CompanyID, ID: userID,
+		})
+		if userErr != nil {
+			return Position{}, internal("Не удалось получить сотрудника должности", userErr)
+		}
+		departments, departmentsErr := queries.GetUserDepartmentClaims(ctx, db.GetUserDepartmentClaimsParams{
+			CompanyID: actor.CompanyID, UserID: userID,
+		})
+		if departmentsErr != nil {
+			return Position{}, internal("Не удалось получить отделы сотрудника", departmentsErr)
+		}
+		if err = s.emit(ctx, queries, actor.CompanyID, actor.UserID, "teamos.org.user.updated.v1", map[string]any{
+			"user":          userEventSnapshot(userFromJoinedRow(userRow), departments),
+			"changedFields": []string{"departmentIds"},
+		}); err != nil {
+			return Position{}, err
+		}
+	}
+	if err = tx.Commit(ctx); err != nil {
 		return Position{}, internal("Не удалось обновить должность", err)
 	}
 	return positionFromDB(row), nil
@@ -280,6 +343,12 @@ func (s *Service) DeletePosition(ctx context.Context, actor Actor, id uuid.UUID)
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
 	queries := db.New(tx)
+	affectedUserIDs, err := queries.GetPositionUserIDs(ctx, db.GetPositionUserIDsParams{
+		CompanyID: actor.CompanyID, PositionID: id,
+	})
+	if err != nil {
+		return internal("Не удалось получить сотрудников должности", err)
+	}
 	rows, err := queries.DeletePosition(ctx, db.DeletePositionParams{CompanyID: actor.CompanyID, ID: id})
 	if err != nil {
 		return internal("Не удалось удалить должность", err)
@@ -288,7 +357,7 @@ func (s *Service) DeletePosition(ctx context.Context, actor Actor, id uuid.UUID)
 		return notFound("Должность")
 	}
 	if err = s.emit(ctx, queries, actor.CompanyID, actor.UserID, "teamos.org.position.deleted.v1", map[string]any{
-		"positionId": id.String(),
+		"positionId": id.String(), "affectedUserIds": stringsFromUUIDs(affectedUserIDs),
 	}); err != nil {
 		return err
 	}

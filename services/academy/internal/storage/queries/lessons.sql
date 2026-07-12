@@ -12,6 +12,13 @@ FROM lessons
 WHERE company_id = $1 AND course_id = $2
 ORDER BY "order", id;
 
+-- name: GetLessonsByCourseIds :many
+SELECT id, company_id, course_id, section_id, title, "order", content,
+    source_article_id, source_article_title, source_mode, quiz_id
+FROM lessons
+WHERE company_id = $1 AND course_id = ANY(sqlc.arg(course_ids)::uuid[])
+ORDER BY course_id, "order", id;
+
 -- name: GetLesson :one
 SELECT id, company_id, course_id, section_id, title, "order", content,
     source_article_id, source_article_title, source_mode, quiz_id
@@ -77,6 +84,17 @@ UPDATE lessons
 SET "order" = $3
 WHERE company_id = $1 AND id = $2;
 
+-- name: NormalizeSectionLessonOrder :exec
+WITH ordered AS (
+    SELECT l.id, row_number() OVER (ORDER BY l."order", l.id) - 1 AS next_order
+    FROM lessons AS l
+    WHERE l.company_id = $1 AND l.section_id = $2
+)
+UPDATE lessons
+SET "order" = ordered.next_order
+FROM ordered
+WHERE lessons.id = ordered.id;
+
 -- name: DeleteLesson :execrows
 DELETE FROM lessons
 WHERE company_id = $1 AND id = $2;
@@ -86,9 +104,11 @@ UPDATE lessons
 SET content = sqlc.arg(content),
     title = CASE WHEN title = source_article_title THEN sqlc.arg(new_title)::text ELSE title END,
     source_article_title = sqlc.arg(new_title)::text
-WHERE source_article_id = sqlc.arg(article_id) AND source_mode = 'link';
+WHERE company_id = sqlc.arg(company_id)
+  AND source_article_id = sqlc.arg(article_id) AND source_mode = 'link';
 
 -- name: DetachLinkedArticle :execrows
 UPDATE lessons
 SET source_mode = 'copy'
-WHERE source_article_id = sqlc.arg(article_id) AND source_mode = 'link';
+WHERE company_id = sqlc.arg(company_id)
+  AND source_article_id = sqlc.arg(article_id) AND source_mode = 'link';

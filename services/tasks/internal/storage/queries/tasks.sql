@@ -2,7 +2,7 @@
 SELECT
     id, company_id, board_id, column_id, "order", title, description, author_id,
     assignee_ids, assignee_position_id, watcher_ids, due_date, priority, label_ids,
-    checklist, attachments, source, linked_article_ids, recurrence, completed_at,
+    checklist, attachments, source, linked_article_ids, recurrence, recurrence_generated_at, completed_at,
     due_soon_sent_at, created_at, updated_at
 FROM tasks
 WHERE company_id = $1
@@ -13,7 +13,7 @@ ORDER BY board_id, column_id, "order";
 SELECT
     id, company_id, board_id, column_id, "order", title, description, author_id,
     assignee_ids, assignee_position_id, watcher_ids, due_date, priority, label_ids,
-    checklist, attachments, source, linked_article_ids, recurrence, completed_at,
+    checklist, attachments, source, linked_article_ids, recurrence, recurrence_generated_at, completed_at,
     due_soon_sent_at, created_at, updated_at
 FROM tasks
 WHERE company_id = $1 AND id = $2;
@@ -22,11 +22,14 @@ WHERE company_id = $1 AND id = $2;
 SELECT
     id, company_id, board_id, column_id, "order", title, description, author_id,
     assignee_ids, assignee_position_id, watcher_ids, due_date, priority, label_ids,
-    checklist, attachments, source, linked_article_ids, recurrence, completed_at,
+    checklist, attachments, source, linked_article_ids, recurrence, recurrence_generated_at, completed_at,
     due_soon_sent_at, created_at, updated_at
 FROM tasks
 WHERE company_id = $1 AND id = $2
 FOR UPDATE;
+
+-- name: LockBoardOrder :exec
+SELECT pg_advisory_xact_lock(hashtextextended(sqlc.arg(board_id)::uuid::text, 0));
 
 -- name: ListTasksInColumnsForUpdate :many
 SELECT id, column_id, "order"
@@ -38,6 +41,16 @@ FOR UPDATE;
 SELECT count(*)::integer AS count
 FROM tasks
 WHERE column_id = $1;
+
+-- name: IsRecurrenceGenerated :one
+SELECT (recurrence_generated_at IS NOT NULL)::boolean AS generated
+FROM tasks
+WHERE company_id = $1 AND id = $2;
+
+-- name: MarkRecurrenceGenerated :exec
+UPDATE tasks
+SET recurrence_generated_at = now()
+WHERE company_id = $1 AND id = $2;
 
 -- name: CreateTask :one
 INSERT INTO tasks (
@@ -51,7 +64,7 @@ VALUES (
 RETURNING
     id, company_id, board_id, column_id, "order", title, description, author_id,
     assignee_ids, assignee_position_id, watcher_ids, due_date, priority, label_ids,
-    checklist, attachments, source, linked_article_ids, recurrence, completed_at,
+    checklist, attachments, source, linked_article_ids, recurrence, recurrence_generated_at, completed_at,
     due_soon_sent_at, created_at, updated_at;
 
 -- name: UpdateTask :one
@@ -93,7 +106,7 @@ WHERE company_id = $1 AND id = $2
 RETURNING
     id, company_id, board_id, column_id, "order", title, description, author_id,
     assignee_ids, assignee_position_id, watcher_ids, due_date, priority, label_ids,
-    checklist, attachments, source, linked_article_ids, recurrence, completed_at,
+    checklist, attachments, source, linked_article_ids, recurrence, recurrence_generated_at, completed_at,
     due_soon_sent_at, created_at, updated_at;
 
 -- name: UpdateTaskPosition :exec
@@ -110,7 +123,7 @@ WHERE company_id = $1 AND id = $2;
 SELECT
     id, company_id, board_id, column_id, "order", title, description, author_id,
     assignee_ids, assignee_position_id, watcher_ids, due_date, priority, label_ids,
-    checklist, attachments, source, linked_article_ids, recurrence, completed_at,
+    checklist, attachments, source, linked_article_ids, recurrence, recurrence_generated_at, completed_at,
     due_soon_sent_at, created_at, updated_at
 FROM tasks
 WHERE company_id = $1
@@ -118,7 +131,10 @@ WHERE company_id = $1
   AND due_date IS NOT NULL
   AND due_soon_sent_at IS NULL
   AND due_date > now()
-  AND due_date <= now() + interval '24 hours';
+  AND due_date <= now() + interval '24 hours'
+ORDER BY due_date, id
+FOR UPDATE SKIP LOCKED
+LIMIT 100;
 
 -- name: MarkDueSoonSent :exec
 UPDATE tasks

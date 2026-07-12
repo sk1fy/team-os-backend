@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package teamos.notifications.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/sk1fy/team-os-backend/contracts/gen/go/notifications/v1;notificationsv1";
+
+service NotificationsService {
+  rpc GetNotifications(GetNotificationsRequest) returns (GetNotificationsResponse);
+  rpc GetUnreadCount(GetUnreadCountRequest) returns (GetUnreadCountResponse);
+  rpc MarkRead(MarkReadRequest) returns (MarkReadResponse);
+  rpc MarkAllRead(MarkAllReadRequest) returns (MarkAllReadResponse);
+  rpc StreamNotifications(StreamNotificationsRequest) returns (stream StreamNotificationsResponse);
+}
+
+enum NotificationType {
+  NOTIFICATION_TYPE_UNSPECIFIED = 0;
+  NOTIFICATION_TYPE_TASK_ASSIGNED = 1;
+  NOTIFICATION_TYPE_TASK_COMMENT = 2;
+  NOTIFICATION_TYPE_TASK_DUE = 3;
+  NOTIFICATION_TYPE_ARTICLE_PUBLISHED = 4;
+  NOTIFICATION_TYPE_ARTICLE_ACK_REQUIRED = 5;
+  NOTIFICATION_TYPE_COURSE_ASSIGNED = 6;
+  NOTIFICATION_TYPE_COURSE_DUE = 7;
+  NOTIFICATION_TYPE_MENTION = 8;
+}
+
+message Notification {
+  string id = 1;
+  string user_id = 2;
+  NotificationType type = 3;
+  string title = 4;
+  optional string body = 5;
+  optional string link = 6;
+  bool read = 7;
+  google.protobuf.Timestamp created_at = 8;
+}
+message GetNotificationsRequest {}
+message GetNotificationsResponse { repeated Notification notifications = 1; }
+message GetUnreadCountRequest {}
+message GetUnreadCountResponse { uint32 count = 1; }
+message MarkReadRequest { string id = 1; }
+message MarkReadResponse {}
+message MarkAllReadRequest {}
+message MarkAllReadResponse {}
+message StreamNotificationsRequest {}
+message StreamNotificationsResponse { string notification_id = 1; }

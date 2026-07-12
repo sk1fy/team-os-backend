@@ -3,13 +3,43 @@ package richtext
 
 import (
 	"encoding/json"
+	"errors"
 	"strings"
 )
 
+var ErrInvalidDocument = errors.New("некорректный TipTap-документ")
+
 // Document is the minimal TipTap root node: { type: "doc", content?: [...] }.
 type Document struct {
-	Type    string           `json:"type"`
+	Type    string            `json:"type"`
 	Content []json.RawMessage `json:"content,omitempty"`
+}
+
+// Validate checks the public RichTextContent invariant without constraining
+// nested TipTap nodes, whose schema is intentionally extensible.
+func Validate(raw json.RawMessage) error {
+	var root map[string]json.RawMessage
+	if len(raw) == 0 || json.Unmarshal(raw, &root) != nil || root == nil {
+		return ErrInvalidDocument
+	}
+	if len(root) < 1 || len(root) > 2 {
+		return ErrInvalidDocument
+	}
+	for field := range root {
+		if field != "type" && field != "content" {
+			return ErrInvalidDocument
+		}
+	}
+	if stringValue(root["type"]) != "doc" {
+		return ErrInvalidDocument
+	}
+	if content, ok := root["content"]; ok {
+		var nodes []json.RawMessage
+		if err := json.Unmarshal(content, &nodes); err != nil || nodes == nil {
+			return ErrInvalidDocument
+		}
+	}
+	return nil
 }
 
 // PlainText walks a TipTap document and returns concatenated visible text.

@@ -103,7 +103,7 @@
 
 - **REST (OpenAPI)**: только аддитивные изменения — новые эндпоинты, новые необязательные поля. Удаление/переименование поля = новая версия пути (`/api/v2/...`), старая живёт минимум два релиза. Diff-линтер спеки (`oasdiff`) в CI падает на breaking change.
 - **gRPC (protobuf)**: поля не удаляются и не перенумеровываются (`reserved`), только добавляются optional; `buf breaking` в CI.
-- **События**: версия в subject (`teamos.kb.article.updated.v1`); изменение схемы = новый subject `.v2`, издатель публикует оба, пока жив хоть один подписчик v1; каталог `contracts/events/catalog.md` фиксирует, кто на чём сидит.
+- **События**: версия в subject (`teamos.kb.article.updated.v1`); изменение схемы = новый subject `.v2`, издатель публикует оба, пока жив хоть один подписчик v1; protobuf-схемы лежат в `contracts/events`, издатели и потребители зафиксированы в §10.1.
 - **БД-миграции**: только expand → migrate → contract (сначала добавить колонку, потом переключить код, потом удалить старую) — чтобы rolling update двух версий сервиса мог работать одновременно.
 
 ### 3.7. Обновление без остановки
@@ -167,7 +167,6 @@ team-os-backend/
 │   │   ├── kb/v1/kb.proto
 │   │   └── ...
 │   └── events/
-│       ├── catalog.md               # каталог событий: имя, издатель, схема, потребители
 │       └── *.proto                  # схемы полезной нагрузки событий
 ├── services/
 │   ├── gateway/
@@ -398,7 +397,11 @@ team-os-backend/
 
 Gateway отсекает грубые случаи (нет токена, не та роль), сервисы повторяют доменные проверки — защита от вызовов в обход шлюза.
 
-### 7.3. Алгоритм проверки `AccessSettings` (kb, переиспользуется в academy)
+### 7.3. Алгоритм проверки `AccessSettings` (kb)
+
+В текущем REST/frontend-контракте `Course` не содержит `AccessSettings`, поэтому сотрудники компании
+видят все курсы, а `partner` — только назначенные. Добавление адресных доступов к курсам является
+отдельным аддитивным расширением; при нём academy должен переиспользовать этот алгоритм.
 
 Тип: `{ scope: 'company' | 'custom', departmentIds, positionIds, userIds }`; по контракту «доступ наследуется дочерними разделами, если scope не переопределён».
 
@@ -642,7 +645,7 @@ Subject-схема: `teamos.<service>.<entity>.<action>.v1` (версия в sub
 | `teamos.tasks.task.due_soon` | tasks (воркер) | notifications: `task_due` |
 | `teamos.academy.course.assigned` | academy | notifications: `course_assigned` (для position/department — резолв в userIds через RPC §9) |
 | `teamos.academy.course.due_soon` | academy (воркер) | notifications: `course_due` |
-| `teamos.academy.course.deleted` | academy | company: чистка `positions.required_course_ids` (в моке — синхронный каскад) |
+| `teamos.academy.course.deleted.v1` | academy | company: чистка `positions.required_course_ids` (в моке — синхронный каскад) |
 | `teamos.*.mention` | tasks, kb | notifications: `mention` (упоминания в TipTap-контенте, тип узла mention) |
 
 ### 10.2. Замена `withLiveContent` (уроки-«ссылки»)
@@ -760,7 +763,7 @@ make dev SERVICE=kb     # один сервис локально (go run) про
 **Фаза 0 — контракты и скелет. Сложность: средняя. ✅ ВЫПОЛНЕНО** *(работа во многом механическая, но здесь принимаются решения, которые определят всё остальное — границы, формат событий, правила эволюции контрактов)*
 - [x] Репозиторий `/Users/nikpeskov/Projects/team-os-backend`, go.work, Makefile, golangci, CI (matrix по сервисам, §3.1).
 - [x] `contracts/openapi/teamos.yaml` — все эндпоинты из §6.2 (механическая трансляция `src/api/index.ts`); `oasdiff` в CI.
-- [x] `contracts/events/catalog.md` + proto-схемы событий (§10.1); `buf breaking` в CI.
+- [x] Proto-схемы событий в `contracts/events` (§10.1); `buf breaking` в CI.
 - [x] docker-compose: postgres, nats; `pkg/apierror`, `pkg/httpx`, `pkg/eventbus` (скелеты).
 - [x] ADR-001 (границы сервисов), ADR-002 (claims в JWT), ADR-003 (outbox+NATS), ADR-004 (правила эволюции контрактов, §3.6).
 
@@ -788,9 +791,10 @@ make dev SERVICE=kb     # один сервис локально (go run) про
 - [x] Назначения (user/position/department/external + inviteToken), прогресс, воркер дедлайнов; gateway проксирует все `academyApi` эндпоинты; seed из фикстур и unit-тесты нормализации/маппинга Academy.
 - [ ] Переключение модуля `academy` на http во фронтенде. *(не сделано по текущей задаче: фронтенд не изменялся и всё ещё использует `mockRequest`)*
 
-**Фаза 5 — `notifications`. Сложность: средняя** *(доменная модель тривиальная, но SSE-hub с горизонтальным масштабированием (§3.2), идемпотентные консьюмеры всех событий и русские тексты уведомлений требуют аккуратности)*
-- [ ] Консьюмеры всех событий §10.1, идемпотентность, тексты по-русски.
-- [ ] REST + SSE-стрим; фронтенд: подписка на SSE. Переключение модуля.
+**Фаза 5 — `notifications`. Сложность: средняя. ✅ БЭКЕНД ВЫПОЛНЕН** *(доменная модель тривиальная, но SSE-hub с горизонтальным масштабированием (§3.2), идемпотентные консьюмеры всех событий и русские тексты уведомлений требуют аккуратности)*
+- [x] Сервис `notifications`: схема §8.5, durable-консьюмеры событий §10.1, идемпотентность через `processed_events`, русские тексты и дедупликация получателей.
+- [x] REST (`getNotifications`, `unread-count`, `markRead`, `markAllRead`) и SSE-стрим через gRPC gateway-прокси; миграция, Compose, health/readyz и unit-тесты.
+- [ ] Фронтенд: подписка на SSE и переключение модуля `notifications` на http. *(не сделано по текущей задаче: фронтенд не изменялся и всё ещё использует `mockRequest`)*
 
 **Фаза 6 — добивка. Сложность: средняя** *(разнородные задачи: порт календарной математики графика — низкая; файловый сервис, нагрузочные прогоны и прод-развёртывание с бэкапами — средняя)*
 - [ ] `scheduleApi` в `company` (порт `schedule.ts`, upsert шаблона `saveSchedule`, батч-upsert исключений). Переключение модуля.

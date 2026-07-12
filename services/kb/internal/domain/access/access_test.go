@@ -46,6 +46,21 @@ func TestEffectiveAccessUsesCustomOverride(t *testing.T) {
 	}
 }
 
+func TestEffectiveAccessCycleFailsClosed(t *testing.T) {
+	t.Parallel()
+	firstID := uuid.New()
+	secondID := uuid.New()
+	sections := map[uuid.UUID]Section{
+		firstID:  {ID: firstID, ParentID: &secondID, Access: Settings{Scope: ScopeCompany}},
+		secondID: {ID: secondID, ParentID: &firstID, Access: Settings{Scope: ScopeCompany}},
+	}
+
+	got := EffectiveAccess(sections[firstID], sections)
+	if got.Scope != ScopeCustom || len(got.UserIDs) != 0 {
+		t.Fatalf("unexpected effective access for cycle: %+v", got)
+	}
+}
+
 func TestAllowedCompanyScope(t *testing.T) {
 	t.Parallel()
 	settings := Settings{Scope: ScopeCompany}
