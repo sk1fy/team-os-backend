@@ -1,0 +1,10 @@
+go 1.25.0
+
+use (
+	./contracts/gen/go
+	./pkg
+	./services/company
+	./services/gateway
+	./services/kb
+	./services/tasks
+)

@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package teamos.events.v1;
+
+import "events/common.proto";
+
+option go_package = "github.com/sk1fy/team-os-backend/contracts/gen/go/events/v1;eventsv1";
+
+enum MentionSourceService {
+  MENTION_SOURCE_SERVICE_UNSPECIFIED = 0;
+  MENTION_SOURCE_SERVICE_TASKS = 1;
+  MENTION_SOURCE_SERVICE_KB = 2;
+}
+
+message MentionCreatedEvent {
+  EventMetadata metadata = 1;
+  MentionCreatedPayload payload = 2;
+}
+
+message MentionCreatedPayload {
+  MentionSourceService source_service = 1;
+  string source_entity = 2;
+  string source_entity_id = 3;
+  string mentioned_user_id = 4;
+  string author_id = 5;
+  string title = 6;
+  string link = 7;
+}

@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package teamos.events.v1;
+
+import "events/common.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/sk1fy/team-os-backend/contracts/gen/go/events/v1;eventsv1";
+
+message TasksTaskAssignedEvent {
+  EventMetadata metadata = 1;
+  TasksTaskAssignedPayload payload = 2;
+}
+
+message TasksTaskAssignedPayload {
+  string task_id = 1;
+  string title = 2;
+  string author_id = 3;
+  repeated string assignee_user_ids = 4;
+  optional string assignee_position_id = 5;
+  string link = 6;
+}
+
+message TasksCommentAddedEvent {
+  EventMetadata metadata = 1;
+  TasksCommentAddedPayload payload = 2;
+}
+
+message TasksCommentAddedPayload {
+  string comment_id = 1;
+  string task_id = 2;
+  string task_title = 3;
+  string author_id = 4;
+  repeated string recipient_user_ids = 5;
+  string link = 6;
+}
+
+message TasksTaskDueSoonEvent {
+  EventMetadata metadata = 1;
+  TasksTaskDueSoonPayload payload = 2;
+}
+
+message TasksTaskDueSoonPayload {
+  string task_id = 1;
+  string title = 2;
+  google.protobuf.Timestamp due_date = 3;
+  repeated string recipient_user_ids = 4;
+  string link = 5;
+}

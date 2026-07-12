@@ -1,0 +1,214 @@
+syntax = "proto3";
+
+package teamos.kb.v1;
+
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/sk1fy/team-os-backend/contracts/gen/go/kb/v1;kbv1";
+
+service KbService {
+  rpc GetSections(GetSectionsRequest) returns (GetSectionsResponse);
+  rpc CreateSection(CreateSectionRequest) returns (CreateSectionResponse);
+  rpc UpdateSection(UpdateSectionRequest) returns (UpdateSectionResponse);
+  rpc DeleteSection(DeleteSectionRequest) returns (DeleteSectionResponse);
+
+  rpc GetArticles(GetArticlesRequest) returns (GetArticlesResponse);
+  rpc GetArticle(GetArticleRequest) returns (GetArticleResponse);
+  rpc CreateArticle(CreateArticleRequest) returns (CreateArticleResponse);
+  rpc UpdateArticle(UpdateArticleRequest) returns (UpdateArticleResponse);
+  rpc RollbackArticle(RollbackArticleRequest) returns (RollbackArticleResponse);
+  rpc GetArticleVersions(GetArticleVersionsRequest) returns (GetArticleVersionsResponse);
+  rpc GetAcknowledgements(GetAcknowledgementsRequest) returns (GetAcknowledgementsResponse);
+  rpc AcknowledgeArticle(AcknowledgeArticleRequest) returns (AcknowledgeArticleResponse);
+  rpc SearchArticles(SearchArticlesRequest) returns (SearchArticlesResponse);
+
+  rpc GetArticlesByIds(GetArticlesByIdsRequest) returns (GetArticlesByIdsResponse);
+  rpc ArticleExists(ArticleExistsRequest) returns (ArticleExistsResponse);
+}
+
+enum AccessScope {
+  ACCESS_SCOPE_UNSPECIFIED = 0;
+  ACCESS_SCOPE_COMPANY = 1;
+  ACCESS_SCOPE_CUSTOM = 2;
+}
+
+enum ArticleStatus {
+  ARTICLE_STATUS_UNSPECIFIED = 0;
+  ARTICLE_STATUS_DRAFT = 1;
+  ARTICLE_STATUS_PUBLISHED = 2;
+}
+
+message AccessSettings {
+  AccessScope scope = 1;
+  repeated string department_ids = 2;
+  repeated string position_ids = 3;
+  repeated string user_ids = 4;
+}
+
+message ArticleSection {
+  string id = 1;
+  string name = 2;
+  optional string parent_id = 3;
+  uint32 order = 4;
+  AccessSettings access = 5;
+}
+
+message Article {
+  string id = 1;
+  string section_id = 2;
+  string title = 3;
+  google.protobuf.Struct content = 4;
+  ArticleStatus status = 5;
+  string author_id = 6;
+  uint32 version = 7;
+  bool requires_acknowledgement = 8;
+  google.protobuf.Timestamp created_at = 9;
+  google.protobuf.Timestamp updated_at = 10;
+}
+
+message ArticleVersion {
+  string id = 1;
+  string article_id = 2;
+  uint32 version = 3;
+  string title = 4;
+  google.protobuf.Struct content = 5;
+  string author_id = 6;
+  google.protobuf.Timestamp created_at = 7;
+}
+
+message Acknowledgement {
+  string article_id = 1;
+  string user_id = 2;
+  google.protobuf.Timestamp acknowledged_at = 3;
+}
+
+message GetSectionsRequest {}
+
+message GetSectionsResponse {
+  repeated ArticleSection sections = 1;
+}
+
+message CreateSectionRequest {
+  string name = 1;
+  optional string parent_id = 2;
+  optional AccessSettings access = 3;
+}
+
+message CreateSectionResponse {
+  ArticleSection section = 1;
+}
+
+message UpdateSectionRequest {
+  string id = 1;
+  optional string name = 2;
+  optional AccessSettings access = 3;
+}
+
+message UpdateSectionResponse {
+  ArticleSection section = 1;
+}
+
+message DeleteSectionRequest {
+  string id = 1;
+}
+
+message DeleteSectionResponse {}
+
+message GetArticlesRequest {
+  optional string section_id = 1;
+}
+
+message GetArticlesResponse {
+  repeated Article articles = 1;
+}
+
+message GetArticleRequest {
+  string id = 1;
+}
+
+message GetArticleResponse {
+  Article article = 1;
+}
+
+message CreateArticleRequest {
+  string section_id = 1;
+  string title = 2;
+  google.protobuf.Struct content = 3;
+  ArticleStatus status = 4;
+  bool requires_acknowledgement = 5;
+}
+
+message CreateArticleResponse {
+  Article article = 1;
+}
+
+message UpdateArticleRequest {
+  string id = 1;
+  optional string section_id = 2;
+  optional string title = 3;
+  optional google.protobuf.Struct content = 4;
+  optional ArticleStatus status = 5;
+  optional bool requires_acknowledgement = 6;
+  optional uint32 expected_version = 7;
+}
+
+message UpdateArticleResponse {
+  Article article = 1;
+}
+
+message RollbackArticleRequest {
+  string article_id = 1;
+  string version_id = 2;
+  optional uint32 expected_version = 3;
+}
+
+message RollbackArticleResponse {
+  Article article = 1;
+}
+
+message GetArticleVersionsRequest {
+  string article_id = 1;
+}
+
+message GetArticleVersionsResponse {
+  repeated ArticleVersion versions = 1;
+}
+
+message GetAcknowledgementsRequest {
+  string article_id = 1;
+}
+
+message GetAcknowledgementsResponse {
+  repeated Acknowledgement acknowledgements = 1;
+}
+
+message AcknowledgeArticleRequest {
+  string article_id = 1;
+}
+
+message AcknowledgeArticleResponse {}
+
+message SearchArticlesRequest {
+  string query = 1;
+}
+
+message SearchArticlesResponse {
+  repeated Article articles = 1;
+}
+
+message GetArticlesByIdsRequest {
+  repeated string ids = 1;
+}
+
+message GetArticlesByIdsResponse {
+  repeated Article articles = 1;
+}
+
+message ArticleExistsRequest {
+  string id = 1;
+}
+
+message ArticleExistsResponse {
+  bool exists = 1;
+}

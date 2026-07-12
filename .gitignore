@@ -1,0 +1,27 @@
+# Local configuration and secrets.
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+
+# Go build and test artifacts.
+bin/
+coverage/
+*.coverprofile
+*.test
+vendor/
+
+# Generated local data.
+.seed/
+.cache/
+tmp/
+
+# Editors and operating systems.
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Docker and observability runtime data.
+deploy/data/

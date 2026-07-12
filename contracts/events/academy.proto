@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package teamos.events.v1;
+
+import "events/common.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/sk1fy/team-os-backend/contracts/gen/go/events/v1;eventsv1";
+
+enum CourseAssigneeType {
+  COURSE_ASSIGNEE_TYPE_UNSPECIFIED = 0;
+  COURSE_ASSIGNEE_TYPE_USER = 1;
+  COURSE_ASSIGNEE_TYPE_POSITION = 2;
+  COURSE_ASSIGNEE_TYPE_DEPARTMENT = 3;
+  COURSE_ASSIGNEE_TYPE_EXTERNAL = 4;
+}
+
+message AcademyCourseAssignedEvent {
+  EventMetadata metadata = 1;
+  AcademyCourseAssignedPayload payload = 2;
+}
+
+message AcademyCourseAssignedPayload {
+  string assignment_id = 1;
+  string course_id = 2;
+  string course_title = 3;
+  CourseAssigneeType assignee_type = 4;
+  optional string assignee_id = 5;
+  optional string invite_token = 6;
+  optional google.protobuf.Timestamp due_date = 7;
+  string assigned_by_id = 8;
+  string link = 9;
+}
+
+message AcademyCourseDueSoonEvent {
+  EventMetadata metadata = 1;
+  AcademyCourseDueSoonPayload payload = 2;
+}
+
+message AcademyCourseDueSoonPayload {
+  string assignment_id = 1;
+  string course_id = 2;
+  string course_title = 3;
+  google.protobuf.Timestamp due_date = 4;
+  repeated string recipient_user_ids = 5;
+  string link = 6;
+}
+
+message AcademyCourseDeletedEvent {
+  EventMetadata metadata = 1;
+  AcademyCourseDeletedPayload payload = 2;
+}
+
+message AcademyCourseDeletedPayload {
+  string course_id = 1;
+}

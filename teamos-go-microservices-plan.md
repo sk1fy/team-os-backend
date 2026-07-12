@@ -757,28 +757,30 @@ make dev SERVICE=kb     # один сервис локально (go run) про
 
 Шкала сложности: **низкая** — по образцу, без новых решений; **средняя** — есть нетривиальные части, но паттерны уже определены; **высокая** — принимаются решения, влияющие на всю систему, и/или сложная предметная логика.
 
-**Фаза 0 — контракты и скелет. Сложность: средняя** *(работа во многом механическая, но здесь принимаются решения, которые определят всё остальное — границы, формат событий, правила эволюции контрактов)*
-- [ ] Репозиторий `/Users/nikpeskov/Projects/team-os-backend`, go.work, Makefile, golangci, CI (matrix по сервисам, §3.1).
-- [ ] `contracts/openapi/teamos.yaml` — все эндпоинты из §6.2 (механическая трансляция `src/api/index.ts`); `oasdiff` в CI.
-- [ ] `contracts/events/catalog.md` + proto-схемы событий (§10.1); `buf breaking` в CI.
-- [ ] docker-compose: postgres, nats; `pkg/apierror`, `pkg/httpx`, `pkg/eventbus` (скелеты).
-- [ ] ADR-001 (границы сервисов), ADR-002 (claims в JWT), ADR-003 (outbox+NATS), ADR-004 (правила эволюции контрактов, §3.6).
+**Фаза 0 — контракты и скелет. Сложность: средняя. ✅ ВЫПОЛНЕНО** *(работа во многом механическая, но здесь принимаются решения, которые определят всё остальное — границы, формат событий, правила эволюции контрактов)*
+- [x] Репозиторий `/Users/nikpeskov/Projects/team-os-backend`, go.work, Makefile, golangci, CI (matrix по сервисам, §3.1).
+- [x] `contracts/openapi/teamos.yaml` — все эндпоинты из §6.2 (механическая трансляция `src/api/index.ts`); `oasdiff` в CI.
+- [x] `contracts/events/catalog.md` + proto-схемы событий (§10.1); `buf breaking` в CI.
+- [x] docker-compose: postgres, nats; `pkg/apierror`, `pkg/httpx`, `pkg/eventbus` (скелеты).
+- [x] ADR-001 (границы сервисов), ADR-002 (claims в JWT), ADR-003 (outbox+NATS), ADR-004 (правила эволюции контрактов, §3.6).
 
-**Фаза 1 — `company` + `gateway` + авторизация. Сложность: высокая** *(самая ответственная фаза: безопасность, сессии, первый прогон всей цепочки domain → outbox → NATS; портирование трёх доменов; всё последующее строится по её образцу)*
-- [ ] Миграции и sqlc для схемы §8.1 (включая ЦКП отделов, `birthDate`/`hiredAt`/`vacationAllowance`, правило одной должности); домен org (порт orgTree/userGuards/inviteRules + тесты).
-- [ ] Auth: login/refresh/logout/accept-invite, argon2id, ротация сессий.
-- [ ] Gateway: oapi-codegen-хендлеры auth/org, JWT-middleware, CORS; health/readyz + graceful shutdown как эталон для всех сервисов (§3.7).
-- [ ] Outbox + события `org.*`; seed из фикстур (§13).
-- [ ] Фронтенд: `httpRequest`, флаги модулей, переключение `auth` и `org` на http.
+**Фаза 1 — `company` + `gateway` + авторизация. Сложность: высокая. ✅ БЭКЕНД ВЫПОЛНЕН** *(остаётся переключение фронтенда на http; самая ответственная фаза: безопасность, сессии, первый прогон всей цепочки domain → outbox → NATS; портирование трёх доменов; всё последующее строится по её образцу)*
+- [x] Миграции и sqlc для схемы §8.1 (включая ЦКП отделов, `birthDate`/`hiredAt`/`vacationAllowance`, правило одной должности); домен org (порт orgTree/userGuards/inviteRules + тесты).
+- [x] Auth: login/refresh/logout/accept-invite, argon2id, ротация сессий.
+- [x] Gateway: oapi-codegen-хендлеры auth/org, JWT-middleware, CORS; health/readyz + graceful shutdown как эталон для всех сервисов (§3.7).
+- [x] Outbox + события `org.*`; seed из фикстур (§13).
+- [ ] Фронтенд: `httpRequest`, флаги модулей, переключение `auth` и `org` на http. *(не сделано: фронтенд всё ещё на `mockRequest`, `httpRequest`/флагов модулей нет)*
 
-**Фаза 2 — `kb`. Сложность: средняя** *(версионирование и русский FTS нетривиальны, но сервис строится по образцу фазы 1; проверка доступов — по готовому алгоритму §7.3)*
-- [ ] Схема §8.2, версии + rollback, ознакомления; `pkg/richtext` (plain-text из TipTap).
-- [ ] FTS-поиск (`russian`), проверка `AccessSettings` по claims (§7.3).
-- [ ] События `kb.article.*` через outbox. Переключение модуля `kb` на http.
+**Фаза 2 — `kb`. Сложность: средняя. ✅ БЭКЕНД ВЫПОЛНЕН** *(версионирование и русский FTS нетривиальны, но сервис строится по образцу фазы 1; проверка доступов — по готовому алгоритму §7.3)*
+- [x] Схема §8.2, версии + rollback, ознакомления; `pkg/richtext` (plain-text из TipTap).
+- [x] FTS-поиск (`russian`), проверка `AccessSettings` по claims (§7.3).
+- [x] События `kb.article.published` / `kb.article.updated` через outbox; gateway проксирует все `kbApi` эндпоинты.
+- [ ] Переключение модуля `kb` на http во фронтенде. *(не сделано: фронтенд всё ещё на `mockRequest`)*
 
-**Фаза 3 — `tasks`. Сложность: средняя** *(транзакционный `moveTask` с конкурентными перестановками и первые фоновые воркеры; доменная модель при этом простая)*
-- [ ] Схема §8.3; транзакционный `moveTask`; комментарии, метки.
-- [ ] Воркеры recurrence + due-dates (river); события `tasks.*`. Переключение модуля.
+**Фаза 3 — `tasks`. Сложность: средняя. ✅ БЭКЕНД ВЫПОЛНЕН** *(транзакционный `moveTask` с конкурентными перестановками и первые фоновые воркеры; доменная модель при этом простая)*
+- [x] Схема §8.3 (+ `due_soon_sent_at`); транзакционный `moveTask` (`SELECT FOR UPDATE` + `domain/board.ReorderAfterMove`); комментарии, метки; порт `taskBoard.ts` → `domain/board`.
+- [x] Воркеры recurrence + due-dates (`river`); события `tasks.*` через outbox; gateway проксирует все `tasksApi` эндпоинты; seed из фикстур.
+- [ ] Переключение модуля `tasks` на http во фронтенде. *(не сделано: фронтенд всё ещё на `mockRequest`)*
 
 **Фаза 4 — `academy`. Сложность: высокая** *(самый связный сервис: синхронные RPC к `kb`, событийная репликация link-уроков, резолв назначений на должности/отделы через `company`, каскадное удаление курса — здесь микросервисные паттерны нагружаются по-настоящему)*
 - [ ] Схема §8.4; `createCourseFromKb` (RPC `kb.GetArticlesByIds`); каскад `deleteCourse`.

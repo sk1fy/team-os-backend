@@ -1,0 +1,263 @@
+syntax = "proto3";
+
+package teamos.tasks.v1;
+
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/sk1fy/team-os-backend/contracts/gen/go/tasks/v1;tasksv1";
+
+service TasksService {
+  rpc GetBoards(GetBoardsRequest) returns (GetBoardsResponse);
+  rpc GetColumns(GetColumnsRequest) returns (GetColumnsResponse);
+  rpc CreateColumn(CreateColumnRequest) returns (CreateColumnResponse);
+  rpc UpdateColumn(UpdateColumnRequest) returns (UpdateColumnResponse);
+
+  rpc GetTasks(GetTasksRequest) returns (GetTasksResponse);
+  rpc GetTask(GetTaskRequest) returns (GetTaskResponse);
+  rpc CreateTask(CreateTaskRequest) returns (CreateTaskResponse);
+  rpc UpdateTask(UpdateTaskRequest) returns (UpdateTaskResponse);
+  rpc MoveTask(MoveTaskRequest) returns (MoveTaskResponse);
+
+  rpc GetComments(GetCommentsRequest) returns (GetCommentsResponse);
+  rpc AddComment(AddCommentRequest) returns (AddCommentResponse);
+  rpc GetLabels(GetLabelsRequest) returns (GetLabelsResponse);
+}
+
+enum BoardType {
+  BOARD_TYPE_UNSPECIFIED = 0;
+  BOARD_TYPE_PERSONAL = 1;
+  BOARD_TYPE_DEPARTMENT = 2;
+  BOARD_TYPE_PROJECT = 3;
+}
+
+enum TaskPriority {
+  TASK_PRIORITY_UNSPECIFIED = 0;
+  TASK_PRIORITY_LOW = 1;
+  TASK_PRIORITY_MEDIUM = 2;
+  TASK_PRIORITY_HIGH = 3;
+  TASK_PRIORITY_URGENT = 4;
+}
+
+enum TaskSourceType {
+  TASK_SOURCE_TYPE_UNSPECIFIED = 0;
+  TASK_SOURCE_TYPE_TASK = 1;
+  TASK_SOURCE_TYPE_CONTACT = 2;
+  TASK_SOURCE_TYPE_COMPANY = 3;
+  TASK_SOURCE_TYPE_DEAL = 4;
+}
+
+enum RecurrenceFrequency {
+  RECURRENCE_FREQUENCY_UNSPECIFIED = 0;
+  RECURRENCE_FREQUENCY_DAILY = 1;
+  RECURRENCE_FREQUENCY_WEEKLY = 2;
+  RECURRENCE_FREQUENCY_MONTHLY = 3;
+}
+
+message Board {
+  string id = 1;
+  string name = 2;
+  BoardType type = 3;
+  optional string department_id = 4;
+  optional string owner_id = 5;
+  google.protobuf.Timestamp created_at = 6;
+}
+
+message TaskColumn {
+  string id = 1;
+  string board_id = 2;
+  string name = 3;
+  uint32 order = 4;
+  optional string color = 5;
+}
+
+message Label {
+  string id = 1;
+  string name = 2;
+  string color = 3;
+}
+
+message ChecklistItem {
+  string id = 1;
+  string text = 2;
+  bool done = 3;
+}
+
+message Attachment {
+  string id = 1;
+  string name = 2;
+  string url = 3;
+  uint64 size = 4;
+  string mime_type = 5;
+}
+
+message TaskSource {
+  TaskSourceType type = 1;
+  string title = 2;
+  string url = 3;
+  optional string funnel_name = 4;
+  optional string stage_name = 5;
+}
+
+message RecurrenceRule {
+  RecurrenceFrequency frequency = 1;
+  uint32 interval = 2;
+  repeated uint32 weekdays = 3;
+}
+
+message Task {
+  string id = 1;
+  string board_id = 2;
+  string column_id = 3;
+  uint32 order = 4;
+  string title = 5;
+  optional google.protobuf.Struct description = 6;
+  string author_id = 7;
+  repeated string assignee_ids = 8;
+  optional string assignee_position_id = 9;
+  repeated string watcher_ids = 10;
+  optional google.protobuf.Timestamp due_date = 11;
+  TaskPriority priority = 12;
+  repeated string label_ids = 13;
+  repeated ChecklistItem checklist = 14;
+  repeated Attachment attachments = 15;
+  optional TaskSource source = 16;
+  repeated string linked_article_ids = 17;
+  optional RecurrenceRule recurrence = 18;
+  optional google.protobuf.Timestamp completed_at = 19;
+  google.protobuf.Timestamp created_at = 20;
+  google.protobuf.Timestamp updated_at = 21;
+}
+
+message TaskComment {
+  string id = 1;
+  string task_id = 2;
+  string author_id = 3;
+  google.protobuf.Struct content = 4;
+  google.protobuf.Timestamp created_at = 5;
+}
+
+message GetBoardsRequest {}
+
+message GetBoardsResponse {
+  repeated Board boards = 1;
+}
+
+message GetColumnsRequest {
+  string board_id = 1;
+}
+
+message GetColumnsResponse {
+  repeated TaskColumn columns = 1;
+}
+
+message CreateColumnRequest {
+  string board_id = 1;
+  string name = 2;
+  optional string color = 3;
+}
+
+message CreateColumnResponse {
+  TaskColumn column = 1;
+}
+
+message UpdateColumnRequest {
+  string id = 1;
+  optional string name = 2;
+  optional string color = 3;
+}
+
+message UpdateColumnResponse {
+  TaskColumn column = 1;
+}
+
+message GetTasksRequest {
+  optional string board_id = 1;
+}
+
+message GetTasksResponse {
+  repeated Task tasks = 1;
+}
+
+message GetTaskRequest {
+  string id = 1;
+}
+
+message GetTaskResponse {
+  Task task = 1;
+}
+
+message CreateTaskRequest {
+  string board_id = 1;
+  string column_id = 2;
+  string title = 3;
+  optional TaskPriority priority = 4;
+}
+
+message CreateTaskResponse {
+  Task task = 1;
+}
+
+message UpdateTaskRequest {
+  string id = 1;
+  optional string title = 2;
+  optional google.protobuf.Struct description = 3;
+  repeated string assignee_ids = 4;
+  optional string assignee_position_id = 5;
+  optional bool clear_assignee_position_id = 6;
+  repeated string watcher_ids = 7;
+  optional google.protobuf.Timestamp due_date = 8;
+  optional bool clear_due_date = 9;
+  optional TaskPriority priority = 10;
+  repeated string label_ids = 11;
+  repeated ChecklistItem checklist = 12;
+  repeated Attachment attachments = 13;
+  repeated string linked_article_ids = 14;
+  optional RecurrenceRule recurrence = 15;
+  optional bool clear_recurrence = 16;
+  optional google.protobuf.Timestamp completed_at = 17;
+  optional bool clear_completed_at = 18;
+  optional bool assignee_ids_set = 19;
+  optional bool watcher_ids_set = 20;
+  optional bool label_ids_set = 21;
+  optional bool checklist_set = 22;
+  optional bool attachments_set = 23;
+  optional bool linked_article_ids_set = 24;
+}
+
+message UpdateTaskResponse {
+  Task task = 1;
+}
+
+message MoveTaskRequest {
+  string task_id = 1;
+  string column_id = 2;
+  uint32 order = 3;
+}
+
+message MoveTaskResponse {
+  Task task = 1;
+}
+
+message GetCommentsRequest {
+  string task_id = 1;
+}
+
+message GetCommentsResponse {
+  repeated TaskComment comments = 1;
+}
+
+message AddCommentRequest {
+  string task_id = 1;
+  google.protobuf.Struct content = 2;
+}
+
+message AddCommentResponse {
+  TaskComment comment = 1;
+}
+
+message GetLabelsRequest {}
+
+message GetLabelsResponse {
+  repeated Label labels = 1;
+}

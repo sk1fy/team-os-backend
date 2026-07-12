@@ -1,0 +1,12 @@
+.git
+.github
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+.cache
+.seed
+coverage
+deploy/data
+tmp

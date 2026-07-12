@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+package teamos.events.v1;
+
+import "events/common.proto";
+
+option go_package = "github.com/sk1fy/team-os-backend/contracts/gen/go/events/v1;eventsv1";
+
+enum OrgUserRole {
+  ORG_USER_ROLE_UNSPECIFIED = 0;
+  ORG_USER_ROLE_OWNER = 1;
+  ORG_USER_ROLE_ADMIN = 2;
+  ORG_USER_ROLE_EMPLOYEE = 3;
+  ORG_USER_ROLE_PARTNER = 4;
+}
+
+enum OrgUserStatus {
+  ORG_USER_STATUS_UNSPECIFIED = 0;
+  ORG_USER_STATUS_ACTIVE = 1;
+  ORG_USER_STATUS_INVITED = 2;
+  ORG_USER_STATUS_DEACTIVATED = 3;
+}
+
+message OrgUserSnapshot {
+  string user_id = 1;
+  string email = 2;
+  string first_name = 3;
+  string last_name = 4;
+  OrgUserRole role = 5;
+  OrgUserStatus status = 6;
+  repeated string position_ids = 7;
+  repeated string department_ids = 8;
+}
+
+message OrgUserCreatedEvent {
+  EventMetadata metadata = 1;
+  OrgUserCreatedPayload payload = 2;
+}
+
+message OrgUserCreatedPayload {
+  OrgUserSnapshot user = 1;
+}
+
+message OrgUserUpdatedEvent {
+  EventMetadata metadata = 1;
+  OrgUserUpdatedPayload payload = 2;
+}
+
+message OrgUserUpdatedPayload {
+  OrgUserSnapshot user = 1;
+  repeated string changed_fields = 2;
+}
+
+message OrgUserDeactivatedEvent {
+  EventMetadata metadata = 1;
+  OrgUserDeactivatedPayload payload = 2;
+}
+
+message OrgUserDeactivatedPayload {
+  string user_id = 1;
+}
+
+message OrgPositionDeletedEvent {
+  EventMetadata metadata = 1;
+  OrgPositionDeletedPayload payload = 2;
+}
+
+message OrgPositionDeletedPayload {
+  string position_id = 1;
+  repeated string affected_user_ids = 2;
+}
+
+message OrgInviteCreatedEvent {
+  EventMetadata metadata = 1;
+  OrgInviteCreatedPayload payload = 2;
+}
+
+message OrgInviteCreatedPayload {
+  string invite_id = 1;
+  string token = 2;
+  optional string email = 3;
+  OrgUserRole role = 4;
+  optional string position_id = 5;
+  optional string department_id = 6;
+  string invited_by_id = 7;
+}

@@ -1,0 +1,11 @@
+version: v2
+plugins:
+  - local: protoc-gen-go
+    out: contracts/gen/go
+    opt:
+      - module=github.com/sk1fy/team-os-backend/contracts/gen/go
+  - local: protoc-gen-go-grpc
+    out: contracts/gen/go
+    opt:
+      - module=github.com/sk1fy/team-os-backend/contracts/gen/go
+      - require_unimplemented_servers=true

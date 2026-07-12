@@ -1,0 +1,87 @@
+package grpc
+
+import (
+	"testing"
+
+	companyv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v1"
+	"github.com/sk1fy/team-os-backend/services/company/internal/application"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+)
+
+func TestUserRoleMapping(t *testing.T) {
+	tests := []struct {
+		proto  companyv1.UserRole
+		domain string
+	}{
+		{proto: companyv1.UserRole_USER_ROLE_OWNER, domain: "owner"},
+		{proto: companyv1.UserRole_USER_ROLE_ADMIN, domain: "admin"},
+		{proto: companyv1.UserRole_USER_ROLE_EMPLOYEE, domain: "employee"},
+		{proto: companyv1.UserRole_USER_ROLE_PARTNER, domain: "partner"},
+	}
+	for _, test := range tests {
+		t.Run(test.domain, func(t *testing.T) {
+			domain, err := userRoleFromProto(test.proto)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if domain != test.domain || userRoleToProto(domain) != test.proto {
+				t.Fatalf("round trip = %q / %v", domain, userRoleToProto(domain))
+			}
+		})
+	}
+	if _, err := userRoleFromProto(companyv1.UserRole_USER_ROLE_UNSPECIFIED); status.Code(err) != codes.InvalidArgument {
+		t.Fatalf("unspecified role error = %v", err)
+	}
+	if got := userRoleToProto("future-role"); got != companyv1.UserRole_USER_ROLE_UNSPECIFIED {
+		t.Fatalf("unknown domain role = %v", got)
+	}
+}
+
+func TestStatusAndInviteEnumMapping(t *testing.T) {
+	if got := userStatusToProto("deactivated"); got != companyv1.UserStatus_USER_STATUS_DEACTIVATED {
+		t.Fatalf("status = %v", got)
+	}
+	if got := inviteStatusToProto("accepted"); got != companyv1.InviteStatus_INVITE_STATUS_ACCEPTED {
+		t.Fatalf("invite status = %v", got)
+	}
+	if _, err := userStatusFromProto(companyv1.UserStatus_USER_STATUS_UNSPECIFIED); status.Code(err) != codes.InvalidArgument {
+		t.Fatalf("unspecified status error = %v", err)
+	}
+}
+
+func TestUpdateCurrentUserOptionalMapping(t *testing.T) {
+	absent := updateCurrentUserInput(&companyv1.UpdateCurrentUserRequest{})
+	if absent.SetPhone || absent.Phone != nil || absent.SetAvatarURL || absent.AvatarURL != nil {
+		t.Fatalf("absent optionals = %#v", absent)
+	}
+
+	empty := ""
+	clear := updateCurrentUserInput(&companyv1.UpdateCurrentUserRequest{Phone: &empty, AvatarUrl: &empty})
+	if !clear.SetPhone || clear.Phone != nil || !clear.SetAvatarURL || clear.AvatarURL != nil {
+		t.Fatalf("clear optionals = %#v", clear)
+	}
+
+	phone := "+7 900 000-00-00"
+	update := updateCurrentUserInput(&companyv1.UpdateCurrentUserRequest{Phone: &phone})
+	if !update.SetPhone || update.Phone == nil || *update.Phone != phone {
+		t.Fatalf("set phone = %#v", update)
+	}
+	phone = "changed after mapping"
+	if *update.Phone != "+7 900 000-00-00" {
+		t.Fatal("transport input aliases the protobuf request")
+	}
+}
+
+func TestProtoOptionalOutputMapping(t *testing.T) {
+	withoutOptionals := userToProto(application.User{})
+	if withoutOptionals.Phone != nil || withoutOptionals.AvatarUrl != nil || withoutOptionals.BirthDate != nil || withoutOptionals.VacationAllowance != nil {
+		t.Fatalf("unexpected optional values: %#v", withoutOptionals)
+	}
+
+	level := int16(0)
+	position := positionToProto(application.Position{Level: level})
+	if position.Level == nil || *position.Level != 0 {
+		t.Fatalf("position level = %#v", position.Level)
+	}
+}

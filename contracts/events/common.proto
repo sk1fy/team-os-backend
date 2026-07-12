@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package teamos.events.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/sk1fy/team-os-backend/contracts/gen/go/events/v1;eventsv1";
+
+// EventMetadata is present in every event. The NATS subject is the external
+// schema version; event_id is the idempotency key used by consumers.
+message EventMetadata {
+  string event_id = 1;
+  google.protobuf.Timestamp occurred_at = 2;
+  string company_id = 3;
+  optional string actor_id = 4;
+  optional string trace_id = 5;
+}

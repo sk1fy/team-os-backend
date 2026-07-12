@@ -1,0 +1,430 @@
+syntax = "proto3";
+
+package teamos.company.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v1;companyv1";
+
+// CompanyService is the internal typed boundary used by gateway and by the
+// few services that need synchronous organization lookups. Authenticated
+// calls receive actor/company claims through gRPC metadata.
+service CompanyService {
+  rpc Register(RegisterRequest) returns (RegisterResponse);
+  rpc Login(LoginRequest) returns (LoginResponse);
+  rpc Refresh(RefreshRequest) returns (RefreshResponse);
+  rpc Logout(LogoutRequest) returns (LogoutResponse);
+  rpc GetInviteByToken(GetInviteByTokenRequest) returns (GetInviteByTokenResponse);
+  rpc AcceptInvite(AcceptInviteRequest) returns (AcceptInviteResponse);
+  rpc GetCurrentUser(GetCurrentUserRequest) returns (GetCurrentUserResponse);
+  rpc UpdateCurrentUser(UpdateCurrentUserRequest) returns (UpdateCurrentUserResponse);
+  rpc GetCompany(GetCompanyRequest) returns (GetCompanyResponse);
+  rpc UpdateCompany(UpdateCompanyRequest) returns (UpdateCompanyResponse);
+
+  rpc GetDepartments(GetDepartmentsRequest) returns (GetDepartmentsResponse);
+  rpc CreateDepartment(CreateDepartmentRequest) returns (CreateDepartmentResponse);
+  rpc UpdateDepartment(UpdateDepartmentRequest) returns (UpdateDepartmentResponse);
+  rpc DeleteDepartment(DeleteDepartmentRequest) returns (DeleteDepartmentResponse);
+  rpc MoveDepartment(MoveDepartmentRequest) returns (MoveDepartmentResponse);
+
+  rpc GetPositions(GetPositionsRequest) returns (GetPositionsResponse);
+  rpc GetPosition(GetPositionRequest) returns (GetPositionResponse);
+  rpc CreatePosition(CreatePositionRequest) returns (CreatePositionResponse);
+  rpc UpdatePosition(UpdatePositionRequest) returns (UpdatePositionResponse);
+  rpc DeletePosition(DeletePositionRequest) returns (DeletePositionResponse);
+  rpc MovePosition(MovePositionRequest) returns (MovePositionResponse);
+
+  rpc GetUsers(GetUsersRequest) returns (GetUsersResponse);
+  rpc GetUser(GetUserRequest) returns (GetUserResponse);
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+  rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
+
+  rpc GetInvites(GetInvitesRequest) returns (GetInvitesResponse);
+  rpc InviteUser(InviteUserRequest) returns (InviteUserResponse);
+  rpc ResendInvite(ResendInviteRequest) returns (ResendInviteResponse);
+  rpc RevokeInvite(RevokeInviteRequest) returns (RevokeInviteResponse);
+
+  rpc GetUsersByIds(GetUsersByIdsRequest) returns (GetUsersByIdsResponse);
+  rpc ResolvePositionUsers(ResolvePositionUsersRequest) returns (ResolvePositionUsersResponse);
+  rpc ResolveDepartmentUsers(ResolveDepartmentUsersRequest) returns (ResolveDepartmentUsersResponse);
+}
+
+enum UserRole {
+  USER_ROLE_UNSPECIFIED = 0;
+  USER_ROLE_OWNER = 1;
+  USER_ROLE_ADMIN = 2;
+  USER_ROLE_EMPLOYEE = 3;
+  USER_ROLE_PARTNER = 4;
+}
+
+enum UserStatus {
+  USER_STATUS_UNSPECIFIED = 0;
+  USER_STATUS_ACTIVE = 1;
+  USER_STATUS_INVITED = 2;
+  USER_STATUS_DEACTIVATED = 3;
+}
+
+enum InviteStatus {
+  INVITE_STATUS_UNSPECIFIED = 0;
+  INVITE_STATUS_PENDING = 1;
+  INVITE_STATUS_ACCEPTED = 2;
+  INVITE_STATUS_EXPIRED = 3;
+}
+
+message Company {
+  string id = 1;
+  string name = 2;
+  optional string logo_url = 3;
+  string owner_id = 4;
+  google.protobuf.Timestamp created_at = 5;
+}
+
+message User {
+  string id = 1;
+  string email = 2;
+  string first_name = 3;
+  string last_name = 4;
+  optional string avatar_url = 5;
+  optional string phone = 6;
+  UserRole role = 7;
+  UserStatus status = 8;
+  // At most one item is currently allowed; repeated is kept for REST/TS compatibility.
+  repeated string position_ids = 9;
+  optional string birth_date = 10;
+  optional string hired_at = 11;
+  optional uint32 vacation_allowance = 12;
+  google.protobuf.Timestamp created_at = 13;
+}
+
+message Department {
+  string id = 1;
+  string name = 2;
+  // Absence means a root department.
+  optional string parent_id = 3;
+  optional string head_user_id = 4;
+  optional string valuable_final_product = 5;
+  uint32 order = 6;
+}
+
+message Position {
+  string id = 1;
+  string name = 2;
+  string department_id = 3;
+  optional uint32 level = 4;
+  optional string description = 5;
+  repeated string article_ids = 6;
+  repeated string required_course_ids = 7;
+}
+
+message Invite {
+  string id = 1;
+  optional string email = 2;
+  string token = 3;
+  UserRole role = 4;
+  optional string position_id = 5;
+  optional string department_id = 6;
+  string invited_by_id = 7;
+  InviteStatus status = 8;
+  google.protobuf.Timestamp created_at = 9;
+}
+
+// Refresh tokens never cross the public JSON boundary. Gateway writes the
+// opaque value from this message to an HttpOnly cookie.
+message AuthSession {
+  string access_token = 1;
+  string refresh_token = 2;
+  google.protobuf.Timestamp refresh_expires_at = 3;
+  User user = 4;
+}
+
+message RegisterRequest {
+  string company_name = 1;
+  string email = 2;
+  string password = 3;
+  string first_name = 4;
+  string last_name = 5;
+}
+
+message RegisterResponse {
+  AuthSession session = 1;
+}
+
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  AuthSession session = 1;
+}
+
+message RefreshRequest {
+  string refresh_token = 1;
+}
+
+message RefreshResponse {
+  AuthSession session = 1;
+}
+
+message LogoutRequest {
+  string refresh_token = 1;
+}
+
+message LogoutResponse {}
+
+message GetInviteByTokenRequest {
+  string token = 1;
+}
+
+message GetInviteByTokenResponse {
+  Invite invite = 1;
+}
+
+message AcceptInviteRequest {
+  string token = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string password = 4;
+  // Required only when the invite was created as a link without an email.
+  optional string email = 5;
+}
+
+message AcceptInviteResponse {
+  AuthSession session = 1;
+}
+
+message GetCurrentUserRequest {}
+
+message GetCurrentUserResponse {
+  User user = 1;
+}
+
+message UpdateCurrentUserRequest {
+  optional string first_name = 1;
+  optional string last_name = 2;
+  // Empty strings clear optional phone/avatar values, matching the TS contract.
+  optional string phone = 3;
+  optional string avatar_url = 4;
+}
+
+message UpdateCurrentUserResponse {
+  User user = 1;
+}
+
+message GetCompanyRequest {}
+
+message GetCompanyResponse {
+  Company company = 1;
+}
+
+message UpdateCompanyRequest {
+  optional string name = 1;
+  // Empty string clears the logo URL.
+  optional string logo_url = 2;
+}
+
+message UpdateCompanyResponse {
+  Company company = 1;
+}
+
+message GetDepartmentsRequest {}
+
+message GetDepartmentsResponse {
+  repeated Department departments = 1;
+}
+
+message CreateDepartmentRequest {
+  string name = 1;
+  // Absence means JSON null/root.
+  optional string parent_id = 2;
+  optional string head_user_id = 3;
+  optional string valuable_final_product = 4;
+}
+
+message CreateDepartmentResponse {
+  Department department = 1;
+}
+
+message UpdateDepartmentRequest {
+  string id = 1;
+  optional string name = 2;
+  optional string head_user_id = 3;
+  bool clear_head_user_id = 4;
+  optional string valuable_final_product = 5;
+  bool clear_valuable_final_product = 6;
+}
+
+message UpdateDepartmentResponse {
+  Department department = 1;
+}
+
+message DeleteDepartmentRequest {
+  string id = 1;
+}
+
+message DeleteDepartmentResponse {}
+
+message MoveDepartmentRequest {
+  string id = 1;
+  // Absence means move to the root.
+  optional string parent_id = 2;
+}
+
+message MoveDepartmentResponse {
+  Department department = 1;
+}
+
+message GetPositionsRequest {}
+
+message GetPositionsResponse {
+  repeated Position positions = 1;
+}
+
+message GetPositionRequest {
+  string id = 1;
+}
+
+message GetPositionResponse {
+  Position position = 1;
+}
+
+message CreatePositionRequest {
+  string name = 1;
+  string department_id = 2;
+  optional uint32 level = 3;
+  optional string description = 4;
+}
+
+message CreatePositionResponse {
+  Position position = 1;
+}
+
+message UpdatePositionRequest {
+  string id = 1;
+  optional string name = 2;
+  optional string department_id = 3;
+  optional uint32 level = 4;
+  optional string description = 5;
+}
+
+message UpdatePositionResponse {
+  Position position = 1;
+}
+
+message DeletePositionRequest {
+  string id = 1;
+}
+
+message DeletePositionResponse {}
+
+message MovePositionRequest {
+  string id = 1;
+  string department_id = 2;
+}
+
+message MovePositionResponse {
+  Position position = 1;
+}
+
+message GetUsersRequest {}
+
+message GetUsersResponse {
+  repeated User users = 1;
+}
+
+message GetUserRequest {
+  string id = 1;
+}
+
+message GetUserResponse {
+  User user = 1;
+}
+
+message CreateUserRequest {
+  string first_name = 1;
+  string last_name = 2;
+  string email = 3;
+  optional string phone = 4;
+  UserRole role = 5;
+  repeated string position_ids = 6;
+}
+
+message CreateUserResponse {
+  User user = 1;
+}
+
+message UpdateUserRequest {
+  string id = 1;
+  optional string first_name = 2;
+  optional string last_name = 3;
+  optional string phone = 4;
+  // Empty date strings clear stored dates.
+  optional string birth_date = 5;
+  optional string hired_at = 6;
+  optional uint32 vacation_allowance = 7;
+  optional UserRole role = 8;
+  optional UserStatus status = 9;
+  // Proto repeated fields have no presence; update_position_ids selects whether to apply it.
+  repeated string position_ids = 10;
+  bool update_position_ids = 11;
+}
+
+message UpdateUserResponse {
+  User user = 1;
+}
+
+message GetInvitesRequest {}
+
+message GetInvitesResponse {
+  repeated Invite invites = 1;
+}
+
+message InviteUserRequest {
+  optional string email = 1;
+  UserRole role = 2;
+  optional string position_id = 3;
+  optional string department_id = 4;
+}
+
+message InviteUserResponse {
+  Invite invite = 1;
+}
+
+message ResendInviteRequest {
+  string id = 1;
+}
+
+message ResendInviteResponse {
+  Invite invite = 1;
+}
+
+message RevokeInviteRequest {
+  string id = 1;
+}
+
+message RevokeInviteResponse {}
+
+message GetUsersByIdsRequest {
+  repeated string user_ids = 1;
+}
+
+message GetUsersByIdsResponse {
+  repeated User users = 1;
+}
+
+message ResolvePositionUsersRequest {
+  string position_id = 1;
+}
+
+message ResolvePositionUsersResponse {
+  repeated string user_ids = 1;
+}
+
+message ResolveDepartmentUsersRequest {
+  string department_id = 1;
+  bool include_descendants = 2;
+}
+
+message ResolveDepartmentUsersResponse {
+  repeated string user_ids = 1;
+}

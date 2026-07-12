@@ -1,0 +1,66 @@
+name: Contract CI
+
+on:
+  pull_request:
+    paths:
+      - contracts/**
+      - .github/workflows/contracts.yaml
+  push:
+    branches: [main]
+    paths:
+      - contracts/**
+      - .github/workflows/contracts.yaml
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate OpenAPI and protobuf
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v6
+        with:
+          go-version: 1.25.x
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - uses: bufbuild/buf-action@v1
+        with:
+          setup_only: true
+          version: "1.68.1"
+          github_token: ${{ github.token }}
+      - name: Install oasdiff
+        run: go install github.com/oasdiff/oasdiff@v1.11.7
+      - name: Validate current contracts
+        run: |
+          npx --yes @redocly/cli@1.34.2 lint contracts/openapi/teamos.yaml
+          buf lint contracts --error-format github-actions
+          buf build contracts --error-format github-actions
+      - name: Check backward compatibility
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        shell: bash
+        run: |
+          if [[ -z "$BASE_SHA" || "$BASE_SHA" =~ ^0+$ ]] || ! git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null; then
+            echo "No baseline commit; compatibility check skipped"
+            exit 0
+          fi
+
+          if git cat-file -e "$BASE_SHA:contracts/openapi/teamos.yaml" 2>/dev/null; then
+            git show "$BASE_SHA:contracts/openapi/teamos.yaml" > /tmp/teamos-base.yaml
+            oasdiff breaking /tmp/teamos-base.yaml contracts/openapi/teamos.yaml
+          else
+            echo "No OpenAPI baseline; breaking check skipped"
+          fi
+
+          if git cat-file -e "$BASE_SHA:contracts/buf.yaml" 2>/dev/null; then
+            mkdir -p /tmp/teamos-contract-base
+            git archive "$BASE_SHA" contracts | tar -x -C /tmp/teamos-contract-base
+            buf breaking contracts --against /tmp/teamos-contract-base/contracts --error-format github-actions
+          else
+            echo "No protobuf baseline; breaking check skipped"
+          fi

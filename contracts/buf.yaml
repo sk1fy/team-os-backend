@@ -1,0 +1,14 @@
+version: v2
+modules:
+  - path: .
+    name: buf.build/teamos/contracts
+lint:
+  use:
+    - STANDARD
+  # The repository layout is fixed by the architecture plan (`proto/*` and
+  # top-level `events/*.proto`) rather than by fully-qualified proto packages.
+  except:
+    - PACKAGE_DIRECTORY_MATCH
+breaking:
+  use:
+    - FILE

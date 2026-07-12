@@ -1,0 +1,3472 @@
+openapi: 3.1.0
+jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
+info:
+  title: TeamOS Gateway API
+  version: 1.0.0
+  license:
+    name: Proprietary
+    identifier: LicenseRef-Proprietary
+  description: |
+    Внешний JSON/REST-контракт TeamOS. Поля и формы ответов зеркалят
+    `src/api/index.ts` и `src/types/index.ts` frontend-приложения.
+    Все даты-время передаются в ISO-8601, идентификаторы являются UUID.
+servers:
+  - url: http://localhost:8080
+    description: Локальный gateway
+tags:
+  - name: Auth
+    description: Сессии, профиль и принятие приглашений.
+  - name: Company
+    description: Настройки текущей компании.
+  - name: Organization
+    description: Отделы, должности, сотрудники и приглашения.
+  - name: Knowledge Base
+    description: Разделы, статьи, версии и ознакомления.
+  - name: Tasks
+    description: Доски, колонки, задачи и комментарии.
+  - name: Academy
+    description: Курсы, уроки, тесты, назначения и прогресс.
+  - name: Notifications
+    description: Уведомления и SSE-доставка.
+  - name: Schedule
+    description: Графики работы и отклонения.
+  - name: Distribution
+    description: Группы и события распределения сделок.
+security:
+  - bearerAuth: []
+
+paths:
+  /api/v1/auth/me:
+    get:
+      tags: [Auth]
+      operationId: getCurrentUser
+      summary: Получить текущего пользователя
+      responses:
+        '200':
+          $ref: '#/components/responses/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        default:
+          $ref: '#/components/responses/Error'
+    patch:
+      tags: [Auth]
+      operationId: updateCurrentUser
+      summary: Обновить профиль текущего пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCurrentUserInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/auth/login:
+    post:
+      tags: [Auth]
+      operationId: login
+      summary: Войти по email и паролю
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/AuthSession'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/auth/refresh:
+    post:
+      tags: [Auth]
+      operationId: refresh
+      summary: Ротировать refresh-сессию и выдать новый access-токен
+      security:
+        - refreshCookie: []
+      responses:
+        '200':
+          $ref: '#/components/responses/AuthSession'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/auth/logout:
+    post:
+      tags: [Auth]
+      operationId: logout
+      summary: Отозвать refresh-сессию
+      security:
+        - refreshCookie: []
+      responses:
+        '204':
+          description: Сессия отозвана, refresh-cookie удалена
+          headers:
+            Set-Cookie:
+              $ref: '#/components/headers/RefreshCookie'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/auth/register:
+    post:
+      tags: [Auth]
+      operationId: register
+      summary: Создать компанию и учётную запись владельца
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterInput'
+      responses:
+        '201':
+          $ref: '#/components/responses/AuthSession'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/auth/invites/{token}:
+    parameters:
+      - $ref: '#/components/parameters/InviteToken'
+    get:
+      tags: [Auth]
+      operationId: getInviteByToken
+      summary: Получить ожидающее приглашение по токену
+      security: []
+      responses:
+        '200':
+          $ref: '#/components/responses/Invite'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/auth/invites/{token}/accept:
+    parameters:
+      - $ref: '#/components/parameters/InviteToken'
+    post:
+      tags: [Auth]
+      operationId: acceptInvite
+      summary: Принять приглашение и задать пароль
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AcceptInviteInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/AuthSession'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/company:
+    get:
+      tags: [Company]
+      operationId: getCompany
+      summary: Получить компанию текущего пользователя
+      responses:
+        '200':
+          $ref: '#/components/responses/Company'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        default:
+          $ref: '#/components/responses/Error'
+    patch:
+      tags: [Company]
+      operationId: updateCompany
+      summary: Обновить компанию
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCompanyInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/Company'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/org/departments:
+    get:
+      tags: [Organization]
+      operationId: getDepartments
+      summary: Получить отделы
+      responses:
+        '200':
+          $ref: '#/components/responses/Departments'
+        default:
+          $ref: '#/components/responses/Error'
+    post:
+      tags: [Organization]
+      operationId: createDepartment
+      summary: Создать отдел
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDepartmentInput'
+      responses:
+        '201':
+          $ref: '#/components/responses/Department'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/org/departments/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    patch:
+      tags: [Organization]
+      operationId: updateDepartment
+      summary: Обновить отдел
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateDepartmentInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/Department'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags: [Organization]
+      operationId: deleteDepartment
+      summary: Удалить пустой отдел
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/org/departments/{id}/move:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    post:
+      tags: [Organization]
+      operationId: moveDepartment
+      summary: Переместить отдел
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MoveDepartmentInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/Department'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/org/positions:
+    get:
+      tags: [Organization]
+      operationId: getPositions
+      summary: Получить должности
+      responses:
+        '200':
+          $ref: '#/components/responses/Positions'
+        default:
+          $ref: '#/components/responses/Error'
+    post:
+      tags: [Organization]
+      operationId: createPosition
+      summary: Создать должность
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePositionInput'
+      responses:
+        '201':
+          $ref: '#/components/responses/Position'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/org/positions/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    get:
+      tags: [Organization]
+      operationId: getPosition
+      summary: Получить должность
+      responses:
+        '200':
+          $ref: '#/components/responses/Position'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/Error'
+    patch:
+      tags: [Organization]
+      operationId: updatePosition
+      summary: Обновить должность, включая перенос в другой отдел
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePositionInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/Position'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags: [Organization]
+      operationId: deletePosition
+      summary: Удалить должность и снять её с сотрудников
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/org/positions/{id}/move:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    post:
+      tags: [Organization]
+      operationId: movePosition
+      summary: Переместить должность в другой отдел
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MovePositionInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/Position'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/org/users:
+    get:
+      tags: [Organization]
+      operationId: getUsers
+      summary: Получить сотрудников
+      responses:
+        '200':
+          $ref: '#/components/responses/Users'
+        default:
+          $ref: '#/components/responses/Error'
+    post:
+      tags: [Organization]
+      operationId: createUser
+      summary: Создать активного сотрудника
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserInput'
+      responses:
+        '201':
+          $ref: '#/components/responses/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/org/users/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    get:
+      tags: [Organization]
+      operationId: getUser
+      summary: Получить сотрудника
+      responses:
+        '200':
+          $ref: '#/components/responses/User'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/Error'
+    patch:
+      tags: [Organization]
+      operationId: updateUser
+      summary: Обновить сотрудника
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/org/invites:
+    get:
+      tags: [Organization]
+      operationId: getInvites
+      summary: Получить приглашения, новые первыми
+      responses:
+        '200':
+          $ref: '#/components/responses/Invites'
+        default:
+          $ref: '#/components/responses/Error'
+    post:
+      tags: [Organization]
+      operationId: inviteUser
+      summary: Создать приглашение по email или ссылке
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InviteUserInput'
+      responses:
+        '201':
+          $ref: '#/components/responses/Invite'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/org/invites/{id}/resend:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    post:
+      tags: [Organization]
+      operationId: resendInvite
+      summary: Повторно отправить ожидающее приглашение
+      responses:
+        '200':
+          $ref: '#/components/responses/Invite'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/org/invites/{id}/revoke:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    post:
+      tags: [Organization]
+      operationId: revokeInvite
+      summary: Отозвать приглашение
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/kb/sections:
+    get:
+      tags: [Knowledge Base]
+      operationId: getSections
+      summary: Получить разделы базы знаний
+      responses:
+        '200':
+          $ref: '#/components/responses/ArticleSections'
+        default:
+          $ref: '#/components/responses/Error'
+    post:
+      tags: [Knowledge Base]
+      operationId: createSection
+      summary: Создать раздел базы знаний
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateArticleSectionInput'
+      responses:
+        '201':
+          $ref: '#/components/responses/ArticleSection'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/kb/sections/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    patch:
+      tags: [Knowledge Base]
+      operationId: updateSection
+      summary: Обновить раздел базы знаний
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateArticleSectionInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/ArticleSection'
+        default:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags: [Knowledge Base]
+      operationId: deleteSection
+      summary: Удалить пустой раздел базы знаний
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/kb/articles:
+    get:
+      tags: [Knowledge Base]
+      operationId: getArticles
+      summary: Получить статьи
+      parameters:
+        - name: sectionId
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/ID'
+      responses:
+        '200':
+          $ref: '#/components/responses/Articles'
+        default:
+          $ref: '#/components/responses/Error'
+    post:
+      tags: [Knowledge Base]
+      operationId: createArticle
+      summary: Создать статью
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateArticleInput'
+      responses:
+        '201':
+          $ref: '#/components/responses/Article'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/kb/articles/search:
+    get:
+      tags: [Knowledge Base]
+      operationId: searchArticles
+      summary: Найти статьи по заголовку и содержимому
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      responses:
+        '200':
+          $ref: '#/components/responses/Articles'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/kb/articles/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    get:
+      tags: [Knowledge Base]
+      operationId: getArticle
+      summary: Получить статью
+      responses:
+        '200':
+          $ref: '#/components/responses/Article'
+        default:
+          $ref: '#/components/responses/Error'
+    patch:
+      tags: [Knowledge Base]
+      operationId: updateArticle
+      summary: Обновить статью
+      parameters:
+        - name: If-Match
+          in: header
+          required: false
+          description: Ожидаемый номер версии для optimistic locking.
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateArticleInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/Article'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/kb/articles/{articleId}/rollback:
+    parameters:
+      - name: articleId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+    post:
+      tags: [Knowledge Base]
+      operationId: rollbackArticle
+      summary: Откатить статью к сохранённой версии
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RollbackArticleInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/Article'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/kb/articles/{id}/versions:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    get:
+      tags: [Knowledge Base]
+      operationId: getArticleVersions
+      summary: Получить историю версий статьи
+      responses:
+        '200':
+          $ref: '#/components/responses/ArticleVersions'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/kb/articles/{id}/acknowledgements:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    get:
+      tags: [Knowledge Base]
+      operationId: getAcknowledgements
+      summary: Получить отметки об ознакомлении со статьёй
+      responses:
+        '200':
+          $ref: '#/components/responses/Acknowledgements'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/kb/articles/{id}/acknowledge:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    post:
+      tags: [Knowledge Base]
+      operationId: acknowledgeArticle
+      summary: Отметить статью как прочитанную
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/tasks/boards:
+    get:
+      tags: [Tasks]
+      operationId: getBoards
+      summary: Получить доски
+      responses:
+        '200':
+          $ref: '#/components/responses/Boards'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/tasks/boards/{boardId}/columns:
+    parameters:
+      - name: boardId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+    get:
+      tags: [Tasks]
+      operationId: getColumns
+      summary: Получить колонки доски
+      responses:
+        '200':
+          $ref: '#/components/responses/TaskColumns'
+        default:
+          $ref: '#/components/responses/Error'
+    post:
+      tags: [Tasks]
+      operationId: createColumn
+      summary: Создать колонку доски
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTaskColumnInput'
+      responses:
+        '201':
+          $ref: '#/components/responses/TaskColumn'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/tasks/columns/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    patch:
+      tags: [Tasks]
+      operationId: updateColumn
+      summary: Обновить колонку
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTaskColumnInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/TaskColumn'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/tasks:
+    get:
+      tags: [Tasks]
+      operationId: getTasks
+      summary: Получить задачи
+      parameters:
+        - name: boardId
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/ID'
+      responses:
+        '200':
+          $ref: '#/components/responses/Tasks'
+        default:
+          $ref: '#/components/responses/Error'
+    post:
+      tags: [Tasks]
+      operationId: createTask
+      summary: Создать задачу
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTaskInput'
+      responses:
+        '201':
+          $ref: '#/components/responses/Task'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/tasks/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    get:
+      tags: [Tasks]
+      operationId: getTask
+      summary: Получить задачу
+      responses:
+        '200':
+          $ref: '#/components/responses/Task'
+        default:
+          $ref: '#/components/responses/Error'
+    patch:
+      tags: [Tasks]
+      operationId: updateTask
+      summary: Обновить задачу
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTaskInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/Task'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/tasks/{taskId}/move:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+    post:
+      tags: [Tasks]
+      operationId: moveTask
+      summary: Переместить задачу и изменить порядок
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MoveTaskInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/Task'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/tasks/{taskId}/comments:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+    get:
+      tags: [Tasks]
+      operationId: getComments
+      summary: Получить комментарии задачи
+      responses:
+        '200':
+          $ref: '#/components/responses/TaskComments'
+        default:
+          $ref: '#/components/responses/Error'
+    post:
+      tags: [Tasks]
+      operationId: addComment
+      summary: Добавить комментарий
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddTaskCommentInput'
+      responses:
+        '201':
+          $ref: '#/components/responses/TaskComment'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/tasks/labels:
+    get:
+      tags: [Tasks]
+      operationId: getLabels
+      summary: Получить метки задач
+      responses:
+        '200':
+          $ref: '#/components/responses/Labels'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/courses:
+    get:
+      tags: [Academy]
+      operationId: getCourses
+      summary: Получить курсы
+      responses:
+        '200':
+          $ref: '#/components/responses/Courses'
+        default:
+          $ref: '#/components/responses/Error'
+    post:
+      tags: [Academy]
+      operationId: createCourse
+      summary: Создать курс
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCourseInput'
+      responses:
+        '201':
+          $ref: '#/components/responses/Course'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/courses/from-kb:
+    post:
+      tags: [Academy]
+      operationId: createCourseFromKb
+      summary: Создать курс из разделов и статей базы знаний
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCourseFromKbInput'
+      responses:
+        '201':
+          $ref: '#/components/responses/Course'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/courses/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    get:
+      tags: [Academy]
+      operationId: getCourse
+      summary: Получить курс
+      responses:
+        '200':
+          $ref: '#/components/responses/Course'
+        default:
+          $ref: '#/components/responses/Error'
+    patch:
+      tags: [Academy]
+      operationId: updateCourse
+      summary: Обновить курс
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCourseInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/Course'
+        default:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags: [Academy]
+      operationId: deleteCourse
+      summary: Удалить курс каскадно
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/courses/{courseId}/sections:
+    parameters:
+      - name: courseId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+    get:
+      tags: [Academy]
+      operationId: getCourseSections
+      summary: Получить разделы курса
+      responses:
+        '200':
+          $ref: '#/components/responses/CourseSections'
+        default:
+          $ref: '#/components/responses/Error'
+    post:
+      tags: [Academy]
+      operationId: createCourseSection
+      summary: Создать раздел курса
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCourseSectionInput'
+      responses:
+        '201':
+          $ref: '#/components/responses/CourseSection'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/sections/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    patch:
+      tags: [Academy]
+      operationId: updateCourseSection
+      summary: Переименовать раздел курса
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCourseSectionInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/CourseSection'
+        default:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags: [Academy]
+      operationId: deleteCourseSection
+      summary: Удалить раздел курса с уроками
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/lessons:
+    get:
+      tags: [Academy]
+      operationId: getLessons
+      summary: Получить уроки
+      parameters:
+        - name: courseId
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/ID'
+      responses:
+        '200':
+          $ref: '#/components/responses/Lessons'
+        default:
+          $ref: '#/components/responses/Error'
+    post:
+      tags: [Academy]
+      operationId: createLesson
+      summary: Создать урок
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateLessonInput'
+      responses:
+        '201':
+          $ref: '#/components/responses/Lesson'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/lessons/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    patch:
+      tags: [Academy]
+      operationId: updateLesson
+      summary: Обновить урок
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateLessonInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/Lesson'
+        default:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags: [Academy]
+      operationId: deleteLesson
+      summary: Удалить урок с тестом и прогрессом
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/lessons/{id}/move:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    post:
+      tags: [Academy]
+      operationId: moveLesson
+      summary: Переместить урок и изменить порядок
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MoveLessonInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/Lesson'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/quizzes:
+    get:
+      tags: [Academy]
+      operationId: getQuizzes
+      summary: Получить тесты
+      parameters:
+        - name: lessonId
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/ID'
+      responses:
+        '200':
+          $ref: '#/components/responses/Quizzes'
+        default:
+          $ref: '#/components/responses/Error'
+    put:
+      tags: [Academy]
+      operationId: upsertQuiz
+      summary: Создать или обновить тест
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpsertQuizInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/Quiz'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/assignments:
+    get:
+      tags: [Academy]
+      operationId: getAssignments
+      summary: Получить назначения курсов
+      responses:
+        '200':
+          $ref: '#/components/responses/CourseAssignments'
+        default:
+          $ref: '#/components/responses/Error'
+    post:
+      tags: [Academy]
+      operationId: assignCourse
+      summary: Назначить курс
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignCourseInput'
+      responses:
+        '201':
+          $ref: '#/components/responses/CourseAssignment'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/progress:
+    get:
+      tags: [Academy]
+      operationId: getProgress
+      summary: Получить прогресс по курсам
+      parameters:
+        - name: courseId
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/ID'
+      responses:
+        '200':
+          $ref: '#/components/responses/CourseProgressList'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/progress/lessons/{lessonId}/complete:
+    parameters:
+      - name: lessonId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+    post:
+      tags: [Academy]
+      operationId: markLessonComplete
+      summary: Отметить урок пройденным
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MarkLessonCompleteInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/CourseProgress'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/notifications:
+    get:
+      tags: [Notifications]
+      operationId: getNotifications
+      summary: Получить уведомления текущего пользователя
+      responses:
+        '200':
+          $ref: '#/components/responses/Notifications'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/notifications/unread-count:
+    get:
+      tags: [Notifications]
+      operationId: getUnreadCount
+      summary: Получить число непрочитанных уведомлений
+      responses:
+        '200':
+          description: Число непрочитанных уведомлений
+          content:
+            application/json:
+              schema:
+                type: integer
+                minimum: 0
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/notifications/{id}/read:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    post:
+      tags: [Notifications]
+      operationId: markRead
+      summary: Отметить уведомление прочитанным
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/notifications/read-all:
+    post:
+      tags: [Notifications]
+      operationId: markAllRead
+      summary: Отметить все уведомления прочитанными
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/notifications/stream:
+    get:
+      tags: [Notifications]
+      operationId: streamNotifications
+      summary: SSE-поток новых уведомлений
+      responses:
+        '200':
+          description: Поток Server-Sent Events с event type `notification`.
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                const: no-cache
+          content:
+            text/event-stream:
+              schema:
+                type: string
+                examples:
+                  - |-
+                    event: notification
+                    data: {"id":"4dc6f749-3490-4fba-a65b-753f747c5473"}
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/schedule:
+    get:
+      tags: [Schedule]
+      operationId: getSchedules
+      summary: Получить шаблоны графиков сотрудников
+      responses:
+        '200':
+          $ref: '#/components/responses/UserSchedules'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/schedule/{userId}:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+    put:
+      tags: [Schedule]
+      operationId: saveSchedule
+      summary: Создать или заменить шаблон графика сотрудника
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaveScheduleInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/UserSchedule'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/schedule/exceptions:
+    get:
+      tags: [Schedule]
+      operationId: getExceptions
+      summary: Получить отклонения от графика за месяц
+      parameters:
+        - name: month
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/Month'
+      responses:
+        '200':
+          $ref: '#/components/responses/ShiftExceptions'
+        default:
+          $ref: '#/components/responses/Error'
+    put:
+      tags: [Schedule]
+      operationId: saveExceptions
+      summary: Пакетно сохранить отклонения от графика
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/SaveShiftExceptionInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/ShiftExceptions'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/distribution/groups:
+    get:
+      tags: [Distribution]
+      operationId: getDistributionGroups
+      summary: Получить группы распределения сделок
+      responses:
+        '200':
+          $ref: '#/components/responses/DistributionGroups'
+        default:
+          $ref: '#/components/responses/Error'
+    post:
+      tags: [Distribution]
+      operationId: createDistributionGroup
+      summary: Создать группу распределения сделок
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDistributionGroupInput'
+      responses:
+        '201':
+          $ref: '#/components/responses/DistributionGroup'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/distribution/groups/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    patch:
+      tags: [Distribution]
+      operationId: updateDistributionGroup
+      summary: Обновить группу распределения сделок
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateDistributionGroupInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/DistributionGroup'
+        default:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags: [Distribution]
+      operationId: deleteDistributionGroup
+      summary: Удалить группу и её события
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/distribution/groups/{groupId}/events:
+    parameters:
+      - name: groupId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+    get:
+      tags: [Distribution]
+      operationId: getDistributionEvents
+      summary: Получить события группы, новые первыми
+      responses:
+        '200':
+          $ref: '#/components/responses/DistributionEvents'
+        default:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags: [Distribution]
+      operationId: resetDistributionEvents
+      summary: Очистить события группы
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/distribution/groups/{groupId}/simulate:
+    parameters:
+      - name: groupId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+    post:
+      tags: [Distribution]
+      operationId: simulateDistributionDeal
+      summary: Смоделировать поступление сделки
+      responses:
+        '201':
+          $ref: '#/components/responses/DistributionEvent'
+        default:
+          $ref: '#/components/responses/Error'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    refreshCookie:
+      type: apiKey
+      in: cookie
+      name: teamos_refresh
+
+  headers:
+    RefreshCookie:
+      description: |
+        HttpOnly refresh-cookie. На login/register/accept/refresh содержит ротированный
+        токен; на logout истекает немедленно. В production добавляется `Secure`.
+      schema:
+        type: string
+        example: teamos_refresh=opaque-token; Path=/api/v1/auth; HttpOnly; SameSite=Lax
+
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/ID'
+    InviteToken:
+      name: token
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 1
+
+  responses:
+    NoContent:
+      description: Операция выполнена
+    BadRequest:
+      description: Ошибка валидации или доменный запрет
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: Учётные данные отсутствуют или недействительны
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Forbidden:
+      description: Недостаточно прав
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Сущность не найдена
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Conflict:
+      description: Конфликт уникальности, состояния или версии
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Error:
+      description: Ошибка API
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    AuthSession:
+      description: Access-токен выдан, refresh-токен установлен в HttpOnly cookie
+      headers:
+        Set-Cookie:
+          $ref: '#/components/headers/RefreshCookie'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AuthResponse'
+    User:
+      description: Пользователь
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/User'
+    Users:
+      description: Пользователи
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/User'
+    Company:
+      description: Компания
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Company'
+    Department:
+      description: Отдел
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Department'
+    Departments:
+      description: Отделы
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Department'
+    Position:
+      description: Должность
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Position'
+    Positions:
+      description: Должности
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Position'
+    Invite:
+      description: Приглашение
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Invite'
+    Invites:
+      description: Приглашения
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Invite'
+    ArticleSection:
+      description: Раздел базы знаний
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ArticleSection'
+    ArticleSections:
+      description: Разделы базы знаний
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/ArticleSection'
+    Article:
+      description: Статья
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Article'
+    Articles:
+      description: Статьи
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Article'
+    ArticleVersions:
+      description: Версии статьи
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/ArticleVersion'
+    Acknowledgements:
+      description: Отметки об ознакомлении
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Acknowledgement'
+    Boards:
+      description: Доски задач
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Board'
+    TaskColumn:
+      description: Колонка задач
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TaskColumn'
+    TaskColumns:
+      description: Колонки задач
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/TaskColumn'
+    Task:
+      description: Задача
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Task'
+    Tasks:
+      description: Задачи
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Task'
+    TaskComment:
+      description: Комментарий задачи
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TaskComment'
+    TaskComments:
+      description: Комментарии задачи
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/TaskComment'
+    Labels:
+      description: Метки задач
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Label'
+    Course:
+      description: Курс
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Course'
+    Courses:
+      description: Курсы
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Course'
+    CourseSection:
+      description: Раздел курса
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CourseSection'
+    CourseSections:
+      description: Разделы курса
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/CourseSection'
+    Lesson:
+      description: Урок
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Lesson'
+    Lessons:
+      description: Уроки
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Lesson'
+    Quiz:
+      description: Тест урока
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Quiz'
+    Quizzes:
+      description: Тесты уроков
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Quiz'
+    CourseAssignment:
+      description: Назначение курса
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CourseAssignment'
+    CourseAssignments:
+      description: Назначения курсов
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/CourseAssignment'
+    CourseProgress:
+      description: Прогресс по курсу
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CourseProgress'
+    CourseProgressList:
+      description: Прогресс по курсам
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/CourseProgress'
+    Notifications:
+      description: Уведомления
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/AppNotification'
+    UserSchedule:
+      description: Шаблон графика сотрудника
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserSchedule'
+    UserSchedules:
+      description: Шаблоны графиков сотрудников
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/UserSchedule'
+    ShiftExceptions:
+      description: Отклонения от графика
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/ShiftException'
+    DistributionGroup:
+      description: Группа распределения сделок
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DealDistributionGroup'
+    DistributionGroups:
+      description: Группы распределения сделок
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/DealDistributionGroup'
+    DistributionEvent:
+      description: Событие распределения сделки
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DistributionEvent'
+    DistributionEvents:
+      description: События распределения сделок
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/DistributionEvent'
+
+  schemas:
+    ID:
+      type: string
+      format: uuid
+    ISODateTime:
+      type: string
+      format: date-time
+    LocalDate:
+      type: string
+      format: date
+    ClearableDate:
+      oneOf:
+        - $ref: '#/components/schemas/LocalDate'
+        - type: string
+          const: ''
+    ClearableDateTime:
+      oneOf:
+        - $ref: '#/components/schemas/ISODateTime'
+        - type: string
+          const: ''
+    Month:
+      type: string
+      pattern: '^\\d{4}-(0[1-9]|1[0-2])$'
+      example: '2026-07'
+    LocalTime:
+      type: string
+      pattern: '^([01]\\d|2[0-3]):[0-5]\\d$'
+      example: '09:00'
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required: [error]
+      properties:
+        error:
+          type: object
+          additionalProperties: false
+          required: [message, status]
+          properties:
+            message:
+              type: string
+              minLength: 1
+              example: Сотрудник не найден
+            status:
+              type: integer
+              minimum: 400
+              maximum: 599
+              example: 404
+    RichTextContent:
+      type: object
+      additionalProperties: false
+      required: [type]
+      properties:
+        type:
+          type: string
+          const: doc
+        content:
+          type: array
+          items: {}
+
+    UserRole:
+      type: string
+      enum: [owner, admin, employee, partner]
+    UserStatus:
+      type: string
+      enum: [active, invited, deactivated]
+    InviteStatus:
+      type: string
+      enum: [pending, accepted, expired]
+
+    Company:
+      type: object
+      additionalProperties: false
+      required: [id, name, ownerId, createdAt]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        name:
+          type: string
+          minLength: 1
+        logoUrl:
+          type: string
+          format: uri
+        ownerId:
+          $ref: '#/components/schemas/ID'
+        createdAt:
+          $ref: '#/components/schemas/ISODateTime'
+
+    User:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - email
+        - firstName
+        - lastName
+        - role
+        - status
+        - positionIds
+        - createdAt
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        email:
+          type: string
+          format: email
+        firstName:
+          type: string
+          minLength: 1
+        lastName:
+          type: string
+          minLength: 1
+        avatarUrl:
+          type: string
+          format: uri
+        phone:
+          type: string
+        role:
+          $ref: '#/components/schemas/UserRole'
+        status:
+          $ref: '#/components/schemas/UserStatus'
+        positionIds:
+          type: array
+          maxItems: 1
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/ID'
+        birthDate:
+          $ref: '#/components/schemas/LocalDate'
+        hiredAt:
+          $ref: '#/components/schemas/LocalDate'
+        vacationAllowance:
+          type: integer
+          minimum: 0
+          maximum: 366
+        createdAt:
+          $ref: '#/components/schemas/ISODateTime'
+
+    Department:
+      type: object
+      additionalProperties: false
+      required: [id, name, parentId, order]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        name:
+          type: string
+          minLength: 1
+        parentId:
+          type: [string, 'null']
+          format: uuid
+          x-go-type: nullable.Nullable[string]
+          x-go-type-skip-optional-pointer: true
+        headUserId:
+          $ref: '#/components/schemas/ID'
+        valuableFinalProduct:
+          type: string
+        order:
+          type: integer
+          minimum: 0
+
+    Position:
+      type: object
+      additionalProperties: false
+      required: [id, name, departmentId, articleIds, requiredCourseIds]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        name:
+          type: string
+          minLength: 1
+        departmentId:
+          $ref: '#/components/schemas/ID'
+        level:
+          type: integer
+          minimum: 0
+          maximum: 4
+        description:
+          type: string
+        articleIds:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/ID'
+        requiredCourseIds:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/ID'
+
+    Invite:
+      type: object
+      additionalProperties: false
+      required: [id, token, role, invitedById, status, createdAt]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        email:
+          type: string
+          format: email
+        token:
+          type: string
+          minLength: 1
+        role:
+          $ref: '#/components/schemas/UserRole'
+        positionId:
+          $ref: '#/components/schemas/ID'
+        departmentId:
+          $ref: '#/components/schemas/ID'
+        invitedById:
+          $ref: '#/components/schemas/ID'
+        status:
+          $ref: '#/components/schemas/InviteStatus'
+        createdAt:
+          $ref: '#/components/schemas/ISODateTime'
+
+    AuthResponse:
+      type: object
+      additionalProperties: false
+      required: [accessToken, user]
+      properties:
+        accessToken:
+          type: string
+          minLength: 1
+          description: JWT access-токен со сроком жизни 15 минут.
+        user:
+          $ref: '#/components/schemas/User'
+
+    LoginInput:
+      type: object
+      additionalProperties: false
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+          minLength: 8
+
+    RegisterInput:
+      type: object
+      additionalProperties: false
+      required: [companyName, email, password, firstName, lastName]
+      properties:
+        companyName:
+          type: string
+          minLength: 1
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+          minLength: 8
+        firstName:
+          type: string
+          minLength: 1
+        lastName:
+          type: string
+          minLength: 1
+
+    AcceptInviteInput:
+      type: object
+      additionalProperties: false
+      required: [firstName, lastName, password]
+      properties:
+        email:
+          type: string
+          format: email
+          description: Обязателен только для приглашения по ссылке без заранее заданного email.
+        firstName:
+          type: string
+          minLength: 1
+        lastName:
+          type: string
+          minLength: 1
+        password:
+          type: string
+          format: password
+          minLength: 8
+
+    UpdateCurrentUserInput:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        firstName:
+          type: string
+          minLength: 1
+        lastName:
+          type: string
+          minLength: 1
+        phone:
+          type: string
+        avatarUrl:
+          type: string
+
+    UpdateCompanyInput:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        name:
+          type: string
+          minLength: 1
+        logoUrl:
+          type: string
+
+    CreateDepartmentInput:
+      type: object
+      additionalProperties: false
+      required: [name, parentId]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        parentId:
+          type: [string, 'null']
+          format: uuid
+          x-go-type: nullable.Nullable[string]
+          x-go-type-skip-optional-pointer: true
+        headUserId:
+          $ref: '#/components/schemas/ID'
+        valuableFinalProduct:
+          type: string
+
+    UpdateDepartmentInput:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        name:
+          type: string
+          minLength: 1
+        headUserId:
+          type: [string, 'null']
+          format: uuid
+          x-go-type: nullable.Nullable[string]
+          x-go-type-skip-optional-pointer: true
+        valuableFinalProduct:
+          type: [string, 'null']
+          x-go-type: nullable.Nullable[string]
+          x-go-type-skip-optional-pointer: true
+
+    MoveDepartmentInput:
+      type: object
+      additionalProperties: false
+      required: [parentId]
+      properties:
+        parentId:
+          type: [string, 'null']
+          format: uuid
+          x-go-type: nullable.Nullable[string]
+          x-go-type-skip-optional-pointer: true
+
+    CreatePositionInput:
+      type: object
+      additionalProperties: false
+      required: [name, departmentId]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        departmentId:
+          $ref: '#/components/schemas/ID'
+        level:
+          type: integer
+          minimum: 0
+          maximum: 4
+        description:
+          type: string
+
+    UpdatePositionInput:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        name:
+          type: string
+          minLength: 1
+        departmentId:
+          $ref: '#/components/schemas/ID'
+        level:
+          type: integer
+          minimum: 0
+          maximum: 4
+        description:
+          type: string
+
+    MovePositionInput:
+      type: object
+      additionalProperties: false
+      required: [departmentId]
+      properties:
+        departmentId:
+          $ref: '#/components/schemas/ID'
+
+    CreateUserInput:
+      type: object
+      additionalProperties: false
+      required: [firstName, lastName, email, role]
+      properties:
+        firstName:
+          type: string
+          minLength: 1
+        lastName:
+          type: string
+          minLength: 1
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        role:
+          $ref: '#/components/schemas/UserRole'
+        positionIds:
+          type: array
+          maxItems: 1
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/ID'
+
+    UpdateUserInput:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phone:
+          type: string
+        birthDate:
+          $ref: '#/components/schemas/ClearableDate'
+        hiredAt:
+          $ref: '#/components/schemas/ClearableDate'
+        vacationAllowance:
+          type: integer
+          minimum: 0
+          maximum: 366
+        role:
+          $ref: '#/components/schemas/UserRole'
+        status:
+          $ref: '#/components/schemas/UserStatus'
+        positionIds:
+          type: array
+          maxItems: 1
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/ID'
+
+    InviteUserInput:
+      type: object
+      additionalProperties: false
+      required: [role]
+      properties:
+        email:
+          type: string
+          format: email
+        role:
+          $ref: '#/components/schemas/UserRole'
+        positionId:
+          $ref: '#/components/schemas/ID'
+        departmentId:
+          $ref: '#/components/schemas/ID'
+
+    AccessScope:
+      type: string
+      enum: [company, custom]
+    AccessSettings:
+      type: object
+      additionalProperties: false
+      required: [scope, departmentIds, positionIds, userIds]
+      properties:
+        scope:
+          $ref: '#/components/schemas/AccessScope'
+        departmentIds:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/ID'
+        positionIds:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/ID'
+        userIds:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/ID'
+
+    ArticleSection:
+      type: object
+      additionalProperties: false
+      required: [id, name, parentId, order, access]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        name:
+          type: string
+          minLength: 1
+        parentId:
+          type: [string, 'null']
+          format: uuid
+          x-go-type: nullable.Nullable[string]
+          x-go-type-skip-optional-pointer: true
+        order:
+          type: integer
+          minimum: 0
+        access:
+          $ref: '#/components/schemas/AccessSettings'
+    ArticleStatus:
+      type: string
+      enum: [draft, published]
+    Article:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - sectionId
+        - title
+        - content
+        - status
+        - authorId
+        - version
+        - requiresAcknowledgement
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        sectionId:
+          $ref: '#/components/schemas/ID'
+        title:
+          type: string
+          minLength: 1
+        content:
+          $ref: '#/components/schemas/RichTextContent'
+        status:
+          $ref: '#/components/schemas/ArticleStatus'
+        authorId:
+          $ref: '#/components/schemas/ID'
+        version:
+          type: integer
+          minimum: 1
+        requiresAcknowledgement:
+          type: boolean
+        createdAt:
+          $ref: '#/components/schemas/ISODateTime'
+        updatedAt:
+          $ref: '#/components/schemas/ISODateTime'
+    ArticleVersion:
+      type: object
+      additionalProperties: false
+      required: [id, articleId, version, title, content, authorId, createdAt]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        articleId:
+          $ref: '#/components/schemas/ID'
+        version:
+          type: integer
+          minimum: 1
+        title:
+          type: string
+        content:
+          $ref: '#/components/schemas/RichTextContent'
+        authorId:
+          $ref: '#/components/schemas/ID'
+        createdAt:
+          $ref: '#/components/schemas/ISODateTime'
+    Acknowledgement:
+      type: object
+      additionalProperties: false
+      required: [articleId, userId, acknowledgedAt]
+      properties:
+        articleId:
+          $ref: '#/components/schemas/ID'
+        userId:
+          $ref: '#/components/schemas/ID'
+        acknowledgedAt:
+          $ref: '#/components/schemas/ISODateTime'
+    CreateArticleSectionInput:
+      type: object
+      additionalProperties: false
+      required: [name, parentId]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        parentId:
+          type: [string, 'null']
+          format: uuid
+          x-go-type: nullable.Nullable[string]
+          x-go-type-skip-optional-pointer: true
+        access:
+          $ref: '#/components/schemas/AccessSettings'
+    UpdateArticleSectionInput:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        name:
+          type: string
+          minLength: 1
+        access:
+          $ref: '#/components/schemas/AccessSettings'
+    CreateArticleInput:
+      type: object
+      additionalProperties: false
+      required: [sectionId, title, content, status, requiresAcknowledgement]
+      properties:
+        sectionId:
+          $ref: '#/components/schemas/ID'
+        title:
+          type: string
+          minLength: 1
+        content:
+          $ref: '#/components/schemas/RichTextContent'
+        status:
+          $ref: '#/components/schemas/ArticleStatus'
+        requiresAcknowledgement:
+          type: boolean
+    UpdateArticleInput:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        sectionId:
+          $ref: '#/components/schemas/ID'
+        title:
+          type: string
+          minLength: 1
+        content:
+          $ref: '#/components/schemas/RichTextContent'
+        status:
+          $ref: '#/components/schemas/ArticleStatus'
+        requiresAcknowledgement:
+          type: boolean
+    RollbackArticleInput:
+      type: object
+      additionalProperties: false
+      required: [versionId]
+      properties:
+        versionId:
+          $ref: '#/components/schemas/ID'
+
+    BoardType:
+      type: string
+      enum: [personal, department, project]
+    Board:
+      type: object
+      additionalProperties: false
+      required: [id, name, type, createdAt]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/BoardType'
+        departmentId:
+          $ref: '#/components/schemas/ID'
+        ownerId:
+          $ref: '#/components/schemas/ID'
+        createdAt:
+          $ref: '#/components/schemas/ISODateTime'
+    TaskColumn:
+      type: object
+      additionalProperties: false
+      required: [id, boardId, name, order]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        boardId:
+          $ref: '#/components/schemas/ID'
+        name:
+          type: string
+        order:
+          type: integer
+          minimum: 0
+        color:
+          type: string
+    TaskPriority:
+      type: string
+      enum: [low, medium, high, urgent]
+    Label:
+      type: object
+      additionalProperties: false
+      required: [id, name, color]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        name:
+          type: string
+        color:
+          type: string
+    ChecklistItem:
+      type: object
+      additionalProperties: false
+      required: [id, text, done]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        text:
+          type: string
+        done:
+          type: boolean
+    Attachment:
+      type: object
+      additionalProperties: false
+      required: [id, name, url, size, mimeType]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        name:
+          type: string
+        url:
+          type: string
+          format: uri
+        size:
+          type: integer
+          minimum: 0
+        mimeType:
+          type: string
+    TaskSourceType:
+      type: string
+      enum: [task, contact, company, deal]
+    TaskSource:
+      type: object
+      additionalProperties: false
+      required: [type, title, url]
+      properties:
+        type:
+          $ref: '#/components/schemas/TaskSourceType'
+        title:
+          type: string
+        url:
+          type: string
+        funnelName:
+          type: string
+        stageName:
+          type: string
+    RecurrenceFrequency:
+      type: string
+      enum: [daily, weekly, monthly]
+    RecurrenceRule:
+      type: object
+      additionalProperties: false
+      required: [frequency, interval]
+      properties:
+        frequency:
+          $ref: '#/components/schemas/RecurrenceFrequency'
+        interval:
+          type: integer
+          minimum: 1
+        weekdays:
+          type: array
+          uniqueItems: true
+          items:
+            type: integer
+            minimum: 0
+            maximum: 6
+    Task:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - boardId
+        - columnId
+        - order
+        - title
+        - authorId
+        - assigneeIds
+        - watcherIds
+        - priority
+        - labelIds
+        - checklist
+        - attachments
+        - linkedArticleIds
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        boardId:
+          $ref: '#/components/schemas/ID'
+        columnId:
+          $ref: '#/components/schemas/ID'
+        order:
+          type: integer
+          minimum: 0
+        title:
+          type: string
+        description:
+          $ref: '#/components/schemas/RichTextContent'
+        authorId:
+          $ref: '#/components/schemas/ID'
+        assigneeIds:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/ID'
+        assigneePositionId:
+          $ref: '#/components/schemas/ID'
+        watcherIds:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/ID'
+        dueDate:
+          $ref: '#/components/schemas/ISODateTime'
+        priority:
+          $ref: '#/components/schemas/TaskPriority'
+        labelIds:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/ID'
+        checklist:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChecklistItem'
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attachment'
+        source:
+          $ref: '#/components/schemas/TaskSource'
+        linkedArticleIds:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/ID'
+        recurrence:
+          $ref: '#/components/schemas/RecurrenceRule'
+        completedAt:
+          $ref: '#/components/schemas/ISODateTime'
+        createdAt:
+          $ref: '#/components/schemas/ISODateTime'
+        updatedAt:
+          $ref: '#/components/schemas/ISODateTime'
+    TaskComment:
+      type: object
+      additionalProperties: false
+      required: [id, taskId, authorId, content, createdAt]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        taskId:
+          $ref: '#/components/schemas/ID'
+        authorId:
+          $ref: '#/components/schemas/ID'
+        content:
+          $ref: '#/components/schemas/RichTextContent'
+        createdAt:
+          $ref: '#/components/schemas/ISODateTime'
+    CreateTaskColumnInput:
+      type: object
+      additionalProperties: false
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        color:
+          type: string
+    UpdateTaskColumnInput:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        name:
+          type: string
+          minLength: 1
+        color:
+          type: string
+    CreateTaskInput:
+      type: object
+      additionalProperties: false
+      required: [boardId, columnId, title]
+      properties:
+        boardId:
+          $ref: '#/components/schemas/ID'
+        columnId:
+          $ref: '#/components/schemas/ID'
+        title:
+          type: string
+          minLength: 1
+        priority:
+          $ref: '#/components/schemas/TaskPriority'
+    UpdateTaskInput:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        title:
+          type: string
+        description:
+          $ref: '#/components/schemas/RichTextContent'
+        assigneeIds:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/ID'
+        assigneePositionId:
+          $ref: '#/components/schemas/ID'
+        watcherIds:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/ID'
+        dueDate:
+          $ref: '#/components/schemas/ClearableDateTime'
+        priority:
+          $ref: '#/components/schemas/TaskPriority'
+        labelIds:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/ID'
+        checklist:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChecklistItem'
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attachment'
+        linkedArticleIds:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/ID'
+        recurrence:
+          $ref: '#/components/schemas/RecurrenceRule'
+        completedAt:
+          $ref: '#/components/schemas/ClearableDateTime'
+    MoveTaskInput:
+      type: object
+      additionalProperties: false
+      required: [columnId, order]
+      properties:
+        columnId:
+          $ref: '#/components/schemas/ID'
+        order:
+          type: integer
+          minimum: 0
+    AddTaskCommentInput:
+      type: object
+      additionalProperties: false
+      required: [content]
+      properties:
+        content:
+          $ref: '#/components/schemas/RichTextContent'
+
+    CourseStatus:
+      type: string
+      enum: [draft, published]
+    Course:
+      type: object
+      additionalProperties: false
+      required: [id, title, status, authorId, sequential, createdAt, updatedAt]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        title:
+          type: string
+        description:
+          type: string
+        coverUrl:
+          type: string
+          format: uri
+        status:
+          $ref: '#/components/schemas/CourseStatus'
+        authorId:
+          $ref: '#/components/schemas/ID'
+        sequential:
+          type: boolean
+        deadlineDays:
+          type: integer
+          minimum: 1
+        createdAt:
+          $ref: '#/components/schemas/ISODateTime'
+        updatedAt:
+          $ref: '#/components/schemas/ISODateTime'
+    CourseSection:
+      type: object
+      additionalProperties: false
+      required: [id, courseId, title, order]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        courseId:
+          $ref: '#/components/schemas/ID'
+        title:
+          type: string
+        order:
+          type: integer
+          minimum: 0
+    LessonSourceMode:
+      type: string
+      enum: [link, copy]
+    Lesson:
+      type: object
+      additionalProperties: false
+      required: [id, courseId, sectionId, title, order, content]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        courseId:
+          $ref: '#/components/schemas/ID'
+        sectionId:
+          $ref: '#/components/schemas/ID'
+        title:
+          type: string
+        order:
+          type: integer
+          minimum: 0
+        content:
+          $ref: '#/components/schemas/RichTextContent'
+        sourceArticleId:
+          $ref: '#/components/schemas/ID'
+        sourceMode:
+          $ref: '#/components/schemas/LessonSourceMode'
+        quizId:
+          $ref: '#/components/schemas/ID'
+    QuizQuestionType:
+      type: string
+      enum: [single, multiple, open]
+    QuizOption:
+      type: object
+      additionalProperties: false
+      required: [id, text, correct]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        text:
+          type: string
+        correct:
+          type: boolean
+    QuizQuestion:
+      type: object
+      additionalProperties: false
+      required: [id, type, text, options]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        type:
+          $ref: '#/components/schemas/QuizQuestionType'
+        text:
+          type: string
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuizOption'
+    Quiz:
+      type: object
+      additionalProperties: false
+      required: [id, lessonId, questions, passingScore]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        lessonId:
+          $ref: '#/components/schemas/ID'
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuizQuestion'
+        passingScore:
+          type: integer
+          minimum: 0
+          maximum: 100
+        maxAttempts:
+          type: integer
+          minimum: 1
+    AssigneeType:
+      type: string
+      enum: [user, position, department, external]
+    CourseAssignment:
+      type: object
+      additionalProperties: false
+      required: [id, courseId, assigneeType, assignedById, createdAt]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        courseId:
+          $ref: '#/components/schemas/ID'
+        assigneeType:
+          $ref: '#/components/schemas/AssigneeType'
+        assigneeId:
+          $ref: '#/components/schemas/ID'
+        inviteToken:
+          type: string
+        dueDate:
+          $ref: '#/components/schemas/ISODateTime'
+        assignedById:
+          $ref: '#/components/schemas/ID'
+        createdAt:
+          $ref: '#/components/schemas/ISODateTime'
+    CourseProgressStatus:
+      type: string
+      enum: [not_started, in_progress, completed, overdue]
+    QuizAttempt:
+      type: object
+      additionalProperties: false
+      required: [id, quizId, userId, score, passed, pendingReview, createdAt]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        quizId:
+          $ref: '#/components/schemas/ID'
+        userId:
+          $ref: '#/components/schemas/ID'
+        score:
+          type: integer
+          minimum: 0
+          maximum: 100
+        passed:
+          type: boolean
+        pendingReview:
+          type: boolean
+        createdAt:
+          $ref: '#/components/schemas/ISODateTime'
+    CourseProgress:
+      type: object
+      additionalProperties: false
+      required: [userId, courseId, status, completedLessonIds, quizAttempts]
+      properties:
+        userId:
+          $ref: '#/components/schemas/ID'
+        courseId:
+          $ref: '#/components/schemas/ID'
+        status:
+          $ref: '#/components/schemas/CourseProgressStatus'
+        completedLessonIds:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/ID'
+        quizAttempts:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuizAttempt'
+        startedAt:
+          $ref: '#/components/schemas/ISODateTime'
+        completedAt:
+          $ref: '#/components/schemas/ISODateTime'
+    CreateCourseInput:
+      type: object
+      additionalProperties: false
+      required: [title]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        status:
+          $ref: '#/components/schemas/CourseStatus'
+        sequential:
+          type: boolean
+        deadlineDays:
+          type: integer
+          minimum: 1
+    CreateCourseFromKbInput:
+      type: object
+      additionalProperties: false
+      required: [title, mode, sectionIds, articleIds]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        sequential:
+          type: boolean
+        deadlineDays:
+          type: integer
+          minimum: 1
+        mode:
+          $ref: '#/components/schemas/LessonSourceMode'
+        sectionIds:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/ID'
+        articleIds:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/ID'
+    UpdateCourseInput:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        status:
+          $ref: '#/components/schemas/CourseStatus'
+        sequential:
+          type: boolean
+        deadlineDays:
+          type: integer
+          minimum: 0
+          description: Значение 0 очищает дедлайн, как в текущем frontend-контракте.
+    CreateCourseSectionInput:
+      type: object
+      additionalProperties: false
+      required: [title]
+      properties:
+        title:
+          type: string
+          minLength: 1
+    UpdateCourseSectionInput:
+      type: object
+      additionalProperties: false
+      required: [title]
+      properties:
+        title:
+          type: string
+          minLength: 1
+    CreateLessonInput:
+      type: object
+      additionalProperties: false
+      required: [courseId, sectionId, title]
+      properties:
+        courseId:
+          $ref: '#/components/schemas/ID'
+        sectionId:
+          $ref: '#/components/schemas/ID'
+        title:
+          type: string
+          minLength: 1
+        content:
+          $ref: '#/components/schemas/RichTextContent'
+        sourceArticleId:
+          $ref: '#/components/schemas/ID'
+        sourceMode:
+          $ref: '#/components/schemas/LessonSourceMode'
+    UpdateLessonInput:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        title:
+          type: string
+        content:
+          $ref: '#/components/schemas/RichTextContent'
+        sourceArticleId:
+          $ref: '#/components/schemas/ID'
+        sourceMode:
+          $ref: '#/components/schemas/LessonSourceMode'
+    MoveLessonInput:
+      type: object
+      additionalProperties: false
+      required: [sectionId, order]
+      properties:
+        sectionId:
+          $ref: '#/components/schemas/ID'
+        order:
+          type: integer
+          minimum: 0
+    UpsertQuizInput:
+      type: object
+      additionalProperties: false
+      required: [lessonId, questions, passingScore]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        lessonId:
+          $ref: '#/components/schemas/ID'
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuizQuestion'
+        passingScore:
+          type: integer
+          minimum: 0
+          maximum: 100
+        maxAttempts:
+          type: integer
+          minimum: 1
+    AssignCourseInput:
+      type: object
+      additionalProperties: false
+      required: [courseId, assigneeType]
+      properties:
+        courseId:
+          $ref: '#/components/schemas/ID'
+        assigneeType:
+          $ref: '#/components/schemas/AssigneeType'
+        assigneeId:
+          $ref: '#/components/schemas/ID'
+        dueDate:
+          $ref: '#/components/schemas/ClearableDateTime'
+    MarkLessonCompleteInput:
+      type: object
+      additionalProperties: false
+      required: [courseId]
+      properties:
+        courseId:
+          $ref: '#/components/schemas/ID'
+        userId:
+          $ref: '#/components/schemas/ID'
+
+    NotificationType:
+      type: string
+      enum:
+        - task_assigned
+        - task_comment
+        - task_due
+        - article_published
+        - article_ack_required
+        - course_assigned
+        - course_due
+        - mention
+    AppNotification:
+      type: object
+      additionalProperties: false
+      required: [id, userId, type, title, read, createdAt]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        userId:
+          $ref: '#/components/schemas/ID'
+        type:
+          $ref: '#/components/schemas/NotificationType'
+        title:
+          type: string
+        body:
+          type: string
+        link:
+          type: string
+        read:
+          type: boolean
+        createdAt:
+          $ref: '#/components/schemas/ISODateTime'
+
+    ShiftType:
+      type: string
+      enum: [work, off, vacation, sick, trip]
+    WeekTemplate:
+      type: object
+      additionalProperties: false
+      required: [type, days, start, end]
+      properties:
+        type:
+          type: string
+          const: week
+        days:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            type: integer
+            minimum: 0
+            maximum: 6
+        start:
+          $ref: '#/components/schemas/LocalTime'
+        end:
+          $ref: '#/components/schemas/LocalTime'
+    CycleTemplate:
+      type: object
+      additionalProperties: false
+      required: [type, on, off, start, end, cycleStart]
+      properties:
+        type:
+          type: string
+          const: cycle
+        'on':
+          type: integer
+          minimum: 1
+        'off':
+          type: integer
+          minimum: 1
+        start:
+          $ref: '#/components/schemas/LocalTime'
+        end:
+          $ref: '#/components/schemas/LocalTime'
+        cycleStart:
+          $ref: '#/components/schemas/LocalDate'
+    ScheduleTemplate:
+      oneOf:
+        - $ref: '#/components/schemas/WeekTemplate'
+        - $ref: '#/components/schemas/CycleTemplate'
+      discriminator:
+        propertyName: type
+        mapping:
+          week: '#/components/schemas/WeekTemplate'
+          cycle: '#/components/schemas/CycleTemplate'
+    UserSchedule:
+      type: object
+      additionalProperties: false
+      required: [userId, template]
+      properties:
+        userId:
+          $ref: '#/components/schemas/ID'
+        template:
+          $ref: '#/components/schemas/ScheduleTemplate'
+    SaveScheduleInput:
+      type: object
+      additionalProperties: false
+      required: [template]
+      properties:
+        template:
+          $ref: '#/components/schemas/ScheduleTemplate'
+    ShiftException:
+      type: object
+      additionalProperties: false
+      required: [id, userId, date, type]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        userId:
+          $ref: '#/components/schemas/ID'
+        date:
+          $ref: '#/components/schemas/LocalDate'
+        type:
+          $ref: '#/components/schemas/ShiftType'
+        start:
+          $ref: '#/components/schemas/LocalTime'
+        end:
+          $ref: '#/components/schemas/LocalTime'
+        note:
+          type: string
+    SaveShiftExceptionInput:
+      type: object
+      additionalProperties: false
+      required: [userId, date, type]
+      properties:
+        userId:
+          $ref: '#/components/schemas/ID'
+        date:
+          $ref: '#/components/schemas/LocalDate'
+        type:
+          $ref: '#/components/schemas/ShiftType'
+        start:
+          $ref: '#/components/schemas/LocalTime'
+        end:
+          $ref: '#/components/schemas/LocalTime'
+        note:
+          type: string
+
+    DistributionAlgorithm:
+      type: string
+      enum: [round_robin, least_loaded, priority]
+    DistributionEventStatus:
+      type: string
+      enum: [accepted, in_progress, reassigned, declined]
+    DealDistributionGroup:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - name
+        - active
+        - algorithm
+        - memberIds
+        - disabledMemberIds
+        - source
+        - dealLimit
+        - unclaimedMinutes
+        - createdAt
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        name:
+          type: string
+        description:
+          type: string
+        active:
+          type: boolean
+        algorithm:
+          $ref: '#/components/schemas/DistributionAlgorithm'
+        memberIds:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/ID'
+        disabledMemberIds:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/ID'
+        source:
+          type: string
+        dealLimit:
+          type: integer
+          minimum: 1
+        unclaimedMinutes:
+          type: integer
+          minimum: 1
+        createdAt:
+          $ref: '#/components/schemas/ISODateTime'
+    DistributionEvent:
+      type: object
+      additionalProperties: false
+      required: [id, groupId, dealNumber, userId, status, createdAt]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        groupId:
+          $ref: '#/components/schemas/ID'
+        dealNumber:
+          type: integer
+          minimum: 1
+        userId:
+          $ref: '#/components/schemas/ID'
+        status:
+          $ref: '#/components/schemas/DistributionEventStatus'
+        createdAt:
+          $ref: '#/components/schemas/ISODateTime'
+    CreateDistributionGroupInput:
+      type: object
+      additionalProperties: false
+      required: [name, memberIds]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        memberIds:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/ID'
+    UpdateDistributionGroupInput:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        active:
+          type: boolean
+        algorithm:
+          $ref: '#/components/schemas/DistributionAlgorithm'
+        memberIds:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/ID'
+        disabledMemberIds:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/ID'
+        source:
+          type: string
+        dealLimit:
+          type: integer
+          minimum: 1
+        unclaimedMinutes:
+          type: integer
+          minimum: 1

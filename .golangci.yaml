@@ -1,0 +1,42 @@
+version: "2"
+
+run:
+  tests: true
+  modules-download-mode: readonly
+
+linters:
+  default: none
+  enable:
+    - bodyclose
+    - errcheck
+    - errorlint
+    - govet
+    - ineffassign
+    - misspell
+    - noctx
+    - staticcheck
+    - unused
+  settings:
+    govet:
+      enable-all: true
+      disable:
+        - fieldalignment
+        - shadow
+    staticcheck:
+      checks:
+        - all
+        # Internal packages are intentionally small; mandatory package-doc
+        # boilerplate does not improve their public API.
+        - -ST1000
+        # TeamOS domain errors are user-facing Russian sentences and must start
+        # with a capital letter, so the Go-internal error style rule is wrong.
+        - -ST1005
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
