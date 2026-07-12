@@ -14,6 +14,7 @@ type Config struct {
 	CompanyGRPCAddr string
 	KbGRPCAddr      string
 	TasksGRPCAddr   string
+	AcademyGRPCAddr string
 	JWTPublicKey    string
 	JWTIssuer       string
 	JWTAudience     string
@@ -28,6 +29,7 @@ func Load() (Config, error) {
 		CompanyGRPCAddr: strings.TrimSpace(os.Getenv("GATEWAY_COMPANY_GRPC_ADDR")),
 		KbGRPCAddr:      strings.TrimSpace(os.Getenv("GATEWAY_KB_GRPC_ADDR")),
 		TasksGRPCAddr:   strings.TrimSpace(os.Getenv("GATEWAY_TASKS_GRPC_ADDR")),
+		AcademyGRPCAddr: strings.TrimSpace(os.Getenv("GATEWAY_ACADEMY_GRPC_ADDR")),
 		JWTPublicKey:    strings.TrimSpace(os.Getenv("GATEWAY_JWT_PUBLIC_KEY")),
 		JWTIssuer:       envOr("GATEWAY_JWT_ISSUER", "teamos-company"),
 		JWTAudience:     envOr("GATEWAY_JWT_AUDIENCE", "teamos-api"),
@@ -56,6 +58,9 @@ func Load() (Config, error) {
 	}
 	if config.TasksGRPCAddr == "" {
 		missing = append(missing, "GATEWAY_TASKS_GRPC_ADDR")
+	}
+	if config.AcademyGRPCAddr == "" {
+		missing = append(missing, "GATEWAY_ACADEMY_GRPC_ADDR")
 	}
 	if config.JWTPublicKey == "" {
 		missing = append(missing, "GATEWAY_JWT_PUBLIC_KEY")

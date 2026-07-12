@@ -42,6 +42,7 @@ migrate: ensure-env ## Apply all currently registered service migrations.
 	$(COMPOSE) run --rm company-migrate
 	$(COMPOSE) run --rm kb-migrate
 	$(COMPOSE) run --rm tasks-migrate
+	$(COMPOSE) run --rm academy-migrate
 
 seed: ## Load already exported JSON fixtures from SEED_DIR.
 	@test -d "$(SEED_DIR_ABS)" || { echo "SEED_DIR does not exist: $(SEED_DIR_ABS)" >&2; exit 1; }

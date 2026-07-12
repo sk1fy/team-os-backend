@@ -20,6 +20,7 @@ import (
 	"github.com/sk1fy/team-os-backend/pkg/httpx"
 	"github.com/sk1fy/team-os-backend/services/company/internal/application"
 	"github.com/sk1fy/team-os-backend/services/company/internal/config"
+	"github.com/sk1fy/team-os-backend/services/company/internal/consumers"
 	"github.com/sk1fy/team-os-backend/services/company/internal/outbox"
 	companygrpc "github.com/sk1fy/team-os-backend/services/company/internal/transport/grpc"
 	"google.golang.org/grpc"
@@ -89,6 +90,12 @@ func run(logger *slog.Logger) error {
 	service, err := application.NewService(pool, issuer)
 	if err != nil {
 		return fmt.Errorf("initialize company application: %w", err)
+	}
+
+	consumerContext, consumerCancel := context.WithCancel(context.Background())
+	defer consumerCancel()
+	if err = consumers.Start(consumerContext, bus, pool, logger); err != nil {
+		return fmt.Errorf("start academy consumers: %w", err)
 	}
 
 	var listenConfig net.ListenConfig

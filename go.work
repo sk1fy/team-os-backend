@@ -6,5 +6,6 @@ use (
 	./services/company
 	./services/gateway
 	./services/kb
+	./services/academy
 	./services/tasks
 )

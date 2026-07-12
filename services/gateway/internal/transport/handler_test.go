@@ -13,6 +13,7 @@ import (
 	"testing"
 	"time"
 
+	academyv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/academy/v1"
 	companyv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v1"
 	kbv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/kb/v1"
 	tasksv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/tasks/v1"
@@ -357,7 +358,8 @@ func newTestGateway(t *testing.T, companyServer companyv1.CompanyServiceServer) 
 	client := companyv1.NewCompanyServiceClient(connection)
 	kbClient := kbv1.NewKbServiceClient(connection)
 	tasksClient := tasksv1.NewTasksServiceClient(connection)
-	return api.Handler(NewHandler(client, kbClient, tasksClient, CookieConfig{Secure: true}, logger))
+	academyClient := academyv1.NewAcademyServiceClient(connection)
+	return api.Handler(NewHandler(client, kbClient, tasksClient, academyClient, CookieConfig{Secure: true}, logger))
 }
 
 func serveGatewayRequest(

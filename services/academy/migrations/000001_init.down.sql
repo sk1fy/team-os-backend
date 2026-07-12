@@ -1,0 +1,9 @@
+DROP TABLE IF EXISTS processed_events;
+DROP TABLE IF EXISTS outbox;
+DROP TABLE IF EXISTS quiz_attempts;
+DROP TABLE IF EXISTS progress;
+DROP TABLE IF EXISTS assignments;
+DROP TABLE IF EXISTS quizzes;
+DROP TABLE IF EXISTS lessons;
+DROP TABLE IF EXISTS course_sections;
+DROP TABLE IF EXISTS courses;

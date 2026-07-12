@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	academyv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/academy/v1"
 	companyv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v1"
 	kbv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/kb/v1"
 	tasksv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/tasks/v1"
@@ -33,6 +34,7 @@ type Handler struct {
 	company companyv1.CompanyServiceClient
 	kb      kbv1.KbServiceClient
 	tasks   tasksv1.TasksServiceClient
+	academy academyv1.AcademyServiceClient
 	cookie  CookieConfig
 	logger  *slog.Logger
 }
@@ -41,6 +43,7 @@ func NewHandler(
 	companyClient companyv1.CompanyServiceClient,
 	kbClient kbv1.KbServiceClient,
 	tasksClient tasksv1.TasksServiceClient,
+	academyClient academyv1.AcademyServiceClient,
 	cookie CookieConfig,
 	logger *slog.Logger,
 ) *Handler {
@@ -48,7 +51,7 @@ func NewHandler(
 		logger = slog.Default()
 	}
 	return &Handler{
-		company: companyClient, kb: kbClient, tasks: tasksClient,
+		company: companyClient, kb: kbClient, tasks: tasksClient, academy: academyClient,
 		cookie: cookie, logger: logger,
 	}
 }

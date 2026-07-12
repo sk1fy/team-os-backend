@@ -1,0 +1,352 @@
+syntax = "proto3";
+
+package teamos.academy.v1;
+
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/sk1fy/team-os-backend/contracts/gen/go/academy/v1;academyv1";
+
+service AcademyService {
+  rpc GetCourses(GetCoursesRequest) returns (GetCoursesResponse);
+  rpc GetCourse(GetCourseRequest) returns (GetCourseResponse);
+  rpc CreateCourse(CreateCourseRequest) returns (CreateCourseResponse);
+  rpc CreateCourseFromKb(CreateCourseFromKbRequest) returns (CreateCourseFromKbResponse);
+  rpc UpdateCourse(UpdateCourseRequest) returns (UpdateCourseResponse);
+  rpc DeleteCourse(DeleteCourseRequest) returns (DeleteCourseResponse);
+
+  rpc GetCourseSections(GetCourseSectionsRequest) returns (GetCourseSectionsResponse);
+  rpc CreateCourseSection(CreateCourseSectionRequest) returns (CreateCourseSectionResponse);
+  rpc UpdateCourseSection(UpdateCourseSectionRequest) returns (UpdateCourseSectionResponse);
+  rpc DeleteCourseSection(DeleteCourseSectionRequest) returns (DeleteCourseSectionResponse);
+
+  rpc GetLessons(GetLessonsRequest) returns (GetLessonsResponse);
+  rpc CreateLesson(CreateLessonRequest) returns (CreateLessonResponse);
+  rpc UpdateLesson(UpdateLessonRequest) returns (UpdateLessonResponse);
+  rpc DeleteLesson(DeleteLessonRequest) returns (DeleteLessonResponse);
+  rpc MoveLesson(MoveLessonRequest) returns (MoveLessonResponse);
+
+  rpc GetQuizzes(GetQuizzesRequest) returns (GetQuizzesResponse);
+  rpc UpsertQuiz(UpsertQuizRequest) returns (UpsertQuizResponse);
+
+  rpc GetAssignments(GetAssignmentsRequest) returns (GetAssignmentsResponse);
+  rpc AssignCourse(AssignCourseRequest) returns (AssignCourseResponse);
+
+  rpc GetProgress(GetProgressRequest) returns (GetProgressResponse);
+  rpc MarkLessonComplete(MarkLessonCompleteRequest) returns (MarkLessonCompleteResponse);
+}
+
+enum CourseStatus {
+  COURSE_STATUS_UNSPECIFIED = 0;
+  COURSE_STATUS_DRAFT = 1;
+  COURSE_STATUS_PUBLISHED = 2;
+}
+
+enum LessonSourceMode {
+  LESSON_SOURCE_MODE_UNSPECIFIED = 0;
+  LESSON_SOURCE_MODE_LINK = 1;
+  LESSON_SOURCE_MODE_COPY = 2;
+}
+
+enum QuizQuestionType {
+  QUIZ_QUESTION_TYPE_UNSPECIFIED = 0;
+  QUIZ_QUESTION_TYPE_SINGLE = 1;
+  QUIZ_QUESTION_TYPE_MULTIPLE = 2;
+  QUIZ_QUESTION_TYPE_OPEN = 3;
+}
+
+enum AssigneeType {
+  ASSIGNEE_TYPE_UNSPECIFIED = 0;
+  ASSIGNEE_TYPE_USER = 1;
+  ASSIGNEE_TYPE_POSITION = 2;
+  ASSIGNEE_TYPE_DEPARTMENT = 3;
+  ASSIGNEE_TYPE_EXTERNAL = 4;
+}
+
+enum CourseProgressStatus {
+  COURSE_PROGRESS_STATUS_UNSPECIFIED = 0;
+  COURSE_PROGRESS_STATUS_NOT_STARTED = 1;
+  COURSE_PROGRESS_STATUS_IN_PROGRESS = 2;
+  COURSE_PROGRESS_STATUS_COMPLETED = 3;
+  COURSE_PROGRESS_STATUS_OVERDUE = 4;
+}
+
+message Course {
+  string id = 1;
+  string title = 2;
+  optional string description = 3;
+  optional string cover_url = 4;
+  CourseStatus status = 5;
+  string author_id = 6;
+  bool sequential = 7;
+  optional uint32 deadline_days = 8;
+  google.protobuf.Timestamp created_at = 9;
+  google.protobuf.Timestamp updated_at = 10;
+}
+
+message CourseSection {
+  string id = 1;
+  string course_id = 2;
+  string title = 3;
+  uint32 order = 4;
+}
+
+message Lesson {
+  string id = 1;
+  string course_id = 2;
+  string section_id = 3;
+  string title = 4;
+  uint32 order = 5;
+  google.protobuf.Struct content = 6;
+  optional string source_article_id = 7;
+  optional LessonSourceMode source_mode = 8;
+  optional string quiz_id = 9;
+}
+
+message QuizOption {
+  string id = 1;
+  string text = 2;
+  bool correct = 3;
+}
+
+message QuizQuestion {
+  string id = 1;
+  QuizQuestionType type = 2;
+  string text = 3;
+  repeated QuizOption options = 4;
+}
+
+message Quiz {
+  string id = 1;
+  string lesson_id = 2;
+  repeated QuizQuestion questions = 3;
+  uint32 passing_score = 4;
+  optional uint32 max_attempts = 5;
+}
+
+message CourseAssignment {
+  string id = 1;
+  string course_id = 2;
+  AssigneeType assignee_type = 3;
+  optional string assignee_id = 4;
+  optional string invite_token = 5;
+  optional google.protobuf.Timestamp due_date = 6;
+  string assigned_by_id = 7;
+  google.protobuf.Timestamp created_at = 8;
+}
+
+message QuizAttempt {
+  string id = 1;
+  string quiz_id = 2;
+  string user_id = 3;
+  uint32 score = 4;
+  bool passed = 5;
+  bool pending_review = 6;
+  google.protobuf.Timestamp created_at = 7;
+}
+
+message CourseProgress {
+  string user_id = 1;
+  string course_id = 2;
+  CourseProgressStatus status = 3;
+  repeated string completed_lesson_ids = 4;
+  repeated QuizAttempt quiz_attempts = 5;
+  optional google.protobuf.Timestamp started_at = 6;
+  optional google.protobuf.Timestamp completed_at = 7;
+}
+
+message GetCoursesRequest {}
+
+message GetCoursesResponse {
+  repeated Course courses = 1;
+}
+
+message GetCourseRequest {
+  string id = 1;
+}
+
+message GetCourseResponse {
+  Course course = 1;
+}
+
+message CreateCourseRequest {
+  string title = 1;
+  optional string description = 2;
+  optional CourseStatus status = 3;
+  optional bool sequential = 4;
+  optional uint32 deadline_days = 5;
+}
+
+message CreateCourseResponse {
+  Course course = 1;
+}
+
+message CreateCourseFromKbRequest {
+  string title = 1;
+  optional string description = 2;
+  optional bool sequential = 3;
+  optional uint32 deadline_days = 4;
+  LessonSourceMode mode = 5;
+  repeated string section_ids = 6;
+  repeated string article_ids = 7;
+}
+
+message CreateCourseFromKbResponse {
+  Course course = 1;
+}
+
+message UpdateCourseRequest {
+  string id = 1;
+  optional string title = 2;
+  optional string description = 3;
+  optional CourseStatus status = 4;
+  optional bool sequential = 5;
+  // Zero clears the deadline, mirroring the frontend contract.
+  optional uint32 deadline_days = 6;
+}
+
+message UpdateCourseResponse {
+  Course course = 1;
+}
+
+message DeleteCourseRequest {
+  string id = 1;
+}
+
+message DeleteCourseResponse {}
+
+message GetCourseSectionsRequest {
+  string course_id = 1;
+}
+
+message GetCourseSectionsResponse {
+  repeated CourseSection sections = 1;
+}
+
+message CreateCourseSectionRequest {
+  string course_id = 1;
+  string title = 2;
+}
+
+message CreateCourseSectionResponse {
+  CourseSection section = 1;
+}
+
+message UpdateCourseSectionRequest {
+  string id = 1;
+  string title = 2;
+}
+
+message UpdateCourseSectionResponse {
+  CourseSection section = 1;
+}
+
+message DeleteCourseSectionRequest {
+  string id = 1;
+}
+
+message DeleteCourseSectionResponse {}
+
+message GetLessonsRequest {
+  optional string course_id = 1;
+}
+
+message GetLessonsResponse {
+  repeated Lesson lessons = 1;
+}
+
+message CreateLessonRequest {
+  string course_id = 1;
+  string section_id = 2;
+  string title = 3;
+  optional google.protobuf.Struct content = 4;
+  optional string source_article_id = 5;
+  optional LessonSourceMode source_mode = 6;
+}
+
+message CreateLessonResponse {
+  Lesson lesson = 1;
+}
+
+message UpdateLessonRequest {
+  string id = 1;
+  optional string title = 2;
+  optional google.protobuf.Struct content = 3;
+  optional string source_article_id = 4;
+  optional LessonSourceMode source_mode = 5;
+}
+
+message UpdateLessonResponse {
+  Lesson lesson = 1;
+}
+
+message DeleteLessonRequest {
+  string id = 1;
+}
+
+message DeleteLessonResponse {}
+
+message MoveLessonRequest {
+  string id = 1;
+  string section_id = 2;
+  uint32 order = 3;
+}
+
+message MoveLessonResponse {
+  Lesson lesson = 1;
+}
+
+message GetQuizzesRequest {
+  optional string lesson_id = 1;
+}
+
+message GetQuizzesResponse {
+  repeated Quiz quizzes = 1;
+}
+
+message UpsertQuizRequest {
+  optional string id = 1;
+  string lesson_id = 2;
+  repeated QuizQuestion questions = 3;
+  uint32 passing_score = 4;
+  optional uint32 max_attempts = 5;
+}
+
+message UpsertQuizResponse {
+  Quiz quiz = 1;
+}
+
+message GetAssignmentsRequest {}
+
+message GetAssignmentsResponse {
+  repeated CourseAssignment assignments = 1;
+}
+
+message AssignCourseRequest {
+  string course_id = 1;
+  AssigneeType assignee_type = 2;
+  optional string assignee_id = 3;
+  optional google.protobuf.Timestamp due_date = 4;
+}
+
+message AssignCourseResponse {
+  CourseAssignment assignment = 1;
+}
+
+message GetProgressRequest {
+  optional string course_id = 1;
+}
+
+message GetProgressResponse {
+  repeated CourseProgress progress = 1;
+}
+
+message MarkLessonCompleteRequest {
+  string lesson_id = 1;
+  string course_id = 2;
+  optional string user_id = 3;
+}
+
+message MarkLessonCompleteResponse {
+  CourseProgress progress = 1;
+}

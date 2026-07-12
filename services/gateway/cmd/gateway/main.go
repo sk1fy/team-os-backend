@@ -13,6 +13,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
+	academyv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/academy/v1"
 	companyv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v1"
 	kbv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/kb/v1"
 	tasksv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/tasks/v1"
@@ -96,10 +97,25 @@ func run(logger *slog.Logger) error {
 		}
 	}()
 	tasksClient := tasksv1.NewTasksServiceClient(tasksConnection)
+	academyConnection, err := grpc.NewClient(
+		configuration.AcademyGRPCAddr,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithUnaryInterceptor(defaultUnaryTimeout(5*time.Second)),
+	)
+	if err != nil {
+		return fmt.Errorf("connect to academy: %w", err)
+	}
+	defer func() {
+		if closeErr := academyConnection.Close(); closeErr != nil {
+			logger.Error("close academy gRPC connection", "error", closeErr)
+		}
+	}()
+	academyClient := academyv1.NewAcademyServiceClient(academyConnection)
 	handler := transport.NewHandler(
 		companyClient,
 		kbClient,
 		tasksClient,
+		academyClient,
 		transport.CookieConfig{Secure: configuration.CookieSecure},
 		logger,
 	)
@@ -118,7 +134,20 @@ func run(logger *slog.Logger) error {
 	companyHealthClient := grpc_health_v1.NewHealthClient(companyConnection)
 	kbHealthClient := grpc_health_v1.NewHealthClient(kbConnection)
 	tasksHealthClient := grpc_health_v1.NewHealthClient(tasksConnection)
+	academyHealthClient := grpc_health_v1.NewHealthClient(academyConnection)
 	router.Get("/readyz", httpx.Readyz(map[string]httpx.ReadinessCheck{
+		"academy": func(ctx context.Context) error {
+			checkContext, cancel := context.WithTimeout(ctx, time.Second)
+			defer cancel()
+			response, checkErr := academyHealthClient.Check(checkContext, &grpc_health_v1.HealthCheckRequest{})
+			if checkErr != nil {
+				return checkErr
+			}
+			if response.GetStatus() != grpc_health_v1.HealthCheckResponse_SERVING {
+				return errors.New("academy is not serving")
+			}
+			return nil
+		},
 		"company": func(ctx context.Context) error {
 			checkContext, cancel := context.WithTimeout(ctx, time.Second)
 			defer cancel()
