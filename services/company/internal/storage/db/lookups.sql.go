@@ -14,7 +14,7 @@ import (
 )
 
 const getUsersByIDs = `-- name: GetUsersByIDs :many
-SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at,
+SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name,
        COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids
 FROM users AS u
 LEFT JOIN user_positions AS up
@@ -46,6 +46,10 @@ type GetUsersByIDsRow struct {
 	VacationAllowance pgtype.Int2 `json:"vacation_allowance"`
 	CreatedAt         time.Time   `json:"created_at"`
 	UpdatedAt         time.Time   `json:"updated_at"`
+	Source            string      `json:"source"`
+	ExternalID        pgtype.Text `json:"external_id"`
+	ExternalGroupID   pgtype.Text `json:"external_group_id"`
+	ExternalGroupName pgtype.Text `json:"external_group_name"`
 	PositionIds       []uuid.UUID `json:"position_ids"`
 }
 
@@ -73,6 +77,10 @@ func (q *Queries) GetUsersByIDs(ctx context.Context, arg GetUsersByIDsParams) ([
 			&i.VacationAllowance,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Source,
+			&i.ExternalID,
+			&i.ExternalGroupID,
+			&i.ExternalGroupName,
 			&i.PositionIds,
 		); err != nil {
 			return nil, err

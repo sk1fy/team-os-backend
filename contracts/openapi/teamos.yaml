@@ -489,6 +489,23 @@ paths:
           $ref: '#/components/responses/NotFound'
         default:
           $ref: '#/components/responses/Error'
+    delete:
+      tags: [Organization]
+      operationId: deleteUser
+      summary: Удалить сотрудника, созданного в TeamOS
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/Error'
 
   /api/v1/org/invites:
     get:
@@ -2035,6 +2052,9 @@ components:
     UserStatus:
       type: string
       enum: [active, invited, deactivated]
+    UserSource:
+      type: string
+      enum: [local, amo]
     InviteStatus:
       type: string
       enum: [pending, accepted, expired]
@@ -2052,6 +2072,9 @@ components:
         logoUrl:
           type: string
           format: uri
+        amoAccountId:
+          type: string
+          pattern: '^\\d+$'
         ownerId:
           $ref: '#/components/schemas/ID'
         createdAt:
@@ -2122,6 +2145,8 @@ components:
           $ref: '#/components/schemas/UserRole'
         status:
           $ref: '#/components/schemas/UserStatus'
+        source:
+          $ref: '#/components/schemas/UserSource'
         positionIds:
           type: array
           maxItems: 1
@@ -2310,6 +2335,9 @@ components:
           minLength: 1
         logoUrl:
           type: string
+        amoAccountId:
+          type: string
+          pattern: '^\\d*$'
 
     CreateDepartmentInput:
       type: object

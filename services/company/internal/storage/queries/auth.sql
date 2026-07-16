@@ -16,6 +16,7 @@ SELECT * FROM companies WHERE id = $1;
 UPDATE companies
 SET name = COALESCE(sqlc.narg('name'), name),
     logo_url = CASE WHEN sqlc.arg('set_logo')::boolean THEN sqlc.narg('logo_url') ELSE logo_url END,
+    amo_account_id = CASE WHEN sqlc.arg('set_amo_account_id')::boolean THEN sqlc.narg('amo_account_id') ELSE amo_account_id END,
     updated_at = now()
 WHERE id = sqlc.arg('id')
 RETURNING *;

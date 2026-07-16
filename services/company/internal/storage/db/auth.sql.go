@@ -49,7 +49,7 @@ SET first_name = $2,
     status = 'active',
     updated_at = now()
 WHERE id = $1 AND company_id = $5
-RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at
+RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name
 `
 
 type ActivateInvitedUserParams struct {
@@ -84,6 +84,10 @@ func (q *Queries) ActivateInvitedUser(ctx context.Context, arg ActivateInvitedUs
 		&i.VacationAllowance,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Source,
+		&i.ExternalID,
+		&i.ExternalGroupID,
+		&i.ExternalGroupName,
 	)
 	return i, err
 }
@@ -91,7 +95,7 @@ func (q *Queries) ActivateInvitedUser(ctx context.Context, arg ActivateInvitedUs
 const createCompany = `-- name: CreateCompany :one
 INSERT INTO companies (id, name, logo_url)
 VALUES ($1, $2, $3)
-RETURNING id, name, logo_url, owner_id, created_at, updated_at
+RETURNING id, name, logo_url, owner_id, created_at, updated_at, amo_account_id
 `
 
 type CreateCompanyParams struct {
@@ -110,6 +114,7 @@ func (q *Queries) CreateCompany(ctx context.Context, arg CreateCompanyParams) (C
 		&i.OwnerID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.AmoAccountID,
 	)
 	return i, err
 }
@@ -208,7 +213,7 @@ INSERT INTO users (
     role, status, birth_date, hired_at, vacation_allowance
 )
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at
+RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name
 `
 
 type CreateUserParams struct {
@@ -257,6 +262,10 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.VacationAllowance,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Source,
+		&i.ExternalID,
+		&i.ExternalGroupID,
+		&i.ExternalGroupName,
 	)
 	return i, err
 }
@@ -274,7 +283,7 @@ func (q *Queries) DeleteExpiredSessions(ctx context.Context, expiresAt time.Time
 }
 
 const getCompany = `-- name: GetCompany :one
-SELECT id, name, logo_url, owner_id, created_at, updated_at FROM companies WHERE id = $1
+SELECT id, name, logo_url, owner_id, created_at, updated_at, amo_account_id FROM companies WHERE id = $1
 `
 
 func (q *Queries) GetCompany(ctx context.Context, id uuid.UUID) (Company, error) {
@@ -287,6 +296,7 @@ func (q *Queries) GetCompany(ctx context.Context, id uuid.UUID) (Company, error)
 		&i.OwnerID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.AmoAccountID,
 	)
 	return i, err
 }
@@ -366,7 +376,7 @@ func (q *Queries) GetSessionByHashForUpdate(ctx context.Context, refreshHash []b
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at FROM users WHERE company_id = $1 AND id = $2
+SELECT id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name FROM users WHERE company_id = $1 AND id = $2
 `
 
 type GetUserParams struct {
@@ -392,12 +402,16 @@ func (q *Queries) GetUser(ctx context.Context, arg GetUserParams) (User, error) 
 		&i.VacationAllowance,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Source,
+		&i.ExternalID,
+		&i.ExternalGroupID,
+		&i.ExternalGroupName,
 	)
 	return i, err
 }
 
 const getUserByEmailForUpdate = `-- name: GetUserByEmailForUpdate :one
-SELECT id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at FROM users
+SELECT id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name FROM users
 WHERE email = $1
 FOR UPDATE
 `
@@ -420,6 +434,10 @@ func (q *Queries) GetUserByEmailForUpdate(ctx context.Context, email string) (Us
 		&i.VacationAllowance,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Source,
+		&i.ExternalID,
+		&i.ExternalGroupID,
+		&i.ExternalGroupName,
 	)
 	return i, err
 }
@@ -468,7 +486,7 @@ func (q *Queries) GetUserDepartmentClaims(ctx context.Context, arg GetUserDepart
 }
 
 const getUserForLogin = `-- name: GetUserForLogin :one
-SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, c.password_hash
+SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name, c.password_hash
 FROM users u
 JOIN credentials c ON c.user_id = u.id
 WHERE u.email = $1
@@ -498,6 +516,10 @@ func (q *Queries) GetUserForLogin(ctx context.Context, email string) (GetUserFor
 		&i.User.VacationAllowance,
 		&i.User.CreatedAt,
 		&i.User.UpdatedAt,
+		&i.User.Source,
+		&i.User.ExternalID,
+		&i.User.ExternalGroupID,
+		&i.User.ExternalGroupName,
 		&i.PasswordHash,
 	)
 	return i, err
@@ -593,7 +615,7 @@ const setCompanyOwner = `-- name: SetCompanyOwner :one
 UPDATE companies
 SET owner_id = $2, updated_at = now()
 WHERE id = $1
-RETURNING id, name, logo_url, owner_id, created_at, updated_at
+RETURNING id, name, logo_url, owner_id, created_at, updated_at, amo_account_id
 `
 
 type SetCompanyOwnerParams struct {
@@ -611,6 +633,7 @@ func (q *Queries) SetCompanyOwner(ctx context.Context, arg SetCompanyOwnerParams
 		&i.OwnerID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.AmoAccountID,
 	)
 	return i, err
 }
@@ -637,16 +660,19 @@ const updateCompany = `-- name: UpdateCompany :one
 UPDATE companies
 SET name = COALESCE($1, name),
     logo_url = CASE WHEN $2::boolean THEN $3 ELSE logo_url END,
+    amo_account_id = CASE WHEN $4::boolean THEN $5 ELSE amo_account_id END,
     updated_at = now()
-WHERE id = $4
-RETURNING id, name, logo_url, owner_id, created_at, updated_at
+WHERE id = $6
+RETURNING id, name, logo_url, owner_id, created_at, updated_at, amo_account_id
 `
 
 type UpdateCompanyParams struct {
-	Name    pgtype.Text `json:"name"`
-	SetLogo bool        `json:"set_logo"`
-	LogoUrl pgtype.Text `json:"logo_url"`
-	ID      uuid.UUID   `json:"id"`
+	Name            pgtype.Text `json:"name"`
+	SetLogo         bool        `json:"set_logo"`
+	LogoUrl         pgtype.Text `json:"logo_url"`
+	SetAmoAccountID bool        `json:"set_amo_account_id"`
+	AmoAccountID    pgtype.Text `json:"amo_account_id"`
+	ID              uuid.UUID   `json:"id"`
 }
 
 func (q *Queries) UpdateCompany(ctx context.Context, arg UpdateCompanyParams) (Company, error) {
@@ -654,6 +680,8 @@ func (q *Queries) UpdateCompany(ctx context.Context, arg UpdateCompanyParams) (C
 		arg.Name,
 		arg.SetLogo,
 		arg.LogoUrl,
+		arg.SetAmoAccountID,
+		arg.AmoAccountID,
 		arg.ID,
 	)
 	var i Company
@@ -664,6 +692,7 @@ func (q *Queries) UpdateCompany(ctx context.Context, arg UpdateCompanyParams) (C
 		&i.OwnerID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.AmoAccountID,
 	)
 	return i, err
 }
@@ -676,7 +705,7 @@ SET first_name = COALESCE($1, first_name),
     avatar_url = CASE WHEN $5::boolean THEN $6 ELSE avatar_url END,
     updated_at = now()
 WHERE company_id = $7 AND id = $8
-RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at
+RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name
 `
 
 type UpdateCurrentUserParams struct {
@@ -717,6 +746,10 @@ func (q *Queries) UpdateCurrentUser(ctx context.Context, arg UpdateCurrentUserPa
 		&i.VacationAllowance,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Source,
+		&i.ExternalID,
+		&i.ExternalGroupID,
+		&i.ExternalGroupName,
 	)
 	return i, err
 }

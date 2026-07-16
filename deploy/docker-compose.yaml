@@ -187,6 +187,9 @@ services:
       COMPANY_JWT_AUDIENCE: ${COMPANY_JWT_AUDIENCE:-teamos-api}
       COMPANY_ACCESS_TTL: ${COMPANY_ACCESS_TTL:-15m}
       COMPANY_SHUTDOWN_TIMEOUT: ${COMPANY_SHUTDOWN_TIMEOUT:-30s}
+      EXTERNAL_API_URL: ${EXTERNAL_API_URL:-https://ssd.rkrs.ru/api/v1/rkrs_activity/getEmployee}
+      APP_NAME: ${APP_NAME:-rkrs_activity}
+      EXTERNAL_API_TIMEOUT: ${EXTERNAL_API_TIMEOUT:-10}
     ports:
       - "8081:8081"
       - "127.0.0.1:9081:9081"

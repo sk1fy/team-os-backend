@@ -218,7 +218,7 @@ func (h *Handler) UpdateCompany(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	response, err := h.company.UpdateCompany(outgoingContext(r), &companyv1.UpdateCompanyRequest{
-		Name: input.Name, LogoUrl: input.LogoUrl,
+		Name: input.Name, LogoUrl: input.LogoUrl, AmoAccountId: input.AmoAccountId,
 	})
 	if err != nil {
 		h.writeRPCError(w, r, err)
@@ -549,6 +549,15 @@ func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request, id api.Id) 
 		return
 	}
 	writeJSON(w, http.StatusOK, converted)
+}
+
+func (h *Handler) DeleteUser(w http.ResponseWriter, r *http.Request, id api.Id) {
+	_, err := h.company.DeleteUser(outgoingContext(r), &companyv1.DeleteUserRequest{Id: id.String()})
+	if err != nil {
+		h.writeRPCError(w, r, err)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func (h *Handler) GetInvites(w http.ResponseWriter, r *http.Request) {

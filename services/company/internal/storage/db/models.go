@@ -13,12 +13,13 @@ import (
 )
 
 type Company struct {
-	ID        uuid.UUID     `json:"id"`
-	Name      string        `json:"name"`
-	LogoUrl   pgtype.Text   `json:"logo_url"`
-	OwnerID   uuid.NullUUID `json:"owner_id"`
-	CreatedAt time.Time     `json:"created_at"`
-	UpdatedAt time.Time     `json:"updated_at"`
+	ID           uuid.UUID     `json:"id"`
+	Name         string        `json:"name"`
+	LogoUrl      pgtype.Text   `json:"logo_url"`
+	OwnerID      uuid.NullUUID `json:"owner_id"`
+	CreatedAt    time.Time     `json:"created_at"`
+	UpdatedAt    time.Time     `json:"updated_at"`
+	AmoAccountID pgtype.Text   `json:"amo_account_id"`
 }
 
 type Credential struct {
@@ -156,6 +157,10 @@ type User struct {
 	VacationAllowance pgtype.Int2 `json:"vacation_allowance"`
 	CreatedAt         time.Time   `json:"created_at"`
 	UpdatedAt         time.Time   `json:"updated_at"`
+	Source            string      `json:"source"`
+	ExternalID        pgtype.Text `json:"external_id"`
+	ExternalGroupID   pgtype.Text `json:"external_group_id"`
+	ExternalGroupName pgtype.Text `json:"external_group_name"`
 }
 
 type UserPosition struct {

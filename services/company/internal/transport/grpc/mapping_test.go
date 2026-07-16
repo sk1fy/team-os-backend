@@ -45,6 +45,9 @@ func TestStatusAndInviteEnumMapping(t *testing.T) {
 	if got := inviteStatusToProto("accepted"); got != companyv1.InviteStatus_INVITE_STATUS_ACCEPTED {
 		t.Fatalf("invite status = %v", got)
 	}
+	if got := userSourceToProto("amo"); got != companyv1.UserSource_USER_SOURCE_AMO {
+		t.Fatalf("source = %v", got)
+	}
 	if _, err := userStatusFromProto(companyv1.UserStatus_USER_STATUS_UNSPECIFIED); status.Code(err) != codes.InvalidArgument {
 		t.Fatalf("unspecified status error = %v", err)
 	}
@@ -70,6 +73,23 @@ func TestUpdateCurrentUserOptionalMapping(t *testing.T) {
 	phone = "changed after mapping"
 	if *update.Phone != "+7 900 000-00-00" {
 		t.Fatal("transport input aliases the protobuf request")
+	}
+}
+
+func TestUpdateCompanyAmoAccountIDMapping(t *testing.T) {
+	absent := updateCompanyInput(&companyv1.UpdateCompanyRequest{})
+	if absent.SetAmoAccountID || absent.AmoAccountID != nil {
+		t.Fatalf("absent amo account id = %#v", absent)
+	}
+	empty := ""
+	clear := updateCompanyInput(&companyv1.UpdateCompanyRequest{AmoAccountId: &empty})
+	if !clear.SetAmoAccountID || clear.AmoAccountID != nil {
+		t.Fatalf("clear amo account id = %#v", clear)
+	}
+	value := "31355990"
+	update := updateCompanyInput(&companyv1.UpdateCompanyRequest{AmoAccountId: &value})
+	if !update.SetAmoAccountID || update.AmoAccountID == nil || *update.AmoAccountID != value {
+		t.Fatalf("set amo account id = %#v", update)
 	}
 }
 

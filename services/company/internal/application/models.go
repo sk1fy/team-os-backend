@@ -13,11 +13,12 @@ type Actor struct {
 }
 
 type Company struct {
-	ID        uuid.UUID
-	Name      string
-	LogoURL   *string
-	OwnerID   uuid.UUID
-	CreatedAt time.Time
+	ID           uuid.UUID
+	Name         string
+	LogoURL      *string
+	OwnerID      uuid.UUID
+	CreatedAt    time.Time
+	AmoAccountID *string
 }
 
 type User struct {
@@ -35,6 +36,16 @@ type User struct {
 	HiredAt           *string
 	VacationAllowance *int16
 	CreatedAt         time.Time
+	Source            string
+}
+
+type ExternalEmployee struct {
+	ID        string
+	Name      string
+	Email     *string
+	AvatarURL *string
+	GroupID   string
+	GroupName string
 }
 
 type Department struct {
@@ -112,9 +123,11 @@ type UpdateCurrentUserInput struct {
 }
 
 type UpdateCompanyInput struct {
-	Name       *string
-	SetLogoURL bool
-	LogoURL    *string
+	Name            *string
+	SetLogoURL      bool
+	LogoURL         *string
+	SetAmoAccountID bool
+	AmoAccountID    *string
 }
 
 type CreateDepartmentInput struct {

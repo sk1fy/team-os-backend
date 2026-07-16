@@ -18,6 +18,9 @@ type Config struct {
 	JWTAudience     string
 	AccessTTL       time.Duration
 	ShutdownTimeout time.Duration
+	ExternalAPIURL  string
+	AmoAppName      string
+	ExternalTimeout time.Duration
 }
 
 func Load() (Config, error) {
@@ -31,6 +34,9 @@ func Load() (Config, error) {
 		JWTAudience:     envOr("COMPANY_JWT_AUDIENCE", "teamos-api"),
 		AccessTTL:       15 * time.Minute,
 		ShutdownTimeout: 30 * time.Second,
+		ExternalAPIURL:  envOr("EXTERNAL_API_URL", "https://ssd.rkrs.ru/api/v1/rkrs_activity/getEmployee"),
+		AmoAppName:      envOr("APP_NAME", "rkrs_activity"),
+		ExternalTimeout: 10 * time.Second,
 	}
 	var err error
 	if value := strings.TrimSpace(os.Getenv("COMPANY_ACCESS_TTL")); value != "" {
@@ -44,6 +50,13 @@ func Load() (Config, error) {
 		if err != nil || config.ShutdownTimeout <= 0 {
 			return Config{}, fmt.Errorf("COMPANY_SHUTDOWN_TIMEOUT: %w", errInvalidDuration)
 		}
+	}
+	if value := strings.TrimSpace(os.Getenv("EXTERNAL_API_TIMEOUT")); value != "" {
+		seconds, parseErr := time.ParseDuration(value + "s")
+		if parseErr != nil || seconds <= 0 {
+			return Config{}, fmt.Errorf("EXTERNAL_API_TIMEOUT: %w", errInvalidDuration)
+		}
+		config.ExternalTimeout = seconds
 	}
 	missing := make([]string, 0, 2)
 	if config.DatabaseURL == "" {

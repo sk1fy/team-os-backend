@@ -61,6 +61,63 @@ func (q *Queries) CountDepartmentPositions(ctx context.Context, arg CountDepartm
 	return count, err
 }
 
+const createAmoUser = `-- name: CreateAmoUser :one
+INSERT INTO users (
+    id, company_id, email, first_name, last_name, avatar_url,
+    role, status, source, external_id, external_group_id, external_group_name
+)
+VALUES ($1, $2, $3, $4, $5, $6, 'employee', 'active', 'amo', $7, $8, $9)
+RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name
+`
+
+type CreateAmoUserParams struct {
+	ID                uuid.UUID   `json:"id"`
+	CompanyID         uuid.UUID   `json:"company_id"`
+	Email             string      `json:"email"`
+	FirstName         string      `json:"first_name"`
+	LastName          string      `json:"last_name"`
+	AvatarUrl         pgtype.Text `json:"avatar_url"`
+	ExternalID        pgtype.Text `json:"external_id"`
+	ExternalGroupID   pgtype.Text `json:"external_group_id"`
+	ExternalGroupName pgtype.Text `json:"external_group_name"`
+}
+
+func (q *Queries) CreateAmoUser(ctx context.Context, arg CreateAmoUserParams) (User, error) {
+	row := q.db.QueryRow(ctx, createAmoUser,
+		arg.ID,
+		arg.CompanyID,
+		arg.Email,
+		arg.FirstName,
+		arg.LastName,
+		arg.AvatarUrl,
+		arg.ExternalID,
+		arg.ExternalGroupID,
+		arg.ExternalGroupName,
+	)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.Email,
+		&i.FirstName,
+		&i.LastName,
+		&i.Phone,
+		&i.AvatarUrl,
+		&i.Role,
+		&i.Status,
+		&i.BirthDate,
+		&i.HiredAt,
+		&i.VacationAllowance,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Source,
+		&i.ExternalID,
+		&i.ExternalGroupID,
+		&i.ExternalGroupName,
+	)
+	return i, err
+}
+
 const createDepartment = `-- name: CreateDepartment :one
 INSERT INTO departments (
     id, company_id, name, parent_id, head_user_id, valuable_final_product, "order"
@@ -195,6 +252,41 @@ func (q *Queries) CreatePosition(ctx context.Context, arg CreatePositionParams) 
 	return i, err
 }
 
+const deactivateMissingAmoUsers = `-- name: DeactivateMissingAmoUsers :many
+UPDATE users
+SET status = 'deactivated', updated_at = now()
+WHERE company_id = $1
+  AND source = 'amo'
+  AND status <> 'deactivated'
+  AND NOT (external_id = ANY($2::text[]))
+RETURNING id
+`
+
+type DeactivateMissingAmoUsersParams struct {
+	CompanyID   uuid.UUID `json:"company_id"`
+	ExternalIds []string  `json:"external_ids"`
+}
+
+func (q *Queries) DeactivateMissingAmoUsers(ctx context.Context, arg DeactivateMissingAmoUsersParams) ([]uuid.UUID, error) {
+	rows, err := q.db.Query(ctx, deactivateMissingAmoUsers, arg.CompanyID, arg.ExternalIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []uuid.UUID{}
+	for rows.Next() {
+		var id uuid.UUID
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		items = append(items, id)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const deleteDepartment = `-- name: DeleteDepartment :execrows
 DELETE FROM departments WHERE company_id = $1 AND id = $2
 `
@@ -206,6 +298,26 @@ type DeleteDepartmentParams struct {
 
 func (q *Queries) DeleteDepartment(ctx context.Context, arg DeleteDepartmentParams) (int64, error) {
 	result, err := q.db.Exec(ctx, deleteDepartment, arg.CompanyID, arg.ID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
+const deleteLocalUser = `-- name: DeleteLocalUser :execrows
+DELETE FROM users
+WHERE company_id = $1
+  AND id = $2
+  AND source = 'local'
+`
+
+type DeleteLocalUserParams struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	ID        uuid.UUID `json:"id"`
+}
+
+func (q *Queries) DeleteLocalUser(ctx context.Context, arg DeleteLocalUserParams) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteLocalUser, arg.CompanyID, arg.ID)
 	if err != nil {
 		return 0, err
 	}
@@ -241,6 +353,47 @@ type DeleteUserPositionsParams struct {
 func (q *Queries) DeleteUserPositions(ctx context.Context, arg DeleteUserPositionsParams) error {
 	_, err := q.db.Exec(ctx, deleteUserPositions, arg.CompanyID, arg.UserID)
 	return err
+}
+
+const findUserForAmoSync = `-- name: FindUserForAmoSync :one
+SELECT id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name
+FROM users
+WHERE company_id = $1
+  AND (external_id = $2 OR email = $3)
+ORDER BY (external_id = $2) DESC
+LIMIT 1
+`
+
+type FindUserForAmoSyncParams struct {
+	CompanyID  uuid.UUID   `json:"company_id"`
+	ExternalID pgtype.Text `json:"external_id"`
+	Email      string      `json:"email"`
+}
+
+func (q *Queries) FindUserForAmoSync(ctx context.Context, arg FindUserForAmoSyncParams) (User, error) {
+	row := q.db.QueryRow(ctx, findUserForAmoSync, arg.CompanyID, arg.ExternalID, arg.Email)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.Email,
+		&i.FirstName,
+		&i.LastName,
+		&i.Phone,
+		&i.AvatarUrl,
+		&i.Role,
+		&i.Status,
+		&i.BirthDate,
+		&i.HiredAt,
+		&i.VacationAllowance,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Source,
+		&i.ExternalID,
+		&i.ExternalGroupID,
+		&i.ExternalGroupName,
+	)
+	return i, err
 }
 
 const getDepartment = `-- name: GetDepartment :one
@@ -359,7 +512,7 @@ func (q *Queries) GetPositionUserIDs(ctx context.Context, arg GetPositionUserIDs
 }
 
 const getUserWithPositions = `-- name: GetUserWithPositions :one
-SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at,
+SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name,
        COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids
 FROM users u
 LEFT JOIN user_positions up ON up.user_id = u.id
@@ -387,6 +540,10 @@ type GetUserWithPositionsRow struct {
 	VacationAllowance pgtype.Int2 `json:"vacation_allowance"`
 	CreatedAt         time.Time   `json:"created_at"`
 	UpdatedAt         time.Time   `json:"updated_at"`
+	Source            string      `json:"source"`
+	ExternalID        pgtype.Text `json:"external_id"`
+	ExternalGroupID   pgtype.Text `json:"external_group_id"`
+	ExternalGroupName pgtype.Text `json:"external_group_name"`
 	PositionIds       []uuid.UUID `json:"position_ids"`
 }
 
@@ -408,6 +565,10 @@ func (q *Queries) GetUserWithPositions(ctx context.Context, arg GetUserWithPosit
 		&i.VacationAllowance,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Source,
+		&i.ExternalID,
+		&i.ExternalGroupID,
+		&i.ExternalGroupName,
 		&i.PositionIds,
 	)
 	return i, err
@@ -522,7 +683,7 @@ func (q *Queries) ListPositions(ctx context.Context, companyID uuid.UUID) ([]Pos
 }
 
 const listUsers = `-- name: ListUsers :many
-SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at,
+SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name,
        COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids
 FROM users u
 LEFT JOIN user_positions up ON up.user_id = u.id
@@ -546,6 +707,10 @@ type ListUsersRow struct {
 	VacationAllowance pgtype.Int2 `json:"vacation_allowance"`
 	CreatedAt         time.Time   `json:"created_at"`
 	UpdatedAt         time.Time   `json:"updated_at"`
+	Source            string      `json:"source"`
+	ExternalID        pgtype.Text `json:"external_id"`
+	ExternalGroupID   pgtype.Text `json:"external_group_id"`
+	ExternalGroupName pgtype.Text `json:"external_group_name"`
 	PositionIds       []uuid.UUID `json:"position_ids"`
 }
 
@@ -573,6 +738,10 @@ func (q *Queries) ListUsers(ctx context.Context, companyID uuid.UUID) ([]ListUse
 			&i.VacationAllowance,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Source,
+			&i.ExternalID,
+			&i.ExternalGroupID,
+			&i.ExternalGroupName,
 			&i.PositionIds,
 		); err != nil {
 			return nil, err
@@ -583,6 +752,15 @@ func (q *Queries) ListUsers(ctx context.Context, companyID uuid.UUID) ([]ListUse
 		return nil, err
 	}
 	return items, nil
+}
+
+const lockAmoUserSync = `-- name: LockAmoUserSync :exec
+SELECT pg_advisory_xact_lock(hashtextextended($1::uuid::text, 0))
+`
+
+func (q *Queries) LockAmoUserSync(ctx context.Context, companyID uuid.UUID) error {
+	_, err := q.db.Exec(ctx, lockAmoUserSync, companyID)
+	return err
 }
 
 const moveDepartment = `-- name: MoveDepartment :one
@@ -621,6 +799,23 @@ func (q *Queries) MoveDepartment(ctx context.Context, arg MoveDepartmentParams) 
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const reassignUserInvites = `-- name: ReassignUserInvites :exec
+UPDATE invites
+SET invited_by_id = $1, updated_at = now()
+WHERE company_id = $2 AND invited_by_id = $3
+`
+
+type ReassignUserInvitesParams struct {
+	ReplacementUserID uuid.UUID `json:"replacement_user_id"`
+	CompanyID         uuid.UUID `json:"company_id"`
+	DeletedUserID     uuid.UUID `json:"deleted_user_id"`
+}
+
+func (q *Queries) ReassignUserInvites(ctx context.Context, arg ReassignUserInvitesParams) error {
+	_, err := q.db.Exec(ctx, reassignUserInvites, arg.ReplacementUserID, arg.CompanyID, arg.DeletedUserID)
+	return err
 }
 
 const resendInvite = `-- name: ResendInvite :one
@@ -690,6 +885,70 @@ func (q *Queries) RevokeInvite(ctx context.Context, arg RevokeInviteParams) (Inv
 		&i.ExpiresAt,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateAmoUser = `-- name: UpdateAmoUser :one
+UPDATE users
+SET email = $1,
+    first_name = $2,
+    last_name = $3,
+    avatar_url = $4,
+    status = 'active',
+    source = 'amo',
+    external_id = $5,
+    external_group_id = $6,
+    external_group_name = $7,
+    updated_at = now()
+WHERE company_id = $8 AND id = $9
+RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name
+`
+
+type UpdateAmoUserParams struct {
+	Email             string      `json:"email"`
+	FirstName         string      `json:"first_name"`
+	LastName          string      `json:"last_name"`
+	AvatarUrl         pgtype.Text `json:"avatar_url"`
+	ExternalID        pgtype.Text `json:"external_id"`
+	ExternalGroupID   pgtype.Text `json:"external_group_id"`
+	ExternalGroupName pgtype.Text `json:"external_group_name"`
+	CompanyID         uuid.UUID   `json:"company_id"`
+	ID                uuid.UUID   `json:"id"`
+}
+
+func (q *Queries) UpdateAmoUser(ctx context.Context, arg UpdateAmoUserParams) (User, error) {
+	row := q.db.QueryRow(ctx, updateAmoUser,
+		arg.Email,
+		arg.FirstName,
+		arg.LastName,
+		arg.AvatarUrl,
+		arg.ExternalID,
+		arg.ExternalGroupID,
+		arg.ExternalGroupName,
+		arg.CompanyID,
+		arg.ID,
+	)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.Email,
+		&i.FirstName,
+		&i.LastName,
+		&i.Phone,
+		&i.AvatarUrl,
+		&i.Role,
+		&i.Status,
+		&i.BirthDate,
+		&i.HiredAt,
+		&i.VacationAllowance,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Source,
+		&i.ExternalID,
+		&i.ExternalGroupID,
+		&i.ExternalGroupName,
 	)
 	return i, err
 }
@@ -798,7 +1057,7 @@ SET first_name = COALESCE($1, first_name),
     status = COALESCE($12, status),
     updated_at = now()
 WHERE company_id = $13 AND id = $14
-RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at
+RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name
 `
 
 type UpdateUserParams struct {
@@ -851,6 +1110,10 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.VacationAllowance,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Source,
+		&i.ExternalID,
+		&i.ExternalGroupID,
+		&i.ExternalGroupName,
 	)
 	return i, err
 }

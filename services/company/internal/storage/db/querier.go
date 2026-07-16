@@ -17,6 +17,7 @@ type Querier interface {
 	AssignUserPosition(ctx context.Context, arg AssignUserPositionParams) error
 	CountDepartmentChildren(ctx context.Context, arg CountDepartmentChildrenParams) (int64, error)
 	CountDepartmentPositions(ctx context.Context, arg CountDepartmentPositionsParams) (int64, error)
+	CreateAmoUser(ctx context.Context, arg CreateAmoUserParams) (User, error)
 	CreateCompany(ctx context.Context, arg CreateCompanyParams) (Company, error)
 	CreateDepartment(ctx context.Context, arg CreateDepartmentParams) (Department, error)
 	CreateDistributionEvent(ctx context.Context, arg CreateDistributionEventParams) (DistributionEvent, error)
@@ -26,11 +27,14 @@ type Querier interface {
 	CreatePosition(ctx context.Context, arg CreatePositionParams) (Position, error)
 	CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
+	DeactivateMissingAmoUsers(ctx context.Context, arg DeactivateMissingAmoUsersParams) ([]uuid.UUID, error)
 	DeleteDepartment(ctx context.Context, arg DeleteDepartmentParams) (int64, error)
 	DeleteDistributionGroup(ctx context.Context, arg DeleteDistributionGroupParams) (int64, error)
 	DeleteExpiredSessions(ctx context.Context, expiresAt time.Time) (int64, error)
+	DeleteLocalUser(ctx context.Context, arg DeleteLocalUserParams) (int64, error)
 	DeletePosition(ctx context.Context, arg DeletePositionParams) (int64, error)
 	DeleteUserPositions(ctx context.Context, arg DeleteUserPositionsParams) error
+	FindUserForAmoSync(ctx context.Context, arg FindUserForAmoSyncParams) (User, error)
 	GetCompany(ctx context.Context, id uuid.UUID) (Company, error)
 	GetDepartment(ctx context.Context, arg GetDepartmentParams) (Department, error)
 	GetDistributionGroup(ctx context.Context, arg GetDistributionGroupParams) (DistributionGroup, error)
@@ -56,7 +60,9 @@ type Querier interface {
 	ListSchedules(ctx context.Context, companyID uuid.UUID) ([]UserSchedule, error)
 	ListShiftExceptionsByMonth(ctx context.Context, arg ListShiftExceptionsByMonthParams) ([]ShiftException, error)
 	ListUsers(ctx context.Context, companyID uuid.UUID) ([]ListUsersRow, error)
+	LockAmoUserSync(ctx context.Context, companyID uuid.UUID) error
 	MoveDepartment(ctx context.Context, arg MoveDepartmentParams) (Department, error)
+	ReassignUserInvites(ctx context.Context, arg ReassignUserInvitesParams) error
 	ResendInvite(ctx context.Context, arg ResendInviteParams) (Invite, error)
 	ResetDistributionEvents(ctx context.Context, arg ResetDistributionEventsParams) (int64, error)
 	ResolveDepartmentUserIDs(ctx context.Context, arg ResolveDepartmentUserIDsParams) ([]uuid.UUID, error)
@@ -67,6 +73,7 @@ type Querier interface {
 	RotateSession(ctx context.Context, arg RotateSessionParams) (int64, error)
 	SetCompanyOwner(ctx context.Context, arg SetCompanyOwnerParams) (Company, error)
 	SetCredential(ctx context.Context, arg SetCredentialParams) error
+	UpdateAmoUser(ctx context.Context, arg UpdateAmoUserParams) (User, error)
 	UpdateCompany(ctx context.Context, arg UpdateCompanyParams) (Company, error)
 	UpdateCurrentUser(ctx context.Context, arg UpdateCurrentUserParams) (User, error)
 	UpdateDepartment(ctx context.Context, arg UpdateDepartmentParams) (Department, error)
