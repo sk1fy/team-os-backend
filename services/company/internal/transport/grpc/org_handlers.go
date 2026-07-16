@@ -398,6 +398,24 @@ func (s *Server) UpdateUser(ctx context.Context, request *companyv1.UpdateUserRe
 	return &companyv1.UpdateUserResponse{User: userToProto(user)}, nil
 }
 
+func (s *Server) DeleteUser(ctx context.Context, request *companyv1.DeleteUserRequest) (*companyv1.DeleteUserResponse, error) {
+	actor, err := s.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if request == nil {
+		return nil, invalidRequest()
+	}
+	id, err := parseUUID(request.Id, "сотрудника")
+	if err != nil {
+		return nil, err
+	}
+	if err = s.application.DeleteUser(ctx, actor, id); err != nil {
+		return nil, transportError(err)
+	}
+	return &companyv1.DeleteUserResponse{}, nil
+}
+
 func (s *Server) GetInvites(ctx context.Context, request *companyv1.GetInvitesRequest) (*companyv1.GetInvitesResponse, error) {
 	actor, err := s.actor(ctx)
 	if err != nil {

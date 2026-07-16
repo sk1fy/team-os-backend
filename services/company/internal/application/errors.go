@@ -10,6 +10,7 @@ const (
 	ErrorForbidden
 	ErrorNotFound
 	ErrorConflict
+	ErrorUpstream
 	ErrorInternal
 )
 
@@ -52,6 +53,10 @@ func notFound(entity string) error {
 
 func conflict(message string) error {
 	return &Error{Kind: ErrorConflict, Message: message}
+}
+
+func upstream(message string, cause error) error {
+	return &Error{Kind: ErrorUpstream, Message: message, Cause: cause}
 }
 
 func internal(message string, cause error) error {

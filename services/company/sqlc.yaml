@@ -4,6 +4,7 @@ sql:
     schema:
       - migrations/000001_init.up.sql
       - migrations/000002_phase6_schedule_distribution.up.sql
+      - migrations/000003_amo_users.up.sql
     queries: internal/storage/queries
     gen:
       go:

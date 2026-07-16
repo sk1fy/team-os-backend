@@ -94,10 +94,17 @@ func (s *Service) UpdateCompany(ctx context.Context, actor Actor, input UpdateCo
 		value := strings.TrimSpace(*input.LogoURL)
 		input.LogoURL = &value
 	}
+	if input.AmoAccountID != nil {
+		value := strings.TrimSpace(*input.AmoAccountID)
+		if value != "" && strings.IndexFunc(value, func(character rune) bool { return character < '0' || character > '9' }) >= 0 {
+			return Company{}, validation("ID аккаунта amoCRM должен состоять только из цифр")
+		}
+		input.AmoAccountID = trimmedOptional(&value)
+	}
 	company, err := db.New(s.pool).UpdateCompany(ctx, db.UpdateCompanyParams{
 		Name: pgText(input.Name), SetLogo: input.SetLogoURL,
-		LogoUrl: pgtype.Text{String: valueOrEmpty(input.LogoURL), Valid: input.LogoURL != nil && valueOrEmpty(input.LogoURL) != ""},
-		ID:      actor.CompanyID,
+		LogoUrl:         pgtype.Text{String: valueOrEmpty(input.LogoURL), Valid: input.LogoURL != nil && valueOrEmpty(input.LogoURL) != ""},
+		SetAmoAccountID: input.SetAmoAccountID, AmoAccountID: pgText(input.AmoAccountID), ID: actor.CompanyID,
 	})
 	if isNoRows(err) {
 		return Company{}, notFound("Компания")

@@ -38,6 +38,7 @@ service CompanyService {
   rpc GetUser(GetUserRequest) returns (GetUserResponse);
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
   rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
+  rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
 
   rpc GetInvites(GetInvitesRequest) returns (GetInvitesResponse);
   rpc InviteUser(InviteUserRequest) returns (InviteUserResponse);
@@ -77,6 +78,12 @@ enum UserStatus {
   USER_STATUS_DEACTIVATED = 3;
 }
 
+enum UserSource {
+  USER_SOURCE_UNSPECIFIED = 0;
+  USER_SOURCE_LOCAL = 1;
+  USER_SOURCE_AMO = 2;
+}
+
 enum InviteStatus {
   INVITE_STATUS_UNSPECIFIED = 0;
   INVITE_STATUS_PENDING = 1;
@@ -90,6 +97,7 @@ message Company {
   optional string logo_url = 3;
   string owner_id = 4;
   google.protobuf.Timestamp created_at = 5;
+  optional string amo_account_id = 6;
 }
 
 message User {
@@ -107,6 +115,7 @@ message User {
   optional string hired_at = 11;
   optional uint32 vacation_allowance = 12;
   google.protobuf.Timestamp created_at = 13;
+  UserSource source = 14;
 }
 
 message Department {
@@ -234,6 +243,8 @@ message UpdateCompanyRequest {
   optional string name = 1;
   // Empty string clears the logo URL.
   optional string logo_url = 2;
+  // Empty string disables synchronization with amoCRM.
+  optional string amo_account_id = 3;
 }
 
 message UpdateCompanyResponse {
@@ -385,6 +396,12 @@ message UpdateUserRequest {
 message UpdateUserResponse {
   User user = 1;
 }
+
+message DeleteUserRequest {
+  string id = 1;
+}
+
+message DeleteUserResponse {}
 
 message GetInvitesRequest {}
 

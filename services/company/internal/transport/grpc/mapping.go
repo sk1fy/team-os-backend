@@ -11,11 +11,12 @@ import (
 
 func companyToProto(value application.Company) *companyv1.Company {
 	return &companyv1.Company{
-		Id:        value.ID.String(),
-		Name:      value.Name,
-		LogoUrl:   cloneString(value.LogoURL),
-		OwnerId:   value.OwnerID.String(),
-		CreatedAt: timestamppb.New(value.CreatedAt.UTC()),
+		Id:           value.ID.String(),
+		Name:         value.Name,
+		LogoUrl:      cloneString(value.LogoURL),
+		OwnerId:      value.OwnerID.String(),
+		CreatedAt:    timestamppb.New(value.CreatedAt.UTC()),
+		AmoAccountId: cloneString(value.AmoAccountID),
 	}
 }
 
@@ -40,6 +41,18 @@ func userToProto(value application.User) *companyv1.User {
 		HiredAt:           cloneString(value.HiredAt),
 		VacationAllowance: vacationAllowance,
 		CreatedAt:         timestamppb.New(value.CreatedAt.UTC()),
+		Source:            userSourceToProto(value.Source),
+	}
+}
+
+func userSourceToProto(value string) companyv1.UserSource {
+	switch value {
+	case "local":
+		return companyv1.UserSource_USER_SOURCE_LOCAL
+	case "amo":
+		return companyv1.UserSource_USER_SOURCE_AMO
+	default:
+		return companyv1.UserSource_USER_SOURCE_UNSPECIFIED
 	}
 }
 
@@ -266,10 +279,13 @@ func updateCurrentUserInput(request *companyv1.UpdateCurrentUserRequest) applica
 
 func updateCompanyInput(request *companyv1.UpdateCompanyRequest) application.UpdateCompanyInput {
 	logoSet, logo := clearableString(request.LogoUrl)
+	amoAccountIDSet, amoAccountID := clearableString(request.AmoAccountId)
 	return application.UpdateCompanyInput{
-		Name:       cloneString(request.Name),
-		SetLogoURL: logoSet,
-		LogoURL:    logo,
+		Name:            cloneString(request.Name),
+		SetLogoURL:      logoSet,
+		LogoURL:         logo,
+		SetAmoAccountID: amoAccountIDSet,
+		AmoAccountID:    amoAccountID,
 	}
 }
 

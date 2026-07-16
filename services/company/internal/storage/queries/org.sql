@@ -96,6 +96,49 @@ LEFT JOIN user_positions up ON up.user_id = u.id
 WHERE u.company_id = $1 AND u.id = $2
 GROUP BY u.id;
 
+-- name: LockAmoUserSync :exec
+SELECT pg_advisory_xact_lock(hashtextextended(sqlc.arg('company_id')::uuid::text, 0));
+
+-- name: FindUserForAmoSync :one
+SELECT *
+FROM users
+WHERE company_id = sqlc.arg('company_id')
+  AND (external_id = sqlc.arg('external_id') OR email = sqlc.arg('email'))
+ORDER BY (external_id = sqlc.arg('external_id')) DESC
+LIMIT 1;
+
+-- name: CreateAmoUser :one
+INSERT INTO users (
+    id, company_id, email, first_name, last_name, avatar_url,
+    role, status, source, external_id, external_group_id, external_group_name
+)
+VALUES ($1, $2, $3, $4, $5, $6, 'employee', 'active', 'amo', $7, $8, $9)
+RETURNING *;
+
+-- name: UpdateAmoUser :one
+UPDATE users
+SET email = sqlc.arg('email'),
+    first_name = sqlc.arg('first_name'),
+    last_name = sqlc.arg('last_name'),
+    avatar_url = sqlc.narg('avatar_url'),
+    status = 'active',
+    source = 'amo',
+    external_id = sqlc.arg('external_id'),
+    external_group_id = sqlc.narg('external_group_id'),
+    external_group_name = sqlc.narg('external_group_name'),
+    updated_at = now()
+WHERE company_id = sqlc.arg('company_id') AND id = sqlc.arg('id')
+RETURNING *;
+
+-- name: DeactivateMissingAmoUsers :many
+UPDATE users
+SET status = 'deactivated', updated_at = now()
+WHERE company_id = sqlc.arg('company_id')
+  AND source = 'amo'
+  AND status <> 'deactivated'
+  AND NOT (external_id = ANY(sqlc.arg('external_ids')::text[]))
+RETURNING id;
+
 -- name: UpdateUser :one
 UPDATE users
 SET first_name = COALESCE(sqlc.narg('first_name'), first_name),
@@ -109,6 +152,17 @@ SET first_name = COALESCE(sqlc.narg('first_name'), first_name),
     updated_at = now()
 WHERE company_id = sqlc.arg('company_id') AND id = sqlc.arg('id')
 RETURNING *;
+
+-- name: ReassignUserInvites :exec
+UPDATE invites
+SET invited_by_id = sqlc.arg('replacement_user_id'), updated_at = now()
+WHERE company_id = sqlc.arg('company_id') AND invited_by_id = sqlc.arg('deleted_user_id');
+
+-- name: DeleteLocalUser :execrows
+DELETE FROM users
+WHERE company_id = sqlc.arg('company_id')
+  AND id = sqlc.arg('id')
+  AND source = 'local';
 
 -- name: DeleteUserPositions :exec
 DELETE FROM user_positions WHERE company_id = $1 AND user_id = $2;

@@ -40,6 +40,29 @@ type stubCompanyServer struct {
 	refreshFn          func(context.Context, *companyv1.RefreshRequest) (*companyv1.RefreshResponse, error)
 	getDepartmentsFn   func(context.Context, *companyv1.GetDepartmentsRequest) (*companyv1.GetDepartmentsResponse, error)
 	updateDepartmentFn func(context.Context, *companyv1.UpdateDepartmentRequest) (*companyv1.UpdateDepartmentResponse, error)
+	deleteUserFn       func(context.Context, *companyv1.DeleteUserRequest) (*companyv1.DeleteUserResponse, error)
+}
+
+func (s *stubCompanyServer) DeleteUser(ctx context.Context, request *companyv1.DeleteUserRequest) (*companyv1.DeleteUserResponse, error) {
+	if s.deleteUserFn == nil {
+		return nil, status.Error(codes.Unimplemented, "unexpected DeleteUser call")
+	}
+	return s.deleteUserFn(ctx, request)
+}
+
+func TestGatewayDeleteUserBridgesToCompany(t *testing.T) {
+	requests := make(chan *companyv1.DeleteUserRequest, 1)
+	server := &stubCompanyServer{deleteUserFn: func(_ context.Context, request *companyv1.DeleteUserRequest) (*companyv1.DeleteUserResponse, error) {
+		requests <- request
+		return &companyv1.DeleteUserResponse{}, nil
+	}}
+	recorder := serveGatewayRequest(t, server, http.MethodDelete, "/api/v1/org/users/"+testUserID, "", nil)
+	if recorder.Code != http.StatusNoContent {
+		t.Fatalf("status = %d; body = %s", recorder.Code, recorder.Body.String())
+	}
+	if request := <-requests; request.GetId() != testUserID {
+		t.Fatalf("id = %q", request.GetId())
+	}
 }
 
 func (s *stubCompanyServer) Login(ctx context.Context, request *companyv1.LoginRequest) (*companyv1.LoginResponse, error) {
@@ -401,6 +424,7 @@ func testAuthSession(accessToken, refreshToken string) *companyv1.AuthSession {
 			Status:      companyv1.UserStatus_USER_STATUS_ACTIVE,
 			PositionIds: []string{},
 			CreatedAt:   timestamppb.New(time.Date(2026, time.July, 12, 12, 0, 0, 0, time.UTC)),
+			Source:      companyv1.UserSource_USER_SOURCE_LOCAL,
 		},
 	}
 }

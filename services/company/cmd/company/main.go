@@ -21,6 +21,7 @@ import (
 	"github.com/sk1fy/team-os-backend/services/company/internal/application"
 	"github.com/sk1fy/team-os-backend/services/company/internal/config"
 	"github.com/sk1fy/team-os-backend/services/company/internal/consumers"
+	"github.com/sk1fy/team-os-backend/services/company/internal/externalusers"
 	"github.com/sk1fy/team-os-backend/services/company/internal/outbox"
 	companygrpc "github.com/sk1fy/team-os-backend/services/company/internal/transport/grpc"
 	"google.golang.org/grpc"
@@ -96,7 +97,14 @@ func run(logger *slog.Logger) error {
 			logger.Error("NATS drain failed", "error", drainErr)
 		}
 	}()
-	service, err := application.NewService(pool, issuer)
+	externalUsersClient, err := externalusers.NewClient(externalusers.Config{
+		APIURL: configuration.ExternalAPIURL, AppName: configuration.AmoAppName,
+		Timeout: configuration.ExternalTimeout,
+	})
+	if err != nil {
+		return fmt.Errorf("initialize amoCRM employees client: %w", err)
+	}
+	service, err := application.NewService(pool, issuer, application.WithExternalEmployeeProvider(externalUsersClient))
 	if err != nil {
 		return fmt.Errorf("initialize company application: %w", err)
 	}

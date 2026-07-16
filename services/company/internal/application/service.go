@@ -32,14 +32,27 @@ type Service struct {
 	now           func() time.Time
 	dummyHash     string
 	passwordSlots chan struct{}
+	externalUsers ExternalEmployeeProvider
 }
 
-func NewService(pool *pgxpool.Pool, issuer *sharedauth.TokenIssuer) (*Service, error) {
+type ExternalEmployeeProvider interface {
+	FetchAll(context.Context, string) ([]ExternalEmployee, error)
+}
+
+type ServiceOption func(*Service)
+
+func WithExternalEmployeeProvider(provider ExternalEmployeeProvider) ServiceOption {
+	return func(service *Service) {
+		service.externalUsers = provider
+	}
+}
+
+func NewService(pool *pgxpool.Pool, issuer *sharedauth.TokenIssuer, options ...ServiceOption) (*Service, error) {
 	dummyHash, err := domainauth.HashPassword("teamos-dummy-password")
 	if err != nil {
 		return nil, err
 	}
-	return &Service{
+	service := &Service{
 		pool:          pool,
 		issuer:        issuer,
 		refreshTTL:    defaultRefreshTTL,
@@ -47,7 +60,11 @@ func NewService(pool *pgxpool.Pool, issuer *sharedauth.TokenIssuer) (*Service, e
 		now:           time.Now,
 		dummyHash:     dummyHash,
 		passwordSlots: make(chan struct{}, 4),
-	}, nil
+	}
+	for _, option := range options {
+		option(service)
+	}
+	return service, nil
 }
 
 func (s *Service) acquirePasswordSlot(ctx context.Context) (func(), error) {
@@ -156,6 +173,7 @@ func userFromDB(value db.User, positions []uuid.UUID) User {
 		HiredAt:           datePointer(value.HiredAt),
 		VacationAllowance: int16Pointer(value.VacationAllowance),
 		CreatedAt:         value.CreatedAt,
+		Source:            value.Source,
 	}
 }
 
@@ -191,7 +209,7 @@ func companyFromDB(value db.Company) Company {
 	}
 	return Company{
 		ID: value.ID, Name: value.Name, LogoURL: textPointer(value.LogoUrl),
-		OwnerID: ownerID, CreatedAt: value.CreatedAt,
+		OwnerID: ownerID, CreatedAt: value.CreatedAt, AmoAccountID: textPointer(value.AmoAccountID),
 	}
 }
 

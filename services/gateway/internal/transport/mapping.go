@@ -41,6 +41,9 @@ func userFromProto(value *companyv1.User) (api.User, error) {
 		LastName: value.GetLastName(), AvatarUrl: value.AvatarUrl, Phone: value.Phone,
 		Role: role, Status: status, PositionIds: positionIDs, CreatedAt: createdAt,
 	}
+	if source := sourceFromProto(value.GetSource()); source != nil {
+		result.Source = source
+	}
 	if value.BirthDate != nil {
 		date, parseErr := time.Parse(time.DateOnly, value.GetBirthDate())
 		if parseErr != nil {
@@ -62,6 +65,19 @@ func userFromProto(value *companyv1.User) (api.User, error) {
 		result.VacationAllowance = &converted
 	}
 	return result, nil
+}
+
+func sourceFromProto(value companyv1.UserSource) *api.UserSource {
+	var source api.UserSource
+	switch value {
+	case companyv1.UserSource_USER_SOURCE_LOCAL:
+		source = api.Local
+	case companyv1.UserSource_USER_SOURCE_AMO:
+		source = api.Amo
+	default:
+		return nil
+	}
+	return &source
 }
 
 func usersFromProto(values []*companyv1.User) ([]api.User, error) {
@@ -92,7 +108,7 @@ func companyFromProto(value *companyv1.Company) (api.Company, error) {
 	if value.GetCreatedAt() != nil {
 		createdAt = value.GetCreatedAt().AsTime()
 	}
-	return api.Company{Id: id, Name: value.GetName(), LogoUrl: value.LogoUrl, OwnerId: ownerID, CreatedAt: createdAt}, nil
+	return api.Company{Id: id, Name: value.GetName(), LogoUrl: value.LogoUrl, AmoAccountId: value.AmoAccountId, OwnerId: ownerID, CreatedAt: createdAt}, nil
 }
 
 func departmentFromProto(value *companyv1.Department) (api.Department, error) {

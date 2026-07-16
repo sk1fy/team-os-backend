@@ -372,6 +372,9 @@ func (s *Service) MovePosition(ctx context.Context, actor Actor, id, departmentI
 }
 
 func (s *Service) ListUsers(ctx context.Context, actor Actor) ([]User, error) {
+	if err := s.syncAmoUsers(ctx, actor); err != nil {
+		return nil, err
+	}
 	rows, err := db.New(s.pool).ListUsers(ctx, actor.CompanyID)
 	if err != nil {
 		return nil, internal("Не удалось получить сотрудников", err)
@@ -381,6 +384,59 @@ func (s *Service) ListUsers(ctx context.Context, actor Actor) ([]User, error) {
 		result[index] = userFromListRow(row)
 	}
 	return result, nil
+}
+
+func (s *Service) DeleteUser(ctx context.Context, actor Actor, id uuid.UUID) error {
+	if err := requireAdministrator(actor); err != nil {
+		return err
+	}
+	if id == actor.UserID {
+		return validation("Нельзя удалить собственную учётную запись")
+	}
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return internal("Не удалось удалить сотрудника", err)
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+	queries := db.New(tx)
+	company, err := queries.GetCompany(ctx, actor.CompanyID)
+	if err != nil {
+		return internal("Не удалось получить компанию", err)
+	}
+	if company.OwnerID.Valid && company.OwnerID.UUID == id {
+		return validation("Нельзя удалить владельца компании")
+	}
+	current, err := queries.GetUserWithPositions(ctx, db.GetUserWithPositionsParams{CompanyID: actor.CompanyID, ID: id})
+	if isNoRows(err) {
+		return notFound("Сотрудник")
+	}
+	if err != nil {
+		return internal("Не удалось получить сотрудника", err)
+	}
+	if current.Source != "local" {
+		return conflict("Сотрудников amoCRM нельзя удалять в TeamOS")
+	}
+	if err = queries.ReassignUserInvites(ctx, db.ReassignUserInvitesParams{
+		ReplacementUserID: actor.UserID, CompanyID: actor.CompanyID, DeletedUserID: id,
+	}); err != nil {
+		return internal("Не удалось переназначить приглашения сотрудника", err)
+	}
+	if err = s.emit(ctx, queries, actor.CompanyID, actor.UserID, "teamos.org.user.deactivated.v1", map[string]any{
+		"userId": id.String(),
+	}); err != nil {
+		return err
+	}
+	rows, err := queries.DeleteLocalUser(ctx, db.DeleteLocalUserParams{CompanyID: actor.CompanyID, ID: id})
+	if err != nil {
+		return internal("Не удалось удалить сотрудника", err)
+	}
+	if rows == 0 {
+		return conflict("Сотрудников amoCRM нельзя удалять в TeamOS")
+	}
+	if err = tx.Commit(ctx); err != nil {
+		return internal("Не удалось удалить сотрудника", err)
+	}
+	return nil
 }
 
 func (s *Service) GetUser(ctx context.Context, actor Actor, id uuid.UUID) (User, error) {
@@ -814,11 +870,11 @@ func positionFromDB(row db.Position) Position {
 }
 
 func userFromJoinedRow(row db.GetUserWithPositionsRow) User {
-	return User{ID: row.ID, CompanyID: row.CompanyID, Email: row.Email, FirstName: row.FirstName, LastName: row.LastName, AvatarURL: textPointer(row.AvatarUrl), Phone: textPointer(row.Phone), Role: row.Role, Status: row.Status, PositionIDs: append([]uuid.UUID(nil), row.PositionIds...), BirthDate: datePointer(row.BirthDate), HiredAt: datePointer(row.HiredAt), VacationAllowance: int16Pointer(row.VacationAllowance), CreatedAt: row.CreatedAt}
+	return User{ID: row.ID, CompanyID: row.CompanyID, Email: row.Email, FirstName: row.FirstName, LastName: row.LastName, AvatarURL: textPointer(row.AvatarUrl), Phone: textPointer(row.Phone), Role: row.Role, Status: row.Status, PositionIDs: append([]uuid.UUID(nil), row.PositionIds...), BirthDate: datePointer(row.BirthDate), HiredAt: datePointer(row.HiredAt), VacationAllowance: int16Pointer(row.VacationAllowance), CreatedAt: row.CreatedAt, Source: row.Source}
 }
 
 func userFromListRow(row db.ListUsersRow) User {
-	return User{ID: row.ID, CompanyID: row.CompanyID, Email: row.Email, FirstName: row.FirstName, LastName: row.LastName, AvatarURL: textPointer(row.AvatarUrl), Phone: textPointer(row.Phone), Role: row.Role, Status: row.Status, PositionIDs: append([]uuid.UUID(nil), row.PositionIds...), BirthDate: datePointer(row.BirthDate), HiredAt: datePointer(row.HiredAt), VacationAllowance: int16Pointer(row.VacationAllowance), CreatedAt: row.CreatedAt}
+	return User{ID: row.ID, CompanyID: row.CompanyID, Email: row.Email, FirstName: row.FirstName, LastName: row.LastName, AvatarURL: textPointer(row.AvatarUrl), Phone: textPointer(row.Phone), Role: row.Role, Status: row.Status, PositionIDs: append([]uuid.UUID(nil), row.PositionIds...), BirthDate: datePointer(row.BirthDate), HiredAt: datePointer(row.HiredAt), VacationAllowance: int16Pointer(row.VacationAllowance), CreatedAt: row.CreatedAt, Source: row.Source}
 }
 
 func trimmedOptional(value *string) *string {
