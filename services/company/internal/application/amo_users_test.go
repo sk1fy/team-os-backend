@@ -21,8 +21,30 @@ func TestNormalizeExternalEmployees(t *testing.T) {
 	if users[0].Email != "user@example.com" || users[0].FirstName != "Иван" || users[0].LastName != "Петров" {
 		t.Fatalf("unexpected first user: %#v", users[0])
 	}
-	if users[1].FirstName != "Анна" || users[1].LastName != "amoCRM" || !strings.HasSuffix(users[1].Email, "@users.invalid") {
+	if users[1].FirstName != "Анна" || users[1].LastName != "" || !strings.HasSuffix(users[1].Email, "@users.invalid") {
 		t.Fatalf("unexpected second user: %#v", users[1])
+	}
+}
+
+func TestNormalizeExternalEmployeesDoesNotAddAmoCRMToName(t *testing.T) {
+	users, err := normalizeExternalEmployees(uuid.New(), []ExternalEmployee{
+		{ID: "1", Name: ""},
+		{ID: "2", Name: "Анна"},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if users[0].FirstName != "Сотрудник" || users[0].LastName != "" {
+		t.Fatalf("unexpected unnamed user: %#v", users[0])
+	}
+	if users[1].FirstName != "Анна" || users[1].LastName != "" {
+		t.Fatalf("unexpected single-name user: %#v", users[1])
+	}
+	if got := preservedAmoLastName("amoCRM"); got != "" {
+		t.Fatalf("legacy amoCRM surname was not removed: %q", got)
+	}
+	if got := preservedAmoLastName("Петрова"); got != "Петрова" {
+		t.Fatalf("real surname was not preserved: %q", got)
 	}
 }
 

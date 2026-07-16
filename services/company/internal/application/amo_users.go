@@ -57,7 +57,7 @@ func (s *Service) syncAmoUsers(ctx context.Context, actor Actor) error {
 		switch {
 		case findErr == nil:
 			if !employee.HasLastName {
-				employee.LastName = current.LastName
+				employee.LastName = preservedAmoLastName(current.LastName)
 			}
 			changedFields = amoChangedFields(current, employee)
 			row, err = queries.UpdateAmoUser(ctx, db.UpdateAmoUserParams{
@@ -178,12 +178,19 @@ func normalizeExternalEmployees(companyID uuid.UUID, values []ExternalEmployee) 
 func splitEmployeeName(value string) (string, string, bool) {
 	parts := strings.FieldsFunc(strings.TrimSpace(value), unicode.IsSpace)
 	if len(parts) == 0 {
-		return "Сотрудник", "amoCRM", false
+		return "Сотрудник", "", false
 	}
 	if len(parts) == 1 {
-		return parts[0], "amoCRM", false
+		return parts[0], "", false
 	}
 	return parts[0], strings.Join(parts[1:], " "), true
+}
+
+func preservedAmoLastName(value string) string {
+	if value == "amoCRM" {
+		return ""
+	}
+	return value
 }
 
 func fallbackAmoEmail(companyID uuid.UUID, externalID string) string {
