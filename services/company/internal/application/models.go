@@ -211,6 +211,16 @@ type UserSchedule struct {
 	Template ScheduleTemplate
 }
 
+type UserCard struct {
+	User     User
+	Schedule UserSchedule
+}
+
+type UpdateUserCardInput struct {
+	User     UpdateUserInput
+	Schedule ScheduleTemplate
+}
+
 type ShiftException struct {
 	ID     uuid.UUID
 	UserID uuid.UUID

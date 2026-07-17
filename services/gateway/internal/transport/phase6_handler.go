@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	companyv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v1"
+	"github.com/sk1fy/team-os-backend/pkg/apierror"
 	"github.com/sk1fy/team-os-backend/services/gateway/internal/api"
 )
 
@@ -42,6 +43,42 @@ func (h *Handler) SaveSchedule(w http.ResponseWriter, r *http.Request, userID ap
 		return
 	}
 	writeJSON(w, http.StatusOK, value)
+}
+
+func (h *Handler) UpdateUserCard(w http.ResponseWriter, r *http.Request, id api.ID) {
+	var input api.UpdateUserCardInput
+	if !decode(w, r, &input) {
+		return
+	}
+	user, err := updateUserRequest(id, input.User)
+	if err != nil {
+		apierror.Write(w, apierror.BadRequest(err.Error()))
+		return
+	}
+	template, err := scheduleTemplateToProto(input.Schedule.Template)
+	if err != nil {
+		apierror.Write(w, apierror.BadRequest("Некорректный шаблон графика"))
+		return
+	}
+	response, err := h.company.UpdateUserCard(outgoingContext(r), &companyv1.UpdateUserCardRequest{
+		User:     user,
+		Template: template,
+	})
+	if err != nil {
+		h.writeRPCError(w, r, err)
+		return
+	}
+	convertedUser, err := userFromProto(response.GetUser())
+	if err != nil {
+		h.writeConversionError(w, r, err)
+		return
+	}
+	convertedSchedule, err := scheduleFromProto(response.GetSchedule())
+	if err != nil {
+		h.writeConversionError(w, r, err)
+		return
+	}
+	writeJSON(w, http.StatusOK, api.UserCard{User: convertedUser, Schedule: convertedSchedule})
 }
 
 func (h *Handler) GetExceptions(w http.ResponseWriter, r *http.Request, params api.GetExceptionsParams) {

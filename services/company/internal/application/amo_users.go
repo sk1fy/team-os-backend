@@ -59,6 +59,7 @@ func (s *Service) syncAmoUsers(ctx context.Context, actor Actor) error {
 			if !employee.HasLastName {
 				employee.LastName = preservedAmoLastName(current.LastName)
 			}
+			// Эти поля принадлежат amoCRM. Локальные значения намеренно заменяются при синхронизации.
 			changedFields = amoChangedFields(current, employee)
 			row, err = queries.UpdateAmoUser(ctx, db.UpdateAmoUserParams{
 				Email: employee.Email, FirstName: employee.FirstName, LastName: employee.LastName,

@@ -507,6 +507,31 @@ paths:
         default:
           $ref: '#/components/responses/Error'
 
+  /api/v1/org/users/{id}/card:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    patch:
+      tags: [Organization]
+      operationId: updateUserCard
+      summary: Атомарно обновить карточку сотрудника и его график
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserCardInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/UserCard'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/Error'
+
   /api/v1/org/invites:
     get:
       tags: [Organization]
@@ -1938,6 +1963,12 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/UserSchedule'
+    UserCard:
+      description: Атомарно сохранённые профиль и график сотрудника
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserCard'
     ShiftExceptions:
       description: Отклонения от графика
       content:
@@ -2055,6 +2086,10 @@ components:
     UserSource:
       type: string
       enum: [local, amo]
+      description: >-
+        Источник сотрудника. Для `amo` поля email, firstName, avatarUrl, активность и lastName при
+        наличии фамилии в amoCRM принадлежат amoCRM и перезаписываются при следующей синхронизации;
+        остальные поля TeamOS сохраняет локально.
     InviteStatus:
       type: string
       enum: [pending, accepted, expired]
@@ -2459,8 +2494,10 @@ components:
       properties:
         firstName:
           type: string
+          minLength: 1
         lastName:
           type: string
+          minLength: 1
         phone:
           type: string
         birthDate:
@@ -3446,6 +3483,24 @@ components:
       properties:
         template:
           $ref: '#/components/schemas/ScheduleTemplate'
+    UpdateUserCardInput:
+      type: object
+      additionalProperties: false
+      required: [user, schedule]
+      properties:
+        user:
+          $ref: '#/components/schemas/UpdateUserInput'
+        schedule:
+          $ref: '#/components/schemas/SaveScheduleInput'
+    UserCard:
+      type: object
+      additionalProperties: false
+      required: [user, schedule]
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        schedule:
+          $ref: '#/components/schemas/UserSchedule'
     ShiftException:
       type: object
       additionalProperties: false

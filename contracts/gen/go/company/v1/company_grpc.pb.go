@@ -44,6 +44,7 @@ const (
 	CompanyService_GetUser_FullMethodName                  = "/teamos.company.v1.CompanyService/GetUser"
 	CompanyService_CreateUser_FullMethodName               = "/teamos.company.v1.CompanyService/CreateUser"
 	CompanyService_UpdateUser_FullMethodName               = "/teamos.company.v1.CompanyService/UpdateUser"
+	CompanyService_UpdateUserCard_FullMethodName           = "/teamos.company.v1.CompanyService/UpdateUserCard"
 	CompanyService_DeleteUser_FullMethodName               = "/teamos.company.v1.CompanyService/DeleteUser"
 	CompanyService_GetInvites_FullMethodName               = "/teamos.company.v1.CompanyService/GetInvites"
 	CompanyService_InviteUser_FullMethodName               = "/teamos.company.v1.CompanyService/InviteUser"
@@ -98,6 +99,7 @@ type CompanyServiceClient interface {
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
 	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error)
+	UpdateUserCard(ctx context.Context, in *UpdateUserCardRequest, opts ...grpc.CallOption) (*UpdateUserCardResponse, error)
 	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*DeleteUserResponse, error)
 	GetInvites(ctx context.Context, in *GetInvitesRequest, opts ...grpc.CallOption) (*GetInvitesResponse, error)
 	InviteUser(ctx context.Context, in *InviteUserRequest, opts ...grpc.CallOption) (*InviteUserResponse, error)
@@ -377,6 +379,16 @@ func (c *companyServiceClient) UpdateUser(ctx context.Context, in *UpdateUserReq
 	return out, nil
 }
 
+func (c *companyServiceClient) UpdateUserCard(ctx context.Context, in *UpdateUserCardRequest, opts ...grpc.CallOption) (*UpdateUserCardResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateUserCardResponse)
+	err := c.cc.Invoke(ctx, CompanyService_UpdateUserCard_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *companyServiceClient) DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*DeleteUserResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(DeleteUserResponse)
@@ -600,6 +612,7 @@ type CompanyServiceServer interface {
 	GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error)
 	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
 	UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error)
+	UpdateUserCard(context.Context, *UpdateUserCardRequest) (*UpdateUserCardResponse, error)
 	DeleteUser(context.Context, *DeleteUserRequest) (*DeleteUserResponse, error)
 	GetInvites(context.Context, *GetInvitesRequest) (*GetInvitesResponse, error)
 	InviteUser(context.Context, *InviteUserRequest) (*InviteUserResponse, error)
@@ -703,6 +716,9 @@ func (UnimplementedCompanyServiceServer) CreateUser(context.Context, *CreateUser
 }
 func (UnimplementedCompanyServiceServer) UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUser not implemented")
+}
+func (UnimplementedCompanyServiceServer) UpdateUserCard(context.Context, *UpdateUserCardRequest) (*UpdateUserCardResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserCard not implemented")
 }
 func (UnimplementedCompanyServiceServer) DeleteUser(context.Context, *DeleteUserRequest) (*DeleteUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteUser not implemented")
@@ -1232,6 +1248,24 @@ func _CompanyService_UpdateUser_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CompanyService_UpdateUserCard_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateUserCardRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).UpdateUserCard(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_UpdateUserCard_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).UpdateUserCard(ctx, req.(*UpdateUserCardRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _CompanyService_DeleteUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteUserRequest)
 	if err := dec(in); err != nil {
@@ -1680,6 +1714,10 @@ var CompanyService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateUser",
 			Handler:    _CompanyService_UpdateUser_Handler,
+		},
+		{
+			MethodName: "UpdateUserCard",
+			Handler:    _CompanyService_UpdateUserCard_Handler,
 		},
 		{
 			MethodName: "DeleteUser",

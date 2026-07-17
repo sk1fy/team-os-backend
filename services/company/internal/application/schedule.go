@@ -53,6 +53,46 @@ func (s *Service) SaveSchedule(ctx context.Context, actor Actor, userID uuid.UUI
 	return scheduleFromDB(row)
 }
 
+func (s *Service) UpdateUserCard(ctx context.Context, actor Actor, input UpdateUserCardInput) (UserCard, error) {
+	if err := requireAdministrator(actor); err != nil {
+		return UserCard{}, err
+	}
+	domain := scheduleToDomain(input.Schedule)
+	if err := domainschedule.ValidateTemplate(domain); err != nil {
+		return UserCard{}, validation(err.Error())
+	}
+	payload, err := json.Marshal(domain)
+	if err != nil {
+		return UserCard{}, internal("Не удалось сохранить шаблон графика", err)
+	}
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return UserCard{}, internal("Не удалось начать сохранение карточки сотрудника", err)
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+	queries := db.New(tx)
+	user, err := s.updateUser(ctx, actor, input.User, queries)
+	if err != nil {
+		return UserCard{}, err
+	}
+	row, err := queries.UpsertSchedule(ctx, db.UpsertScheduleParams{
+		CompanyID: actor.CompanyID,
+		UserID:    input.User.ID,
+		Template:  payload,
+	})
+	if err != nil {
+		return UserCard{}, internal("Не удалось сохранить график", err)
+	}
+	savedSchedule, err := scheduleFromDB(row)
+	if err != nil {
+		return UserCard{}, internal("Не удалось прочитать шаблон графика", err)
+	}
+	if err = tx.Commit(ctx); err != nil {
+		return UserCard{}, internal("Не удалось сохранить карточку сотрудника", err)
+	}
+	return UserCard{User: user, Schedule: savedSchedule}, nil
+}
+
 func (s *Service) ListShiftExceptions(ctx context.Context, actor Actor, month string) ([]ShiftException, error) {
 	start, err := time.Parse("2006-01", month)
 	if err != nil {

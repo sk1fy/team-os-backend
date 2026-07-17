@@ -38,6 +38,7 @@ service CompanyService {
   rpc GetUser(GetUserRequest) returns (GetUserResponse);
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
   rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
+  rpc UpdateUserCard(UpdateUserCardRequest) returns (UpdateUserCardResponse);
   rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
 
   rpc GetInvites(GetInvitesRequest) returns (GetInvitesResponse);
@@ -497,6 +498,14 @@ message GetSchedulesRequest {}
 message GetSchedulesResponse { repeated UserSchedule schedules = 1; }
 message SaveScheduleRequest { string user_id = 1; ScheduleTemplate template = 2; }
 message SaveScheduleResponse { UserSchedule schedule = 1; }
+message UpdateUserCardRequest {
+  UpdateUserRequest user = 1;
+  ScheduleTemplate template = 2;
+}
+message UpdateUserCardResponse {
+  User user = 1;
+  UserSchedule schedule = 2;
+}
 message GetShiftExceptionsRequest { string month = 1; }
 message GetShiftExceptionsResponse { repeated ShiftException exceptions = 1; }
 message SaveShiftExceptionInput {

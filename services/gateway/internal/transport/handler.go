@@ -3,6 +3,7 @@ package transport
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log/slog"
 	"net"
 	"net/http"
@@ -503,21 +504,37 @@ func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request, id api.Id) 
 	if !decode(w, r, &input) {
 		return
 	}
+	request, err := updateUserRequest(id, input)
+	if err != nil {
+		apierror.Write(w, apierror.BadRequest(err.Error()))
+		return
+	}
+	response, err := h.company.UpdateUser(outgoingContext(r), request)
+	if err != nil {
+		h.writeRPCError(w, r, err)
+		return
+	}
+	converted, err := userFromProto(response.GetUser())
+	if err != nil {
+		h.writeConversionError(w, r, err)
+		return
+	}
+	writeJSON(w, http.StatusOK, converted)
+}
+
+func updateUserRequest(id api.Id, input api.UpdateUserInput) (*companyv1.UpdateUserRequest, error) {
 	birthDate, err := clearableDateString(input.BirthDate)
 	if err != nil {
-		apierror.Write(w, apierror.BadRequest("Некорректная дата рождения"))
-		return
+		return nil, fmt.Errorf("Некорректная дата рождения")
 	}
 	hiredAt, err := clearableDateString(input.HiredAt)
 	if err != nil {
-		apierror.Write(w, apierror.BadRequest("Некорректная дата выхода на работу"))
-		return
+		return nil, fmt.Errorf("Некорректная дата выхода на работу")
 	}
 	var vacation *uint32
 	if input.VacationAllowance != nil {
 		if *input.VacationAllowance < 0 {
-			apierror.Write(w, apierror.BadRequest("Норма отпуска не может быть отрицательной"))
-			return
+			return nil, fmt.Errorf("Норма отпуска не может быть отрицательной")
 		}
 		value := uint32(*input.VacationAllowance)
 		vacation = &value
@@ -538,17 +555,7 @@ func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request, id api.Id) 
 		request.UpdatePositionIds = true
 		request.PositionIds = stringsFromUUIDs(*input.PositionIds)
 	}
-	response, err := h.company.UpdateUser(outgoingContext(r), request)
-	if err != nil {
-		h.writeRPCError(w, r, err)
-		return
-	}
-	converted, err := userFromProto(response.GetUser())
-	if err != nil {
-		h.writeConversionError(w, r, err)
-		return
-	}
-	writeJSON(w, http.StatusOK, converted)
+	return request, nil
 }
 
 func (h *Handler) DeleteUser(w http.ResponseWriter, r *http.Request, id api.Id) {

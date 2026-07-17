@@ -519,6 +519,22 @@ func (s *Service) CreateUser(ctx context.Context, actor Actor, input CreateUserI
 }
 
 func (s *Service) UpdateUser(ctx context.Context, actor Actor, input UpdateUserInput) (User, error) {
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return User{}, internal("Не удалось обновить сотрудника", err)
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+	user, err := s.updateUser(ctx, actor, input, db.New(tx))
+	if err != nil {
+		return User{}, err
+	}
+	if err = tx.Commit(ctx); err != nil {
+		return User{}, internal("Не удалось обновить сотрудника", err)
+	}
+	return user, nil
+}
+
+func (s *Service) updateUser(ctx context.Context, actor Actor, input UpdateUserInput, queries *db.Queries) (User, error) {
 	if err := requireAdministrator(actor); err != nil {
 		return User{}, err
 	}
@@ -563,12 +579,6 @@ func (s *Service) UpdateUser(ctx context.Context, actor Actor, input UpdateUserI
 		return User{}, validation("Норма отпуска должна быть от 0 до 366 дней")
 	}
 
-	tx, err := s.pool.Begin(ctx)
-	if err != nil {
-		return User{}, internal("Не удалось обновить сотрудника", err)
-	}
-	defer func() { _ = tx.Rollback(ctx) }()
-	queries := db.New(tx)
 	company, err := queries.GetCompany(ctx, actor.CompanyID)
 	if err != nil {
 		return User{}, internal("Не удалось получить компанию", err)
@@ -659,9 +669,6 @@ func (s *Service) UpdateUser(ctx context.Context, actor Actor, input UpdateUserI
 	}
 	if err = s.emit(ctx, queries, actor.CompanyID, actor.UserID, subject, eventPayload); err != nil {
 		return User{}, err
-	}
-	if err = tx.Commit(ctx); err != nil {
-		return User{}, internal("Не удалось обновить сотрудника", err)
 	}
 	return userFromDB(row, positions), nil
 }

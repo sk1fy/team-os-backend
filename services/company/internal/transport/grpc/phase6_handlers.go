@@ -45,6 +45,35 @@ func (s *Server) SaveSchedule(ctx context.Context, request *companyv1.SaveSchedu
 	return &companyv1.SaveScheduleResponse{Schedule: scheduleToProto(value)}, nil
 }
 
+func (s *Server) UpdateUserCard(ctx context.Context, request *companyv1.UpdateUserCardRequest) (*companyv1.UpdateUserCardResponse, error) {
+	actor, err := s.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if request == nil || request.User == nil || request.Template == nil {
+		return nil, invalidRequest()
+	}
+	user, err := updateUserInputFromProto(request.User)
+	if err != nil {
+		return nil, err
+	}
+	template, err := scheduleTemplateFromProto(request.Template)
+	if err != nil {
+		return nil, err
+	}
+	value, err := s.application.UpdateUserCard(ctx, actor, application.UpdateUserCardInput{
+		User:     user,
+		Schedule: template,
+	})
+	if err != nil {
+		return nil, transportError(err)
+	}
+	return &companyv1.UpdateUserCardResponse{
+		User:     userToProto(value.User),
+		Schedule: scheduleToProto(value.Schedule),
+	}, nil
+}
+
 func (s *Server) GetShiftExceptions(ctx context.Context, request *companyv1.GetShiftExceptionsRequest) (*companyv1.GetShiftExceptionsResponse, error) {
 	actor, err := s.actor(ctx)
 	if err != nil {

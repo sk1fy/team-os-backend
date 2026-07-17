@@ -338,25 +338,37 @@ func (s *Server) UpdateUser(ctx context.Context, request *companyv1.UpdateUserRe
 	if err != nil {
 		return nil, err
 	}
+	input, err := updateUserInputFromProto(request)
+	if err != nil {
+		return nil, err
+	}
+	user, err := s.application.UpdateUser(ctx, actor, input)
+	if err != nil {
+		return nil, transportError(err)
+	}
+	return &companyv1.UpdateUserResponse{User: userToProto(user)}, nil
+}
+
+func updateUserInputFromProto(request *companyv1.UpdateUserRequest) (application.UpdateUserInput, error) {
 	if request == nil {
-		return nil, invalidRequest()
+		return application.UpdateUserInput{}, invalidRequest()
 	}
 	id, err := parseUUID(request.Id, "сотрудника")
 	if err != nil {
-		return nil, err
+		return application.UpdateUserInput{}, err
 	}
 	phoneSet, phone := clearableString(request.Phone)
 	birthDateSet, birthDate := clearableString(request.BirthDate)
 	hiredAtSet, hiredAt := clearableString(request.HiredAt)
 	vacationAllowance, err := optionalVacationAllowance(request.VacationAllowance)
 	if err != nil {
-		return nil, err
+		return application.UpdateUserInput{}, err
 	}
 	var role *string
 	if request.Role != nil {
 		value, mapErr := userRoleFromProto(*request.Role)
 		if mapErr != nil {
-			return nil, mapErr
+			return application.UpdateUserInput{}, mapErr
 		}
 		role = &value
 	}
@@ -364,7 +376,7 @@ func (s *Server) UpdateUser(ctx context.Context, request *companyv1.UpdateUserRe
 	if request.Status != nil {
 		value, mapErr := userStatusFromProto(*request.Status)
 		if mapErr != nil {
-			return nil, mapErr
+			return application.UpdateUserInput{}, mapErr
 		}
 		userStatus = &value
 	}
@@ -372,10 +384,10 @@ func (s *Server) UpdateUser(ctx context.Context, request *companyv1.UpdateUserRe
 	if request.UpdatePositionIds {
 		positionIDs, err = parseUUIDs(request.PositionIds, "должностей")
 		if err != nil {
-			return nil, err
+			return application.UpdateUserInput{}, err
 		}
 	}
-	user, err := s.application.UpdateUser(ctx, actor, application.UpdateUserInput{
+	return application.UpdateUserInput{
 		ID:                   id,
 		FirstName:            cloneString(request.FirstName),
 		LastName:             cloneString(request.LastName),
@@ -391,11 +403,7 @@ func (s *Server) UpdateUser(ctx context.Context, request *companyv1.UpdateUserRe
 		Status:               userStatus,
 		SetPositionIDs:       request.UpdatePositionIds,
 		PositionIDs:          positionIDs,
-	})
-	if err != nil {
-		return nil, transportError(err)
-	}
-	return &companyv1.UpdateUserResponse{User: userToProto(user)}, nil
+	}, nil
 }
 
 func (s *Server) DeleteUser(ctx context.Context, request *companyv1.DeleteUserRequest) (*companyv1.DeleteUserResponse, error) {

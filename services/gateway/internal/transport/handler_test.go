@@ -41,6 +41,7 @@ type stubCompanyServer struct {
 	getDepartmentsFn   func(context.Context, *companyv1.GetDepartmentsRequest) (*companyv1.GetDepartmentsResponse, error)
 	updateDepartmentFn func(context.Context, *companyv1.UpdateDepartmentRequest) (*companyv1.UpdateDepartmentResponse, error)
 	deleteUserFn       func(context.Context, *companyv1.DeleteUserRequest) (*companyv1.DeleteUserResponse, error)
+	updateUserCardFn   func(context.Context, *companyv1.UpdateUserCardRequest) (*companyv1.UpdateUserCardResponse, error)
 }
 
 func (s *stubCompanyServer) DeleteUser(ctx context.Context, request *companyv1.DeleteUserRequest) (*companyv1.DeleteUserResponse, error) {
@@ -48,6 +49,13 @@ func (s *stubCompanyServer) DeleteUser(ctx context.Context, request *companyv1.D
 		return nil, status.Error(codes.Unimplemented, "unexpected DeleteUser call")
 	}
 	return s.deleteUserFn(ctx, request)
+}
+
+func (s *stubCompanyServer) UpdateUserCard(ctx context.Context, request *companyv1.UpdateUserCardRequest) (*companyv1.UpdateUserCardResponse, error) {
+	if s.updateUserCardFn == nil {
+		return nil, status.Error(codes.Unimplemented, "unexpected UpdateUserCard call")
+	}
+	return s.updateUserCardFn(ctx, request)
 }
 
 func TestGatewayDeleteUserBridgesToCompany(t *testing.T) {
@@ -62,6 +70,43 @@ func TestGatewayDeleteUserBridgesToCompany(t *testing.T) {
 	}
 	if request := <-requests; request.GetId() != testUserID {
 		t.Fatalf("id = %q", request.GetId())
+	}
+}
+
+func TestGatewayUpdateUserCardBridgesAtomicRequest(t *testing.T) {
+	requests := make(chan *companyv1.UpdateUserCardRequest, 1)
+	server := &stubCompanyServer{updateUserCardFn: func(_ context.Context, request *companyv1.UpdateUserCardRequest) (*companyv1.UpdateUserCardResponse, error) {
+		requests <- request
+		user := testAuthSession("access", "refresh").User
+		user.FirstName = "Grace"
+		user.LastName = "Hopper"
+		return &companyv1.UpdateUserCardResponse{
+			User: user,
+			Schedule: &companyv1.UserSchedule{UserId: testUserID, Template: &companyv1.ScheduleTemplate{
+				Type: "week", Days: []uint32{1, 2, 3, 4, 5}, Start: "09:00", End: "18:00",
+			}},
+		}, nil
+	}}
+	recorder := serveGatewayRequest(t, server, http.MethodPatch, "/api/v1/org/users/"+testUserID+"/card", `{
+		"user":{"firstName":"Grace","lastName":"Hopper"},
+		"schedule":{"template":{"type":"week","days":[1,2,3,4,5],"start":"09:00","end":"18:00"}}
+	}`, nil)
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("status = %d; body = %s", recorder.Code, recorder.Body.String())
+	}
+	request := <-requests
+	if request.GetUser().GetId() != testUserID || request.GetUser().GetFirstName() != "Grace" || request.GetUser().GetLastName() != "Hopper" {
+		t.Fatalf("user request = %#v", request.GetUser())
+	}
+	if request.GetTemplate().GetType() != "week" || len(request.GetTemplate().GetDays()) != 5 {
+		t.Fatalf("schedule request = %#v", request.GetTemplate())
+	}
+	body := decodeObject(t, recorder)
+	if _, ok := body["user"]; !ok {
+		t.Fatalf("response has no user: %s", recorder.Body.String())
+	}
+	if _, ok := body["schedule"]; !ok {
+		t.Fatalf("response has no schedule: %s", recorder.Body.String())
 	}
 }
 
