@@ -33,7 +33,7 @@ type amoSyncState struct {
 }
 
 type Service struct {
-	pool          *pgxpool.Pool
+	pool          databasePool
 	issuer        *sharedauth.TokenIssuer
 	refreshTTL    time.Duration
 	inviteTTL     time.Duration
@@ -45,6 +45,15 @@ type Service struct {
 	amoSyncTTL    time.Duration
 	amoSyncMu     sync.Mutex
 	amoSyncStates map[uuid.UUID]*amoSyncState
+}
+
+// databasePool is the subset of pgxpool.Pool used by the application layer.
+// Keeping the dependency at this boundary makes transactional workflows
+// testable without starting PostgreSQL.
+type databasePool interface {
+	db.DBTX
+	Begin(context.Context) (pgx.Tx, error)
+	BeginTx(context.Context, pgx.TxOptions) (pgx.Tx, error)
 }
 
 type ExternalEmployeeProvider interface {
