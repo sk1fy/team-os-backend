@@ -184,8 +184,13 @@ func (h *Handler) UpdateCurrentUser(w http.ResponseWriter, r *http.Request) {
 	if !decode(w, r, &input) {
 		return
 	}
+	phone, err := clearablePhoneString(input.Phone)
+	if err != nil {
+		apierror.Write(w, apierror.BadRequest("Некорректный номер телефона"))
+		return
+	}
 	response, err := h.company.UpdateCurrentUser(outgoingContext(r), &companyv1.UpdateCurrentUserRequest{
-		FirstName: input.FirstName, LastName: input.LastName, Phone: input.Phone, AvatarUrl: input.AvatarUrl,
+		FirstName: input.FirstName, LastName: input.LastName, Phone: phone, AvatarUrl: input.AvatarUrl,
 	})
 	if err != nil {
 		h.writeRPCError(w, r, err)
@@ -523,6 +528,10 @@ func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request, id api.Id) 
 }
 
 func updateUserRequest(id api.Id, input api.UpdateUserInput) (*companyv1.UpdateUserRequest, error) {
+	phone, err := clearablePhoneString(input.Phone)
+	if err != nil {
+		return nil, fmt.Errorf("Некорректный номер телефона")
+	}
 	birthDate, err := clearableDateString(input.BirthDate)
 	if err != nil {
 		return nil, fmt.Errorf("Некорректная дата рождения")
@@ -540,7 +549,7 @@ func updateUserRequest(id api.Id, input api.UpdateUserInput) (*companyv1.UpdateU
 		vacation = &value
 	}
 	request := &companyv1.UpdateUserRequest{
-		Id: id.String(), FirstName: input.FirstName, LastName: input.LastName, Phone: input.Phone,
+		Id: id.String(), FirstName: input.FirstName, LastName: input.LastName, Phone: phone,
 		BirthDate: birthDate, HiredAt: hiredAt, VacationAllowance: vacation,
 	}
 	if input.Role != nil {

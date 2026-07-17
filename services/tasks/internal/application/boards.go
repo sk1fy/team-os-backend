@@ -10,6 +10,14 @@ import (
 )
 
 func (s *Service) GetBoards(ctx context.Context, actor Actor) ([]Board, error) {
+	if actor.Role != "owner" && actor.Role != "admin" && actor.Role != "employee" && actor.Role != "partner" {
+		return nil, forbidden("Недостаточно прав для просмотра досок")
+	}
+	if actor.Role != "partner" {
+		if err := s.ensureDefaultBoard(ctx, actor.CompanyID); err != nil {
+			return nil, err
+		}
+	}
 	rows, err := db.New(s.pool).ListBoards(ctx, actor.CompanyID)
 	if err != nil {
 		return nil, internal("Не удалось получить доски", err)
@@ -24,8 +32,6 @@ func (s *Service) GetBoards(ctx context.Context, actor Actor) ([]Board, error) {
 		for _, task := range tasks {
 			visibleBoardIDs[task.BoardID] = struct{}{}
 		}
-	} else if actor.Role != "owner" && actor.Role != "admin" && actor.Role != "employee" {
-		return nil, forbidden("Недостаточно прав для просмотра досок")
 	}
 	boards := make([]Board, 0, len(rows))
 	for _, row := range rows {
@@ -38,6 +44,50 @@ func (s *Service) GetBoards(ctx context.Context, actor Actor) ([]Board, error) {
 		boards = append(boards, board)
 	}
 	return boards, nil
+}
+
+func (s *Service) ensureDefaultBoard(ctx context.Context, companyID uuid.UUID) error {
+	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{})
+	if err != nil {
+		return internal("Не удалось начать создание доски", err)
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+	queries := db.New(tx)
+	if err = queries.LockCompanyBoardBootstrap(ctx, companyID); err != nil {
+		return internal("Не удалось заблокировать создание доски", err)
+	}
+	boards, err := queries.ListBoards(ctx, companyID)
+	if err != nil {
+		return internal("Не удалось проверить доски", err)
+	}
+	if len(boards) == 0 {
+		boardID := uuid.New()
+		if _, err = queries.CreateBoard(ctx, db.CreateBoardParams{
+			ID: boardID, CompanyID: companyID, Name: "Задачи компании", Type: "project",
+		}); err != nil {
+			return internal("Не удалось создать стандартную доску", err)
+		}
+		columns := []struct {
+			name  string
+			color string
+		}{
+			{name: "Новые", color: "slate"},
+			{name: "В работе", color: "sky"},
+			{name: "Готово", color: "green"},
+		}
+		for index, column := range columns {
+			if _, err = queries.CreateColumn(ctx, db.CreateColumnParams{
+				ID: uuid.New(), BoardID: boardID, Name: column.name,
+				Color: pgtype.Text{String: column.color, Valid: true}, Order: int32(index),
+			}); err != nil {
+				return internal("Не удалось создать стандартные колонки", err)
+			}
+		}
+	}
+	if err = tx.Commit(ctx); err != nil {
+		return internal("Не удалось сохранить стандартную доску", err)
+	}
+	return nil
 }
 
 func (s *Service) GetColumns(ctx context.Context, actor Actor, boardID uuid.UUID) ([]TaskColumn, error) {

@@ -132,7 +132,11 @@ func run(logger *slog.Logger) error {
 		}
 	}()
 	notificationsClient := notificationsv1.NewNotificationsServiceClient(notificationsConnection)
-	filesConnection, err := grpc.NewClient(configuration.FilesGRPCAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	filesConnection, err := grpc.NewClient(
+		configuration.FilesGRPCAddr,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithUnaryInterceptor(defaultUnaryTimeout(5*time.Second)),
+	)
 	if err != nil {
 		return fmt.Errorf("connect to files: %w", err)
 	}

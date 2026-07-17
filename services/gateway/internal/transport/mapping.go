@@ -362,3 +362,15 @@ func clearableDateString(value *api.ClearableDate) (*string, error) {
 	result := string(text)
 	return &result, nil
 }
+
+func clearablePhoneString(value *api.ClearablePhone) (*string, error) {
+	if value == nil {
+		return nil, nil
+	}
+	phone, err := value.AsPhone()
+	if err != nil {
+		return nil, err
+	}
+	result := string(phone)
+	return &result, nil
+}

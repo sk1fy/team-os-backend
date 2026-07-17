@@ -17,6 +17,7 @@ import (
 	companyv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v1"
 	kbv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/kb/v1"
 	tasksv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/tasks/v1"
+	"github.com/sk1fy/team-os-backend/pkg/apierror"
 	"github.com/sk1fy/team-os-backend/services/gateway/internal/api"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -42,6 +43,34 @@ type stubCompanyServer struct {
 	updateDepartmentFn func(context.Context, *companyv1.UpdateDepartmentRequest) (*companyv1.UpdateDepartmentResponse, error)
 	deleteUserFn       func(context.Context, *companyv1.DeleteUserRequest) (*companyv1.DeleteUserResponse, error)
 	updateUserCardFn   func(context.Context, *companyv1.UpdateUserCardRequest) (*companyv1.UpdateUserCardResponse, error)
+	getUserFn          func(context.Context, *companyv1.GetUserRequest) (*companyv1.GetUserResponse, error)
+	getEventsFn        func(context.Context, *companyv1.GetDistributionEventsRequest) (*companyv1.GetDistributionEventsResponse, error)
+}
+
+type stubAcademyServer struct {
+	academyv1.UnimplementedAcademyServiceServer
+	getCourseFn func(context.Context, *academyv1.GetCourseRequest) (*academyv1.GetCourseResponse, error)
+}
+
+func (s *stubAcademyServer) GetCourse(ctx context.Context, request *academyv1.GetCourseRequest) (*academyv1.GetCourseResponse, error) {
+	if s.getCourseFn == nil {
+		return nil, status.Error(codes.Unimplemented, "unexpected GetCourse call")
+	}
+	return s.getCourseFn(ctx, request)
+}
+
+func (s *stubCompanyServer) GetUser(ctx context.Context, request *companyv1.GetUserRequest) (*companyv1.GetUserResponse, error) {
+	if s.getUserFn == nil {
+		return nil, status.Error(codes.Unimplemented, "unexpected GetUser call")
+	}
+	return s.getUserFn(ctx, request)
+}
+
+func (s *stubCompanyServer) GetDistributionEvents(ctx context.Context, request *companyv1.GetDistributionEventsRequest) (*companyv1.GetDistributionEventsResponse, error) {
+	if s.getEventsFn == nil {
+		return nil, status.Error(codes.Unimplemented, "unexpected GetDistributionEvents call")
+	}
+	return s.getEventsFn(ctx, request)
 }
 
 func (s *stubCompanyServer) DeleteUser(ctx context.Context, request *companyv1.DeleteUserRequest) (*companyv1.DeleteUserResponse, error) {
@@ -107,6 +136,44 @@ func TestGatewayUpdateUserCardBridgesAtomicRequest(t *testing.T) {
 	}
 	if _, ok := body["schedule"]; !ok {
 		t.Fatalf("response has no schedule: %s", recorder.Body.String())
+	}
+}
+
+func TestGatewayReturnsNotFoundEnvelopeForUnknownEntities(t *testing.T) {
+	t.Run("employee", func(t *testing.T) {
+		server := &stubCompanyServer{getUserFn: func(context.Context, *companyv1.GetUserRequest) (*companyv1.GetUserResponse, error) {
+			return nil, status.Error(codes.NotFound, "Сотрудник не найден")
+		}}
+		assertErrorEnvelope(t, serveGatewayRequest(t, server, http.MethodGet, "/api/v1/org/users/"+testChildID, "", nil), http.StatusNotFound, "Сотрудник не найден")
+	})
+
+	t.Run("distribution group", func(t *testing.T) {
+		server := &stubCompanyServer{getEventsFn: func(context.Context, *companyv1.GetDistributionEventsRequest) (*companyv1.GetDistributionEventsResponse, error) {
+			return nil, status.Error(codes.NotFound, "Группа распределения не найдена")
+		}}
+		assertErrorEnvelope(t, serveGatewayRequest(t, server, http.MethodGet, "/api/v1/distribution/groups/"+testChildID+"/events", "", nil), http.StatusNotFound, "Группа распределения не найдена")
+	})
+
+	t.Run("course", func(t *testing.T) {
+		company := &stubCompanyServer{}
+		academy := &stubAcademyServer{getCourseFn: func(context.Context, *academyv1.GetCourseRequest) (*academyv1.GetCourseResponse, error) {
+			return nil, status.Error(codes.NotFound, "Курс не найден")
+		}}
+		handler := newTestGatewayWithAcademy(t, company, academy)
+		assertErrorEnvelope(t, performRequest(handler, http.MethodGet, "/api/v1/academy/courses/"+testChildID, "", nil), http.StatusNotFound, "Курс не найден")
+	})
+}
+
+func TestGatewayRejectsMalformedEntityIDsWithoutCallingServices(t *testing.T) {
+	handler := newTestGateway(t, &stubCompanyServer{})
+	for _, path := range []string{
+		"/api/v1/org/users/nonexistent-id",
+		"/api/v1/distribution/groups/fake/events",
+		"/api/v1/academy/courses/fake",
+	} {
+		t.Run(path, func(t *testing.T) {
+			assertErrorEnvelope(t, performRequest(handler, http.MethodGet, path, "", nil), http.StatusBadRequest, "Некорректные параметры запроса")
+		})
 	}
 }
 
@@ -393,6 +460,14 @@ func TestGatewayRejectsMalformedJSONBeforeRPC(t *testing.T) {
 }
 
 func newTestGateway(t *testing.T, companyServer companyv1.CompanyServiceServer) http.Handler {
+	return newTestGatewayWithAcademy(t, companyServer, academyv1.UnimplementedAcademyServiceServer{})
+}
+
+func newTestGatewayWithAcademy(
+	t *testing.T,
+	companyServer companyv1.CompanyServiceServer,
+	academyServer academyv1.AcademyServiceServer,
+) http.Handler {
 	t.Helper()
 
 	listener := bufconn.Listen(1024 * 1024)
@@ -400,6 +475,7 @@ func newTestGateway(t *testing.T, companyServer companyv1.CompanyServiceServer) 
 	companyv1.RegisterCompanyServiceServer(grpcServer, companyServer)
 	kbv1.RegisterKbServiceServer(grpcServer, kbv1.UnimplementedKbServiceServer{})
 	tasksv1.RegisterTasksServiceServer(grpcServer, tasksv1.UnimplementedTasksServiceServer{})
+	academyv1.RegisterAcademyServiceServer(grpcServer, academyServer)
 	go func() {
 		_ = grpcServer.Serve(listener)
 	}()
@@ -427,7 +503,10 @@ func newTestGateway(t *testing.T, companyServer companyv1.CompanyServiceServer) 
 	kbClient := kbv1.NewKbServiceClient(connection)
 	tasksClient := tasksv1.NewTasksServiceClient(connection)
 	academyClient := academyv1.NewAcademyServiceClient(connection)
-	return api.Handler(NewHandler(client, kbClient, tasksClient, academyClient, CookieConfig{Secure: true}, logger))
+	handler := NewHandler(client, kbClient, tasksClient, academyClient, CookieConfig{Secure: true}, logger)
+	return api.HandlerWithOptions(handler, api.ChiServerOptions{ErrorHandlerFunc: func(w http.ResponseWriter, _ *http.Request, _ error) {
+		apierror.Write(w, apierror.BadRequest("Некорректные параметры запроса"))
+	}})
 }
 
 func serveGatewayRequest(
@@ -490,6 +569,23 @@ func decodeObject(t *testing.T, recorder *httptest.ResponseRecorder) map[string]
 	var object map[string]json.RawMessage
 	decodeJSON(t, recorder, &object)
 	return object
+}
+
+func assertErrorEnvelope(t *testing.T, recorder *httptest.ResponseRecorder, wantStatus int, wantMessage string) {
+	t.Helper()
+	if recorder.Code != wantStatus {
+		t.Fatalf("status = %d, want %d; body = %s", recorder.Code, wantStatus, recorder.Body.String())
+	}
+	var envelope struct {
+		Error struct {
+			Message string `json:"message"`
+			Status  int    `json:"status"`
+		} `json:"error"`
+	}
+	decodeJSON(t, recorder, &envelope)
+	if envelope.Error.Status != wantStatus || envelope.Error.Message != wantMessage {
+		t.Fatalf("error = %#v, want status %d message %q", envelope.Error, wantStatus, wantMessage)
+	}
 }
 
 func decodeStringField(t *testing.T, object map[string]json.RawMessage, field string) string {

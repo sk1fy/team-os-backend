@@ -40,8 +40,12 @@ func (s *Service) UpdateCurrentUser(
 		}
 		input.LastName = &value
 	}
-	if input.Phone != nil {
-		input.Phone = trimmedOptional(input.Phone)
+	if input.SetPhone {
+		phone, phoneErr := normalizePhone(input.Phone)
+		if phoneErr != nil {
+			return User{}, phoneErr
+		}
+		input.Phone = phone
 	}
 	if input.AvatarURL != nil {
 		input.AvatarURL = trimmedOptional(input.AvatarURL)

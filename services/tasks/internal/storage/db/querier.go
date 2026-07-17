@@ -13,6 +13,7 @@ import (
 type Querier interface {
 	CountColumnsByBoard(ctx context.Context, boardID uuid.UUID) (int32, error)
 	CountTasksInColumn(ctx context.Context, columnID uuid.UUID) (int32, error)
+	CreateBoard(ctx context.Context, arg CreateBoardParams) (Board, error)
 	CreateColumn(ctx context.Context, arg CreateColumnParams) (Column, error)
 	CreateComment(ctx context.Context, arg CreateCommentParams) (Comment, error)
 	CreateOutboxEvent(ctx context.Context, arg CreateOutboxEventParams) (Outbox, error)
@@ -30,6 +31,7 @@ type Querier interface {
 	ListTasksDueSoon(ctx context.Context, companyID uuid.UUID) ([]Task, error)
 	ListTasksInColumnsForUpdate(ctx context.Context, arg ListTasksInColumnsForUpdateParams) ([]ListTasksInColumnsForUpdateRow, error)
 	LockBoardOrder(ctx context.Context, boardID uuid.UUID) error
+	LockCompanyBoardBootstrap(ctx context.Context, companyID uuid.UUID) error
 	MarkDueSoonSent(ctx context.Context, arg MarkDueSoonSentParams) error
 	MarkRecurrenceGenerated(ctx context.Context, arg MarkRecurrenceGeneratedParams) error
 	UpdateColumn(ctx context.Context, arg UpdateColumnParams) (Column, error)

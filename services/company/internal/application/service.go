@@ -86,10 +86,53 @@ func requireAdministrator(actor Actor) error {
 func normalizeEmail(value string) (string, error) {
 	normalized := strings.ToLower(strings.TrimSpace(value))
 	address, err := mail.ParseAddress(normalized)
-	if err != nil || address.Address != normalized {
+	at := strings.LastIndexByte(normalized, '@')
+	if err != nil || address.Address != normalized || at <= 0 || !validEmailDomain(normalized[at+1:]) {
 		return "", validation("Некорректный email")
 	}
 	return normalized, nil
+}
+
+func validEmailDomain(domain string) bool {
+	if len(domain) > 253 || !strings.Contains(domain, ".") {
+		return false
+	}
+	for _, label := range strings.Split(domain, ".") {
+		if label == "" || len(label) > 63 || label[0] == '-' || label[len(label)-1] == '-' {
+			return false
+		}
+		for _, character := range label {
+			if (character < 'a' || character > 'z') && (character < '0' || character > '9') && character != '-' {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+func normalizePhone(value *string) (*string, error) {
+	if value == nil {
+		return nil, nil
+	}
+	phone := strings.TrimSpace(*value)
+	if phone == "" {
+		return nil, nil
+	}
+	digits := 0
+	for index, character := range phone {
+		switch {
+		case character >= '0' && character <= '9':
+			digits++
+		case character == '+' && index == 0:
+		case character == ' ' || character == '-' || character == '(' || character == ')':
+		default:
+			return nil, validation("Некорректный номер телефона")
+		}
+	}
+	if digits < 7 || digits > 15 {
+		return nil, validation("Некорректный номер телефона")
+	}
+	return &phone, nil
 }
 
 func requiredText(value, message string) (string, error) {

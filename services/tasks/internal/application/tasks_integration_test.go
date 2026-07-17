@@ -58,6 +58,30 @@ func TestConcurrentTaskOrderingAndRecurrence(t *testing.T) {
 	userID := uuid.New()
 	actor := Actor{CompanyID: companyID, UserID: userID, Role: "employee"}
 
+	t.Run("стандартная доска создаётся идемпотентно", func(t *testing.T) {
+		bootstrapCompanyID := uuid.New()
+		bootstrapActor := Actor{CompanyID: bootstrapCompanyID, UserID: uuid.New(), Role: "owner"}
+		for attempt := 0; attempt < 2; attempt++ {
+			boards, getErr := service.GetBoards(ctx, bootstrapActor)
+			if getErr != nil {
+				t.Fatalf("получение досок: %v", getErr)
+			}
+			if len(boards) != 1 || boards[0].Name != "Задачи компании" {
+				t.Fatalf("доски = %#v", boards)
+			}
+		}
+		var boardsCount, columnsCount int
+		if err = pool.QueryRow(ctx, `SELECT count(*) FROM boards WHERE company_id = $1`, bootstrapCompanyID).Scan(&boardsCount); err != nil {
+			t.Fatalf("подсчёт досок: %v", err)
+		}
+		if err = pool.QueryRow(ctx, `SELECT count(*) FROM columns WHERE board_id IN (SELECT id FROM boards WHERE company_id = $1)`, bootstrapCompanyID).Scan(&columnsCount); err != nil {
+			t.Fatalf("подсчёт колонок: %v", err)
+		}
+		if boardsCount != 1 || columnsCount != 3 {
+			t.Fatalf("boards=%d columns=%d", boardsCount, columnsCount)
+		}
+	})
+
 	t.Run("конкурентные перемещения не образуют deadlock", func(t *testing.T) {
 		boardID, columnID := seedBoardAndColumn(t, ctx, pool, companyID, userID)
 		taskIDs := []uuid.UUID{uuid.New(), uuid.New(), uuid.New()}

@@ -11,6 +11,43 @@ import (
 	"github.com/google/uuid"
 )
 
+const createBoard = `-- name: CreateBoard :one
+INSERT INTO boards (id, company_id, name, type, department_id, owner_id)
+VALUES ($1, $2, $3, $4, $5, $6)
+RETURNING id, company_id, name, type, department_id, owner_id, created_at
+`
+
+type CreateBoardParams struct {
+	ID           uuid.UUID     `json:"id"`
+	CompanyID    uuid.UUID     `json:"company_id"`
+	Name         string        `json:"name"`
+	Type         string        `json:"type"`
+	DepartmentID uuid.NullUUID `json:"department_id"`
+	OwnerID      uuid.NullUUID `json:"owner_id"`
+}
+
+func (q *Queries) CreateBoard(ctx context.Context, arg CreateBoardParams) (Board, error) {
+	row := q.db.QueryRow(ctx, createBoard,
+		arg.ID,
+		arg.CompanyID,
+		arg.Name,
+		arg.Type,
+		arg.DepartmentID,
+		arg.OwnerID,
+	)
+	var i Board
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.Name,
+		&i.Type,
+		&i.DepartmentID,
+		&i.OwnerID,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const getBoard = `-- name: GetBoard :one
 SELECT id, company_id, name, type, department_id, owner_id, created_at
 FROM boards
@@ -70,4 +107,13 @@ func (q *Queries) ListBoards(ctx context.Context, companyID uuid.UUID) ([]Board,
 		return nil, err
 	}
 	return items, nil
+}
+
+const lockCompanyBoardBootstrap = `-- name: LockCompanyBoardBootstrap :exec
+SELECT pg_advisory_xact_lock(hashtextextended($1::uuid::text, 1))
+`
+
+func (q *Queries) LockCompanyBoardBootstrap(ctx context.Context, companyID uuid.UUID) error {
+	_, err := q.db.Exec(ctx, lockCompanyBoardBootstrap, companyID)
+	return err
 }

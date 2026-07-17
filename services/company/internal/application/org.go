@@ -484,7 +484,10 @@ func (s *Service) CreateUser(ctx context.Context, actor Actor, input CreateUserI
 	if err = ensurePositions(ctx, queries, actor.CompanyID, input.PositionIDs); err != nil {
 		return User{}, err
 	}
-	phone := trimmedOptional(input.Phone)
+	phone, err := normalizePhone(input.Phone)
+	if err != nil {
+		return User{}, err
+	}
 	row, err := queries.CreateUser(ctx, db.CreateUserParams{
 		ID: uuid.New(), CompanyID: actor.CompanyID, Email: email,
 		FirstName: firstName, LastName: lastName, Phone: pgText(phone),
@@ -567,6 +570,13 @@ func (s *Service) updateUser(ctx context.Context, actor Actor, input UpdateUserI
 		}
 		input.LastName = &value
 	}
+	if input.SetPhone {
+		phone, phoneErr := normalizePhone(input.Phone)
+		if phoneErr != nil {
+			return User{}, phoneErr
+		}
+		input.Phone = phone
+	}
 	birthDate, err := optionalDate(input.SetBirthDate, input.BirthDate)
 	if err != nil {
 		return User{}, validation("Некорректная дата рождения")
@@ -618,10 +628,9 @@ func (s *Service) updateUser(ctx context.Context, actor Actor, input UpdateUserI
 			return User{}, err
 		}
 	}
-	phone := trimmedOptional(input.Phone)
 	row, err := queries.UpdateUser(ctx, db.UpdateUserParams{
 		FirstName: pgText(input.FirstName), LastName: pgText(input.LastName),
-		SetPhone: input.SetPhone, Phone: pgText(phone),
+		SetPhone: input.SetPhone, Phone: pgText(input.Phone),
 		SetBirthDate: input.SetBirthDate, BirthDate: birthDate,
 		SetHiredAt: input.SetHiredAt, HiredAt: hiredAt,
 		SetVacation: input.SetVacationAllowance, VacationAllowance: optionalInt2(input.VacationAllowance),
