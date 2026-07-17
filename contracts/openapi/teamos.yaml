@@ -11,8 +11,8 @@ info:
     `src/api/index.ts` и `src/types/index.ts` frontend-приложения.
     Все даты-время передаются в ISO-8601, идентификаторы являются UUID.
 servers:
-  - url: http://localhost:8080
-    description: Локальный gateway
+  - url: /
+    description: Gateway в текущем окружении
 tags:
   - name: Auth
     description: Сессии, профиль и принятие приглашений.
@@ -243,6 +243,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Departments'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
     post:
@@ -340,6 +342,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Positions'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
     post:
@@ -446,6 +450,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Users'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
     post:
@@ -648,6 +654,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Invites'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
     post:
@@ -718,6 +726,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/ArticleSections'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
     post:
@@ -733,6 +743,8 @@ paths:
       responses:
         '201':
           $ref: '#/components/responses/ArticleSection'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -752,6 +764,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/ArticleSection'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
     delete:
@@ -761,6 +775,8 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -778,6 +794,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Articles'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
     post:
@@ -793,6 +811,8 @@ paths:
       responses:
         '201':
           $ref: '#/components/responses/Article'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -811,6 +831,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Articles'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -824,6 +846,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Article'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
     patch:
@@ -897,6 +921,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/ArticleVersions'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -910,6 +936,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Acknowledgements'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -923,6 +951,8 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -938,6 +968,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Boards'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -955,6 +987,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/TaskColumns'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
     post:
@@ -970,6 +1004,8 @@ paths:
       responses:
         '201':
           $ref: '#/components/responses/TaskColumn'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -989,6 +1025,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/TaskColumn'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -1006,6 +1044,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Tasks'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
     post:
@@ -1021,6 +1061,8 @@ paths:
       responses:
         '201':
           $ref: '#/components/responses/Task'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -1034,6 +1076,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Task'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
     patch:
@@ -1049,6 +1093,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Task'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -1072,6 +1118,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Task'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -1089,6 +1137,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/TaskComments'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
     post:
@@ -1104,6 +1154,8 @@ paths:
       responses:
         '201':
           $ref: '#/components/responses/TaskComment'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -1115,6 +1167,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Labels'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -1126,6 +1180,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Courses'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
     post:
@@ -1141,6 +1197,8 @@ paths:
       responses:
         '201':
           $ref: '#/components/responses/Course'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -1158,6 +1216,8 @@ paths:
       responses:
         '201':
           $ref: '#/components/responses/Course'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -1190,6 +1250,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Course'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
     delete:
@@ -1199,6 +1261,8 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -1216,6 +1280,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/CourseSections'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
     post:
@@ -1231,6 +1297,8 @@ paths:
       responses:
         '201':
           $ref: '#/components/responses/CourseSection'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -1250,6 +1318,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/CourseSection'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
     delete:
@@ -1259,6 +1329,8 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -1276,6 +1348,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Lessons'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
     post:
@@ -1291,6 +1365,8 @@ paths:
       responses:
         '201':
           $ref: '#/components/responses/Lesson'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -1310,6 +1386,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Lesson'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
     delete:
@@ -1319,6 +1397,8 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -1338,6 +1418,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Lesson'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -1355,6 +1437,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Quizzes'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
     put:
@@ -1370,6 +1454,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Quiz'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -1381,6 +1467,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/CourseAssignments'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
     post:
@@ -1396,6 +1484,8 @@ paths:
       responses:
         '201':
           $ref: '#/components/responses/CourseAssignment'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -1413,6 +1503,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/CourseProgressList'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -1436,6 +1528,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/CourseProgress'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -1447,6 +1541,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Notifications'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -1463,6 +1559,8 @@ paths:
               schema:
                 type: integer
                 minimum: 0
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -1476,6 +1574,8 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -1487,6 +1587,8 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -1511,6 +1613,8 @@ paths:
                   - |-
                     event: notification
                     data: {"id":"4dc6f749-3490-4fba-a65b-753f747c5473"}
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -1522,6 +1626,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/UserSchedules'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -1545,6 +1651,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/UserSchedule'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -1562,6 +1670,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/ShiftExceptions'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
     put:
@@ -1579,6 +1689,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/ShiftExceptions'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -1590,6 +1702,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/DistributionGroups'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
     post:
@@ -1605,6 +1719,8 @@ paths:
       responses:
         '201':
           $ref: '#/components/responses/DistributionGroup'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -1624,6 +1740,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/DistributionGroup'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
     delete:
@@ -1633,6 +1751,8 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -1663,6 +1783,8 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -1680,6 +1802,8 @@ paths:
       responses:
         '201':
           $ref: '#/components/responses/DistributionEvent'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -1705,6 +1829,8 @@ paths:
       responses:
         '201':
           $ref: '#/components/responses/UploadedFile'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -1718,6 +1844,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/FileDownload'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
     delete:
@@ -1727,6 +1855,8 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
+        '4XX':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
