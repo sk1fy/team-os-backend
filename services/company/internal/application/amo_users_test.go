@@ -3,9 +3,55 @@ package application
 import (
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/google/uuid"
 )
+
+func TestTryStartAmoSyncSkipsInFlightAndHonorsTTL(t *testing.T) {
+	companyID := uuid.New()
+	now := time.Date(2026, time.July, 17, 12, 0, 0, 0, time.UTC)
+	service := &Service{
+		now:           func() time.Time { return now },
+		amoSyncTTL:    5 * time.Minute,
+		amoSyncStates: make(map[uuid.UUID]*amoSyncState),
+	}
+
+	unlock, ok := service.tryStartAmoSync(companyID)
+	if !ok {
+		t.Fatal("first sync attempt must start")
+	}
+
+	result := make(chan bool, 1)
+	go func() {
+		secondUnlock, started := service.tryStartAmoSync(companyID)
+		if started {
+			secondUnlock()
+		}
+		result <- started
+	}()
+	select {
+	case started := <-result:
+		if started {
+			t.Fatal("parallel sync attempt must be skipped")
+		}
+	case <-time.After(time.Second):
+		unlock()
+		<-result
+		t.Fatal("parallel sync attempt blocked instead of returning immediately")
+	}
+	unlock()
+
+	if _, started := service.tryStartAmoSync(companyID); started {
+		t.Fatal("sync attempt inside TTL must be skipped")
+	}
+	now = now.Add(5 * time.Minute)
+	unlock, ok = service.tryStartAmoSync(companyID)
+	if !ok {
+		t.Fatal("sync attempt after TTL must start")
+	}
+	unlock()
+}
 
 func TestNormalizeExternalEmployees(t *testing.T) {
 	companyID := uuid.MustParse("11111111-1111-1111-1111-111111111111")

@@ -18,27 +18,39 @@ func (s *Service) syncAmoUsers(ctx context.Context, actor Actor) error {
 	if s.externalUsers == nil {
 		return nil
 	}
-	s.amoSyncMu.Lock()
-	state := s.amoSyncStates[actor.CompanyID]
-	if state == nil {
-		state = &amoSyncState{}
-		s.amoSyncStates[actor.CompanyID] = state
-	}
-	s.amoSyncMu.Unlock()
-
-	state.mu.Lock()
-	defer state.mu.Unlock()
-	now := s.now().UTC()
-	if !state.lastAttempt.IsZero() && now.Sub(state.lastAttempt) < s.amoSyncTTL {
+	unlock, ok := s.tryStartAmoSync(actor.CompanyID)
+	if !ok {
 		return nil
 	}
-	// Throttle both successful attempts and failures so an unavailable upstream
-	// cannot turn every org-tree read into a slow external request.
-	state.lastAttempt = now
+	defer unlock()
+
 	if err := s.syncAmoUsersNow(ctx, actor); err != nil {
 		s.logger.WarnContext(ctx, "amoCRM user sync failed; serving local users", "company_id", actor.CompanyID, "error", err)
 	}
 	return nil
+}
+
+func (s *Service) tryStartAmoSync(companyID uuid.UUID) (func(), bool) {
+	s.amoSyncMu.Lock()
+	state := s.amoSyncStates[companyID]
+	if state == nil {
+		state = &amoSyncState{}
+		s.amoSyncStates[companyID] = state
+	}
+	s.amoSyncMu.Unlock()
+
+	if !state.mu.TryLock() {
+		return nil, false
+	}
+	now := s.now().UTC()
+	if !state.lastAttempt.IsZero() && now.Sub(state.lastAttempt) < s.amoSyncTTL {
+		state.mu.Unlock()
+		return nil, false
+	}
+	// Throttle both successful attempts and failures so an unavailable upstream
+	// cannot turn every org-tree read into a slow external request.
+	state.lastAttempt = now
+	return state.mu.Unlock, true
 }
 
 func (s *Service) syncAmoUsersNow(ctx context.Context, actor Actor) error {

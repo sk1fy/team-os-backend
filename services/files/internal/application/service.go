@@ -62,6 +62,8 @@ func (s *Service) Upload(ctx context.Context, companyID, userID uuid.UUID, v dom
 }
 
 func (s *Service) Get(ctx context.Context, companyID, id uuid.UUID) (domain.File, string, error) {
+	// Reading is intentionally authorized at the company boundary only for now.
+	// Parent-entity ACLs require an additive ownership link; see production-security.md §9.1.
 	f, err := s.repo.Get(ctx, companyID, id)
 	if err != nil {
 		return domain.File{}, "", err
