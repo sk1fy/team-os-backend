@@ -5,12 +5,13 @@ import (
 	"net/http"
 
 	notificationsv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/notifications/v1"
+	"github.com/sk1fy/team-os-backend/pkg/apierror"
 	"github.com/sk1fy/team-os-backend/services/gateway/internal/api"
 )
 
 func (h *Handler) notificationsClient(w http.ResponseWriter) notificationsv1.NotificationsServiceClient {
 	if h.notifications == nil {
-		http.Error(w, "Сервис уведомлений временно недоступен", http.StatusServiceUnavailable)
+		apierror.Write(w, apierror.New(http.StatusServiceUnavailable, "Сервис уведомлений временно недоступен"))
 		return nil
 	}
 	return h.notifications
@@ -87,7 +88,7 @@ func (h *Handler) StreamNotifications(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Connection", "keep-alive")
 	f, ok := w.(http.Flusher)
 	if !ok {
-		http.Error(w, "SSE недоступен", 500)
+		apierror.Write(w, apierror.New(http.StatusInternalServerError, "SSE недоступен"))
 		return
 	}
 	for {

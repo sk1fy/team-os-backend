@@ -3,6 +3,7 @@ package config
 import (
 	"errors"
 	"fmt"
+	"net/netip"
 	"os"
 	"strconv"
 	"strings"
@@ -23,6 +24,7 @@ type Config struct {
 	CORSOrigins           []string
 	CookieSecure          bool
 	ShutdownTimeout       time.Duration
+	TrustedProxyCIDRs     []netip.Prefix
 }
 
 func Load() (Config, error) {
@@ -52,6 +54,13 @@ func Load() (Config, error) {
 		if err != nil || config.ShutdownTimeout <= 0 {
 			return Config{}, fmt.Errorf("GATEWAY_SHUTDOWN_TIMEOUT: %w", errInvalidDuration)
 		}
+	}
+	for _, value := range splitList(os.Getenv("GATEWAY_TRUSTED_PROXY_CIDRS")) {
+		prefix, parseErr := netip.ParsePrefix(value)
+		if parseErr != nil {
+			return Config{}, fmt.Errorf("GATEWAY_TRUSTED_PROXY_CIDRS: некорректная сеть %q: %w", value, parseErr)
+		}
+		config.TrustedProxyCIDRs = append(config.TrustedProxyCIDRs, prefix.Masked())
 	}
 	missing := make([]string, 0, 4)
 	if config.CompanyGRPCAddr == "" {

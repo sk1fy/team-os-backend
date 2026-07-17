@@ -4,9 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"log/slog"
 	"net/mail"
 	"net/netip"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -22,7 +24,13 @@ import (
 const (
 	defaultRefreshTTL = 30 * 24 * time.Hour
 	defaultInviteTTL  = 7 * 24 * time.Hour
+	defaultAmoSyncTTL = 5 * time.Minute
 )
+
+type amoSyncState struct {
+	mu          sync.Mutex
+	lastAttempt time.Time
+}
 
 type Service struct {
 	pool          *pgxpool.Pool
@@ -33,6 +41,10 @@ type Service struct {
 	dummyHash     string
 	passwordSlots chan struct{}
 	externalUsers ExternalEmployeeProvider
+	logger        *slog.Logger
+	amoSyncTTL    time.Duration
+	amoSyncMu     sync.Mutex
+	amoSyncStates map[uuid.UUID]*amoSyncState
 }
 
 type ExternalEmployeeProvider interface {
@@ -44,6 +56,22 @@ type ServiceOption func(*Service)
 func WithExternalEmployeeProvider(provider ExternalEmployeeProvider) ServiceOption {
 	return func(service *Service) {
 		service.externalUsers = provider
+	}
+}
+
+func WithLogger(logger *slog.Logger) ServiceOption {
+	return func(service *Service) {
+		if logger != nil {
+			service.logger = logger
+		}
+	}
+}
+
+func WithAmoSyncInterval(interval time.Duration) ServiceOption {
+	return func(service *Service) {
+		if interval > 0 {
+			service.amoSyncTTL = interval
+		}
 	}
 }
 
@@ -60,6 +88,9 @@ func NewService(pool *pgxpool.Pool, issuer *sharedauth.TokenIssuer, options ...S
 		now:           time.Now,
 		dummyHash:     dummyHash,
 		passwordSlots: make(chan struct{}, 4),
+		logger:        slog.Default(),
+		amoSyncTTL:    defaultAmoSyncTTL,
+		amoSyncStates: make(map[uuid.UUID]*amoSyncState),
 	}
 	for _, option := range options {
 		option(service)

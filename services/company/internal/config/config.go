@@ -21,6 +21,7 @@ type Config struct {
 	ExternalAPIURL  string
 	AmoAppName      string
 	ExternalTimeout time.Duration
+	AmoSyncInterval time.Duration
 }
 
 func Load() (Config, error) {
@@ -37,6 +38,7 @@ func Load() (Config, error) {
 		ExternalAPIURL:  envOr("EXTERNAL_API_URL", "https://ssd.rkrs.ru/api/v1/rkrs_activity/getEmployee"),
 		AmoAppName:      envOr("APP_NAME", "rkrs_activity"),
 		ExternalTimeout: 10 * time.Second,
+		AmoSyncInterval: 5 * time.Minute,
 	}
 	var err error
 	if value := strings.TrimSpace(os.Getenv("COMPANY_ACCESS_TTL")); value != "" {
@@ -57,6 +59,12 @@ func Load() (Config, error) {
 			return Config{}, fmt.Errorf("EXTERNAL_API_TIMEOUT: %w", errInvalidDuration)
 		}
 		config.ExternalTimeout = seconds
+	}
+	if value := strings.TrimSpace(os.Getenv("COMPANY_AMO_SYNC_INTERVAL")); value != "" {
+		config.AmoSyncInterval, err = time.ParseDuration(value)
+		if err != nil || config.AmoSyncInterval <= 0 {
+			return Config{}, fmt.Errorf("COMPANY_AMO_SYNC_INTERVAL: %w", errInvalidDuration)
+		}
 	}
 	missing := make([]string, 0, 2)
 	if config.DatabaseURL == "" {

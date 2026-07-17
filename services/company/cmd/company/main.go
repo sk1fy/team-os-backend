@@ -104,7 +104,11 @@ func run(logger *slog.Logger) error {
 	if err != nil {
 		return fmt.Errorf("initialize amoCRM employees client: %w", err)
 	}
-	service, err := application.NewService(pool, issuer, application.WithExternalEmployeeProvider(externalUsersClient))
+	service, err := application.NewService(pool, issuer,
+		application.WithExternalEmployeeProvider(externalUsersClient),
+		application.WithAmoSyncInterval(configuration.AmoSyncInterval),
+		application.WithLogger(logger),
+	)
 	if err != nil {
 		return fmt.Errorf("initialize company application: %w", err)
 	}

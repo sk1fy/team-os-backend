@@ -3,6 +3,7 @@ package ratelimit
 import (
 	"net"
 	"net/http"
+	"net/netip"
 	"strconv"
 	"strings"
 	"sync"
@@ -20,22 +21,23 @@ type entry struct {
 // restart does not affect correctness; a shared Redis limiter can replace it
 // when gateway replicas require a global quota.
 type Limiter struct {
-	mu      sync.Mutex
-	entries map[string]entry
-	limit   int
-	window  time.Duration
-	now     func() time.Time
-	lastGC  time.Time
+	mu             sync.Mutex
+	entries        map[string]entry
+	limit          int
+	window         time.Duration
+	now            func() time.Time
+	lastGC         time.Time
+	trustedProxies []netip.Prefix
 }
 
-func New(limit int, window time.Duration) *Limiter {
+func New(limit int, window time.Duration, trustedProxies ...netip.Prefix) *Limiter {
 	if limit <= 0 {
 		limit = 30
 	}
 	if window <= 0 {
 		window = time.Minute
 	}
-	return &Limiter{entries: make(map[string]entry), limit: limit, window: window, now: time.Now}
+	return &Limiter{entries: make(map[string]entry), limit: limit, window: window, now: time.Now, trustedProxies: append([]netip.Prefix(nil), trustedProxies...)}
 }
 
 func (l *Limiter) Middleware(next http.Handler) http.Handler {
@@ -44,7 +46,7 @@ func (l *Limiter) Middleware(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 			return
 		}
-		allowed, retryAfter := l.allow(clientIP(r.RemoteAddr))
+		allowed, retryAfter := l.allow(l.clientIP(r))
 		if !allowed {
 			w.Header().Set("Retry-After", strconv.Itoa(max(1, int(retryAfter.Round(time.Second).Seconds()))))
 			apierror.Write(w, apierror.New(http.StatusTooManyRequests, "Слишком много запросов. Повторите позже."))
@@ -85,4 +87,44 @@ func clientIP(remoteAddress string) string {
 		return host
 	}
 	return remoteAddress
+}
+
+func (l *Limiter) clientIP(r *http.Request) string {
+	peer := clientIP(r.RemoteAddr)
+	peerAddress, err := netip.ParseAddr(peer)
+	if err != nil || !contains(l.trustedProxies, peerAddress.Unmap()) {
+		return peer
+	}
+	forwardedValue := strings.TrimSpace(r.Header.Get("X-Forwarded-For"))
+	if forwardedValue != "" {
+		forwarded := strings.Split(forwardedValue, ",")
+		addresses := make([]netip.Addr, len(forwarded))
+		for index, value := range forwarded {
+			address, parseErr := netip.ParseAddr(strings.TrimSpace(value))
+			if parseErr != nil {
+				return peer
+			}
+			addresses[index] = address.Unmap()
+		}
+		// Walk from the proxy nearest to us towards the client. This remains
+		// safe when a trusted proxy appends to an existing X-Forwarded-For value.
+		for index := len(addresses) - 1; index >= 0; index-- {
+			if !contains(l.trustedProxies, addresses[index]) {
+				return addresses[index].String()
+			}
+		}
+	}
+	if address, parseErr := netip.ParseAddr(strings.TrimSpace(r.Header.Get("X-Real-IP"))); parseErr == nil {
+		return address.Unmap().String()
+	}
+	return peer
+}
+
+func contains(prefixes []netip.Prefix, address netip.Addr) bool {
+	for _, prefix := range prefixes {
+		if prefix.Contains(address) {
+			return true
+		}
+	}
+	return false
 }

@@ -34,7 +34,7 @@ func (s *Server) actor(ctx context.Context) (uuid.UUID, uuid.UUID, error) {
 		return uuid.Nil, uuid.Nil, status.Error(codes.Unauthenticated, "Требуется авторизация")
 	}
 	p := strings.Fields(v[0])
-	if len(p) != 2 {
+	if len(p) != 2 || !strings.EqualFold(p[0], "Bearer") {
 		return uuid.Nil, uuid.Nil, status.Error(codes.Unauthenticated, "Некорректный заголовок авторизации")
 	}
 	c, e := s.verifier.Verify(p[1])

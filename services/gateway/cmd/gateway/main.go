@@ -250,7 +250,7 @@ func run(logger *slog.Logger) error {
 		},
 	}).ServeHTTP)
 	router.Group(func(apiRouter chi.Router) {
-		apiRouter.Use(ratelimit.New(30, time.Minute).Middleware, authmw.Middleware(verifier))
+		apiRouter.Use(ratelimit.New(30, time.Minute, configuration.TrustedProxyCIDRs...).Middleware, authmw.Middleware(verifier))
 		api.HandlerWithOptions(handler, api.ChiServerOptions{
 			BaseRouter: apiRouter,
 			ErrorHandlerFunc: func(w http.ResponseWriter, _ *http.Request, _ error) {

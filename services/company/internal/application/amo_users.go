@@ -18,6 +18,33 @@ func (s *Service) syncAmoUsers(ctx context.Context, actor Actor) error {
 	if s.externalUsers == nil {
 		return nil
 	}
+	s.amoSyncMu.Lock()
+	state := s.amoSyncStates[actor.CompanyID]
+	if state == nil {
+		state = &amoSyncState{}
+		s.amoSyncStates[actor.CompanyID] = state
+	}
+	s.amoSyncMu.Unlock()
+
+	state.mu.Lock()
+	defer state.mu.Unlock()
+	now := s.now().UTC()
+	if !state.lastAttempt.IsZero() && now.Sub(state.lastAttempt) < s.amoSyncTTL {
+		return nil
+	}
+	// Throttle both successful attempts and failures so an unavailable upstream
+	// cannot turn every org-tree read into a slow external request.
+	state.lastAttempt = now
+	if err := s.syncAmoUsersNow(ctx, actor); err != nil {
+		s.logger.WarnContext(ctx, "amoCRM user sync failed; serving local users", "company_id", actor.CompanyID, "error", err)
+	}
+	return nil
+}
+
+func (s *Service) syncAmoUsersNow(ctx context.Context, actor Actor) error {
+	if s.externalUsers == nil {
+		return nil
+	}
 	company, err := db.New(s.pool).GetCompany(ctx, actor.CompanyID)
 	if err != nil {
 		return internal("Не удалось получить настройки amoCRM", err)

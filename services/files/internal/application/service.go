@@ -11,7 +11,10 @@ import (
 	"github.com/sk1fy/team-os-backend/services/files/internal/domain"
 )
 
-var ErrNotFound = errors.New("Файл не найден")
+var (
+	ErrNotFound  = errors.New("Файл не найден")
+	ErrForbidden = errors.New("Недостаточно прав для удаления файла")
+)
 
 type Repository interface {
 	Create(context.Context, domain.File) (domain.File, error)
@@ -70,10 +73,13 @@ func (s *Service) Get(ctx context.Context, companyID, id uuid.UUID) (domain.File
 	return f, url, nil
 }
 
-func (s *Service) Delete(ctx context.Context, companyID, id uuid.UUID) error {
+func (s *Service) Delete(ctx context.Context, companyID, userID uuid.UUID, role string, id uuid.UUID) error {
 	f, err := s.repo.Get(ctx, companyID, id)
 	if err != nil {
 		return err
+	}
+	if f.UploadedBy != userID && role != "owner" && role != "admin" {
+		return ErrForbidden
 	}
 	if err = s.objects.Remove(ctx, f.ObjectKey); err != nil {
 		return fmt.Errorf("удалить объект: %w", err)

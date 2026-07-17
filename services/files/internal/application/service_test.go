@@ -60,3 +60,32 @@ func TestUploadAndCleanup(t *testing.T) {
 		t.Fatal("object must be removed after metadata failure")
 	}
 }
+
+func TestDeleteAuthorization(t *testing.T) {
+	uploaderID := uuid.New()
+	repo := &fakeRepo{file: domain.File{UploadedBy: uploaderID, ObjectKey: "object"}}
+
+	for _, test := range []struct {
+		name    string
+		userID  uuid.UUID
+		role    string
+		wantErr error
+	}{
+		{name: "uploader", userID: uploaderID},
+		{name: "owner", userID: uuid.New(), role: "owner"},
+		{name: "admin", userID: uuid.New(), role: "admin"},
+		{name: "other user", userID: uuid.New(), role: "employee", wantErr: ErrForbidden},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			objects := &fakeObjects{}
+			service := New(repo, objects, 100, nil, time.Minute)
+			err := service.Delete(context.Background(), uuid.New(), test.userID, test.role, uuid.New())
+			if !errors.Is(err, test.wantErr) {
+				t.Fatalf("Delete() error = %v, want %v", err, test.wantErr)
+			}
+			if objects.removed != (test.wantErr == nil) {
+				t.Fatalf("object removed = %v", objects.removed)
+			}
+		})
+	}
+}
