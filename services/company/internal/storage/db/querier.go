@@ -28,6 +28,8 @@ type Querier interface {
 	CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	DeactivateMissingAmoUsers(ctx context.Context, arg DeactivateMissingAmoUsersParams) ([]uuid.UUID, error)
+	DeleteAccessLink(ctx context.Context, arg DeleteAccessLinkParams) error
+	DeleteCredential(ctx context.Context, arg DeleteCredentialParams) error
 	DeleteDepartment(ctx context.Context, arg DeleteDepartmentParams) (int64, error)
 	DeleteDistributionGroup(ctx context.Context, arg DeleteDistributionGroupParams) (int64, error)
 	DeleteExpiredSessions(ctx context.Context, expiresAt time.Time) (int64, error)
@@ -35,6 +37,7 @@ type Querier interface {
 	DeletePosition(ctx context.Context, arg DeletePositionParams) (int64, error)
 	DeleteUserPositions(ctx context.Context, arg DeleteUserPositionsParams) error
 	FindUserForAmoSync(ctx context.Context, arg FindUserForAmoSyncParams) (User, error)
+	GetAccessLink(ctx context.Context, arg GetAccessLinkParams) (AccessLink, error)
 	GetCompany(ctx context.Context, id uuid.UUID) (Company, error)
 	GetDepartment(ctx context.Context, arg GetDepartmentParams) (Department, error)
 	GetDistributionGroup(ctx context.Context, arg GetDistributionGroupParams) (DistributionGroup, error)
@@ -46,8 +49,11 @@ type Querier interface {
 	GetPositionUserIDs(ctx context.Context, arg GetPositionUserIDsParams) ([]uuid.UUID, error)
 	GetSessionByHashForUpdate(ctx context.Context, refreshHash []byte) (Session, error)
 	GetUser(ctx context.Context, arg GetUserParams) (User, error)
+	GetUserAccessMode(ctx context.Context, arg GetUserAccessModeParams) (string, error)
+	GetUserByAccessToken(ctx context.Context, token string) (User, error)
 	GetUserByEmailForUpdate(ctx context.Context, email string) (User, error)
 	GetUserDepartmentClaims(ctx context.Context, arg GetUserDepartmentClaimsParams) ([]uuid.UUID, error)
+	GetUserForAccessUpdate(ctx context.Context, arg GetUserForAccessUpdateParams) (User, error)
 	GetUserForLogin(ctx context.Context, email string) (GetUserForLoginRow, error)
 	GetUserPositionIDs(ctx context.Context, arg GetUserPositionIDsParams) ([]uuid.UUID, error)
 	GetUserWithPositions(ctx context.Context, arg GetUserWithPositionsParams) (GetUserWithPositionsRow, error)
@@ -80,6 +86,7 @@ type Querier interface {
 	UpdateDistributionGroup(ctx context.Context, arg UpdateDistributionGroupParams) (DistributionGroup, error)
 	UpdatePosition(ctx context.Context, arg UpdatePositionParams) (Position, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
+	UpsertAccessLink(ctx context.Context, arg UpsertAccessLinkParams) (AccessLink, error)
 	UpsertSchedule(ctx context.Context, arg UpsertScheduleParams) (UserSchedule, error)
 	UpsertShiftException(ctx context.Context, arg UpsertShiftExceptionParams) (ShiftException, error)
 }

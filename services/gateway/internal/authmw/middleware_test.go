@@ -54,3 +54,12 @@ func TestMiddlewareRejectsMissingToken(t *testing.T) {
 		t.Fatalf("status = %d", response.Code)
 	}
 }
+
+func TestAccessLinkLoginIsPublic(t *testing.T) {
+	if !isPublic(http.MethodPost, "/api/v1/auth/access-link/opaque-token") {
+		t.Fatal("access-link login must be public")
+	}
+	if isPublic(http.MethodGet, "/api/v1/auth/access-link/opaque-token") {
+		t.Fatal("only POST access-link login may be public")
+	}
+}

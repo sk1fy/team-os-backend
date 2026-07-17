@@ -56,7 +56,7 @@ func TestConcurrentTaskOrderingAndRecurrence(t *testing.T) {
 
 	companyID := uuid.New()
 	userID := uuid.New()
-	actor := Actor{CompanyID: companyID, UserID: userID, Role: "employee"}
+	actor := Actor{CompanyID: companyID, UserID: userID, Role: "admin"}
 
 	t.Run("стандартная доска создаётся идемпотентно", func(t *testing.T) {
 		bootstrapCompanyID := uuid.New()

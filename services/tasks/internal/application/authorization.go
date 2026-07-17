@@ -6,9 +6,13 @@ func canManageBoardStructure(actor Actor) bool {
 	return actor.Role == "owner" || actor.Role == "admin"
 }
 
+func canUseTasks(actor Actor) bool {
+	return actor.Role == "owner" || actor.Role == "admin" || actor.Role == "partner"
+}
+
 func canCreateTask(actor Actor) bool {
 	switch actor.Role {
-	case "owner", "admin", "employee", "partner":
+	case "owner", "admin", "partner":
 		return true
 	default:
 		return false
@@ -17,7 +21,7 @@ func canCreateTask(actor Actor) bool {
 
 func canAccessTask(actor Actor, task Task) bool {
 	switch actor.Role {
-	case "owner", "admin", "employee":
+	case "owner", "admin":
 		return true
 	case "partner":
 		if task.AuthorID == actor.UserID || containsUUID(task.AssigneeIDs, actor.UserID) || containsUUID(task.WatcherIDs, actor.UserID) {

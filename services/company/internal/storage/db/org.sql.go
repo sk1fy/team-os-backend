@@ -513,7 +513,12 @@ func (q *Queries) GetPositionUserIDs(ctx context.Context, arg GetPositionUserIDs
 
 const getUserWithPositions = `-- name: GetUserWithPositions :one
 SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name,
-       COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids
+       COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids,
+       CASE
+           WHEN EXISTS (SELECT 1 FROM access_links access WHERE access.company_id = u.company_id AND access.user_id = u.id) THEN 'link'
+           WHEN EXISTS (SELECT 1 FROM credentials credential WHERE credential.company_id = u.company_id AND credential.user_id = u.id) THEN 'password'
+           ELSE 'none'
+       END::text AS access_mode
 FROM users u
 LEFT JOIN user_positions up ON up.user_id = u.id
 WHERE u.company_id = $1 AND u.id = $2
@@ -545,6 +550,7 @@ type GetUserWithPositionsRow struct {
 	ExternalGroupID   pgtype.Text `json:"external_group_id"`
 	ExternalGroupName pgtype.Text `json:"external_group_name"`
 	PositionIds       []uuid.UUID `json:"position_ids"`
+	AccessMode        string      `json:"access_mode"`
 }
 
 func (q *Queries) GetUserWithPositions(ctx context.Context, arg GetUserWithPositionsParams) (GetUserWithPositionsRow, error) {
@@ -570,6 +576,7 @@ func (q *Queries) GetUserWithPositions(ctx context.Context, arg GetUserWithPosit
 		&i.ExternalGroupID,
 		&i.ExternalGroupName,
 		&i.PositionIds,
+		&i.AccessMode,
 	)
 	return i, err
 }
@@ -684,7 +691,12 @@ func (q *Queries) ListPositions(ctx context.Context, companyID uuid.UUID) ([]Pos
 
 const listUsers = `-- name: ListUsers :many
 SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name,
-       COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids
+       COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids,
+       CASE
+           WHEN EXISTS (SELECT 1 FROM access_links access WHERE access.company_id = u.company_id AND access.user_id = u.id) THEN 'link'
+           WHEN EXISTS (SELECT 1 FROM credentials credential WHERE credential.company_id = u.company_id AND credential.user_id = u.id) THEN 'password'
+           ELSE 'none'
+       END::text AS access_mode
 FROM users u
 LEFT JOIN user_positions up ON up.user_id = u.id
 WHERE u.company_id = $1
@@ -712,6 +724,7 @@ type ListUsersRow struct {
 	ExternalGroupID   pgtype.Text `json:"external_group_id"`
 	ExternalGroupName pgtype.Text `json:"external_group_name"`
 	PositionIds       []uuid.UUID `json:"position_ids"`
+	AccessMode        string      `json:"access_mode"`
 }
 
 func (q *Queries) ListUsers(ctx context.Context, companyID uuid.UUID) ([]ListUsersRow, error) {
@@ -743,6 +756,7 @@ func (q *Queries) ListUsers(ctx context.Context, companyID uuid.UUID) ([]ListUse
 			&i.ExternalGroupID,
 			&i.ExternalGroupName,
 			&i.PositionIds,
+			&i.AccessMode,
 		); err != nil {
 			return nil, err
 		}

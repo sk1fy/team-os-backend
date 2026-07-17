@@ -81,7 +81,12 @@ ORDER BY up.user_id;
 
 -- name: ListUsers :many
 SELECT u.*,
-       COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids
+       COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids,
+       CASE
+           WHEN EXISTS (SELECT 1 FROM access_links access WHERE access.company_id = u.company_id AND access.user_id = u.id) THEN 'link'
+           WHEN EXISTS (SELECT 1 FROM credentials credential WHERE credential.company_id = u.company_id AND credential.user_id = u.id) THEN 'password'
+           ELSE 'none'
+       END::text AS access_mode
 FROM users u
 LEFT JOIN user_positions up ON up.user_id = u.id
 WHERE u.company_id = $1
@@ -90,7 +95,12 @@ ORDER BY u.created_at, u.id;
 
 -- name: GetUserWithPositions :one
 SELECT u.*,
-       COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids
+       COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids,
+       CASE
+           WHEN EXISTS (SELECT 1 FROM access_links access WHERE access.company_id = u.company_id AND access.user_id = u.id) THEN 'link'
+           WHEN EXISTS (SELECT 1 FROM credentials credential WHERE credential.company_id = u.company_id AND credential.user_id = u.id) THEN 'password'
+           ELSE 'none'
+       END::text AS access_mode
 FROM users u
 LEFT JOIN user_positions up ON up.user_id = u.id
 WHERE u.company_id = $1 AND u.id = $2

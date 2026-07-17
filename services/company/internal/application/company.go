@@ -26,6 +26,9 @@ func (s *Service) UpdateCurrentUser(
 	actor Actor,
 	input UpdateCurrentUserInput,
 ) (User, error) {
+	if actor.Role == "employee" {
+		return User{}, forbidden("Недостаточно прав для изменения профиля")
+	}
 	if input.FirstName != nil {
 		value := strings.TrimSpace(*input.FirstName)
 		if value == "" {

@@ -84,6 +84,29 @@ func TestUploadFileAcceptsPNG(t *testing.T) {
 	}
 }
 
+func TestEmployeeCannotUploadFile(t *testing.T) {
+	client, cleanup := newTestClient(t)
+	defer cleanup()
+	ctx := metadata.NewOutgoingContext(context.Background(), metadata.Pairs(
+		"x-user-id", uuid.NewString(),
+		"x-company-id", uuid.NewString(),
+		"x-user-role", "employee",
+	))
+	stream, err := client.UploadFile(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	png := []byte{0x89, 'P', 'N', 'G', '\r', '\n', 0x1a, '\n'}
+	_ = stream.Send(&filesv1.UploadFileRequest{Payload: &filesv1.UploadFileRequest_Info{Info: &filesv1.UploadFileInfo{
+		Name: "avatar.png", ContentType: "image/png", Size: uint64(len(png)), Purpose: filesv1.FilePurpose_FILE_PURPOSE_AVATAR,
+	}}})
+	_ = stream.Send(&filesv1.UploadFileRequest{Payload: &filesv1.UploadFileRequest_Chunk{Chunk: png}})
+	_, err = stream.CloseAndRecv()
+	if status.Code(err) != codes.PermissionDenied {
+		t.Fatalf("got %v, want PermissionDenied", err)
+	}
+}
+
 func newTestClient(t *testing.T) (filesv1.FilesServiceClient, func()) {
 	t.Helper()
 	listener := bufconn.Listen(1 << 20)

@@ -93,7 +93,7 @@ func (s *Server) UploadFile(stream filesv1.FilesService_UploadFileServer) error 
 	if _, err = tmp.Seek(0, io.SeekStart); err != nil {
 		return status.Error(codes.Internal, "Не удалось обработать загружаемый файл")
 	}
-	f, err := s.service.Upload(stream.Context(), actor.companyID, actor.userID, upload, tmp)
+	f, err := s.service.Upload(stream.Context(), actor.companyID, actor.userID, actor.role, upload, tmp)
 	if err != nil {
 		return domainError(err)
 	}
@@ -132,8 +132,8 @@ func domainError(err error) error {
 	switch {
 	case errors.Is(err, application.ErrNotFound):
 		return status.Error(codes.NotFound, application.ErrNotFound.Error())
-	case errors.Is(err, application.ErrForbidden):
-		return status.Error(codes.PermissionDenied, application.ErrForbidden.Error())
+	case errors.Is(err, application.ErrForbidden), errors.Is(err, application.ErrUploadForbidden):
+		return status.Error(codes.PermissionDenied, err.Error())
 	case errors.Is(err, domain.ErrFileTooLarge):
 		return status.Error(codes.ResourceExhausted, err.Error())
 	case errors.Is(err, domain.ErrInvalidName), errors.Is(err, domain.ErrInvalidSize), errors.Is(err, domain.ErrContentTypeDenied), errors.Is(err, domain.ErrContentTypeMismatch), errors.Is(err, domain.ErrInvalidPurpose):

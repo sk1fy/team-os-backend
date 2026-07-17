@@ -42,7 +42,32 @@ func userToProto(value application.User) *companyv1.User {
 		VacationAllowance: vacationAllowance,
 		CreatedAt:         timestamppb.New(value.CreatedAt.UTC()),
 		Source:            userSourceToProto(value.Source),
+		AccessMode:        userAccessModeToProto(value.AccessMode),
 	}
+}
+
+func userAccessModeToProto(value string) companyv1.UserAccessMode {
+	switch value {
+	case "none":
+		return companyv1.UserAccessMode_USER_ACCESS_MODE_NONE
+	case "password":
+		return companyv1.UserAccessMode_USER_ACCESS_MODE_PASSWORD
+	case "link":
+		return companyv1.UserAccessMode_USER_ACCESS_MODE_LINK
+	default:
+		return companyv1.UserAccessMode_USER_ACCESS_MODE_UNSPECIFIED
+	}
+}
+
+func employeeAccessToProto(value application.EmployeeAccess) *companyv1.UserAccess {
+	result := &companyv1.UserAccess{
+		Mode:      userAccessModeToProto(value.Mode),
+		LinkToken: cloneString(value.LinkToken),
+	}
+	if value.LinkCreatedAt != nil {
+		result.LinkCreatedAt = timestamppb.New(value.LinkCreatedAt.UTC())
+	}
+	return result
 }
 
 func userSourceToProto(value string) companyv1.UserSource {

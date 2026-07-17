@@ -15,7 +15,12 @@ import (
 
 const getUsersByIDs = `-- name: GetUsersByIDs :many
 SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name,
-       COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids
+       COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids,
+       CASE
+           WHEN EXISTS (SELECT 1 FROM access_links access WHERE access.company_id = u.company_id AND access.user_id = u.id) THEN 'link'
+           WHEN EXISTS (SELECT 1 FROM credentials credential WHERE credential.company_id = u.company_id AND credential.user_id = u.id) THEN 'password'
+           ELSE 'none'
+       END::text AS access_mode
 FROM users AS u
 LEFT JOIN user_positions AS up
   ON up.company_id = u.company_id
@@ -51,6 +56,7 @@ type GetUsersByIDsRow struct {
 	ExternalGroupID   pgtype.Text `json:"external_group_id"`
 	ExternalGroupName pgtype.Text `json:"external_group_name"`
 	PositionIds       []uuid.UUID `json:"position_ids"`
+	AccessMode        string      `json:"access_mode"`
 }
 
 func (q *Queries) GetUsersByIDs(ctx context.Context, arg GetUsersByIDsParams) ([]GetUsersByIDsRow, error) {
@@ -82,6 +88,7 @@ func (q *Queries) GetUsersByIDs(ctx context.Context, arg GetUsersByIDsParams) ([
 			&i.ExternalGroupID,
 			&i.ExternalGroupName,
 			&i.PositionIds,
+			&i.AccessMode,
 		); err != nil {
 			return nil, err
 		}

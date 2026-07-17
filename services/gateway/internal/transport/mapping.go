@@ -41,6 +41,9 @@ func userFromProto(value *companyv1.User) (api.User, error) {
 		LastName: value.GetLastName(), AvatarUrl: value.AvatarUrl, Phone: value.Phone,
 		Role: role, Status: status, PositionIds: positionIDs, CreatedAt: createdAt,
 	}
+	if accessMode := accessModeFromProto(value.GetAccessMode()); accessMode != nil {
+		result.AccessMode = accessMode
+	}
 	if source := sourceFromProto(value.GetSource()); source != nil {
 		result.Source = source
 	}
@@ -63,6 +66,40 @@ func userFromProto(value *companyv1.User) (api.User, error) {
 	if value.VacationAllowance != nil {
 		converted := int(value.GetVacationAllowance())
 		result.VacationAllowance = &converted
+	}
+	return result, nil
+}
+
+func accessModeFromProto(value companyv1.UserAccessMode) *api.UserAccessMode {
+	var mode api.UserAccessMode
+	switch value {
+	case companyv1.UserAccessMode_USER_ACCESS_MODE_NONE:
+		mode = api.UserAccessModeNone
+	case companyv1.UserAccessMode_USER_ACCESS_MODE_PASSWORD:
+		mode = api.UserAccessModePassword
+	case companyv1.UserAccessMode_USER_ACCESS_MODE_LINK:
+		mode = api.UserAccessModeLink
+	default:
+		return nil
+	}
+	return &mode
+}
+
+func employeeAccessFromProto(value *companyv1.UserAccess) (api.EmployeeAccess, error) {
+	if value == nil {
+		return api.EmployeeAccess{}, errors.New("company returned empty employee access")
+	}
+	mode := accessModeFromProto(value.GetMode())
+	if mode == nil {
+		return api.EmployeeAccess{}, errors.New("company returned invalid employee access mode")
+	}
+	result := api.EmployeeAccess{Mode: *mode, LinkToken: value.LinkToken}
+	if value.GetLinkCreatedAt() != nil {
+		if !value.GetLinkCreatedAt().IsValid() {
+			return api.EmployeeAccess{}, errors.New("company returned invalid access link creation time")
+		}
+		createdAt := value.GetLinkCreatedAt().AsTime()
+		result.LinkCreatedAt = &createdAt
 	}
 	return result, nil
 }

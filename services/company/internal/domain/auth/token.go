@@ -7,7 +7,18 @@ import (
 	"fmt"
 )
 
-const refreshTokenBytes = 32
+const (
+	refreshTokenBytes    = 32
+	accessLinkTokenBytes = 32
+)
+
+func NewAccessLinkToken() (string, error) {
+	random := make([]byte, accessLinkTokenBytes)
+	if _, err := rand.Read(random); err != nil {
+		return "", fmt.Errorf("сгенерировать токен ссылки доступа: %w", err)
+	}
+	return base64.RawURLEncoding.EncodeToString(random), nil
+}
 
 func NewRefreshToken() (string, []byte, error) {
 	random := make([]byte, refreshTokenBytes)

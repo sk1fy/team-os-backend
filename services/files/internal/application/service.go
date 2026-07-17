@@ -12,8 +12,9 @@ import (
 )
 
 var (
-	ErrNotFound  = errors.New("Файл не найден")
-	ErrForbidden = errors.New("Недостаточно прав для удаления файла")
+	ErrNotFound        = errors.New("Файл не найден")
+	ErrForbidden       = errors.New("Недостаточно прав для удаления файла")
+	ErrUploadForbidden = errors.New("Недостаточно прав для загрузки файла")
 )
 
 type Repository interface {
@@ -44,7 +45,10 @@ func (s *Service) Validate(v domain.Upload) error {
 	return domain.ValidateUpload(v, s.maxSize, s.allowed)
 }
 
-func (s *Service) Upload(ctx context.Context, companyID, userID uuid.UUID, v domain.Upload, body io.Reader) (domain.File, error) {
+func (s *Service) Upload(ctx context.Context, companyID, userID uuid.UUID, role string, v domain.Upload, body io.Reader) (domain.File, error) {
+	if role == "employee" {
+		return domain.File{}, ErrUploadForbidden
+	}
 	if err := s.Validate(v); err != nil {
 		return domain.File{}, err
 	}

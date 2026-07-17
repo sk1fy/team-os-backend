@@ -15,6 +15,9 @@ import (
 )
 
 func (s *Service) GetTasks(ctx context.Context, actor Actor, boardID *uuid.UUID) ([]Task, error) {
+	if !canUseTasks(actor) {
+		return nil, forbidden("Недостаточно прав для просмотра задач")
+	}
 	params := db.ListTasksParams{CompanyID: actor.CompanyID}
 	if boardID != nil {
 		params.BoardID = uuid.NullUUID{UUID: *boardID, Valid: true}
@@ -37,6 +40,9 @@ func (s *Service) GetTasks(ctx context.Context, actor Actor, boardID *uuid.UUID)
 }
 
 func (s *Service) GetTask(ctx context.Context, actor Actor, id uuid.UUID) (Task, error) {
+	if !canUseTasks(actor) {
+		return Task{}, forbidden("Недостаточно прав для просмотра задачи")
+	}
 	row, err := db.New(s.pool).GetTask(ctx, db.GetTaskParams{CompanyID: actor.CompanyID, ID: id})
 	if err != nil {
 		if isNoRows(err) {
@@ -166,6 +172,9 @@ type UpdateTaskInput struct {
 }
 
 func (s *Service) UpdateTask(ctx context.Context, actor Actor, input UpdateTaskInput) (Task, error) {
+	if !canUseTasks(actor) {
+		return Task{}, forbidden("Недостаточно прав для изменения задачи")
+	}
 	if input.Title == nil && len(input.Description) == 0 && !input.AssigneeIDsSet &&
 		input.AssigneePositionID == nil && !input.ClearAssigneePositionID && !input.WatcherIDsSet &&
 		input.DueDate == nil && !input.ClearDueDate && input.Priority == nil && !input.LabelIDsSet &&
@@ -330,6 +339,9 @@ type MoveTaskInput struct {
 }
 
 func (s *Service) MoveTask(ctx context.Context, actor Actor, input MoveTaskInput) (Task, error) {
+	if !canUseTasks(actor) {
+		return Task{}, forbidden("Недостаточно прав для перемещения задачи")
+	}
 	if input.Order < 0 {
 		return Task{}, validation("Некорректный порядок задачи")
 	}

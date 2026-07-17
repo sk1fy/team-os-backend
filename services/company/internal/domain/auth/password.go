@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"math/big"
 	"strconv"
 	"strings"
 
@@ -13,11 +14,13 @@ import (
 )
 
 const (
-	argonMemory      = 64 * 1024
-	argonIterations  = 3
-	argonParallelism = 2
-	argonSaltLength  = 16
-	argonKeyLength   = 32
+	argonMemory               = 64 * 1024
+	argonIterations           = 3
+	argonParallelism          = 2
+	argonSaltLength           = 16
+	argonKeyLength            = 32
+	generatedPasswordLength   = 14
+	generatedPasswordAlphabet = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789"
 )
 
 var (
@@ -25,6 +28,19 @@ var (
 	ErrPasswordTooShort    = errors.New("Пароль должен содержать не менее 8 символов")
 	ErrPasswordTooLong     = errors.New("Пароль должен содержать не более 256 символов")
 )
+
+func GeneratePassword() (string, error) {
+	alphabetLength := big.NewInt(int64(len(generatedPasswordAlphabet)))
+	password := make([]byte, generatedPasswordLength)
+	for index := range password {
+		alphabetIndex, err := rand.Int(rand.Reader, alphabetLength)
+		if err != nil {
+			return "", fmt.Errorf("сгенерировать пароль: %w", err)
+		}
+		password[index] = generatedPasswordAlphabet[alphabetIndex.Int64()]
+	}
+	return string(password), nil
+}
 
 func HashPassword(password string) (string, error) {
 	passwordLength := len([]rune(password))

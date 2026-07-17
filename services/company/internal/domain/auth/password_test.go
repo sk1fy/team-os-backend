@@ -6,6 +6,34 @@ import (
 	"testing"
 )
 
+func TestGeneratePassword(t *testing.T) {
+	const (
+		samples         = 100
+		expectedLength  = 14
+		allowedAlphabet = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789"
+	)
+
+	passwords := make(map[string]struct{}, samples)
+	for range samples {
+		password, err := GeneratePassword()
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(password) != expectedLength {
+			t.Fatalf("GeneratePassword() length = %d, want %d", len(password), expectedLength)
+		}
+		for _, character := range password {
+			if !strings.ContainsRune(allowedAlphabet, character) {
+				t.Fatalf("GeneratePassword() contains character %q outside the allowed alphabet", character)
+			}
+		}
+		if _, exists := passwords[password]; exists {
+			t.Fatalf("GeneratePassword() returned duplicate password %q", password)
+		}
+		passwords[password] = struct{}{}
+	}
+}
+
 func TestHashAndVerifyPassword(t *testing.T) {
 	encoded, err := HashPassword("Надёжный-пароль-2026")
 	if err != nil {

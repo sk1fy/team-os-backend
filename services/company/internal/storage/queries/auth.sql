@@ -32,6 +32,9 @@ RETURNING *;
 -- name: GetUser :one
 SELECT * FROM users WHERE company_id = $1 AND id = $2;
 
+-- name: GetUserForAccessUpdate :one
+SELECT * FROM users WHERE company_id = $1 AND id = $2 FOR UPDATE;
+
 -- name: GetUserForLogin :one
 SELECT sqlc.embed(u), c.password_hash
 FROM users u
@@ -49,6 +52,42 @@ INSERT INTO credentials (company_id, user_id, password_hash)
 VALUES ($1, $2, $3)
 ON CONFLICT (user_id) DO UPDATE
 SET password_hash = EXCLUDED.password_hash, updated_at = now();
+
+-- name: DeleteCredential :exec
+DELETE FROM credentials WHERE company_id = $1 AND user_id = $2;
+
+-- name: UpsertAccessLink :one
+INSERT INTO access_links (company_id, user_id, token)
+VALUES ($1, $2, $3)
+ON CONFLICT (user_id) DO UPDATE
+SET token = EXCLUDED.token, created_at = now(), updated_at = now()
+RETURNING *;
+
+-- name: GetAccessLink :one
+SELECT * FROM access_links WHERE company_id = $1 AND user_id = $2;
+
+-- name: DeleteAccessLink :exec
+DELETE FROM access_links WHERE company_id = $1 AND user_id = $2;
+
+-- name: GetUserByAccessToken :one
+SELECT u.*
+FROM users u
+JOIN access_links access ON access.user_id = u.id AND access.company_id = u.company_id
+WHERE access.token = $1 AND u.status = 'active'
+FOR SHARE OF u, access;
+
+-- name: GetUserAccessMode :one
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1 FROM access_links access
+        WHERE access.company_id = sqlc.arg('company_id') AND access.user_id = sqlc.arg('user_id')
+    ) THEN 'link'
+    WHEN EXISTS (
+        SELECT 1 FROM credentials credential
+        WHERE credential.company_id = sqlc.arg('company_id') AND credential.user_id = sqlc.arg('user_id')
+    ) THEN 'password'
+    ELSE 'none'
+END::text AS access_mode;
 
 -- name: GetUserPositionIDs :many
 SELECT position_id

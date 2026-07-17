@@ -270,6 +270,34 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	return i, err
 }
 
+const deleteAccessLink = `-- name: DeleteAccessLink :exec
+DELETE FROM access_links WHERE company_id = $1 AND user_id = $2
+`
+
+type DeleteAccessLinkParams struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	UserID    uuid.UUID `json:"user_id"`
+}
+
+func (q *Queries) DeleteAccessLink(ctx context.Context, arg DeleteAccessLinkParams) error {
+	_, err := q.db.Exec(ctx, deleteAccessLink, arg.CompanyID, arg.UserID)
+	return err
+}
+
+const deleteCredential = `-- name: DeleteCredential :exec
+DELETE FROM credentials WHERE company_id = $1 AND user_id = $2
+`
+
+type DeleteCredentialParams struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	UserID    uuid.UUID `json:"user_id"`
+}
+
+func (q *Queries) DeleteCredential(ctx context.Context, arg DeleteCredentialParams) error {
+	_, err := q.db.Exec(ctx, deleteCredential, arg.CompanyID, arg.UserID)
+	return err
+}
+
 const deleteExpiredSessions = `-- name: DeleteExpiredSessions :execrows
 DELETE FROM sessions WHERE expires_at < $1
 `
@@ -280,6 +308,28 @@ func (q *Queries) DeleteExpiredSessions(ctx context.Context, expiresAt time.Time
 		return 0, err
 	}
 	return result.RowsAffected(), nil
+}
+
+const getAccessLink = `-- name: GetAccessLink :one
+SELECT company_id, user_id, token, created_at, updated_at FROM access_links WHERE company_id = $1 AND user_id = $2
+`
+
+type GetAccessLinkParams struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	UserID    uuid.UUID `json:"user_id"`
+}
+
+func (q *Queries) GetAccessLink(ctx context.Context, arg GetAccessLinkParams) (AccessLink, error) {
+	row := q.db.QueryRow(ctx, getAccessLink, arg.CompanyID, arg.UserID)
+	var i AccessLink
+	err := row.Scan(
+		&i.CompanyID,
+		&i.UserID,
+		&i.Token,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const getCompany = `-- name: GetCompany :one
@@ -410,6 +460,66 @@ func (q *Queries) GetUser(ctx context.Context, arg GetUserParams) (User, error) 
 	return i, err
 }
 
+const getUserAccessMode = `-- name: GetUserAccessMode :one
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1 FROM access_links access
+        WHERE access.company_id = $1 AND access.user_id = $2
+    ) THEN 'link'
+    WHEN EXISTS (
+        SELECT 1 FROM credentials credential
+        WHERE credential.company_id = $1 AND credential.user_id = $2
+    ) THEN 'password'
+    ELSE 'none'
+END::text AS access_mode
+`
+
+type GetUserAccessModeParams struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	UserID    uuid.UUID `json:"user_id"`
+}
+
+func (q *Queries) GetUserAccessMode(ctx context.Context, arg GetUserAccessModeParams) (string, error) {
+	row := q.db.QueryRow(ctx, getUserAccessMode, arg.CompanyID, arg.UserID)
+	var access_mode string
+	err := row.Scan(&access_mode)
+	return access_mode, err
+}
+
+const getUserByAccessToken = `-- name: GetUserByAccessToken :one
+SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name
+FROM users u
+JOIN access_links access ON access.user_id = u.id AND access.company_id = u.company_id
+WHERE access.token = $1 AND u.status = 'active'
+FOR SHARE OF u, access
+`
+
+func (q *Queries) GetUserByAccessToken(ctx context.Context, token string) (User, error) {
+	row := q.db.QueryRow(ctx, getUserByAccessToken, token)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.Email,
+		&i.FirstName,
+		&i.LastName,
+		&i.Phone,
+		&i.AvatarUrl,
+		&i.Role,
+		&i.Status,
+		&i.BirthDate,
+		&i.HiredAt,
+		&i.VacationAllowance,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Source,
+		&i.ExternalID,
+		&i.ExternalGroupID,
+		&i.ExternalGroupName,
+	)
+	return i, err
+}
+
 const getUserByEmailForUpdate = `-- name: GetUserByEmailForUpdate :one
 SELECT id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name FROM users
 WHERE email = $1
@@ -483,6 +593,41 @@ func (q *Queries) GetUserDepartmentClaims(ctx context.Context, arg GetUserDepart
 		return nil, err
 	}
 	return items, nil
+}
+
+const getUserForAccessUpdate = `-- name: GetUserForAccessUpdate :one
+SELECT id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name FROM users WHERE company_id = $1 AND id = $2 FOR UPDATE
+`
+
+type GetUserForAccessUpdateParams struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	ID        uuid.UUID `json:"id"`
+}
+
+func (q *Queries) GetUserForAccessUpdate(ctx context.Context, arg GetUserForAccessUpdateParams) (User, error) {
+	row := q.db.QueryRow(ctx, getUserForAccessUpdate, arg.CompanyID, arg.ID)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.Email,
+		&i.FirstName,
+		&i.LastName,
+		&i.Phone,
+		&i.AvatarUrl,
+		&i.Role,
+		&i.Status,
+		&i.BirthDate,
+		&i.HiredAt,
+		&i.VacationAllowance,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Source,
+		&i.ExternalID,
+		&i.ExternalGroupID,
+		&i.ExternalGroupName,
+	)
+	return i, err
 }
 
 const getUserForLogin = `-- name: GetUserForLogin :one
@@ -750,6 +895,33 @@ func (q *Queries) UpdateCurrentUser(ctx context.Context, arg UpdateCurrentUserPa
 		&i.ExternalID,
 		&i.ExternalGroupID,
 		&i.ExternalGroupName,
+	)
+	return i, err
+}
+
+const upsertAccessLink = `-- name: UpsertAccessLink :one
+INSERT INTO access_links (company_id, user_id, token)
+VALUES ($1, $2, $3)
+ON CONFLICT (user_id) DO UPDATE
+SET token = EXCLUDED.token, created_at = now(), updated_at = now()
+RETURNING company_id, user_id, token, created_at, updated_at
+`
+
+type UpsertAccessLinkParams struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	UserID    uuid.UUID `json:"user_id"`
+	Token     string    `json:"token"`
+}
+
+func (q *Queries) UpsertAccessLink(ctx context.Context, arg UpsertAccessLinkParams) (AccessLink, error) {
+	row := q.db.QueryRow(ctx, upsertAccessLink, arg.CompanyID, arg.UserID, arg.Token)
+	var i AccessLink
+	err := row.Scan(
+		&i.CompanyID,
+		&i.UserID,
+		&i.Token,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }

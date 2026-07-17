@@ -1,6 +1,8 @@
 package application
 
 import (
+	"context"
+	"errors"
 	"testing"
 
 	"github.com/google/uuid"
@@ -21,7 +23,7 @@ func TestPartnerTaskAccess(t *testing.T) {
 		{name: "watcher", actor: Actor{UserID: partnerID, Role: "partner"}, task: Task{AuthorID: base.AuthorID, WatcherIDs: []uuid.UUID{partnerID}}, want: true},
 		{name: "position", actor: Actor{UserID: partnerID, Role: "partner", PositionIDs: []uuid.UUID{positionID}}, task: Task{AuthorID: base.AuthorID, AssigneePositionID: &positionID}, want: true},
 		{name: "unrelated", actor: Actor{UserID: partnerID, Role: "partner"}, task: base, want: false},
-		{name: "employee", actor: Actor{UserID: uuid.New(), Role: "employee"}, task: base, want: true},
+		{name: "employee", actor: Actor{UserID: uuid.New(), Role: "employee"}, task: base, want: false},
 		{name: "unknown role", actor: Actor{UserID: uuid.New(), Role: ""}, task: base, want: false},
 	}
 	for _, test := range tests {
@@ -30,6 +32,19 @@ func TestPartnerTaskAccess(t *testing.T) {
 				t.Fatalf("canAccessTask() = %v, want %v", got, test.want)
 			}
 		})
+	}
+}
+
+func TestCreateTaskAuthorization(t *testing.T) {
+	for _, role := range []string{"owner", "admin", "partner"} {
+		if !canCreateTask(Actor{Role: role}) {
+			t.Fatalf("роль %q должна создавать задачи", role)
+		}
+	}
+	for _, role := range []string{"employee", ""} {
+		if canCreateTask(Actor{Role: role}) {
+			t.Fatalf("роль %q не должна создавать задачи", role)
+		}
 	}
 }
 
@@ -43,5 +58,33 @@ func TestBoardStructureAuthorization(t *testing.T) {
 		if canManageBoardStructure(Actor{Role: role}) {
 			t.Fatalf("роль %q не должна управлять структурой доски", role)
 		}
+	}
+}
+
+func TestEmployeeCannotReadBoards(t *testing.T) {
+	service := &Service{}
+	actor := Actor{Role: "employee"}
+
+	_, boardsErr := service.GetBoards(context.Background(), actor)
+	assertTaskForbidden(t, boardsErr)
+
+	_, columnsErr := service.GetColumns(context.Background(), actor, uuid.New())
+	assertTaskForbidden(t, columnsErr)
+
+	_, tasksErr := service.GetTasks(context.Background(), actor, nil)
+	assertTaskForbidden(t, tasksErr)
+
+	_, taskErr := service.GetTask(context.Background(), actor, uuid.New())
+	assertTaskForbidden(t, taskErr)
+
+	_, labelsErr := service.GetLabels(context.Background(), actor)
+	assertTaskForbidden(t, labelsErr)
+}
+
+func assertTaskForbidden(t *testing.T, err error) {
+	t.Helper()
+	var applicationErr *Error
+	if !errors.As(err, &applicationErr) || applicationErr.Kind != ErrorForbidden {
+		t.Fatalf("error = %v, want forbidden", err)
 	}
 }

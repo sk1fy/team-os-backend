@@ -50,14 +50,30 @@ func TestUploadAndCleanup(t *testing.T) {
 	objects := &fakeObjects{}
 	repo := &fakeRepo{}
 	s := New(repo, objects, 100, map[string]struct{}{"image/png": {}}, time.Minute)
-	_, err := s.Upload(context.Background(), uuid.New(), uuid.New(), domain.Upload{Name: "x.png", ContentType: "image/png", Size: 3, Purpose: domain.PurposeAttachment}, bytes.NewBufferString("png"))
+	_, err := s.Upload(context.Background(), uuid.New(), uuid.New(), "owner", domain.Upload{Name: "x.png", ContentType: "image/png", Size: 3, Purpose: domain.PurposeAttachment}, bytes.NewBufferString("png"))
 	if err != nil || string(objects.put) != "png" {
 		t.Fatalf("upload: %v %q", err, objects.put)
 	}
 	repo.createErr = errors.New("db")
-	_, err = s.Upload(context.Background(), uuid.New(), uuid.New(), domain.Upload{Name: "x.png", ContentType: "image/png", Size: 3, Purpose: domain.PurposeAttachment}, bytes.NewBufferString("png"))
+	_, err = s.Upload(context.Background(), uuid.New(), uuid.New(), "owner", domain.Upload{Name: "x.png", ContentType: "image/png", Size: 3, Purpose: domain.PurposeAttachment}, bytes.NewBufferString("png"))
 	if err == nil || !objects.removed {
 		t.Fatal("object must be removed after metadata failure")
+	}
+}
+
+func TestEmployeeCannotUpload(t *testing.T) {
+	objects := &fakeObjects{}
+	repo := &fakeRepo{}
+	service := New(repo, objects, 100, map[string]struct{}{"image/png": {}}, time.Minute)
+
+	_, err := service.Upload(context.Background(), uuid.New(), uuid.New(), "employee", domain.Upload{
+		Name: "x.png", ContentType: "image/png", Size: 3, Purpose: domain.PurposeAttachment,
+	}, bytes.NewBufferString("png"))
+	if !errors.Is(err, ErrUploadForbidden) {
+		t.Fatalf("Upload() error = %v, want %v", err, ErrUploadForbidden)
+	}
+	if len(objects.put) != 0 || repo.file.ID != uuid.Nil {
+		t.Fatal("запрещённая загрузка не должна обращаться к хранилищам")
 	}
 }
 

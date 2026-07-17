@@ -37,6 +37,8 @@ func (s *Service) GetUsersByIDs(ctx context.Context, actor Actor, userIDs []uuid
 			HiredAt:           datePointer(row.HiredAt),
 			VacationAllowance: int16Pointer(row.VacationAllowance),
 			CreatedAt:         row.CreatedAt,
+			Source:            row.Source,
+			AccessMode:        row.AccessMode,
 		}
 	}
 	return result, nil

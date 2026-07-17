@@ -1,6 +1,11 @@
 -- name: GetUsersByIDs :many
 SELECT u.*,
-       COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids
+       COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids,
+       CASE
+           WHEN EXISTS (SELECT 1 FROM access_links access WHERE access.company_id = u.company_id AND access.user_id = u.id) THEN 'link'
+           WHEN EXISTS (SELECT 1 FROM credentials credential WHERE credential.company_id = u.company_id AND credential.user_id = u.id) THEN 'password'
+           ELSE 'none'
+       END::text AS access_mode
 FROM users AS u
 LEFT JOIN user_positions AS up
   ON up.company_id = u.company_id

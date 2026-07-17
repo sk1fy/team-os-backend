@@ -11,6 +11,9 @@ import (
 )
 
 func (s *Service) GetComments(ctx context.Context, actor Actor, taskID uuid.UUID) ([]Comment, error) {
+	if !canUseTasks(actor) {
+		return nil, forbidden("Недостаточно прав для просмотра комментариев")
+	}
 	row, err := db.New(s.pool).GetTask(ctx, db.GetTaskParams{
 		CompanyID: actor.CompanyID, ID: taskID,
 	})
@@ -44,6 +47,9 @@ type AddCommentInput struct {
 }
 
 func (s *Service) AddComment(ctx context.Context, actor Actor, input AddCommentInput) (Comment, error) {
+	if !canUseTasks(actor) {
+		return Comment{}, forbidden("Недостаточно прав для добавления комментария")
+	}
 	if richtext.Validate(input.Content) != nil {
 		return Comment{}, validation("Некорректное содержимое комментария")
 	}

@@ -12,6 +12,14 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type AccessLink struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	UserID    uuid.UUID `json:"user_id"`
+	Token     string    `json:"token"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
 type Company struct {
 	ID           uuid.UUID     `json:"id"`
 	Name         string        `json:"name"`

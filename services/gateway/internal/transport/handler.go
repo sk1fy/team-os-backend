@@ -83,6 +83,15 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	h.writeSession(w, r, http.StatusOK, response.GetSession())
 }
 
+func (h *Handler) LoginWithAccessLink(w http.ResponseWriter, r *http.Request, token api.AccessLinkToken) {
+	response, err := h.company.LoginWithAccessLink(outgoingContext(r), &companyv1.LoginWithAccessLinkRequest{Token: token})
+	if err != nil {
+		h.writeRPCError(w, r, err)
+		return
+	}
+	h.writeSession(w, r, http.StatusOK, response.GetSession())
+}
+
 func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 	var input api.RegisterInput
 	if !decode(w, r, &input) {
@@ -477,6 +486,59 @@ func (h *Handler) GetUser(w http.ResponseWriter, r *http.Request, id api.Id) {
 		return
 	}
 	writeJSON(w, http.StatusOK, converted)
+}
+
+func (h *Handler) GetUserAccess(w http.ResponseWriter, r *http.Request, id api.Id) {
+	response, err := h.company.GetUserAccess(outgoingContext(r), &companyv1.GetUserAccessRequest{Id: id.String()})
+	if err != nil {
+		h.writeRPCError(w, r, err)
+		return
+	}
+	converted, err := employeeAccessFromProto(response.GetAccess())
+	if err != nil {
+		h.writeConversionError(w, r, err)
+		return
+	}
+	writeJSON(w, http.StatusOK, converted)
+}
+
+func (h *Handler) SetUserPasswordAccess(w http.ResponseWriter, r *http.Request, id api.Id) {
+	var input api.SetUserPasswordAccessInput
+	if r.ContentLength != 0 && !decode(w, r, &input) {
+		return
+	}
+	response, err := h.company.SetUserPasswordAccess(outgoingContext(r), &companyv1.SetUserPasswordAccessRequest{
+		Id: id.String(), Password: input.Password,
+	})
+	if err != nil {
+		h.writeRPCError(w, r, err)
+		return
+	}
+	writeJSON(w, http.StatusOK, api.EmployeePasswordAccess{Password: response.GetPassword()})
+}
+
+func (h *Handler) SetUserLinkAccess(w http.ResponseWriter, r *http.Request, id api.Id) {
+	response, err := h.company.SetUserLinkAccess(outgoingContext(r), &companyv1.SetUserLinkAccessRequest{Id: id.String()})
+	if err != nil {
+		h.writeRPCError(w, r, err)
+		return
+	}
+	if response.GetCreatedAt() == nil || !response.GetCreatedAt().IsValid() {
+		h.writeConversionError(w, r, errors.New("company returned invalid access link creation time"))
+		return
+	}
+	writeJSON(w, http.StatusOK, api.EmployeeLinkAccess{
+		Token: response.GetToken(), CreatedAt: response.GetCreatedAt().AsTime(),
+	})
+}
+
+func (h *Handler) RevokeUserAccess(w http.ResponseWriter, r *http.Request, id api.Id) {
+	_, err := h.company.RevokeUserAccess(outgoingContext(r), &companyv1.RevokeUserAccessRequest{Id: id.String()})
+	if err != nil {
+		h.writeRPCError(w, r, err)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {

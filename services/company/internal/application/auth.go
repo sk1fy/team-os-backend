@@ -427,9 +427,18 @@ func (s *Service) createSessionWithID(
 	if err != nil {
 		return AuthResult{}, internal("Не удалось сохранить сессию", err)
 	}
+	accessMode, err := queries.GetUserAccessMode(ctx, db.GetUserAccessModeParams{
+		CompanyID: user.CompanyID,
+		UserID:    user.ID,
+	})
+	if err != nil {
+		return AuthResult{}, internal("Не удалось получить способ доступа", err)
+	}
+	resultUser := userFromDB(user, positionIDs)
+	resultUser.AccessMode = accessMode
 	return AuthResult{
 		AccessToken: accessToken, AccessExpiresAt: accessExpiresAt,
 		RefreshToken: refreshToken, RefreshExpiresAt: refreshExpiresAt,
-		User: userFromDB(user, positionIDs),
+		User: resultUser,
 	}, nil
 }

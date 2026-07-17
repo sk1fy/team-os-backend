@@ -90,6 +90,22 @@ paths:
         default:
           $ref: '#/components/responses/Error'
 
+  /api/v1/auth/access-link/{token}:
+    parameters:
+      - $ref: '#/components/parameters/AccessLinkToken'
+    post:
+      tags: [Auth]
+      operationId: loginWithAccessLink
+      summary: Войти по ссылке доступа
+      security: []
+      responses:
+        '200':
+          $ref: '#/components/responses/AuthSession'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        default:
+          $ref: '#/components/responses/Error'
+
   /api/v1/auth/refresh:
     post:
       tags: [Auth]
@@ -525,6 +541,96 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/UserCard'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/org/users/{id}/access:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    get:
+      tags: [Organization]
+      operationId: getUserAccess
+      summary: Получить способ доступа сотрудника
+      responses:
+        '200':
+          description: Текущий способ доступа сотрудника
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeAccess'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags: [Organization]
+      operationId: revokeUserAccess
+      summary: Полностью отозвать доступ сотрудника
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/org/users/{id}/access/password:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    put:
+      tags: [Organization]
+      operationId: setUserPasswordAccess
+      summary: Выдать сотруднику доступ по паролю
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetUserPasswordAccessInput'
+      responses:
+        '200':
+          description: Пароль, показываемый только в этом ответе
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeePasswordAccess'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/org/users/{id}/access/link:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    put:
+      tags: [Organization]
+      operationId: setUserLinkAccess
+      summary: Выдать сотруднику доступ по постоянной ссылке
+      responses:
+        '200':
+          description: Новый токен ссылки доступа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeLinkAccess'
         '400':
           $ref: '#/components/responses/BadRequest'
         '403':
@@ -1658,6 +1764,13 @@ components:
       schema:
         type: string
         minLength: 1
+    AccessLinkToken:
+      name: token
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 1
 
   responses:
     NoContent:
@@ -2124,6 +2237,10 @@ components:
     InviteStatus:
       type: string
       enum: [pending, accepted, expired]
+    UserAccessMode:
+      type: string
+      enum: [none, password, link]
+      x-enum-varnames: [UserAccessModeNone, UserAccessModePassword, UserAccessModeLink]
 
     Company:
       type: object
@@ -2211,6 +2328,8 @@ components:
           $ref: '#/components/schemas/UserStatus'
         source:
           $ref: '#/components/schemas/UserSource'
+        accessMode:
+          $ref: '#/components/schemas/UserAccessMode'
         positionIds:
           type: array
           maxItems: 1
@@ -2225,6 +2344,39 @@ components:
           type: integer
           minimum: 0
           maximum: 366
+        createdAt:
+          $ref: '#/components/schemas/ISODateTime'
+
+    EmployeeAccess:
+      type: object
+      additionalProperties: false
+      required: [mode]
+      properties:
+        mode:
+          $ref: '#/components/schemas/UserAccessMode'
+        linkToken:
+          type: string
+          minLength: 1
+        linkCreatedAt:
+          $ref: '#/components/schemas/ISODateTime'
+
+    EmployeePasswordAccess:
+      type: object
+      additionalProperties: false
+      required: [password]
+      properties:
+        password:
+          type: string
+          minLength: 8
+
+    EmployeeLinkAccess:
+      type: object
+      additionalProperties: false
+      required: [token, createdAt]
+      properties:
+        token:
+          type: string
+          minLength: 1
         createdAt:
           $ref: '#/components/schemas/ISODateTime'
 
@@ -2324,6 +2476,15 @@ components:
       properties:
         email:
           $ref: '#/components/schemas/Email'
+        password:
+          type: string
+          format: password
+          minLength: 8
+
+    SetUserPasswordAccessInput:
+      type: object
+      additionalProperties: false
+      properties:
         password:
           type: string
           format: password

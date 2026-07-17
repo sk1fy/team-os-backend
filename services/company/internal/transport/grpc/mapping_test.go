@@ -48,6 +48,9 @@ func TestStatusAndInviteEnumMapping(t *testing.T) {
 	if got := userSourceToProto("amo"); got != companyv1.UserSource_USER_SOURCE_AMO {
 		t.Fatalf("source = %v", got)
 	}
+	if got := userAccessModeToProto("link"); got != companyv1.UserAccessMode_USER_ACCESS_MODE_LINK {
+		t.Fatalf("access mode = %v", got)
+	}
 	if _, err := userStatusFromProto(companyv1.UserStatus_USER_STATUS_UNSPECIFIED); status.Code(err) != codes.InvalidArgument {
 		t.Fatalf("unspecified status error = %v", err)
 	}

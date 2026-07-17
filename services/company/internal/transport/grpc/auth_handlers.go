@@ -37,6 +37,17 @@ func (s *Server) Login(ctx context.Context, request *companyv1.LoginRequest) (*c
 	return &companyv1.LoginResponse{Session: authSessionToProto(result)}, nil
 }
 
+func (s *Server) LoginWithAccessLink(ctx context.Context, request *companyv1.LoginWithAccessLinkRequest) (*companyv1.LoginWithAccessLinkResponse, error) {
+	if request == nil {
+		return nil, invalidRequest()
+	}
+	result, err := s.application.LoginWithAccessLink(ctx, request.Token, sessionMeta(ctx))
+	if err != nil {
+		return nil, transportError(err)
+	}
+	return &companyv1.LoginWithAccessLinkResponse{Session: authSessionToProto(result)}, nil
+}
+
 func (s *Server) Refresh(ctx context.Context, request *companyv1.RefreshRequest) (*companyv1.RefreshResponse, error) {
 	if request == nil {
 		return nil, invalidRequest()

@@ -10,7 +10,7 @@ import (
 )
 
 func (s *Service) GetBoards(ctx context.Context, actor Actor) ([]Board, error) {
-	if actor.Role != "owner" && actor.Role != "admin" && actor.Role != "employee" && actor.Role != "partner" {
+	if actor.Role != "owner" && actor.Role != "admin" && actor.Role != "partner" {
 		return nil, forbidden("Недостаточно прав для просмотра досок")
 	}
 	if actor.Role != "partner" {
@@ -99,7 +99,7 @@ func (s *Service) GetColumns(ctx context.Context, actor Actor, boardID uuid.UUID
 		if len(tasks) == 0 {
 			return nil, forbidden("Недостаточно прав для просмотра доски")
 		}
-	} else if actor.Role != "owner" && actor.Role != "admin" && actor.Role != "employee" {
+	} else if actor.Role != "owner" && actor.Role != "admin" {
 		return nil, forbidden("Недостаточно прав для просмотра доски")
 	}
 	if _, err := db.New(s.pool).GetBoard(ctx, db.GetBoardParams{

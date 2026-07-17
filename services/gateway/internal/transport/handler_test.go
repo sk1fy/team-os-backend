@@ -37,6 +37,7 @@ type stubCompanyServer struct {
 	companyv1.UnimplementedCompanyServiceServer
 
 	loginFn            func(context.Context, *companyv1.LoginRequest) (*companyv1.LoginResponse, error)
+	loginWithLinkFn    func(context.Context, *companyv1.LoginWithAccessLinkRequest) (*companyv1.LoginWithAccessLinkResponse, error)
 	registerFn         func(context.Context, *companyv1.RegisterRequest) (*companyv1.RegisterResponse, error)
 	refreshFn          func(context.Context, *companyv1.RefreshRequest) (*companyv1.RefreshResponse, error)
 	getDepartmentsFn   func(context.Context, *companyv1.GetDepartmentsRequest) (*companyv1.GetDepartmentsResponse, error)
@@ -45,6 +46,10 @@ type stubCompanyServer struct {
 	updateUserCardFn   func(context.Context, *companyv1.UpdateUserCardRequest) (*companyv1.UpdateUserCardResponse, error)
 	getUserFn          func(context.Context, *companyv1.GetUserRequest) (*companyv1.GetUserResponse, error)
 	getEventsFn        func(context.Context, *companyv1.GetDistributionEventsRequest) (*companyv1.GetDistributionEventsResponse, error)
+	getUserAccessFn    func(context.Context, *companyv1.GetUserAccessRequest) (*companyv1.GetUserAccessResponse, error)
+	setPasswordFn      func(context.Context, *companyv1.SetUserPasswordAccessRequest) (*companyv1.SetUserPasswordAccessResponse, error)
+	setLinkFn          func(context.Context, *companyv1.SetUserLinkAccessRequest) (*companyv1.SetUserLinkAccessResponse, error)
+	revokeAccessFn     func(context.Context, *companyv1.RevokeUserAccessRequest) (*companyv1.RevokeUserAccessResponse, error)
 }
 
 type stubAcademyServer struct {
@@ -64,6 +69,41 @@ func (s *stubCompanyServer) GetUser(ctx context.Context, request *companyv1.GetU
 		return nil, status.Error(codes.Unimplemented, "unexpected GetUser call")
 	}
 	return s.getUserFn(ctx, request)
+}
+
+func (s *stubCompanyServer) LoginWithAccessLink(ctx context.Context, request *companyv1.LoginWithAccessLinkRequest) (*companyv1.LoginWithAccessLinkResponse, error) {
+	if s.loginWithLinkFn == nil {
+		return nil, status.Error(codes.Unimplemented, "unexpected LoginWithAccessLink call")
+	}
+	return s.loginWithLinkFn(ctx, request)
+}
+
+func (s *stubCompanyServer) GetUserAccess(ctx context.Context, request *companyv1.GetUserAccessRequest) (*companyv1.GetUserAccessResponse, error) {
+	if s.getUserAccessFn == nil {
+		return nil, status.Error(codes.Unimplemented, "unexpected GetUserAccess call")
+	}
+	return s.getUserAccessFn(ctx, request)
+}
+
+func (s *stubCompanyServer) SetUserPasswordAccess(ctx context.Context, request *companyv1.SetUserPasswordAccessRequest) (*companyv1.SetUserPasswordAccessResponse, error) {
+	if s.setPasswordFn == nil {
+		return nil, status.Error(codes.Unimplemented, "unexpected SetUserPasswordAccess call")
+	}
+	return s.setPasswordFn(ctx, request)
+}
+
+func (s *stubCompanyServer) SetUserLinkAccess(ctx context.Context, request *companyv1.SetUserLinkAccessRequest) (*companyv1.SetUserLinkAccessResponse, error) {
+	if s.setLinkFn == nil {
+		return nil, status.Error(codes.Unimplemented, "unexpected SetUserLinkAccess call")
+	}
+	return s.setLinkFn(ctx, request)
+}
+
+func (s *stubCompanyServer) RevokeUserAccess(ctx context.Context, request *companyv1.RevokeUserAccessRequest) (*companyv1.RevokeUserAccessResponse, error) {
+	if s.revokeAccessFn == nil {
+		return nil, status.Error(codes.Unimplemented, "unexpected RevokeUserAccess call")
+	}
+	return s.revokeAccessFn(ctx, request)
 }
 
 func (s *stubCompanyServer) GetDistributionEvents(ctx context.Context, request *companyv1.GetDistributionEventsRequest) (*companyv1.GetDistributionEventsResponse, error) {
@@ -261,6 +301,128 @@ func TestGatewayLoginBridgesJSONToGRPCAndSetsRefreshCookie(t *testing.T) {
 	if cookie.Path != "/api/v1/auth" {
 		t.Fatalf("refresh cookie path = %q, want %q", cookie.Path, "/api/v1/auth")
 	}
+}
+
+func TestGatewayLoginWithAccessLinkSetsRefreshCookie(t *testing.T) {
+	requests := make(chan *companyv1.LoginWithAccessLinkRequest, 1)
+	server := &stubCompanyServer{loginWithLinkFn: func(_ context.Context, request *companyv1.LoginWithAccessLinkRequest) (*companyv1.LoginWithAccessLinkResponse, error) {
+		requests <- request
+		return &companyv1.LoginWithAccessLinkResponse{Session: testAuthSession("access-link", "refresh-link")}, nil
+	}}
+
+	recorder := serveGatewayRequest(t, server, http.MethodPost, "/api/v1/auth/access-link/link-token", "", nil)
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("status = %d; body = %s", recorder.Code, recorder.Body.String())
+	}
+	if request := <-requests; request.GetToken() != "link-token" {
+		t.Fatalf("token = %q", request.GetToken())
+	}
+	if got := responseCookie(t, recorder, refreshCookieName).Value; got != "refresh-link" {
+		t.Fatalf("refresh cookie = %q", got)
+	}
+	if got := decodeStringField(t, decodeObject(t, recorder), "accessToken"); got != "access-link" {
+		t.Fatalf("access token = %q", got)
+	}
+}
+
+func TestGatewayLoginWithRevokedAccessLinkReturnsUnauthorized(t *testing.T) {
+	server := &stubCompanyServer{loginWithLinkFn: func(context.Context, *companyv1.LoginWithAccessLinkRequest) (*companyv1.LoginWithAccessLinkResponse, error) {
+		return nil, status.Error(codes.Unauthenticated, "Ссылка доступа недействительна")
+	}}
+	assertErrorEnvelope(
+		t,
+		serveGatewayRequest(t, server, http.MethodPost, "/api/v1/auth/access-link/revoked-token", "", nil),
+		http.StatusUnauthorized,
+		"Ссылка доступа недействительна",
+	)
+}
+
+func TestGatewayEmployeeAccessManagementBridgesToCompany(t *testing.T) {
+	createdAt := time.Date(2026, time.July, 17, 9, 30, 0, 0, time.UTC)
+
+	t.Run("get link access", func(t *testing.T) {
+		server := &stubCompanyServer{getUserAccessFn: func(_ context.Context, request *companyv1.GetUserAccessRequest) (*companyv1.GetUserAccessResponse, error) {
+			if request.GetId() != testUserID {
+				t.Fatalf("id = %q", request.GetId())
+			}
+			token := "reusable-token"
+			return &companyv1.GetUserAccessResponse{Access: &companyv1.UserAccess{
+				Mode: companyv1.UserAccessMode_USER_ACCESS_MODE_LINK, LinkToken: &token,
+				LinkCreatedAt: timestamppb.New(createdAt),
+			}}, nil
+		}}
+		recorder := serveGatewayRequest(t, server, http.MethodGet, "/api/v1/org/users/"+testUserID+"/access", "", nil)
+		if recorder.Code != http.StatusOK {
+			t.Fatalf("status = %d; body = %s", recorder.Code, recorder.Body.String())
+		}
+		body := decodeObject(t, recorder)
+		if decodeStringField(t, body, "mode") != "link" || decodeStringField(t, body, "linkToken") != "reusable-token" {
+			t.Fatalf("body = %s", recorder.Body.String())
+		}
+	})
+
+	t.Run("set explicit password", func(t *testing.T) {
+		requests := make(chan *companyv1.SetUserPasswordAccessRequest, 1)
+		server := &stubCompanyServer{setPasswordFn: func(_ context.Context, request *companyv1.SetUserPasswordAccessRequest) (*companyv1.SetUserPasswordAccessResponse, error) {
+			requests <- request
+			return &companyv1.SetUserPasswordAccessResponse{Password: request.GetPassword()}, nil
+		}}
+		recorder := serveGatewayRequest(t, server, http.MethodPut, "/api/v1/org/users/"+testUserID+"/access/password", `{"password":"chosen-password"}`, nil)
+		if recorder.Code != http.StatusOK {
+			t.Fatalf("status = %d; body = %s", recorder.Code, recorder.Body.String())
+		}
+		request := <-requests
+		if request.Password == nil || request.GetPassword() != "chosen-password" {
+			t.Fatalf("request = %#v", request)
+		}
+		if decodeStringField(t, decodeObject(t, recorder), "password") != "chosen-password" {
+			t.Fatalf("body = %s", recorder.Body.String())
+		}
+	})
+
+	t.Run("generate password without body", func(t *testing.T) {
+		requests := make(chan *companyv1.SetUserPasswordAccessRequest, 1)
+		server := &stubCompanyServer{setPasswordFn: func(_ context.Context, request *companyv1.SetUserPasswordAccessRequest) (*companyv1.SetUserPasswordAccessResponse, error) {
+			requests <- request
+			return &companyv1.SetUserPasswordAccessResponse{Password: "generated-password"}, nil
+		}}
+		recorder := serveGatewayRequest(t, server, http.MethodPut, "/api/v1/org/users/"+testUserID+"/access/password", "", nil)
+		if recorder.Code != http.StatusOK {
+			t.Fatalf("status = %d; body = %s", recorder.Code, recorder.Body.String())
+		}
+		if request := <-requests; request.Password != nil {
+			t.Fatalf("password presence = %#v", request.Password)
+		}
+	})
+
+	t.Run("set link", func(t *testing.T) {
+		server := &stubCompanyServer{setLinkFn: func(_ context.Context, request *companyv1.SetUserLinkAccessRequest) (*companyv1.SetUserLinkAccessResponse, error) {
+			if request.GetId() != testUserID {
+				t.Fatalf("id = %q", request.GetId())
+			}
+			return &companyv1.SetUserLinkAccessResponse{Token: "new-token", CreatedAt: timestamppb.New(createdAt)}, nil
+		}}
+		recorder := serveGatewayRequest(t, server, http.MethodPut, "/api/v1/org/users/"+testUserID+"/access/link", "", nil)
+		if recorder.Code != http.StatusOK {
+			t.Fatalf("status = %d; body = %s", recorder.Code, recorder.Body.String())
+		}
+		if decodeStringField(t, decodeObject(t, recorder), "token") != "new-token" {
+			t.Fatalf("body = %s", recorder.Body.String())
+		}
+	})
+
+	t.Run("revoke", func(t *testing.T) {
+		server := &stubCompanyServer{revokeAccessFn: func(_ context.Context, request *companyv1.RevokeUserAccessRequest) (*companyv1.RevokeUserAccessResponse, error) {
+			if request.GetId() != testUserID {
+				t.Fatalf("id = %q", request.GetId())
+			}
+			return &companyv1.RevokeUserAccessResponse{}, nil
+		}}
+		recorder := serveGatewayRequest(t, server, http.MethodDelete, "/api/v1/org/users/"+testUserID+"/access", "", nil)
+		if recorder.Code != http.StatusNoContent {
+			t.Fatalf("status = %d; body = %s", recorder.Code, recorder.Body.String())
+		}
+	})
 }
 
 func TestGatewayRegisterReturnsCreated(t *testing.T) {

@@ -37,6 +37,22 @@ type User struct {
 	VacationAllowance *int16
 	CreatedAt         time.Time
 	Source            string
+	AccessMode        string
+}
+
+type EmployeeAccess struct {
+	Mode          string
+	LinkToken     *string
+	LinkCreatedAt *time.Time
+}
+
+type EmployeeLinkAccess struct {
+	Token     string
+	CreatedAt time.Time
+}
+
+type SetPasswordAccessInput struct {
+	Password *string
 }
 
 type ExternalEmployee struct {

@@ -12,6 +12,9 @@ import (
 )
 
 func (s *Service) ListDistributionGroups(ctx context.Context, actor Actor) ([]DistributionGroup, error) {
+	if err := requireAdministrator(actor); err != nil {
+		return nil, err
+	}
 	rows, err := db.New(s.pool).ListDistributionGroups(ctx, actor.CompanyID)
 	if err != nil {
 		return nil, internal("Не удалось получить группы распределения", err)
@@ -133,6 +136,9 @@ func (s *Service) DeleteDistributionGroup(ctx context.Context, actor Actor, id u
 }
 
 func (s *Service) ListDistributionEvents(ctx context.Context, actor Actor, groupID uuid.UUID) ([]DistributionEvent, error) {
+	if err := requireAdministrator(actor); err != nil {
+		return nil, err
+	}
 	queries := db.New(s.pool)
 	if _, err := queries.GetDistributionGroup(ctx, db.GetDistributionGroupParams{CompanyID: actor.CompanyID, ID: groupID}); err != nil {
 		if isNoRows(err) {

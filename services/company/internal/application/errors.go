@@ -39,6 +39,10 @@ func unauthenticated() error {
 	return &Error{Kind: ErrorUnauthenticated, Message: "Неверный email или пароль"}
 }
 
+func invalidAccessLink() error {
+	return &Error{Kind: ErrorUnauthenticated, Message: "Ссылка доступа недействительна"}
+}
+
 func invalidSession() error {
 	return &Error{Kind: ErrorUnauthenticated, Message: "Сессия недействительна или истекла"}
 }

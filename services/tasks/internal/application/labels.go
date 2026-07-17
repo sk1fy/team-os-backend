@@ -7,6 +7,9 @@ import (
 )
 
 func (s *Service) GetLabels(ctx context.Context, actor Actor) ([]Label, error) {
+	if !canUseTasks(actor) {
+		return nil, forbidden("Недостаточно прав для просмотра меток")
+	}
 	rows, err := db.New(s.pool).ListLabels(ctx, actor.CompanyID)
 	if err != nil {
 		return nil, internal("Не удалось получить метки", err)

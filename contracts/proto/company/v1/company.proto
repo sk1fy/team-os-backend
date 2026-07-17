@@ -12,6 +12,7 @@ option go_package = "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v
 service CompanyService {
   rpc Register(RegisterRequest) returns (RegisterResponse);
   rpc Login(LoginRequest) returns (LoginResponse);
+  rpc LoginWithAccessLink(LoginWithAccessLinkRequest) returns (LoginWithAccessLinkResponse);
   rpc Refresh(RefreshRequest) returns (RefreshResponse);
   rpc Logout(LogoutRequest) returns (LogoutResponse);
   rpc GetInviteByToken(GetInviteByTokenRequest) returns (GetInviteByTokenResponse);
@@ -40,6 +41,10 @@ service CompanyService {
   rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
   rpc UpdateUserCard(UpdateUserCardRequest) returns (UpdateUserCardResponse);
   rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
+  rpc GetUserAccess(GetUserAccessRequest) returns (GetUserAccessResponse);
+  rpc SetUserPasswordAccess(SetUserPasswordAccessRequest) returns (SetUserPasswordAccessResponse);
+  rpc SetUserLinkAccess(SetUserLinkAccessRequest) returns (SetUserLinkAccessResponse);
+  rpc RevokeUserAccess(RevokeUserAccessRequest) returns (RevokeUserAccessResponse);
 
   rpc GetInvites(GetInvitesRequest) returns (GetInvitesResponse);
   rpc InviteUser(InviteUserRequest) returns (InviteUserResponse);
@@ -85,6 +90,13 @@ enum UserSource {
   USER_SOURCE_AMO = 2;
 }
 
+enum UserAccessMode {
+  USER_ACCESS_MODE_UNSPECIFIED = 0;
+  USER_ACCESS_MODE_NONE = 1;
+  USER_ACCESS_MODE_PASSWORD = 2;
+  USER_ACCESS_MODE_LINK = 3;
+}
+
 enum InviteStatus {
   INVITE_STATUS_UNSPECIFIED = 0;
   INVITE_STATUS_PENDING = 1;
@@ -117,6 +129,7 @@ message User {
   optional uint32 vacation_allowance = 12;
   google.protobuf.Timestamp created_at = 13;
   UserSource source = 14;
+  UserAccessMode access_mode = 15;
 }
 
 message Department {
@@ -178,6 +191,14 @@ message LoginRequest {
 }
 
 message LoginResponse {
+  AuthSession session = 1;
+}
+
+message LoginWithAccessLinkRequest {
+  string token = 1;
+}
+
+message LoginWithAccessLinkResponse {
   AuthSession session = 1;
 }
 
@@ -403,6 +424,44 @@ message DeleteUserRequest {
 }
 
 message DeleteUserResponse {}
+
+message UserAccess {
+  UserAccessMode mode = 1;
+  optional string link_token = 2;
+  optional google.protobuf.Timestamp link_created_at = 3;
+}
+
+message GetUserAccessRequest {
+  string id = 1;
+}
+
+message GetUserAccessResponse {
+  UserAccess access = 1;
+}
+
+message SetUserPasswordAccessRequest {
+  string id = 1;
+  optional string password = 2;
+}
+
+message SetUserPasswordAccessResponse {
+  string password = 1;
+}
+
+message SetUserLinkAccessRequest {
+  string id = 1;
+}
+
+message SetUserLinkAccessResponse {
+  string token = 1;
+  google.protobuf.Timestamp created_at = 2;
+}
+
+message RevokeUserAccessRequest {
+  string id = 1;
+}
+
+message RevokeUserAccessResponse {}
 
 message GetInvitesRequest {}
 

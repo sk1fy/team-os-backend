@@ -886,11 +886,11 @@ func positionFromDB(row db.Position) Position {
 }
 
 func userFromJoinedRow(row db.GetUserWithPositionsRow) User {
-	return User{ID: row.ID, CompanyID: row.CompanyID, Email: row.Email, FirstName: row.FirstName, LastName: row.LastName, AvatarURL: textPointer(row.AvatarUrl), Phone: textPointer(row.Phone), Role: row.Role, Status: row.Status, PositionIDs: append([]uuid.UUID(nil), row.PositionIds...), BirthDate: datePointer(row.BirthDate), HiredAt: datePointer(row.HiredAt), VacationAllowance: int16Pointer(row.VacationAllowance), CreatedAt: row.CreatedAt, Source: row.Source}
+	return User{ID: row.ID, CompanyID: row.CompanyID, Email: row.Email, FirstName: row.FirstName, LastName: row.LastName, AvatarURL: textPointer(row.AvatarUrl), Phone: textPointer(row.Phone), Role: row.Role, Status: row.Status, PositionIDs: append([]uuid.UUID(nil), row.PositionIds...), BirthDate: datePointer(row.BirthDate), HiredAt: datePointer(row.HiredAt), VacationAllowance: int16Pointer(row.VacationAllowance), CreatedAt: row.CreatedAt, Source: row.Source, AccessMode: row.AccessMode}
 }
 
 func userFromListRow(row db.ListUsersRow) User {
-	return User{ID: row.ID, CompanyID: row.CompanyID, Email: row.Email, FirstName: row.FirstName, LastName: row.LastName, AvatarURL: textPointer(row.AvatarUrl), Phone: textPointer(row.Phone), Role: row.Role, Status: row.Status, PositionIDs: append([]uuid.UUID(nil), row.PositionIds...), BirthDate: datePointer(row.BirthDate), HiredAt: datePointer(row.HiredAt), VacationAllowance: int16Pointer(row.VacationAllowance), CreatedAt: row.CreatedAt, Source: row.Source}
+	return User{ID: row.ID, CompanyID: row.CompanyID, Email: row.Email, FirstName: row.FirstName, LastName: row.LastName, AvatarURL: textPointer(row.AvatarUrl), Phone: textPointer(row.Phone), Role: row.Role, Status: row.Status, PositionIDs: append([]uuid.UUID(nil), row.PositionIds...), BirthDate: datePointer(row.BirthDate), HiredAt: datePointer(row.HiredAt), VacationAllowance: int16Pointer(row.VacationAllowance), CreatedAt: row.CreatedAt, Source: row.Source, AccessMode: row.AccessMode}
 }
 
 func trimmedOptional(value *string) *string {
