@@ -33,6 +33,7 @@ func TestConcurrentTaskOrderingAndRecurrence(t *testing.T) {
 			filepath.Join(migrationsDir, "000001_init.up.sql"),
 			filepath.Join(migrationsDir, "000002_phase3_concurrency.up.sql"),
 		),
+		postgres.BasicWaitStrategies(),
 	)
 	if err != nil {
 		t.Fatalf("запуск PostgreSQL: %v", err)

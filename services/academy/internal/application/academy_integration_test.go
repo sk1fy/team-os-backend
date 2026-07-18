@@ -185,6 +185,7 @@ func academyTestPool(t *testing.T, ctx context.Context) *pgxpool.Pool {
 			filepath.Join(migrationsDir, "000002_assignment_events_and_outbox.up.sql"),
 			filepath.Join(migrationsDir, "000003_course_visibility_assignment_idempotency.up.sql"),
 		),
+		postgres.BasicWaitStrategies(),
 	)
 	if err != nil {
 		t.Fatalf("запуск PostgreSQL: %v", err)

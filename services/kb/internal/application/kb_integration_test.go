@@ -37,6 +37,7 @@ func TestSectionAccessAndArticleLifecycle(t *testing.T) {
 			filepath.Join(migrationsDir, "000003_outbox_aggregate_order.up.sql"),
 			filepath.Join(migrationsDir, "000004_section_visibility.up.sql"),
 		),
+		postgres.BasicWaitStrategies(),
 	)
 	if err != nil {
 		t.Fatalf("запуск PostgreSQL: %v", err)

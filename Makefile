@@ -42,14 +42,7 @@ check-production-compose: ## Verify production ports and security overrides, inc
 	@command -v jq >/dev/null || { echo "jq is required" >&2; exit 1; }
 	@FILES_S3_SECURE=true FILES_S3_PUBLIC_SECURE=false GATEWAY_COOKIE_SECURE=false \
 		$(COMPOSE_BIN) --file deploy/docker-compose.yaml --file deploy/docker-compose.prod.yaml config --format json | \
-		jq -e '(.services.files.environment.FILES_S3_SECURE == "false") and \
-			(.services.files.environment.FILES_S3_PUBLIC_SECURE == "true") and \
-			(.services.gateway.environment.GATEWAY_COOKIE_SECURE == "true") and \
-			([.services.postgres.ports, .services.nats.ports, .services.company.ports, \
-			  .services.kb.ports, .services.tasks.ports, .services.academy.ports, \
-			  .services.notifications.ports, .services.files.ports] | all(length == 0)) and \
-			(.services.gateway.ports[0].host_ip == "127.0.0.1") and \
-			(.services.minio.ports[0].host_ip == "127.0.0.1")' >/dev/null
+		jq -e --from-file deploy/production-compose-check.jq >/dev/null
 
 migrate: ensure-env ## Apply all currently registered service migrations.
 	$(COMPOSE) run --rm company-migrate
