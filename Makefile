@@ -3,12 +3,14 @@ SHELL := /usr/bin/env bash
 GO ?= go
 COMPOSE_BIN ?= $(shell if docker compose version >/dev/null 2>&1; then printf 'docker compose'; else printf 'docker-compose'; fi)
 COMPOSE ?= $(COMPOSE_BIN) --file deploy/docker-compose.yaml
+ENV_FILE ?= $(CURDIR)/.env
+COMPOSE_WITH_ENV ?= $(COMPOSE_BIN) --env-file $(ENV_FILE) --file deploy/docker-compose.yaml
 FRONTEND_DIR ?= /Users/nikpeskov/Projects/team-os
 SEED_DIR ?= $(CURDIR)/.seed
 SERVICE ?=
 
-ifneq ($(wildcard .env),)
-include .env
+ifneq ($(wildcard $(ENV_FILE)),)
+include $(ENV_FILE)
 export
 endif
 
@@ -24,10 +26,10 @@ help: ## Show available commands.
 	@awk 'BEGIN {FS = ":.*## "} /^[a-zA-Z0-9_-]+:.*## / {printf "  %-18s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 up: ensure-env ## Build and start the development stack.
-	$(COMPOSE) up --build -d
+	$(COMPOSE_WITH_ENV) up --build -d
 
 ensure-env:
-	@if [[ ! -f .env ]]; then $(MAKE) --no-print-directory dev-keys; fi
+	@if [[ ! -f "$(ENV_FILE)" ]]; then $(MAKE) --no-print-directory dev-keys; fi
 
 down: ## Stop the development stack.
 	$(COMPOSE) down --remove-orphans
@@ -35,8 +37,8 @@ down: ## Stop the development stack.
 logs: ## Follow logs from the development stack.
 	$(COMPOSE) logs -f
 
-compose-config: ## Validate and render the Compose configuration.
-	$(COMPOSE) config --quiet
+compose-config: ensure-env ## Validate and render the Compose configuration.
+	$(COMPOSE_WITH_ENV) config --quiet
 
 check-production-compose: ## Verify production ports and security overrides, including legacy .env values.
 	@command -v jq >/dev/null || { echo "jq is required" >&2; exit 1; }
@@ -45,12 +47,12 @@ check-production-compose: ## Verify production ports and security overrides, inc
 		jq -e --from-file deploy/production-compose-check.jq >/dev/null
 
 migrate: ensure-env ## Apply all currently registered service migrations.
-	$(COMPOSE) run --rm company-migrate
-	$(COMPOSE) run --rm kb-migrate
-	$(COMPOSE) run --rm tasks-migrate
-	$(COMPOSE) run --rm academy-migrate
-	$(COMPOSE) run --rm notifications-migrate
-	$(COMPOSE) run --rm files-migrate
+	$(COMPOSE_WITH_ENV) run --rm company-migrate
+	$(COMPOSE_WITH_ENV) run --rm kb-migrate
+	$(COMPOSE_WITH_ENV) run --rm tasks-migrate
+	$(COMPOSE_WITH_ENV) run --rm academy-migrate
+	$(COMPOSE_WITH_ENV) run --rm notifications-migrate
+	$(COMPOSE_WITH_ENV) run --rm files-migrate
 
 seed: ## Load already exported JSON fixtures from SEED_DIR.
 	@test -d "$(SEED_DIR_ABS)" || { echo "SEED_DIR does not exist: $(SEED_DIR_ABS)" >&2; exit 1; }
@@ -109,7 +111,7 @@ dev: ## Run one service locally: make dev SERVICE=company.
 
 dev-keys: ## Create .env with a fresh Ed25519 development key pair.
 	@command -v openssl >/dev/null || { echo "openssl is required" >&2; exit 1; }
-	@test ! -e .env || { echo ".env already exists; refusing to overwrite it" >&2; exit 1; }
+	@test ! -e "$(ENV_FILE)" || { echo "$(ENV_FILE) already exists; refusing to overwrite it" >&2; exit 1; }
 	@tmp="$$(mktemp -d)"; trap 'rm -rf "$$tmp"' EXIT; \
 	openssl genpkey -algorithm ED25519 -out "$$tmp/private.pem" >/dev/null 2>&1; \
 	openssl pkey -in "$$tmp/private.pem" -pubout -out "$$tmp/public.pem" >/dev/null 2>&1; \
@@ -117,11 +119,11 @@ dev-keys: ## Create .env with a fresh Ed25519 development key pair.
 	public="$$(openssl base64 -A -in "$$tmp/public.pem")"; \
 	awk -v private="$$private" -v public="$$public" \
 		'/^COMPANY_JWT_PRIVATE_KEY=/{print "COMPANY_JWT_PRIVATE_KEY=" private; next} /^GATEWAY_JWT_PUBLIC_KEY=/{print "GATEWAY_JWT_PUBLIC_KEY=" public; next} {print}' \
-		.env.example > .env; \
-	echo "Created .env with development-only signing keys"
+		.env.example > "$(ENV_FILE)"; \
+	echo "Created $(ENV_FILE) with development-only signing keys"
 
 observability-up: ensure-env ## Start the stack with Prometheus, Grafana, Loki and Tempo.
-	$(COMPOSE_BIN) --file deploy/docker-compose.yaml --file deploy/docker-compose.observability.yaml --profile observability up --build -d
+	$(COMPOSE_BIN) --env-file $(ENV_FILE) --file deploy/docker-compose.yaml --file deploy/docker-compose.observability.yaml --profile observability up --build -d
 
 observability-down: ## Stop the stack including the observability profile.
 	$(COMPOSE_BIN) --file deploy/docker-compose.yaml --file deploy/docker-compose.observability.yaml --profile observability down --remove-orphans
