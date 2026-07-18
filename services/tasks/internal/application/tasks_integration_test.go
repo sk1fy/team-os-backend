@@ -208,11 +208,15 @@ func seedBoardAndColumn(
 ) (uuid.UUID, uuid.UUID) {
 	t.Helper()
 	boardID, columnID := uuid.New(), uuid.New()
-	if _, err := pool.Exec(ctx, `
-		INSERT INTO boards (id, company_id, name, type, owner_id) VALUES ($1, $2, 'Доска', 'personal', $3);
-		INSERT INTO columns (id, board_id, name, "order") VALUES ($4, $1, 'Колонка', 0)`,
-		boardID, companyID, ownerID, columnID); err != nil {
+	if _, err := pool.Exec(ctx,
+		`INSERT INTO boards (id, company_id, name, type, owner_id) VALUES ($1, $2, 'Доска', 'personal', $3)`,
+		boardID, companyID, ownerID); err != nil {
 		t.Fatalf("подготовка доски: %v", err)
+	}
+	if _, err := pool.Exec(ctx,
+		`INSERT INTO columns (id, board_id, name, "order") VALUES ($1, $2, 'Колонка', 0)`,
+		columnID, boardID); err != nil {
+		t.Fatalf("подготовка колонки: %v", err)
 	}
 	return boardID, columnID
 }

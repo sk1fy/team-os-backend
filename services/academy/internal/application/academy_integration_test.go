@@ -138,14 +138,22 @@ func TestAcademyAuthorizationConsumersAndOrdering(t *testing.T) {
 	t.Run("встречные перемещения уроков не создают deadlock", func(t *testing.T) {
 		courseID, firstSectionID, secondSectionID := uuid.New(), uuid.New(), uuid.New()
 		firstLessonID, secondLessonID := uuid.New(), uuid.New()
+		if _, err = pool.Exec(ctx,
+			`INSERT INTO courses (id,company_id,title,status,author_id) VALUES ($1,$2,'Курс','published',$3)`,
+			courseID, companyID, managerID); err != nil {
+			t.Fatalf("подготовка курса для перемещений: %v", err)
+		}
 		if _, err = pool.Exec(ctx, `
-			INSERT INTO courses (id,company_id,title,status,author_id) VALUES ($1,$2,'Курс','published',$3);
 			INSERT INTO course_sections (id,company_id,course_id,title,"order") VALUES
-			($4,$2,$1,'A',0),($5,$2,$1,'B',1);
+			($1,$2,$3,'A',0),($4,$2,$3,'B',1)`,
+			firstSectionID, companyID, courseID, secondSectionID); err != nil {
+			t.Fatalf("подготовка разделов для перемещений: %v", err)
+		}
+		if _, err = pool.Exec(ctx, `
 			INSERT INTO lessons (id,company_id,course_id,section_id,title,"order",content) VALUES
-			($6,$2,$1,$4,'A',0,'{"type":"doc"}'),($7,$2,$1,$5,'B',0,'{"type":"doc"}')`,
-			courseID, companyID, managerID, firstSectionID, secondSectionID, firstLessonID, secondLessonID); err != nil {
-			t.Fatalf("подготовка перемещений: %v", err)
+			($1,$2,$3,$4,'A',0,'{"type":"doc"}'),($5,$2,$3,$6,'B',0,'{"type":"doc"}')`,
+			firstLessonID, companyID, courseID, firstSectionID, secondLessonID, secondSectionID); err != nil {
+			t.Fatalf("подготовка уроков для перемещений: %v", err)
 		}
 		manager := Actor{CompanyID: companyID, UserID: managerID, Role: "admin"}
 		start := make(chan struct{})
@@ -208,14 +216,26 @@ func seedAcademyCourse(
 	companyID, authorID, courseID, sectionID, lessonID, quizID uuid.UUID,
 ) {
 	t.Helper()
-	if _, err := pool.Exec(ctx, `
-		INSERT INTO courses (id,company_id,title,status,author_id) VALUES ($1,$2,'Курс','published',$3);
-		INSERT INTO course_sections (id,company_id,course_id,title,"order") VALUES ($4,$2,$1,'Раздел',0);
-		INSERT INTO lessons (id,company_id,course_id,section_id,title,"order",content) VALUES
-		($5,$2,$1,$4,'Урок',0,'{"type":"doc"}');
-		INSERT INTO quizzes (id,company_id,lesson_id,questions,passing_score) VALUES ($6,$2,$5,'[]',50)`,
-		courseID, companyID, authorID, sectionID, lessonID, quizID); err != nil {
+	if _, err := pool.Exec(ctx,
+		`INSERT INTO courses (id,company_id,title,status,author_id) VALUES ($1,$2,'Курс','published',$3)`,
+		courseID, companyID, authorID); err != nil {
 		t.Fatalf("подготовка курса: %v", err)
+	}
+	if _, err := pool.Exec(ctx,
+		`INSERT INTO course_sections (id,company_id,course_id,title,"order") VALUES ($1,$2,$3,'Раздел',0)`,
+		sectionID, companyID, courseID); err != nil {
+		t.Fatalf("подготовка раздела курса: %v", err)
+	}
+	if _, err := pool.Exec(ctx, `
+		INSERT INTO lessons (id,company_id,course_id,section_id,title,"order",content)
+		VALUES ($1,$2,$3,$4,'Урок',0,'{"type":"doc"}')`,
+		lessonID, companyID, courseID, sectionID); err != nil {
+		t.Fatalf("подготовка урока: %v", err)
+	}
+	if _, err := pool.Exec(ctx,
+		`INSERT INTO quizzes (id,company_id,lesson_id,questions,passing_score) VALUES ($1,$2,$3,'[]',50)`,
+		quizID, companyID, lessonID); err != nil {
+		t.Fatalf("подготовка теста: %v", err)
 	}
 }
 
