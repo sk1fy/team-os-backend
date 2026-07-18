@@ -1,0 +1,28 @@
+package consumers
+
+import (
+	"strings"
+	"testing"
+)
+
+func TestDurableNamesAreValidAndUnique(t *testing.T) {
+	seen := make(map[string]struct{}, len(subjects))
+	for _, subject := range subjects {
+		name := durableName(subject)
+		if strings.ContainsAny(name, ". \t\r\n") {
+			t.Errorf("durableName(%q) = %q: имя содержит запрещённые символы", subject, name)
+		}
+		if _, exists := seen[name]; exists {
+			t.Errorf("durableName(%q) = %q: имя не уникально", subject, name)
+		}
+		seen[name] = struct{}{}
+	}
+}
+
+func TestDurableName(t *testing.T) {
+	const subject = "teamos.org.user.created.v1"
+	const want = "notifications-org-user-created-v1"
+	if got := durableName(subject); got != want {
+		t.Fatalf("durableName(%q) = %q, ожидалось %q", subject, got, want)
+	}
+}

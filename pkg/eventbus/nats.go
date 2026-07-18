@@ -294,6 +294,9 @@ func validateConsumerConfig(config *ConsumerConfig) error {
 	if strings.TrimSpace(config.Durable) == "" {
 		return errors.New("durable consumer name is required")
 	}
+	if strings.ContainsAny(config.Durable, ". \t\r\n") {
+		return fmt.Errorf("invalid durable consumer name %q", config.Durable)
+	}
 	if config.Queue == "" {
 		config.Queue = config.Durable
 	}
