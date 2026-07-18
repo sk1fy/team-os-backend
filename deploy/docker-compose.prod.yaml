@@ -1,0 +1,64 @@
+# Production-override поверх docker-compose.yaml (см. production-security.md §4.2).
+#
+# Закрывает риски из production-security.md §2: Postgres, NATS и доменные сервисы
+# не публикуют порты на хост, MinIO и gateway слушают только loopback (наружу
+# смотрит reverse proxy c TLS), все длительно работающие сервисы получают
+# restart policy, presigned-ссылки files подписываются как https.
+#
+# Запуск:
+#   docker compose -f deploy/docker-compose.yaml -f deploy/docker-compose.prod.yaml up -d
+#
+# Требуется Docker Compose v2.24.4+ (YAML-тег !override заменяет списки портов,
+# а не дополняет их). После запуска проверить объединённую модель:
+#   docker compose -f deploy/docker-compose.yaml -f deploy/docker-compose.prod.yaml config
+
+services:
+  postgres:
+    ports: !override []
+
+  nats:
+    ports: !override []
+
+  minio:
+    ports: !override
+      - "127.0.0.1:${MINIO_PORT:-9000}:9000"
+
+  company:
+    ports: !override []
+    restart: unless-stopped
+
+  kb:
+    ports: !override []
+    restart: unless-stopped
+
+  tasks:
+    ports: !override []
+    restart: unless-stopped
+
+  academy:
+    ports: !override []
+    restart: unless-stopped
+
+  notifications:
+    ports: !override []
+    restart: unless-stopped
+
+  files:
+    ports: !override []
+    restart: unless-stopped
+    environment:
+      # Внутреннее соединение с MinIO остаётся http внутри compose-сети,
+      # а presigned-ссылки подписываются как https за TLS reverse proxy.
+      # Значения намеренно не читаются из .env: старые production-конфигурации
+      # могли содержать FILES_S3_SECURE=true, что ломает соединение с minio:9000.
+      FILES_S3_SECURE: "false"
+      FILES_S3_PUBLIC_SECURE: "true"
+
+  gateway:
+    ports: !override
+      - "127.0.0.1:8080:8080"
+    restart: unless-stopped
+    environment:
+      # Production всегда обслуживается через HTTPS reverse proxy. Значение
+      # намеренно не читается из .env.example, где для разработки стоит false.
+      GATEWAY_COOKIE_SECURE: "true"

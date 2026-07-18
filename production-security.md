@@ -37,17 +37,15 @@
 
 ## 2. Текущие риски репозитория
 
-В `deploy/docker-compose.yaml` сейчас:
+Базовый `deploy/docker-compose.yaml` рассчитан на локальную разработку и публикует порты
+PostgreSQL, NATS, MinIO, gateway и доменных сервисов на `0.0.0.0`. Для production обязателен
+override `deploy/docker-compose.prod.yaml` (§4.2), который закрывает эти порты, включает
+`restart` policy и подписывает presigned-ссылки как https (`FILES_S3_PUBLIC_SECURE`).
 
-- PostgreSQL публикуется на `0.0.0.0:5432`;
-- NATS и monitoring публикуются на `0.0.0.0:4222/8222`;
-- MinIO API и console публикуются на `0.0.0.0:9000/9001`;
-- HTTP-порты доменных сервисов публикуются на `0.0.0.0:8081-8086`;
-- gateway публикуется на `0.0.0.0:8080` без встроенного TLS;
+Остаются нерешёнными на уровне репозитория:
+
 - все логические базы используют одного PostgreSQL-пользователя;
 - секреты передаются контейнерам через environment variables;
-- `FILES_S3_SECURE` жёстко задан как `false`;
-- application-сервисы не везде имеют явный `restart` policy;
 - resource limits и log rotation не заданы;
 - Docker image tags сторонних компонентов не закреплены digest;
 - production reverse proxy и backup automation отсутствуют.
@@ -162,7 +160,10 @@ services:
     ports: !override []
     restart: unless-stopped
     environment:
-      FILES_S3_SECURE: "true"
+      # Внутреннее соединение с MinIO остаётся http внутри compose-сети,
+      # presigned-ссылки подписываются как https (за TLS reverse proxy).
+      FILES_S3_SECURE: "false"
+      FILES_S3_PUBLIC_SECURE: "true"
 
   gateway:
     ports: !override
@@ -388,7 +389,7 @@ download и backup.
 - заменить root credentials;
 - сервису `files` в перспективе выдать отдельного пользователя с доступом только к нужному bucket,
   не использовать root credentials;
-- `FILES_S3_SECURE=true`;
+- `FILES_S3_PUBLIC_SECURE=true` (presigned-ссылки подписываются как https);
 - `FILES_S3_PUBLIC_ENDPOINT` указывает на публичный HTTPS host без `http://`;
 - максимальный размер файла ограничен в gateway/reverse proxy и сервисе;
 - имена, MIME type и расширения не считаются доверенными;
@@ -802,7 +803,7 @@ proxy или SSH tunnel.
 - [ ] Gateway доступен только через HTTPS reverse proxy.
 - [ ] `GATEWAY_COOKIE_SECURE=true`.
 - [ ] CORS содержит только доверенные production origins.
-- [ ] `FILES_S3_SECURE=true` реально присутствует внутри контейнера.
+- [ ] `FILES_S3_PUBLIC_SECURE=true` реально присутствует внутри контейнера.
 - [ ] Upload/download работает через HTTPS.
 - [ ] TLS автоматически обновляется и контролируется alert.
 - [ ] SSH ограничен ключами и доверенной сетью/VPN.

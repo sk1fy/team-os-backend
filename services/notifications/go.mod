@@ -4,7 +4,7 @@ go 1.25.0
 
 require (
 	github.com/google/uuid v1.6.0
-	github.com/jackc/pgx/v5 v5.7.6
+	github.com/jackc/pgx/v5 v5.9.2
 	github.com/sk1fy/team-os-backend/contracts/gen/go v0.0.0
 	github.com/sk1fy/team-os-backend/pkg v0.0.0
 	google.golang.org/grpc v1.81.1

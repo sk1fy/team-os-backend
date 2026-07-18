@@ -177,10 +177,14 @@ func TestAcademyAuthorizationConsumersAndOrdering(t *testing.T) {
 func academyTestPool(t *testing.T, ctx context.Context) *pgxpool.Pool {
 	t.Helper()
 	_, filename, _, _ := runtime.Caller(0)
-	migration := filepath.Join(filepath.Dir(filename), "..", "..", "migrations", "000001_init.up.sql")
-	container, err := postgres.Run(ctx, "postgres:17-alpine",
+	migrationsDir := filepath.Join(filepath.Dir(filename), "..", "..", "migrations")
+	container, err := postgres.Run(ctx, "postgres:16-alpine",
 		postgres.WithDatabase("academy"), postgres.WithUsername("academy"),
-		postgres.WithPassword("academy"), postgres.WithInitScripts(migration),
+		postgres.WithPassword("academy"), postgres.WithInitScripts(
+			filepath.Join(migrationsDir, "000001_init.up.sql"),
+			filepath.Join(migrationsDir, "000002_assignment_events_and_outbox.up.sql"),
+			filepath.Join(migrationsDir, "000003_course_visibility_assignment_idempotency.up.sql"),
+		),
 	)
 	if err != nil {
 		t.Fatalf("запуск PostgreSQL: %v", err)

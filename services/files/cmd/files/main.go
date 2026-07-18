@@ -90,7 +90,7 @@ func run(logger *slog.Logger) error {
 	if err = pool.Ping(startup); err != nil {
 		return fmt.Errorf("проверить PostgreSQL: %w", err)
 	}
-	objects, err := objectstore.New(c.S3Endpoint, c.S3PublicEndpoint, c.S3AccessKey, c.S3SecretKey, c.S3Region, c.S3Bucket, c.S3Secure)
+	objects, err := objectstore.New(c.S3Endpoint, c.S3PublicEndpoint, c.S3AccessKey, c.S3SecretKey, c.S3Region, c.S3Bucket, c.S3Secure, c.S3PublicSecure)
 	if err != nil {
 		return fmt.Errorf("создать S3-клиент: %w", err)
 	}

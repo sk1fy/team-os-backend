@@ -1,0 +1,36 @@
+version: 2
+updates:
+  - package-ecosystem: gomod
+    directories:
+      - /pkg
+      - /contracts/gen/go
+      - /services/academy
+      - /services/company
+      - /services/files
+      - /services/gateway
+      - /services/kb
+      - /services/notifications
+      - /services/tasks
+      - /tools
+    schedule:
+      interval: weekly
+    groups:
+      go-dependencies:
+        patterns: ["*"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: docker
+    directories:
+      - /services/academy
+      - /services/company
+      - /services/files
+      - /services/gateway
+      - /services/kb
+      - /services/notifications
+      - /services/tasks
+    schedule:
+      interval: weekly

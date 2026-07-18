@@ -10,4 +10,5 @@ use (
 	./services/kb
 	./services/notifications
 	./services/tasks
+	./tools
 )

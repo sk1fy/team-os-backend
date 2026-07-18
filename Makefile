@@ -14,11 +14,11 @@ endif
 
 SEED_DIR_ABS := $(abspath $(SEED_DIR))
 
-MODULE_DIRS = pkg $(sort $(patsubst %/go.mod,%,$(wildcard services/*/go.mod)))
+MODULE_DIRS = contracts/gen/go pkg $(sort $(patsubst %/go.mod,%,$(wildcard services/*/go.mod))) $(patsubst %/go.mod,%,$(wildcard tools/go.mod))
 
 .DEFAULT_GOAL := help
 
-.PHONY: help up down logs compose-config migrate seed export-fixtures gen test test-race lint fmt check-contract dev dev-keys ensure-env e2e load-test load-kb load-tasks load-move observability-up observability-down
+.PHONY: help up down logs compose-config check-production-compose migrate seed export-fixtures gen test test-integration test-race lint fmt check-contract dev dev-keys ensure-env e2e load-test load-kb load-tasks load-move observability-up observability-down
 
 help: ## Show available commands.
 	@awk 'BEGIN {FS = ":.*## "} /^[a-zA-Z0-9_-]+:.*## / {printf "  %-18s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -37,6 +37,19 @@ logs: ## Follow logs from the development stack.
 
 compose-config: ## Validate and render the Compose configuration.
 	$(COMPOSE) config --quiet
+
+check-production-compose: ## Verify production ports and security overrides, including legacy .env values.
+	@command -v jq >/dev/null || { echo "jq is required" >&2; exit 1; }
+	@FILES_S3_SECURE=true FILES_S3_PUBLIC_SECURE=false GATEWAY_COOKIE_SECURE=false \
+		$(COMPOSE_BIN) --file deploy/docker-compose.yaml --file deploy/docker-compose.prod.yaml config --format json | \
+		jq -e '(.services.files.environment.FILES_S3_SECURE == "false") and \
+			(.services.files.environment.FILES_S3_PUBLIC_SECURE == "true") and \
+			(.services.gateway.environment.GATEWAY_COOKIE_SECURE == "true") and \
+			([.services.postgres.ports, .services.nats.ports, .services.company.ports, \
+			  .services.kb.ports, .services.tasks.ports, .services.academy.ports, \
+			  .services.notifications.ports, .services.files.ports] | all(length == 0)) and \
+			(.services.gateway.ports[0].host_ip == "127.0.0.1") and \
+			(.services.minio.ports[0].host_ip == "127.0.0.1")' >/dev/null
 
 migrate: ensure-env ## Apply all currently registered service migrations.
 	$(COMPOSE) run --rm company-migrate
@@ -73,6 +86,9 @@ gen: ## Generate configured protobuf, OpenAPI and sqlc artifacts.
 
 test: ## Run unit tests in every Go module.
 	@set -e; for module in $(MODULE_DIRS); do echo "==> go test $$module"; (cd "$$module" && GOWORK=off $(GO) test ./...); done
+
+test-integration: ## Run tests with the integration build tag (requires Docker for testcontainers).
+	@set -e; for module in $(MODULE_DIRS); do echo "==> go test -tags integration $$module"; (cd "$$module" && GOWORK=off $(GO) test -tags integration ./...); done
 
 test-race: ## Run Go tests with the race detector in every module.
 	@set -e; for module in $(MODULE_DIRS); do echo "==> go test -race $$module"; (cd "$$module" && GOWORK=off $(GO) test -race ./...); done

@@ -15,7 +15,7 @@ type Config struct {
 	HTTPAddr, GRPCAddr, DatabaseURL                                            string
 	JWTPublicKey, JWTIssuer, JWTAudience                                       string
 	S3Endpoint, S3PublicEndpoint, S3AccessKey, S3SecretKey, S3Bucket, S3Region string
-	S3Secure, S3CreateBucket, TrustedMetadata                                  bool
+	S3Secure, S3PublicSecure, S3CreateBucket, TrustedMetadata                  bool
 	MaxFileSize                                                                int64
 	AllowedTypes                                                               map[string]struct{}
 	DownloadURLTTL, ShutdownTimeout                                            time.Duration
@@ -33,6 +33,9 @@ func Load() (Config, error) {
 		AllowedTypes: parseTypes(env("FILES_ALLOWED_CONTENT_TYPES", defaultAllowedTypes)), TempDir: strings.TrimSpace(os.Getenv("FILES_TEMP_DIR")),
 	}
 	c.S3PublicEndpoint = env("FILES_S3_PUBLIC_ENDPOINT", c.S3Endpoint)
+	// Схема presigned-ссылок независима от внутреннего соединения: за TLS reverse
+	// proxy ссылки должны быть https, даже когда MinIO внутри сети отвечает по http.
+	c.S3PublicSecure = envBool("FILES_S3_PUBLIC_SECURE", c.S3Secure)
 	var err error
 	if raw := strings.TrimSpace(os.Getenv("FILES_MAX_SIZE_BYTES")); raw != "" {
 		c.MaxFileSize, err = strconv.ParseInt(raw, 10, 64)

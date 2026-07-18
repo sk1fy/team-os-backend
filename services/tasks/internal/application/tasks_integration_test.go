@@ -24,12 +24,15 @@ func TestConcurrentTaskOrderingAndRecurrence(t *testing.T) {
 	if !ok {
 		t.Fatal("не удалось определить путь к миграции")
 	}
-	migration := filepath.Join(filepath.Dir(filename), "..", "..", "migrations", "000001_init.up.sql")
-	container, err := postgres.Run(ctx, "postgres:17-alpine",
+	migrationsDir := filepath.Join(filepath.Dir(filename), "..", "..", "migrations")
+	container, err := postgres.Run(ctx, "postgres:16-alpine",
 		postgres.WithDatabase("tasks"),
 		postgres.WithUsername("tasks"),
 		postgres.WithPassword("tasks"),
-		postgres.WithInitScripts(migration),
+		postgres.WithInitScripts(
+			filepath.Join(migrationsDir, "000001_init.up.sql"),
+			filepath.Join(migrationsDir, "000002_phase3_concurrency.up.sql"),
+		),
 	)
 	if err != nil {
 		t.Fatalf("запуск PostgreSQL: %v", err)

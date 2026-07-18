@@ -10,6 +10,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/sk1fy/team-os-backend/pkg/eventbus"
+	"github.com/sk1fy/team-os-backend/services/notifications/internal/storage/db"
 )
 
 type Notification struct {
@@ -21,6 +22,7 @@ type Notification struct {
 }
 type Service struct {
 	pool        *pgxpool.Pool
+	queries     *db.Queries
 	mu          sync.Mutex
 	subscribers map[uuid.UUID]map[chan uuid.UUID]struct{}
 }
@@ -29,42 +31,43 @@ func New(pool *pgxpool.Pool) (*Service, error) {
 	if pool == nil {
 		return nil, fmt.Errorf("pool обязателен")
 	}
-	return &Service{pool: pool, subscribers: map[uuid.UUID]map[chan uuid.UUID]struct{}{}}, nil
+	return &Service{pool: pool, queries: db.New(pool), subscribers: map[uuid.UUID]map[chan uuid.UUID]struct{}{}}, nil
 }
 func (s *Service) List(ctx context.Context, companyID, userID uuid.UUID) ([]Notification, error) {
-	rows, err := s.pool.Query(ctx, `SELECT id,user_id,type,title,body,link,read,created_at FROM notifications WHERE company_id=$1 AND user_id=$2 ORDER BY created_at DESC`, companyID, userID)
+	rows, err := s.queries.ListNotifications(ctx, db.ListNotificationsParams{CompanyID: companyID, UserID: userID})
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-	result := []Notification{}
-	for rows.Next() {
-		var n Notification
-		if err = rows.Scan(&n.ID, &n.UserID, &n.Type, &n.Title, &n.Body, &n.Link, &n.Read, &n.CreatedAt); err != nil {
-			return nil, err
-		}
-		result = append(result, n)
+	result := make([]Notification, 0, len(rows))
+	for _, row := range rows {
+		result = append(result, Notification{
+			ID: row.ID, UserID: row.UserID,
+			Type: row.Type, Title: row.Title,
+			Body: row.Body, Link: row.Link,
+			Read: row.Read, CreatedAt: row.CreatedAt,
+		})
 	}
-	return result, rows.Err()
+	return result, nil
 }
 func (s *Service) Count(ctx context.Context, companyID, userID uuid.UUID) (uint32, error) {
-	var n uint32
-	err := s.pool.QueryRow(ctx, `SELECT count(*) FROM notifications WHERE company_id=$1 AND user_id=$2 AND read=false`, companyID, userID).Scan(&n)
-	return n, err
+	n, err := s.queries.CountUnread(ctx, db.CountUnreadParams{CompanyID: companyID, UserID: userID})
+	if err != nil {
+		return 0, err
+	}
+	return uint32(n), nil
 }
 func (s *Service) MarkRead(ctx context.Context, companyID, userID, id uuid.UUID) error {
-	tag, err := s.pool.Exec(ctx, `UPDATE notifications SET read=true WHERE id=$1 AND company_id=$2 AND user_id=$3`, id, companyID, userID)
+	affected, err := s.queries.MarkRead(ctx, db.MarkReadParams{ID: id, CompanyID: companyID, UserID: userID})
 	if err != nil {
 		return err
 	}
-	if tag.RowsAffected() == 0 {
+	if affected == 0 {
 		return pgx.ErrNoRows
 	}
 	return nil
 }
 func (s *Service) MarkAllRead(ctx context.Context, companyID, userID uuid.UUID) error {
-	_, err := s.pool.Exec(ctx, `UPDATE notifications SET read=true WHERE company_id=$1 AND user_id=$2 AND read=false`, companyID, userID)
-	return err
+	return s.queries.MarkAllRead(ctx, db.MarkAllReadParams{CompanyID: companyID, UserID: userID})
 }
 func (s *Service) Subscribe(userID uuid.UUID) (<-chan uuid.UUID, func()) {
 	ch := make(chan uuid.UUID, 16)
@@ -103,17 +106,21 @@ func (s *Service) CreateMany(ctx context.Context, event eventbus.Event, userIDs 
 		return false, err
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
-	tag, err := tx.Exec(ctx, `INSERT INTO processed_events(event_id,company_id) VALUES($1,$2) ON CONFLICT DO NOTHING`, eventID, companyID)
+	queries := s.queries.WithTx(tx)
+	inserted, err := queries.InsertProcessedEvent(ctx, db.InsertProcessedEventParams{EventID: eventID, CompanyID: companyID})
 	if err != nil {
 		return false, err
 	}
-	if tag.RowsAffected() == 0 {
+	if inserted == 0 {
 		return false, nil
 	}
 	ids := make([]uuid.UUID, 0, len(userIDs))
 	for _, userID := range userIDs {
 		id := uuid.New()
-		_, err = tx.Exec(ctx, `INSERT INTO notifications(id,company_id,user_id,type,title,body,link) VALUES($1,$2,$3,$4,$5,$6,$7)`, id, companyID, userID, typ, title, body, link)
+		err = queries.InsertNotification(ctx, db.InsertNotificationParams{
+			ID: id, CompanyID: companyID, UserID: userID,
+			Type: typ, Title: title, Body: body, Link: link,
+		})
 		if err != nil {
 			return false, err
 		}

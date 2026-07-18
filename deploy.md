@@ -200,10 +200,14 @@ GATEWAY_CORS_ORIGINS=https://app.example.ru
 GATEWAY_COOKIE_SECURE=true
 
 FILES_S3_PUBLIC_ENDPOINT=storage.example.ru
-FILES_S3_SECURE=true
+FILES_S3_PUBLIC_SECURE=true
 FILES_S3_BUCKET=teamos-files
 FILES_S3_REGION=us-east-1
 ```
+
+`deploy/docker-compose.prod.yaml` принудительно выставляет `GATEWAY_COOKIE_SECURE=true`, поэтому
+dev-значение `false`, скопированное из `.env.example`, не может отключить secure-cookie в
+production.
 
 Текущий Compose подставляет пароль PostgreSQL непосредственно в URI. До перехода на file-based
 secret использовать длинный случайный пароль из URL-safe символов (`A-Z`, `a-z`, `0-9`, `-`, `_`)
@@ -224,8 +228,11 @@ stat -c '%a %U:%G %n' .env
 
 Ожидаемые права — `600`, владелец — deployment-пользователь.
 
-Важно: основной Compose сейчас жёстко задаёт `FILES_S3_SECURE: "false"`. Для production требуется
-override, который задаст `"true"`; одной строки в `.env` недостаточно.
+Важно: `FILES_S3_SECURE` относится к внутреннему соединению files↔MinIO и внутри compose-сети
+остаётся `false`. Схему presigned-ссылок задаёт отдельная переменная `FILES_S3_PUBLIC_SECURE`;
+production-override `deploy/docker-compose.prod.yaml` принудительно выставляет значения `false` и
+`true` соответственно. Это намеренно защищает повторный деплой от старого `.env`, в котором
+`FILES_S3_SECURE` мог быть равен `true` по прежней инструкции.
 
 ## 8. Production Compose
 
@@ -582,11 +589,11 @@ container logs, PostgreSQL, NATS или MinIO.
 Проверить итоговую переменную внутри контейнера:
 
 ```bash
-$COMPOSE_PROD exec -T files sh -c 'printf "%s\n" "$FILES_S3_PUBLIC_ENDPOINT" "$FILES_S3_SECURE"'
+$COMPOSE_PROD exec -T files sh -c 'printf "%s\n" "$FILES_S3_PUBLIC_ENDPOINT" "$FILES_S3_PUBLIC_SECURE"'
 ```
 
-Ожидаются `storage.example.ru` и `true`. Если выводится `false`, production override не
-переопределил жёсткое значение основного Compose.
+Ожидаются `storage.example.ru` и `true`. Если выводится `false` или пустая строка, production
+override не переопределил значение основного Compose.
 
 ## 20. Остановка
 

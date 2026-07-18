@@ -17,12 +17,12 @@ type Store struct {
 	bucket string
 }
 
-func New(endpoint, publicEndpoint, accessKey, secretKey, region, bucket string, secure bool) (*Store, error) {
+func New(endpoint, publicEndpoint, accessKey, secretKey, region, bucket string, secure, publicSecure bool) (*Store, error) {
 	client, err := minio.New(endpoint, &minio.Options{Creds: credentials.NewStaticV4(accessKey, secretKey, ""), Secure: secure, Region: region})
 	if err != nil {
 		return nil, err
 	}
-	signer, err := minio.New(publicEndpoint, &minio.Options{Creds: credentials.NewStaticV4(accessKey, secretKey, ""), Secure: secure, Region: region})
+	signer, err := minio.New(publicEndpoint, &minio.Options{Creds: credentials.NewStaticV4(accessKey, secretKey, ""), Secure: publicSecure, Region: region})
 	if err != nil {
 		return nil, err
 	}
