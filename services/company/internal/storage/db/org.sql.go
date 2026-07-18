@@ -256,41 +256,6 @@ func (q *Queries) CreatePosition(ctx context.Context, arg CreatePositionParams) 
 	return i, err
 }
 
-const deactivateMissingAmoUsers = `-- name: DeactivateMissingAmoUsers :many
-UPDATE users
-SET status = 'deactivated', updated_at = now()
-WHERE company_id = $1
-  AND source = 'amo'
-  AND status <> 'deactivated'
-  AND NOT (external_id = ANY($2::text[]))
-RETURNING id
-`
-
-type DeactivateMissingAmoUsersParams struct {
-	CompanyID   uuid.UUID `json:"company_id"`
-	ExternalIds []string  `json:"external_ids"`
-}
-
-func (q *Queries) DeactivateMissingAmoUsers(ctx context.Context, arg DeactivateMissingAmoUsersParams) ([]uuid.UUID, error) {
-	rows, err := q.db.Query(ctx, deactivateMissingAmoUsers, arg.CompanyID, arg.ExternalIds)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []uuid.UUID{}
-	for rows.Next() {
-		var id uuid.UUID
-		if err := rows.Scan(&id); err != nil {
-			return nil, err
-		}
-		items = append(items, id)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const deleteDepartment = `-- name: DeleteDepartment :execrows
 DELETE FROM departments WHERE company_id = $1 AND id = $2
 `
@@ -908,74 +873,6 @@ func (q *Queries) RevokeInvite(ctx context.Context, arg RevokeInviteParams) (Inv
 		&i.ExpiresAt,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-	)
-	return i, err
-}
-
-const updateAmoUser = `-- name: UpdateAmoUser :one
-UPDATE users
-SET email = $1,
-    first_name = $2,
-    last_name = $3,
-    avatar_url = $4,
-    avatar_source = $5,
-    status = 'active',
-    source = 'amo',
-    external_id = $6,
-    external_group_id = $7,
-    external_group_name = $8,
-    updated_at = now()
-WHERE company_id = $9 AND id = $10
-RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source
-`
-
-type UpdateAmoUserParams struct {
-	Email             string      `json:"email"`
-	FirstName         string      `json:"first_name"`
-	LastName          pgtype.Text `json:"last_name"`
-	AvatarUrl         pgtype.Text `json:"avatar_url"`
-	AvatarSource      pgtype.Text `json:"avatar_source"`
-	ExternalID        pgtype.Text `json:"external_id"`
-	ExternalGroupID   pgtype.Text `json:"external_group_id"`
-	ExternalGroupName pgtype.Text `json:"external_group_name"`
-	CompanyID         uuid.UUID   `json:"company_id"`
-	ID                uuid.UUID   `json:"id"`
-}
-
-func (q *Queries) UpdateAmoUser(ctx context.Context, arg UpdateAmoUserParams) (User, error) {
-	row := q.db.QueryRow(ctx, updateAmoUser,
-		arg.Email,
-		arg.FirstName,
-		arg.LastName,
-		arg.AvatarUrl,
-		arg.AvatarSource,
-		arg.ExternalID,
-		arg.ExternalGroupID,
-		arg.ExternalGroupName,
-		arg.CompanyID,
-		arg.ID,
-	)
-	var i User
-	err := row.Scan(
-		&i.ID,
-		&i.CompanyID,
-		&i.Email,
-		&i.FirstName,
-		&i.LastName,
-		&i.Phone,
-		&i.AvatarUrl,
-		&i.Role,
-		&i.Status,
-		&i.BirthDate,
-		&i.HiredAt,
-		&i.VacationAllowance,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.Source,
-		&i.ExternalID,
-		&i.ExternalGroupID,
-		&i.ExternalGroupName,
-		&i.AvatarSource,
 	)
 	return i, err
 }

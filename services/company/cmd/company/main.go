@@ -97,18 +97,21 @@ func run(logger *slog.Logger) error {
 			logger.Error("NATS drain failed", "error", drainErr)
 		}
 	}()
-	externalUsersClient, err := externalusers.NewClient(externalusers.Config{
-		APIURL: configuration.ExternalAPIURL, AppName: configuration.AmoAppName,
-		Timeout: configuration.ExternalTimeout,
-	})
-	if err != nil {
-		return fmt.Errorf("initialize amoCRM employees client: %w", err)
-	}
-	service, err := application.NewService(pool, issuer,
-		application.WithExternalEmployeeProvider(externalUsersClient),
+	serviceOptions := []application.ServiceOption{
 		application.WithAmoSyncInterval(configuration.AmoSyncInterval),
 		application.WithLogger(logger),
-	)
+	}
+	if configuration.AmoImportEnabled {
+		externalUsersClient, clientErr := externalusers.NewClient(externalusers.Config{
+			APIURL: configuration.ExternalAPIURL, AppName: configuration.AmoAppName,
+			Timeout: configuration.ExternalTimeout,
+		})
+		if clientErr != nil {
+			return fmt.Errorf("initialize amoCRM employees client: %w", clientErr)
+		}
+		serviceOptions = append(serviceOptions, application.WithExternalEmployeeProvider(externalUsersClient))
+	}
+	service, err := application.NewService(pool, issuer, serviceOptions...)
 	if err != nil {
 		return fmt.Errorf("initialize company application: %w", err)
 	}

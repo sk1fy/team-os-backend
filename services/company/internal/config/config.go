@@ -4,43 +4,52 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 )
 
 type Config struct {
-	HTTPAddr        string
-	GRPCAddr        string
-	DatabaseURL     string
-	NATSURL         string
-	JWTPrivateKey   string
-	JWTIssuer       string
-	JWTAudience     string
-	AccessTTL       time.Duration
-	ShutdownTimeout time.Duration
-	ExternalAPIURL  string
-	AmoAppName      string
-	ExternalTimeout time.Duration
-	AmoSyncInterval time.Duration
+	HTTPAddr         string
+	GRPCAddr         string
+	DatabaseURL      string
+	NATSURL          string
+	JWTPrivateKey    string
+	JWTIssuer        string
+	JWTAudience      string
+	AccessTTL        time.Duration
+	ShutdownTimeout  time.Duration
+	ExternalAPIURL   string
+	AmoAppName       string
+	AmoImportEnabled bool
+	ExternalTimeout  time.Duration
+	AmoSyncInterval  time.Duration
 }
 
 func Load() (Config, error) {
-	config := Config{
-		HTTPAddr:        envOr("COMPANY_HTTP_ADDR", ":8081"),
-		GRPCAddr:        envOr("COMPANY_GRPC_ADDR", ":9081"),
-		DatabaseURL:     strings.TrimSpace(os.Getenv("COMPANY_DB_URL")),
-		NATSURL:         envOr("COMPANY_NATS_URL", "nats://localhost:4222"),
-		JWTPrivateKey:   strings.TrimSpace(os.Getenv("COMPANY_JWT_PRIVATE_KEY")),
-		JWTIssuer:       envOr("COMPANY_JWT_ISSUER", "teamos-company"),
-		JWTAudience:     envOr("COMPANY_JWT_AUDIENCE", "teamos-api"),
-		AccessTTL:       15 * time.Minute,
-		ShutdownTimeout: 30 * time.Second,
-		ExternalAPIURL:  envOr("EXTERNAL_API_URL", "https://ssd.rkrs.ru/api/v1/rkrs_activity/getEmployee"),
-		AmoAppName:      envOr("APP_NAME", "rkrs_activity"),
-		ExternalTimeout: 10 * time.Second,
-		AmoSyncInterval: 5 * time.Minute,
-	}
 	var err error
+	config := Config{
+		HTTPAddr:         envOr("COMPANY_HTTP_ADDR", ":8081"),
+		GRPCAddr:         envOr("COMPANY_GRPC_ADDR", ":9081"),
+		DatabaseURL:      strings.TrimSpace(os.Getenv("COMPANY_DB_URL")),
+		NATSURL:          envOr("COMPANY_NATS_URL", "nats://localhost:4222"),
+		JWTPrivateKey:    strings.TrimSpace(os.Getenv("COMPANY_JWT_PRIVATE_KEY")),
+		JWTIssuer:        envOr("COMPANY_JWT_ISSUER", "teamos-company"),
+		JWTAudience:      envOr("COMPANY_JWT_AUDIENCE", "teamos-api"),
+		AccessTTL:        15 * time.Minute,
+		ShutdownTimeout:  30 * time.Second,
+		ExternalAPIURL:   envOr("EXTERNAL_API_URL", "https://ssd.rkrs.ru/api/v1/rkrs_activity/getEmployee"),
+		AmoAppName:       envOr("APP_NAME", "rkrs_activity"),
+		AmoImportEnabled: false,
+		ExternalTimeout:  10 * time.Second,
+		AmoSyncInterval:  5 * time.Minute,
+	}
+	if value := strings.TrimSpace(os.Getenv("COMPANY_AMO_IMPORT_ENABLED")); value != "" {
+		config.AmoImportEnabled, err = strconv.ParseBool(value)
+		if err != nil {
+			return Config{}, fmt.Errorf("COMPANY_AMO_IMPORT_ENABLED: ожидается true или false")
+		}
+	}
 	if value := strings.TrimSpace(os.Getenv("COMPANY_ACCESS_TTL")); value != "" {
 		config.AccessTTL, err = time.ParseDuration(value)
 		if err != nil || config.AccessTTL <= 0 {

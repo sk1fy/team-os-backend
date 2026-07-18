@@ -25,7 +25,7 @@ func (s *Service) syncAmoUsers(ctx context.Context, actor Actor) error {
 	defer unlock()
 
 	if err := s.syncAmoUsersNow(ctx, actor); err != nil {
-		s.logger.WarnContext(ctx, "amoCRM user sync failed; serving local users", "company_id", actor.CompanyID, "error", err)
+		s.logger.WarnContext(ctx, "amoCRM user import failed; serving TeamOS users", "company_id", actor.CompanyID, "error", err)
 	}
 	return nil
 }
@@ -76,100 +76,47 @@ func (s *Service) syncAmoUsersNow(ctx context.Context, actor Actor) error {
 
 	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.Serializable})
 	if err != nil {
-		return internal("Не удалось начать синхронизацию сотрудников", err)
+		return internal("Не удалось начать импорт сотрудников", err)
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
 	queries := db.New(tx)
 	if err = queries.LockAmoUserSync(ctx, actor.CompanyID); err != nil {
-		return internal("Не удалось заблокировать синхронизацию сотрудников", err)
+		return internal("Не удалось заблокировать импорт сотрудников", err)
 	}
 
-	externalIDs := make([]string, 0, len(normalized))
 	for _, employee := range normalized {
-		externalIDs = append(externalIDs, employee.ID)
-		current, findErr := queries.FindUserForAmoSync(ctx, db.FindUserForAmoSyncParams{
+		_, findErr := queries.FindUserForAmoSync(ctx, db.FindUserForAmoSyncParams{
 			CompanyID: actor.CompanyID, ExternalID: pgtype.Text{String: employee.ID, Valid: true}, Email: employee.Email,
 		})
-		created := false
-		changedFields := []string(nil)
-		var row db.User
-		switch {
-		case findErr == nil:
-			if !employee.HasLastName {
-				employee.LastName = preservedAmoLastName(textValue(current.LastName))
-			}
-			// Эти поля принадлежат amoCRM. Локальные значения намеренно заменяются при синхронизации.
-			changedFields = amoChangedFields(current, employee)
-			row, err = queries.UpdateAmoUser(ctx, db.UpdateAmoUserParams{
-				Email: employee.Email, FirstName: employee.FirstName, LastName: pgText(&employee.LastName),
-				AvatarUrl: pgText(employee.AvatarURL), ExternalID: pgtype.Text{String: employee.ID, Valid: true},
-				AvatarSource:      avatarSource(employee.AvatarURL),
-				ExternalGroupID:   pgText(trimmedStringPointer(employee.GroupID)),
-				ExternalGroupName: pgText(trimmedStringPointer(employee.GroupName)),
-				CompanyID:         actor.CompanyID, ID: current.ID,
-			})
-		case isNoRows(findErr):
-			row, err = queries.CreateAmoUser(ctx, db.CreateAmoUserParams{
-				ID: uuid.New(), CompanyID: actor.CompanyID, Email: employee.Email,
-				FirstName: employee.FirstName, LastName: pgText(&employee.LastName),
-				AvatarUrl: pgText(employee.AvatarURL), ExternalID: pgtype.Text{String: employee.ID, Valid: true},
-				AvatarSource:      avatarSource(employee.AvatarURL),
-				ExternalGroupID:   pgText(trimmedStringPointer(employee.GroupID)),
-				ExternalGroupName: pgText(trimmedStringPointer(employee.GroupName)),
-			})
-			created = true
-		default:
+		if findErr == nil {
+			// Импорт не перезаписывает профиль, статус или доступ уже известного TeamOS-пользователя.
+			continue
+		}
+		if !isNoRows(findErr) {
 			return internal("Не удалось сопоставить сотрудника amoCRM", findErr)
 		}
+		row, err := queries.CreateAmoUser(ctx, db.CreateAmoUserParams{
+			ID: uuid.New(), CompanyID: actor.CompanyID, Email: employee.Email,
+			FirstName: employee.FirstName, LastName: pgText(&employee.LastName),
+			AvatarUrl: pgText(employee.AvatarURL), ExternalID: pgtype.Text{String: employee.ID, Valid: true},
+			AvatarSource:      avatarSource(employee.AvatarURL),
+			ExternalGroupID:   pgText(trimmedStringPointer(employee.GroupID)),
+			ExternalGroupName: pgText(trimmedStringPointer(employee.GroupName)),
+		})
 		if isUniqueViolation(err) {
 			return conflict("Не удалось сопоставить сотрудников amoCRM: email уже занят")
 		}
 		if err != nil {
 			return internal("Не удалось сохранить сотрудника amoCRM", err)
 		}
-		if created {
-			if err = s.emit(ctx, queries, actor.CompanyID, actor.UserID, "teamos.org.user.created.v1", map[string]any{
-				"user": userEventSnapshot(userFromDB(row, nil), nil),
-			}); err != nil {
-				return err
-			}
-		} else if len(changedFields) > 0 {
-			joined, joinErr := queries.GetUserWithPositions(ctx, db.GetUserWithPositionsParams{CompanyID: actor.CompanyID, ID: row.ID})
-			if joinErr != nil {
-				return internal("Не удалось получить синхронизированного сотрудника", joinErr)
-			}
-			departments, claimsErr := queries.GetUserDepartmentClaims(ctx, db.GetUserDepartmentClaimsParams{CompanyID: actor.CompanyID, UserID: row.ID})
-			if claimsErr != nil {
-				return internal("Не удалось получить отделы синхронизированного сотрудника", claimsErr)
-			}
-			if err = s.emit(ctx, queries, actor.CompanyID, actor.UserID, "teamos.org.user.updated.v1", map[string]any{
-				"user": userEventSnapshot(userFromJoinedRow(joined), departments), "changedFields": changedFields,
-			}); err != nil {
-				return err
-			}
-		}
-	}
-
-	deactivatedIDs, err := queries.DeactivateMissingAmoUsers(ctx, db.DeactivateMissingAmoUsersParams{
-		CompanyID: actor.CompanyID, ExternalIds: externalIDs,
-	})
-	if err != nil {
-		return internal("Не удалось деактивировать уволенных сотрудников amoCRM", err)
-	}
-	for _, userID := range deactivatedIDs {
-		if err = queries.RevokeAllUserSessions(ctx, db.RevokeAllUserSessionsParams{
-			UserID: userID, RevokedAt: pgtype.Timestamptz{Time: s.now().UTC(), Valid: true},
-		}); err != nil {
-			return internal("Не удалось отозвать сессии уволенного сотрудника", err)
-		}
-		if err = s.emit(ctx, queries, actor.CompanyID, actor.UserID, "teamos.org.user.deactivated.v1", map[string]any{
-			"userId": userID.String(),
+		if err = s.emit(ctx, queries, actor.CompanyID, actor.UserID, "teamos.org.user.created.v1", map[string]any{
+			"user": userEventSnapshot(userFromDB(row, nil), nil),
 		}); err != nil {
 			return err
 		}
 	}
 	if err = tx.Commit(ctx); err != nil {
-		return internal("Не удалось завершить синхронизацию сотрудников", err)
+		return internal("Не удалось завершить импорт сотрудников", err)
 	}
 	return nil
 }
@@ -177,7 +124,6 @@ func (s *Service) syncAmoUsersNow(ctx context.Context, actor Actor) error {
 type normalizedExternalEmployee struct {
 	ID, Email, FirstName, LastName, GroupID, GroupName string
 	AvatarURL                                          *string
-	HasLastName                                        bool
 }
 
 func normalizeExternalEmployees(companyID uuid.UUID, values []ExternalEmployee) ([]normalizedExternalEmployee, error) {
@@ -193,7 +139,7 @@ func normalizeExternalEmployees(companyID uuid.UUID, values []ExternalEmployee) 
 			return nil, fmt.Errorf("сотрудник %d: повторяется id %q", index+1, id)
 		}
 		ids[id] = struct{}{}
-		firstName, lastName, hasLastName := splitEmployeeName(value.Name)
+		firstName, lastName, _ := splitEmployeeName(value.Name)
 		email := fallbackAmoEmail(companyID, id)
 		if value.Email != nil && strings.TrimSpace(*value.Email) != "" {
 			candidate := strings.ToLower(strings.TrimSpace(*value.Email))
@@ -211,7 +157,6 @@ func normalizeExternalEmployees(companyID uuid.UUID, values []ExternalEmployee) 
 			ID: id, Email: email, FirstName: firstName, LastName: lastName,
 			AvatarURL: trimmedStringPointerValue(value.AvatarURL),
 			GroupID:   strings.TrimSpace(value.GroupID), GroupName: strings.TrimSpace(value.GroupName),
-			HasLastName: hasLastName,
 		})
 	}
 	return result, nil
@@ -226,13 +171,6 @@ func splitEmployeeName(value string) (string, string, bool) {
 		return parts[0], "", false
 	}
 	return parts[0], strings.Join(parts[1:], " "), true
-}
-
-func preservedAmoLastName(value string) string {
-	if value == "amoCRM" {
-		return ""
-	}
-	return value
 }
 
 func fallbackAmoEmail(companyID uuid.UUID, externalID string) string {
@@ -253,33 +191,6 @@ func trimmedStringPointerValue(value *string) *string {
 		return nil
 	}
 	return trimmedStringPointer(*value)
-}
-
-func amoChangedFields(current db.User, next normalizedExternalEmployee) []string {
-	result := make([]string, 0, 5)
-	if current.Email != next.Email {
-		result = append(result, "email")
-	}
-	if current.FirstName != next.FirstName {
-		result = append(result, "firstName")
-	}
-	if textValue(current.LastName) != next.LastName {
-		result = append(result, "lastName")
-	}
-	if !equalText(current.AvatarUrl, next.AvatarURL) {
-		result = append(result, "avatarUrl")
-	}
-	if current.Status != "active" {
-		result = append(result, "status")
-	}
-	return result
-}
-
-func equalText(current pgtype.Text, next *string) bool {
-	if !current.Valid {
-		return next == nil
-	}
-	return next != nil && current.String == *next
 }
 
 func avatarSource(avatarURL *string) pgtype.Text {

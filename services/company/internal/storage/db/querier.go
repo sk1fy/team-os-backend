@@ -28,7 +28,6 @@ type Querier interface {
 	CreatePosition(ctx context.Context, arg CreatePositionParams) (Position, error)
 	CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
-	DeactivateMissingAmoUsers(ctx context.Context, arg DeactivateMissingAmoUsersParams) ([]uuid.UUID, error)
 	DeleteAccessLink(ctx context.Context, arg DeleteAccessLinkParams) error
 	DeleteCredential(ctx context.Context, arg DeleteCredentialParams) error
 	DeleteDepartment(ctx context.Context, arg DeleteDepartmentParams) (int64, error)
@@ -80,7 +79,6 @@ type Querier interface {
 	RotateSession(ctx context.Context, arg RotateSessionParams) (int64, error)
 	SetCompanyOwner(ctx context.Context, arg SetCompanyOwnerParams) (Company, error)
 	SetCredential(ctx context.Context, arg SetCredentialParams) error
-	UpdateAmoUser(ctx context.Context, arg UpdateAmoUserParams) (User, error)
 	UpdateCompany(ctx context.Context, arg UpdateCompanyParams) (Company, error)
 	UpdateCurrentUser(ctx context.Context, arg UpdateCurrentUserParams) (User, error)
 	UpdateDepartment(ctx context.Context, arg UpdateDepartmentParams) (Department, error)

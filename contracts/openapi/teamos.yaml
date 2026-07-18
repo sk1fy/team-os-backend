@@ -2395,9 +2395,8 @@ components:
       type: string
       enum: [local, amo]
       description: >-
-        Источник сотрудника. Для `amo` поля email, firstName, avatarUrl, активность и lastName при
-        наличии фамилии в amoCRM принадлежат amoCRM и перезаписываются при следующей синхронизации;
-        остальные поля TeamOS сохраняет локально.
+        Источник сотрудника. `amo` означает однократный импорт из amoCRM; после импорта профиль,
+        статус и доступ сотрудника управляются только в TeamOS.
     InviteStatus:
       type: string
       enum: [pending, accepted, expired]
