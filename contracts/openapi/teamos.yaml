@@ -2712,6 +2712,7 @@ components:
           type: string
         phone:
           $ref: '#/components/schemas/ClearablePhone'
+        # Поле сохранено в контракте только для совместимости; gateway не передаёт его в company.
         avatarUrl:
           type: string
           deprecated: true
