@@ -44,3 +44,15 @@ func TestNormalizeUUIDsAndAddedUUIDs(t *testing.T) {
 		t.Fatalf("addedUUIDs() = %v", added)
 	}
 }
+
+func TestCloneUUIDsReturnsNonNilEmptySlice(t *testing.T) {
+	for _, values := range [][]uuid.UUID{nil, {}} {
+		got := cloneUUIDs(values)
+		if got == nil {
+			t.Fatal("cloneUUIDs() вернул nil для пустого UUID-массива")
+		}
+		if len(got) != 0 {
+			t.Fatalf("cloneUUIDs() = %v, ожидался пустой UUID-массив", got)
+		}
+	}
+}

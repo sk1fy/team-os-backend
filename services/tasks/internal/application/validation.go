@@ -18,6 +18,12 @@ func normalizeUUIDs(values []uuid.UUID) []uuid.UUID {
 	return result
 }
 
+func cloneUUIDs(values []uuid.UUID) []uuid.UUID {
+	result := make([]uuid.UUID, len(values))
+	copy(result, values)
+	return result
+}
+
 func normalizeRecurrence(rule *RecurrenceRule) error {
 	if rule == nil {
 		return nil

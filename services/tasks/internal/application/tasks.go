@@ -541,13 +541,13 @@ func (s *Service) ProcessRecurrence(ctx context.Context, companyID, taskID uuid.
 		ID: uuid.New(), CompanyID: task.CompanyID, BoardID: task.BoardID,
 		ColumnID: task.ColumnID, Order: count, Title: task.Title,
 		Description: description, AuthorID: task.AuthorID,
-		AssigneeIds:        append([]uuid.UUID(nil), task.AssigneeIDs...),
+		AssigneeIds:        cloneUUIDs(task.AssigneeIDs),
 		AssigneePositionID: nullableUUID(task.AssigneePositionID),
-		WatcherIds:         append([]uuid.UUID(nil), task.WatcherIDs...),
+		WatcherIds:         cloneUUIDs(task.WatcherIDs),
 		DueDate:            nullableTime(&nextDue), Priority: task.Priority,
-		LabelIds:  append([]uuid.UUID(nil), task.LabelIDs...),
+		LabelIds:  cloneUUIDs(task.LabelIDs),
 		Checklist: checklistJSON, Attachments: attachmentsJSON,
-		Source: sourceJSON, LinkedArticleIds: append([]uuid.UUID(nil), task.LinkedArticleIDs...),
+		Source: sourceJSON, LinkedArticleIds: cloneUUIDs(task.LinkedArticleIDs),
 		Recurrence: recurrenceJSON, CompletedAt: pgtype.Timestamptz{},
 	})
 	if err != nil {
