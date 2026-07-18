@@ -1809,7 +1809,11 @@ type UpdateCurrentUserRequest struct {
 	FirstName *string                `protobuf:"bytes,1,opt,name=first_name,json=firstName,proto3,oneof" json:"first_name,omitempty"`
 	LastName  *string                `protobuf:"bytes,2,opt,name=last_name,json=lastName,proto3,oneof" json:"last_name,omitempty"`
 	// Empty string clears the optional phone value.
-	Phone         *string `protobuf:"bytes,3,opt,name=phone,proto3,oneof" json:"phone,omitempty"`
+	Phone *string `protobuf:"bytes,3,opt,name=phone,proto3,oneof" json:"phone,omitempty"`
+	// Deprecated compatibility field. The server ignores client avatar updates.
+	//
+	// Deprecated: Marked as deprecated in proto/company/v1/company.proto.
+	AvatarUrl     *string `protobuf:"bytes,4,opt,name=avatar_url,json=avatarUrl,proto3,oneof" json:"avatar_url,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1861,6 +1865,14 @@ func (x *UpdateCurrentUserRequest) GetLastName() string {
 func (x *UpdateCurrentUserRequest) GetPhone() string {
 	if x != nil && x.Phone != nil {
 		return *x.Phone
+	}
+	return ""
+}
+
+// Deprecated: Marked as deprecated in proto/company/v1/company.proto.
+func (x *UpdateCurrentUserRequest) GetAvatarUrl() string {
+	if x != nil && x.AvatarUrl != nil {
+		return *x.AvatarUrl
 	}
 	return ""
 }
@@ -3338,13 +3350,14 @@ func (x *GetUserResponse) GetUser() *User {
 }
 
 type CreateUserRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	FirstName     string                 `protobuf:"bytes,1,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
-	LastName      *string                `protobuf:"bytes,2,opt,name=last_name,json=lastName,proto3,oneof" json:"last_name,omitempty"`
-	Email         string                 `protobuf:"bytes,3,opt,name=email,proto3" json:"email,omitempty"`
-	Phone         *string                `protobuf:"bytes,4,opt,name=phone,proto3,oneof" json:"phone,omitempty"`
-	Role          UserRole               `protobuf:"varint,5,opt,name=role,proto3,enum=teamos.company.v1.UserRole" json:"role,omitempty"`
-	PositionIds   []string               `protobuf:"bytes,6,rep,name=position_ids,json=positionIds,proto3" json:"position_ids,omitempty"`
+	state     protoimpl.MessageState `protogen:"open.v1"`
+	FirstName string                 `protobuf:"bytes,1,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
+	// Empty string means that the optional surname was not provided.
+	LastName      string   `protobuf:"bytes,2,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
+	Email         string   `protobuf:"bytes,3,opt,name=email,proto3" json:"email,omitempty"`
+	Phone         *string  `protobuf:"bytes,4,opt,name=phone,proto3,oneof" json:"phone,omitempty"`
+	Role          UserRole `protobuf:"varint,5,opt,name=role,proto3,enum=teamos.company.v1.UserRole" json:"role,omitempty"`
+	PositionIds   []string `protobuf:"bytes,6,rep,name=position_ids,json=positionIds,proto3" json:"position_ids,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3387,8 +3400,8 @@ func (x *CreateUserRequest) GetFirstName() string {
 }
 
 func (x *CreateUserRequest) GetLastName() string {
-	if x != nil && x.LastName != nil {
-		return *x.LastName
+	if x != nil {
+		return x.LastName
 	}
 	return ""
 }
@@ -6598,17 +6611,19 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\asession\x18\x01 \x01(\v2\x1e.teamos.company.v1.AuthSessionR\asession\"\x17\n" +
 	"\x15GetCurrentUserRequest\"E\n" +
 	"\x16GetCurrentUserResponse\x12+\n" +
-	"\x04user\x18\x01 \x01(\v2\x17.teamos.company.v1.UserR\x04user\"\xb4\x01\n" +
+	"\x04user\x18\x01 \x01(\v2\x17.teamos.company.v1.UserR\x04user\"\xd9\x01\n" +
 	"\x18UpdateCurrentUserRequest\x12\"\n" +
 	"\n" +
 	"first_name\x18\x01 \x01(\tH\x00R\tfirstName\x88\x01\x01\x12 \n" +
 	"\tlast_name\x18\x02 \x01(\tH\x01R\blastName\x88\x01\x01\x12\x19\n" +
-	"\x05phone\x18\x03 \x01(\tH\x02R\x05phone\x88\x01\x01B\r\n" +
+	"\x05phone\x18\x03 \x01(\tH\x02R\x05phone\x88\x01\x01\x12&\n" +
+	"\n" +
+	"avatar_url\x18\x04 \x01(\tB\x02\x18\x01H\x03R\tavatarUrl\x88\x01\x01B\r\n" +
 	"\v_first_nameB\f\n" +
 	"\n" +
 	"_last_nameB\b\n" +
-	"\x06_phoneJ\x04\b\x04\x10\x05R\n" +
-	"avatar_url\"H\n" +
+	"\x06_phoneB\r\n" +
+	"\v_avatar_url\"H\n" +
 	"\x19UpdateCurrentUserResponse\x12+\n" +
 	"\x04user\x18\x01 \x01(\v2\x17.teamos.company.v1.UserR\x04user\"\x13\n" +
 	"\x11GetCompanyRequest\"J\n" +
@@ -6709,17 +6724,15 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\x0eGetUserRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\">\n" +
 	"\x0fGetUserResponse\x12+\n" +
-	"\x04user\x18\x01 \x01(\v2\x17.teamos.company.v1.UserR\x04user\"\xf1\x01\n" +
+	"\x04user\x18\x01 \x01(\v2\x17.teamos.company.v1.UserR\x04user\"\xde\x01\n" +
 	"\x11CreateUserRequest\x12\x1d\n" +
 	"\n" +
-	"first_name\x18\x01 \x01(\tR\tfirstName\x12 \n" +
-	"\tlast_name\x18\x02 \x01(\tH\x00R\blastName\x88\x01\x01\x12\x14\n" +
+	"first_name\x18\x01 \x01(\tR\tfirstName\x12\x1b\n" +
+	"\tlast_name\x18\x02 \x01(\tR\blastName\x12\x14\n" +
 	"\x05email\x18\x03 \x01(\tR\x05email\x12\x19\n" +
-	"\x05phone\x18\x04 \x01(\tH\x01R\x05phone\x88\x01\x01\x12/\n" +
+	"\x05phone\x18\x04 \x01(\tH\x00R\x05phone\x88\x01\x01\x12/\n" +
 	"\x04role\x18\x05 \x01(\x0e2\x1b.teamos.company.v1.UserRoleR\x04role\x12!\n" +
-	"\fposition_ids\x18\x06 \x03(\tR\vpositionIdsB\f\n" +
-	"\n" +
-	"_last_nameB\b\n" +
+	"\fposition_ids\x18\x06 \x03(\tR\vpositionIdsB\b\n" +
 	"\x06_phone\"A\n" +
 	"\x12CreateUserResponse\x12+\n" +
 	"\x04user\x18\x01 \x01(\v2\x17.teamos.company.v1.UserR\x04user\"\xaf\x04\n" +

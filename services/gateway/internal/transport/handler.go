@@ -570,8 +570,12 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	if input.PositionIds != nil {
 		positionIDs = *input.PositionIds
 	}
+	lastName := ""
+	if input.LastName != nil {
+		lastName = *input.LastName
+	}
 	response, err := h.company.CreateUser(outgoingContext(r), &companyv1.CreateUserRequest{
-		FirstName: input.FirstName, LastName: input.LastName, Email: string(input.Email),
+		FirstName: input.FirstName, LastName: lastName, Email: string(input.Email),
 		Phone: input.Phone, Role: roleToProto(input.Role), PositionIds: stringsFromUUIDs(positionIDs),
 	})
 	if err != nil {

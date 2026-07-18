@@ -2712,6 +2712,10 @@ components:
           type: string
         phone:
           $ref: '#/components/schemas/ClearablePhone'
+        avatarUrl:
+          type: string
+          deprecated: true
+          description: Устаревшее поле для обратной совместимости. Значение игнорируется сервером.
 
     UpdateCompanyInput:
       type: object

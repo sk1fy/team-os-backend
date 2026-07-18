@@ -248,8 +248,8 @@ message UpdateCurrentUserRequest {
   optional string last_name = 2;
   // Empty string clears the optional phone value.
   optional string phone = 3;
-  reserved 4;
-  reserved "avatar_url";
+  // Deprecated compatibility field. The server ignores client avatar updates.
+  optional string avatar_url = 4 [deprecated = true];
 }
 
 message UpdateCurrentUserResponse {
@@ -389,7 +389,8 @@ message GetUserResponse {
 
 message CreateUserRequest {
   string first_name = 1;
-  optional string last_name = 2;
+  // Empty string means that the optional surname was not provided.
+  string last_name = 2;
   string email = 3;
   optional string phone = 4;
   UserRole role = 5;
