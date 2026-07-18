@@ -75,6 +75,16 @@ type DistributionGroup struct {
 	UpdatedAt         time.Time   `json:"updated_at"`
 }
 
+type EmployeeAccessAudit struct {
+	ID           uuid.UUID `json:"id"`
+	CompanyID    uuid.UUID `json:"company_id"`
+	TargetUserID uuid.UUID `json:"target_user_id"`
+	ActorUserID  uuid.UUID `json:"actor_user_id"`
+	Action       string    `json:"action"`
+	Mode         string    `json:"mode"`
+	CreatedAt    time.Time `json:"created_at"`
+}
+
 type Invite struct {
 	ID           uuid.UUID     `json:"id"`
 	CompanyID    uuid.UUID     `json:"company_id"`
@@ -155,7 +165,7 @@ type User struct {
 	CompanyID         uuid.UUID   `json:"company_id"`
 	Email             string      `json:"email"`
 	FirstName         string      `json:"first_name"`
-	LastName          string      `json:"last_name"`
+	LastName          pgtype.Text `json:"last_name"`
 	Phone             pgtype.Text `json:"phone"`
 	AvatarUrl         pgtype.Text `json:"avatar_url"`
 	Role              string      `json:"role"`
@@ -169,6 +179,7 @@ type User struct {
 	ExternalID        pgtype.Text `json:"external_id"`
 	ExternalGroupID   pgtype.Text `json:"external_group_id"`
 	ExternalGroupName pgtype.Text `json:"external_group_name"`
+	AvatarSource      pgtype.Text `json:"avatar_source"`
 }
 
 type UserPosition struct {

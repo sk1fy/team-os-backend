@@ -35,6 +35,16 @@ func (k *Kb) GetArticle(ctx context.Context, token string, id uuid.UUID) (applic
 	return articleFromProto(response.GetArticle())
 }
 
+func (k *Kb) GetPublicArticle(ctx context.Context, id uuid.UUID) (application.KbArticle, error) {
+	response, err := callWithResilience(ctx, "", k.breaker, func(callContext context.Context) (*kbv1.GetPublicArticleResponse, error) {
+		return k.client.GetPublicArticle(callContext, &kbv1.GetPublicArticleRequest{Id: id.String()})
+	})
+	if err != nil {
+		return application.KbArticle{}, fmt.Errorf("kb.GetPublicArticle: %w", err)
+	}
+	return articleFromProto(response.GetArticle())
+}
+
 func (k *Kb) GetArticlesByIds(ctx context.Context, token string, ids []uuid.UUID) ([]application.KbArticle, error) {
 	request := &kbv1.GetArticlesByIdsRequest{Ids: make([]string, len(ids))}
 	for index := range ids {
@@ -70,7 +80,11 @@ func (k *Kb) GetSections(ctx context.Context, token string) ([]application.KbSec
 		if parseErr != nil {
 			return nil, fmt.Errorf("kb.GetSections: invalid section id %q", section.GetId())
 		}
-		sections = append(sections, application.KbSection{ID: id, Name: section.GetName()})
+		visibility := "company"
+		if section.GetVisibility() == kbv1.SectionVisibility_SECTION_VISIBILITY_PUBLIC {
+			visibility = "public"
+		}
+		sections = append(sections, application.KbSection{ID: id, Name: section.GetName(), Visibility: visibility})
 	}
 	return sections, nil
 }

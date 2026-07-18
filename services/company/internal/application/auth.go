@@ -50,7 +50,7 @@ func (s *Service) Register(ctx context.Context, input RegisterInput, meta Sessio
 		return AuthResult{}, internal("Не удалось создать компанию", err)
 	}
 	user, err := queries.CreateUser(ctx, db.CreateUserParams{
-		ID: userID, CompanyID: companyID, Email: email, FirstName: firstName, LastName: lastName,
+		ID: userID, CompanyID: companyID, Email: email, FirstName: firstName, LastName: pgText(&lastName),
 		Role: "owner", Status: "active",
 	})
 	if isUniqueViolation(err) {
@@ -310,7 +310,7 @@ func (s *Service) AcceptInvite(ctx context.Context, input AcceptInviteInput, met
 			return AuthResult{}, conflict("Пользователь с таким email уже активен")
 		}
 		user, err = queries.ActivateInvitedUser(ctx, db.ActivateInvitedUserParams{
-			ID: user.ID, FirstName: firstName, LastName: lastName,
+			ID: user.ID, FirstName: firstName, LastName: pgText(&lastName),
 			Role: invite.Role, CompanyID: invite.CompanyID,
 		})
 		if err != nil {
@@ -319,7 +319,7 @@ func (s *Service) AcceptInvite(ctx context.Context, input AcceptInviteInput, met
 	} else {
 		user, err = queries.CreateUser(ctx, db.CreateUserParams{
 			ID: uuid.New(), CompanyID: invite.CompanyID, Email: email,
-			FirstName: firstName, LastName: lastName, Role: invite.Role, Status: "active",
+			FirstName: firstName, LastName: pgText(&lastName), Role: invite.Role, Status: "active",
 		})
 		if err != nil {
 			return AuthResult{}, internal("Не удалось создать пользователя", err)

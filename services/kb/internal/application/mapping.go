@@ -19,8 +19,19 @@ func sectionFromDB(value db.Section) (Section, error) {
 	return Section{
 		ID: value.ID, CompanyID: value.CompanyID, Name: value.Name,
 		ParentID: uuidPointer(value.ParentID), Order: value.Order, Access: access,
-		CreatedAt: value.CreatedAt, UpdatedAt: value.UpdatedAt,
+		Visibility: value.Visibility,
+		CreatedAt:  value.CreatedAt, UpdatedAt: value.UpdatedAt,
 	}, nil
+}
+
+func articleFromPublicRow(value db.GetPublicArticleRow) Article {
+	return articleFromDBRow(articleDBFields{
+		ID: value.ID, CompanyID: value.CompanyID, SectionID: value.SectionID,
+		Title: value.Title, Content: value.Content, Status: value.Status,
+		AuthorID: value.AuthorID, Version: value.Version,
+		RequiresAcknowledgement: value.RequiresAcknowledgement,
+		PlainText:               value.PlainText, CreatedAt: value.CreatedAt, UpdatedAt: value.UpdatedAt,
+	})
 }
 
 type articleDBFields struct {

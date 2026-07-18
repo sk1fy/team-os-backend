@@ -48,9 +48,10 @@ func readableSections(actor Actor, sections []Section, byID map[uuid.UUID]Sectio
 }
 
 type CreateSectionInput struct {
-	Name     string
-	ParentID *uuid.UUID
-	Access   *AccessSettings
+	Name       string
+	ParentID   *uuid.UUID
+	Access     *AccessSettings
+	Visibility *string
 }
 
 func (s *Service) CreateSection(ctx context.Context, actor Actor, input CreateSectionInput) (Section, error) {
@@ -64,6 +65,13 @@ func (s *Service) CreateSection(ctx context.Context, actor Actor, input CreateSe
 	access := defaultAccessSettings()
 	if input.Access != nil {
 		access = *input.Access
+	}
+	visibility := "company"
+	if input.Visibility != nil {
+		if err = validateSectionVisibility(*input.Visibility); err != nil {
+			return Section{}, err
+		}
+		visibility = *input.Visibility
 	}
 	accessJSON, err := accessToJSON(access)
 	if err != nil {
@@ -97,7 +105,8 @@ func (s *Service) CreateSection(ctx context.Context, actor Actor, input CreateSe
 	row, err := queries.CreateSection(ctx, db.CreateSectionParams{
 		ID: uuid.New(), CompanyID: actor.CompanyID, Name: name,
 		ParentID: nullableUUID(input.ParentID), Order: siblingCount,
-		Access: accessJSON,
+		Access:     accessJSON,
+		Visibility: visibility,
 	})
 	if err != nil {
 		return Section{}, internal("Не удалось создать раздел", err)
@@ -109,16 +118,17 @@ func (s *Service) CreateSection(ctx context.Context, actor Actor, input CreateSe
 }
 
 type UpdateSectionInput struct {
-	ID     uuid.UUID
-	Name   *string
-	Access *AccessSettings
+	ID         uuid.UUID
+	Name       *string
+	Access     *AccessSettings
+	Visibility *string
 }
 
 func (s *Service) UpdateSection(ctx context.Context, actor Actor, input UpdateSectionInput) (Section, error) {
 	if !domainaccess.CanManage(actor.subject()) {
 		return Section{}, forbidden("Недостаточно прав для изменения базы знаний")
 	}
-	if input.Name == nil && input.Access == nil {
+	if input.Name == nil && input.Access == nil && input.Visibility == nil {
 		return Section{}, validation("Укажите хотя бы одно поле для обновления")
 	}
 	params := db.UpdateSectionParams{CompanyID: actor.CompanyID, ID: input.ID}
@@ -136,6 +146,12 @@ func (s *Service) UpdateSection(ctx context.Context, actor Actor, input UpdateSe
 		}
 		params.Access = accessJSON
 	}
+	if input.Visibility != nil {
+		if err := validateSectionVisibility(*input.Visibility); err != nil {
+			return Section{}, err
+		}
+		params.Visibility = pgtype.Text{String: *input.Visibility, Valid: true}
+	}
 	row, err := db.New(s.pool).UpdateSection(ctx, params)
 	if err != nil {
 		if isNoRows(err) {
@@ -144,6 +160,13 @@ func (s *Service) UpdateSection(ctx context.Context, actor Actor, input UpdateSe
 		return Section{}, internal("Не удалось обновить раздел", err)
 	}
 	return sectionFromDB(row)
+}
+
+func validateSectionVisibility(value string) error {
+	if value != "public" && value != "company" {
+		return validation("Некорректная видимость раздела")
+	}
+	return nil
 }
 
 func (s *Service) DeleteSection(ctx context.Context, actor Actor, id uuid.UUID) error {

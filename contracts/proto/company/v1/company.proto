@@ -246,9 +246,10 @@ message GetCurrentUserResponse {
 message UpdateCurrentUserRequest {
   optional string first_name = 1;
   optional string last_name = 2;
-  // Empty strings clear optional phone/avatar values, matching the TS contract.
+  // Empty string clears the optional phone value.
   optional string phone = 3;
-  optional string avatar_url = 4;
+  reserved 4;
+  reserved "avatar_url";
 }
 
 message UpdateCurrentUserResponse {
@@ -388,7 +389,7 @@ message GetUserResponse {
 
 message CreateUserRequest {
   string first_name = 1;
-  string last_name = 2;
+  optional string last_name = 2;
   string email = 3;
   optional string phone = 4;
   UserRole role = 5;
@@ -429,6 +430,7 @@ message UserAccess {
   UserAccessMode mode = 1;
   optional string link_token = 2;
   optional google.protobuf.Timestamp link_created_at = 3;
+  optional string link_url = 4;
 }
 
 message GetUserAccessRequest {
@@ -455,6 +457,7 @@ message SetUserLinkAccessRequest {
 message SetUserLinkAccessResponse {
   string token = 1;
   google.protobuf.Timestamp created_at = 2;
+  optional string link_url = 3;
 }
 
 message RevokeUserAccessRequest {

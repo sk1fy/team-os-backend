@@ -35,10 +35,14 @@ func (s *Service) GetQuizzes(ctx context.Context, actor Actor, lessonID *uuid.UU
 	if !canReadAcademy(actor) {
 		return nil, forbidden("Недостаточно прав для просмотра академии")
 	}
-	if actor.Role == "partner" {
-		courseIDs, err := s.assignedCourseIDs(ctx, queries, actor)
+	if !actor.canManage() {
+		visibleCourses, err := s.GetCourses(ctx, actor)
 		if err != nil {
 			return nil, err
+		}
+		courseIDs := make([]uuid.UUID, len(visibleCourses))
+		for index := range visibleCourses {
+			courseIDs[index] = visibleCourses[index].ID
 		}
 		if len(courseIDs) == 0 {
 			return []Quiz{}, nil

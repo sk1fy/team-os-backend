@@ -14,7 +14,7 @@ import (
 )
 
 const getUsersByIDs = `-- name: GetUsersByIDs :many
-SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name,
+SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name, u.avatar_source,
        COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids,
        CASE
            WHEN EXISTS (SELECT 1 FROM access_links access WHERE access.company_id = u.company_id AND access.user_id = u.id) THEN 'link'
@@ -41,7 +41,7 @@ type GetUsersByIDsRow struct {
 	CompanyID         uuid.UUID   `json:"company_id"`
 	Email             string      `json:"email"`
 	FirstName         string      `json:"first_name"`
-	LastName          string      `json:"last_name"`
+	LastName          pgtype.Text `json:"last_name"`
 	Phone             pgtype.Text `json:"phone"`
 	AvatarUrl         pgtype.Text `json:"avatar_url"`
 	Role              string      `json:"role"`
@@ -55,6 +55,7 @@ type GetUsersByIDsRow struct {
 	ExternalID        pgtype.Text `json:"external_id"`
 	ExternalGroupID   pgtype.Text `json:"external_group_id"`
 	ExternalGroupName pgtype.Text `json:"external_group_name"`
+	AvatarSource      pgtype.Text `json:"avatar_source"`
 	PositionIds       []uuid.UUID `json:"position_ids"`
 	AccessMode        string      `json:"access_mode"`
 }
@@ -87,6 +88,7 @@ func (q *Queries) GetUsersByIDs(ctx context.Context, arg GetUsersByIDsParams) ([
 			&i.ExternalID,
 			&i.ExternalGroupID,
 			&i.ExternalGroupName,
+			&i.AvatarSource,
 			&i.PositionIds,
 			&i.AccessMode,
 		); err != nil {

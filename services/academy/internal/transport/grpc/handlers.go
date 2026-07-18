@@ -36,6 +36,24 @@ func (s *Server) GetCourse(ctx context.Context, request *academyv1.GetCourseRequ
 	return &academyv1.GetCourseResponse{Course: courseToProto(course)}, nil
 }
 
+func (s *Server) GetPublicCourse(ctx context.Context, request *academyv1.GetPublicCourseRequest) (*academyv1.GetPublicCourseResponse, error) {
+	id, err := parseUUID(request.GetId())
+	if err != nil {
+		return nil, err
+	}
+	publicCourse, err := s.application.GetPublicCourse(ctx, id)
+	if err != nil {
+		return nil, transportError(err)
+	}
+	lessons, err := lessonsToProto(publicCourse.Lessons)
+	if err != nil {
+		return nil, transportError(err)
+	}
+	return &academyv1.GetPublicCourseResponse{
+		Course: courseToProto(publicCourse.Course), Sections: sectionsToProto(publicCourse.Sections), Lessons: lessons,
+	}, nil
+}
+
 func (s *Server) CreateCourse(ctx context.Context, request *academyv1.CreateCourseRequest) (*academyv1.CreateCourseResponse, error) {
 	actor, err := s.actor(ctx)
 	if err != nil {
@@ -51,6 +69,13 @@ func (s *Server) CreateCourse(ctx context.Context, request *academyv1.CreateCour
 			return nil, statusErr
 		}
 		input.Status = &status
+	}
+	if request.Visibility != nil {
+		visibility, visibilityErr := courseVisibilityFromProto(request.GetVisibility())
+		if visibilityErr != nil {
+			return nil, visibilityErr
+		}
+		input.Visibility = &visibility
 	}
 	course, err := s.application.CreateCourse(ctx, actor, input)
 	if err != nil {
@@ -76,11 +101,19 @@ func (s *Server) CreateCourseFromKb(ctx context.Context, request *academyv1.Crea
 	if err != nil {
 		return nil, err
 	}
-	course, err := s.application.CreateCourseFromKb(ctx, actor, application.CreateCourseFromKbInput{
+	input := application.CreateCourseFromKbInput{
 		Title: request.GetTitle(), Description: request.Description,
 		Sequential: request.Sequential, DeadlineDays: uint32Pointer(request.DeadlineDays),
 		Mode: mode, SectionIDs: sectionIDs, ArticleIDs: articleIDs,
-	})
+	}
+	if request.Visibility != nil {
+		visibility, visibilityErr := courseVisibilityFromProto(request.GetVisibility())
+		if visibilityErr != nil {
+			return nil, visibilityErr
+		}
+		input.Visibility = &visibility
+	}
+	course, err := s.application.CreateCourseFromKb(ctx, actor, input)
 	if err != nil {
 		return nil, transportError(err)
 	}
@@ -106,6 +139,13 @@ func (s *Server) UpdateCourse(ctx context.Context, request *academyv1.UpdateCour
 			return nil, statusErr
 		}
 		input.Status = &status
+	}
+	if request.Visibility != nil {
+		visibility, visibilityErr := courseVisibilityFromProto(request.GetVisibility())
+		if visibilityErr != nil {
+			return nil, visibilityErr
+		}
+		input.Visibility = &visibility
 	}
 	course, err := s.application.UpdateCourse(ctx, actor, input)
 	if err != nil {

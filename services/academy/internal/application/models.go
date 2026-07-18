@@ -29,6 +29,7 @@ type Course struct {
 	Description  *string
 	CoverURL     *string
 	Status       string
+	Visibility   string
 	AuthorID     uuid.UUID
 	Sequential   bool
 	DeadlineDays *int32
@@ -98,6 +99,12 @@ type Progress struct {
 	CompletedAt        *time.Time
 }
 
+type PublicCourse struct {
+	Course   Course
+	Sections []CourseSection
+	Lessons  []Lesson
+}
+
 // KbArticle is the subset of a knowledge-base article academy copies into
 // lessons; fetched over gRPC with the actor's forwarded token.
 type KbArticle struct {
@@ -108,12 +115,14 @@ type KbArticle struct {
 }
 
 type KbSection struct {
-	ID   uuid.UUID
-	Name string
+	ID         uuid.UUID
+	Name       string
+	Visibility string
 }
 
 type KbClient interface {
 	GetArticle(ctx context.Context, token string, id uuid.UUID) (KbArticle, error)
+	GetPublicArticle(ctx context.Context, id uuid.UUID) (KbArticle, error)
 	GetArticlesByIds(ctx context.Context, token string, ids []uuid.UUID) ([]KbArticle, error)
 	GetSections(ctx context.Context, token string) ([]KbSection, error)
 }

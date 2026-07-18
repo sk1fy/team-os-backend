@@ -67,12 +67,13 @@ type ProcessedEvent struct {
 }
 
 type Section struct {
-	ID        uuid.UUID     `json:"id"`
-	CompanyID uuid.UUID     `json:"company_id"`
-	Name      string        `json:"name"`
-	ParentID  uuid.NullUUID `json:"parent_id"`
-	Order     int32         `json:"order"`
-	Access    []byte        `json:"access"`
-	CreatedAt time.Time     `json:"created_at"`
-	UpdatedAt time.Time     `json:"updated_at"`
+	ID         uuid.UUID     `json:"id"`
+	CompanyID  uuid.UUID     `json:"company_id"`
+	Name       string        `json:"name"`
+	ParentID   uuid.NullUUID `json:"parent_id"`
+	Order      int32         `json:"order"`
+	Access     []byte        `json:"access"`
+	CreatedAt  time.Time     `json:"created_at"`
+	UpdatedAt  time.Time     `json:"updated_at"`
+	Visibility string        `json:"visibility"`
 }

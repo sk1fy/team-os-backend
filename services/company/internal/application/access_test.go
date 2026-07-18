@@ -18,6 +18,7 @@ var accessUserColumns = []string{
 	"id", "company_id", "email", "first_name", "last_name", "phone", "avatar_url",
 	"role", "status", "birth_date", "hired_at", "vacation_allowance", "created_at",
 	"updated_at", "source", "external_id", "external_group_id", "external_group_name",
+	"avatar_source",
 }
 
 func TestRequireOwnerForEmployeeAccessManagement(t *testing.T) {
@@ -69,6 +70,7 @@ func TestSetLinkAccessSwitchesModeAndRevokesSessions(t *testing.T) {
 
 	mock.ExpectBegin()
 	expectAccessTarget(mock, companyID, userID, now)
+	expectAccessMode(mock, companyID, userID, "password")
 	mock.ExpectQuery("INSERT INTO access_links").
 		WithArgs(companyID, userID, pgxmock.AnyArg()).
 		WillReturnRows(pgxmock.NewRows([]string{"company_id", "user_id", "token", "created_at", "updated_at"}).
@@ -77,6 +79,7 @@ func TestSetLinkAccessSwitchesModeAndRevokesSessions(t *testing.T) {
 		WithArgs(companyID, userID).
 		WillReturnResult(pgconn.NewCommandTag("DELETE 1"))
 	expectSessionRevocation(mock, userID, now)
+	expectAccessAudit(mock, actor, userID, "reissued", "link", now)
 	mock.ExpectCommit()
 
 	service := newAccessService(mock, now)
@@ -99,6 +102,7 @@ func TestSetPasswordAccessSwitchesModeAndRevokesSessions(t *testing.T) {
 
 	mock.ExpectBegin()
 	expectAccessTarget(mock, companyID, userID, now)
+	expectAccessMode(mock, companyID, userID, "link")
 	mock.ExpectExec("INSERT INTO credentials").
 		WithArgs(companyID, userID, pgxmock.AnyArg()).
 		WillReturnResult(pgconn.NewCommandTag("INSERT 0 1"))
@@ -106,6 +110,7 @@ func TestSetPasswordAccessSwitchesModeAndRevokesSessions(t *testing.T) {
 		WithArgs(companyID, userID).
 		WillReturnResult(pgconn.NewCommandTag("DELETE 1"))
 	expectSessionRevocation(mock, userID, now)
+	expectAccessAudit(mock, actor, userID, "reissued", "password", now)
 	mock.ExpectCommit()
 
 	service := newAccessService(mock, now)
@@ -129,6 +134,7 @@ func TestRevokeAccessDeletesBothModesAndRevokesSessions(t *testing.T) {
 
 	mock.ExpectBegin()
 	expectAccessTarget(mock, companyID, userID, now)
+	expectAccessMode(mock, companyID, userID, "link")
 	mock.ExpectExec("DELETE FROM credentials").
 		WithArgs(companyID, userID).
 		WillReturnResult(pgconn.NewCommandTag("DELETE 1"))
@@ -136,6 +142,7 @@ func TestRevokeAccessDeletesBothModesAndRevokesSessions(t *testing.T) {
 		WithArgs(companyID, userID).
 		WillReturnResult(pgconn.NewCommandTag("DELETE 1"))
 	expectSessionRevocation(mock, userID, now)
+	expectAccessAudit(mock, actor, userID, "revoked", "link", now)
 	mock.ExpectCommit()
 
 	service := newAccessService(mock, now)
@@ -188,8 +195,19 @@ func expectAccessTarget(mock pgxmock.PgxPoolIface, companyID, userID uuid.UUID, 
 		WithArgs(companyID, userID).
 		WillReturnRows(pgxmock.NewRows(accessUserColumns).AddRow(
 			userID, companyID, "employee@example.com", "Иван", "Иванов", nil, nil,
-			"employee", "active", nil, nil, nil, now, now, "local", nil, nil, nil,
+			"employee", "active", nil, nil, nil, now, now, "local", nil, nil, nil, nil,
 		))
+}
+
+func expectAccessMode(mock pgxmock.PgxPoolIface, companyID, userID uuid.UUID, mode string) {
+	mock.ExpectQuery("SELECT CASE").WithArgs(companyID, userID).
+		WillReturnRows(pgxmock.NewRows([]string{"access_mode"}).AddRow(mode))
+}
+
+func expectAccessAudit(mock pgxmock.PgxPoolIface, actor Actor, userID uuid.UUID, action, mode string, now time.Time) {
+	mock.ExpectExec("INSERT INTO employee_access_audit").
+		WithArgs(pgxmock.AnyArg(), actor.CompanyID, userID, actor.UserID, action, mode, now).
+		WillReturnResult(pgconn.NewCommandTag("INSERT 0 1"))
 }
 
 func expectSessionRevocation(mock pgxmock.PgxPoolIface, userID uuid.UUID, now time.Time) {

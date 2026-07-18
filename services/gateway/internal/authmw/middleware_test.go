@@ -63,3 +63,18 @@ func TestAccessLinkLoginIsPublic(t *testing.T) {
 		t.Fatal("only POST access-link login may be public")
 	}
 }
+
+func TestPublicContentResolversArePublic(t *testing.T) {
+	t.Parallel()
+	for _, path := range []string{
+		"/api/v1/public/academy/courses/00000000-0000-0000-0000-000000000001",
+		"/api/v1/public/kb/articles/00000000-0000-0000-0000-000000000001",
+	} {
+		if !isPublic(http.MethodGet, path) {
+			t.Fatalf("GET %s must be public", path)
+		}
+		if isPublic(http.MethodPost, path) {
+			t.Fatalf("POST %s must remain protected", path)
+		}
+	}
+}

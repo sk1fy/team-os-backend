@@ -24,6 +24,7 @@ type Querier interface {
 	GetArticleForUpdate(ctx context.Context, arg GetArticleForUpdateParams) (GetArticleForUpdateRow, error)
 	GetArticleVersion(ctx context.Context, arg GetArticleVersionParams) (ArticleVersion, error)
 	GetArticlesByIDs(ctx context.Context, arg GetArticlesByIDsParams) ([]GetArticlesByIDsRow, error)
+	GetPublicArticle(ctx context.Context, id uuid.UUID) (GetPublicArticleRow, error)
 	GetSection(ctx context.Context, arg GetSectionParams) (Section, error)
 	ListAcknowledgements(ctx context.Context, arg ListAcknowledgementsParams) ([]ListAcknowledgementsRow, error)
 	ListArticleVersions(ctx context.Context, arg ListArticleVersionsParams) ([]ArticleVersion, error)

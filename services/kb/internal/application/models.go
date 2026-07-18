@@ -31,14 +31,15 @@ type AccessSettings struct {
 }
 
 type Section struct {
-	ID        uuid.UUID
-	CompanyID uuid.UUID
-	Name      string
-	ParentID  *uuid.UUID
-	Order     int32
-	Access    AccessSettings
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID         uuid.UUID
+	CompanyID  uuid.UUID
+	Name       string
+	ParentID   *uuid.UUID
+	Order      int32
+	Access     AccessSettings
+	Visibility string
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
 }
 
 func (s Section) domain(byID map[uuid.UUID]Section) domainaccess.Section {

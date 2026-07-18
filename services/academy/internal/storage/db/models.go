@@ -37,6 +37,7 @@ type Course struct {
 	DeadlineDays pgtype.Int4 `json:"deadline_days"`
 	CreatedAt    time.Time   `json:"created_at"`
 	UpdatedAt    time.Time   `json:"updated_at"`
+	Visibility   string      `json:"visibility"`
 }
 
 type CourseSection struct {

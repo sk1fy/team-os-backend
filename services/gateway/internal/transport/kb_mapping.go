@@ -31,10 +31,36 @@ func sectionFromProto(value *kbv1.ArticleSection) (api.ArticleSection, error) {
 	if err != nil {
 		return api.ArticleSection{}, err
 	}
+	visibility, err := sectionVisibilityFromProto(value.GetVisibility())
+	if err != nil {
+		return api.ArticleSection{}, err
+	}
 	return api.ArticleSection{
 		Id: id, Name: value.GetName(), ParentId: parent,
-		Order: int(value.GetOrder()), Access: access,
+		Order: int(value.GetOrder()), Access: access, Visibility: visibility,
 	}, nil
+}
+
+func sectionVisibilityFromProto(value kbv1.SectionVisibility) (api.ArticleSectionVisibility, error) {
+	switch value {
+	case kbv1.SectionVisibility_SECTION_VISIBILITY_PUBLIC:
+		return api.ArticleSectionVisibilityPublic, nil
+	case kbv1.SectionVisibility_SECTION_VISIBILITY_COMPANY:
+		return api.ArticleSectionVisibilityCompany, nil
+	default:
+		return "", fmt.Errorf("unknown section visibility %d", value)
+	}
+}
+
+func sectionVisibilityToProto(value api.ArticleSectionVisibility) (kbv1.SectionVisibility, error) {
+	switch value {
+	case api.ArticleSectionVisibilityPublic:
+		return kbv1.SectionVisibility_SECTION_VISIBILITY_PUBLIC, nil
+	case api.ArticleSectionVisibilityCompany:
+		return kbv1.SectionVisibility_SECTION_VISIBILITY_COMPANY, nil
+	default:
+		return kbv1.SectionVisibility_SECTION_VISIBILITY_UNSPECIFIED, fmt.Errorf("unknown section visibility %q", value)
+	}
 }
 
 func sectionsFromProto(values []*kbv1.ArticleSection) ([]api.ArticleSection, error) {

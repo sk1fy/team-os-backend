@@ -43,3 +43,26 @@ func TestReadableSectionsManagerSeesAll(t *testing.T) {
 		t.Fatalf("readableSections() len = %d, want 1", len(got))
 	}
 }
+
+func TestArticleVisibilityMatrix(t *testing.T) {
+	t.Parallel()
+	service := &Service{}
+	publicID, companyID := uuid.New(), uuid.New()
+	sections := map[uuid.UUID]Section{
+		publicID:  {ID: publicID, Visibility: "public", Access: AccessSettings{Scope: domainaccess.ScopeCustom}},
+		companyID: {ID: companyID, Visibility: "company", Access: AccessSettings{Scope: domainaccess.ScopeCompany}},
+	}
+	employee := Actor{Role: "employee", UserID: uuid.New()}
+	if !service.canReadArticle(employee, Article{SectionID: publicID, Status: "published"}, sections) {
+		t.Fatal("published article in public section must be readable")
+	}
+	if service.canReadArticle(employee, Article{SectionID: publicID, Status: "draft"}, sections) {
+		t.Fatal("draft in public section must not be readable")
+	}
+	if !service.canReadArticle(employee, Article{SectionID: companyID, Status: "published"}, sections) {
+		t.Fatal("published company article must be readable by employee")
+	}
+	if !service.canReadArticle(Actor{Role: "admin"}, Article{SectionID: companyID, Status: "draft"}, sections) {
+		t.Fatal("manager must be able to read drafts")
+	}
+}

@@ -2,6 +2,7 @@ package application
 
 import (
 	"context"
+	"encoding/json"
 	"strings"
 
 	"github.com/google/uuid"
@@ -15,50 +16,33 @@ func (s *Service) GetCourses(ctx context.Context, actor Actor) ([]Course, error)
 	if !canReadAcademy(actor) {
 		return nil, forbidden("Недостаточно прав для просмотра академии")
 	}
-	if actor.Role == "partner" {
-		return s.partnerCourses(ctx, queries, actor)
-	}
 	rows, err := queries.GetCourses(ctx, actor.CompanyID)
 	if err != nil {
 		return nil, internal("Не удалось получить курсы", err)
 	}
-	return coursesFromRows(rows), nil
-}
-
-// partnerCourses restricts partners to courses assigned to them directly (§7.2).
-func (s *Service) partnerCourses(ctx context.Context, queries *db.Queries, actor Actor) ([]Course, error) {
-	assignments, err := queries.GetUserAssignments(ctx, db.GetUserAssignmentsParams{
-		CompanyID: actor.CompanyID, UserID: actor.UserID,
-	})
-	if err != nil {
-		return nil, internal("Не удалось получить назначения", err)
+	courses := coursesFromRows(rows)
+	if actor.canManage() {
+		return courses, nil
 	}
-	courseIDs := make([]uuid.UUID, 0, len(assignments))
-	seen := make(map[uuid.UUID]struct{}, len(assignments))
-	for _, assignment := range assignments {
-		if _, ok := seen[assignment.CourseID]; ok {
-			continue
+	assignedIDs, err := s.assignedCourseIDs(ctx, queries, actor)
+	if err != nil {
+		return nil, err
+	}
+	assigned := make(map[uuid.UUID]struct{}, len(assignedIDs))
+	for _, id := range assignedIDs {
+		assigned[id] = struct{}{}
+	}
+	result := make([]Course, 0, len(courses))
+	for _, course := range courses {
+		if visibleCourse(actor, course, assigned) {
+			result = append(result, course)
 		}
-		seen[assignment.CourseID] = struct{}{}
-		courseIDs = append(courseIDs, assignment.CourseID)
 	}
-	if len(courseIDs) == 0 {
-		return []Course{}, nil
-	}
-	rows, err := queries.GetCoursesByIds(ctx, db.GetCoursesByIdsParams{
-		CompanyID: actor.CompanyID, Ids: courseIDs,
-	})
-	if err != nil {
-		return nil, internal("Не удалось получить курсы", err)
-	}
-	return coursesFromRows(rows), nil
+	return result, nil
 }
 
 func (s *Service) GetCourse(ctx context.Context, actor Actor, id uuid.UUID) (Course, error) {
 	queries := db.New(s.pool)
-	if err := s.requireCourseAccess(ctx, queries, actor, id); err != nil {
-		return Course{}, err
-	}
 	row, err := queries.GetCourse(ctx, db.GetCourseParams{CompanyID: actor.CompanyID, ID: id})
 	if err != nil {
 		if isNoRows(err) {
@@ -66,7 +50,50 @@ func (s *Service) GetCourse(ctx context.Context, actor Actor, id uuid.UUID) (Cou
 		}
 		return Course{}, internal("Не удалось получить курс", err)
 	}
+	if err = s.requireCourseAccess(ctx, queries, actor, id); err != nil {
+		return Course{}, err
+	}
 	return courseFromRow(row), nil
+}
+
+func (s *Service) GetPublicCourse(ctx context.Context, id uuid.UUID) (PublicCourse, error) {
+	queries := db.New(s.pool)
+	row, err := queries.GetPublicCourse(ctx, id)
+	if err != nil {
+		if isNoRows(err) {
+			return PublicCourse{}, notFound("Курс")
+		}
+		return PublicCourse{}, internal("Не удалось получить публичный курс", err)
+	}
+	sections, err := queries.GetPublicCourseSections(ctx, id)
+	if err != nil {
+		return PublicCourse{}, internal("Не удалось получить разделы публичного курса", err)
+	}
+	lessons, err := queries.GetPublicCourseLessons(ctx, id)
+	if err != nil {
+		return PublicCourse{}, internal("Не удалось получить уроки публичного курса", err)
+	}
+	convertedLessons := lessonsFromRows(lessons)
+	for index := range convertedLessons {
+		lesson := &convertedLessons[index]
+		if lesson.SourceMode == nil || *lesson.SourceMode != "link" || lesson.SourceArticleID == nil {
+			continue
+		}
+		if s.kb == nil {
+			return PublicCourse{}, notFound("Курс")
+		}
+		article, articleErr := s.kb.GetPublicArticle(ctx, *lesson.SourceArticleID)
+		if articleErr != nil {
+			// Fail closed if a linked article was unpublished or its section was closed.
+			return PublicCourse{}, notFound("Курс")
+		}
+		lesson.Content = append(json.RawMessage(nil), article.Content...)
+	}
+	convertedSections := make([]CourseSection, len(sections))
+	for index := range sections {
+		convertedSections[index] = sectionFromRow(sections[index])
+	}
+	return PublicCourse{Course: courseFromRow(row), Sections: convertedSections, Lessons: convertedLessons}, nil
 }
 
 type CreateCourseInput struct {
@@ -75,6 +102,7 @@ type CreateCourseInput struct {
 	Status       *string
 	Sequential   *bool
 	DeadlineDays *int32
+	Visibility   *string
 }
 
 func (s *Service) CreateCourse(ctx context.Context, actor Actor, input CreateCourseInput) (Course, error) {
@@ -100,6 +128,13 @@ func (s *Service) CreateCourse(ctx context.Context, actor Actor, input CreateCou
 	if err != nil {
 		return Course{}, err
 	}
+	visibility := "restricted"
+	if input.Visibility != nil {
+		if err = validateCourseVisibility(*input.Visibility); err != nil {
+			return Course{}, err
+		}
+		visibility = *input.Visibility
+	}
 
 	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
@@ -114,6 +149,7 @@ func (s *Service) CreateCourse(ctx context.Context, actor Actor, input CreateCou
 		Description: nullText(input.Description), Status: status,
 		AuthorID: actor.UserID, Sequential: sequential,
 		DeadlineDays: nullInt4(deadlineDays), CreatedAt: now,
+		Visibility: visibility,
 	})
 	if err != nil {
 		return Course{}, internal("Не удалось создать курс", err)
@@ -139,6 +175,7 @@ type CreateCourseFromKbInput struct {
 	Mode         string
 	SectionIDs   []uuid.UUID
 	ArticleIDs   []uuid.UUID
+	Visibility   *string
 }
 
 func (s *Service) CreateCourseFromKb(ctx context.Context, actor Actor, input CreateCourseFromKbInput) (Course, error) {
@@ -168,8 +205,10 @@ func (s *Service) CreateCourseFromKb(ctx context.Context, actor Actor, input Cre
 		return Course{}, unavailable("Не удалось получить разделы базы знаний", err)
 	}
 	sectionNames := make(map[uuid.UUID]string, len(kbSections))
+	sectionVisibility := make(map[uuid.UUID]string, len(kbSections))
 	for _, section := range kbSections {
 		sectionNames[section.ID] = section.Name
+		sectionVisibility[section.ID] = section.Visibility
 	}
 	articlesBySection := make(map[uuid.UUID][]KbArticle, len(input.SectionIDs))
 	for _, article := range articles {
@@ -197,6 +236,20 @@ func (s *Service) CreateCourseFromKb(ctx context.Context, actor Actor, input Cre
 	if input.Sequential != nil {
 		sequential = *input.Sequential
 	}
+	visibility := "restricted"
+	if input.Visibility != nil {
+		if err = validateCourseVisibility(*input.Visibility); err != nil {
+			return Course{}, err
+		}
+		visibility = *input.Visibility
+	}
+	if visibility == "public" && input.Mode == "link" {
+		for _, article := range articles {
+			if sectionVisibility[article.SectionID] != "public" {
+				return Course{}, validation("Публичный курс может ссылаться только на публичные статьи; используйте режим copy")
+			}
+		}
+	}
 
 	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
@@ -211,6 +264,7 @@ func (s *Service) CreateCourseFromKb(ctx context.Context, actor Actor, input Cre
 		Description: nullText(input.Description), Status: "draft",
 		AuthorID: actor.UserID, Sequential: sequential,
 		DeadlineDays: nullInt4(deadlineDays), CreatedAt: now,
+		Visibility: visibility,
 	})
 	if err != nil {
 		return Course{}, internal("Не удалось создать курс", err)
@@ -251,6 +305,7 @@ type UpdateCourseInput struct {
 	Status       *string
 	Sequential   *bool
 	DeadlineDays *int32
+	Visibility   *string
 }
 
 func (s *Service) UpdateCourse(ctx context.Context, actor Actor, input UpdateCourseInput) (Course, error) {
@@ -260,6 +315,7 @@ func (s *Service) UpdateCourse(ctx context.Context, actor Actor, input UpdateCou
 	params := db.UpdateCourseParams{
 		CompanyID: actor.CompanyID, ID: input.ID, UpdatedAt: s.now().UTC(),
 	}
+	queries := db.New(s.pool)
 	if input.Title != nil {
 		title, err := requiredText(*input.Title, "Укажите название курса")
 		if err != nil {
@@ -287,7 +343,37 @@ func (s *Service) UpdateCourse(ctx context.Context, actor Actor, input UpdateCou
 			params.DeadlineDays = nullInt4(input.DeadlineDays)
 		}
 	}
-	row, err := db.New(s.pool).UpdateCourse(ctx, params)
+	if input.Visibility != nil {
+		if err := validateCourseVisibility(*input.Visibility); err != nil {
+			return Course{}, err
+		}
+		params.Visibility = nullText(input.Visibility)
+		current, currentErr := queries.GetCourse(ctx, db.GetCourseParams{CompanyID: actor.CompanyID, ID: input.ID})
+		if currentErr != nil {
+			if isNoRows(currentErr) {
+				return Course{}, notFound("Курс")
+			}
+			return Course{}, internal("Не удалось проверить курс", currentErr)
+		}
+		if *input.Visibility == "public" && current.Visibility != "public" {
+			linkedArticleIDs, linkedErr := queries.GetLinkedCourseArticleIDs(ctx, db.GetLinkedCourseArticleIDsParams{CompanyID: actor.CompanyID, CourseID: input.ID})
+			if linkedErr != nil {
+				return Course{}, internal("Не удалось проверить связанные статьи", linkedErr)
+			}
+			if len(linkedArticleIDs) > 0 && s.kb == nil {
+				return Course{}, unavailable("Сервис базы знаний временно недоступен", nil)
+			}
+			for _, articleID := range linkedArticleIDs {
+				if !articleID.Valid {
+					continue
+				}
+				if _, publicErr := s.kb.GetPublicArticle(ctx, articleID.UUID); publicErr != nil {
+					return Course{}, validation("Публичный курс может ссылаться только на публичные статьи; используйте режим copy")
+				}
+			}
+		}
+	}
+	row, err := queries.UpdateCourse(ctx, params)
 	if err != nil {
 		if isNoRows(err) {
 			return Course{}, notFound("Курс")
@@ -340,6 +426,15 @@ func validateCourseStatus(status string) error {
 		return validation("Некорректный статус курса")
 	}
 	return nil
+}
+
+func validateCourseVisibility(visibility string) error {
+	switch visibility {
+	case "public", "company", "restricted":
+		return nil
+	default:
+		return validation("Некорректная видимость курса")
+	}
 }
 
 func normalizeDeadlineDays(value *int32) (*int32, error) {

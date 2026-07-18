@@ -14,9 +14,31 @@ import (
 func sectionToProto(value application.Section) *kbv1.ArticleSection {
 	return &kbv1.ArticleSection{
 		Id: value.ID.String(), Name: value.Name,
-		ParentId: optionalUUIDString(value.ParentID),
-		Order:    uint32(max(0, value.Order)),
-		Access:   accessToProto(value.Access),
+		ParentId:   optionalUUIDString(value.ParentID),
+		Order:      uint32(max(0, value.Order)),
+		Access:     accessToProto(value.Access),
+		Visibility: sectionVisibilityToProto(value.Visibility),
+	}
+}
+
+func sectionVisibilityToProto(value string) kbv1.SectionVisibility {
+	if value == "public" {
+		return kbv1.SectionVisibility_SECTION_VISIBILITY_PUBLIC
+	}
+	if value == "company" {
+		return kbv1.SectionVisibility_SECTION_VISIBILITY_COMPANY
+	}
+	return kbv1.SectionVisibility_SECTION_VISIBILITY_UNSPECIFIED
+}
+
+func sectionVisibilityFromProto(value kbv1.SectionVisibility) (string, error) {
+	switch value {
+	case kbv1.SectionVisibility_SECTION_VISIBILITY_PUBLIC:
+		return "public", nil
+	case kbv1.SectionVisibility_SECTION_VISIBILITY_COMPANY:
+		return "company", nil
+	default:
+		return "", invalidArgument("Некорректная видимость раздела")
 	}
 }
 

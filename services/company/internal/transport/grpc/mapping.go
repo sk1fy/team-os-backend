@@ -291,14 +291,11 @@ func optionalVacationAllowance(value *uint32) (*int16, error) {
 
 func updateCurrentUserInput(request *companyv1.UpdateCurrentUserRequest) application.UpdateCurrentUserInput {
 	phoneSet, phone := clearableString(request.Phone)
-	avatarSet, avatar := clearableString(request.AvatarUrl)
 	return application.UpdateCurrentUserInput{
-		FirstName:    cloneString(request.FirstName),
-		LastName:     cloneString(request.LastName),
-		SetPhone:     phoneSet,
-		Phone:        phone,
-		SetAvatarURL: avatarSet,
-		AvatarURL:    avatar,
+		FirstName: cloneString(request.FirstName),
+		LastName:  cloneString(request.LastName),
+		SetPhone:  phoneSet,
+		Phone:     phone,
 	}
 }
 

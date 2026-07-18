@@ -73,3 +73,28 @@ func TestMentions(t *testing.T) {
 		t.Fatalf("Mentions() len = %d, want 2", len(mentions))
 	}
 }
+
+func TestNormalizeVideo(t *testing.T) {
+	t.Parallel()
+	raw := json.RawMessage(`{"type":"doc","content":[{"type":"video","attrs":{"src":"https://WWW.YouTube.com/embed/abc#fragment"}}]}`)
+	normalized, err := Normalize(raw)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(normalized) != `{"content":[{"attrs":{"provider":"youtube","src":"https://www.youtube.com/embed/abc"},"type":"video"}],"type":"doc"}` {
+		t.Fatalf("Normalize() = %s", normalized)
+	}
+}
+
+func TestRejectUnsafeVideo(t *testing.T) {
+	t.Parallel()
+	for _, raw := range []string{
+		`{"type":"doc","content":[{"type":"video","attrs":{"src":"javascript:alert(1)"}}]}`,
+		`{"type":"doc","content":[{"type":"video","attrs":{"src":"https://127.0.0.1/video.mp4"}}]}`,
+		`{"type":"doc","content":[{"type":"video","attrs":{"src":"https://evil.example/embed/1"}}]}`,
+	} {
+		if _, err := Normalize(json.RawMessage(raw)); err == nil {
+			t.Fatalf("Normalize(%s) unexpectedly succeeded", raw)
+		}
+	}
+}

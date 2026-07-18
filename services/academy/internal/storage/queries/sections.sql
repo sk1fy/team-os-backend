@@ -4,6 +4,12 @@ FROM course_sections
 WHERE company_id = $1 AND course_id = $2
 ORDER BY "order", id;
 
+-- name: GetPublicCourseSections :many
+SELECT id, company_id, course_id, title, "order"
+FROM course_sections
+WHERE course_id = $1
+ORDER BY "order", id;
+
 -- name: GetCourseSection :one
 SELECT id, company_id, course_id, title, "order"
 FROM course_sections

@@ -15,6 +15,7 @@ func courseFromRow(row db.Course) Course {
 		Description:  textPointer(row.Description),
 		CoverURL:     textPointer(row.CoverUrl),
 		Status:       row.Status,
+		Visibility:   row.Visibility,
 		AuthorID:     row.AuthorID,
 		Sequential:   row.Sequential,
 		DeadlineDays: int4Pointer(row.DeadlineDays),

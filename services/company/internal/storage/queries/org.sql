@@ -119,10 +119,11 @@ LIMIT 1;
 
 -- name: CreateAmoUser :one
 INSERT INTO users (
-    id, company_id, email, first_name, last_name, avatar_url,
+    id, company_id, email, first_name, last_name, avatar_url, avatar_source,
     role, status, source, external_id, external_group_id, external_group_name
 )
-VALUES ($1, $2, $3, $4, $5, $6, 'employee', 'active', 'amo', $7, $8, $9)
+VALUES ($1, $2, $3, $4, $5, $6, sqlc.narg('avatar_source'),
+    'employee', 'active', 'amo', $7, $8, $9)
 RETURNING *;
 
 -- name: UpdateAmoUser :one
@@ -131,6 +132,7 @@ SET email = sqlc.arg('email'),
     first_name = sqlc.arg('first_name'),
     last_name = sqlc.arg('last_name'),
     avatar_url = sqlc.narg('avatar_url'),
+    avatar_source = sqlc.narg('avatar_source'),
     status = 'active',
     source = 'amo',
     external_id = sqlc.arg('external_id'),

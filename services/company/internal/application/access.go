@@ -114,6 +114,10 @@ func (s *Service) SetPasswordAccess(
 	if _, err = accessTargetForUpdate(ctx, queries, actor, userID); err != nil {
 		return "", err
 	}
+	previousMode, err := queries.GetUserAccessMode(ctx, db.GetUserAccessModeParams{CompanyID: actor.CompanyID, UserID: userID})
+	if err != nil {
+		return "", internal("Не удалось проверить текущий способ доступа", err)
+	}
 	if err = queries.SetCredential(ctx, db.SetCredentialParams{
 		CompanyID: actor.CompanyID, UserID: userID, PasswordHash: passwordHash,
 	}); err != nil {
@@ -123,6 +127,9 @@ func (s *Service) SetPasswordAccess(
 		return "", internal("Не удалось удалить ссылку доступа", err)
 	}
 	if err = revokeUserSessions(ctx, queries, userID, s.now().UTC()); err != nil {
+		return "", err
+	}
+	if err = auditAccessChange(ctx, queries, actor, userID, accessAction(previousMode), "password", s.now().UTC()); err != nil {
 		return "", err
 	}
 	if err = tx.Commit(ctx); err != nil {
@@ -148,6 +155,10 @@ func (s *Service) SetLinkAccess(ctx context.Context, actor Actor, userID uuid.UU
 	if _, err = accessTargetForUpdate(ctx, queries, actor, userID); err != nil {
 		return EmployeeLinkAccess{}, err
 	}
+	previousMode, err := queries.GetUserAccessMode(ctx, db.GetUserAccessModeParams{CompanyID: actor.CompanyID, UserID: userID})
+	if err != nil {
+		return EmployeeLinkAccess{}, internal("Не удалось проверить текущий способ доступа", err)
+	}
 	link, err := queries.UpsertAccessLink(ctx, db.UpsertAccessLinkParams{
 		CompanyID: actor.CompanyID, UserID: userID, Token: token,
 	})
@@ -158,6 +169,9 @@ func (s *Service) SetLinkAccess(ctx context.Context, actor Actor, userID uuid.UU
 		return EmployeeLinkAccess{}, internal("Не удалось удалить пароль", err)
 	}
 	if err = revokeUserSessions(ctx, queries, userID, s.now().UTC()); err != nil {
+		return EmployeeLinkAccess{}, err
+	}
+	if err = auditAccessChange(ctx, queries, actor, userID, accessAction(previousMode), "link", s.now().UTC()); err != nil {
 		return EmployeeLinkAccess{}, err
 	}
 	if err = tx.Commit(ctx); err != nil {
@@ -179,6 +193,10 @@ func (s *Service) RevokeAccess(ctx context.Context, actor Actor, userID uuid.UUI
 	if _, err = accessTargetForUpdate(ctx, queries, actor, userID); err != nil {
 		return err
 	}
+	previousMode, err := queries.GetUserAccessMode(ctx, db.GetUserAccessModeParams{CompanyID: actor.CompanyID, UserID: userID})
+	if err != nil {
+		return internal("Не удалось проверить текущий способ доступа", err)
+	}
 	if err = queries.DeleteCredential(ctx, db.DeleteCredentialParams{CompanyID: actor.CompanyID, UserID: userID}); err != nil {
 		return internal("Не удалось удалить пароль", err)
 	}
@@ -186,6 +204,9 @@ func (s *Service) RevokeAccess(ctx context.Context, actor Actor, userID uuid.UUI
 		return internal("Не удалось удалить ссылку доступа", err)
 	}
 	if err = revokeUserSessions(ctx, queries, userID, s.now().UTC()); err != nil {
+		return err
+	}
+	if err = auditAccessChange(ctx, queries, actor, userID, "revoked", previousMode, s.now().UTC()); err != nil {
 		return err
 	}
 	if err = tx.Commit(ctx); err != nil {
@@ -226,6 +247,31 @@ func revokeUserSessions(ctx context.Context, queries *db.Queries, userID uuid.UU
 		UserID: userID, RevokedAt: pgtype.Timestamptz{Time: revokedAt, Valid: true},
 	}); err != nil {
 		return internal("Не удалось отозвать сессии пользователя", err)
+	}
+	return nil
+}
+
+func accessAction(previousMode string) string {
+	if previousMode == "none" {
+		return "issued"
+	}
+	return "reissued"
+}
+
+func auditAccessChange(
+	ctx context.Context,
+	queries *db.Queries,
+	actor Actor,
+	targetUserID uuid.UUID,
+	action string,
+	mode string,
+	createdAt time.Time,
+) error {
+	if err := queries.CreateEmployeeAccessAudit(ctx, db.CreateEmployeeAccessAuditParams{
+		ID: uuid.New(), CompanyID: actor.CompanyID, TargetUserID: targetUserID,
+		ActorUserID: actor.UserID, Action: action, Mode: mode, CreatedAt: createdAt,
+	}); err != nil {
+		return internal("Не удалось записать аудит доступа", err)
 	}
 	return nil
 }

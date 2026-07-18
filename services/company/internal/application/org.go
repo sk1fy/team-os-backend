@@ -467,10 +467,7 @@ func (s *Service) CreateUser(ctx context.Context, actor Actor, input CreateUserI
 	if err != nil {
 		return User{}, err
 	}
-	lastName, err := requiredText(input.LastName, "Укажите фамилию пользователя")
-	if err != nil {
-		return User{}, err
-	}
+	lastName := trimmedOptional(input.LastName)
 	email, err := normalizeEmail(input.Email)
 	if err != nil {
 		return User{}, err
@@ -490,7 +487,7 @@ func (s *Service) CreateUser(ctx context.Context, actor Actor, input CreateUserI
 	}
 	row, err := queries.CreateUser(ctx, db.CreateUserParams{
 		ID: uuid.New(), CompanyID: actor.CompanyID, Email: email,
-		FirstName: firstName, LastName: lastName, Phone: pgText(phone),
+		FirstName: firstName, LastName: pgText(lastName), Phone: pgText(phone),
 		Role: input.Role, Status: "active",
 	})
 	if isUniqueViolation(err) {
@@ -564,10 +561,7 @@ func (s *Service) updateUser(ctx context.Context, actor Actor, input UpdateUserI
 		input.FirstName = &value
 	}
 	if input.LastName != nil {
-		value, err := requiredText(*input.LastName, "Укажите фамилию пользователя")
-		if err != nil {
-			return User{}, err
-		}
+		value := strings.TrimSpace(*input.LastName)
 		input.LastName = &value
 	}
 	if input.SetPhone {
@@ -760,7 +754,7 @@ func (s *Service) InviteUser(ctx context.Context, actor Actor, input InviteUserI
 			firstName := inviteFirstName(*email)
 			created, createErr := queries.CreateUser(ctx, db.CreateUserParams{
 				ID: uuid.New(), CompanyID: actor.CompanyID, Email: *email,
-				FirstName: firstName, LastName: "Сотрудник", Role: input.Role, Status: "invited",
+				FirstName: firstName, LastName: pgtype.Text{String: "Сотрудник", Valid: true}, Role: input.Role, Status: "invited",
 			})
 			if createErr != nil {
 				return Invite{}, internal("Не удалось подготовить пользователя", createErr)
@@ -886,11 +880,11 @@ func positionFromDB(row db.Position) Position {
 }
 
 func userFromJoinedRow(row db.GetUserWithPositionsRow) User {
-	return User{ID: row.ID, CompanyID: row.CompanyID, Email: row.Email, FirstName: row.FirstName, LastName: row.LastName, AvatarURL: textPointer(row.AvatarUrl), Phone: textPointer(row.Phone), Role: row.Role, Status: row.Status, PositionIDs: append([]uuid.UUID(nil), row.PositionIds...), BirthDate: datePointer(row.BirthDate), HiredAt: datePointer(row.HiredAt), VacationAllowance: int16Pointer(row.VacationAllowance), CreatedAt: row.CreatedAt, Source: row.Source, AccessMode: row.AccessMode}
+	return User{ID: row.ID, CompanyID: row.CompanyID, Email: row.Email, FirstName: row.FirstName, LastName: textValue(row.LastName), AvatarURL: textPointer(row.AvatarUrl), Phone: textPointer(row.Phone), Role: row.Role, Status: row.Status, PositionIDs: append([]uuid.UUID(nil), row.PositionIds...), BirthDate: datePointer(row.BirthDate), HiredAt: datePointer(row.HiredAt), VacationAllowance: int16Pointer(row.VacationAllowance), CreatedAt: row.CreatedAt, Source: row.Source, AccessMode: row.AccessMode}
 }
 
 func userFromListRow(row db.ListUsersRow) User {
-	return User{ID: row.ID, CompanyID: row.CompanyID, Email: row.Email, FirstName: row.FirstName, LastName: row.LastName, AvatarURL: textPointer(row.AvatarUrl), Phone: textPointer(row.Phone), Role: row.Role, Status: row.Status, PositionIDs: append([]uuid.UUID(nil), row.PositionIds...), BirthDate: datePointer(row.BirthDate), HiredAt: datePointer(row.HiredAt), VacationAllowance: int16Pointer(row.VacationAllowance), CreatedAt: row.CreatedAt, Source: row.Source, AccessMode: row.AccessMode}
+	return User{ID: row.ID, CompanyID: row.CompanyID, Email: row.Email, FirstName: row.FirstName, LastName: textValue(row.LastName), AvatarURL: textPointer(row.AvatarUrl), Phone: textPointer(row.Phone), Role: row.Role, Status: row.Status, PositionIDs: append([]uuid.UUID(nil), row.PositionIds...), BirthDate: datePointer(row.BirthDate), HiredAt: datePointer(row.HiredAt), VacationAllowance: int16Pointer(row.VacationAllowance), CreatedAt: row.CreatedAt, Source: row.Source, AccessMode: row.AccessMode}
 }
 
 func trimmedOptional(value *string) *string {

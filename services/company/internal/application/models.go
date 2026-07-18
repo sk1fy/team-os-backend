@@ -130,12 +130,10 @@ type AcceptInviteInput struct {
 }
 
 type UpdateCurrentUserInput struct {
-	FirstName    *string
-	LastName     *string
-	SetPhone     bool
-	Phone        *string
-	SetAvatarURL bool
-	AvatarURL    *string
+	FirstName *string
+	LastName  *string
+	SetPhone  bool
+	Phone     *string
 }
 
 type UpdateCompanyInput struct {
@@ -180,7 +178,7 @@ type UpdatePositionInput struct {
 
 type CreateUserInput struct {
 	FirstName   string
-	LastName    string
+	LastName    *string
 	Email       string
 	Phone       *string
 	Role        string

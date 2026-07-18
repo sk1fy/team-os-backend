@@ -12,6 +12,13 @@ SELECT id, company_id, section_id, title, content, status, author_id, version,
 FROM articles
 WHERE company_id = $1 AND id = $2;
 
+-- name: GetPublicArticle :one
+SELECT a.id, a.company_id, a.section_id, a.title, a.content, a.status, a.author_id, a.version,
+       a.requires_acknowledgement, a.plain_text, a.created_at, a.updated_at
+FROM articles a
+JOIN sections s ON s.id = a.section_id AND s.company_id = a.company_id
+WHERE a.id = $1 AND a.status = 'published' AND s.visibility = 'public';
+
 -- name: GetArticleForUpdate :one
 SELECT id, company_id, section_id, title, content, status, author_id, version,
        requires_acknowledgement, plain_text, created_at, updated_at

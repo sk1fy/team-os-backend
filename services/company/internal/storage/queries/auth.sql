@@ -69,6 +69,12 @@ SELECT * FROM access_links WHERE company_id = $1 AND user_id = $2;
 -- name: DeleteAccessLink :exec
 DELETE FROM access_links WHERE company_id = $1 AND user_id = $2;
 
+-- name: CreateEmployeeAccessAudit :exec
+INSERT INTO employee_access_audit (
+    id, company_id, target_user_id, actor_user_id, action, mode, created_at
+)
+VALUES ($1, $2, $3, $4, $5, $6, $7);
+
 -- name: GetUserByAccessToken :one
 SELECT u.*
 FROM users u
@@ -116,7 +122,6 @@ UPDATE users
 SET first_name = COALESCE(sqlc.narg('first_name'), first_name),
     last_name = COALESCE(sqlc.narg('last_name'), last_name),
     phone = CASE WHEN sqlc.arg('set_phone')::boolean THEN sqlc.narg('phone') ELSE phone END,
-    avatar_url = CASE WHEN sqlc.arg('set_avatar_url')::boolean THEN sqlc.narg('avatar_url') ELSE avatar_url END,
     updated_at = now()
 WHERE company_id = sqlc.arg('company_id') AND id = sqlc.arg('id')
 RETURNING *;

@@ -35,12 +35,29 @@ func (s *Service) canReadArticle(actor Actor, article Article, sections map[uuid
 	if domainaccess.CanManage(actor.subject()) {
 		return true
 	}
+	if article.Status != "published" {
+		return false
+	}
 	section, ok := sections[article.SectionID]
 	if !ok {
 		return false
 	}
+	if section.Visibility == "public" {
+		return true
+	}
 	settings := domainaccess.EffectiveAccess(section.domain(sections), domainIndex(sections))
 	return domainaccess.Allowed(actor.subject(), settings)
+}
+
+func (s *Service) GetPublicArticle(ctx context.Context, id uuid.UUID) (Article, error) {
+	row, err := db.New(s.pool).GetPublicArticle(ctx, id)
+	if err != nil {
+		if isNoRows(err) {
+			return Article{}, notFound("Статья")
+		}
+		return Article{}, internal("Не удалось получить публичную статью", err)
+	}
+	return articleFromPublicRow(row), nil
 }
 
 func (s *Service) GetArticles(ctx context.Context, actor Actor, sectionID *uuid.UUID) ([]Article, error) {
@@ -138,9 +155,11 @@ func (s *Service) CreateArticle(ctx context.Context, actor Actor, input CreateAr
 	if err = validateArticleStatus(input.Status); err != nil {
 		return Article{}, err
 	}
-	if richtext.Validate(input.Content) != nil {
+	normalizedContent, normalizeErr := richtext.Normalize(input.Content)
+	if normalizeErr != nil {
 		return Article{}, validation("Некорректное содержимое статьи")
 	}
+	input.Content = normalizedContent
 	plainText := richtext.PlainText(input.Content)
 
 	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{})
@@ -238,10 +257,11 @@ func (s *Service) UpdateArticle(ctx context.Context, actor Actor, input UpdateAr
 	}
 	nextContent := append(json.RawMessage(nil), current.Content...)
 	if len(input.Content) > 0 {
-		if richtext.Validate(input.Content) != nil {
+		normalizedContent, normalizeErr := richtext.Normalize(input.Content)
+		if normalizeErr != nil {
 			return Article{}, validation("Некорректное содержимое статьи")
 		}
-		nextContent = append(json.RawMessage(nil), input.Content...)
+		nextContent = append(json.RawMessage(nil), normalizedContent...)
 	}
 	nextStatus := current.Status
 	if input.Status != nil {

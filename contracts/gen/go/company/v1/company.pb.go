@@ -1808,9 +1808,8 @@ type UpdateCurrentUserRequest struct {
 	state     protoimpl.MessageState `protogen:"open.v1"`
 	FirstName *string                `protobuf:"bytes,1,opt,name=first_name,json=firstName,proto3,oneof" json:"first_name,omitempty"`
 	LastName  *string                `protobuf:"bytes,2,opt,name=last_name,json=lastName,proto3,oneof" json:"last_name,omitempty"`
-	// Empty strings clear optional phone/avatar values, matching the TS contract.
+	// Empty string clears the optional phone value.
 	Phone         *string `protobuf:"bytes,3,opt,name=phone,proto3,oneof" json:"phone,omitempty"`
-	AvatarUrl     *string `protobuf:"bytes,4,opt,name=avatar_url,json=avatarUrl,proto3,oneof" json:"avatar_url,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1862,13 +1861,6 @@ func (x *UpdateCurrentUserRequest) GetLastName() string {
 func (x *UpdateCurrentUserRequest) GetPhone() string {
 	if x != nil && x.Phone != nil {
 		return *x.Phone
-	}
-	return ""
-}
-
-func (x *UpdateCurrentUserRequest) GetAvatarUrl() string {
-	if x != nil && x.AvatarUrl != nil {
-		return *x.AvatarUrl
 	}
 	return ""
 }
@@ -3348,7 +3340,7 @@ func (x *GetUserResponse) GetUser() *User {
 type CreateUserRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	FirstName     string                 `protobuf:"bytes,1,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
-	LastName      string                 `protobuf:"bytes,2,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
+	LastName      *string                `protobuf:"bytes,2,opt,name=last_name,json=lastName,proto3,oneof" json:"last_name,omitempty"`
 	Email         string                 `protobuf:"bytes,3,opt,name=email,proto3" json:"email,omitempty"`
 	Phone         *string                `protobuf:"bytes,4,opt,name=phone,proto3,oneof" json:"phone,omitempty"`
 	Role          UserRole               `protobuf:"varint,5,opt,name=role,proto3,enum=teamos.company.v1.UserRole" json:"role,omitempty"`
@@ -3395,8 +3387,8 @@ func (x *CreateUserRequest) GetFirstName() string {
 }
 
 func (x *CreateUserRequest) GetLastName() string {
-	if x != nil {
-		return x.LastName
+	if x != nil && x.LastName != nil {
+		return *x.LastName
 	}
 	return ""
 }
@@ -3728,6 +3720,7 @@ type UserAccess struct {
 	Mode          UserAccessMode         `protobuf:"varint,1,opt,name=mode,proto3,enum=teamos.company.v1.UserAccessMode" json:"mode,omitempty"`
 	LinkToken     *string                `protobuf:"bytes,2,opt,name=link_token,json=linkToken,proto3,oneof" json:"link_token,omitempty"`
 	LinkCreatedAt *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=link_created_at,json=linkCreatedAt,proto3,oneof" json:"link_created_at,omitempty"`
+	LinkUrl       *string                `protobuf:"bytes,4,opt,name=link_url,json=linkUrl,proto3,oneof" json:"link_url,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3781,6 +3774,13 @@ func (x *UserAccess) GetLinkCreatedAt() *timestamppb.Timestamp {
 		return x.LinkCreatedAt
 	}
 	return nil
+}
+
+func (x *UserAccess) GetLinkUrl() string {
+	if x != nil && x.LinkUrl != nil {
+		return *x.LinkUrl
+	}
+	return ""
 }
 
 type GetUserAccessRequest struct {
@@ -4015,6 +4015,7 @@ type SetUserLinkAccessResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Token         string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	LinkUrl       *string                `protobuf:"bytes,3,opt,name=link_url,json=linkUrl,proto3,oneof" json:"link_url,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4061,6 +4062,13 @@ func (x *SetUserLinkAccessResponse) GetCreatedAt() *timestamppb.Timestamp {
 		return x.CreatedAt
 	}
 	return nil
+}
+
+func (x *SetUserLinkAccessResponse) GetLinkUrl() string {
+	if x != nil && x.LinkUrl != nil {
+		return *x.LinkUrl
+	}
+	return ""
 }
 
 type RevokeUserAccessRequest struct {
@@ -6590,19 +6598,17 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\asession\x18\x01 \x01(\v2\x1e.teamos.company.v1.AuthSessionR\asession\"\x17\n" +
 	"\x15GetCurrentUserRequest\"E\n" +
 	"\x16GetCurrentUserResponse\x12+\n" +
-	"\x04user\x18\x01 \x01(\v2\x17.teamos.company.v1.UserR\x04user\"\xd5\x01\n" +
+	"\x04user\x18\x01 \x01(\v2\x17.teamos.company.v1.UserR\x04user\"\xb4\x01\n" +
 	"\x18UpdateCurrentUserRequest\x12\"\n" +
 	"\n" +
 	"first_name\x18\x01 \x01(\tH\x00R\tfirstName\x88\x01\x01\x12 \n" +
 	"\tlast_name\x18\x02 \x01(\tH\x01R\blastName\x88\x01\x01\x12\x19\n" +
-	"\x05phone\x18\x03 \x01(\tH\x02R\x05phone\x88\x01\x01\x12\"\n" +
-	"\n" +
-	"avatar_url\x18\x04 \x01(\tH\x03R\tavatarUrl\x88\x01\x01B\r\n" +
+	"\x05phone\x18\x03 \x01(\tH\x02R\x05phone\x88\x01\x01B\r\n" +
 	"\v_first_nameB\f\n" +
 	"\n" +
 	"_last_nameB\b\n" +
-	"\x06_phoneB\r\n" +
-	"\v_avatar_url\"H\n" +
+	"\x06_phoneJ\x04\b\x04\x10\x05R\n" +
+	"avatar_url\"H\n" +
 	"\x19UpdateCurrentUserResponse\x12+\n" +
 	"\x04user\x18\x01 \x01(\v2\x17.teamos.company.v1.UserR\x04user\"\x13\n" +
 	"\x11GetCompanyRequest\"J\n" +
@@ -6703,15 +6709,17 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\x0eGetUserRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\">\n" +
 	"\x0fGetUserResponse\x12+\n" +
-	"\x04user\x18\x01 \x01(\v2\x17.teamos.company.v1.UserR\x04user\"\xde\x01\n" +
+	"\x04user\x18\x01 \x01(\v2\x17.teamos.company.v1.UserR\x04user\"\xf1\x01\n" +
 	"\x11CreateUserRequest\x12\x1d\n" +
 	"\n" +
-	"first_name\x18\x01 \x01(\tR\tfirstName\x12\x1b\n" +
-	"\tlast_name\x18\x02 \x01(\tR\blastName\x12\x14\n" +
+	"first_name\x18\x01 \x01(\tR\tfirstName\x12 \n" +
+	"\tlast_name\x18\x02 \x01(\tH\x00R\blastName\x88\x01\x01\x12\x14\n" +
 	"\x05email\x18\x03 \x01(\tR\x05email\x12\x19\n" +
-	"\x05phone\x18\x04 \x01(\tH\x00R\x05phone\x88\x01\x01\x12/\n" +
+	"\x05phone\x18\x04 \x01(\tH\x01R\x05phone\x88\x01\x01\x12/\n" +
 	"\x04role\x18\x05 \x01(\x0e2\x1b.teamos.company.v1.UserRoleR\x04role\x12!\n" +
-	"\fposition_ids\x18\x06 \x03(\tR\vpositionIdsB\b\n" +
+	"\fposition_ids\x18\x06 \x03(\tR\vpositionIdsB\f\n" +
+	"\n" +
+	"_last_nameB\b\n" +
 	"\x06_phone\"A\n" +
 	"\x12CreateUserResponse\x12+\n" +
 	"\x04user\x18\x01 \x01(\v2\x17.teamos.company.v1.UserR\x04user\"\xaf\x04\n" +
@@ -6743,15 +6751,17 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\x04user\x18\x01 \x01(\v2\x17.teamos.company.v1.UserR\x04user\"#\n" +
 	"\x11DeleteUserRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"\x14\n" +
-	"\x12DeleteUserResponse\"\xd3\x01\n" +
+	"\x12DeleteUserResponse\"\x80\x02\n" +
 	"\n" +
 	"UserAccess\x125\n" +
 	"\x04mode\x18\x01 \x01(\x0e2!.teamos.company.v1.UserAccessModeR\x04mode\x12\"\n" +
 	"\n" +
 	"link_token\x18\x02 \x01(\tH\x00R\tlinkToken\x88\x01\x01\x12G\n" +
-	"\x0flink_created_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampH\x01R\rlinkCreatedAt\x88\x01\x01B\r\n" +
+	"\x0flink_created_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampH\x01R\rlinkCreatedAt\x88\x01\x01\x12\x1e\n" +
+	"\blink_url\x18\x04 \x01(\tH\x02R\alinkUrl\x88\x01\x01B\r\n" +
 	"\v_link_tokenB\x12\n" +
-	"\x10_link_created_at\"&\n" +
+	"\x10_link_created_atB\v\n" +
+	"\t_link_url\"&\n" +
 	"\x14GetUserAccessRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"N\n" +
 	"\x15GetUserAccessResponse\x125\n" +
@@ -6763,11 +6773,13 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\x1dSetUserPasswordAccessResponse\x12\x1a\n" +
 	"\bpassword\x18\x01 \x01(\tR\bpassword\"*\n" +
 	"\x18SetUserLinkAccessRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"l\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\x99\x01\n" +
 	"\x19SetUserLinkAccessResponse\x12\x14\n" +
 	"\x05token\x18\x01 \x01(\tR\x05token\x129\n" +
 	"\n" +
-	"created_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\")\n" +
+	"created_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12\x1e\n" +
+	"\blink_url\x18\x03 \x01(\tH\x00R\alinkUrl\x88\x01\x01B\v\n" +
+	"\t_link_url\")\n" +
 	"\x17RevokeUserAccessRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"\x1a\n" +
 	"\x18RevokeUserAccessResponse\"\x13\n" +
@@ -7388,6 +7400,7 @@ func file_proto_company_v1_company_proto_init() {
 	file_proto_company_v1_company_proto_msgTypes[56].OneofWrappers = []any{}
 	file_proto_company_v1_company_proto_msgTypes[60].OneofWrappers = []any{}
 	file_proto_company_v1_company_proto_msgTypes[63].OneofWrappers = []any{}
+	file_proto_company_v1_company_proto_msgTypes[66].OneofWrappers = []any{}
 	file_proto_company_v1_company_proto_msgTypes[71].OneofWrappers = []any{}
 	file_proto_company_v1_company_proto_msgTypes[83].OneofWrappers = []any{}
 	file_proto_company_v1_company_proto_msgTypes[85].OneofWrappers = []any{}

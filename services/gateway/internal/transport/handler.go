@@ -29,7 +29,8 @@ import (
 const refreshCookieName = "teamos_refresh"
 
 type CookieConfig struct {
-	Secure bool
+	Secure       bool
+	PublicAppURL string
 }
 
 type Handler struct {
@@ -199,7 +200,7 @@ func (h *Handler) UpdateCurrentUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	response, err := h.company.UpdateCurrentUser(outgoingContext(r), &companyv1.UpdateCurrentUserRequest{
-		FirstName: input.FirstName, LastName: input.LastName, Phone: phone, AvatarUrl: input.AvatarUrl,
+		FirstName: input.FirstName, LastName: input.LastName, Phone: phone,
 	})
 	if err != nil {
 		h.writeRPCError(w, r, err)
@@ -499,6 +500,10 @@ func (h *Handler) GetUserAccess(w http.ResponseWriter, r *http.Request, id api.I
 		h.writeConversionError(w, r, err)
 		return
 	}
+	if converted.LinkToken != nil {
+		linkURL := h.accessLinkURL(r, *converted.LinkToken)
+		converted.LinkUrl = &linkURL
+	}
 	writeJSON(w, http.StatusOK, converted)
 }
 
@@ -528,8 +533,23 @@ func (h *Handler) SetUserLinkAccess(w http.ResponseWriter, r *http.Request, id a
 		return
 	}
 	writeJSON(w, http.StatusOK, api.EmployeeLinkAccess{
-		Token: response.GetToken(), CreatedAt: response.GetCreatedAt().AsTime(),
+		Token: response.GetToken(), LinkUrl: h.accessLinkURL(r, response.GetToken()),
+		CreatedAt: response.GetCreatedAt().AsTime(),
 	})
+}
+
+func (h *Handler) accessLinkURL(r *http.Request, token string) string {
+	if baseURL := strings.TrimRight(strings.TrimSpace(h.cookie.PublicAppURL), "/"); baseURL != "" {
+		return baseURL + "/access/" + token
+	}
+	scheme := "http"
+	if r.TLS != nil {
+		scheme = "https"
+	}
+	if forwarded := strings.TrimSpace(strings.Split(r.Header.Get("X-Forwarded-Proto"), ",")[0]); forwarded == "http" || forwarded == "https" {
+		scheme = forwarded
+	}
+	return scheme + "://" + r.Host + "/access/" + token
 }
 
 func (h *Handler) RevokeUserAccess(w http.ResponseWriter, r *http.Request, id api.Id) {

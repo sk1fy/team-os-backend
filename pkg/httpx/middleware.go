@@ -108,6 +108,10 @@ func Logging(logger *slog.Logger) Middleware {
 
 func redactedPath(path string) string {
 	const invitePrefix = "/api/v1/auth/invites/"
+	const accessLinkPrefix = "/api/v1/auth/access-link/"
+	if strings.HasPrefix(path, accessLinkPrefix) {
+		return accessLinkPrefix + ":token"
+	}
 	if !strings.HasPrefix(path, invitePrefix) {
 		return path
 	}
@@ -162,6 +166,17 @@ func BodyLimit(maxBytes int64) Middleware {
 			next.ServeHTTP(w, r)
 		})
 	}
+}
+
+// SecurityHeaders constrains browser rendering of API responses and mirrors
+// the server-side video provider allowlist.
+func SecurityHeaders(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Security-Policy", "default-src 'none'; frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://rutube.ru; media-src https:; object-src 'none'; base-uri 'none'")
+		w.Header().Set("X-Content-Type-Options", "nosniff")
+		w.Header().Set("Referrer-Policy", "no-referrer")
+		next.ServeHTTP(w, r)
+	})
 }
 
 // Tracing instruments HTTP requests with the configured global OTel provider.

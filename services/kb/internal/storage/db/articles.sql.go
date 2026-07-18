@@ -256,6 +256,49 @@ func (q *Queries) GetArticlesByIDs(ctx context.Context, arg GetArticlesByIDsPara
 	return items, nil
 }
 
+const getPublicArticle = `-- name: GetPublicArticle :one
+SELECT a.id, a.company_id, a.section_id, a.title, a.content, a.status, a.author_id, a.version,
+       a.requires_acknowledgement, a.plain_text, a.created_at, a.updated_at
+FROM articles a
+JOIN sections s ON s.id = a.section_id AND s.company_id = a.company_id
+WHERE a.id = $1 AND a.status = 'published' AND s.visibility = 'public'
+`
+
+type GetPublicArticleRow struct {
+	ID                      uuid.UUID `json:"id"`
+	CompanyID               uuid.UUID `json:"company_id"`
+	SectionID               uuid.UUID `json:"section_id"`
+	Title                   string    `json:"title"`
+	Content                 []byte    `json:"content"`
+	Status                  string    `json:"status"`
+	AuthorID                uuid.UUID `json:"author_id"`
+	Version                 int32     `json:"version"`
+	RequiresAcknowledgement bool      `json:"requires_acknowledgement"`
+	PlainText               string    `json:"plain_text"`
+	CreatedAt               time.Time `json:"created_at"`
+	UpdatedAt               time.Time `json:"updated_at"`
+}
+
+func (q *Queries) GetPublicArticle(ctx context.Context, id uuid.UUID) (GetPublicArticleRow, error) {
+	row := q.db.QueryRow(ctx, getPublicArticle, id)
+	var i GetPublicArticleRow
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.SectionID,
+		&i.Title,
+		&i.Content,
+		&i.Status,
+		&i.AuthorID,
+		&i.Version,
+		&i.RequiresAcknowledgement,
+		&i.PlainText,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const listArticles = `-- name: ListArticles :many
 SELECT id, company_id, section_id, title, content, status, author_id, version,
        requires_acknowledgement, plain_text, created_at, updated_at

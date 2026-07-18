@@ -63,11 +63,12 @@ func (q *Queries) CountDepartmentPositions(ctx context.Context, arg CountDepartm
 
 const createAmoUser = `-- name: CreateAmoUser :one
 INSERT INTO users (
-    id, company_id, email, first_name, last_name, avatar_url,
+    id, company_id, email, first_name, last_name, avatar_url, avatar_source,
     role, status, source, external_id, external_group_id, external_group_name
 )
-VALUES ($1, $2, $3, $4, $5, $6, 'employee', 'active', 'amo', $7, $8, $9)
-RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name
+VALUES ($1, $2, $3, $4, $5, $6, $10,
+    'employee', 'active', 'amo', $7, $8, $9)
+RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source
 `
 
 type CreateAmoUserParams struct {
@@ -75,11 +76,12 @@ type CreateAmoUserParams struct {
 	CompanyID         uuid.UUID   `json:"company_id"`
 	Email             string      `json:"email"`
 	FirstName         string      `json:"first_name"`
-	LastName          string      `json:"last_name"`
+	LastName          pgtype.Text `json:"last_name"`
 	AvatarUrl         pgtype.Text `json:"avatar_url"`
 	ExternalID        pgtype.Text `json:"external_id"`
 	ExternalGroupID   pgtype.Text `json:"external_group_id"`
 	ExternalGroupName pgtype.Text `json:"external_group_name"`
+	AvatarSource      pgtype.Text `json:"avatar_source"`
 }
 
 func (q *Queries) CreateAmoUser(ctx context.Context, arg CreateAmoUserParams) (User, error) {
@@ -93,6 +95,7 @@ func (q *Queries) CreateAmoUser(ctx context.Context, arg CreateAmoUserParams) (U
 		arg.ExternalID,
 		arg.ExternalGroupID,
 		arg.ExternalGroupName,
+		arg.AvatarSource,
 	)
 	var i User
 	err := row.Scan(
@@ -114,6 +117,7 @@ func (q *Queries) CreateAmoUser(ctx context.Context, arg CreateAmoUserParams) (U
 		&i.ExternalID,
 		&i.ExternalGroupID,
 		&i.ExternalGroupName,
+		&i.AvatarSource,
 	)
 	return i, err
 }
@@ -356,7 +360,7 @@ func (q *Queries) DeleteUserPositions(ctx context.Context, arg DeleteUserPositio
 }
 
 const findUserForAmoSync = `-- name: FindUserForAmoSync :one
-SELECT id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name
+SELECT id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source
 FROM users
 WHERE company_id = $1
   AND (external_id = $2 OR email = $3)
@@ -392,6 +396,7 @@ func (q *Queries) FindUserForAmoSync(ctx context.Context, arg FindUserForAmoSync
 		&i.ExternalID,
 		&i.ExternalGroupID,
 		&i.ExternalGroupName,
+		&i.AvatarSource,
 	)
 	return i, err
 }
@@ -512,7 +517,7 @@ func (q *Queries) GetPositionUserIDs(ctx context.Context, arg GetPositionUserIDs
 }
 
 const getUserWithPositions = `-- name: GetUserWithPositions :one
-SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name,
+SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name, u.avatar_source,
        COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids,
        CASE
            WHEN EXISTS (SELECT 1 FROM access_links access WHERE access.company_id = u.company_id AND access.user_id = u.id) THEN 'link'
@@ -535,7 +540,7 @@ type GetUserWithPositionsRow struct {
 	CompanyID         uuid.UUID   `json:"company_id"`
 	Email             string      `json:"email"`
 	FirstName         string      `json:"first_name"`
-	LastName          string      `json:"last_name"`
+	LastName          pgtype.Text `json:"last_name"`
 	Phone             pgtype.Text `json:"phone"`
 	AvatarUrl         pgtype.Text `json:"avatar_url"`
 	Role              string      `json:"role"`
@@ -549,6 +554,7 @@ type GetUserWithPositionsRow struct {
 	ExternalID        pgtype.Text `json:"external_id"`
 	ExternalGroupID   pgtype.Text `json:"external_group_id"`
 	ExternalGroupName pgtype.Text `json:"external_group_name"`
+	AvatarSource      pgtype.Text `json:"avatar_source"`
 	PositionIds       []uuid.UUID `json:"position_ids"`
 	AccessMode        string      `json:"access_mode"`
 }
@@ -575,6 +581,7 @@ func (q *Queries) GetUserWithPositions(ctx context.Context, arg GetUserWithPosit
 		&i.ExternalID,
 		&i.ExternalGroupID,
 		&i.ExternalGroupName,
+		&i.AvatarSource,
 		&i.PositionIds,
 		&i.AccessMode,
 	)
@@ -690,7 +697,7 @@ func (q *Queries) ListPositions(ctx context.Context, companyID uuid.UUID) ([]Pos
 }
 
 const listUsers = `-- name: ListUsers :many
-SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name,
+SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name, u.avatar_source,
        COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids,
        CASE
            WHEN EXISTS (SELECT 1 FROM access_links access WHERE access.company_id = u.company_id AND access.user_id = u.id) THEN 'link'
@@ -709,7 +716,7 @@ type ListUsersRow struct {
 	CompanyID         uuid.UUID   `json:"company_id"`
 	Email             string      `json:"email"`
 	FirstName         string      `json:"first_name"`
-	LastName          string      `json:"last_name"`
+	LastName          pgtype.Text `json:"last_name"`
 	Phone             pgtype.Text `json:"phone"`
 	AvatarUrl         pgtype.Text `json:"avatar_url"`
 	Role              string      `json:"role"`
@@ -723,6 +730,7 @@ type ListUsersRow struct {
 	ExternalID        pgtype.Text `json:"external_id"`
 	ExternalGroupID   pgtype.Text `json:"external_group_id"`
 	ExternalGroupName pgtype.Text `json:"external_group_name"`
+	AvatarSource      pgtype.Text `json:"avatar_source"`
 	PositionIds       []uuid.UUID `json:"position_ids"`
 	AccessMode        string      `json:"access_mode"`
 }
@@ -755,6 +763,7 @@ func (q *Queries) ListUsers(ctx context.Context, companyID uuid.UUID) ([]ListUse
 			&i.ExternalID,
 			&i.ExternalGroupID,
 			&i.ExternalGroupName,
+			&i.AvatarSource,
 			&i.PositionIds,
 			&i.AccessMode,
 		); err != nil {
@@ -909,21 +918,23 @@ SET email = $1,
     first_name = $2,
     last_name = $3,
     avatar_url = $4,
+    avatar_source = $5,
     status = 'active',
     source = 'amo',
-    external_id = $5,
-    external_group_id = $6,
-    external_group_name = $7,
+    external_id = $6,
+    external_group_id = $7,
+    external_group_name = $8,
     updated_at = now()
-WHERE company_id = $8 AND id = $9
-RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name
+WHERE company_id = $9 AND id = $10
+RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source
 `
 
 type UpdateAmoUserParams struct {
 	Email             string      `json:"email"`
 	FirstName         string      `json:"first_name"`
-	LastName          string      `json:"last_name"`
+	LastName          pgtype.Text `json:"last_name"`
 	AvatarUrl         pgtype.Text `json:"avatar_url"`
+	AvatarSource      pgtype.Text `json:"avatar_source"`
 	ExternalID        pgtype.Text `json:"external_id"`
 	ExternalGroupID   pgtype.Text `json:"external_group_id"`
 	ExternalGroupName pgtype.Text `json:"external_group_name"`
@@ -937,6 +948,7 @@ func (q *Queries) UpdateAmoUser(ctx context.Context, arg UpdateAmoUserParams) (U
 		arg.FirstName,
 		arg.LastName,
 		arg.AvatarUrl,
+		arg.AvatarSource,
 		arg.ExternalID,
 		arg.ExternalGroupID,
 		arg.ExternalGroupName,
@@ -963,6 +975,7 @@ func (q *Queries) UpdateAmoUser(ctx context.Context, arg UpdateAmoUserParams) (U
 		&i.ExternalID,
 		&i.ExternalGroupID,
 		&i.ExternalGroupName,
+		&i.AvatarSource,
 	)
 	return i, err
 }
@@ -1071,7 +1084,7 @@ SET first_name = COALESCE($1, first_name),
     status = COALESCE($12, status),
     updated_at = now()
 WHERE company_id = $13 AND id = $14
-RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name
+RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source
 `
 
 type UpdateUserParams struct {
@@ -1128,6 +1141,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.ExternalID,
 		&i.ExternalGroupID,
 		&i.ExternalGroupName,
+		&i.AvatarSource,
 	)
 	return i, err
 }

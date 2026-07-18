@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/netip"
+	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -22,6 +23,7 @@ type Config struct {
 	JWTIssuer             string
 	JWTAudience           string
 	CORSOrigins           []string
+	PublicAppURL          string
 	CookieSecure          bool
 	ShutdownTimeout       time.Duration
 	TrustedProxyCIDRs     []netip.Prefix
@@ -40,8 +42,14 @@ func Load() (Config, error) {
 		JWTIssuer:             envOr("GATEWAY_JWT_ISSUER", "teamos-company"),
 		JWTAudience:           envOr("GATEWAY_JWT_AUDIENCE", "teamos-api"),
 		CORSOrigins:           splitList(envOr("GATEWAY_CORS_ORIGINS", "http://localhost:5173")),
+		PublicAppURL:          envOr("GATEWAY_PUBLIC_APP_URL", "http://localhost:5173"),
 		ShutdownTimeout:       30 * time.Second,
 	}
+	publicAppURL, parseErr := url.Parse(config.PublicAppURL)
+	if parseErr != nil || (publicAppURL.Scheme != "http" && publicAppURL.Scheme != "https") || publicAppURL.Host == "" || publicAppURL.User != nil {
+		return Config{}, errors.New("GATEWAY_PUBLIC_APP_URL: ожидается абсолютный HTTP(S) URL")
+	}
+	config.PublicAppURL = strings.TrimRight(publicAppURL.String(), "/")
 	var err error
 	if value := strings.TrimSpace(os.Getenv("GATEWAY_COOKIE_SECURE")); value != "" {
 		config.CookieSecure, err = strconv.ParseBool(value)

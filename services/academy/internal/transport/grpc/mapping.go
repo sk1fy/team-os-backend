@@ -16,6 +16,7 @@ func courseToProto(value application.Course) *academyv1.Course {
 		Id: value.ID.String(), Title: value.Title,
 		Description: value.Description, CoverUrl: value.CoverURL,
 		Status:     courseStatusToProto(value.Status),
+		Visibility: courseVisibilityToProto(value.Visibility),
 		AuthorId:   value.AuthorID.String(),
 		Sequential: value.Sequential,
 		CreatedAt:  timestamppb.New(value.CreatedAt.UTC()),
@@ -26,6 +27,32 @@ func courseToProto(value application.Course) *academyv1.Course {
 		course.DeadlineDays = &days
 	}
 	return course
+}
+
+func courseVisibilityToProto(value string) academyv1.CourseVisibility {
+	switch value {
+	case "public":
+		return academyv1.CourseVisibility_COURSE_VISIBILITY_PUBLIC
+	case "company":
+		return academyv1.CourseVisibility_COURSE_VISIBILITY_COMPANY
+	case "restricted":
+		return academyv1.CourseVisibility_COURSE_VISIBILITY_RESTRICTED
+	default:
+		return academyv1.CourseVisibility_COURSE_VISIBILITY_UNSPECIFIED
+	}
+}
+
+func courseVisibilityFromProto(value academyv1.CourseVisibility) (string, error) {
+	switch value {
+	case academyv1.CourseVisibility_COURSE_VISIBILITY_PUBLIC:
+		return "public", nil
+	case academyv1.CourseVisibility_COURSE_VISIBILITY_COMPANY:
+		return "company", nil
+	case academyv1.CourseVisibility_COURSE_VISIBILITY_RESTRICTED:
+		return "restricted", nil
+	default:
+		return "", invalidArgument("Некорректная видимость курса")
+	}
 }
 
 func coursesToProto(values []application.Course) []*academyv1.Course {

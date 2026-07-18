@@ -313,6 +313,77 @@ func (q *Queries) GetLessonsByCourseIds(ctx context.Context, arg GetLessonsByCou
 	return items, nil
 }
 
+const getLinkedCourseArticleIDs = `-- name: GetLinkedCourseArticleIDs :many
+SELECT DISTINCT source_article_id
+FROM lessons
+WHERE company_id = $1 AND course_id = $2 AND source_mode = 'link' AND source_article_id IS NOT NULL
+`
+
+type GetLinkedCourseArticleIDsParams struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	CourseID  uuid.UUID `json:"course_id"`
+}
+
+func (q *Queries) GetLinkedCourseArticleIDs(ctx context.Context, arg GetLinkedCourseArticleIDsParams) ([]uuid.NullUUID, error) {
+	rows, err := q.db.Query(ctx, getLinkedCourseArticleIDs, arg.CompanyID, arg.CourseID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []uuid.NullUUID{}
+	for rows.Next() {
+		var source_article_id uuid.NullUUID
+		if err := rows.Scan(&source_article_id); err != nil {
+			return nil, err
+		}
+		items = append(items, source_article_id)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPublicCourseLessons = `-- name: GetPublicCourseLessons :many
+SELECT id, company_id, course_id, section_id, title, "order", content,
+    source_article_id, source_article_title, source_mode, quiz_id
+FROM lessons
+WHERE course_id = $1
+ORDER BY "order", id
+`
+
+func (q *Queries) GetPublicCourseLessons(ctx context.Context, courseID uuid.UUID) ([]Lesson, error) {
+	rows, err := q.db.Query(ctx, getPublicCourseLessons, courseID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Lesson{}
+	for rows.Next() {
+		var i Lesson
+		if err := rows.Scan(
+			&i.ID,
+			&i.CompanyID,
+			&i.CourseID,
+			&i.SectionID,
+			&i.Title,
+			&i.Order,
+			&i.Content,
+			&i.SourceArticleID,
+			&i.SourceArticleTitle,
+			&i.SourceMode,
+			&i.QuizID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getSectionLessonIds = `-- name: GetSectionLessonIds :many
 SELECT id
 FROM lessons

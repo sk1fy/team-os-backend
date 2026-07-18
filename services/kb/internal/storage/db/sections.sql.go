@@ -67,18 +67,19 @@ func (q *Queries) CountSectionSiblings(ctx context.Context, arg CountSectionSibl
 }
 
 const createSection = `-- name: CreateSection :one
-INSERT INTO sections (id, company_id, name, parent_id, "order", access)
-VALUES ($1, $2, $3, $4, $5, $6)
-RETURNING id, company_id, name, parent_id, "order", access, created_at, updated_at
+INSERT INTO sections (id, company_id, name, parent_id, "order", access, visibility)
+VALUES ($1, $2, $3, $4, $5, $6, $7)
+RETURNING id, company_id, name, parent_id, "order", access, created_at, updated_at, visibility
 `
 
 type CreateSectionParams struct {
-	ID        uuid.UUID     `json:"id"`
-	CompanyID uuid.UUID     `json:"company_id"`
-	Name      string        `json:"name"`
-	ParentID  uuid.NullUUID `json:"parent_id"`
-	Order     int32         `json:"order"`
-	Access    []byte        `json:"access"`
+	ID         uuid.UUID     `json:"id"`
+	CompanyID  uuid.UUID     `json:"company_id"`
+	Name       string        `json:"name"`
+	ParentID   uuid.NullUUID `json:"parent_id"`
+	Order      int32         `json:"order"`
+	Access     []byte        `json:"access"`
+	Visibility string        `json:"visibility"`
 }
 
 func (q *Queries) CreateSection(ctx context.Context, arg CreateSectionParams) (Section, error) {
@@ -89,6 +90,7 @@ func (q *Queries) CreateSection(ctx context.Context, arg CreateSectionParams) (S
 		arg.ParentID,
 		arg.Order,
 		arg.Access,
+		arg.Visibility,
 	)
 	var i Section
 	err := row.Scan(
@@ -100,6 +102,7 @@ func (q *Queries) CreateSection(ctx context.Context, arg CreateSectionParams) (S
 		&i.Access,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Visibility,
 	)
 	return i, err
 }
@@ -120,7 +123,7 @@ func (q *Queries) DeleteSection(ctx context.Context, arg DeleteSectionParams) er
 }
 
 const getSection = `-- name: GetSection :one
-SELECT id, company_id, name, parent_id, "order", access, created_at, updated_at
+SELECT id, company_id, name, parent_id, "order", access, created_at, updated_at, visibility
 FROM sections
 WHERE company_id = $1 AND id = $2
 `
@@ -142,12 +145,13 @@ func (q *Queries) GetSection(ctx context.Context, arg GetSectionParams) (Section
 		&i.Access,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Visibility,
 	)
 	return i, err
 }
 
 const listSections = `-- name: ListSections :many
-SELECT id, company_id, name, parent_id, "order", access, created_at, updated_at
+SELECT id, company_id, name, parent_id, "order", access, created_at, updated_at, visibility
 FROM sections
 WHERE company_id = $1
 ORDER BY parent_id NULLS FIRST, "order", name
@@ -171,6 +175,7 @@ func (q *Queries) ListSections(ctx context.Context, companyID uuid.UUID) ([]Sect
 			&i.Access,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Visibility,
 		); err != nil {
 			return nil, err
 		}
@@ -187,16 +192,18 @@ UPDATE sections
 SET
     name = COALESCE($3, name),
     access = COALESCE($4, access),
+    visibility = COALESCE($5, visibility),
     updated_at = now()
 WHERE company_id = $1 AND id = $2
-RETURNING id, company_id, name, parent_id, "order", access, created_at, updated_at
+RETURNING id, company_id, name, parent_id, "order", access, created_at, updated_at, visibility
 `
 
 type UpdateSectionParams struct {
-	CompanyID uuid.UUID   `json:"company_id"`
-	ID        uuid.UUID   `json:"id"`
-	Name      pgtype.Text `json:"name"`
-	Access    []byte      `json:"access"`
+	CompanyID  uuid.UUID   `json:"company_id"`
+	ID         uuid.UUID   `json:"id"`
+	Name       pgtype.Text `json:"name"`
+	Access     []byte      `json:"access"`
+	Visibility pgtype.Text `json:"visibility"`
 }
 
 func (q *Queries) UpdateSection(ctx context.Context, arg UpdateSectionParams) (Section, error) {
@@ -205,6 +212,7 @@ func (q *Queries) UpdateSection(ctx context.Context, arg UpdateSectionParams) (S
 		arg.ID,
 		arg.Name,
 		arg.Access,
+		arg.Visibility,
 	)
 	var i Section
 	err := row.Scan(
@@ -216,6 +224,7 @@ func (q *Queries) UpdateSection(ctx context.Context, arg UpdateSectionParams) (S
 		&i.Access,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Visibility,
 	)
 	return i, err
 }

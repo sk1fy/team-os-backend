@@ -25,8 +25,13 @@ func courseFromProto(value *academyv1.Course) (api.Course, error) {
 	if err != nil {
 		return api.Course{}, err
 	}
+	visibility, err := courseVisibilityFromProto(value.GetVisibility())
+	if err != nil {
+		return api.Course{}, err
+	}
 	result := api.Course{
 		Id: id, Title: value.GetTitle(), Status: status, AuthorId: authorID,
+		Visibility:  visibility,
 		Sequential:  value.GetSequential(),
 		Description: value.Description, CoverUrl: value.CoverUrl,
 	}
@@ -41,6 +46,32 @@ func courseFromProto(value *academyv1.Course) (api.Course, error) {
 		result.DeadlineDays = &days
 	}
 	return result, nil
+}
+
+func courseVisibilityFromProto(value academyv1.CourseVisibility) (api.CourseVisibility, error) {
+	switch value {
+	case academyv1.CourseVisibility_COURSE_VISIBILITY_PUBLIC:
+		return api.CourseVisibilityPublic, nil
+	case academyv1.CourseVisibility_COURSE_VISIBILITY_COMPANY:
+		return api.CourseVisibilityCompany, nil
+	case academyv1.CourseVisibility_COURSE_VISIBILITY_RESTRICTED:
+		return api.CourseVisibilityRestricted, nil
+	default:
+		return "", fmt.Errorf("unknown course visibility %d", value)
+	}
+}
+
+func courseVisibilityToProto(value api.CourseVisibility) (academyv1.CourseVisibility, error) {
+	switch value {
+	case api.CourseVisibilityPublic:
+		return academyv1.CourseVisibility_COURSE_VISIBILITY_PUBLIC, nil
+	case api.CourseVisibilityCompany:
+		return academyv1.CourseVisibility_COURSE_VISIBILITY_COMPANY, nil
+	case api.CourseVisibilityRestricted:
+		return academyv1.CourseVisibility_COURSE_VISIBILITY_RESTRICTED, nil
+	default:
+		return academyv1.CourseVisibility_COURSE_VISIBILITY_UNSPECIFIED, fmt.Errorf("unknown course visibility %q", value)
+	}
 }
 
 func coursesFromProto(values []*academyv1.Course) ([]api.Course, error) {

@@ -321,7 +321,7 @@ func (s *Server) CreateUser(ctx context.Context, request *companyv1.CreateUserRe
 	}
 	user, err := s.application.CreateUser(ctx, actor, application.CreateUserInput{
 		FirstName:   request.FirstName,
-		LastName:    request.LastName,
+		LastName:    cloneString(request.LastName),
 		Email:       request.Email,
 		Phone:       cloneString(request.Phone),
 		Role:        role,

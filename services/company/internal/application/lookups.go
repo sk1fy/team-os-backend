@@ -27,7 +27,7 @@ func (s *Service) GetUsersByIDs(ctx context.Context, actor Actor, userIDs []uuid
 			CompanyID:         row.CompanyID,
 			Email:             row.Email,
 			FirstName:         row.FirstName,
-			LastName:          row.LastName,
+			LastName:          textValue(row.LastName),
 			AvatarURL:         textPointer(row.AvatarUrl),
 			Phone:             textPointer(row.Phone),
 			Role:              row.Role,

@@ -10,6 +10,7 @@ option go_package = "github.com/sk1fy/team-os-backend/contracts/gen/go/academy/v
 service AcademyService {
   rpc GetCourses(GetCoursesRequest) returns (GetCoursesResponse);
   rpc GetCourse(GetCourseRequest) returns (GetCourseResponse);
+  rpc GetPublicCourse(GetPublicCourseRequest) returns (GetPublicCourseResponse);
   rpc CreateCourse(CreateCourseRequest) returns (CreateCourseResponse);
   rpc CreateCourseFromKb(CreateCourseFromKbRequest) returns (CreateCourseFromKbResponse);
   rpc UpdateCourse(UpdateCourseRequest) returns (UpdateCourseResponse);
@@ -40,6 +41,13 @@ enum CourseStatus {
   COURSE_STATUS_UNSPECIFIED = 0;
   COURSE_STATUS_DRAFT = 1;
   COURSE_STATUS_PUBLISHED = 2;
+}
+
+enum CourseVisibility {
+  COURSE_VISIBILITY_UNSPECIFIED = 0;
+  COURSE_VISIBILITY_PUBLIC = 1;
+  COURSE_VISIBILITY_COMPANY = 2;
+  COURSE_VISIBILITY_RESTRICTED = 3;
 }
 
 enum LessonSourceMode {
@@ -82,6 +90,7 @@ message Course {
   optional uint32 deadline_days = 8;
   google.protobuf.Timestamp created_at = 9;
   google.protobuf.Timestamp updated_at = 10;
+  CourseVisibility visibility = 11;
 }
 
 message CourseSection {
@@ -169,12 +178,23 @@ message GetCourseResponse {
   Course course = 1;
 }
 
+message GetPublicCourseRequest {
+  string id = 1;
+}
+
+message GetPublicCourseResponse {
+  Course course = 1;
+  repeated CourseSection sections = 2;
+  repeated Lesson lessons = 3;
+}
+
 message CreateCourseRequest {
   string title = 1;
   optional string description = 2;
   optional CourseStatus status = 3;
   optional bool sequential = 4;
   optional uint32 deadline_days = 5;
+  optional CourseVisibility visibility = 6;
 }
 
 message CreateCourseResponse {
@@ -189,6 +209,7 @@ message CreateCourseFromKbRequest {
   LessonSourceMode mode = 5;
   repeated string section_ids = 6;
   repeated string article_ids = 7;
+  optional CourseVisibility visibility = 8;
 }
 
 message CreateCourseFromKbResponse {
@@ -203,6 +224,7 @@ message UpdateCourseRequest {
   optional bool sequential = 5;
   // Zero clears the deadline, mirroring the frontend contract.
   optional uint32 deadline_days = 6;
+  optional CourseVisibility visibility = 7;
 }
 
 message UpdateCourseResponse {

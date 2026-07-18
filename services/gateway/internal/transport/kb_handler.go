@@ -50,6 +50,14 @@ func (h *Handler) CreateSection(w http.ResponseWriter, r *http.Request) {
 		}
 		request.Access = access
 	}
+	if input.Visibility != nil {
+		visibility, err := sectionVisibilityToProto(*input.Visibility)
+		if err != nil {
+			apierror.Write(w, apierror.BadRequest("Некорректная видимость раздела"))
+			return
+		}
+		request.Visibility = &visibility
+	}
 	response, err := h.kb.CreateSection(outgoingContext(r), request)
 	if err != nil {
 		h.writeKbRPCError(w, r, err)
@@ -76,6 +84,14 @@ func (h *Handler) UpdateSection(w http.ResponseWriter, r *http.Request, id api.I
 			return
 		}
 		request.Access = access
+	}
+	if input.Visibility != nil {
+		visibility, err := sectionVisibilityToProto(*input.Visibility)
+		if err != nil {
+			apierror.Write(w, apierror.BadRequest("Некорректная видимость раздела"))
+			return
+		}
+		request.Visibility = &visibility
 	}
 	response, err := h.kb.UpdateSection(outgoingContext(r), request)
 	if err != nil {
@@ -120,6 +136,20 @@ func (h *Handler) GetArticles(w http.ResponseWriter, r *http.Request, params api
 
 func (h *Handler) GetArticle(w http.ResponseWriter, r *http.Request, id api.Id) {
 	response, err := h.kb.GetArticle(outgoingContext(r), &kbv1.GetArticleRequest{Id: id.String()})
+	if err != nil {
+		h.writeKbRPCError(w, r, err)
+		return
+	}
+	converted, err := articleFromProto(response.GetArticle())
+	if err != nil {
+		h.writeConversionError(w, r, err)
+		return
+	}
+	writeJSON(w, http.StatusOK, converted)
+}
+
+func (h *Handler) GetPublicArticle(w http.ResponseWriter, r *http.Request, id api.Id) {
+	response, err := h.kb.GetPublicArticle(outgoingContext(r), &kbv1.GetPublicArticleRequest{Id: id.String()})
 	if err != nil {
 		h.writeKbRPCError(w, r, err)
 		return

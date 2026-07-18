@@ -39,6 +39,30 @@ func (h *Handler) GetCourse(w http.ResponseWriter, r *http.Request, id api.Id) {
 	writeJSON(w, http.StatusOK, converted)
 }
 
+func (h *Handler) GetPublicCourse(w http.ResponseWriter, r *http.Request, id api.Id) {
+	response, err := h.academy.GetPublicCourse(outgoingContext(r), &academyv1.GetPublicCourseRequest{Id: id.String()})
+	if err != nil {
+		h.writeAcademyRPCError(w, r, err)
+		return
+	}
+	course, err := courseFromProto(response.GetCourse())
+	if err != nil {
+		h.writeConversionError(w, r, err)
+		return
+	}
+	sections, err := courseSectionsFromProto(response.GetSections())
+	if err != nil {
+		h.writeConversionError(w, r, err)
+		return
+	}
+	lessons, err := lessonsFromProto(response.GetLessons())
+	if err != nil {
+		h.writeConversionError(w, r, err)
+		return
+	}
+	writeJSON(w, http.StatusOK, api.PublicCourse{Course: course, Sections: sections, Lessons: lessons})
+}
+
 func (h *Handler) CreateCourse(w http.ResponseWriter, r *http.Request) {
 	var input api.CreateCourseInput
 	if !decode(w, r, &input) {
@@ -62,6 +86,14 @@ func (h *Handler) CreateCourse(w http.ResponseWriter, r *http.Request) {
 		}
 		days := uint32(*input.DeadlineDays)
 		request.DeadlineDays = &days
+	}
+	if input.Visibility != nil {
+		visibility, err := courseVisibilityToProto(*input.Visibility)
+		if err != nil {
+			apierror.Write(w, apierror.BadRequest("Некорректная видимость курса"))
+			return
+		}
+		request.Visibility = &visibility
 	}
 	response, err := h.academy.CreateCourse(outgoingContext(r), request)
 	if err != nil {
@@ -97,6 +129,14 @@ func (h *Handler) CreateCourseFromKb(w http.ResponseWriter, r *http.Request) {
 		}
 		days := uint32(*input.DeadlineDays)
 		request.DeadlineDays = &days
+	}
+	if input.Visibility != nil {
+		visibility, err := courseVisibilityToProto(*input.Visibility)
+		if err != nil {
+			apierror.Write(w, apierror.BadRequest("Некорректная видимость курса"))
+			return
+		}
+		request.Visibility = &visibility
 	}
 	response, err := h.academy.CreateCourseFromKb(outgoingContext(r), request)
 	if err != nil {
@@ -135,6 +175,14 @@ func (h *Handler) UpdateCourse(w http.ResponseWriter, r *http.Request, id api.Id
 		}
 		days := uint32(*input.DeadlineDays)
 		request.DeadlineDays = &days
+	}
+	if input.Visibility != nil {
+		visibility, err := courseVisibilityToProto(*input.Visibility)
+		if err != nil {
+			apierror.Write(w, apierror.BadRequest("Некорректная видимость курса"))
+			return
+		}
+		request.Visibility = &visibility
 	}
 	response, err := h.academy.UpdateCourse(outgoingContext(r), request)
 	if err != nil {

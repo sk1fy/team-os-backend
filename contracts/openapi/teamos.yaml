@@ -816,6 +816,21 @@ paths:
         default:
           $ref: '#/components/responses/Error'
 
+  /api/v1/public/kb/articles/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    get:
+      security: []
+      tags: [Knowledge Base]
+      operationId: getPublicArticle
+      summary: Получить опубликованную статью из публичного раздела
+      responses:
+        '200':
+          $ref: '#/components/responses/Article'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/Error'
   /api/v1/kb/articles/search:
     get:
       tags: [Knowledge Base]
@@ -1202,6 +1217,25 @@ paths:
         default:
           $ref: '#/components/responses/Error'
 
+  /api/v1/public/academy/courses/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    get:
+      security: []
+      tags: [Academy]
+      operationId: getPublicCourse
+      summary: Получить опубликованный публичный курс с материалами
+      responses:
+        '200':
+          description: Публичный курс с разделами и уроками
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicCourse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/Error'
   /api/v1/academy/courses/from-kb:
     post:
       tags: [Academy]
@@ -2489,6 +2523,9 @@ components:
           minLength: 1
         linkCreatedAt:
           $ref: '#/components/schemas/ISODateTime'
+        linkUrl:
+          type: string
+          format: uri
 
     EmployeePasswordAccess:
       type: object
@@ -2502,11 +2539,14 @@ components:
     EmployeeLinkAccess:
       type: object
       additionalProperties: false
-      required: [token, createdAt]
+      required: [token, linkUrl, createdAt]
       properties:
         token:
           type: string
           minLength: 1
+        linkUrl:
+          type: string
+          format: uri
         createdAt:
           $ref: '#/components/schemas/ISODateTime'
 
@@ -2670,11 +2710,8 @@ components:
           minLength: 1
         lastName:
           type: string
-          minLength: 1
         phone:
           $ref: '#/components/schemas/ClearablePhone'
-        avatarUrl:
-          type: string
 
     UpdateCompanyInput:
       type: object
@@ -2782,14 +2819,13 @@ components:
     CreateUserInput:
       type: object
       additionalProperties: false
-      required: [firstName, lastName, email, role]
+      required: [firstName, email, role]
       properties:
         firstName:
           type: string
           minLength: 1
         lastName:
           type: string
-          minLength: 1
         email:
           $ref: '#/components/schemas/Email'
         phone:
@@ -2813,7 +2849,6 @@ components:
           minLength: 1
         lastName:
           type: string
-          minLength: 1
         phone:
           $ref: '#/components/schemas/ClearablePhone'
         birthDate:
@@ -2852,6 +2887,9 @@ components:
     AccessScope:
       type: string
       enum: [company, custom]
+    ArticleSectionVisibility:
+      type: string
+      enum: [public, company]
     AccessSettings:
       type: object
       additionalProperties: false
@@ -2878,7 +2916,7 @@ components:
     ArticleSection:
       type: object
       additionalProperties: false
-      required: [id, name, parentId, order, access]
+      required: [id, name, parentId, order, access, visibility]
       properties:
         id:
           $ref: '#/components/schemas/ID'
@@ -2895,6 +2933,8 @@ components:
           minimum: 0
         access:
           $ref: '#/components/schemas/AccessSettings'
+        visibility:
+          $ref: '#/components/schemas/ArticleSectionVisibility'
     ArticleStatus:
       type: string
       enum: [draft, published]
@@ -2981,6 +3021,8 @@ components:
           x-go-type-skip-optional-pointer: true
         access:
           $ref: '#/components/schemas/AccessSettings'
+        visibility:
+          $ref: '#/components/schemas/ArticleSectionVisibility'
     UpdateArticleSectionInput:
       type: object
       additionalProperties: false
@@ -2991,6 +3033,8 @@ components:
           minLength: 1
         access:
           $ref: '#/components/schemas/AccessSettings'
+        visibility:
+          $ref: '#/components/schemas/ArticleSectionVisibility'
     CreateArticleInput:
       type: object
       additionalProperties: false
@@ -3345,10 +3389,13 @@ components:
     CourseStatus:
       type: string
       enum: [draft, published]
+    CourseVisibility:
+      type: string
+      enum: [public, company, restricted]
     Course:
       type: object
       additionalProperties: false
-      required: [id, title, status, authorId, sequential, createdAt, updatedAt]
+      required: [id, title, status, visibility, authorId, sequential, createdAt, updatedAt]
       properties:
         id:
           $ref: '#/components/schemas/ID'
@@ -3361,6 +3408,8 @@ components:
           format: uri
         status:
           $ref: '#/components/schemas/CourseStatus'
+        visibility:
+          $ref: '#/components/schemas/CourseVisibility'
         authorId:
           $ref: '#/components/schemas/ID'
         sequential:
@@ -3551,6 +3600,8 @@ components:
         deadlineDays:
           type: integer
           minimum: 1
+        visibility:
+          $ref: '#/components/schemas/CourseVisibility'
     CreateCourseFromKbInput:
       type: object
       additionalProperties: false
@@ -3580,6 +3631,8 @@ components:
           uniqueItems: true
           items:
             $ref: '#/components/schemas/ID'
+        visibility:
+          $ref: '#/components/schemas/CourseVisibility'
     UpdateCourseInput:
       type: object
       additionalProperties: false
@@ -3597,6 +3650,23 @@ components:
           type: integer
           minimum: 0
           description: Значение 0 очищает дедлайн, как в текущем frontend-контракте.
+        visibility:
+          $ref: '#/components/schemas/CourseVisibility'
+    PublicCourse:
+      type: object
+      additionalProperties: false
+      required: [course, sections, lessons]
+      properties:
+        course:
+          $ref: '#/components/schemas/Course'
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/CourseSection'
+        lessons:
+          type: array
+          items:
+            $ref: '#/components/schemas/Lesson'
     CreateCourseSectionInput:
       type: object
       additionalProperties: false

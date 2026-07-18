@@ -246,7 +246,7 @@ func userFromDB(value db.User, positions []uuid.UUID) User {
 		CompanyID:         value.CompanyID,
 		Email:             value.Email,
 		FirstName:         value.FirstName,
-		LastName:          value.LastName,
+		LastName:          textValue(value.LastName),
 		AvatarURL:         textPointer(value.AvatarUrl),
 		Phone:             textPointer(value.Phone),
 		Role:              value.Role,
@@ -258,6 +258,13 @@ func userFromDB(value db.User, positions []uuid.UUID) User {
 		CreatedAt:         value.CreatedAt,
 		Source:            value.Source,
 	}
+}
+
+func textValue(value pgtype.Text) string {
+	if !value.Valid {
+		return ""
+	}
+	return value.String
 }
 
 func userEventSnapshot(user User, departmentIDs []uuid.UUID) map[string]any {

@@ -42,8 +42,18 @@ INSERT INTO assignments (
     due_date, resolved_user_ids, assigned_by_id, created_at
 )
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+ON CONFLICT DO NOTHING
 RETURNING id, company_id, course_id, assignee_type, assignee_id, invite_token,
     due_date, resolved_user_ids, due_soon_sent_at, assigned_by_id, created_at;
+
+-- name: GetAssignmentByTarget :one
+SELECT id, company_id, course_id, assignee_type, assignee_id, invite_token,
+    due_date, resolved_user_ids, due_soon_sent_at, assigned_by_id, created_at
+FROM assignments
+WHERE company_id = $1
+  AND course_id = $2
+  AND assignee_type = $3
+  AND assignee_id IS NOT DISTINCT FROM sqlc.narg(assignee_id)::uuid;
 
 -- name: GetDueSoonAssignments :many
 SELECT a.id, a.company_id, a.course_id, a.assignee_type, a.assignee_id,

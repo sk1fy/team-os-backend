@@ -58,13 +58,13 @@ func TestStatusAndInviteEnumMapping(t *testing.T) {
 
 func TestUpdateCurrentUserOptionalMapping(t *testing.T) {
 	absent := updateCurrentUserInput(&companyv1.UpdateCurrentUserRequest{})
-	if absent.SetPhone || absent.Phone != nil || absent.SetAvatarURL || absent.AvatarURL != nil {
+	if absent.SetPhone || absent.Phone != nil {
 		t.Fatalf("absent optionals = %#v", absent)
 	}
 
 	empty := ""
-	clear := updateCurrentUserInput(&companyv1.UpdateCurrentUserRequest{Phone: &empty, AvatarUrl: &empty})
-	if !clear.SetPhone || clear.Phone != nil || !clear.SetAvatarURL || clear.AvatarURL != nil {
+	clear := updateCurrentUserInput(&companyv1.UpdateCurrentUserRequest{Phone: &empty})
+	if !clear.SetPhone || clear.Phone != nil {
 		t.Fatalf("clear optionals = %#v", clear)
 	}
 

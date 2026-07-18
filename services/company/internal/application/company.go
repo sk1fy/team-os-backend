@@ -38,9 +38,6 @@ func (s *Service) UpdateCurrentUser(
 	}
 	if input.LastName != nil {
 		value := strings.TrimSpace(*input.LastName)
-		if value == "" {
-			return User{}, validation("Укажите фамилию")
-		}
 		input.LastName = &value
 	}
 	if input.SetPhone {
@@ -50,14 +47,10 @@ func (s *Service) UpdateCurrentUser(
 		}
 		input.Phone = phone
 	}
-	if input.AvatarURL != nil {
-		input.AvatarURL = trimmedOptional(input.AvatarURL)
-	}
 	queries := db.New(s.pool)
 	user, err := queries.UpdateCurrentUser(ctx, db.UpdateCurrentUserParams{
 		FirstName: pgText(input.FirstName), LastName: pgText(input.LastName),
 		SetPhone: input.SetPhone, Phone: pgText(input.Phone),
-		SetAvatarUrl: input.SetAvatarURL, AvatarUrl: pgText(input.AvatarURL),
 		CompanyID: actor.CompanyID, ID: actor.UserID,
 	})
 	if isNoRows(err) {

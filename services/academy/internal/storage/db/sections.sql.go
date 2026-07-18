@@ -142,6 +142,39 @@ func (q *Queries) GetCourseSections(ctx context.Context, arg GetCourseSectionsPa
 	return items, nil
 }
 
+const getPublicCourseSections = `-- name: GetPublicCourseSections :many
+SELECT id, company_id, course_id, title, "order"
+FROM course_sections
+WHERE course_id = $1
+ORDER BY "order", id
+`
+
+func (q *Queries) GetPublicCourseSections(ctx context.Context, courseID uuid.UUID) ([]CourseSection, error) {
+	rows, err := q.db.Query(ctx, getPublicCourseSections, courseID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []CourseSection{}
+	for rows.Next() {
+		var i CourseSection
+		if err := rows.Scan(
+			&i.ID,
+			&i.CompanyID,
+			&i.CourseID,
+			&i.Title,
+			&i.Order,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateCourseSection = `-- name: UpdateCourseSection :one
 UPDATE course_sections
 SET title = $3

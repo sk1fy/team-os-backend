@@ -90,10 +90,24 @@ func (s *Service) AssignCourse(ctx context.Context, actor Actor, input AssignCou
 		ResolvedUserIds: resolvedUserIDs, AssignedByID: actor.UserID,
 		CreatedAt: s.now().UTC(),
 	})
+	created := true
+	if isNoRows(err) {
+		created = false
+		row, err = queries.GetAssignmentByTarget(ctx, db.GetAssignmentByTargetParams{
+			CompanyID: actor.CompanyID, CourseID: input.CourseID,
+			AssigneeType: input.AssigneeType, AssigneeID: nullUUID(input.AssigneeID),
+		})
+	}
 	if err != nil {
 		return Assignment{}, internal("Не удалось создать назначение", err)
 	}
 	assignment := assignmentFromRow(row)
+	if !created {
+		if err = tx.Commit(ctx); err != nil {
+			return Assignment{}, internal("Не удалось получить назначение", err)
+		}
+		return assignment, nil
+	}
 
 	payload := &eventsv1.AcademyCourseAssignedPayload{
 		AssignmentId: assignment.ID.String(), CourseId: assignment.CourseID.String(),

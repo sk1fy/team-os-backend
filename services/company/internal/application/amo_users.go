@@ -96,13 +96,14 @@ func (s *Service) syncAmoUsersNow(ctx context.Context, actor Actor) error {
 		switch {
 		case findErr == nil:
 			if !employee.HasLastName {
-				employee.LastName = preservedAmoLastName(current.LastName)
+				employee.LastName = preservedAmoLastName(textValue(current.LastName))
 			}
 			// Эти поля принадлежат amoCRM. Локальные значения намеренно заменяются при синхронизации.
 			changedFields = amoChangedFields(current, employee)
 			row, err = queries.UpdateAmoUser(ctx, db.UpdateAmoUserParams{
-				Email: employee.Email, FirstName: employee.FirstName, LastName: employee.LastName,
+				Email: employee.Email, FirstName: employee.FirstName, LastName: pgText(&employee.LastName),
 				AvatarUrl: pgText(employee.AvatarURL), ExternalID: pgtype.Text{String: employee.ID, Valid: true},
+				AvatarSource:      avatarSource(employee.AvatarURL),
 				ExternalGroupID:   pgText(trimmedStringPointer(employee.GroupID)),
 				ExternalGroupName: pgText(trimmedStringPointer(employee.GroupName)),
 				CompanyID:         actor.CompanyID, ID: current.ID,
@@ -110,8 +111,9 @@ func (s *Service) syncAmoUsersNow(ctx context.Context, actor Actor) error {
 		case isNoRows(findErr):
 			row, err = queries.CreateAmoUser(ctx, db.CreateAmoUserParams{
 				ID: uuid.New(), CompanyID: actor.CompanyID, Email: employee.Email,
-				FirstName: employee.FirstName, LastName: employee.LastName,
+				FirstName: employee.FirstName, LastName: pgText(&employee.LastName),
 				AvatarUrl: pgText(employee.AvatarURL), ExternalID: pgtype.Text{String: employee.ID, Valid: true},
+				AvatarSource:      avatarSource(employee.AvatarURL),
 				ExternalGroupID:   pgText(trimmedStringPointer(employee.GroupID)),
 				ExternalGroupName: pgText(trimmedStringPointer(employee.GroupName)),
 			})
@@ -261,7 +263,7 @@ func amoChangedFields(current db.User, next normalizedExternalEmployee) []string
 	if current.FirstName != next.FirstName {
 		result = append(result, "firstName")
 	}
-	if current.LastName != next.LastName {
+	if textValue(current.LastName) != next.LastName {
 		result = append(result, "lastName")
 	}
 	if !equalText(current.AvatarUrl, next.AvatarURL) {
@@ -278,4 +280,11 @@ func equalText(current pgtype.Text, next *string) bool {
 		return next == nil
 	}
 	return next != nil && current.String == *next
+}
+
+func avatarSource(avatarURL *string) pgtype.Text {
+	if avatarURL == nil {
+		return pgtype.Text{}
+	}
+	return pgtype.Text{String: "amo", Valid: true}
 }

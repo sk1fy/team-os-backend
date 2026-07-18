@@ -72,6 +72,58 @@ func (CourseStatus) EnumDescriptor() ([]byte, []int) {
 	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{0}
 }
 
+type CourseVisibility int32
+
+const (
+	CourseVisibility_COURSE_VISIBILITY_UNSPECIFIED CourseVisibility = 0
+	CourseVisibility_COURSE_VISIBILITY_PUBLIC      CourseVisibility = 1
+	CourseVisibility_COURSE_VISIBILITY_COMPANY     CourseVisibility = 2
+	CourseVisibility_COURSE_VISIBILITY_RESTRICTED  CourseVisibility = 3
+)
+
+// Enum value maps for CourseVisibility.
+var (
+	CourseVisibility_name = map[int32]string{
+		0: "COURSE_VISIBILITY_UNSPECIFIED",
+		1: "COURSE_VISIBILITY_PUBLIC",
+		2: "COURSE_VISIBILITY_COMPANY",
+		3: "COURSE_VISIBILITY_RESTRICTED",
+	}
+	CourseVisibility_value = map[string]int32{
+		"COURSE_VISIBILITY_UNSPECIFIED": 0,
+		"COURSE_VISIBILITY_PUBLIC":      1,
+		"COURSE_VISIBILITY_COMPANY":     2,
+		"COURSE_VISIBILITY_RESTRICTED":  3,
+	}
+)
+
+func (x CourseVisibility) Enum() *CourseVisibility {
+	p := new(CourseVisibility)
+	*p = x
+	return p
+}
+
+func (x CourseVisibility) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (CourseVisibility) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_academy_v1_academy_proto_enumTypes[1].Descriptor()
+}
+
+func (CourseVisibility) Type() protoreflect.EnumType {
+	return &file_proto_academy_v1_academy_proto_enumTypes[1]
+}
+
+func (x CourseVisibility) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use CourseVisibility.Descriptor instead.
+func (CourseVisibility) EnumDescriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{1}
+}
+
 type LessonSourceMode int32
 
 const (
@@ -105,11 +157,11 @@ func (x LessonSourceMode) String() string {
 }
 
 func (LessonSourceMode) Descriptor() protoreflect.EnumDescriptor {
-	return file_proto_academy_v1_academy_proto_enumTypes[1].Descriptor()
+	return file_proto_academy_v1_academy_proto_enumTypes[2].Descriptor()
 }
 
 func (LessonSourceMode) Type() protoreflect.EnumType {
-	return &file_proto_academy_v1_academy_proto_enumTypes[1]
+	return &file_proto_academy_v1_academy_proto_enumTypes[2]
 }
 
 func (x LessonSourceMode) Number() protoreflect.EnumNumber {
@@ -118,7 +170,7 @@ func (x LessonSourceMode) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use LessonSourceMode.Descriptor instead.
 func (LessonSourceMode) EnumDescriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{1}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{2}
 }
 
 type QuizQuestionType int32
@@ -157,11 +209,11 @@ func (x QuizQuestionType) String() string {
 }
 
 func (QuizQuestionType) Descriptor() protoreflect.EnumDescriptor {
-	return file_proto_academy_v1_academy_proto_enumTypes[2].Descriptor()
+	return file_proto_academy_v1_academy_proto_enumTypes[3].Descriptor()
 }
 
 func (QuizQuestionType) Type() protoreflect.EnumType {
-	return &file_proto_academy_v1_academy_proto_enumTypes[2]
+	return &file_proto_academy_v1_academy_proto_enumTypes[3]
 }
 
 func (x QuizQuestionType) Number() protoreflect.EnumNumber {
@@ -170,7 +222,7 @@ func (x QuizQuestionType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use QuizQuestionType.Descriptor instead.
 func (QuizQuestionType) EnumDescriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{2}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{3}
 }
 
 type AssigneeType int32
@@ -212,11 +264,11 @@ func (x AssigneeType) String() string {
 }
 
 func (AssigneeType) Descriptor() protoreflect.EnumDescriptor {
-	return file_proto_academy_v1_academy_proto_enumTypes[3].Descriptor()
+	return file_proto_academy_v1_academy_proto_enumTypes[4].Descriptor()
 }
 
 func (AssigneeType) Type() protoreflect.EnumType {
-	return &file_proto_academy_v1_academy_proto_enumTypes[3]
+	return &file_proto_academy_v1_academy_proto_enumTypes[4]
 }
 
 func (x AssigneeType) Number() protoreflect.EnumNumber {
@@ -225,7 +277,7 @@ func (x AssigneeType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use AssigneeType.Descriptor instead.
 func (AssigneeType) EnumDescriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{3}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{4}
 }
 
 type CourseProgressStatus int32
@@ -267,11 +319,11 @@ func (x CourseProgressStatus) String() string {
 }
 
 func (CourseProgressStatus) Descriptor() protoreflect.EnumDescriptor {
-	return file_proto_academy_v1_academy_proto_enumTypes[4].Descriptor()
+	return file_proto_academy_v1_academy_proto_enumTypes[5].Descriptor()
 }
 
 func (CourseProgressStatus) Type() protoreflect.EnumType {
-	return &file_proto_academy_v1_academy_proto_enumTypes[4]
+	return &file_proto_academy_v1_academy_proto_enumTypes[5]
 }
 
 func (x CourseProgressStatus) Number() protoreflect.EnumNumber {
@@ -280,7 +332,7 @@ func (x CourseProgressStatus) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use CourseProgressStatus.Descriptor instead.
 func (CourseProgressStatus) EnumDescriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{4}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{5}
 }
 
 type Course struct {
@@ -295,6 +347,7 @@ type Course struct {
 	DeadlineDays  *uint32                `protobuf:"varint,8,opt,name=deadline_days,json=deadlineDays,proto3,oneof" json:"deadline_days,omitempty"`
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	Visibility    CourseVisibility       `protobuf:"varint,11,opt,name=visibility,proto3,enum=teamos.academy.v1.CourseVisibility" json:"visibility,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -397,6 +450,13 @@ func (x *Course) GetUpdatedAt() *timestamppb.Timestamp {
 		return x.UpdatedAt
 	}
 	return nil
+}
+
+func (x *Course) GetVisibility() CourseVisibility {
+	if x != nil {
+		return x.Visibility
+	}
+	return CourseVisibility_COURSE_VISIBILITY_UNSPECIFIED
 }
 
 type CourseSection struct {
@@ -1231,6 +1291,110 @@ func (x *GetCourseResponse) GetCourse() *Course {
 	return nil
 }
 
+type GetPublicCourseRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetPublicCourseRequest) Reset() {
+	*x = GetPublicCourseRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPublicCourseRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPublicCourseRequest) ProtoMessage() {}
+
+func (x *GetPublicCourseRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPublicCourseRequest.ProtoReflect.Descriptor instead.
+func (*GetPublicCourseRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *GetPublicCourseRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+type GetPublicCourseResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Course        *Course                `protobuf:"bytes,1,opt,name=course,proto3" json:"course,omitempty"`
+	Sections      []*CourseSection       `protobuf:"bytes,2,rep,name=sections,proto3" json:"sections,omitempty"`
+	Lessons       []*Lesson              `protobuf:"bytes,3,rep,name=lessons,proto3" json:"lessons,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetPublicCourseResponse) Reset() {
+	*x = GetPublicCourseResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPublicCourseResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPublicCourseResponse) ProtoMessage() {}
+
+func (x *GetPublicCourseResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPublicCourseResponse.ProtoReflect.Descriptor instead.
+func (*GetPublicCourseResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *GetPublicCourseResponse) GetCourse() *Course {
+	if x != nil {
+		return x.Course
+	}
+	return nil
+}
+
+func (x *GetPublicCourseResponse) GetSections() []*CourseSection {
+	if x != nil {
+		return x.Sections
+	}
+	return nil
+}
+
+func (x *GetPublicCourseResponse) GetLessons() []*Lesson {
+	if x != nil {
+		return x.Lessons
+	}
+	return nil
+}
+
 type CreateCourseRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Title         string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
@@ -1238,13 +1402,14 @@ type CreateCourseRequest struct {
 	Status        *CourseStatus          `protobuf:"varint,3,opt,name=status,proto3,enum=teamos.academy.v1.CourseStatus,oneof" json:"status,omitempty"`
 	Sequential    *bool                  `protobuf:"varint,4,opt,name=sequential,proto3,oneof" json:"sequential,omitempty"`
 	DeadlineDays  *uint32                `protobuf:"varint,5,opt,name=deadline_days,json=deadlineDays,proto3,oneof" json:"deadline_days,omitempty"`
+	Visibility    *CourseVisibility      `protobuf:"varint,6,opt,name=visibility,proto3,enum=teamos.academy.v1.CourseVisibility,oneof" json:"visibility,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CreateCourseRequest) Reset() {
 	*x = CreateCourseRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[13]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1256,7 +1421,7 @@ func (x *CreateCourseRequest) String() string {
 func (*CreateCourseRequest) ProtoMessage() {}
 
 func (x *CreateCourseRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[13]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1269,7 +1434,7 @@ func (x *CreateCourseRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateCourseRequest.ProtoReflect.Descriptor instead.
 func (*CreateCourseRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{13}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *CreateCourseRequest) GetTitle() string {
@@ -1307,6 +1472,13 @@ func (x *CreateCourseRequest) GetDeadlineDays() uint32 {
 	return 0
 }
 
+func (x *CreateCourseRequest) GetVisibility() CourseVisibility {
+	if x != nil && x.Visibility != nil {
+		return *x.Visibility
+	}
+	return CourseVisibility_COURSE_VISIBILITY_UNSPECIFIED
+}
+
 type CreateCourseResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Course        *Course                `protobuf:"bytes,1,opt,name=course,proto3" json:"course,omitempty"`
@@ -1316,7 +1488,7 @@ type CreateCourseResponse struct {
 
 func (x *CreateCourseResponse) Reset() {
 	*x = CreateCourseResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[14]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1328,7 +1500,7 @@ func (x *CreateCourseResponse) String() string {
 func (*CreateCourseResponse) ProtoMessage() {}
 
 func (x *CreateCourseResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[14]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1341,7 +1513,7 @@ func (x *CreateCourseResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateCourseResponse.ProtoReflect.Descriptor instead.
 func (*CreateCourseResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{14}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *CreateCourseResponse) GetCourse() *Course {
@@ -1360,13 +1532,14 @@ type CreateCourseFromKbRequest struct {
 	Mode          LessonSourceMode       `protobuf:"varint,5,opt,name=mode,proto3,enum=teamos.academy.v1.LessonSourceMode" json:"mode,omitempty"`
 	SectionIds    []string               `protobuf:"bytes,6,rep,name=section_ids,json=sectionIds,proto3" json:"section_ids,omitempty"`
 	ArticleIds    []string               `protobuf:"bytes,7,rep,name=article_ids,json=articleIds,proto3" json:"article_ids,omitempty"`
+	Visibility    *CourseVisibility      `protobuf:"varint,8,opt,name=visibility,proto3,enum=teamos.academy.v1.CourseVisibility,oneof" json:"visibility,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CreateCourseFromKbRequest) Reset() {
 	*x = CreateCourseFromKbRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[15]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1378,7 +1551,7 @@ func (x *CreateCourseFromKbRequest) String() string {
 func (*CreateCourseFromKbRequest) ProtoMessage() {}
 
 func (x *CreateCourseFromKbRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[15]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1391,7 +1564,7 @@ func (x *CreateCourseFromKbRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateCourseFromKbRequest.ProtoReflect.Descriptor instead.
 func (*CreateCourseFromKbRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{15}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *CreateCourseFromKbRequest) GetTitle() string {
@@ -1443,6 +1616,13 @@ func (x *CreateCourseFromKbRequest) GetArticleIds() []string {
 	return nil
 }
 
+func (x *CreateCourseFromKbRequest) GetVisibility() CourseVisibility {
+	if x != nil && x.Visibility != nil {
+		return *x.Visibility
+	}
+	return CourseVisibility_COURSE_VISIBILITY_UNSPECIFIED
+}
+
 type CreateCourseFromKbResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Course        *Course                `protobuf:"bytes,1,opt,name=course,proto3" json:"course,omitempty"`
@@ -1452,7 +1632,7 @@ type CreateCourseFromKbResponse struct {
 
 func (x *CreateCourseFromKbResponse) Reset() {
 	*x = CreateCourseFromKbResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[16]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1464,7 +1644,7 @@ func (x *CreateCourseFromKbResponse) String() string {
 func (*CreateCourseFromKbResponse) ProtoMessage() {}
 
 func (x *CreateCourseFromKbResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[16]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1477,7 +1657,7 @@ func (x *CreateCourseFromKbResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateCourseFromKbResponse.ProtoReflect.Descriptor instead.
 func (*CreateCourseFromKbResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{16}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *CreateCourseFromKbResponse) GetCourse() *Course {
@@ -1495,14 +1675,15 @@ type UpdateCourseRequest struct {
 	Status      *CourseStatus          `protobuf:"varint,4,opt,name=status,proto3,enum=teamos.academy.v1.CourseStatus,oneof" json:"status,omitempty"`
 	Sequential  *bool                  `protobuf:"varint,5,opt,name=sequential,proto3,oneof" json:"sequential,omitempty"`
 	// Zero clears the deadline, mirroring the frontend contract.
-	DeadlineDays  *uint32 `protobuf:"varint,6,opt,name=deadline_days,json=deadlineDays,proto3,oneof" json:"deadline_days,omitempty"`
+	DeadlineDays  *uint32           `protobuf:"varint,6,opt,name=deadline_days,json=deadlineDays,proto3,oneof" json:"deadline_days,omitempty"`
+	Visibility    *CourseVisibility `protobuf:"varint,7,opt,name=visibility,proto3,enum=teamos.academy.v1.CourseVisibility,oneof" json:"visibility,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *UpdateCourseRequest) Reset() {
 	*x = UpdateCourseRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[17]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1514,7 +1695,7 @@ func (x *UpdateCourseRequest) String() string {
 func (*UpdateCourseRequest) ProtoMessage() {}
 
 func (x *UpdateCourseRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[17]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1527,7 +1708,7 @@ func (x *UpdateCourseRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateCourseRequest.ProtoReflect.Descriptor instead.
 func (*UpdateCourseRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{17}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *UpdateCourseRequest) GetId() string {
@@ -1572,6 +1753,13 @@ func (x *UpdateCourseRequest) GetDeadlineDays() uint32 {
 	return 0
 }
 
+func (x *UpdateCourseRequest) GetVisibility() CourseVisibility {
+	if x != nil && x.Visibility != nil {
+		return *x.Visibility
+	}
+	return CourseVisibility_COURSE_VISIBILITY_UNSPECIFIED
+}
+
 type UpdateCourseResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Course        *Course                `protobuf:"bytes,1,opt,name=course,proto3" json:"course,omitempty"`
@@ -1581,7 +1769,7 @@ type UpdateCourseResponse struct {
 
 func (x *UpdateCourseResponse) Reset() {
 	*x = UpdateCourseResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[18]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1593,7 +1781,7 @@ func (x *UpdateCourseResponse) String() string {
 func (*UpdateCourseResponse) ProtoMessage() {}
 
 func (x *UpdateCourseResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[18]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1606,7 +1794,7 @@ func (x *UpdateCourseResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateCourseResponse.ProtoReflect.Descriptor instead.
 func (*UpdateCourseResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{18}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *UpdateCourseResponse) GetCourse() *Course {
@@ -1625,7 +1813,7 @@ type DeleteCourseRequest struct {
 
 func (x *DeleteCourseRequest) Reset() {
 	*x = DeleteCourseRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[19]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1637,7 +1825,7 @@ func (x *DeleteCourseRequest) String() string {
 func (*DeleteCourseRequest) ProtoMessage() {}
 
 func (x *DeleteCourseRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[19]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1650,7 +1838,7 @@ func (x *DeleteCourseRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteCourseRequest.ProtoReflect.Descriptor instead.
 func (*DeleteCourseRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{19}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *DeleteCourseRequest) GetId() string {
@@ -1668,7 +1856,7 @@ type DeleteCourseResponse struct {
 
 func (x *DeleteCourseResponse) Reset() {
 	*x = DeleteCourseResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[20]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1680,7 +1868,7 @@ func (x *DeleteCourseResponse) String() string {
 func (*DeleteCourseResponse) ProtoMessage() {}
 
 func (x *DeleteCourseResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[20]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1693,7 +1881,7 @@ func (x *DeleteCourseResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteCourseResponse.ProtoReflect.Descriptor instead.
 func (*DeleteCourseResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{20}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{22}
 }
 
 type GetCourseSectionsRequest struct {
@@ -1705,7 +1893,7 @@ type GetCourseSectionsRequest struct {
 
 func (x *GetCourseSectionsRequest) Reset() {
 	*x = GetCourseSectionsRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[21]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1717,7 +1905,7 @@ func (x *GetCourseSectionsRequest) String() string {
 func (*GetCourseSectionsRequest) ProtoMessage() {}
 
 func (x *GetCourseSectionsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[21]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1730,7 +1918,7 @@ func (x *GetCourseSectionsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCourseSectionsRequest.ProtoReflect.Descriptor instead.
 func (*GetCourseSectionsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{21}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *GetCourseSectionsRequest) GetCourseId() string {
@@ -1749,7 +1937,7 @@ type GetCourseSectionsResponse struct {
 
 func (x *GetCourseSectionsResponse) Reset() {
 	*x = GetCourseSectionsResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[22]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1761,7 +1949,7 @@ func (x *GetCourseSectionsResponse) String() string {
 func (*GetCourseSectionsResponse) ProtoMessage() {}
 
 func (x *GetCourseSectionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[22]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1774,7 +1962,7 @@ func (x *GetCourseSectionsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCourseSectionsResponse.ProtoReflect.Descriptor instead.
 func (*GetCourseSectionsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{22}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *GetCourseSectionsResponse) GetSections() []*CourseSection {
@@ -1794,7 +1982,7 @@ type CreateCourseSectionRequest struct {
 
 func (x *CreateCourseSectionRequest) Reset() {
 	*x = CreateCourseSectionRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[23]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1806,7 +1994,7 @@ func (x *CreateCourseSectionRequest) String() string {
 func (*CreateCourseSectionRequest) ProtoMessage() {}
 
 func (x *CreateCourseSectionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[23]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1819,7 +2007,7 @@ func (x *CreateCourseSectionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateCourseSectionRequest.ProtoReflect.Descriptor instead.
 func (*CreateCourseSectionRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{23}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *CreateCourseSectionRequest) GetCourseId() string {
@@ -1845,7 +2033,7 @@ type CreateCourseSectionResponse struct {
 
 func (x *CreateCourseSectionResponse) Reset() {
 	*x = CreateCourseSectionResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[24]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1857,7 +2045,7 @@ func (x *CreateCourseSectionResponse) String() string {
 func (*CreateCourseSectionResponse) ProtoMessage() {}
 
 func (x *CreateCourseSectionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[24]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1870,7 +2058,7 @@ func (x *CreateCourseSectionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateCourseSectionResponse.ProtoReflect.Descriptor instead.
 func (*CreateCourseSectionResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{24}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *CreateCourseSectionResponse) GetSection() *CourseSection {
@@ -1890,7 +2078,7 @@ type UpdateCourseSectionRequest struct {
 
 func (x *UpdateCourseSectionRequest) Reset() {
 	*x = UpdateCourseSectionRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[25]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1902,7 +2090,7 @@ func (x *UpdateCourseSectionRequest) String() string {
 func (*UpdateCourseSectionRequest) ProtoMessage() {}
 
 func (x *UpdateCourseSectionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[25]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1915,7 +2103,7 @@ func (x *UpdateCourseSectionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateCourseSectionRequest.ProtoReflect.Descriptor instead.
 func (*UpdateCourseSectionRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{25}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *UpdateCourseSectionRequest) GetId() string {
@@ -1941,7 +2129,7 @@ type UpdateCourseSectionResponse struct {
 
 func (x *UpdateCourseSectionResponse) Reset() {
 	*x = UpdateCourseSectionResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[26]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1953,7 +2141,7 @@ func (x *UpdateCourseSectionResponse) String() string {
 func (*UpdateCourseSectionResponse) ProtoMessage() {}
 
 func (x *UpdateCourseSectionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[26]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1966,7 +2154,7 @@ func (x *UpdateCourseSectionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateCourseSectionResponse.ProtoReflect.Descriptor instead.
 func (*UpdateCourseSectionResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{26}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *UpdateCourseSectionResponse) GetSection() *CourseSection {
@@ -1985,7 +2173,7 @@ type DeleteCourseSectionRequest struct {
 
 func (x *DeleteCourseSectionRequest) Reset() {
 	*x = DeleteCourseSectionRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[27]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1997,7 +2185,7 @@ func (x *DeleteCourseSectionRequest) String() string {
 func (*DeleteCourseSectionRequest) ProtoMessage() {}
 
 func (x *DeleteCourseSectionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[27]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2010,7 +2198,7 @@ func (x *DeleteCourseSectionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteCourseSectionRequest.ProtoReflect.Descriptor instead.
 func (*DeleteCourseSectionRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{27}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *DeleteCourseSectionRequest) GetId() string {
@@ -2028,7 +2216,7 @@ type DeleteCourseSectionResponse struct {
 
 func (x *DeleteCourseSectionResponse) Reset() {
 	*x = DeleteCourseSectionResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[28]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2040,7 +2228,7 @@ func (x *DeleteCourseSectionResponse) String() string {
 func (*DeleteCourseSectionResponse) ProtoMessage() {}
 
 func (x *DeleteCourseSectionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[28]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2053,7 +2241,7 @@ func (x *DeleteCourseSectionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteCourseSectionResponse.ProtoReflect.Descriptor instead.
 func (*DeleteCourseSectionResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{28}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{30}
 }
 
 type GetLessonsRequest struct {
@@ -2065,7 +2253,7 @@ type GetLessonsRequest struct {
 
 func (x *GetLessonsRequest) Reset() {
 	*x = GetLessonsRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[29]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2077,7 +2265,7 @@ func (x *GetLessonsRequest) String() string {
 func (*GetLessonsRequest) ProtoMessage() {}
 
 func (x *GetLessonsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[29]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2090,7 +2278,7 @@ func (x *GetLessonsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetLessonsRequest.ProtoReflect.Descriptor instead.
 func (*GetLessonsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{29}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *GetLessonsRequest) GetCourseId() string {
@@ -2109,7 +2297,7 @@ type GetLessonsResponse struct {
 
 func (x *GetLessonsResponse) Reset() {
 	*x = GetLessonsResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[30]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2121,7 +2309,7 @@ func (x *GetLessonsResponse) String() string {
 func (*GetLessonsResponse) ProtoMessage() {}
 
 func (x *GetLessonsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[30]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2134,7 +2322,7 @@ func (x *GetLessonsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetLessonsResponse.ProtoReflect.Descriptor instead.
 func (*GetLessonsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{30}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *GetLessonsResponse) GetLessons() []*Lesson {
@@ -2158,7 +2346,7 @@ type CreateLessonRequest struct {
 
 func (x *CreateLessonRequest) Reset() {
 	*x = CreateLessonRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[31]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2170,7 +2358,7 @@ func (x *CreateLessonRequest) String() string {
 func (*CreateLessonRequest) ProtoMessage() {}
 
 func (x *CreateLessonRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[31]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2183,7 +2371,7 @@ func (x *CreateLessonRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateLessonRequest.ProtoReflect.Descriptor instead.
 func (*CreateLessonRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{31}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *CreateLessonRequest) GetCourseId() string {
@@ -2237,7 +2425,7 @@ type CreateLessonResponse struct {
 
 func (x *CreateLessonResponse) Reset() {
 	*x = CreateLessonResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[32]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2249,7 +2437,7 @@ func (x *CreateLessonResponse) String() string {
 func (*CreateLessonResponse) ProtoMessage() {}
 
 func (x *CreateLessonResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[32]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2262,7 +2450,7 @@ func (x *CreateLessonResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateLessonResponse.ProtoReflect.Descriptor instead.
 func (*CreateLessonResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{32}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *CreateLessonResponse) GetLesson() *Lesson {
@@ -2285,7 +2473,7 @@ type UpdateLessonRequest struct {
 
 func (x *UpdateLessonRequest) Reset() {
 	*x = UpdateLessonRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[33]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2297,7 +2485,7 @@ func (x *UpdateLessonRequest) String() string {
 func (*UpdateLessonRequest) ProtoMessage() {}
 
 func (x *UpdateLessonRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[33]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2310,7 +2498,7 @@ func (x *UpdateLessonRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateLessonRequest.ProtoReflect.Descriptor instead.
 func (*UpdateLessonRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{33}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *UpdateLessonRequest) GetId() string {
@@ -2357,7 +2545,7 @@ type UpdateLessonResponse struct {
 
 func (x *UpdateLessonResponse) Reset() {
 	*x = UpdateLessonResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[34]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2369,7 +2557,7 @@ func (x *UpdateLessonResponse) String() string {
 func (*UpdateLessonResponse) ProtoMessage() {}
 
 func (x *UpdateLessonResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[34]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2382,7 +2570,7 @@ func (x *UpdateLessonResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateLessonResponse.ProtoReflect.Descriptor instead.
 func (*UpdateLessonResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{34}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *UpdateLessonResponse) GetLesson() *Lesson {
@@ -2401,7 +2589,7 @@ type DeleteLessonRequest struct {
 
 func (x *DeleteLessonRequest) Reset() {
 	*x = DeleteLessonRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[35]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2413,7 +2601,7 @@ func (x *DeleteLessonRequest) String() string {
 func (*DeleteLessonRequest) ProtoMessage() {}
 
 func (x *DeleteLessonRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[35]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2426,7 +2614,7 @@ func (x *DeleteLessonRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteLessonRequest.ProtoReflect.Descriptor instead.
 func (*DeleteLessonRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{35}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *DeleteLessonRequest) GetId() string {
@@ -2444,7 +2632,7 @@ type DeleteLessonResponse struct {
 
 func (x *DeleteLessonResponse) Reset() {
 	*x = DeleteLessonResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[36]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2456,7 +2644,7 @@ func (x *DeleteLessonResponse) String() string {
 func (*DeleteLessonResponse) ProtoMessage() {}
 
 func (x *DeleteLessonResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[36]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2469,7 +2657,7 @@ func (x *DeleteLessonResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteLessonResponse.ProtoReflect.Descriptor instead.
 func (*DeleteLessonResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{36}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{38}
 }
 
 type MoveLessonRequest struct {
@@ -2483,7 +2671,7 @@ type MoveLessonRequest struct {
 
 func (x *MoveLessonRequest) Reset() {
 	*x = MoveLessonRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[37]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2495,7 +2683,7 @@ func (x *MoveLessonRequest) String() string {
 func (*MoveLessonRequest) ProtoMessage() {}
 
 func (x *MoveLessonRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[37]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2508,7 +2696,7 @@ func (x *MoveLessonRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MoveLessonRequest.ProtoReflect.Descriptor instead.
 func (*MoveLessonRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{37}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *MoveLessonRequest) GetId() string {
@@ -2541,7 +2729,7 @@ type MoveLessonResponse struct {
 
 func (x *MoveLessonResponse) Reset() {
 	*x = MoveLessonResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[38]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2553,7 +2741,7 @@ func (x *MoveLessonResponse) String() string {
 func (*MoveLessonResponse) ProtoMessage() {}
 
 func (x *MoveLessonResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[38]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2566,7 +2754,7 @@ func (x *MoveLessonResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MoveLessonResponse.ProtoReflect.Descriptor instead.
 func (*MoveLessonResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{38}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *MoveLessonResponse) GetLesson() *Lesson {
@@ -2585,7 +2773,7 @@ type GetQuizzesRequest struct {
 
 func (x *GetQuizzesRequest) Reset() {
 	*x = GetQuizzesRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[39]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2597,7 +2785,7 @@ func (x *GetQuizzesRequest) String() string {
 func (*GetQuizzesRequest) ProtoMessage() {}
 
 func (x *GetQuizzesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[39]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2610,7 +2798,7 @@ func (x *GetQuizzesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetQuizzesRequest.ProtoReflect.Descriptor instead.
 func (*GetQuizzesRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{39}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *GetQuizzesRequest) GetLessonId() string {
@@ -2629,7 +2817,7 @@ type GetQuizzesResponse struct {
 
 func (x *GetQuizzesResponse) Reset() {
 	*x = GetQuizzesResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[40]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2641,7 +2829,7 @@ func (x *GetQuizzesResponse) String() string {
 func (*GetQuizzesResponse) ProtoMessage() {}
 
 func (x *GetQuizzesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[40]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2654,7 +2842,7 @@ func (x *GetQuizzesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetQuizzesResponse.ProtoReflect.Descriptor instead.
 func (*GetQuizzesResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{40}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *GetQuizzesResponse) GetQuizzes() []*Quiz {
@@ -2677,7 +2865,7 @@ type UpsertQuizRequest struct {
 
 func (x *UpsertQuizRequest) Reset() {
 	*x = UpsertQuizRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[41]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2689,7 +2877,7 @@ func (x *UpsertQuizRequest) String() string {
 func (*UpsertQuizRequest) ProtoMessage() {}
 
 func (x *UpsertQuizRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[41]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2702,7 +2890,7 @@ func (x *UpsertQuizRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpsertQuizRequest.ProtoReflect.Descriptor instead.
 func (*UpsertQuizRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{41}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *UpsertQuizRequest) GetId() string {
@@ -2749,7 +2937,7 @@ type UpsertQuizResponse struct {
 
 func (x *UpsertQuizResponse) Reset() {
 	*x = UpsertQuizResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[42]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2761,7 +2949,7 @@ func (x *UpsertQuizResponse) String() string {
 func (*UpsertQuizResponse) ProtoMessage() {}
 
 func (x *UpsertQuizResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[42]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2774,7 +2962,7 @@ func (x *UpsertQuizResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpsertQuizResponse.ProtoReflect.Descriptor instead.
 func (*UpsertQuizResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{42}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *UpsertQuizResponse) GetQuiz() *Quiz {
@@ -2792,7 +2980,7 @@ type GetAssignmentsRequest struct {
 
 func (x *GetAssignmentsRequest) Reset() {
 	*x = GetAssignmentsRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[43]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2804,7 +2992,7 @@ func (x *GetAssignmentsRequest) String() string {
 func (*GetAssignmentsRequest) ProtoMessage() {}
 
 func (x *GetAssignmentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[43]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2817,7 +3005,7 @@ func (x *GetAssignmentsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAssignmentsRequest.ProtoReflect.Descriptor instead.
 func (*GetAssignmentsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{43}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{45}
 }
 
 type GetAssignmentsResponse struct {
@@ -2829,7 +3017,7 @@ type GetAssignmentsResponse struct {
 
 func (x *GetAssignmentsResponse) Reset() {
 	*x = GetAssignmentsResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[44]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2841,7 +3029,7 @@ func (x *GetAssignmentsResponse) String() string {
 func (*GetAssignmentsResponse) ProtoMessage() {}
 
 func (x *GetAssignmentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[44]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2854,7 +3042,7 @@ func (x *GetAssignmentsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAssignmentsResponse.ProtoReflect.Descriptor instead.
 func (*GetAssignmentsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{44}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *GetAssignmentsResponse) GetAssignments() []*CourseAssignment {
@@ -2876,7 +3064,7 @@ type AssignCourseRequest struct {
 
 func (x *AssignCourseRequest) Reset() {
 	*x = AssignCourseRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[45]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2888,7 +3076,7 @@ func (x *AssignCourseRequest) String() string {
 func (*AssignCourseRequest) ProtoMessage() {}
 
 func (x *AssignCourseRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[45]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2901,7 +3089,7 @@ func (x *AssignCourseRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AssignCourseRequest.ProtoReflect.Descriptor instead.
 func (*AssignCourseRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{45}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *AssignCourseRequest) GetCourseId() string {
@@ -2941,7 +3129,7 @@ type AssignCourseResponse struct {
 
 func (x *AssignCourseResponse) Reset() {
 	*x = AssignCourseResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[46]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2953,7 +3141,7 @@ func (x *AssignCourseResponse) String() string {
 func (*AssignCourseResponse) ProtoMessage() {}
 
 func (x *AssignCourseResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[46]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2966,7 +3154,7 @@ func (x *AssignCourseResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AssignCourseResponse.ProtoReflect.Descriptor instead.
 func (*AssignCourseResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{46}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *AssignCourseResponse) GetAssignment() *CourseAssignment {
@@ -2985,7 +3173,7 @@ type GetProgressRequest struct {
 
 func (x *GetProgressRequest) Reset() {
 	*x = GetProgressRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[47]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2997,7 +3185,7 @@ func (x *GetProgressRequest) String() string {
 func (*GetProgressRequest) ProtoMessage() {}
 
 func (x *GetProgressRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[47]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3010,7 +3198,7 @@ func (x *GetProgressRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetProgressRequest.ProtoReflect.Descriptor instead.
 func (*GetProgressRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{47}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *GetProgressRequest) GetCourseId() string {
@@ -3029,7 +3217,7 @@ type GetProgressResponse struct {
 
 func (x *GetProgressResponse) Reset() {
 	*x = GetProgressResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[48]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3041,7 +3229,7 @@ func (x *GetProgressResponse) String() string {
 func (*GetProgressResponse) ProtoMessage() {}
 
 func (x *GetProgressResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[48]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3054,7 +3242,7 @@ func (x *GetProgressResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetProgressResponse.ProtoReflect.Descriptor instead.
 func (*GetProgressResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{48}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{50}
 }
 
 func (x *GetProgressResponse) GetProgress() []*CourseProgress {
@@ -3075,7 +3263,7 @@ type MarkLessonCompleteRequest struct {
 
 func (x *MarkLessonCompleteRequest) Reset() {
 	*x = MarkLessonCompleteRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[49]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3087,7 +3275,7 @@ func (x *MarkLessonCompleteRequest) String() string {
 func (*MarkLessonCompleteRequest) ProtoMessage() {}
 
 func (x *MarkLessonCompleteRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[49]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3100,7 +3288,7 @@ func (x *MarkLessonCompleteRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MarkLessonCompleteRequest.ProtoReflect.Descriptor instead.
 func (*MarkLessonCompleteRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{49}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{51}
 }
 
 func (x *MarkLessonCompleteRequest) GetLessonId() string {
@@ -3133,7 +3321,7 @@ type MarkLessonCompleteResponse struct {
 
 func (x *MarkLessonCompleteResponse) Reset() {
 	*x = MarkLessonCompleteResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[50]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3145,7 +3333,7 @@ func (x *MarkLessonCompleteResponse) String() string {
 func (*MarkLessonCompleteResponse) ProtoMessage() {}
 
 func (x *MarkLessonCompleteResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[50]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3158,7 +3346,7 @@ func (x *MarkLessonCompleteResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MarkLessonCompleteResponse.ProtoReflect.Descriptor instead.
 func (*MarkLessonCompleteResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{50}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{52}
 }
 
 func (x *MarkLessonCompleteResponse) GetProgress() *CourseProgress {
@@ -3172,7 +3360,7 @@ var File_proto_academy_v1_academy_proto protoreflect.FileDescriptor
 
 const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"\n" +
-	"\x1eproto/academy/v1/academy.proto\x12\x11teamos.academy.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbd\x03\n" +
+	"\x1eproto/academy/v1/academy.proto\x12\x11teamos.academy.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x82\x04\n" +
 	"\x06Course\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12%\n" +
@@ -3188,7 +3376,10 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"created_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
 	"updated_at\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAtB\x0e\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12C\n" +
+	"\n" +
+	"visibility\x18\v \x01(\x0e2#.teamos.academy.v1.CourseVisibilityR\n" +
+	"visibilityB\x0e\n" +
 	"\f_descriptionB\f\n" +
 	"\n" +
 	"_cover_urlB\x10\n" +
@@ -3271,7 +3462,13 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"\x10GetCourseRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"F\n" +
 	"\x11GetCourseResponse\x121\n" +
-	"\x06course\x18\x01 \x01(\v2\x19.teamos.academy.v1.CourseR\x06course\"\x9b\x02\n" +
+	"\x06course\x18\x01 \x01(\v2\x19.teamos.academy.v1.CourseR\x06course\"(\n" +
+	"\x16GetPublicCourseRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\xbf\x01\n" +
+	"\x17GetPublicCourseResponse\x121\n" +
+	"\x06course\x18\x01 \x01(\v2\x19.teamos.academy.v1.CourseR\x06course\x12<\n" +
+	"\bsections\x18\x02 \x03(\v2 .teamos.academy.v1.CourseSectionR\bsections\x123\n" +
+	"\alessons\x18\x03 \x03(\v2\x19.teamos.academy.v1.LessonR\alessons\"\xf4\x02\n" +
 	"\x13CreateCourseRequest\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12%\n" +
 	"\vdescription\x18\x02 \x01(\tH\x00R\vdescription\x88\x01\x01\x12<\n" +
@@ -3279,13 +3476,17 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"\n" +
 	"sequential\x18\x04 \x01(\bH\x02R\n" +
 	"sequential\x88\x01\x01\x12(\n" +
-	"\rdeadline_days\x18\x05 \x01(\rH\x03R\fdeadlineDays\x88\x01\x01B\x0e\n" +
+	"\rdeadline_days\x18\x05 \x01(\rH\x03R\fdeadlineDays\x88\x01\x01\x12H\n" +
+	"\n" +
+	"visibility\x18\x06 \x01(\x0e2#.teamos.academy.v1.CourseVisibilityH\x04R\n" +
+	"visibility\x88\x01\x01B\x0e\n" +
 	"\f_descriptionB\t\n" +
 	"\a_statusB\r\n" +
 	"\v_sequentialB\x10\n" +
-	"\x0e_deadline_days\"I\n" +
+	"\x0e_deadline_daysB\r\n" +
+	"\v_visibility\"I\n" +
 	"\x14CreateCourseResponse\x121\n" +
-	"\x06course\x18\x01 \x01(\v2\x19.teamos.academy.v1.CourseR\x06course\"\xd3\x02\n" +
+	"\x06course\x18\x01 \x01(\v2\x19.teamos.academy.v1.CourseR\x06course\"\xac\x03\n" +
 	"\x19CreateCourseFromKbRequest\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12%\n" +
 	"\vdescription\x18\x02 \x01(\tH\x00R\vdescription\x88\x01\x01\x12#\n" +
@@ -3297,12 +3498,16 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"\vsection_ids\x18\x06 \x03(\tR\n" +
 	"sectionIds\x12\x1f\n" +
 	"\varticle_ids\x18\a \x03(\tR\n" +
-	"articleIdsB\x0e\n" +
+	"articleIds\x12H\n" +
+	"\n" +
+	"visibility\x18\b \x01(\x0e2#.teamos.academy.v1.CourseVisibilityH\x03R\n" +
+	"visibility\x88\x01\x01B\x0e\n" +
 	"\f_descriptionB\r\n" +
 	"\v_sequentialB\x10\n" +
-	"\x0e_deadline_days\"O\n" +
+	"\x0e_deadline_daysB\r\n" +
+	"\v_visibility\"O\n" +
 	"\x1aCreateCourseFromKbResponse\x121\n" +
-	"\x06course\x18\x01 \x01(\v2\x19.teamos.academy.v1.CourseR\x06course\"\xba\x02\n" +
+	"\x06course\x18\x01 \x01(\v2\x19.teamos.academy.v1.CourseR\x06course\"\x93\x03\n" +
 	"\x13UpdateCourseRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x19\n" +
 	"\x05title\x18\x02 \x01(\tH\x00R\x05title\x88\x01\x01\x12%\n" +
@@ -3311,12 +3516,16 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"\n" +
 	"sequential\x18\x05 \x01(\bH\x03R\n" +
 	"sequential\x88\x01\x01\x12(\n" +
-	"\rdeadline_days\x18\x06 \x01(\rH\x04R\fdeadlineDays\x88\x01\x01B\b\n" +
+	"\rdeadline_days\x18\x06 \x01(\rH\x04R\fdeadlineDays\x88\x01\x01\x12H\n" +
+	"\n" +
+	"visibility\x18\a \x01(\x0e2#.teamos.academy.v1.CourseVisibilityH\x05R\n" +
+	"visibility\x88\x01\x01B\b\n" +
 	"\x06_titleB\x0e\n" +
 	"\f_descriptionB\t\n" +
 	"\a_statusB\r\n" +
 	"\v_sequentialB\x10\n" +
-	"\x0e_deadline_days\"I\n" +
+	"\x0e_deadline_daysB\r\n" +
+	"\v_visibility\"I\n" +
 	"\x14UpdateCourseResponse\x121\n" +
 	"\x06course\x18\x01 \x01(\v2\x19.teamos.academy.v1.CourseR\x06course\"%\n" +
 	"\x13DeleteCourseRequest\x12\x0e\n" +
@@ -3432,7 +3641,12 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"\fCourseStatus\x12\x1d\n" +
 	"\x19COURSE_STATUS_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13COURSE_STATUS_DRAFT\x10\x01\x12\x1b\n" +
-	"\x17COURSE_STATUS_PUBLISHED\x10\x02*p\n" +
+	"\x17COURSE_STATUS_PUBLISHED\x10\x02*\x94\x01\n" +
+	"\x10CourseVisibility\x12!\n" +
+	"\x1dCOURSE_VISIBILITY_UNSPECIFIED\x10\x00\x12\x1c\n" +
+	"\x18COURSE_VISIBILITY_PUBLIC\x10\x01\x12\x1d\n" +
+	"\x19COURSE_VISIBILITY_COMPANY\x10\x02\x12 \n" +
+	"\x1cCOURSE_VISIBILITY_RESTRICTED\x10\x03*p\n" +
 	"\x10LessonSourceMode\x12\"\n" +
 	"\x1eLESSON_SOURCE_MODE_UNSPECIFIED\x10\x00\x12\x1b\n" +
 	"\x17LESSON_SOURCE_MODE_LINK\x10\x01\x12\x1b\n" +
@@ -3453,11 +3667,12 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"\"COURSE_PROGRESS_STATUS_NOT_STARTED\x10\x01\x12&\n" +
 	"\"COURSE_PROGRESS_STATUS_IN_PROGRESS\x10\x02\x12$\n" +
 	" COURSE_PROGRESS_STATUS_COMPLETED\x10\x03\x12\"\n" +
-	"\x1eCOURSE_PROGRESS_STATUS_OVERDUE\x10\x042\xd3\x10\n" +
+	"\x1eCOURSE_PROGRESS_STATUS_OVERDUE\x10\x042\xbd\x11\n" +
 	"\x0eAcademyService\x12Y\n" +
 	"\n" +
 	"GetCourses\x12$.teamos.academy.v1.GetCoursesRequest\x1a%.teamos.academy.v1.GetCoursesResponse\x12V\n" +
-	"\tGetCourse\x12#.teamos.academy.v1.GetCourseRequest\x1a$.teamos.academy.v1.GetCourseResponse\x12_\n" +
+	"\tGetCourse\x12#.teamos.academy.v1.GetCourseRequest\x1a$.teamos.academy.v1.GetCourseResponse\x12h\n" +
+	"\x0fGetPublicCourse\x12).teamos.academy.v1.GetPublicCourseRequest\x1a*.teamos.academy.v1.GetPublicCourseResponse\x12_\n" +
 	"\fCreateCourse\x12&.teamos.academy.v1.CreateCourseRequest\x1a'.teamos.academy.v1.CreateCourseResponse\x12q\n" +
 	"\x12CreateCourseFromKb\x12,.teamos.academy.v1.CreateCourseFromKbRequest\x1a-.teamos.academy.v1.CreateCourseFromKbResponse\x12_\n" +
 	"\fUpdateCourse\x12&.teamos.academy.v1.UpdateCourseRequest\x1a'.teamos.academy.v1.UpdateCourseResponse\x12_\n" +
@@ -3494,160 +3709,172 @@ func file_proto_academy_v1_academy_proto_rawDescGZIP() []byte {
 	return file_proto_academy_v1_academy_proto_rawDescData
 }
 
-var file_proto_academy_v1_academy_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
-var file_proto_academy_v1_academy_proto_msgTypes = make([]protoimpl.MessageInfo, 51)
+var file_proto_academy_v1_academy_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
+var file_proto_academy_v1_academy_proto_msgTypes = make([]protoimpl.MessageInfo, 53)
 var file_proto_academy_v1_academy_proto_goTypes = []any{
 	(CourseStatus)(0),                   // 0: teamos.academy.v1.CourseStatus
-	(LessonSourceMode)(0),               // 1: teamos.academy.v1.LessonSourceMode
-	(QuizQuestionType)(0),               // 2: teamos.academy.v1.QuizQuestionType
-	(AssigneeType)(0),                   // 3: teamos.academy.v1.AssigneeType
-	(CourseProgressStatus)(0),           // 4: teamos.academy.v1.CourseProgressStatus
-	(*Course)(nil),                      // 5: teamos.academy.v1.Course
-	(*CourseSection)(nil),               // 6: teamos.academy.v1.CourseSection
-	(*Lesson)(nil),                      // 7: teamos.academy.v1.Lesson
-	(*QuizOption)(nil),                  // 8: teamos.academy.v1.QuizOption
-	(*QuizQuestion)(nil),                // 9: teamos.academy.v1.QuizQuestion
-	(*Quiz)(nil),                        // 10: teamos.academy.v1.Quiz
-	(*CourseAssignment)(nil),            // 11: teamos.academy.v1.CourseAssignment
-	(*QuizAttempt)(nil),                 // 12: teamos.academy.v1.QuizAttempt
-	(*CourseProgress)(nil),              // 13: teamos.academy.v1.CourseProgress
-	(*GetCoursesRequest)(nil),           // 14: teamos.academy.v1.GetCoursesRequest
-	(*GetCoursesResponse)(nil),          // 15: teamos.academy.v1.GetCoursesResponse
-	(*GetCourseRequest)(nil),            // 16: teamos.academy.v1.GetCourseRequest
-	(*GetCourseResponse)(nil),           // 17: teamos.academy.v1.GetCourseResponse
-	(*CreateCourseRequest)(nil),         // 18: teamos.academy.v1.CreateCourseRequest
-	(*CreateCourseResponse)(nil),        // 19: teamos.academy.v1.CreateCourseResponse
-	(*CreateCourseFromKbRequest)(nil),   // 20: teamos.academy.v1.CreateCourseFromKbRequest
-	(*CreateCourseFromKbResponse)(nil),  // 21: teamos.academy.v1.CreateCourseFromKbResponse
-	(*UpdateCourseRequest)(nil),         // 22: teamos.academy.v1.UpdateCourseRequest
-	(*UpdateCourseResponse)(nil),        // 23: teamos.academy.v1.UpdateCourseResponse
-	(*DeleteCourseRequest)(nil),         // 24: teamos.academy.v1.DeleteCourseRequest
-	(*DeleteCourseResponse)(nil),        // 25: teamos.academy.v1.DeleteCourseResponse
-	(*GetCourseSectionsRequest)(nil),    // 26: teamos.academy.v1.GetCourseSectionsRequest
-	(*GetCourseSectionsResponse)(nil),   // 27: teamos.academy.v1.GetCourseSectionsResponse
-	(*CreateCourseSectionRequest)(nil),  // 28: teamos.academy.v1.CreateCourseSectionRequest
-	(*CreateCourseSectionResponse)(nil), // 29: teamos.academy.v1.CreateCourseSectionResponse
-	(*UpdateCourseSectionRequest)(nil),  // 30: teamos.academy.v1.UpdateCourseSectionRequest
-	(*UpdateCourseSectionResponse)(nil), // 31: teamos.academy.v1.UpdateCourseSectionResponse
-	(*DeleteCourseSectionRequest)(nil),  // 32: teamos.academy.v1.DeleteCourseSectionRequest
-	(*DeleteCourseSectionResponse)(nil), // 33: teamos.academy.v1.DeleteCourseSectionResponse
-	(*GetLessonsRequest)(nil),           // 34: teamos.academy.v1.GetLessonsRequest
-	(*GetLessonsResponse)(nil),          // 35: teamos.academy.v1.GetLessonsResponse
-	(*CreateLessonRequest)(nil),         // 36: teamos.academy.v1.CreateLessonRequest
-	(*CreateLessonResponse)(nil),        // 37: teamos.academy.v1.CreateLessonResponse
-	(*UpdateLessonRequest)(nil),         // 38: teamos.academy.v1.UpdateLessonRequest
-	(*UpdateLessonResponse)(nil),        // 39: teamos.academy.v1.UpdateLessonResponse
-	(*DeleteLessonRequest)(nil),         // 40: teamos.academy.v1.DeleteLessonRequest
-	(*DeleteLessonResponse)(nil),        // 41: teamos.academy.v1.DeleteLessonResponse
-	(*MoveLessonRequest)(nil),           // 42: teamos.academy.v1.MoveLessonRequest
-	(*MoveLessonResponse)(nil),          // 43: teamos.academy.v1.MoveLessonResponse
-	(*GetQuizzesRequest)(nil),           // 44: teamos.academy.v1.GetQuizzesRequest
-	(*GetQuizzesResponse)(nil),          // 45: teamos.academy.v1.GetQuizzesResponse
-	(*UpsertQuizRequest)(nil),           // 46: teamos.academy.v1.UpsertQuizRequest
-	(*UpsertQuizResponse)(nil),          // 47: teamos.academy.v1.UpsertQuizResponse
-	(*GetAssignmentsRequest)(nil),       // 48: teamos.academy.v1.GetAssignmentsRequest
-	(*GetAssignmentsResponse)(nil),      // 49: teamos.academy.v1.GetAssignmentsResponse
-	(*AssignCourseRequest)(nil),         // 50: teamos.academy.v1.AssignCourseRequest
-	(*AssignCourseResponse)(nil),        // 51: teamos.academy.v1.AssignCourseResponse
-	(*GetProgressRequest)(nil),          // 52: teamos.academy.v1.GetProgressRequest
-	(*GetProgressResponse)(nil),         // 53: teamos.academy.v1.GetProgressResponse
-	(*MarkLessonCompleteRequest)(nil),   // 54: teamos.academy.v1.MarkLessonCompleteRequest
-	(*MarkLessonCompleteResponse)(nil),  // 55: teamos.academy.v1.MarkLessonCompleteResponse
-	(*timestamppb.Timestamp)(nil),       // 56: google.protobuf.Timestamp
-	(*structpb.Struct)(nil),             // 57: google.protobuf.Struct
+	(CourseVisibility)(0),               // 1: teamos.academy.v1.CourseVisibility
+	(LessonSourceMode)(0),               // 2: teamos.academy.v1.LessonSourceMode
+	(QuizQuestionType)(0),               // 3: teamos.academy.v1.QuizQuestionType
+	(AssigneeType)(0),                   // 4: teamos.academy.v1.AssigneeType
+	(CourseProgressStatus)(0),           // 5: teamos.academy.v1.CourseProgressStatus
+	(*Course)(nil),                      // 6: teamos.academy.v1.Course
+	(*CourseSection)(nil),               // 7: teamos.academy.v1.CourseSection
+	(*Lesson)(nil),                      // 8: teamos.academy.v1.Lesson
+	(*QuizOption)(nil),                  // 9: teamos.academy.v1.QuizOption
+	(*QuizQuestion)(nil),                // 10: teamos.academy.v1.QuizQuestion
+	(*Quiz)(nil),                        // 11: teamos.academy.v1.Quiz
+	(*CourseAssignment)(nil),            // 12: teamos.academy.v1.CourseAssignment
+	(*QuizAttempt)(nil),                 // 13: teamos.academy.v1.QuizAttempt
+	(*CourseProgress)(nil),              // 14: teamos.academy.v1.CourseProgress
+	(*GetCoursesRequest)(nil),           // 15: teamos.academy.v1.GetCoursesRequest
+	(*GetCoursesResponse)(nil),          // 16: teamos.academy.v1.GetCoursesResponse
+	(*GetCourseRequest)(nil),            // 17: teamos.academy.v1.GetCourseRequest
+	(*GetCourseResponse)(nil),           // 18: teamos.academy.v1.GetCourseResponse
+	(*GetPublicCourseRequest)(nil),      // 19: teamos.academy.v1.GetPublicCourseRequest
+	(*GetPublicCourseResponse)(nil),     // 20: teamos.academy.v1.GetPublicCourseResponse
+	(*CreateCourseRequest)(nil),         // 21: teamos.academy.v1.CreateCourseRequest
+	(*CreateCourseResponse)(nil),        // 22: teamos.academy.v1.CreateCourseResponse
+	(*CreateCourseFromKbRequest)(nil),   // 23: teamos.academy.v1.CreateCourseFromKbRequest
+	(*CreateCourseFromKbResponse)(nil),  // 24: teamos.academy.v1.CreateCourseFromKbResponse
+	(*UpdateCourseRequest)(nil),         // 25: teamos.academy.v1.UpdateCourseRequest
+	(*UpdateCourseResponse)(nil),        // 26: teamos.academy.v1.UpdateCourseResponse
+	(*DeleteCourseRequest)(nil),         // 27: teamos.academy.v1.DeleteCourseRequest
+	(*DeleteCourseResponse)(nil),        // 28: teamos.academy.v1.DeleteCourseResponse
+	(*GetCourseSectionsRequest)(nil),    // 29: teamos.academy.v1.GetCourseSectionsRequest
+	(*GetCourseSectionsResponse)(nil),   // 30: teamos.academy.v1.GetCourseSectionsResponse
+	(*CreateCourseSectionRequest)(nil),  // 31: teamos.academy.v1.CreateCourseSectionRequest
+	(*CreateCourseSectionResponse)(nil), // 32: teamos.academy.v1.CreateCourseSectionResponse
+	(*UpdateCourseSectionRequest)(nil),  // 33: teamos.academy.v1.UpdateCourseSectionRequest
+	(*UpdateCourseSectionResponse)(nil), // 34: teamos.academy.v1.UpdateCourseSectionResponse
+	(*DeleteCourseSectionRequest)(nil),  // 35: teamos.academy.v1.DeleteCourseSectionRequest
+	(*DeleteCourseSectionResponse)(nil), // 36: teamos.academy.v1.DeleteCourseSectionResponse
+	(*GetLessonsRequest)(nil),           // 37: teamos.academy.v1.GetLessonsRequest
+	(*GetLessonsResponse)(nil),          // 38: teamos.academy.v1.GetLessonsResponse
+	(*CreateLessonRequest)(nil),         // 39: teamos.academy.v1.CreateLessonRequest
+	(*CreateLessonResponse)(nil),        // 40: teamos.academy.v1.CreateLessonResponse
+	(*UpdateLessonRequest)(nil),         // 41: teamos.academy.v1.UpdateLessonRequest
+	(*UpdateLessonResponse)(nil),        // 42: teamos.academy.v1.UpdateLessonResponse
+	(*DeleteLessonRequest)(nil),         // 43: teamos.academy.v1.DeleteLessonRequest
+	(*DeleteLessonResponse)(nil),        // 44: teamos.academy.v1.DeleteLessonResponse
+	(*MoveLessonRequest)(nil),           // 45: teamos.academy.v1.MoveLessonRequest
+	(*MoveLessonResponse)(nil),          // 46: teamos.academy.v1.MoveLessonResponse
+	(*GetQuizzesRequest)(nil),           // 47: teamos.academy.v1.GetQuizzesRequest
+	(*GetQuizzesResponse)(nil),          // 48: teamos.academy.v1.GetQuizzesResponse
+	(*UpsertQuizRequest)(nil),           // 49: teamos.academy.v1.UpsertQuizRequest
+	(*UpsertQuizResponse)(nil),          // 50: teamos.academy.v1.UpsertQuizResponse
+	(*GetAssignmentsRequest)(nil),       // 51: teamos.academy.v1.GetAssignmentsRequest
+	(*GetAssignmentsResponse)(nil),      // 52: teamos.academy.v1.GetAssignmentsResponse
+	(*AssignCourseRequest)(nil),         // 53: teamos.academy.v1.AssignCourseRequest
+	(*AssignCourseResponse)(nil),        // 54: teamos.academy.v1.AssignCourseResponse
+	(*GetProgressRequest)(nil),          // 55: teamos.academy.v1.GetProgressRequest
+	(*GetProgressResponse)(nil),         // 56: teamos.academy.v1.GetProgressResponse
+	(*MarkLessonCompleteRequest)(nil),   // 57: teamos.academy.v1.MarkLessonCompleteRequest
+	(*MarkLessonCompleteResponse)(nil),  // 58: teamos.academy.v1.MarkLessonCompleteResponse
+	(*timestamppb.Timestamp)(nil),       // 59: google.protobuf.Timestamp
+	(*structpb.Struct)(nil),             // 60: google.protobuf.Struct
 }
 var file_proto_academy_v1_academy_proto_depIdxs = []int32{
 	0,  // 0: teamos.academy.v1.Course.status:type_name -> teamos.academy.v1.CourseStatus
-	56, // 1: teamos.academy.v1.Course.created_at:type_name -> google.protobuf.Timestamp
-	56, // 2: teamos.academy.v1.Course.updated_at:type_name -> google.protobuf.Timestamp
-	57, // 3: teamos.academy.v1.Lesson.content:type_name -> google.protobuf.Struct
-	1,  // 4: teamos.academy.v1.Lesson.source_mode:type_name -> teamos.academy.v1.LessonSourceMode
-	2,  // 5: teamos.academy.v1.QuizQuestion.type:type_name -> teamos.academy.v1.QuizQuestionType
-	8,  // 6: teamos.academy.v1.QuizQuestion.options:type_name -> teamos.academy.v1.QuizOption
-	9,  // 7: teamos.academy.v1.Quiz.questions:type_name -> teamos.academy.v1.QuizQuestion
-	3,  // 8: teamos.academy.v1.CourseAssignment.assignee_type:type_name -> teamos.academy.v1.AssigneeType
-	56, // 9: teamos.academy.v1.CourseAssignment.due_date:type_name -> google.protobuf.Timestamp
-	56, // 10: teamos.academy.v1.CourseAssignment.created_at:type_name -> google.protobuf.Timestamp
-	56, // 11: teamos.academy.v1.QuizAttempt.created_at:type_name -> google.protobuf.Timestamp
-	4,  // 12: teamos.academy.v1.CourseProgress.status:type_name -> teamos.academy.v1.CourseProgressStatus
-	12, // 13: teamos.academy.v1.CourseProgress.quiz_attempts:type_name -> teamos.academy.v1.QuizAttempt
-	56, // 14: teamos.academy.v1.CourseProgress.started_at:type_name -> google.protobuf.Timestamp
-	56, // 15: teamos.academy.v1.CourseProgress.completed_at:type_name -> google.protobuf.Timestamp
-	5,  // 16: teamos.academy.v1.GetCoursesResponse.courses:type_name -> teamos.academy.v1.Course
-	5,  // 17: teamos.academy.v1.GetCourseResponse.course:type_name -> teamos.academy.v1.Course
-	0,  // 18: teamos.academy.v1.CreateCourseRequest.status:type_name -> teamos.academy.v1.CourseStatus
-	5,  // 19: teamos.academy.v1.CreateCourseResponse.course:type_name -> teamos.academy.v1.Course
-	1,  // 20: teamos.academy.v1.CreateCourseFromKbRequest.mode:type_name -> teamos.academy.v1.LessonSourceMode
-	5,  // 21: teamos.academy.v1.CreateCourseFromKbResponse.course:type_name -> teamos.academy.v1.Course
-	0,  // 22: teamos.academy.v1.UpdateCourseRequest.status:type_name -> teamos.academy.v1.CourseStatus
-	5,  // 23: teamos.academy.v1.UpdateCourseResponse.course:type_name -> teamos.academy.v1.Course
-	6,  // 24: teamos.academy.v1.GetCourseSectionsResponse.sections:type_name -> teamos.academy.v1.CourseSection
-	6,  // 25: teamos.academy.v1.CreateCourseSectionResponse.section:type_name -> teamos.academy.v1.CourseSection
-	6,  // 26: teamos.academy.v1.UpdateCourseSectionResponse.section:type_name -> teamos.academy.v1.CourseSection
-	7,  // 27: teamos.academy.v1.GetLessonsResponse.lessons:type_name -> teamos.academy.v1.Lesson
-	57, // 28: teamos.academy.v1.CreateLessonRequest.content:type_name -> google.protobuf.Struct
-	1,  // 29: teamos.academy.v1.CreateLessonRequest.source_mode:type_name -> teamos.academy.v1.LessonSourceMode
-	7,  // 30: teamos.academy.v1.CreateLessonResponse.lesson:type_name -> teamos.academy.v1.Lesson
-	57, // 31: teamos.academy.v1.UpdateLessonRequest.content:type_name -> google.protobuf.Struct
-	1,  // 32: teamos.academy.v1.UpdateLessonRequest.source_mode:type_name -> teamos.academy.v1.LessonSourceMode
-	7,  // 33: teamos.academy.v1.UpdateLessonResponse.lesson:type_name -> teamos.academy.v1.Lesson
-	7,  // 34: teamos.academy.v1.MoveLessonResponse.lesson:type_name -> teamos.academy.v1.Lesson
-	10, // 35: teamos.academy.v1.GetQuizzesResponse.quizzes:type_name -> teamos.academy.v1.Quiz
-	9,  // 36: teamos.academy.v1.UpsertQuizRequest.questions:type_name -> teamos.academy.v1.QuizQuestion
-	10, // 37: teamos.academy.v1.UpsertQuizResponse.quiz:type_name -> teamos.academy.v1.Quiz
-	11, // 38: teamos.academy.v1.GetAssignmentsResponse.assignments:type_name -> teamos.academy.v1.CourseAssignment
-	3,  // 39: teamos.academy.v1.AssignCourseRequest.assignee_type:type_name -> teamos.academy.v1.AssigneeType
-	56, // 40: teamos.academy.v1.AssignCourseRequest.due_date:type_name -> google.protobuf.Timestamp
-	11, // 41: teamos.academy.v1.AssignCourseResponse.assignment:type_name -> teamos.academy.v1.CourseAssignment
-	13, // 42: teamos.academy.v1.GetProgressResponse.progress:type_name -> teamos.academy.v1.CourseProgress
-	13, // 43: teamos.academy.v1.MarkLessonCompleteResponse.progress:type_name -> teamos.academy.v1.CourseProgress
-	14, // 44: teamos.academy.v1.AcademyService.GetCourses:input_type -> teamos.academy.v1.GetCoursesRequest
-	16, // 45: teamos.academy.v1.AcademyService.GetCourse:input_type -> teamos.academy.v1.GetCourseRequest
-	18, // 46: teamos.academy.v1.AcademyService.CreateCourse:input_type -> teamos.academy.v1.CreateCourseRequest
-	20, // 47: teamos.academy.v1.AcademyService.CreateCourseFromKb:input_type -> teamos.academy.v1.CreateCourseFromKbRequest
-	22, // 48: teamos.academy.v1.AcademyService.UpdateCourse:input_type -> teamos.academy.v1.UpdateCourseRequest
-	24, // 49: teamos.academy.v1.AcademyService.DeleteCourse:input_type -> teamos.academy.v1.DeleteCourseRequest
-	26, // 50: teamos.academy.v1.AcademyService.GetCourseSections:input_type -> teamos.academy.v1.GetCourseSectionsRequest
-	28, // 51: teamos.academy.v1.AcademyService.CreateCourseSection:input_type -> teamos.academy.v1.CreateCourseSectionRequest
-	30, // 52: teamos.academy.v1.AcademyService.UpdateCourseSection:input_type -> teamos.academy.v1.UpdateCourseSectionRequest
-	32, // 53: teamos.academy.v1.AcademyService.DeleteCourseSection:input_type -> teamos.academy.v1.DeleteCourseSectionRequest
-	34, // 54: teamos.academy.v1.AcademyService.GetLessons:input_type -> teamos.academy.v1.GetLessonsRequest
-	36, // 55: teamos.academy.v1.AcademyService.CreateLesson:input_type -> teamos.academy.v1.CreateLessonRequest
-	38, // 56: teamos.academy.v1.AcademyService.UpdateLesson:input_type -> teamos.academy.v1.UpdateLessonRequest
-	40, // 57: teamos.academy.v1.AcademyService.DeleteLesson:input_type -> teamos.academy.v1.DeleteLessonRequest
-	42, // 58: teamos.academy.v1.AcademyService.MoveLesson:input_type -> teamos.academy.v1.MoveLessonRequest
-	44, // 59: teamos.academy.v1.AcademyService.GetQuizzes:input_type -> teamos.academy.v1.GetQuizzesRequest
-	46, // 60: teamos.academy.v1.AcademyService.UpsertQuiz:input_type -> teamos.academy.v1.UpsertQuizRequest
-	48, // 61: teamos.academy.v1.AcademyService.GetAssignments:input_type -> teamos.academy.v1.GetAssignmentsRequest
-	50, // 62: teamos.academy.v1.AcademyService.AssignCourse:input_type -> teamos.academy.v1.AssignCourseRequest
-	52, // 63: teamos.academy.v1.AcademyService.GetProgress:input_type -> teamos.academy.v1.GetProgressRequest
-	54, // 64: teamos.academy.v1.AcademyService.MarkLessonComplete:input_type -> teamos.academy.v1.MarkLessonCompleteRequest
-	15, // 65: teamos.academy.v1.AcademyService.GetCourses:output_type -> teamos.academy.v1.GetCoursesResponse
-	17, // 66: teamos.academy.v1.AcademyService.GetCourse:output_type -> teamos.academy.v1.GetCourseResponse
-	19, // 67: teamos.academy.v1.AcademyService.CreateCourse:output_type -> teamos.academy.v1.CreateCourseResponse
-	21, // 68: teamos.academy.v1.AcademyService.CreateCourseFromKb:output_type -> teamos.academy.v1.CreateCourseFromKbResponse
-	23, // 69: teamos.academy.v1.AcademyService.UpdateCourse:output_type -> teamos.academy.v1.UpdateCourseResponse
-	25, // 70: teamos.academy.v1.AcademyService.DeleteCourse:output_type -> teamos.academy.v1.DeleteCourseResponse
-	27, // 71: teamos.academy.v1.AcademyService.GetCourseSections:output_type -> teamos.academy.v1.GetCourseSectionsResponse
-	29, // 72: teamos.academy.v1.AcademyService.CreateCourseSection:output_type -> teamos.academy.v1.CreateCourseSectionResponse
-	31, // 73: teamos.academy.v1.AcademyService.UpdateCourseSection:output_type -> teamos.academy.v1.UpdateCourseSectionResponse
-	33, // 74: teamos.academy.v1.AcademyService.DeleteCourseSection:output_type -> teamos.academy.v1.DeleteCourseSectionResponse
-	35, // 75: teamos.academy.v1.AcademyService.GetLessons:output_type -> teamos.academy.v1.GetLessonsResponse
-	37, // 76: teamos.academy.v1.AcademyService.CreateLesson:output_type -> teamos.academy.v1.CreateLessonResponse
-	39, // 77: teamos.academy.v1.AcademyService.UpdateLesson:output_type -> teamos.academy.v1.UpdateLessonResponse
-	41, // 78: teamos.academy.v1.AcademyService.DeleteLesson:output_type -> teamos.academy.v1.DeleteLessonResponse
-	43, // 79: teamos.academy.v1.AcademyService.MoveLesson:output_type -> teamos.academy.v1.MoveLessonResponse
-	45, // 80: teamos.academy.v1.AcademyService.GetQuizzes:output_type -> teamos.academy.v1.GetQuizzesResponse
-	47, // 81: teamos.academy.v1.AcademyService.UpsertQuiz:output_type -> teamos.academy.v1.UpsertQuizResponse
-	49, // 82: teamos.academy.v1.AcademyService.GetAssignments:output_type -> teamos.academy.v1.GetAssignmentsResponse
-	51, // 83: teamos.academy.v1.AcademyService.AssignCourse:output_type -> teamos.academy.v1.AssignCourseResponse
-	53, // 84: teamos.academy.v1.AcademyService.GetProgress:output_type -> teamos.academy.v1.GetProgressResponse
-	55, // 85: teamos.academy.v1.AcademyService.MarkLessonComplete:output_type -> teamos.academy.v1.MarkLessonCompleteResponse
-	65, // [65:86] is the sub-list for method output_type
-	44, // [44:65] is the sub-list for method input_type
-	44, // [44:44] is the sub-list for extension type_name
-	44, // [44:44] is the sub-list for extension extendee
-	0,  // [0:44] is the sub-list for field type_name
+	59, // 1: teamos.academy.v1.Course.created_at:type_name -> google.protobuf.Timestamp
+	59, // 2: teamos.academy.v1.Course.updated_at:type_name -> google.protobuf.Timestamp
+	1,  // 3: teamos.academy.v1.Course.visibility:type_name -> teamos.academy.v1.CourseVisibility
+	60, // 4: teamos.academy.v1.Lesson.content:type_name -> google.protobuf.Struct
+	2,  // 5: teamos.academy.v1.Lesson.source_mode:type_name -> teamos.academy.v1.LessonSourceMode
+	3,  // 6: teamos.academy.v1.QuizQuestion.type:type_name -> teamos.academy.v1.QuizQuestionType
+	9,  // 7: teamos.academy.v1.QuizQuestion.options:type_name -> teamos.academy.v1.QuizOption
+	10, // 8: teamos.academy.v1.Quiz.questions:type_name -> teamos.academy.v1.QuizQuestion
+	4,  // 9: teamos.academy.v1.CourseAssignment.assignee_type:type_name -> teamos.academy.v1.AssigneeType
+	59, // 10: teamos.academy.v1.CourseAssignment.due_date:type_name -> google.protobuf.Timestamp
+	59, // 11: teamos.academy.v1.CourseAssignment.created_at:type_name -> google.protobuf.Timestamp
+	59, // 12: teamos.academy.v1.QuizAttempt.created_at:type_name -> google.protobuf.Timestamp
+	5,  // 13: teamos.academy.v1.CourseProgress.status:type_name -> teamos.academy.v1.CourseProgressStatus
+	13, // 14: teamos.academy.v1.CourseProgress.quiz_attempts:type_name -> teamos.academy.v1.QuizAttempt
+	59, // 15: teamos.academy.v1.CourseProgress.started_at:type_name -> google.protobuf.Timestamp
+	59, // 16: teamos.academy.v1.CourseProgress.completed_at:type_name -> google.protobuf.Timestamp
+	6,  // 17: teamos.academy.v1.GetCoursesResponse.courses:type_name -> teamos.academy.v1.Course
+	6,  // 18: teamos.academy.v1.GetCourseResponse.course:type_name -> teamos.academy.v1.Course
+	6,  // 19: teamos.academy.v1.GetPublicCourseResponse.course:type_name -> teamos.academy.v1.Course
+	7,  // 20: teamos.academy.v1.GetPublicCourseResponse.sections:type_name -> teamos.academy.v1.CourseSection
+	8,  // 21: teamos.academy.v1.GetPublicCourseResponse.lessons:type_name -> teamos.academy.v1.Lesson
+	0,  // 22: teamos.academy.v1.CreateCourseRequest.status:type_name -> teamos.academy.v1.CourseStatus
+	1,  // 23: teamos.academy.v1.CreateCourseRequest.visibility:type_name -> teamos.academy.v1.CourseVisibility
+	6,  // 24: teamos.academy.v1.CreateCourseResponse.course:type_name -> teamos.academy.v1.Course
+	2,  // 25: teamos.academy.v1.CreateCourseFromKbRequest.mode:type_name -> teamos.academy.v1.LessonSourceMode
+	1,  // 26: teamos.academy.v1.CreateCourseFromKbRequest.visibility:type_name -> teamos.academy.v1.CourseVisibility
+	6,  // 27: teamos.academy.v1.CreateCourseFromKbResponse.course:type_name -> teamos.academy.v1.Course
+	0,  // 28: teamos.academy.v1.UpdateCourseRequest.status:type_name -> teamos.academy.v1.CourseStatus
+	1,  // 29: teamos.academy.v1.UpdateCourseRequest.visibility:type_name -> teamos.academy.v1.CourseVisibility
+	6,  // 30: teamos.academy.v1.UpdateCourseResponse.course:type_name -> teamos.academy.v1.Course
+	7,  // 31: teamos.academy.v1.GetCourseSectionsResponse.sections:type_name -> teamos.academy.v1.CourseSection
+	7,  // 32: teamos.academy.v1.CreateCourseSectionResponse.section:type_name -> teamos.academy.v1.CourseSection
+	7,  // 33: teamos.academy.v1.UpdateCourseSectionResponse.section:type_name -> teamos.academy.v1.CourseSection
+	8,  // 34: teamos.academy.v1.GetLessonsResponse.lessons:type_name -> teamos.academy.v1.Lesson
+	60, // 35: teamos.academy.v1.CreateLessonRequest.content:type_name -> google.protobuf.Struct
+	2,  // 36: teamos.academy.v1.CreateLessonRequest.source_mode:type_name -> teamos.academy.v1.LessonSourceMode
+	8,  // 37: teamos.academy.v1.CreateLessonResponse.lesson:type_name -> teamos.academy.v1.Lesson
+	60, // 38: teamos.academy.v1.UpdateLessonRequest.content:type_name -> google.protobuf.Struct
+	2,  // 39: teamos.academy.v1.UpdateLessonRequest.source_mode:type_name -> teamos.academy.v1.LessonSourceMode
+	8,  // 40: teamos.academy.v1.UpdateLessonResponse.lesson:type_name -> teamos.academy.v1.Lesson
+	8,  // 41: teamos.academy.v1.MoveLessonResponse.lesson:type_name -> teamos.academy.v1.Lesson
+	11, // 42: teamos.academy.v1.GetQuizzesResponse.quizzes:type_name -> teamos.academy.v1.Quiz
+	10, // 43: teamos.academy.v1.UpsertQuizRequest.questions:type_name -> teamos.academy.v1.QuizQuestion
+	11, // 44: teamos.academy.v1.UpsertQuizResponse.quiz:type_name -> teamos.academy.v1.Quiz
+	12, // 45: teamos.academy.v1.GetAssignmentsResponse.assignments:type_name -> teamos.academy.v1.CourseAssignment
+	4,  // 46: teamos.academy.v1.AssignCourseRequest.assignee_type:type_name -> teamos.academy.v1.AssigneeType
+	59, // 47: teamos.academy.v1.AssignCourseRequest.due_date:type_name -> google.protobuf.Timestamp
+	12, // 48: teamos.academy.v1.AssignCourseResponse.assignment:type_name -> teamos.academy.v1.CourseAssignment
+	14, // 49: teamos.academy.v1.GetProgressResponse.progress:type_name -> teamos.academy.v1.CourseProgress
+	14, // 50: teamos.academy.v1.MarkLessonCompleteResponse.progress:type_name -> teamos.academy.v1.CourseProgress
+	15, // 51: teamos.academy.v1.AcademyService.GetCourses:input_type -> teamos.academy.v1.GetCoursesRequest
+	17, // 52: teamos.academy.v1.AcademyService.GetCourse:input_type -> teamos.academy.v1.GetCourseRequest
+	19, // 53: teamos.academy.v1.AcademyService.GetPublicCourse:input_type -> teamos.academy.v1.GetPublicCourseRequest
+	21, // 54: teamos.academy.v1.AcademyService.CreateCourse:input_type -> teamos.academy.v1.CreateCourseRequest
+	23, // 55: teamos.academy.v1.AcademyService.CreateCourseFromKb:input_type -> teamos.academy.v1.CreateCourseFromKbRequest
+	25, // 56: teamos.academy.v1.AcademyService.UpdateCourse:input_type -> teamos.academy.v1.UpdateCourseRequest
+	27, // 57: teamos.academy.v1.AcademyService.DeleteCourse:input_type -> teamos.academy.v1.DeleteCourseRequest
+	29, // 58: teamos.academy.v1.AcademyService.GetCourseSections:input_type -> teamos.academy.v1.GetCourseSectionsRequest
+	31, // 59: teamos.academy.v1.AcademyService.CreateCourseSection:input_type -> teamos.academy.v1.CreateCourseSectionRequest
+	33, // 60: teamos.academy.v1.AcademyService.UpdateCourseSection:input_type -> teamos.academy.v1.UpdateCourseSectionRequest
+	35, // 61: teamos.academy.v1.AcademyService.DeleteCourseSection:input_type -> teamos.academy.v1.DeleteCourseSectionRequest
+	37, // 62: teamos.academy.v1.AcademyService.GetLessons:input_type -> teamos.academy.v1.GetLessonsRequest
+	39, // 63: teamos.academy.v1.AcademyService.CreateLesson:input_type -> teamos.academy.v1.CreateLessonRequest
+	41, // 64: teamos.academy.v1.AcademyService.UpdateLesson:input_type -> teamos.academy.v1.UpdateLessonRequest
+	43, // 65: teamos.academy.v1.AcademyService.DeleteLesson:input_type -> teamos.academy.v1.DeleteLessonRequest
+	45, // 66: teamos.academy.v1.AcademyService.MoveLesson:input_type -> teamos.academy.v1.MoveLessonRequest
+	47, // 67: teamos.academy.v1.AcademyService.GetQuizzes:input_type -> teamos.academy.v1.GetQuizzesRequest
+	49, // 68: teamos.academy.v1.AcademyService.UpsertQuiz:input_type -> teamos.academy.v1.UpsertQuizRequest
+	51, // 69: teamos.academy.v1.AcademyService.GetAssignments:input_type -> teamos.academy.v1.GetAssignmentsRequest
+	53, // 70: teamos.academy.v1.AcademyService.AssignCourse:input_type -> teamos.academy.v1.AssignCourseRequest
+	55, // 71: teamos.academy.v1.AcademyService.GetProgress:input_type -> teamos.academy.v1.GetProgressRequest
+	57, // 72: teamos.academy.v1.AcademyService.MarkLessonComplete:input_type -> teamos.academy.v1.MarkLessonCompleteRequest
+	16, // 73: teamos.academy.v1.AcademyService.GetCourses:output_type -> teamos.academy.v1.GetCoursesResponse
+	18, // 74: teamos.academy.v1.AcademyService.GetCourse:output_type -> teamos.academy.v1.GetCourseResponse
+	20, // 75: teamos.academy.v1.AcademyService.GetPublicCourse:output_type -> teamos.academy.v1.GetPublicCourseResponse
+	22, // 76: teamos.academy.v1.AcademyService.CreateCourse:output_type -> teamos.academy.v1.CreateCourseResponse
+	24, // 77: teamos.academy.v1.AcademyService.CreateCourseFromKb:output_type -> teamos.academy.v1.CreateCourseFromKbResponse
+	26, // 78: teamos.academy.v1.AcademyService.UpdateCourse:output_type -> teamos.academy.v1.UpdateCourseResponse
+	28, // 79: teamos.academy.v1.AcademyService.DeleteCourse:output_type -> teamos.academy.v1.DeleteCourseResponse
+	30, // 80: teamos.academy.v1.AcademyService.GetCourseSections:output_type -> teamos.academy.v1.GetCourseSectionsResponse
+	32, // 81: teamos.academy.v1.AcademyService.CreateCourseSection:output_type -> teamos.academy.v1.CreateCourseSectionResponse
+	34, // 82: teamos.academy.v1.AcademyService.UpdateCourseSection:output_type -> teamos.academy.v1.UpdateCourseSectionResponse
+	36, // 83: teamos.academy.v1.AcademyService.DeleteCourseSection:output_type -> teamos.academy.v1.DeleteCourseSectionResponse
+	38, // 84: teamos.academy.v1.AcademyService.GetLessons:output_type -> teamos.academy.v1.GetLessonsResponse
+	40, // 85: teamos.academy.v1.AcademyService.CreateLesson:output_type -> teamos.academy.v1.CreateLessonResponse
+	42, // 86: teamos.academy.v1.AcademyService.UpdateLesson:output_type -> teamos.academy.v1.UpdateLessonResponse
+	44, // 87: teamos.academy.v1.AcademyService.DeleteLesson:output_type -> teamos.academy.v1.DeleteLessonResponse
+	46, // 88: teamos.academy.v1.AcademyService.MoveLesson:output_type -> teamos.academy.v1.MoveLessonResponse
+	48, // 89: teamos.academy.v1.AcademyService.GetQuizzes:output_type -> teamos.academy.v1.GetQuizzesResponse
+	50, // 90: teamos.academy.v1.AcademyService.UpsertQuiz:output_type -> teamos.academy.v1.UpsertQuizResponse
+	52, // 91: teamos.academy.v1.AcademyService.GetAssignments:output_type -> teamos.academy.v1.GetAssignmentsResponse
+	54, // 92: teamos.academy.v1.AcademyService.AssignCourse:output_type -> teamos.academy.v1.AssignCourseResponse
+	56, // 93: teamos.academy.v1.AcademyService.GetProgress:output_type -> teamos.academy.v1.GetProgressResponse
+	58, // 94: teamos.academy.v1.AcademyService.MarkLessonComplete:output_type -> teamos.academy.v1.MarkLessonCompleteResponse
+	73, // [73:95] is the sub-list for method output_type
+	51, // [51:73] is the sub-list for method input_type
+	51, // [51:51] is the sub-list for extension type_name
+	51, // [51:51] is the sub-list for extension extendee
+	0,  // [0:51] is the sub-list for field type_name
 }
 
 func init() { file_proto_academy_v1_academy_proto_init() }
@@ -3660,24 +3887,24 @@ func file_proto_academy_v1_academy_proto_init() {
 	file_proto_academy_v1_academy_proto_msgTypes[5].OneofWrappers = []any{}
 	file_proto_academy_v1_academy_proto_msgTypes[6].OneofWrappers = []any{}
 	file_proto_academy_v1_academy_proto_msgTypes[8].OneofWrappers = []any{}
-	file_proto_academy_v1_academy_proto_msgTypes[13].OneofWrappers = []any{}
 	file_proto_academy_v1_academy_proto_msgTypes[15].OneofWrappers = []any{}
 	file_proto_academy_v1_academy_proto_msgTypes[17].OneofWrappers = []any{}
-	file_proto_academy_v1_academy_proto_msgTypes[29].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[19].OneofWrappers = []any{}
 	file_proto_academy_v1_academy_proto_msgTypes[31].OneofWrappers = []any{}
 	file_proto_academy_v1_academy_proto_msgTypes[33].OneofWrappers = []any{}
-	file_proto_academy_v1_academy_proto_msgTypes[39].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[35].OneofWrappers = []any{}
 	file_proto_academy_v1_academy_proto_msgTypes[41].OneofWrappers = []any{}
-	file_proto_academy_v1_academy_proto_msgTypes[45].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[43].OneofWrappers = []any{}
 	file_proto_academy_v1_academy_proto_msgTypes[47].OneofWrappers = []any{}
 	file_proto_academy_v1_academy_proto_msgTypes[49].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[51].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_academy_v1_academy_proto_rawDesc), len(file_proto_academy_v1_academy_proto_rawDesc)),
-			NumEnums:      5,
-			NumMessages:   51,
+			NumEnums:      6,
+			NumMessages:   53,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

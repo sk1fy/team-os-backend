@@ -70,6 +70,8 @@ func bearerToken(header string) (string, bool) {
 
 func isPublic(method, path string) bool {
 	switch {
+	case method == http.MethodGet && strings.HasPrefix(path, "/api/v1/public/"):
+		return true
 	case method == http.MethodPost && path == "/api/v1/auth/login":
 		return true
 	case method == http.MethodPost && strings.HasPrefix(path, "/api/v1/auth/access-link/"):

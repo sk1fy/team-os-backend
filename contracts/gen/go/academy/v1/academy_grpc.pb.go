@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	AcademyService_GetCourses_FullMethodName          = "/teamos.academy.v1.AcademyService/GetCourses"
 	AcademyService_GetCourse_FullMethodName           = "/teamos.academy.v1.AcademyService/GetCourse"
+	AcademyService_GetPublicCourse_FullMethodName     = "/teamos.academy.v1.AcademyService/GetPublicCourse"
 	AcademyService_CreateCourse_FullMethodName        = "/teamos.academy.v1.AcademyService/CreateCourse"
 	AcademyService_CreateCourseFromKb_FullMethodName  = "/teamos.academy.v1.AcademyService/CreateCourseFromKb"
 	AcademyService_UpdateCourse_FullMethodName        = "/teamos.academy.v1.AcademyService/UpdateCourse"
@@ -48,6 +49,7 @@ const (
 type AcademyServiceClient interface {
 	GetCourses(ctx context.Context, in *GetCoursesRequest, opts ...grpc.CallOption) (*GetCoursesResponse, error)
 	GetCourse(ctx context.Context, in *GetCourseRequest, opts ...grpc.CallOption) (*GetCourseResponse, error)
+	GetPublicCourse(ctx context.Context, in *GetPublicCourseRequest, opts ...grpc.CallOption) (*GetPublicCourseResponse, error)
 	CreateCourse(ctx context.Context, in *CreateCourseRequest, opts ...grpc.CallOption) (*CreateCourseResponse, error)
 	CreateCourseFromKb(ctx context.Context, in *CreateCourseFromKbRequest, opts ...grpc.CallOption) (*CreateCourseFromKbResponse, error)
 	UpdateCourse(ctx context.Context, in *UpdateCourseRequest, opts ...grpc.CallOption) (*UpdateCourseResponse, error)
@@ -91,6 +93,16 @@ func (c *academyServiceClient) GetCourse(ctx context.Context, in *GetCourseReque
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetCourseResponse)
 	err := c.cc.Invoke(ctx, AcademyService_GetCourse_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) GetPublicCourse(ctx context.Context, in *GetPublicCourseRequest, opts ...grpc.CallOption) (*GetPublicCourseResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetPublicCourseResponse)
+	err := c.cc.Invoke(ctx, AcademyService_GetPublicCourse_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -293,6 +305,7 @@ func (c *academyServiceClient) MarkLessonComplete(ctx context.Context, in *MarkL
 type AcademyServiceServer interface {
 	GetCourses(context.Context, *GetCoursesRequest) (*GetCoursesResponse, error)
 	GetCourse(context.Context, *GetCourseRequest) (*GetCourseResponse, error)
+	GetPublicCourse(context.Context, *GetPublicCourseRequest) (*GetPublicCourseResponse, error)
 	CreateCourse(context.Context, *CreateCourseRequest) (*CreateCourseResponse, error)
 	CreateCourseFromKb(context.Context, *CreateCourseFromKbRequest) (*CreateCourseFromKbResponse, error)
 	UpdateCourse(context.Context, *UpdateCourseRequest) (*UpdateCourseResponse, error)
@@ -327,6 +340,9 @@ func (UnimplementedAcademyServiceServer) GetCourses(context.Context, *GetCourses
 }
 func (UnimplementedAcademyServiceServer) GetCourse(context.Context, *GetCourseRequest) (*GetCourseResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCourse not implemented")
+}
+func (UnimplementedAcademyServiceServer) GetPublicCourse(context.Context, *GetPublicCourseRequest) (*GetPublicCourseResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPublicCourse not implemented")
 }
 func (UnimplementedAcademyServiceServer) CreateCourse(context.Context, *CreateCourseRequest) (*CreateCourseResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateCourse not implemented")
@@ -438,6 +454,24 @@ func _AcademyService_GetCourse_Handler(srv interface{}, ctx context.Context, dec
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AcademyServiceServer).GetCourse(ctx, req.(*GetCourseRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_GetPublicCourse_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPublicCourseRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).GetPublicCourse(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_GetPublicCourse_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).GetPublicCourse(ctx, req.(*GetPublicCourseRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -798,6 +832,10 @@ var AcademyService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetCourse",
 			Handler:    _AcademyService_GetCourse_Handler,
+		},
+		{
+			MethodName: "GetPublicCourse",
+			Handler:    _AcademyService_GetPublicCourse_Handler,
 		},
 		{
 			MethodName: "CreateCourse",

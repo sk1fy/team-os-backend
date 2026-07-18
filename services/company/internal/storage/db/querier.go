@@ -22,6 +22,7 @@ type Querier interface {
 	CreateDepartment(ctx context.Context, arg CreateDepartmentParams) (Department, error)
 	CreateDistributionEvent(ctx context.Context, arg CreateDistributionEventParams) (DistributionEvent, error)
 	CreateDistributionGroup(ctx context.Context, arg CreateDistributionGroupParams) (DistributionGroup, error)
+	CreateEmployeeAccessAudit(ctx context.Context, arg CreateEmployeeAccessAuditParams) error
 	CreateInvite(ctx context.Context, arg CreateInviteParams) (Invite, error)
 	CreateOutboxEvent(ctx context.Context, arg CreateOutboxEventParams) (Outbox, error)
 	CreatePosition(ctx context.Context, arg CreatePositionParams) (Position, error)

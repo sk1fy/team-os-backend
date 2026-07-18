@@ -35,6 +35,7 @@ INSERT INTO assignments (
     due_date, resolved_user_ids, assigned_by_id, created_at
 )
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+ON CONFLICT DO NOTHING
 RETURNING id, company_id, course_id, assignee_type, assignee_id, invite_token,
     due_date, resolved_user_ids, due_soon_sent_at, assigned_by_id, created_at
 `
@@ -64,6 +65,47 @@ func (q *Queries) CreateAssignment(ctx context.Context, arg CreateAssignmentPara
 		arg.ResolvedUserIds,
 		arg.AssignedByID,
 		arg.CreatedAt,
+	)
+	var i Assignment
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.CourseID,
+		&i.AssigneeType,
+		&i.AssigneeID,
+		&i.InviteToken,
+		&i.DueDate,
+		&i.ResolvedUserIds,
+		&i.DueSoonSentAt,
+		&i.AssignedByID,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const getAssignmentByTarget = `-- name: GetAssignmentByTarget :one
+SELECT id, company_id, course_id, assignee_type, assignee_id, invite_token,
+    due_date, resolved_user_ids, due_soon_sent_at, assigned_by_id, created_at
+FROM assignments
+WHERE company_id = $1
+  AND course_id = $2
+  AND assignee_type = $3
+  AND assignee_id IS NOT DISTINCT FROM $4::uuid
+`
+
+type GetAssignmentByTargetParams struct {
+	CompanyID    uuid.UUID     `json:"company_id"`
+	CourseID     uuid.UUID     `json:"course_id"`
+	AssigneeType string        `json:"assignee_type"`
+	AssigneeID   uuid.NullUUID `json:"assignee_id"`
+}
+
+func (q *Queries) GetAssignmentByTarget(ctx context.Context, arg GetAssignmentByTargetParams) (Assignment, error) {
+	row := q.db.QueryRow(ctx, getAssignmentByTarget,
+		arg.CompanyID,
+		arg.CourseID,
+		arg.AssigneeType,
+		arg.AssigneeID,
 	)
 	var i Assignment
 	err := row.Scan(

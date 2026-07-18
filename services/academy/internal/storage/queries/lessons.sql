@@ -12,6 +12,13 @@ FROM lessons
 WHERE company_id = $1 AND course_id = $2
 ORDER BY "order", id;
 
+-- name: GetPublicCourseLessons :many
+SELECT id, company_id, course_id, section_id, title, "order", content,
+    source_article_id, source_article_title, source_mode, quiz_id
+FROM lessons
+WHERE course_id = $1
+ORDER BY "order", id;
+
 -- name: GetLessonsByCourseIds :many
 SELECT id, company_id, course_id, section_id, title, "order", content,
     source_article_id, source_article_title, source_mode, quiz_id
@@ -41,6 +48,11 @@ WHERE company_id = $1 AND section_id = $2;
 SELECT id
 FROM lessons
 WHERE company_id = $1 AND course_id = $2;
+
+-- name: GetLinkedCourseArticleIDs :many
+SELECT DISTINCT source_article_id
+FROM lessons
+WHERE company_id = $1 AND course_id = $2 AND source_mode = 'link' AND source_article_id IS NOT NULL;
 
 -- name: GetSectionLessonIds :many
 SELECT id

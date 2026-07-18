@@ -14,7 +14,7 @@ func (s *Service) GetProgress(ctx context.Context, actor Actor, courseID *uuid.U
 	if !canReadAcademy(actor) {
 		return nil, forbidden("Недостаточно прав для просмотра академии")
 	}
-	if actor.Role == "partner" && courseID != nil {
+	if !actor.canManage() && courseID != nil {
 		if err := s.requireCourseAccess(ctx, queries, actor, *courseID); err != nil {
 			return nil, err
 		}
@@ -22,7 +22,7 @@ func (s *Service) GetProgress(ctx context.Context, actor Actor, courseID *uuid.U
 	var rows []db.Progress
 	var err error
 	switch {
-	case actor.Role == "partner":
+	case !actor.canManage():
 		rows, err = queries.GetUserProgressRows(ctx, db.GetUserProgressRowsParams{
 			CompanyID: actor.CompanyID, UserID: actor.UserID,
 		})
@@ -36,17 +36,17 @@ func (s *Service) GetProgress(ctx context.Context, actor Actor, courseID *uuid.U
 	if err != nil {
 		return nil, internal("Не удалось получить прогресс", err)
 	}
-	if actor.Role == "partner" {
-		assignedIDs, assignmentErr := s.assignedCourseIDs(ctx, queries, actor)
-		if assignmentErr != nil {
-			return nil, assignmentErr
+	if !actor.canManage() {
+		visibleCourses, visibleErr := s.GetCourses(ctx, actor)
+		if visibleErr != nil {
+			return nil, visibleErr
 		}
-		assigned := make(map[uuid.UUID]struct{}, len(assignedIDs))
-		for _, assignedID := range assignedIDs {
-			assigned[assignedID] = struct{}{}
+		visible := make(map[uuid.UUID]struct{}, len(visibleCourses))
+		for _, course := range visibleCourses {
+			visible[course.ID] = struct{}{}
 		}
 		rows = slices.DeleteFunc(rows, func(row db.Progress) bool {
-			_, allowed := assigned[row.CourseID]
+			_, allowed := visible[row.CourseID]
 			return !allowed
 		})
 	}

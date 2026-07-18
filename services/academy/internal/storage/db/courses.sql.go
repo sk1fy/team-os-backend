@@ -16,11 +16,11 @@ import (
 const createCourse = `-- name: CreateCourse :one
 INSERT INTO courses (
     id, company_id, title, description, cover_url, status, author_id,
-    sequential, deadline_days, created_at, updated_at
+    sequential, deadline_days, created_at, updated_at, visibility
 )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $10)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $10, $11)
 RETURNING id, company_id, title, description, cover_url, status, author_id,
-    sequential, deadline_days, created_at, updated_at
+    sequential, deadline_days, created_at, updated_at, visibility
 `
 
 type CreateCourseParams struct {
@@ -34,6 +34,7 @@ type CreateCourseParams struct {
 	Sequential   bool        `json:"sequential"`
 	DeadlineDays pgtype.Int4 `json:"deadline_days"`
 	CreatedAt    time.Time   `json:"created_at"`
+	Visibility   string      `json:"visibility"`
 }
 
 func (q *Queries) CreateCourse(ctx context.Context, arg CreateCourseParams) (Course, error) {
@@ -48,6 +49,7 @@ func (q *Queries) CreateCourse(ctx context.Context, arg CreateCourseParams) (Cou
 		arg.Sequential,
 		arg.DeadlineDays,
 		arg.CreatedAt,
+		arg.Visibility,
 	)
 	var i Course
 	err := row.Scan(
@@ -62,6 +64,7 @@ func (q *Queries) CreateCourse(ctx context.Context, arg CreateCourseParams) (Cou
 		&i.DeadlineDays,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Visibility,
 	)
 	return i, err
 }
@@ -86,7 +89,7 @@ func (q *Queries) DeleteCourse(ctx context.Context, arg DeleteCourseParams) (int
 
 const getCourse = `-- name: GetCourse :one
 SELECT id, company_id, title, description, cover_url, status, author_id,
-    sequential, deadline_days, created_at, updated_at
+    sequential, deadline_days, created_at, updated_at, visibility
 FROM courses
 WHERE company_id = $1 AND id = $2
 `
@@ -111,13 +114,14 @@ func (q *Queries) GetCourse(ctx context.Context, arg GetCourseParams) (Course, e
 		&i.DeadlineDays,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Visibility,
 	)
 	return i, err
 }
 
 const getCourses = `-- name: GetCourses :many
 SELECT id, company_id, title, description, cover_url, status, author_id,
-    sequential, deadline_days, created_at, updated_at
+    sequential, deadline_days, created_at, updated_at, visibility
 FROM courses
 WHERE company_id = $1
 ORDER BY created_at, id
@@ -144,6 +148,7 @@ func (q *Queries) GetCourses(ctx context.Context, companyID uuid.UUID) ([]Course
 			&i.DeadlineDays,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Visibility,
 		); err != nil {
 			return nil, err
 		}
@@ -157,7 +162,7 @@ func (q *Queries) GetCourses(ctx context.Context, companyID uuid.UUID) ([]Course
 
 const getCoursesByIds = `-- name: GetCoursesByIds :many
 SELECT id, company_id, title, description, cover_url, status, author_id,
-    sequential, deadline_days, created_at, updated_at
+    sequential, deadline_days, created_at, updated_at, visibility
 FROM courses
 WHERE company_id = $1 AND id = ANY($2::uuid[])
 ORDER BY created_at, id
@@ -189,6 +194,7 @@ func (q *Queries) GetCoursesByIds(ctx context.Context, arg GetCoursesByIdsParams
 			&i.DeadlineDays,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Visibility,
 		); err != nil {
 			return nil, err
 		}
@@ -198,6 +204,33 @@ func (q *Queries) GetCoursesByIds(ctx context.Context, arg GetCoursesByIdsParams
 		return nil, err
 	}
 	return items, nil
+}
+
+const getPublicCourse = `-- name: GetPublicCourse :one
+SELECT id, company_id, title, description, cover_url, status, author_id,
+    sequential, deadline_days, created_at, updated_at, visibility
+FROM courses
+WHERE id = $1 AND status = 'published' AND visibility = 'public'
+`
+
+func (q *Queries) GetPublicCourse(ctx context.Context, id uuid.UUID) (Course, error) {
+	row := q.db.QueryRow(ctx, getPublicCourse, id)
+	var i Course
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.Title,
+		&i.Description,
+		&i.CoverUrl,
+		&i.Status,
+		&i.AuthorID,
+		&i.Sequential,
+		&i.DeadlineDays,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Visibility,
+	)
+	return i, err
 }
 
 const lockCourseOrder = `-- name: LockCourseOrder :exec
@@ -216,10 +249,11 @@ SET title = coalesce($3, title),
     status = coalesce($6, status),
     sequential = coalesce($7, sequential),
     deadline_days = CASE WHEN $8::boolean THEN $9 ELSE deadline_days END,
-    updated_at = $10
+    visibility = coalesce($10, visibility),
+    updated_at = $11
 WHERE company_id = $1 AND id = $2
 RETURNING id, company_id, title, description, cover_url, status, author_id,
-    sequential, deadline_days, created_at, updated_at
+    sequential, deadline_days, created_at, updated_at, visibility
 `
 
 type UpdateCourseParams struct {
@@ -232,6 +266,7 @@ type UpdateCourseParams struct {
 	Sequential      pgtype.Bool `json:"sequential"`
 	SetDeadlineDays bool        `json:"set_deadline_days"`
 	DeadlineDays    pgtype.Int4 `json:"deadline_days"`
+	Visibility      pgtype.Text `json:"visibility"`
 	UpdatedAt       time.Time   `json:"updated_at"`
 }
 
@@ -246,6 +281,7 @@ func (q *Queries) UpdateCourse(ctx context.Context, arg UpdateCourseParams) (Cou
 		arg.Sequential,
 		arg.SetDeadlineDays,
 		arg.DeadlineDays,
+		arg.Visibility,
 		arg.UpdatedAt,
 	)
 	var i Course
@@ -261,6 +297,7 @@ func (q *Queries) UpdateCourse(ctx context.Context, arg UpdateCourseParams) (Cou
 		&i.DeadlineDays,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Visibility,
 	)
 	return i, err
 }

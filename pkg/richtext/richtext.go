@@ -4,6 +4,10 @@ package richtext
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
+	"net"
+	"net/url"
+	"path"
 	"strings"
 )
 
@@ -39,7 +43,107 @@ func Validate(raw json.RawMessage) error {
 			return ErrInvalidDocument
 		}
 	}
+	if _, err := Normalize(raw); err != nil {
+		return err
+	}
 	return nil
+}
+
+// Normalize validates structured video nodes and returns canonical TipTap JSON.
+// It never accepts embed HTML; video nodes must use attrs.src/provider/mimeType.
+func Normalize(raw json.RawMessage) (json.RawMessage, error) {
+	var root map[string]any
+	if len(raw) == 0 || json.Unmarshal(raw, &root) != nil || root == nil || root["type"] != "doc" {
+		return nil, ErrInvalidDocument
+	}
+	if err := normalizeNode(root); err != nil {
+		return nil, err
+	}
+	normalized, err := json.Marshal(root)
+	if err != nil {
+		return nil, ErrInvalidDocument
+	}
+	return normalized, nil
+}
+
+func normalizeNode(node map[string]any) error {
+	if node["type"] == "video" {
+		attrs, ok := node["attrs"].(map[string]any)
+		if !ok {
+			return fmt.Errorf("%w: у видео отсутствуют attrs", ErrInvalidDocument)
+		}
+		if _, hasHTML := attrs["html"]; hasHTML {
+			return fmt.Errorf("%w: HTML-код видео запрещён", ErrInvalidDocument)
+		}
+		src, ok := attrs["src"].(string)
+		if !ok {
+			return fmt.Errorf("%w: у видео отсутствует HTTPS URL", ErrInvalidDocument)
+		}
+		normalizedURL, provider, err := normalizeVideoURL(src, attrs)
+		if err != nil {
+			return err
+		}
+		attrs["src"] = normalizedURL
+		attrs["provider"] = provider
+	}
+	if content, ok := node["content"].([]any); ok {
+		for _, child := range content {
+			childNode, ok := child.(map[string]any)
+			if !ok {
+				return ErrInvalidDocument
+			}
+			if err := normalizeNode(childNode); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func normalizeVideoURL(raw string, attrs map[string]any) (string, string, error) {
+	parsed, err := url.Parse(strings.TrimSpace(raw))
+	if err != nil || parsed.Scheme != "https" || parsed.Hostname() == "" || parsed.User != nil {
+		return "", "", fmt.Errorf("%w: разрешены только HTTPS-ссылки на видео", ErrInvalidDocument)
+	}
+	host := strings.ToLower(strings.TrimSuffix(parsed.Hostname(), "."))
+	if unsafeVideoHost(host) {
+		return "", "", fmt.Errorf("%w: локальные адреса для видео запрещены", ErrInvalidDocument)
+	}
+	provider := ""
+	switch host {
+	case "youtube.com", "www.youtube.com", "youtu.be", "youtube-nocookie.com", "www.youtube-nocookie.com":
+		provider = "youtube"
+	case "vimeo.com", "www.vimeo.com", "player.vimeo.com":
+		provider = "vimeo"
+	case "rutube.ru", "www.rutube.ru":
+		provider = "rutube"
+	default:
+		extension := strings.ToLower(path.Ext(parsed.Path))
+		allowedMIME := map[string]string{".mp4": "video/mp4", ".webm": "video/webm", ".ogv": "video/ogg"}
+		expectedMIME, allowed := allowedMIME[extension]
+		if !allowed {
+			return "", "", fmt.Errorf("%w: домен iframe не входит в allowlist", ErrInvalidDocument)
+		}
+		if mimeType, exists := attrs["mimeType"].(string); exists && mimeType != "" && mimeType != expectedMIME {
+			return "", "", fmt.Errorf("%w: недопустимый MIME-тип видео", ErrInvalidDocument)
+		}
+		attrs["mimeType"] = expectedMIME
+		provider = "direct"
+	}
+	parsed.Scheme = "https"
+	if port := parsed.Port(); port != "" && port != "443" {
+		return "", "", fmt.Errorf("%w: нестандартный порт видео запрещён", ErrInvalidDocument)
+	}
+	parsed.Host = host
+	parsed.Fragment = ""
+	return parsed.String(), provider, nil
+}
+
+func unsafeVideoHost(host string) bool {
+	if host == "localhost" || strings.HasSuffix(host, ".localhost") || strings.HasSuffix(host, ".local") {
+		return true
+	}
+	return net.ParseIP(host) != nil
 }
 
 // PlainText walks a TipTap document and returns concatenated visible text.

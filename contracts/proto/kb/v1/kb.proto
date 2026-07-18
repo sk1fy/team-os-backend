@@ -15,6 +15,7 @@ service KbService {
 
   rpc GetArticles(GetArticlesRequest) returns (GetArticlesResponse);
   rpc GetArticle(GetArticleRequest) returns (GetArticleResponse);
+  rpc GetPublicArticle(GetPublicArticleRequest) returns (GetPublicArticleResponse);
   rpc CreateArticle(CreateArticleRequest) returns (CreateArticleResponse);
   rpc UpdateArticle(UpdateArticleRequest) returns (UpdateArticleResponse);
   rpc RollbackArticle(RollbackArticleRequest) returns (RollbackArticleResponse);
@@ -39,6 +40,12 @@ enum ArticleStatus {
   ARTICLE_STATUS_PUBLISHED = 2;
 }
 
+enum SectionVisibility {
+  SECTION_VISIBILITY_UNSPECIFIED = 0;
+  SECTION_VISIBILITY_PUBLIC = 1;
+  SECTION_VISIBILITY_COMPANY = 2;
+}
+
 message AccessSettings {
   AccessScope scope = 1;
   repeated string department_ids = 2;
@@ -52,6 +59,7 @@ message ArticleSection {
   optional string parent_id = 3;
   uint32 order = 4;
   AccessSettings access = 5;
+  SectionVisibility visibility = 6;
 }
 
 message Article {
@@ -93,6 +101,7 @@ message CreateSectionRequest {
   string name = 1;
   optional string parent_id = 2;
   optional AccessSettings access = 3;
+  optional SectionVisibility visibility = 4;
 }
 
 message CreateSectionResponse {
@@ -103,6 +112,7 @@ message UpdateSectionRequest {
   string id = 1;
   optional string name = 2;
   optional AccessSettings access = 3;
+  optional SectionVisibility visibility = 4;
 }
 
 message UpdateSectionResponse {
@@ -128,6 +138,14 @@ message GetArticleRequest {
 }
 
 message GetArticleResponse {
+  Article article = 1;
+}
+
+message GetPublicArticleRequest {
+  string id = 1;
+}
+
+message GetPublicArticleResponse {
   Article article = 1;
 }
 

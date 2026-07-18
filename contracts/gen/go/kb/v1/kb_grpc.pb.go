@@ -25,6 +25,7 @@ const (
 	KbService_DeleteSection_FullMethodName       = "/teamos.kb.v1.KbService/DeleteSection"
 	KbService_GetArticles_FullMethodName         = "/teamos.kb.v1.KbService/GetArticles"
 	KbService_GetArticle_FullMethodName          = "/teamos.kb.v1.KbService/GetArticle"
+	KbService_GetPublicArticle_FullMethodName    = "/teamos.kb.v1.KbService/GetPublicArticle"
 	KbService_CreateArticle_FullMethodName       = "/teamos.kb.v1.KbService/CreateArticle"
 	KbService_UpdateArticle_FullMethodName       = "/teamos.kb.v1.KbService/UpdateArticle"
 	KbService_RollbackArticle_FullMethodName     = "/teamos.kb.v1.KbService/RollbackArticle"
@@ -46,6 +47,7 @@ type KbServiceClient interface {
 	DeleteSection(ctx context.Context, in *DeleteSectionRequest, opts ...grpc.CallOption) (*DeleteSectionResponse, error)
 	GetArticles(ctx context.Context, in *GetArticlesRequest, opts ...grpc.CallOption) (*GetArticlesResponse, error)
 	GetArticle(ctx context.Context, in *GetArticleRequest, opts ...grpc.CallOption) (*GetArticleResponse, error)
+	GetPublicArticle(ctx context.Context, in *GetPublicArticleRequest, opts ...grpc.CallOption) (*GetPublicArticleResponse, error)
 	CreateArticle(ctx context.Context, in *CreateArticleRequest, opts ...grpc.CallOption) (*CreateArticleResponse, error)
 	UpdateArticle(ctx context.Context, in *UpdateArticleRequest, opts ...grpc.CallOption) (*UpdateArticleResponse, error)
 	RollbackArticle(ctx context.Context, in *RollbackArticleRequest, opts ...grpc.CallOption) (*RollbackArticleResponse, error)
@@ -119,6 +121,16 @@ func (c *kbServiceClient) GetArticle(ctx context.Context, in *GetArticleRequest,
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetArticleResponse)
 	err := c.cc.Invoke(ctx, KbService_GetArticle_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *kbServiceClient) GetPublicArticle(ctx context.Context, in *GetPublicArticleRequest, opts ...grpc.CallOption) (*GetPublicArticleResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetPublicArticleResponse)
+	err := c.cc.Invoke(ctx, KbService_GetPublicArticle_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -225,6 +237,7 @@ type KbServiceServer interface {
 	DeleteSection(context.Context, *DeleteSectionRequest) (*DeleteSectionResponse, error)
 	GetArticles(context.Context, *GetArticlesRequest) (*GetArticlesResponse, error)
 	GetArticle(context.Context, *GetArticleRequest) (*GetArticleResponse, error)
+	GetPublicArticle(context.Context, *GetPublicArticleRequest) (*GetPublicArticleResponse, error)
 	CreateArticle(context.Context, *CreateArticleRequest) (*CreateArticleResponse, error)
 	UpdateArticle(context.Context, *UpdateArticleRequest) (*UpdateArticleResponse, error)
 	RollbackArticle(context.Context, *RollbackArticleRequest) (*RollbackArticleResponse, error)
@@ -261,6 +274,9 @@ func (UnimplementedKbServiceServer) GetArticles(context.Context, *GetArticlesReq
 }
 func (UnimplementedKbServiceServer) GetArticle(context.Context, *GetArticleRequest) (*GetArticleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetArticle not implemented")
+}
+func (UnimplementedKbServiceServer) GetPublicArticle(context.Context, *GetPublicArticleRequest) (*GetPublicArticleResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPublicArticle not implemented")
 }
 func (UnimplementedKbServiceServer) CreateArticle(context.Context, *CreateArticleRequest) (*CreateArticleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateArticle not implemented")
@@ -414,6 +430,24 @@ func _KbService_GetArticle_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(KbServiceServer).GetArticle(ctx, req.(*GetArticleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _KbService_GetPublicArticle_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPublicArticleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(KbServiceServer).GetPublicArticle(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: KbService_GetPublicArticle_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(KbServiceServer).GetPublicArticle(ctx, req.(*GetPublicArticleRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -610,6 +644,10 @@ var KbService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetArticle",
 			Handler:    _KbService_GetArticle_Handler,
+		},
+		{
+			MethodName: "GetPublicArticle",
+			Handler:    _KbService_GetPublicArticle_Handler,
 		},
 		{
 			MethodName: "CreateArticle",

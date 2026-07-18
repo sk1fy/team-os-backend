@@ -39,8 +39,16 @@ func (s *Server) CreateSection(ctx context.Context, request *kbv1.CreateSectionR
 		}
 		access = &converted
 	}
+	var visibility *string
+	if request.Visibility != nil {
+		converted, mapErr := sectionVisibilityFromProto(request.GetVisibility())
+		if mapErr != nil {
+			return nil, mapErr
+		}
+		visibility = &converted
+	}
 	section, err := s.application.CreateSection(ctx, actor, application.CreateSectionInput{
-		Name: request.GetName(), ParentID: parentID, Access: access,
+		Name: request.GetName(), ParentID: parentID, Access: access, Visibility: visibility,
 	})
 	if err != nil {
 		return nil, transportError(err)
@@ -64,6 +72,13 @@ func (s *Server) UpdateSection(ctx context.Context, request *kbv1.UpdateSectionR
 			return nil, mapErr
 		}
 		input.Access = &converted
+	}
+	if request.Visibility != nil {
+		converted, mapErr := sectionVisibilityFromProto(request.GetVisibility())
+		if mapErr != nil {
+			return nil, mapErr
+		}
+		input.Visibility = &converted
 	}
 	section, err := s.application.UpdateSection(ctx, actor, input)
 	if err != nil {
@@ -129,6 +144,22 @@ func (s *Server) GetArticle(ctx context.Context, request *kbv1.GetArticleRequest
 		return nil, transportError(err)
 	}
 	return &kbv1.GetArticleResponse{Article: converted}, nil
+}
+
+func (s *Server) GetPublicArticle(ctx context.Context, request *kbv1.GetPublicArticleRequest) (*kbv1.GetPublicArticleResponse, error) {
+	id, err := parseUUID(request.GetId())
+	if err != nil {
+		return nil, err
+	}
+	article, err := s.application.GetPublicArticle(ctx, id)
+	if err != nil {
+		return nil, transportError(err)
+	}
+	converted, err := articleToProto(article)
+	if err != nil {
+		return nil, transportError(err)
+	}
+	return &kbv1.GetPublicArticleResponse{Article: converted}, nil
 }
 
 func (s *Server) CreateArticle(ctx context.Context, request *kbv1.CreateArticleRequest) (*kbv1.CreateArticleResponse, error) {

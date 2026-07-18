@@ -49,15 +49,15 @@ SET first_name = $2,
     status = 'active',
     updated_at = now()
 WHERE id = $1 AND company_id = $5
-RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name
+RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source
 `
 
 type ActivateInvitedUserParams struct {
-	ID        uuid.UUID `json:"id"`
-	FirstName string    `json:"first_name"`
-	LastName  string    `json:"last_name"`
-	Role      string    `json:"role"`
-	CompanyID uuid.UUID `json:"company_id"`
+	ID        uuid.UUID   `json:"id"`
+	FirstName string      `json:"first_name"`
+	LastName  pgtype.Text `json:"last_name"`
+	Role      string      `json:"role"`
+	CompanyID uuid.UUID   `json:"company_id"`
 }
 
 func (q *Queries) ActivateInvitedUser(ctx context.Context, arg ActivateInvitedUserParams) (User, error) {
@@ -88,6 +88,7 @@ func (q *Queries) ActivateInvitedUser(ctx context.Context, arg ActivateInvitedUs
 		&i.ExternalID,
 		&i.ExternalGroupID,
 		&i.ExternalGroupName,
+		&i.AvatarSource,
 	)
 	return i, err
 }
@@ -117,6 +118,36 @@ func (q *Queries) CreateCompany(ctx context.Context, arg CreateCompanyParams) (C
 		&i.AmoAccountID,
 	)
 	return i, err
+}
+
+const createEmployeeAccessAudit = `-- name: CreateEmployeeAccessAudit :exec
+INSERT INTO employee_access_audit (
+    id, company_id, target_user_id, actor_user_id, action, mode, created_at
+)
+VALUES ($1, $2, $3, $4, $5, $6, $7)
+`
+
+type CreateEmployeeAccessAuditParams struct {
+	ID           uuid.UUID `json:"id"`
+	CompanyID    uuid.UUID `json:"company_id"`
+	TargetUserID uuid.UUID `json:"target_user_id"`
+	ActorUserID  uuid.UUID `json:"actor_user_id"`
+	Action       string    `json:"action"`
+	Mode         string    `json:"mode"`
+	CreatedAt    time.Time `json:"created_at"`
+}
+
+func (q *Queries) CreateEmployeeAccessAudit(ctx context.Context, arg CreateEmployeeAccessAuditParams) error {
+	_, err := q.db.Exec(ctx, createEmployeeAccessAudit,
+		arg.ID,
+		arg.CompanyID,
+		arg.TargetUserID,
+		arg.ActorUserID,
+		arg.Action,
+		arg.Mode,
+		arg.CreatedAt,
+	)
+	return err
 }
 
 const createOutboxEvent = `-- name: CreateOutboxEvent :one
@@ -213,7 +244,7 @@ INSERT INTO users (
     role, status, birth_date, hired_at, vacation_allowance
 )
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name
+RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source
 `
 
 type CreateUserParams struct {
@@ -221,7 +252,7 @@ type CreateUserParams struct {
 	CompanyID         uuid.UUID   `json:"company_id"`
 	Email             string      `json:"email"`
 	FirstName         string      `json:"first_name"`
-	LastName          string      `json:"last_name"`
+	LastName          pgtype.Text `json:"last_name"`
 	Phone             pgtype.Text `json:"phone"`
 	AvatarUrl         pgtype.Text `json:"avatar_url"`
 	Role              string      `json:"role"`
@@ -266,6 +297,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.ExternalID,
 		&i.ExternalGroupID,
 		&i.ExternalGroupName,
+		&i.AvatarSource,
 	)
 	return i, err
 }
@@ -426,7 +458,7 @@ func (q *Queries) GetSessionByHashForUpdate(ctx context.Context, refreshHash []b
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name FROM users WHERE company_id = $1 AND id = $2
+SELECT id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source FROM users WHERE company_id = $1 AND id = $2
 `
 
 type GetUserParams struct {
@@ -456,6 +488,7 @@ func (q *Queries) GetUser(ctx context.Context, arg GetUserParams) (User, error) 
 		&i.ExternalID,
 		&i.ExternalGroupID,
 		&i.ExternalGroupName,
+		&i.AvatarSource,
 	)
 	return i, err
 }
@@ -487,7 +520,7 @@ func (q *Queries) GetUserAccessMode(ctx context.Context, arg GetUserAccessModePa
 }
 
 const getUserByAccessToken = `-- name: GetUserByAccessToken :one
-SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name
+SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name, u.avatar_source
 FROM users u
 JOIN access_links access ON access.user_id = u.id AND access.company_id = u.company_id
 WHERE access.token = $1 AND u.status = 'active'
@@ -516,12 +549,13 @@ func (q *Queries) GetUserByAccessToken(ctx context.Context, token string) (User,
 		&i.ExternalID,
 		&i.ExternalGroupID,
 		&i.ExternalGroupName,
+		&i.AvatarSource,
 	)
 	return i, err
 }
 
 const getUserByEmailForUpdate = `-- name: GetUserByEmailForUpdate :one
-SELECT id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name FROM users
+SELECT id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source FROM users
 WHERE email = $1
 FOR UPDATE
 `
@@ -548,6 +582,7 @@ func (q *Queries) GetUserByEmailForUpdate(ctx context.Context, email string) (Us
 		&i.ExternalID,
 		&i.ExternalGroupID,
 		&i.ExternalGroupName,
+		&i.AvatarSource,
 	)
 	return i, err
 }
@@ -596,7 +631,7 @@ func (q *Queries) GetUserDepartmentClaims(ctx context.Context, arg GetUserDepart
 }
 
 const getUserForAccessUpdate = `-- name: GetUserForAccessUpdate :one
-SELECT id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name FROM users WHERE company_id = $1 AND id = $2 FOR UPDATE
+SELECT id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source FROM users WHERE company_id = $1 AND id = $2 FOR UPDATE
 `
 
 type GetUserForAccessUpdateParams struct {
@@ -626,12 +661,13 @@ func (q *Queries) GetUserForAccessUpdate(ctx context.Context, arg GetUserForAcce
 		&i.ExternalID,
 		&i.ExternalGroupID,
 		&i.ExternalGroupName,
+		&i.AvatarSource,
 	)
 	return i, err
 }
 
 const getUserForLogin = `-- name: GetUserForLogin :one
-SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name, c.password_hash
+SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name, u.avatar_source, c.password_hash
 FROM users u
 JOIN credentials c ON c.user_id = u.id
 WHERE u.email = $1
@@ -665,6 +701,7 @@ func (q *Queries) GetUserForLogin(ctx context.Context, email string) (GetUserFor
 		&i.User.ExternalID,
 		&i.User.ExternalGroupID,
 		&i.User.ExternalGroupName,
+		&i.User.AvatarSource,
 		&i.PasswordHash,
 	)
 	return i, err
@@ -847,21 +884,18 @@ UPDATE users
 SET first_name = COALESCE($1, first_name),
     last_name = COALESCE($2, last_name),
     phone = CASE WHEN $3::boolean THEN $4 ELSE phone END,
-    avatar_url = CASE WHEN $5::boolean THEN $6 ELSE avatar_url END,
     updated_at = now()
-WHERE company_id = $7 AND id = $8
-RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name
+WHERE company_id = $5 AND id = $6
+RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source
 `
 
 type UpdateCurrentUserParams struct {
-	FirstName    pgtype.Text `json:"first_name"`
-	LastName     pgtype.Text `json:"last_name"`
-	SetPhone     bool        `json:"set_phone"`
-	Phone        pgtype.Text `json:"phone"`
-	SetAvatarUrl bool        `json:"set_avatar_url"`
-	AvatarUrl    pgtype.Text `json:"avatar_url"`
-	CompanyID    uuid.UUID   `json:"company_id"`
-	ID           uuid.UUID   `json:"id"`
+	FirstName pgtype.Text `json:"first_name"`
+	LastName  pgtype.Text `json:"last_name"`
+	SetPhone  bool        `json:"set_phone"`
+	Phone     pgtype.Text `json:"phone"`
+	CompanyID uuid.UUID   `json:"company_id"`
+	ID        uuid.UUID   `json:"id"`
 }
 
 func (q *Queries) UpdateCurrentUser(ctx context.Context, arg UpdateCurrentUserParams) (User, error) {
@@ -870,8 +904,6 @@ func (q *Queries) UpdateCurrentUser(ctx context.Context, arg UpdateCurrentUserPa
 		arg.LastName,
 		arg.SetPhone,
 		arg.Phone,
-		arg.SetAvatarUrl,
-		arg.AvatarUrl,
 		arg.CompanyID,
 		arg.ID,
 	)
@@ -895,6 +927,7 @@ func (q *Queries) UpdateCurrentUser(ctx context.Context, arg UpdateCurrentUserPa
 		&i.ExternalID,
 		&i.ExternalGroupID,
 		&i.ExternalGroupName,
+		&i.AvatarSource,
 	)
 	return i, err
 }

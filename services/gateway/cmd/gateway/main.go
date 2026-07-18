@@ -151,7 +151,7 @@ func run(logger *slog.Logger) error {
 		kbClient,
 		tasksClient,
 		academyClient,
-		transport.CookieConfig{Secure: configuration.CookieSecure},
+		transport.CookieConfig{Secure: configuration.CookieSecure, PublicAppURL: configuration.PublicAppURL},
 		logger,
 		notificationsClient,
 	)
@@ -166,7 +166,7 @@ func run(logger *slog.Logger) error {
 		AllowCredentials: true,
 		MaxAge:           300,
 	}))
-	router.Use(httpx.RequestID, httpx.Recoverer(logger), httpx.Tracing("gateway"), httpx.Metrics, httpx.Logging(logger))
+	router.Use(httpx.SecurityHeaders, httpx.RequestID, httpx.Recoverer(logger), httpx.Tracing("gateway"), httpx.Metrics, httpx.Logging(logger))
 	router.Get("/healthz", httpx.Healthz().ServeHTTP)
 	router.Get("/metrics", httpx.MetricsHandler().ServeHTTP)
 	companyHealthClient := grpc_health_v1.NewHealthClient(companyConnection)

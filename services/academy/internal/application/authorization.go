@@ -49,7 +49,20 @@ func (s *Service) requireCourseAccess(
 	if !canReadAcademy(actor) {
 		return forbidden("Недостаточно прав для просмотра академии")
 	}
-	if actor.Role != "partner" {
+	course, err := queries.GetCourse(ctx, db.GetCourseParams{CompanyID: actor.CompanyID, ID: courseID})
+	if err != nil {
+		if isNoRows(err) {
+			return notFound("Курс")
+		}
+		return internal("Не удалось проверить доступ к курсу", err)
+	}
+	if actor.canManage() {
+		return nil
+	}
+	if course.Status != "published" {
+		return forbidden("Черновик курса доступен только управляющим ролям")
+	}
+	if course.Visibility == "public" || course.Visibility == "company" {
 		return nil
 	}
 	courseIDs, err := s.assignedCourseIDs(ctx, queries, actor)
@@ -62,4 +75,18 @@ func (s *Service) requireCourseAccess(
 		}
 	}
 	return forbidden("Курс не назначен пользователю")
+}
+
+func visibleCourse(actor Actor, course Course, assigned map[uuid.UUID]struct{}) bool {
+	if actor.canManage() {
+		return true
+	}
+	if course.Status != "published" {
+		return false
+	}
+	if course.Visibility == "public" || course.Visibility == "company" {
+		return true
+	}
+	_, ok := assigned[course.ID]
+	return ok
 }

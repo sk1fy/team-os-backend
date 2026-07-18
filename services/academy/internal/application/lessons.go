@@ -30,10 +30,14 @@ func (s *Service) GetLessons(ctx context.Context, actor Actor, courseID *uuid.UU
 	if !canReadAcademy(actor) {
 		return nil, forbidden("Недостаточно прав для просмотра академии")
 	}
-	if actor.Role == "partner" {
-		courseIDs, err := s.assignedCourseIDs(ctx, queries, actor)
+	if !actor.canManage() {
+		visibleCourses, err := s.GetCourses(ctx, actor)
 		if err != nil {
 			return nil, err
+		}
+		courseIDs := make([]uuid.UUID, len(visibleCourses))
+		for index := range visibleCourses {
+			courseIDs[index] = visibleCourses[index].ID
 		}
 		if len(courseIDs) == 0 {
 			return []Lesson{}, nil
@@ -73,8 +77,12 @@ func (s *Service) CreateLesson(ctx context.Context, actor Actor, input CreateLes
 	if input.SourceMode != nil && *input.SourceMode != "link" && *input.SourceMode != "copy" {
 		return Lesson{}, validation("Некорректный режим импорта статьи")
 	}
-	if len(input.Content) > 0 && richtext.Validate(input.Content) != nil {
-		return Lesson{}, validation("Некорректное содержимое урока")
+	if len(input.Content) > 0 {
+		normalizedContent, normalizeErr := richtext.Normalize(input.Content)
+		if normalizeErr != nil {
+			return Lesson{}, validation("Некорректное содержимое урока")
+		}
+		input.Content = normalizedContent
 	}
 
 	var sourceArticle *KbArticle
@@ -166,8 +174,12 @@ func (s *Service) UpdateLesson(ctx context.Context, actor Actor, input UpdateLes
 	if input.SourceMode != nil && *input.SourceMode != "link" && *input.SourceMode != "copy" {
 		return Lesson{}, validation("Некорректный режим импорта статьи")
 	}
-	if len(input.Content) > 0 && richtext.Validate(input.Content) != nil {
-		return Lesson{}, validation("Некорректное содержимое урока")
+	if len(input.Content) > 0 {
+		normalizedContent, normalizeErr := richtext.Normalize(input.Content)
+		if normalizeErr != nil {
+			return Lesson{}, validation("Некорректное содержимое урока")
+		}
+		input.Content = normalizedContent
 	}
 
 	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{})
