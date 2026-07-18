@@ -69,6 +69,174 @@ func (s *Service) MarkRead(ctx context.Context, companyID, userID, id uuid.UUID)
 func (s *Service) MarkAllRead(ctx context.Context, companyID, userID uuid.UUID) error {
 	return s.queries.MarkAllRead(ctx, db.MarkAllReadParams{CompanyID: companyID, UserID: userID})
 }
+
+func (s *Service) upsertUserProjection(
+	ctx context.Context,
+	event eventbus.Event,
+	rawUserID string,
+	active bool,
+	rawPositionIDs, rawDepartmentIDs []string,
+	welcome bool,
+) (bool, error) {
+	eventID, companyID, err := eventIDs(event)
+	if err != nil {
+		return false, err
+	}
+	userID, err := uuid.Parse(rawUserID)
+	if err != nil {
+		return false, fmt.Errorf("некорректный userId в событии: %w", err)
+	}
+	positionIDs, err := parseUUIDStrings(rawPositionIDs)
+	if err != nil {
+		return false, fmt.Errorf("некорректный positionId в событии: %w", err)
+	}
+	departmentIDs, err := parseUUIDStrings(rawDepartmentIDs)
+	if err != nil {
+		return false, fmt.Errorf("некорректный departmentId в событии: %w", err)
+	}
+
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return false, err
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+	queries := s.queries.WithTx(tx)
+	if err = queries.UpsertNotificationUser(ctx, db.UpsertNotificationUserParams{
+		CompanyID: companyID, UserID: userID, Active: active,
+		PositionIds: positionIDs, DepartmentIds: departmentIDs, LastEventAt: event.OccurredAt,
+	}); err != nil {
+		return false, err
+	}
+	inserted, err := queries.InsertProcessedEvent(ctx, db.InsertProcessedEventParams{
+		EventID: eventID, CompanyID: companyID,
+	})
+	if err != nil {
+		return false, err
+	}
+	if inserted == 0 {
+		if err = tx.Commit(ctx); err != nil {
+			return false, err
+		}
+		return false, nil
+	}
+
+	notificationID := uuid.Nil
+	if welcome {
+		notificationID = uuid.New()
+		if err = queries.InsertNotification(ctx, db.InsertNotificationParams{
+			ID: notificationID, CompanyID: companyID, UserID: userID,
+			Type: "article_published", Title: "Добро пожаловать в TeamOS",
+		}); err != nil {
+			return false, err
+		}
+	}
+	if err = tx.Commit(ctx); err != nil {
+		return false, err
+	}
+	if notificationID != uuid.Nil {
+		s.notify(userID, notificationID)
+	}
+	return true, nil
+}
+
+func (s *Service) deactivateUserProjection(ctx context.Context, event eventbus.Event, rawUserID string) (bool, error) {
+	eventID, companyID, err := eventIDs(event)
+	if err != nil {
+		return false, err
+	}
+	userID, err := uuid.Parse(rawUserID)
+	if err != nil {
+		return false, fmt.Errorf("некорректный userId в событии: %w", err)
+	}
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return false, err
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+	queries := s.queries.WithTx(tx)
+	if err = queries.DeactivateNotificationUser(ctx, db.DeactivateNotificationUserParams{
+		CompanyID: companyID, UserID: userID, LastEventAt: event.OccurredAt,
+	}); err != nil {
+		return false, err
+	}
+	inserted, err := queries.InsertProcessedEvent(ctx, db.InsertProcessedEventParams{
+		EventID: eventID, CompanyID: companyID,
+	})
+	if err != nil {
+		return false, err
+	}
+	if inserted == 0 {
+		if err = tx.Commit(ctx); err != nil {
+			return false, err
+		}
+		return false, nil
+	}
+	if err = tx.Commit(ctx); err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+func (s *Service) resolveArticleAudience(
+	ctx context.Context,
+	rawCompanyID, scope string,
+	rawUserIDs, rawPositionIDs, rawDepartmentIDs []string,
+) ([]uuid.UUID, error) {
+	companyID, err := uuid.Parse(rawCompanyID)
+	if err != nil {
+		return nil, fmt.Errorf("некорректный companyId в событии: %w", err)
+	}
+	userIDs, err := parseUUIDStrings(rawUserIDs)
+	if err != nil {
+		return nil, fmt.Errorf("некорректный audience.userId: %w", err)
+	}
+	positionIDs, err := parseUUIDStrings(rawPositionIDs)
+	if err != nil {
+		return nil, fmt.Errorf("некорректный audience.positionId: %w", err)
+	}
+	departmentIDs, err := parseUUIDStrings(rawDepartmentIDs)
+	if err != nil {
+		return nil, fmt.Errorf("некорректный audience.departmentId: %w", err)
+	}
+	companyWide := scope == "ARTICLE_AUDIENCE_SCOPE_COMPANY" || scope == "company"
+	return s.queries.ResolveArticleAudience(ctx, db.ResolveArticleAudienceParams{
+		CompanyID: companyID, CompanyWide: companyWide,
+		UserIds: userIDs, PositionIds: positionIDs, DepartmentIds: departmentIDs,
+	})
+}
+
+func eventIDs(event eventbus.Event) (uuid.UUID, uuid.UUID, error) {
+	eventID, err := uuid.Parse(event.EventID)
+	if err != nil {
+		return uuid.Nil, uuid.Nil, err
+	}
+	companyID, err := uuid.Parse(event.CompanyID)
+	if err != nil {
+		return uuid.Nil, uuid.Nil, err
+	}
+	return eventID, companyID, nil
+}
+
+func parseUUIDStrings(values []string) ([]uuid.UUID, error) {
+	result := make([]uuid.UUID, len(values))
+	for index, value := range values {
+		parsed, err := uuid.Parse(value)
+		if err != nil {
+			return nil, err
+		}
+		result[index] = parsed
+	}
+	return result, nil
+}
+
+func uuidStrings(values []uuid.UUID) []string {
+	result := make([]string, len(values))
+	for index, value := range values {
+		result[index] = value.String()
+	}
+	return result
+}
+
 func (s *Service) Subscribe(userID uuid.UUID) (<-chan uuid.UUID, func()) {
 	ch := make(chan uuid.UUID, 16)
 	s.mu.Lock()

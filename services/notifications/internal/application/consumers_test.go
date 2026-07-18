@@ -1,6 +1,11 @@
 package application
 
-import "testing"
+import (
+	"encoding/json"
+	"testing"
+
+	"github.com/google/uuid"
+)
 
 func TestEventNotificationUsesRussianTextAndTypes(t *testing.T) {
 	tests := []struct{ subject, wantType, wantTitle string }{
@@ -25,5 +30,33 @@ func TestEventNotificationUsesRussianTextAndTypes(t *testing.T) {
 				t.Fatalf("got (%q, %q), want (%q, %q)", gotType, gotTitle, test.wantType, test.wantTitle)
 			}
 		})
+	}
+}
+
+func TestPayloadDecodesOrgProjectionAndArticleAudience(t *testing.T) {
+	userID, positionID, departmentID := uuid.New(), uuid.New(), uuid.New()
+	raw := []byte(`{
+		"user":{"userId":"` + userID.String() + `","status":"ORG_USER_STATUS_ACTIVE","positionIds":["` + positionID.String() + `"],"departmentIds":["` + departmentID.String() + `"]},
+		"audience":{"scope":"ARTICLE_AUDIENCE_SCOPE_COMPANY","userIds":["` + userID.String() + `"],"positionIds":["` + positionID.String() + `"],"departmentIds":["` + departmentID.String() + `"]}
+	}`)
+	var got payload
+	if err := json.Unmarshal(raw, &got); err != nil {
+		t.Fatalf("json.Unmarshal() error = %v", err)
+	}
+	if got.User.UserID != userID.String() || got.User.Status != "ORG_USER_STATUS_ACTIVE" {
+		t.Fatalf("user projection decoded incorrectly: %+v", got.User)
+	}
+	if got.Audience.Scope != "ARTICLE_AUDIENCE_SCOPE_COMPANY" || len(got.Audience.PositionIDs) != 1 || len(got.Audience.DepartmentIDs) != 1 {
+		t.Fatalf("article audience decoded incorrectly: %+v", got.Audience)
+	}
+}
+
+func TestParseUUIDStringsReturnsNonNilEmptySlice(t *testing.T) {
+	got, err := parseUUIDStrings(nil)
+	if err != nil {
+		t.Fatalf("parseUUIDStrings() error = %v", err)
+	}
+	if got == nil || len(got) != 0 {
+		t.Fatalf("parseUUIDStrings(nil) = %v, ожидался непустой slice с длиной 0", got)
 	}
 }

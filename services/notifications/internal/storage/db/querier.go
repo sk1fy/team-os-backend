@@ -6,15 +6,20 @@ package db
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
 
 type Querier interface {
 	CountUnread(ctx context.Context, arg CountUnreadParams) (int64, error)
+	DeactivateNotificationUser(ctx context.Context, arg DeactivateNotificationUserParams) error
 	InsertNotification(ctx context.Context, arg InsertNotificationParams) error
 	InsertProcessedEvent(ctx context.Context, arg InsertProcessedEventParams) (int64, error)
 	ListNotifications(ctx context.Context, arg ListNotificationsParams) ([]ListNotificationsRow, error)
 	MarkAllRead(ctx context.Context, arg MarkAllReadParams) error
 	MarkRead(ctx context.Context, arg MarkReadParams) (int64, error)
+	ResolveArticleAudience(ctx context.Context, arg ResolveArticleAudienceParams) ([]uuid.UUID, error)
+	UpsertNotificationUser(ctx context.Context, arg UpsertNotificationUserParams) error
 }
 
 var _ Querier = (*Queries)(nil)

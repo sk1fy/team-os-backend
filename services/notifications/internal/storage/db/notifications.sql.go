@@ -30,6 +30,26 @@ func (q *Queries) CountUnread(ctx context.Context, arg CountUnreadParams) (int64
 	return count, err
 }
 
+const deactivateNotificationUser = `-- name: DeactivateNotificationUser :exec
+INSERT INTO notification_users (company_id, user_id, active, position_ids, department_ids, last_event_at)
+VALUES ($1, $2, false, '{}', '{}', $3)
+ON CONFLICT (company_id, user_id) DO UPDATE
+SET active = false,
+    last_event_at = EXCLUDED.last_event_at
+WHERE notification_users.last_event_at <= EXCLUDED.last_event_at
+`
+
+type DeactivateNotificationUserParams struct {
+	CompanyID   uuid.UUID `json:"company_id"`
+	UserID      uuid.UUID `json:"user_id"`
+	LastEventAt time.Time `json:"last_event_at"`
+}
+
+func (q *Queries) DeactivateNotificationUser(ctx context.Context, arg DeactivateNotificationUserParams) error {
+	_, err := q.db.Exec(ctx, deactivateNotificationUser, arg.CompanyID, arg.UserID, arg.LastEventAt)
+	return err
+}
+
 const insertNotification = `-- name: InsertNotification :exec
 INSERT INTO notifications (id, company_id, user_id, type, title, body, link)
 VALUES ($1, $2, $3, $4, $5, $6, $7)
@@ -163,4 +183,84 @@ func (q *Queries) MarkRead(ctx context.Context, arg MarkReadParams) (int64, erro
 		return 0, err
 	}
 	return result.RowsAffected(), nil
+}
+
+const resolveArticleAudience = `-- name: ResolveArticleAudience :many
+SELECT user_id
+FROM notification_users
+WHERE company_id = $1
+  AND active
+  AND (
+    $2::boolean
+    OR user_id = ANY($3::uuid[])
+    OR position_ids && $4::uuid[]
+    OR department_ids && $5::uuid[]
+  )
+ORDER BY user_id
+`
+
+type ResolveArticleAudienceParams struct {
+	CompanyID     uuid.UUID   `json:"company_id"`
+	CompanyWide   bool        `json:"company_wide"`
+	UserIds       []uuid.UUID `json:"user_ids"`
+	PositionIds   []uuid.UUID `json:"position_ids"`
+	DepartmentIds []uuid.UUID `json:"department_ids"`
+}
+
+func (q *Queries) ResolveArticleAudience(ctx context.Context, arg ResolveArticleAudienceParams) ([]uuid.UUID, error) {
+	rows, err := q.db.Query(ctx, resolveArticleAudience,
+		arg.CompanyID,
+		arg.CompanyWide,
+		arg.UserIds,
+		arg.PositionIds,
+		arg.DepartmentIds,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []uuid.UUID{}
+	for rows.Next() {
+		var user_id uuid.UUID
+		if err := rows.Scan(&user_id); err != nil {
+			return nil, err
+		}
+		items = append(items, user_id)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const upsertNotificationUser = `-- name: UpsertNotificationUser :exec
+INSERT INTO notification_users (company_id, user_id, active, position_ids, department_ids, last_event_at)
+VALUES ($1, $2, $3, $4, $5, $6)
+ON CONFLICT (company_id, user_id) DO UPDATE
+SET active = EXCLUDED.active,
+    position_ids = EXCLUDED.position_ids,
+    department_ids = EXCLUDED.department_ids,
+    last_event_at = EXCLUDED.last_event_at
+WHERE notification_users.last_event_at <= EXCLUDED.last_event_at
+`
+
+type UpsertNotificationUserParams struct {
+	CompanyID     uuid.UUID   `json:"company_id"`
+	UserID        uuid.UUID   `json:"user_id"`
+	Active        bool        `json:"active"`
+	PositionIds   []uuid.UUID `json:"position_ids"`
+	DepartmentIds []uuid.UUID `json:"department_ids"`
+	LastEventAt   time.Time   `json:"last_event_at"`
+}
+
+func (q *Queries) UpsertNotificationUser(ctx context.Context, arg UpsertNotificationUserParams) error {
+	_, err := q.db.Exec(ctx, upsertNotificationUser,
+		arg.CompanyID,
+		arg.UserID,
+		arg.Active,
+		arg.PositionIds,
+		arg.DepartmentIds,
+		arg.LastEventAt,
+	)
+	return err
 }

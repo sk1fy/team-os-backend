@@ -12,6 +12,7 @@ import (
 
 var subjects = []string{
 	"teamos.org.user.created.v1",
+	"teamos.org.user.updated.v1",
 	"teamos.org.user.deactivated.v1",
 	"teamos.org.invite.created.v1",
 	"teamos.kb.article.published.v1",

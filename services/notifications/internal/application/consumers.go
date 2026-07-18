@@ -11,17 +11,24 @@ import (
 )
 
 type payload struct {
-	UserID                              string `json:"userId"`
-	MentionedUserID                     string `json:"mentionedUserId"`
-	AssigneeUserIDs, RecipientUserIDs   []string
+	UserID                              string   `json:"userId"`
+	MentionedUserID                     string   `json:"mentionedUserId"`
+	AssigneeUserIDs                     []string `json:"assigneeUserIds"`
+	RecipientUserIDs                    []string `json:"recipientUserIds"`
 	Title, TaskTitle, CourseTitle, Link string
 	AuthorID                            string `json:"authorId"`
 	RequiresAcknowledgement             bool   `json:"requiresAcknowledgement"`
 	User                                struct {
-		UserID string `json:"userId"`
+		UserID        string   `json:"userId"`
+		Status        string   `json:"status"`
+		PositionIDs   []string `json:"positionIds"`
+		DepartmentIDs []string `json:"departmentIds"`
 	} `json:"user"`
 	Audience struct {
-		UserIDs []string `json:"userIds"`
+		Scope         string   `json:"scope"`
+		UserIDs       []string `json:"userIds"`
+		PositionIDs   []string `json:"positionIds"`
+		DepartmentIDs []string `json:"departmentIds"`
 	} `json:"audience"`
 }
 
@@ -30,6 +37,14 @@ func (s *Service) Handle(subject string) eventbus.HandlerFunc {
 		var p payload
 		if err := json.Unmarshal(event.Payload, &p); err != nil {
 			return false, fmt.Errorf("decode %s: %w", subject, err)
+		}
+		switch subject {
+		case "teamos.org.user.created.v1", "teamos.org.user.updated.v1":
+			return s.upsertUserProjection(ctx, event, p.User.UserID,
+				p.User.Status == "ORG_USER_STATUS_ACTIVE", p.User.PositionIDs, p.User.DepartmentIDs,
+				subject == "teamos.org.user.created.v1")
+		case "teamos.org.user.deactivated.v1":
+			return s.deactivateUserProjection(ctx, event, p.UserID)
 		}
 		typ, title, body := eventNotification(subject, p)
 		recipients := append([]string{}, p.RecipientUserIDs...)
@@ -42,7 +57,12 @@ func (s *Service) Handle(subject string) eventbus.HandlerFunc {
 			}
 		}
 		if subject == "teamos.kb.article.published.v1" {
-			recipients = p.Audience.UserIDs
+			resolved, err := s.resolveArticleAudience(ctx, event.CompanyID,
+				p.Audience.Scope, p.Audience.UserIDs, p.Audience.PositionIDs, p.Audience.DepartmentIDs)
+			if err != nil {
+				return false, err
+			}
+			recipients = uuidStrings(resolved)
 		}
 		if strings.Contains(subject, "mention") {
 			recipients = []string{p.MentionedUserID}
@@ -52,12 +72,16 @@ func (s *Service) Handle(subject string) eventbus.HandlerFunc {
 		}
 		seen := map[uuid.UUID]struct{}{}
 		ids := []uuid.UUID{}
+		authorID := p.AuthorID
+		if authorID == "" {
+			authorID = event.ActorID
+		}
 		for _, raw := range recipients {
 			id, err := uuid.Parse(raw)
 			if err != nil {
 				continue
 			}
-			if id.String() == p.AuthorID {
+			if id.String() == authorID {
 				continue
 			}
 			if _, ok := seen[id]; ok {

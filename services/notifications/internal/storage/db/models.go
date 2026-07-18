@@ -22,6 +22,15 @@ type Notification struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
+type NotificationUser struct {
+	CompanyID     uuid.UUID   `json:"company_id"`
+	UserID        uuid.UUID   `json:"user_id"`
+	Active        bool        `json:"active"`
+	PositionIds   []uuid.UUID `json:"position_ids"`
+	DepartmentIds []uuid.UUID `json:"department_ids"`
+	LastEventAt   time.Time   `json:"last_event_at"`
+}
+
 type ProcessedEvent struct {
 	EventID     uuid.UUID `json:"event_id"`
 	CompanyID   uuid.UUID `json:"company_id"`
