@@ -130,6 +130,47 @@ func TestLoggingRedactsInviteToken(t *testing.T) {
 	}
 }
 
+func TestLoggingRedactsAcademyAccessTokenAndPreservesAction(t *testing.T) {
+	t.Parallel()
+	var logs bytes.Buffer
+	logger := slog.New(slog.NewJSONHandler(&logs, nil))
+	handler := httpx.Logging(logger)(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	}))
+	request := httptest.NewRequestWithContext(
+		context.Background(), http.MethodPost,
+		"/api/v1/public/academy/access/secret-campaign-token/activate", nil,
+	)
+	handler.ServeHTTP(httptest.NewRecorder(), request)
+	if strings.Contains(logs.String(), "secret-campaign-token") ||
+		!strings.Contains(logs.String(), "/access/:token/activate") {
+		t.Fatalf("academy access token was not redacted: %s", logs.String())
+	}
+}
+
+func TestTracingRestoresOriginalRequestAfterTelemetryRedaction(t *testing.T) {
+	t.Parallel()
+
+	var gotPath, gotQuery, gotAgent, gotRemote string
+	handler := httpx.Tracing("test")(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		gotPath, gotQuery = r.URL.Path, r.URL.RawQuery
+		gotAgent, gotRemote = r.UserAgent(), r.RemoteAddr
+		w.WriteHeader(http.StatusNoContent)
+	}))
+	request := httptest.NewRequestWithContext(
+		context.Background(), http.MethodGet,
+		"/api/v1/public/academy/access/secret-token?utm_source=private", nil,
+	)
+	request.Header.Set("User-Agent", "private-agent")
+	request.RemoteAddr = "192.0.2.10:1234"
+	handler.ServeHTTP(httptest.NewRecorder(), request)
+
+	if gotPath != request.URL.Path || gotQuery != request.URL.RawQuery ||
+		gotAgent != "private-agent" || gotRemote != request.RemoteAddr {
+		t.Fatalf("downstream request was not restored: path=%q query=%q agent=%q remote=%q", gotPath, gotQuery, gotAgent, gotRemote)
+	}
+}
+
 func TestDecodeJSON(t *testing.T) {
 	t.Parallel()
 

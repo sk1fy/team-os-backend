@@ -109,8 +109,12 @@ func Logging(logger *slog.Logger) Middleware {
 func redactedPath(path string) string {
 	const invitePrefix = "/api/v1/auth/invites/"
 	const accessLinkPrefix = "/api/v1/auth/access-link/"
+	const academyAccessPrefix = "/api/v1/public/academy/access/"
 	if strings.HasPrefix(path, accessLinkPrefix) {
 		return accessLinkPrefix + ":token"
+	}
+	if strings.HasPrefix(path, academyAccessPrefix) {
+		return redactFirstPathSegment(path, academyAccessPrefix, ":token")
 	}
 	if !strings.HasPrefix(path, invitePrefix) {
 		return path
@@ -120,6 +124,14 @@ func redactedPath(path string) string {
 		return invitePrefix + ":token/accept"
 	}
 	return invitePrefix + ":token"
+}
+
+func redactFirstPathSegment(path, prefix, placeholder string) string {
+	remainder := strings.TrimPrefix(path, prefix)
+	if slash := strings.IndexByte(remainder, '/'); slash >= 0 {
+		return prefix + placeholder + remainder[slash:]
+	}
+	return prefix + placeholder
 }
 
 // Recoverer converts a panic raised before response commit to a safe API error
@@ -181,8 +193,43 @@ func SecurityHeaders(next http.Handler) http.Handler {
 
 // Tracing instruments HTTP requests with the configured global OTel provider.
 func Tracing(serviceName string) Middleware {
-	return otelhttp.NewMiddleware(serviceName)
+	return func(next http.Handler) http.Handler {
+		// otelhttp derives URL, client address and user-agent attributes before it
+		// invokes the next handler. Give instrumentation a privacy-safe clone, then
+		// restore the original request together with the newly created span context
+		// for routing, authentication and rate limiting.
+		instrumented := otelhttp.NewMiddleware(serviceName)(http.HandlerFunc(func(w http.ResponseWriter, traced *http.Request) {
+			original, ok := traced.Context().Value(originalTelemetryRequestKey{}).(*http.Request)
+			if !ok || original == nil {
+				next.ServeHTTP(w, traced)
+				return
+			}
+			next.ServeHTTP(w, original.WithContext(traced.Context()))
+		}))
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			ctx := context.WithValue(r.Context(), originalTelemetryRequestKey{}, r)
+			safe := r.Clone(ctx)
+			safeURL := *r.URL
+			safeURL.Path = redactedPath(r.URL.Path)
+			safeURL.RawPath = ""
+			safeURL.RawQuery = ""
+			safeURL.ForceQuery = false
+			safe.URL = &safeURL
+			safe.RequestURI = safeURL.RequestURI()
+			safe.RemoteAddr = ""
+			safe.Header = r.Header.Clone()
+			for _, header := range []string{
+				"Authorization", "Cookie", "Forwarded", "Referer", "User-Agent",
+				"X-Forwarded-For", "X-Real-IP",
+			} {
+				safe.Header.Del(header)
+			}
+			instrumented.ServeHTTP(w, safe)
+		})
+	}
 }
+
+type originalTelemetryRequestKey struct{}
 
 func newRequestID() string {
 	var id [16]byte

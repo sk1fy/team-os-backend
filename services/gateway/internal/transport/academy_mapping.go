@@ -45,7 +45,416 @@ func courseFromProto(value *academyv1.Course) (api.Course, error) {
 		days := int(value.GetDeadlineDays())
 		result.DeadlineDays = &days
 	}
+	if value.OwnerType != nil {
+		ownerType, convertErr := courseOwnerTypeFromProto(value.GetOwnerType())
+		if convertErr != nil {
+			return api.Course{}, convertErr
+		}
+		result.OwnerType = &ownerType
+	}
+	if value.OwnerUserId != nil {
+		ownerUserID, parseErr := uuid.Parse(value.GetOwnerUserId())
+		if parseErr != nil {
+			return api.Course{}, parseErr
+		}
+		result.OwnerUserId = &ownerUserID
+	}
+	if value.CreatedById != nil {
+		createdByID, parseErr := uuid.Parse(value.GetCreatedById())
+		if parseErr != nil {
+			return api.Course{}, parseErr
+		}
+		result.CreatedById = &createdByID
+	}
+	if value.LifecycleStatus != nil {
+		lifecycle, convertErr := courseLifecycleFromProto(value.GetLifecycleStatus())
+		if convertErr != nil {
+			return api.Course{}, convertErr
+		}
+		result.LifecycleStatus = &lifecycle
+	}
+	if value.DistributionStatus != nil {
+		distribution, convertErr := courseDistributionFromProto(value.GetDistributionStatus())
+		if convertErr != nil {
+			return api.Course{}, convertErr
+		}
+		result.DistributionStatus = &distribution
+	}
+	if value.CurrentDraftVersionId != nil {
+		currentDraftID, parseErr := uuid.Parse(value.GetCurrentDraftVersionId())
+		if parseErr != nil {
+			return api.Course{}, parseErr
+		}
+		result.CurrentDraftVersionId = &currentDraftID
+	}
+	if value.LatestPublishedVersionId != nil {
+		latestPublishedID, parseErr := uuid.Parse(value.GetLatestPublishedVersionId())
+		if parseErr != nil {
+			return api.Course{}, parseErr
+		}
+		result.LatestPublishedVersionId = &latestPublishedID
+	}
 	return result, nil
+}
+
+func courseVersionFromProto(value *academyv1.CourseVersion) (api.CourseVersion, error) {
+	if value == nil {
+		return api.CourseVersion{}, errors.New("academy returned an empty course version")
+	}
+	id, err := uuid.Parse(value.GetId())
+	if err != nil {
+		return api.CourseVersion{}, err
+	}
+	courseID, err := uuid.Parse(value.GetCourseId())
+	if err != nil {
+		return api.CourseVersion{}, err
+	}
+	createdByID, err := uuid.Parse(value.GetCreatedById())
+	if err != nil {
+		return api.CourseVersion{}, err
+	}
+	status, err := courseVersionStatusFromProto(value.GetStatus())
+	if err != nil {
+		return api.CourseVersion{}, err
+	}
+	result := api.CourseVersion{
+		Id: id, CourseId: courseID, Number: int(value.GetNumber()), Status: status,
+		Title: value.GetTitle(), Description: value.Description, CoverUrl: value.CoverUrl,
+		Sequential: value.GetSequential(), CreatedById: createdByID, ContentHash: value.ContentHash,
+	}
+	if value.GetCreatedAt() != nil {
+		result.CreatedAt = value.GetCreatedAt().AsTime()
+	}
+	if value.CoverFileId != nil {
+		parsed, parseErr := uuid.Parse(value.GetCoverFileId())
+		if parseErr != nil {
+			return api.CourseVersion{}, parseErr
+		}
+		result.CoverFileId = &parsed
+	}
+	if value.DefaultInternalDeadlineDays != nil {
+		days := int(value.GetDefaultInternalDeadlineDays())
+		result.DefaultInternalDeadlineDays = &days
+	}
+	if value.PublishedById != nil {
+		parsed, parseErr := uuid.Parse(value.GetPublishedById())
+		if parseErr != nil {
+			return api.CourseVersion{}, parseErr
+		}
+		result.PublishedById = &parsed
+	}
+	if value.GetPublishedAt() != nil {
+		publishedAt := value.GetPublishedAt().AsTime()
+		result.PublishedAt = &publishedAt
+	}
+	return result, nil
+}
+
+func courseVersionsFromProto(values []*academyv1.CourseVersion) ([]api.CourseVersion, error) {
+	result := make([]api.CourseVersion, len(values))
+	for index := range values {
+		converted, err := courseVersionFromProto(values[index])
+		if err != nil {
+			return nil, err
+		}
+		result[index] = converted
+	}
+	return result, nil
+}
+
+func courseVersionStatusFromProto(value academyv1.CourseVersionStatus) (api.CourseVersionStatus, error) {
+	switch value {
+	case academyv1.CourseVersionStatus_COURSE_VERSION_STATUS_DRAFT:
+		return api.CourseVersionStatusDraft, nil
+	case academyv1.CourseVersionStatus_COURSE_VERSION_STATUS_PUBLISHED:
+		return api.CourseVersionStatusPublished, nil
+	case academyv1.CourseVersionStatus_COURSE_VERSION_STATUS_RETIRED:
+		return api.CourseVersionStatusRetired, nil
+	default:
+		return "", fmt.Errorf("unknown course version status %d", value)
+	}
+}
+
+func courseVersionSectionFromProto(value *academyv1.CourseVersionSection) (api.CourseVersionSection, error) {
+	if value == nil {
+		return api.CourseVersionSection{}, errors.New("academy returned an empty course version section")
+	}
+	id, err := uuid.Parse(value.GetId())
+	if err != nil {
+		return api.CourseVersionSection{}, err
+	}
+	versionID, err := uuid.Parse(value.GetCourseVersionId())
+	if err != nil {
+		return api.CourseVersionSection{}, err
+	}
+	return api.CourseVersionSection{Id: id, CourseVersionId: versionID, Title: value.GetTitle(), Order: int(value.GetOrder())}, nil
+}
+
+func courseVersionSectionsFromProto(values []*academyv1.CourseVersionSection) ([]api.CourseVersionSection, error) {
+	result := make([]api.CourseVersionSection, len(values))
+	for index := range values {
+		converted, err := courseVersionSectionFromProto(values[index])
+		if err != nil {
+			return nil, err
+		}
+		result[index] = converted
+	}
+	return result, nil
+}
+
+func courseLessonSourceTypeFromProto(value academyv1.CourseLessonSourceType) (api.CourseLessonSourceType, error) {
+	switch value {
+	case academyv1.CourseLessonSourceType_COURSE_LESSON_SOURCE_TYPE_MANUAL:
+		return api.Manual, nil
+	case academyv1.CourseLessonSourceType_COURSE_LESSON_SOURCE_TYPE_KB_LINK:
+		return api.KbLink, nil
+	case academyv1.CourseLessonSourceType_COURSE_LESSON_SOURCE_TYPE_KB_SNAPSHOT:
+		return api.KbSnapshot, nil
+	case academyv1.CourseLessonSourceType_COURSE_LESSON_SOURCE_TYPE_TEMPLATE_SNAPSHOT:
+		return api.TemplateSnapshot, nil
+	default:
+		return "", fmt.Errorf("unknown course lesson source type %d", value)
+	}
+}
+
+func courseLessonSourceTypeToProto(value api.CourseLessonSourceType) (academyv1.CourseLessonSourceType, error) {
+	switch value {
+	case api.Manual:
+		return academyv1.CourseLessonSourceType_COURSE_LESSON_SOURCE_TYPE_MANUAL, nil
+	case api.KbLink:
+		return academyv1.CourseLessonSourceType_COURSE_LESSON_SOURCE_TYPE_KB_LINK, nil
+	case api.KbSnapshot:
+		return academyv1.CourseLessonSourceType_COURSE_LESSON_SOURCE_TYPE_KB_SNAPSHOT, nil
+	case api.TemplateSnapshot:
+		return academyv1.CourseLessonSourceType_COURSE_LESSON_SOURCE_TYPE_TEMPLATE_SNAPSHOT, nil
+	default:
+		return academyv1.CourseLessonSourceType_COURSE_LESSON_SOURCE_TYPE_UNSPECIFIED, fmt.Errorf("unknown course lesson source type %q", value)
+	}
+}
+
+func courseVersionLessonFromProto(value *academyv1.CourseVersionLesson) (api.CourseVersionLesson, error) {
+	if value == nil {
+		return api.CourseVersionLesson{}, errors.New("academy returned an empty course version lesson")
+	}
+	id, err := uuid.Parse(value.GetId())
+	if err != nil {
+		return api.CourseVersionLesson{}, err
+	}
+	versionID, err := uuid.Parse(value.GetCourseVersionId())
+	if err != nil {
+		return api.CourseVersionLesson{}, err
+	}
+	sectionID, err := uuid.Parse(value.GetSectionVersionId())
+	if err != nil {
+		return api.CourseVersionLesson{}, err
+	}
+	content, err := richTextFromStruct(value.GetContent())
+	if err != nil {
+		return api.CourseVersionLesson{}, err
+	}
+	sourceType, err := courseLessonSourceTypeFromProto(value.GetSourceType())
+	if err != nil {
+		return api.CourseVersionLesson{}, err
+	}
+	result := api.CourseVersionLesson{
+		Id: id, CourseVersionId: versionID, SectionVersionId: sectionID,
+		StableKey: value.GetStableKey(), Title: value.GetTitle(), Order: int(value.GetOrder()),
+		Content: content, SourceType: sourceType,
+	}
+	if result.SourceArticleId, err = parseOptionalUUIDString(value.GetSourceArticleId()); err != nil {
+		return api.CourseVersionLesson{}, err
+	}
+	if result.SourceTemplateId, err = parseOptionalUUIDString(value.GetSourceTemplateId()); err != nil {
+		return api.CourseVersionLesson{}, err
+	}
+	if result.SourceTemplateVersionId, err = parseOptionalUUIDString(value.GetSourceTemplateVersionId()); err != nil {
+		return api.CourseVersionLesson{}, err
+	}
+	if result.QuizVersionId, err = parseOptionalUUIDString(value.GetQuizVersionId()); err != nil {
+		return api.CourseVersionLesson{}, err
+	}
+	if value.SourceArticleVersion != nil {
+		converted := int(value.GetSourceArticleVersion())
+		result.SourceArticleVersion = &converted
+	}
+	if value.EstimatedMinutes != nil {
+		converted := int(value.GetEstimatedMinutes())
+		result.EstimatedMinutes = &converted
+	}
+	return result, nil
+}
+
+func parseOptionalUUIDString(value string) (*uuid.UUID, error) {
+	if value == "" {
+		return nil, nil
+	}
+	parsed, err := uuid.Parse(value)
+	if err != nil {
+		return nil, err
+	}
+	return &parsed, nil
+}
+
+func courseVersionLessonsFromProto(values []*academyv1.CourseVersionLesson) ([]api.CourseVersionLesson, error) {
+	result := make([]api.CourseVersionLesson, len(values))
+	for index := range values {
+		converted, err := courseVersionLessonFromProto(values[index])
+		if err != nil {
+			return nil, err
+		}
+		result[index] = converted
+	}
+	return result, nil
+}
+
+func courseVersionQuizFromProto(value *academyv1.CourseVersionQuiz) (api.CourseVersionQuiz, error) {
+	if value == nil {
+		return api.CourseVersionQuiz{}, errors.New("academy returned an empty course version quiz")
+	}
+	id, err := uuid.Parse(value.GetId())
+	if err != nil {
+		return api.CourseVersionQuiz{}, err
+	}
+	versionID, err := uuid.Parse(value.GetCourseVersionId())
+	if err != nil {
+		return api.CourseVersionQuiz{}, err
+	}
+	lessonID, err := uuid.Parse(value.GetLessonVersionId())
+	if err != nil {
+		return api.CourseVersionQuiz{}, err
+	}
+	questions, err := quizQuestionsFromProto(value.GetQuestions())
+	if err != nil {
+		return api.CourseVersionQuiz{}, err
+	}
+	result := api.CourseVersionQuiz{
+		Id: id, CourseVersionId: versionID, LessonVersionId: lessonID,
+		Questions: questions, PassingScore: int(value.GetPassingScore()),
+	}
+	if value.MaxAttempts != nil {
+		attempts := int(value.GetMaxAttempts())
+		result.MaxAttempts = &attempts
+	}
+	return result, nil
+}
+
+func courseVersionQuizzesFromProto(values []*academyv1.CourseVersionQuiz) ([]api.CourseVersionQuiz, error) {
+	result := make([]api.CourseVersionQuiz, len(values))
+	for index := range values {
+		converted, err := courseVersionQuizFromProto(values[index])
+		if err != nil {
+			return nil, err
+		}
+		result[index] = converted
+	}
+	return result, nil
+}
+
+func courseVersionDetailFromProto(value *academyv1.GetCourseVersionResponse) (api.CourseVersionDetail, error) {
+	version, err := courseVersionFromProto(value.GetVersion())
+	if err != nil {
+		return api.CourseVersionDetail{}, err
+	}
+	sections, err := courseVersionSectionsFromProto(value.GetSections())
+	if err != nil {
+		return api.CourseVersionDetail{}, err
+	}
+	lessons, err := courseVersionLessonsFromProto(value.GetLessons())
+	if err != nil {
+		return api.CourseVersionDetail{}, err
+	}
+	quizzes, err := courseVersionQuizzesFromProto(value.GetQuizzes())
+	if err != nil {
+		return api.CourseVersionDetail{}, err
+	}
+	return api.CourseVersionDetail{Version: version, Sections: sections, Lessons: lessons, Quizzes: quizzes}, nil
+}
+
+func courseOwnerTypeFromProto(value academyv1.CourseOwnerType) (api.CourseOwnerType, error) {
+	switch value {
+	case academyv1.CourseOwnerType_COURSE_OWNER_TYPE_COMPANY:
+		return api.CourseOwnerTypeCompany, nil
+	case academyv1.CourseOwnerType_COURSE_OWNER_TYPE_PARTNER:
+		return api.CourseOwnerTypePartner, nil
+	default:
+		return "", fmt.Errorf("unknown course owner type %d", value)
+	}
+}
+
+func courseOwnerTypeToProto(value api.CourseOwnerType) (academyv1.CourseOwnerType, error) {
+	switch value {
+	case api.CourseOwnerTypeCompany:
+		return academyv1.CourseOwnerType_COURSE_OWNER_TYPE_COMPANY, nil
+	case api.CourseOwnerTypePartner:
+		return academyv1.CourseOwnerType_COURSE_OWNER_TYPE_PARTNER, nil
+	default:
+		return academyv1.CourseOwnerType_COURSE_OWNER_TYPE_UNSPECIFIED, fmt.Errorf("unknown course owner type %q", value)
+	}
+}
+
+func courseLifecycleFromProto(value academyv1.CourseLifecycleStatus) (api.CourseLifecycleStatus, error) {
+	switch value {
+	case academyv1.CourseLifecycleStatus_COURSE_LIFECYCLE_STATUS_ACTIVE:
+		return api.CourseLifecycleStatusActive, nil
+	case academyv1.CourseLifecycleStatus_COURSE_LIFECYCLE_STATUS_ARCHIVED:
+		return api.CourseLifecycleStatusArchived, nil
+	case academyv1.CourseLifecycleStatus_COURSE_LIFECYCLE_STATUS_DELETED:
+		return api.CourseLifecycleStatusDeleted, nil
+	default:
+		return "", fmt.Errorf("unknown course lifecycle status %d", value)
+	}
+}
+
+func courseLifecycleToProto(value api.CourseLifecycleStatus) (academyv1.CourseLifecycleStatus, error) {
+	switch value {
+	case api.CourseLifecycleStatusActive:
+		return academyv1.CourseLifecycleStatus_COURSE_LIFECYCLE_STATUS_ACTIVE, nil
+	case api.CourseLifecycleStatusArchived:
+		return academyv1.CourseLifecycleStatus_COURSE_LIFECYCLE_STATUS_ARCHIVED, nil
+	case api.CourseLifecycleStatusDeleted:
+		return academyv1.CourseLifecycleStatus_COURSE_LIFECYCLE_STATUS_DELETED, nil
+	default:
+		return academyv1.CourseLifecycleStatus_COURSE_LIFECYCLE_STATUS_UNSPECIFIED, fmt.Errorf("unknown course lifecycle status %q", value)
+	}
+}
+
+func courseDistributionFromProto(value academyv1.CourseDistributionStatus) (api.CourseDistributionStatus, error) {
+	switch value {
+	case academyv1.CourseDistributionStatus_COURSE_DISTRIBUTION_STATUS_ACTIVE:
+		return api.CourseDistributionStatusActive, nil
+	case academyv1.CourseDistributionStatus_COURSE_DISTRIBUTION_STATUS_PAUSED:
+		return api.CourseDistributionStatusPaused, nil
+	case academyv1.CourseDistributionStatus_COURSE_DISTRIBUTION_STATUS_BLOCKED:
+		return api.CourseDistributionStatusBlocked, nil
+	default:
+		return "", fmt.Errorf("unknown course distribution status %d", value)
+	}
+}
+
+func courseDistributionToProto(value api.CourseDistributionStatus) (academyv1.CourseDistributionStatus, error) {
+	switch value {
+	case api.CourseDistributionStatusActive:
+		return academyv1.CourseDistributionStatus_COURSE_DISTRIBUTION_STATUS_ACTIVE, nil
+	case api.CourseDistributionStatusPaused:
+		return academyv1.CourseDistributionStatus_COURSE_DISTRIBUTION_STATUS_PAUSED, nil
+	case api.CourseDistributionStatusBlocked:
+		return academyv1.CourseDistributionStatus_COURSE_DISTRIBUTION_STATUS_BLOCKED, nil
+	default:
+		return academyv1.CourseDistributionStatus_COURSE_DISTRIBUTION_STATUS_UNSPECIFIED, fmt.Errorf("unknown course distribution status %q", value)
+	}
+}
+
+func courseOriginTypeToProto(value api.CourseOriginType) (academyv1.CourseOriginType, error) {
+	switch value {
+	case api.PartnerCourse:
+		return academyv1.CourseOriginType_COURSE_ORIGIN_TYPE_PARTNER_COURSE, nil
+	case api.SystemTemplate:
+		return academyv1.CourseOriginType_COURSE_ORIGIN_TYPE_SYSTEM_TEMPLATE, nil
+	case api.CompanyTemplate:
+		return academyv1.CourseOriginType_COURSE_ORIGIN_TYPE_COMPANY_TEMPLATE, nil
+	default:
+		return academyv1.CourseOriginType_COURSE_ORIGIN_TYPE_UNSPECIFIED, fmt.Errorf("unknown course origin type %q", value)
+	}
 }
 
 func courseVisibilityFromProto(value academyv1.CourseVisibility) (api.CourseVisibility, error) {
@@ -286,6 +695,13 @@ func assignmentFromProto(value *academyv1.CourseAssignment) (api.CourseAssignmen
 		Id: id, CourseId: courseID, AssigneeType: assigneeType,
 		AssignedById: assignedByID, InviteToken: value.InviteToken,
 	}
+	if value.CourseVersionId != nil {
+		versionID, parseErr := uuid.Parse(value.GetCourseVersionId())
+		if parseErr != nil {
+			return api.CourseAssignment{}, parseErr
+		}
+		result.CourseVersionId = &versionID
+	}
 	if value.GetCreatedAt() != nil {
 		result.CreatedAt = value.GetCreatedAt().AsTime()
 	}
@@ -426,9 +842,9 @@ func courseStatusToProto(value api.CourseStatus) (academyv1.CourseStatus, error)
 func lessonSourceModeFromProto(value academyv1.LessonSourceMode) (api.LessonSourceMode, error) {
 	switch value {
 	case academyv1.LessonSourceMode_LESSON_SOURCE_MODE_LINK:
-		return api.Link, nil
+		return api.LessonSourceModeLink, nil
 	case academyv1.LessonSourceMode_LESSON_SOURCE_MODE_COPY:
-		return api.Copy, nil
+		return api.LessonSourceModeCopy, nil
 	default:
 		return "", fmt.Errorf("unknown lesson source mode %d", value)
 	}
@@ -436,9 +852,9 @@ func lessonSourceModeFromProto(value academyv1.LessonSourceMode) (api.LessonSour
 
 func lessonSourceModeToProto(value api.LessonSourceMode) (academyv1.LessonSourceMode, error) {
 	switch value {
-	case api.Link:
+	case api.LessonSourceModeLink:
 		return academyv1.LessonSourceMode_LESSON_SOURCE_MODE_LINK, nil
-	case api.Copy:
+	case api.LessonSourceModeCopy:
 		return academyv1.LessonSourceMode_LESSON_SOURCE_MODE_COPY, nil
 	default:
 		return academyv1.LessonSourceMode_LESSON_SOURCE_MODE_UNSPECIFIED,

@@ -38,6 +38,9 @@ func (s *Service) canReadArticle(actor Actor, article Article, sections map[uuid
 	if article.Status != "published" {
 		return false
 	}
+	if actor.Role == "partner" {
+		return article.PartnerAccess.allows(actor.UserID)
+	}
 	section, ok := sections[article.SectionID]
 	if !ok {
 		return false
@@ -61,6 +64,22 @@ func (s *Service) GetPublicArticle(ctx context.Context, id uuid.UUID) (Article, 
 }
 
 func (s *Service) GetArticles(ctx context.Context, actor Actor, sectionID *uuid.UUID) ([]Article, error) {
+	if actor.Role == "partner" {
+		params := db.ListPartnerArticlesParams{CompanyID: actor.CompanyID, PartnerID: actor.UserID}
+		if sectionID != nil {
+			params.SectionID = uuid.NullUUID{UUID: *sectionID, Valid: true}
+		}
+		rows, err := db.New(s.pool).ListPartnerArticles(ctx, params)
+		if err != nil {
+			return nil, internal("Не удалось получить доступные статьи", err)
+		}
+		articles := make([]Article, len(rows))
+		for index, row := range rows {
+			articles[index] = articleFromPartnerListRow(row)
+			articles[index].PartnerAccess.PartnerIDs = []uuid.UUID{actor.UserID}
+		}
+		return articles, nil
+	}
 	_, sections, err := s.loadSections(ctx, actor.CompanyID)
 	if err != nil {
 		return nil, err
@@ -84,6 +103,20 @@ func (s *Service) GetArticles(ctx context.Context, actor Actor, sectionID *uuid.
 }
 
 func (s *Service) GetArticle(ctx context.Context, actor Actor, id uuid.UUID) (Article, error) {
+	if actor.Role == "partner" {
+		row, err := db.New(s.pool).GetPartnerArticle(ctx, db.GetPartnerArticleParams{
+			CompanyID: actor.CompanyID, ID: id, PartnerID: actor.UserID,
+		})
+		if err != nil {
+			if isNoRows(err) {
+				return Article{}, notFound("Статья")
+			}
+			return Article{}, internal("Не удалось получить статью", err)
+		}
+		article := articleFromPartnerRow(row)
+		article.PartnerAccess.PartnerIDs = []uuid.UUID{actor.UserID}
+		return article, nil
+	}
 	_, sections, err := s.loadSections(ctx, actor.CompanyID)
 	if err != nil {
 		return Article{}, err
@@ -105,6 +138,25 @@ func (s *Service) GetArticle(ctx context.Context, actor Actor, id uuid.UUID) (Ar
 func (s *Service) GetArticlesByIDs(ctx context.Context, actor Actor, ids []uuid.UUID) ([]Article, error) {
 	if len(ids) == 0 {
 		return nil, nil
+	}
+	if actor.Role == "partner" {
+		queries := db.New(s.pool)
+		articles := make([]Article, 0, len(ids))
+		for _, id := range ids {
+			row, err := queries.GetPartnerArticle(ctx, db.GetPartnerArticleParams{
+				CompanyID: actor.CompanyID, ID: id, PartnerID: actor.UserID,
+			})
+			if isNoRows(err) {
+				continue
+			}
+			if err != nil {
+				return nil, internal("Не удалось получить доступные статьи", err)
+			}
+			article := articleFromPartnerRow(row)
+			article.PartnerAccess.PartnerIDs = []uuid.UUID{actor.UserID}
+			articles = append(articles, article)
+		}
+		return articles, nil
 	}
 	_, sections, err := s.loadSections(ctx, actor.CompanyID)
 	if err != nil {
@@ -142,6 +194,8 @@ type CreateArticleInput struct {
 	Content                 json.RawMessage
 	Status                  string
 	RequiresAcknowledgement bool
+	PartnerAccess           *PartnerAccessSettings
+	PartnerReusePolicy      *string
 }
 
 func (s *Service) CreateArticle(ctx context.Context, actor Actor, input CreateArticleInput) (Article, error) {
@@ -154,6 +208,14 @@ func (s *Service) CreateArticle(ctx context.Context, actor Actor, input CreateAr
 	}
 	if err = validateArticleStatus(input.Status); err != nil {
 		return Article{}, err
+	}
+	if input.PartnerAccess != nil {
+		if err = validatePartnerAccess(*input.PartnerAccess); err != nil {
+			return Article{}, err
+		}
+	}
+	if input.PartnerReusePolicy != nil && *input.PartnerReusePolicy != "not_allowed" && *input.PartnerReusePolicy != "copy_allowed" {
+		return Article{}, validation("Некорректная политика повторного использования статьи")
 	}
 	normalizedContent, normalizeErr := richtext.Normalize(input.Content)
 	if normalizeErr != nil {
@@ -189,6 +251,19 @@ func (s *Service) CreateArticle(ctx context.Context, actor Actor, input CreateAr
 		return Article{}, internal("Не удалось создать статью", err)
 	}
 	article := articleFromCreateRow(row)
+	policyUpdatedAt := s.now().UTC()
+	if err = applyArticlePartnerPolicyFields(
+		ctx, queries, actor.CompanyID, article.ID, actor.UserID,
+		input.PartnerAccess, input.PartnerReusePolicy, policyUpdatedAt,
+	); err != nil {
+		return Article{}, err
+	}
+	if input.PartnerAccess != nil {
+		article.PartnerAccess = *input.PartnerAccess
+	}
+	if input.PartnerReusePolicy != nil {
+		article.PartnerReusePolicy = *input.PartnerReusePolicy
+	}
 
 	if input.Status == "published" {
 		_, sections, loadErr := s.loadSectionsInTx(ctx, queries, actor.CompanyID)
@@ -219,6 +294,8 @@ type UpdateArticleInput struct {
 	Status                  *string
 	RequiresAcknowledgement *bool
 	ExpectedVersion         *int32
+	PartnerAccess           *PartnerAccessSettings
+	PartnerReusePolicy      *string
 }
 
 func (s *Service) UpdateArticle(ctx context.Context, actor Actor, input UpdateArticleInput) (Article, error) {
@@ -226,8 +303,17 @@ func (s *Service) UpdateArticle(ctx context.Context, actor Actor, input UpdateAr
 		return Article{}, forbidden("Недостаточно прав для изменения базы знаний")
 	}
 	if input.SectionID == nil && input.Title == nil && len(input.Content) == 0 &&
-		input.Status == nil && input.RequiresAcknowledgement == nil {
+		input.Status == nil && input.RequiresAcknowledgement == nil &&
+		input.PartnerAccess == nil && input.PartnerReusePolicy == nil {
 		return Article{}, validation("Укажите хотя бы одно поле для обновления")
+	}
+	if input.PartnerAccess != nil {
+		if err := validatePartnerAccess(*input.PartnerAccess); err != nil {
+			return Article{}, err
+		}
+	}
+	if input.PartnerReusePolicy != nil && *input.PartnerReusePolicy != "not_allowed" && *input.PartnerReusePolicy != "copy_allowed" {
+		return Article{}, validation("Некорректная политика повторного использования статьи")
 	}
 
 	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{})
@@ -331,6 +417,18 @@ func (s *Service) UpdateArticle(ctx context.Context, actor Actor, input UpdateAr
 		return Article{}, internal("Не удалось обновить статью", err)
 	}
 	article := articleFromUpdateRow(updated)
+	if err = applyArticlePartnerPolicyFields(
+		ctx, queries, actor.CompanyID, article.ID, actor.UserID,
+		input.PartnerAccess, input.PartnerReusePolicy, s.now().UTC(),
+	); err != nil {
+		return Article{}, err
+	}
+	if input.PartnerAccess != nil {
+		article.PartnerAccess = *input.PartnerAccess
+	}
+	if input.PartnerReusePolicy != nil {
+		article.PartnerReusePolicy = *input.PartnerReusePolicy
+	}
 
 	_, sections, err := s.loadSectionsInTx(ctx, queries, actor.CompanyID)
 	if err != nil {
@@ -454,6 +552,9 @@ func (s *Service) RollbackArticle(ctx context.Context, actor Actor, input Rollba
 }
 
 func (s *Service) GetArticleVersions(ctx context.Context, actor Actor, articleID uuid.UUID) ([]ArticleVersion, error) {
+	if actor.Role == "partner" {
+		return nil, forbidden("Партнёру недоступна история версий корпоративной статьи")
+	}
 	_, sections, err := s.loadSections(ctx, actor.CompanyID)
 	if err != nil {
 		return nil, err
@@ -483,6 +584,9 @@ func (s *Service) GetArticleVersions(ctx context.Context, actor Actor, articleID
 }
 
 func (s *Service) GetAcknowledgements(ctx context.Context, actor Actor, articleID uuid.UUID) ([]Acknowledgement, error) {
+	if actor.Role == "partner" {
+		return nil, forbidden("Партнёру недоступен список ознакомлений с корпоративной статьёй")
+	}
 	_, sections, err := s.loadSections(ctx, actor.CompanyID)
 	if err != nil {
 		return nil, err
@@ -527,6 +631,15 @@ func (s *Service) AcknowledgeArticle(ctx context.Context, actor Actor, articleID
 		return internal("Не удалось получить статью", err)
 	}
 	article := articleFromForUpdateRow(current)
+	if actor.Role == "partner" {
+		partnerArticle, accessErr := queries.GetPartnerArticle(ctx, db.GetPartnerArticleParams{
+			CompanyID: actor.CompanyID, ID: articleID, PartnerID: actor.UserID,
+		})
+		if accessErr != nil {
+			return forbidden("Недостаточно прав для ознакомления со статьёй")
+		}
+		article = articleFromPartnerRow(partnerArticle)
+	}
 	_, sections, err := s.loadSectionsInTx(ctx, queries, actor.CompanyID)
 	if err != nil {
 		return err
@@ -556,6 +669,20 @@ func (s *Service) SearchArticles(ctx context.Context, actor Actor, query string)
 	normalized := strings.TrimSpace(query)
 	if normalized == "" {
 		return nil, validation("Укажите поисковый запрос")
+	}
+	if actor.Role == "partner" {
+		rows, err := db.New(s.pool).SearchPartnerArticles(ctx, db.SearchPartnerArticlesParams{
+			CompanyID: actor.CompanyID, Query: normalized, PartnerID: actor.UserID,
+		})
+		if err != nil {
+			return nil, internal("Не удалось выполнить поиск", err)
+		}
+		articles := make([]Article, len(rows))
+		for index, row := range rows {
+			articles[index] = articleFromPartnerSearchRow(row)
+			articles[index].PartnerAccess.PartnerIDs = []uuid.UUID{actor.UserID}
+		}
+		return articles, nil
 	}
 	_, sections, err := s.loadSections(ctx, actor.CompanyID)
 	if err != nil {

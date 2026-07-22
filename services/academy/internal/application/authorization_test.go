@@ -22,6 +22,7 @@ func TestCanReadAcademy(t *testing.T) {
 func TestVisibleCourseMatrix(t *testing.T) {
 	t.Parallel()
 	assignedID := uuid.New()
+	partnerID := uuid.New()
 	assigned := map[uuid.UUID]struct{}{assignedID: {}}
 	tests := []struct {
 		name   string
@@ -35,6 +36,11 @@ func TestVisibleCourseMatrix(t *testing.T) {
 		{name: "employee sees company", actor: Actor{Role: "employee"}, course: Course{Status: "published", Visibility: "company"}, want: true},
 		{name: "employee sees assigned restricted", actor: Actor{Role: "employee"}, course: Course{ID: assignedID, Status: "published", Visibility: "restricted"}, want: true},
 		{name: "employee cannot see unassigned restricted", actor: Actor{Role: "employee"}, course: Course{ID: uuid.New(), Status: "published", Visibility: "restricted"}},
+		{name: "partner sees own course", actor: Actor{Role: "partner", UserID: partnerID}, course: Course{OwnerType: "partner", OwnerUserID: &partnerID, LifecycleStatus: "active"}, want: true},
+		{name: "partner cannot see another partner course", actor: Actor{Role: "partner", UserID: uuid.New()}, course: Course{OwnerType: "partner", OwnerUserID: &partnerID, LifecycleStatus: "active"}},
+		{name: "employee cannot see partner course", actor: Actor{Role: "employee"}, course: Course{OwnerType: "partner", OwnerUserID: &partnerID, Status: "published", LifecycleStatus: "active"}},
+		{name: "archived hidden from employee", actor: Actor{Role: "employee"}, course: Course{OwnerType: "company", Status: "published", Visibility: "public", LifecycleStatus: "archived"}},
+		{name: "blocked hidden from partner owner", actor: Actor{Role: "partner", UserID: partnerID}, course: Course{OwnerType: "partner", OwnerUserID: &partnerID, LifecycleStatus: "active", DistributionStatus: "blocked"}},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -53,5 +59,38 @@ func TestAssigneeTypeToEvent(t *testing.T) {
 	}
 	if assigneeTypeToEvent("unknown") != 0 {
 		t.Fatal("неизвестный тип назначения должен оставаться unspecified")
+	}
+}
+
+func TestEnrollmentAuthorization(t *testing.T) {
+	companyID, userID, partnerID := uuid.New(), uuid.New(), uuid.New()
+	otherCompany := uuid.New()
+	enrollment := Enrollment{CompanyID: companyID, LearnerType: "user", UserID: &userID}
+	companyCourse := Course{CompanyID: companyID, OwnerType: "company"}
+	partnerCourse := Course{CompanyID: companyID, OwnerType: "partner", OwnerUserID: &partnerID}
+
+	if !canViewEnrollment(Actor{CompanyID: companyID, Role: "employee", UserID: userID}, enrollment, companyCourse) {
+		t.Fatal("employee cannot view own enrollment")
+	}
+	if canViewEnrollment(Actor{CompanyID: companyID, Role: "employee", UserID: uuid.New()}, enrollment, companyCourse) {
+		t.Fatal("employee can view another enrollment")
+	}
+	if !canViewEnrollment(Actor{CompanyID: companyID, Role: "partner", UserID: partnerID}, enrollment, partnerCourse) {
+		t.Fatal("partner cannot view enrollment for own course")
+	}
+	if canViewEnrollment(Actor{CompanyID: otherCompany, Role: "owner"}, enrollment, companyCourse) {
+		t.Fatal("cross-tenant owner can view enrollment")
+	}
+	if !canMutateEnrollment(Actor{CompanyID: companyID, Role: "employee", UserID: userID}, enrollment) {
+		t.Fatal("employee cannot mutate own enrollment")
+	}
+	if canMutateEnrollment(Actor{CompanyID: companyID, Role: "partner", UserID: partnerID}, enrollment) {
+		t.Fatal("partner can mutate learner enrollment")
+	}
+	if canMutateEnrollment(Actor{CompanyID: companyID, Role: "owner", UserID: uuid.New()}, enrollment) {
+		t.Fatal("owner can mutate another learner enrollment")
+	}
+	if canMutateEnrollment(Actor{CompanyID: companyID, Role: "admin", UserID: uuid.New()}, enrollment) {
+		t.Fatal("admin can mutate another learner enrollment")
 	}
 }

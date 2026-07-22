@@ -1,9 +1,10 @@
 // sync-contract сверяет REST-вызовы фронтенда с contracts/openapi/teamos.yaml.
 //
-// Инструмент извлекает вызовы request()/publicRequest()/httpRequest()/openEventStream()
-// из src/api фронтенда (FRONTEND_DIR) и проверяет, что каждый путь и метод описан
-// в OpenAPI-контракте. Завершается с ненулевым кодом, если фронтенд обращается к
-// эндпоинту, которого нет в контракте.
+// Инструмент извлекает вызовы request()/publicRequest()/httpRequest()/openEventStream(),
+// а также типизированных Academy-хелперов academyGet()/academyMutate() и
+// externalGet()/externalMutate() из src/api фронтенда (FRONTEND_DIR). Затем он
+// проверяет, что каждый путь и метод описан в OpenAPI-контракте. Завершается с
+// ненулевым кодом, если фронтенд обращается к эндпоинту, которого нет в контракте.
 package main
 
 import (
@@ -91,16 +92,18 @@ func main() {
 	}
 }
 
-// callPattern распознаёт вызов HTTP-хелпера с первой строкой-аргументом:
-// request('/path'…), publicRequest(`/path/${id(x)}`…), httpRequest<T>('/path'…),
-// а также сырой fetch(`${API_URL}/path`…).
+// callPattern распознаёт вызов HTTP-хелпера с первой строкой-аргументом. Имя
+// хелпера сохраняется отдельно: у *Get метод задан самой сигнатурой, а у
+// *Mutate он обязан быть вторым строковым аргументом. Это не даёт ошибочно
+// принять mutation с вычисляемым/неразобранным методом за GET.
 var callPattern = regexp.MustCompile(
-	"(?:\\b(?:publicRequest|request|httpRequest|openEventStream|fetch))(?:<[^>(]*>)?\\(\\s*(?:'([^']*)'|`([^`]*)`)",
+	"(?:\\b(publicRequest|request|httpRequest|openEventStream|fetch|academyGet|academyMutate|externalGet|externalMutate))" +
+		"(?:<[^()]*>)?\\(\\s*(?:'([^']*)'|\"([^\"]*)\"|`([^`]*)`)",
 )
 
-var methodPattern = regexp.MustCompile(`'(GET|POST|PUT|PATCH|DELETE)'|method:\s*'(GET|POST|PUT|PATCH|DELETE)'`)
+var methodPattern = regexp.MustCompile(`["'](GET|POST|PUT|PATCH|DELETE)["']|method:\s*["'](GET|POST|PUT|PATCH|DELETE)["']`)
 
-var templateParam = regexp.MustCompile(`\$\{[^}]*\}`)
+var mutateMethodPattern = regexp.MustCompile(`^\s*,\s*["'](POST|PUT|PATCH|DELETE)["']`)
 
 func collectCalls(frontendDir string) ([]call, error) {
 	frontendFiles, err := discoverFrontendFiles(frontendDir)
@@ -116,9 +119,13 @@ func collectCalls(frontendDir string) ([]call, error) {
 		}
 		content := string(data)
 		for _, m := range callPattern.FindAllStringSubmatchIndex(content, -1) {
-			raw := submatch(content, m, 1)
+			helper := submatch(content, m, 1)
+			raw := submatch(content, m, 2)
 			if raw == "" {
-				raw = submatch(content, m, 2)
+				raw = submatch(content, m, 3)
+			}
+			if raw == "" {
+				raw = submatch(content, m, 4)
 			}
 			raw = strings.TrimPrefix(raw, "${API_URL}")
 			if !strings.HasPrefix(raw, "/") {
@@ -126,18 +133,15 @@ func collectCalls(frontendDir string) ([]call, error) {
 			}
 			// Метод ищем в аргументах после пути: request(path, 'POST', …) либо
 			// httpRequest/fetch(path, { method: 'POST', … }) — опции бывают многострочными.
-			method := "GET"
-			rest := content[m[1]:min(m[1]+200, len(content))]
+			rest := content[m[1]:min(m[1]+500, len(content))]
 			// Не заглядываем в аргументы следующего вызова.
 			if next := callPattern.FindStringIndex(rest); next != nil {
 				rest = rest[:next[0]]
 			}
-			if mm := methodPattern.FindStringSubmatch(rest); mm != nil {
-				if mm[1] != "" {
-					method = mm[1]
-				} else {
-					method = mm[2]
-				}
+			method, methodErr := extractMethod(helper, rest)
+			if methodErr != nil {
+				line := 1 + strings.Count(content[:m[0]], "\n")
+				return nil, fmt.Errorf("%s:%d: %w", rel, line, methodErr)
 			}
 			calls = append(calls, call{
 				Method: method,
@@ -148,6 +152,27 @@ func collectCalls(frontendDir string) ([]call, error) {
 		}
 	}
 	return calls, nil
+}
+
+func extractMethod(helper, rest string) (string, error) {
+	switch helper {
+	case "academyGet", "externalGet":
+		return "GET", nil
+	case "academyMutate", "externalMutate":
+		match := mutateMethodPattern.FindStringSubmatch(rest)
+		if match == nil {
+			return "", fmt.Errorf("для %s метод должен быть строковым литералом", helper)
+		}
+		return match[1], nil
+	default:
+		if match := methodPattern.FindStringSubmatch(rest); match != nil {
+			if match[1] != "" {
+				return match[1], nil
+			}
+			return match[2], nil
+		}
+		return "GET", nil
+	}
 }
 
 // discoverFrontendFiles возвращает все runtime TypeScript-файлы src/api.
@@ -198,13 +223,50 @@ func normalizePath(raw string) string {
 	if i := strings.IndexByte(raw, '?'); i >= 0 {
 		raw = raw[:i]
 	}
-	raw = templateParam.ReplaceAllString(raw, "{param}")
-	// Незакрытый ${ — это условная query-строка во вложенном template-литерале
-	// (`/tasks${boardId ? `?boardId=…` : ''}`): значимая часть пути — до него.
-	if i := strings.Index(raw, "${"); i >= 0 {
-		raw = strings.TrimRight(raw[:i], " ")
+	return normalizeTemplateExpressions(raw)
+}
+
+// normalizeTemplateExpressions заменяет динамический сегмент `${...}` на
+// `{param}`, учитывая вложенные object literals в buildQuery({...}). Динамика,
+// приклеенная к literal-сегменту без '/', является query builder/conditional и
+// отбрасывается вместе с query-строкой.
+func normalizeTemplateExpressions(raw string) string {
+	var result strings.Builder
+	for cursor := 0; cursor < len(raw); {
+		start := strings.Index(raw[cursor:], "${")
+		if start < 0 {
+			result.WriteString(raw[cursor:])
+			break
+		}
+		start += cursor
+		result.WriteString(raw[cursor:start])
+		if start > 0 && raw[start-1] != '/' {
+			break
+		}
+		end := templateExpressionEnd(raw, start+2)
+		if end < 0 {
+			break
+		}
+		result.WriteString("{param}")
+		cursor = end + 1
 	}
-	return raw
+	return strings.TrimRight(result.String(), " ")
+}
+
+func templateExpressionEnd(raw string, start int) int {
+	depth := 1
+	for index := start; index < len(raw); index++ {
+		switch raw[index] {
+		case '{':
+			depth++
+		case '}':
+			depth--
+			if depth == 0 {
+				return index
+			}
+		}
+	}
+	return -1
 }
 
 // loadSpec возвращает множество "METHOD /path" из OpenAPI-документа.

@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package teamos.events.v1;
+
+import "events/common.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/sk1fy/team-os-backend/contracts/gen/go/events/v1;eventsv1";
+
+enum FilesCloneState {
+  FILES_CLONE_STATE_UNSPECIFIED = 0;
+  FILES_CLONE_STATE_PENDING = 1;
+  FILES_CLONE_STATE_IN_PROGRESS = 2;
+  FILES_CLONE_STATE_SUCCEEDED = 3;
+  FILES_CLONE_STATE_FAILED = 4;
+}
+
+enum FilesOwnerType {
+  FILES_OWNER_TYPE_UNSPECIFIED = 0;
+  FILES_OWNER_TYPE_COURSE_VERSION = 1;
+  FILES_OWNER_TYPE_TEMPLATE_VERSION = 2;
+  FILES_OWNER_TYPE_ARTICLE_VERSION = 3;
+}
+
+message FilesOwner {
+  FilesOwnerType type = 1;
+  string id = 2;
+}
+
+message FilesCloneMapping {
+  string source_file_id = 1;
+  optional string target_file_id = 2;
+}
+
+// Published under teamos.files.clone.requested.v1. Consumers deduplicate by
+// metadata.event_id and clone_operation_id.
+message FilesCloneRequestedEvent {
+  EventMetadata metadata = 1;
+  FilesCloneRequestedPayload payload = 2;
+}
+
+message FilesCloneRequestedPayload {
+  string clone_operation_id = 1;
+  repeated string source_file_ids = 2;
+  FilesOwner target_owner = 3;
+  string idempotency_key = 4;
+  string requested_by_id = 5;
+  google.protobuf.Timestamp requested_at = 6;
+}
+
+// Published under teamos.files.clone.state_changed.v1 for every persisted
+// transition. FAILED is retriable by the saga; SUCCEEDED is terminal.
+message FilesCloneStateChangedEvent {
+  EventMetadata metadata = 1;
+  FilesCloneStateChangedPayload payload = 2;
+}
+
+message FilesCloneStateChangedPayload {
+  string clone_operation_id = 1;
+  FilesCloneState previous_state = 2;
+  FilesCloneState state = 3;
+  FilesOwner target_owner = 4;
+  repeated FilesCloneMapping files = 5;
+  optional string error_message = 6;
+  google.protobuf.Timestamp occurred_at = 7;
+}

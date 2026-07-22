@@ -19,8 +19,9 @@ func sectionFromDB(value db.Section) (Section, error) {
 	return Section{
 		ID: value.ID, CompanyID: value.CompanyID, Name: value.Name,
 		ParentID: uuidPointer(value.ParentID), Order: value.Order, Access: access,
-		Visibility: value.Visibility,
-		CreatedAt:  value.CreatedAt, UpdatedAt: value.UpdatedAt,
+		Visibility:    value.Visibility,
+		PartnerAccess: PartnerAccessSettings{Mode: "none"},
+		CreatedAt:     value.CreatedAt, UpdatedAt: value.UpdatedAt,
 	}, nil
 }
 
@@ -31,6 +32,7 @@ func articleFromPublicRow(value db.GetPublicArticleRow) Article {
 		AuthorID: value.AuthorID, Version: value.Version,
 		RequiresAcknowledgement: value.RequiresAcknowledgement,
 		PlainText:               value.PlainText, CreatedAt: value.CreatedAt, UpdatedAt: value.UpdatedAt,
+		PartnerAccessMode: value.PartnerAccessMode, PartnerReusePolicy: value.PartnerReusePolicy,
 	})
 }
 
@@ -47,6 +49,8 @@ type articleDBFields struct {
 	PlainText               string
 	CreatedAt               time.Time
 	UpdatedAt               time.Time
+	PartnerAccessMode       string
+	PartnerReusePolicy      string
 }
 
 func articleFromDBRow(value articleDBFields) Article {
@@ -56,6 +60,8 @@ func articleFromDBRow(value articleDBFields) Article {
 		Status: value.Status, AuthorID: value.AuthorID, Version: value.Version,
 		RequiresAcknowledgement: value.RequiresAcknowledgement,
 		PlainText:               value.PlainText, CreatedAt: value.CreatedAt, UpdatedAt: value.UpdatedAt,
+		PartnerAccess:      PartnerAccessSettings{Mode: value.PartnerAccessMode},
+		PartnerReusePolicy: value.PartnerReusePolicy,
 	}
 }
 
@@ -66,6 +72,7 @@ func articleFromGetRow(value db.GetArticleRow) Article {
 		AuthorID: value.AuthorID, Version: value.Version,
 		RequiresAcknowledgement: value.RequiresAcknowledgement,
 		PlainText:               value.PlainText, CreatedAt: value.CreatedAt, UpdatedAt: value.UpdatedAt,
+		PartnerAccessMode: value.PartnerAccessMode, PartnerReusePolicy: value.PartnerReusePolicy,
 	})
 }
 
@@ -76,6 +83,7 @@ func articleFromForUpdateRow(value db.GetArticleForUpdateRow) Article {
 		AuthorID: value.AuthorID, Version: value.Version,
 		RequiresAcknowledgement: value.RequiresAcknowledgement,
 		PlainText:               value.PlainText, CreatedAt: value.CreatedAt, UpdatedAt: value.UpdatedAt,
+		PartnerAccessMode: value.PartnerAccessMode, PartnerReusePolicy: value.PartnerReusePolicy,
 	})
 }
 
@@ -86,6 +94,7 @@ func articleFromCreateRow(value db.CreateArticleRow) Article {
 		AuthorID: value.AuthorID, Version: value.Version,
 		RequiresAcknowledgement: value.RequiresAcknowledgement,
 		PlainText:               value.PlainText, CreatedAt: value.CreatedAt, UpdatedAt: value.UpdatedAt,
+		PartnerAccessMode: value.PartnerAccessMode, PartnerReusePolicy: value.PartnerReusePolicy,
 	})
 }
 
@@ -96,6 +105,7 @@ func articleFromUpdateRow(value db.UpdateArticleRow) Article {
 		AuthorID: value.AuthorID, Version: value.Version,
 		RequiresAcknowledgement: value.RequiresAcknowledgement,
 		PlainText:               value.PlainText, CreatedAt: value.CreatedAt, UpdatedAt: value.UpdatedAt,
+		PartnerAccessMode: value.PartnerAccessMode, PartnerReusePolicy: value.PartnerReusePolicy,
 	})
 }
 
@@ -106,6 +116,7 @@ func articleFromListRow(value db.ListArticlesRow) Article {
 		AuthorID: value.AuthorID, Version: value.Version,
 		RequiresAcknowledgement: value.RequiresAcknowledgement,
 		PlainText:               value.PlainText, CreatedAt: value.CreatedAt, UpdatedAt: value.UpdatedAt,
+		PartnerAccessMode: value.PartnerAccessMode, PartnerReusePolicy: value.PartnerReusePolicy,
 	})
 }
 
@@ -116,6 +127,7 @@ func articleFromSearchRow(value db.SearchArticlesRow) Article {
 		AuthorID: value.AuthorID, Version: value.Version,
 		RequiresAcknowledgement: value.RequiresAcknowledgement,
 		PlainText:               value.PlainText, CreatedAt: value.CreatedAt, UpdatedAt: value.UpdatedAt,
+		PartnerAccessMode: value.PartnerAccessMode, PartnerReusePolicy: value.PartnerReusePolicy,
 	})
 }
 
@@ -126,6 +138,7 @@ func articleFromIDsRow(value db.GetArticlesByIDsRow) Article {
 		AuthorID: value.AuthorID, Version: value.Version,
 		RequiresAcknowledgement: value.RequiresAcknowledgement,
 		PlainText:               value.PlainText, CreatedAt: value.CreatedAt, UpdatedAt: value.UpdatedAt,
+		PartnerAccessMode: value.PartnerAccessMode, PartnerReusePolicy: value.PartnerReusePolicy,
 	})
 }
 

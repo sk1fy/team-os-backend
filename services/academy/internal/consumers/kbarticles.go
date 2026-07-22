@@ -25,6 +25,11 @@ func Start(ctx context.Context, bus *eventbus.Bus, service *application.Service,
 		handler eventbus.HandlerFunc
 	}{
 		{
+			subject: "teamos.company.company.created.v1",
+			durable: "academy-company-created",
+			handler: service.HandleCompanyCreated,
+		},
+		{
 			subject: "teamos.kb.article.updated.v1",
 			durable: "academy-kb-article-updated",
 			handler: service.HandleKbArticleUpdated,

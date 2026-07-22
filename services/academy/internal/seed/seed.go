@@ -259,6 +259,7 @@ type Dataset struct {
 
 type courseRow struct {
 	ID, CompanyID, AuthorID uuid.UUID
+	VersionID               uuid.UUID
 	Title, Status           string
 	Description, CoverURL   *string
 	Sequential              bool
@@ -334,7 +335,8 @@ func Normalize(fixtures Fixtures) (Dataset, error) {
 		}
 		dataset.Courses = append(dataset.Courses, courseRow{
 			ID: id, CompanyID: companyID, AuthorID: authorID,
-			Title: fixture.Title, Status: fixture.Status,
+			VersionID: seedEntityID("course-version-v1", id),
+			Title:     fixture.Title, Status: fixture.Status,
 			Description: fixture.Description, CoverURL: fixture.CoverURL,
 			Sequential: fixture.Sequential, DeadlineDays: fixture.DeadlineDays,
 			CreatedAt: createdAt, UpdatedAt: updatedAt,
@@ -551,88 +553,6 @@ func parseTimestamp(value string) (time.Time, error) {
 	return time.Time{}, fmt.Errorf("неподдерживаемый формат даты %q", value)
 }
 
-func Apply(ctx context.Context, tx pgx.Tx, dataset Dataset) error {
-	for _, statement := range []string{
-		`DELETE FROM quiz_attempts WHERE company_id = $1`,
-		`DELETE FROM progress WHERE company_id = $1`,
-		`DELETE FROM assignments WHERE company_id = $1`,
-		`DELETE FROM quizzes WHERE company_id = $1`,
-		`DELETE FROM lessons WHERE company_id = $1`,
-		`DELETE FROM course_sections WHERE company_id = $1`,
-		`DELETE FROM courses WHERE company_id = $1`,
-	} {
-		if _, err := tx.Exec(ctx, statement, dataset.CompanyID); err != nil {
-			return err
-		}
-	}
-	for _, course := range dataset.Courses {
-		if _, err := tx.Exec(ctx, `
-			INSERT INTO courses (
-				id, company_id, title, description, cover_url, status, author_id,
-				sequential, deadline_days, created_at, updated_at
-			) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
-			course.ID, course.CompanyID, course.Title, course.Description, course.CoverURL,
-			course.Status, course.AuthorID, course.Sequential, course.DeadlineDays,
-			course.CreatedAt, course.UpdatedAt,
-		); err != nil {
-			return fmt.Errorf("вставить course %s: %w", course.ID, err)
-		}
-	}
-	for _, section := range dataset.Sections {
-		if _, err := tx.Exec(ctx, `
-			INSERT INTO course_sections (id, company_id, course_id, title, "order")
-			VALUES ($1,$2,$3,$4,$5)`,
-			section.ID, section.CompanyID, section.CourseID, section.Title, section.Order,
-		); err != nil {
-			return fmt.Errorf("вставить courseSection %s: %w", section.ID, err)
-		}
-	}
-	for _, lesson := range dataset.Lessons {
-		if _, err := tx.Exec(ctx, `
-			INSERT INTO lessons (
-				id, company_id, course_id, section_id, title, "order", content,
-				source_article_id, source_article_title, source_mode, quiz_id
-			) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
-			lesson.ID, lesson.CompanyID, lesson.CourseID, lesson.SectionID,
-			lesson.Title, lesson.Order, lesson.Content,
-			lesson.SourceArticleID, lesson.SourceArticleTitle, lesson.SourceMode, lesson.QuizID,
-		); err != nil {
-			return fmt.Errorf("вставить lesson %s: %w", lesson.ID, err)
-		}
-	}
-	for _, quiz := range dataset.Quizzes {
-		if _, err := tx.Exec(ctx, `
-			INSERT INTO quizzes (id, company_id, lesson_id, questions, passing_score, max_attempts)
-			VALUES ($1,$2,$3,$4,$5,$6)`,
-			quiz.ID, quiz.CompanyID, quiz.LessonID, quiz.Questions,
-			quiz.PassingScore, quiz.MaxAttempts,
-		); err != nil {
-			return fmt.Errorf("вставить quiz %s: %w", quiz.ID, err)
-		}
-	}
-	for _, assignment := range dataset.Assignments {
-		if _, err := tx.Exec(ctx, `
-			INSERT INTO assignments (
-				id, company_id, course_id, assignee_type, assignee_id, invite_token,
-				due_date, resolved_user_ids, assigned_by_id, created_at
-			) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
-			assignment.ID, assignment.CompanyID, assignment.CourseID, assignment.AssigneeType,
-			assignment.AssigneeID, assignment.InviteToken, assignment.DueDate,
-			assignment.ResolvedUserIDs, assignment.AssignedByID, assignment.CreatedAt,
-		); err != nil {
-			return fmt.Errorf("вставить assignment %s: %w", assignment.ID, err)
-		}
-	}
-	for _, progress := range dataset.Progress {
-		if _, err := tx.Exec(ctx, `
-			INSERT INTO progress (
-				company_id, user_id, course_id, status, completed_lesson_ids, started_at, completed_at
-			) VALUES ($1,$2,$3,$4,$5,$6,$7)`,
-			progress.CompanyID, progress.UserID, progress.CourseID, progress.Status,
-			progress.CompletedLessonIDs, progress.StartedAt, progress.CompletedAt,
-		); err != nil {
-			return fmt.Errorf("вставить progress %s/%s: %w", progress.UserID, progress.CourseID, err)
-		}
-	}
-	return nil
+func seedEntityID(kind string, source uuid.UUID) uuid.UUID {
+	return uuid.NewSHA1(fixtureNamespace, []byte(kind+":"+source.String()))
 }

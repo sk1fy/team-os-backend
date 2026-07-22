@@ -26,6 +26,14 @@ service KbService {
 
   rpc GetArticlesByIds(GetArticlesByIdsRequest) returns (GetArticlesByIdsResponse);
   rpc ArticleExists(ArticleExistsRequest) returns (ArticleExistsResponse);
+
+  // Partner visibility and course reuse default to deny. Snapshot export is
+  // the only supported Academy integration: a partner course must never keep
+  // a live link to company KB content.
+  rpc GetArticlePartnerPolicy(GetArticlePartnerPolicyRequest) returns (GetArticlePartnerPolicyResponse);
+  rpc UpdateArticlePartnerPolicy(UpdateArticlePartnerPolicyRequest) returns (UpdateArticlePartnerPolicyResponse);
+  rpc CheckArticleCourseCopyPermission(CheckArticleCourseCopyPermissionRequest) returns (CheckArticleCourseCopyPermissionResponse);
+  rpc GetArticleSnapshotForCourseCopy(GetArticleSnapshotForCourseCopyRequest) returns (GetArticleSnapshotForCourseCopyResponse);
 }
 
 enum AccessScope {
@@ -44,6 +52,32 @@ enum SectionVisibility {
   SECTION_VISIBILITY_UNSPECIFIED = 0;
   SECTION_VISIBILITY_PUBLIC = 1;
   SECTION_VISIBILITY_COMPANY = 2;
+}
+
+enum PartnerAccessMode {
+  PARTNER_ACCESS_MODE_UNSPECIFIED = 0;
+  PARTNER_ACCESS_MODE_NONE = 1;
+  PARTNER_ACCESS_MODE_ALL = 2;
+  PARTNER_ACCESS_MODE_SELECTED = 3;
+}
+
+enum PartnerReusePolicy {
+  PARTNER_REUSE_POLICY_UNSPECIFIED = 0;
+  PARTNER_REUSE_POLICY_NOT_ALLOWED = 1;
+  PARTNER_REUSE_POLICY_COPY_ALLOWED = 2;
+}
+
+message PartnerAccessSettings {
+  PartnerAccessMode mode = 1;
+  repeated string partner_ids = 2;
+}
+
+message ArticlePartnerPolicy {
+  string article_id = 1;
+  PartnerAccessSettings access = 2;
+  PartnerReusePolicy reuse_policy = 3;
+  google.protobuf.Timestamp updated_at = 4;
+  optional string updated_by_id = 5;
 }
 
 message AccessSettings {
@@ -73,6 +107,8 @@ message Article {
   bool requires_acknowledgement = 8;
   google.protobuf.Timestamp created_at = 9;
   google.protobuf.Timestamp updated_at = 10;
+  optional PartnerAccessSettings partner_access = 11;
+  optional PartnerReusePolicy partner_reuse_policy = 12;
 }
 
 message ArticleVersion {
@@ -155,6 +191,8 @@ message CreateArticleRequest {
   google.protobuf.Struct content = 3;
   ArticleStatus status = 4;
   bool requires_acknowledgement = 5;
+  optional PartnerAccessSettings partner_access = 6;
+  optional PartnerReusePolicy partner_reuse_policy = 7;
 }
 
 message CreateArticleResponse {
@@ -169,6 +207,8 @@ message UpdateArticleRequest {
   optional ArticleStatus status = 5;
   optional bool requires_acknowledgement = 6;
   optional uint32 expected_version = 7;
+  optional PartnerAccessSettings partner_access = 8;
+  optional PartnerReusePolicy partner_reuse_policy = 9;
 }
 
 message UpdateArticleResponse {
@@ -229,4 +269,69 @@ message ArticleExistsRequest {
 
 message ArticleExistsResponse {
   bool exists = 1;
+}
+
+message GetArticlePartnerPolicyRequest {
+  string article_id = 1;
+}
+
+message GetArticlePartnerPolicyResponse {
+  ArticlePartnerPolicy policy = 1;
+}
+
+message UpdateArticlePartnerPolicyRequest {
+  string article_id = 1;
+  PartnerAccessSettings access = 2;
+  PartnerReusePolicy reuse_policy = 3;
+}
+
+message UpdateArticlePartnerPolicyResponse {
+  ArticlePartnerPolicy policy = 1;
+}
+
+message CheckArticleCourseCopyPermissionRequest {
+  string article_id = 1;
+  // When absent, KB checks the current published article version.
+  optional string article_version_id = 2;
+  // Required for service-to-service calls where Academy is creating a course
+  // owned by a partner. KB validates this partner against the policy.
+  optional string target_partner_id = 3;
+}
+
+message CheckArticleCourseCopyPermissionResponse {
+  bool can_read = 1;
+  bool can_copy = 2;
+  PartnerReusePolicy reuse_policy = 3;
+  optional string denial_reason = 4;
+  optional string resolved_article_version_id = 5;
+}
+
+message ArticleSnapshotAttachment {
+  string file_id = 1;
+  optional string name = 2;
+  optional string content_type = 3;
+  optional uint64 size = 4;
+}
+
+message ArticleSnapshotForCourseCopy {
+  string article_id = 1;
+  string article_version_id = 2;
+  uint32 version = 3;
+  string title = 4;
+  google.protobuf.Struct content = 5;
+  repeated ArticleSnapshotAttachment attachments = 6;
+  string content_hash = 7;
+  google.protobuf.Timestamp captured_at = 8;
+}
+
+message GetArticleSnapshotForCourseCopyRequest {
+  string article_id = 1;
+  // Only published versions are eligible. When absent, KB resolves the
+  // current published version atomically with the permission check.
+  optional string article_version_id = 2;
+  optional string target_partner_id = 3;
+}
+
+message GetArticleSnapshotForCourseCopyResponse {
+  ArticleSnapshotForCourseCopy snapshot = 1;
 }

@@ -32,6 +32,20 @@ func (r *testRepo) Get(context.Context, uuid.UUID, uuid.UUID) (domain.File, erro
 func (r *testRepo) Delete(context.Context, uuid.UUID, uuid.UUID) (string, error) {
 	return r.file.ObjectKey, nil
 }
+func (r *testRepo) BeginClone(_ context.Context, operation domain.CloneOperation) (domain.CloneOperation, error) {
+	return operation, nil
+}
+func (r *testRepo) StartClone(_ context.Context, _, _ uuid.UUID) (domain.CloneOperation, bool, error) {
+	return domain.CloneOperation{}, false, nil
+}
+func (r *testRepo) CompleteClone(_ context.Context, operation domain.CloneOperation, files []domain.ClonedFile) (domain.CloneOperation, error) {
+	operation.Files = files
+	operation.State = domain.CloneSucceeded
+	return operation, nil
+}
+func (r *testRepo) FailClone(_ context.Context, _, _ uuid.UUID, message string) (domain.CloneOperation, error) {
+	return domain.CloneOperation{State: domain.CloneFailed, ErrorMessage: message}, nil
+}
 
 type testObjects struct{ uploaded []byte }
 
@@ -39,7 +53,8 @@ func (o *testObjects) Put(_ context.Context, _ string, body io.Reader, _ int64, 
 	o.uploaded, _ = io.ReadAll(body)
 	return nil
 }
-func (*testObjects) Remove(context.Context, string) error { return nil }
+func (*testObjects) Copy(context.Context, string, string) error { return nil }
+func (*testObjects) Remove(context.Context, string) error       { return nil }
 func (*testObjects) DownloadURL(context.Context, string, time.Duration) (string, error) {
 	return "https://example.test", nil
 }

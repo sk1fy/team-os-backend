@@ -12,6 +12,36 @@ import (
 func (s *Service) GetQuizzes(ctx context.Context, actor Actor, lessonID *uuid.UUID) ([]Quiz, error) {
 	queries := db.New(s.pool)
 	if lessonID != nil {
+		versionLesson, versionLessonErr := queries.GetCourseVersionLesson(ctx, db.GetCourseVersionLessonParams{
+			CompanyID: actor.CompanyID, ID: *lessonID,
+		})
+		if versionLessonErr == nil {
+			version, versionErr := queries.GetCourseVersion(ctx, db.GetCourseVersionParams{
+				CompanyID: actor.CompanyID, ID: versionLesson.CourseVersionID,
+			})
+			if versionErr != nil {
+				return nil, internal("Не удалось проверить версию курса", versionErr)
+			}
+			if accessErr := s.requireCourseAccess(ctx, queries, actor, version.CourseID); accessErr != nil {
+				return nil, accessErr
+			}
+			rows, listErr := queries.GetCourseVersionQuizzes(ctx, db.GetCourseVersionQuizzesParams{
+				CompanyID: actor.CompanyID, CourseVersionID: version.ID,
+			})
+			if listErr != nil {
+				return nil, internal("Не удалось получить тесты версии", listErr)
+			}
+			result := make([]Quiz, 0, 1)
+			for _, row := range rows {
+				if row.LessonVersionID == *lessonID {
+					result = append(result, versionQuizAsLegacy(row))
+				}
+			}
+			return result, nil
+		}
+		if !isNoRows(versionLessonErr) {
+			return nil, internal("Не удалось проверить урок версии", versionLessonErr)
+		}
 		lesson, err := queries.GetLesson(ctx, db.GetLessonParams{
 			CompanyID: actor.CompanyID, ID: *lessonID,
 		})
@@ -32,34 +62,43 @@ func (s *Service) GetQuizzes(ctx context.Context, actor Actor, lessonID *uuid.UU
 		}
 		return quizzesFromRows(rows), nil
 	}
-	if !canReadAcademy(actor) {
-		return nil, forbidden("Недостаточно прав для просмотра академии")
-	}
-	if !actor.canManage() {
-		visibleCourses, err := s.GetCourses(ctx, actor)
-		if err != nil {
-			return nil, err
-		}
-		courseIDs := make([]uuid.UUID, len(visibleCourses))
-		for index := range visibleCourses {
-			courseIDs[index] = visibleCourses[index].ID
-		}
-		if len(courseIDs) == 0 {
-			return []Quiz{}, nil
-		}
-		rows, err := queries.GetQuizzesByCourseIds(ctx, db.GetQuizzesByCourseIdsParams{
-			CompanyID: actor.CompanyID, CourseIds: courseIDs,
-		})
-		if err != nil {
-			return nil, internal("Не удалось получить тесты", err)
-		}
-		return quizzesFromRows(rows), nil
-	}
-	rows, err := queries.GetQuizzes(ctx, actor.CompanyID)
+	visibleCourses, err := s.GetCourses(ctx, actor)
 	if err != nil {
-		return nil, internal("Не удалось получить тесты", err)
+		return nil, err
 	}
-	return quizzesFromRows(rows), nil
+	result := make([]Quiz, 0)
+	for _, course := range visibleCourses {
+		version, versionErr := s.displayCourseVersion(ctx, queries, actor, course)
+		if versionErr != nil {
+			return nil, versionErr
+		}
+		if version != nil {
+			rows, listErr := queries.GetCourseVersionQuizzes(ctx, db.GetCourseVersionQuizzesParams{
+				CompanyID: actor.CompanyID, CourseVersionID: version.ID,
+			})
+			if listErr != nil {
+				return nil, internal("Не удалось получить тесты версии", listErr)
+			}
+			for _, row := range rows {
+				result = append(result, versionQuizAsLegacy(row))
+			}
+			continue
+		}
+		rows, listErr := queries.GetQuizzesByCourseIds(ctx, db.GetQuizzesByCourseIdsParams{
+			CompanyID: actor.CompanyID, CourseIds: []uuid.UUID{course.ID},
+		})
+		if listErr != nil {
+			return nil, internal("Не удалось получить тесты", listErr)
+		}
+		for _, row := range rows {
+			result = append(result, Quiz{
+				ID: row.ID, CompanyID: row.CompanyID, LessonID: row.LessonID,
+				Questions: append(json.RawMessage(nil), row.Questions...), PassingScore: row.PassingScore,
+				MaxAttempts: int4Pointer(row.MaxAttempts),
+			})
+		}
+	}
+	return result, nil
 }
 
 type UpsertQuizInput struct {
@@ -71,9 +110,6 @@ type UpsertQuizInput struct {
 }
 
 func (s *Service) UpsertQuiz(ctx context.Context, actor Actor, input UpsertQuizInput) (Quiz, error) {
-	if !actor.canManage() {
-		return Quiz{}, forbidden("Недостаточно прав для изменения академии")
-	}
 	if input.PassingScore < 0 || input.PassingScore > 100 {
 		return Quiz{}, validation("Проходной балл должен быть от 0 до 100")
 	}
@@ -87,6 +123,24 @@ func (s *Service) UpsertQuiz(ctx context.Context, actor Actor, input UpsertQuizI
 	if !json.Valid(questions) {
 		return Quiz{}, validation("Некорректные вопросы теста")
 	}
+	rootQueries := db.New(s.pool)
+	if _, versionErr := rootQueries.GetCourseVersionLesson(ctx, db.GetCourseVersionLessonParams{
+		CompanyID: actor.CompanyID, ID: input.LessonID,
+	}); versionErr == nil {
+		updated, updateErr := s.UpsertCourseVersionQuiz(ctx, actor, UpsertCourseVersionQuizInput{
+			LessonVersionID: input.LessonID, Questions: questions,
+			PassingScore: input.PassingScore, MaxAttempts: input.MaxAttempts,
+		})
+		if updateErr != nil {
+			return Quiz{}, updateErr
+		}
+		return Quiz{
+			ID: updated.ID, CompanyID: updated.CompanyID, LessonID: updated.LessonVersionID,
+			Questions: updated.Questions, PassingScore: updated.PassingScore, MaxAttempts: updated.MaxAttempts,
+		}, nil
+	} else if !isNoRows(versionErr) {
+		return Quiz{}, internal("Не удалось проверить урок версии", versionErr)
+	}
 
 	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
@@ -97,6 +151,20 @@ func (s *Service) UpsertQuiz(ctx context.Context, actor Actor, input UpsertQuizI
 
 	var row db.Quiz
 	if input.ID != nil {
+		current, getErr := queries.GetQuiz(ctx, db.GetQuizParams{CompanyID: actor.CompanyID, ID: *input.ID})
+		if getErr != nil {
+			if isNoRows(getErr) {
+				return Quiz{}, notFound("Тест")
+			}
+			return Quiz{}, internal("Не удалось проверить тест", getErr)
+		}
+		lesson, getErr := queries.GetLesson(ctx, db.GetLessonParams{CompanyID: actor.CompanyID, ID: current.LessonID})
+		if getErr != nil {
+			return Quiz{}, internal("Не удалось проверить урок", getErr)
+		}
+		if _, getErr = s.requireCourseEditAccess(ctx, queries, actor, lesson.CourseID); getErr != nil {
+			return Quiz{}, getErr
+		}
 		row, err = queries.UpdateQuiz(ctx, db.UpdateQuizParams{
 			CompanyID: actor.CompanyID, ID: *input.ID,
 			Questions: questions, PassingScore: input.PassingScore,
@@ -109,13 +177,17 @@ func (s *Service) UpsertQuiz(ctx context.Context, actor Actor, input UpsertQuizI
 			return Quiz{}, internal("Не удалось обновить тест", err)
 		}
 	} else {
-		if _, err = queries.GetLesson(ctx, db.GetLessonParams{
+		lesson, getErr := queries.GetLesson(ctx, db.GetLessonParams{
 			CompanyID: actor.CompanyID, ID: input.LessonID,
-		}); err != nil {
-			if isNoRows(err) {
+		})
+		if getErr != nil {
+			if isNoRows(getErr) {
 				return Quiz{}, notFound("Урок")
 			}
-			return Quiz{}, internal("Не удалось проверить урок", err)
+			return Quiz{}, internal("Не удалось проверить урок", getErr)
+		}
+		if _, getErr = s.requireCourseEditAccess(ctx, queries, actor, lesson.CourseID); getErr != nil {
+			return Quiz{}, getErr
 		}
 		row, err = queries.CreateQuiz(ctx, db.CreateQuizParams{
 			ID: uuid.New(), CompanyID: actor.CompanyID, LessonID: input.LessonID,

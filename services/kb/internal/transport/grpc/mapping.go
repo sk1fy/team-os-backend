@@ -55,13 +55,130 @@ func articleToProto(value application.Article) (*kbv1.Article, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &kbv1.Article{
+	result := &kbv1.Article{
 		Id: value.ID.String(), SectionId: value.SectionID.String(),
 		Title: value.Title, Content: content, Status: articleStatusToProto(value.Status),
 		AuthorId: value.AuthorID.String(), Version: uint32(value.Version),
 		RequiresAcknowledgement: value.RequiresAcknowledgement,
 		CreatedAt:               timestamppb.New(value.CreatedAt.UTC()),
 		UpdatedAt:               timestamppb.New(value.UpdatedAt.UTC()),
+	}
+	if value.PartnerAccess.Mode != "" {
+		result.PartnerAccess = partnerAccessToProto(value.PartnerAccess)
+	}
+	if value.PartnerReusePolicy != "" {
+		policy, mapErr := partnerReusePolicyToProto(value.PartnerReusePolicy)
+		if mapErr != nil {
+			return nil, mapErr
+		}
+		result.PartnerReusePolicy = &policy
+	}
+	return result, nil
+}
+
+func partnerAccessToProto(value application.PartnerAccessSettings) *kbv1.PartnerAccessSettings {
+	mode := kbv1.PartnerAccessMode_PARTNER_ACCESS_MODE_NONE
+	switch value.Mode {
+	case "all":
+		mode = kbv1.PartnerAccessMode_PARTNER_ACCESS_MODE_ALL
+	case "selected":
+		mode = kbv1.PartnerAccessMode_PARTNER_ACCESS_MODE_SELECTED
+	}
+	return &kbv1.PartnerAccessSettings{Mode: mode, PartnerIds: uuidStrings(value.PartnerIDs)}
+}
+
+func partnerAccessFromProto(value *kbv1.PartnerAccessSettings) (application.PartnerAccessSettings, error) {
+	if value == nil {
+		return application.PartnerAccessSettings{}, invalidArgument("Укажите настройки доступа партнёров")
+	}
+	mode := ""
+	switch value.GetMode() {
+	case kbv1.PartnerAccessMode_PARTNER_ACCESS_MODE_NONE:
+		mode = "none"
+	case kbv1.PartnerAccessMode_PARTNER_ACCESS_MODE_ALL:
+		mode = "all"
+	case kbv1.PartnerAccessMode_PARTNER_ACCESS_MODE_SELECTED:
+		mode = "selected"
+	default:
+		return application.PartnerAccessSettings{}, invalidArgument("Некорректный режим доступа партнёров")
+	}
+	partnerIDs, err := parseUUIDStrings(value.GetPartnerIds())
+	if err != nil {
+		return application.PartnerAccessSettings{}, invalidArgument("Некорректный идентификатор партнёра")
+	}
+	return application.PartnerAccessSettings{Mode: mode, PartnerIDs: partnerIDs}, nil
+}
+
+func partnerReusePolicyFromProto(value kbv1.PartnerReusePolicy) (string, error) {
+	switch value {
+	case kbv1.PartnerReusePolicy_PARTNER_REUSE_POLICY_NOT_ALLOWED:
+		return "not_allowed", nil
+	case kbv1.PartnerReusePolicy_PARTNER_REUSE_POLICY_COPY_ALLOWED:
+		return "copy_allowed", nil
+	default:
+		return "", invalidArgument("Некорректная политика повторного использования статьи")
+	}
+}
+
+func partnerReusePolicyToProto(value string) (kbv1.PartnerReusePolicy, error) {
+	switch value {
+	case "not_allowed":
+		return kbv1.PartnerReusePolicy_PARTNER_REUSE_POLICY_NOT_ALLOWED, nil
+	case "copy_allowed":
+		return kbv1.PartnerReusePolicy_PARTNER_REUSE_POLICY_COPY_ALLOWED, nil
+	default:
+		return kbv1.PartnerReusePolicy_PARTNER_REUSE_POLICY_UNSPECIFIED, invalidArgument("Некорректная политика повторного использования статьи")
+	}
+}
+
+func articlePartnerPolicyToProto(value application.ArticlePartnerPolicy) (*kbv1.ArticlePartnerPolicy, error) {
+	reusePolicy, err := partnerReusePolicyToProto(value.ReusePolicy)
+	if err != nil {
+		return nil, err
+	}
+	result := &kbv1.ArticlePartnerPolicy{
+		ArticleId: value.ArticleID.String(), Access: partnerAccessToProto(value.Access),
+		ReusePolicy: reusePolicy, UpdatedAt: timestamppb.New(value.UpdatedAt.UTC()),
+	}
+	if value.UpdatedByID != nil {
+		updatedBy := value.UpdatedByID.String()
+		result.UpdatedById = &updatedBy
+	}
+	return result, nil
+}
+
+func courseCopyPermissionToProto(value application.ArticleCourseCopyPermission) (*kbv1.CheckArticleCourseCopyPermissionResponse, error) {
+	reusePolicy, err := partnerReusePolicyToProto(value.ReusePolicy)
+	if err != nil {
+		return nil, err
+	}
+	result := &kbv1.CheckArticleCourseCopyPermissionResponse{
+		CanRead: value.CanRead, CanCopy: value.CanCopy, ReusePolicy: reusePolicy,
+	}
+	if value.DenialReason != "" {
+		result.DenialReason = &value.DenialReason
+	}
+	if value.ResolvedArticleVersionID != nil {
+		resolvedID := value.ResolvedArticleVersionID.String()
+		result.ResolvedArticleVersionId = &resolvedID
+	}
+	return result, nil
+}
+
+func articleSnapshotToProto(value application.ArticleSnapshotForCourseCopy) (*kbv1.ArticleSnapshotForCourseCopy, error) {
+	content, err := contentToStruct(value.Content)
+	if err != nil {
+		return nil, err
+	}
+	attachments := make([]*kbv1.ArticleSnapshotAttachment, 0, len(value.Attachments))
+	for _, attachment := range value.Attachments {
+		attachments = append(attachments, &kbv1.ArticleSnapshotAttachment{FileId: attachment.FileID.String()})
+	}
+	return &kbv1.ArticleSnapshotForCourseCopy{
+		ArticleId: value.ArticleID.String(), ArticleVersionId: value.ArticleVersionID.String(),
+		Version: uint32(value.Version), Title: value.Title, Content: content,
+		Attachments: attachments, ContentHash: value.ContentHash,
+		CapturedAt: timestamppb.New(value.CapturedAt.UTC()),
 	}, nil
 }
 

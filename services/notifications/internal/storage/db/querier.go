@@ -11,12 +11,18 @@ import (
 )
 
 type Querier interface {
+	ClaimEmailDelivery(ctx context.Context, arg ClaimEmailDeliveryParams) (EmailDelivery, error)
 	CountUnread(ctx context.Context, arg CountUnreadParams) (int64, error)
 	DeactivateNotificationUser(ctx context.Context, arg DeactivateNotificationUserParams) error
+	ExpireEmailDelivery(ctx context.Context, arg ExpireEmailDeliveryParams) error
+	GetEmailDelivery(ctx context.Context, arg GetEmailDeliveryParams) (EmailDelivery, error)
+	InsertEmailDelivery(ctx context.Context, arg InsertEmailDeliveryParams) error
 	InsertNotification(ctx context.Context, arg InsertNotificationParams) error
 	InsertProcessedEvent(ctx context.Context, arg InsertProcessedEventParams) (int64, error)
 	ListNotifications(ctx context.Context, arg ListNotificationsParams) ([]ListNotificationsRow, error)
 	MarkAllRead(ctx context.Context, arg MarkAllReadParams) error
+	MarkEmailDeliveryFailed(ctx context.Context, arg MarkEmailDeliveryFailedParams) error
+	MarkEmailDeliverySent(ctx context.Context, arg MarkEmailDeliverySentParams) error
 	MarkRead(ctx context.Context, arg MarkReadParams) (int64, error)
 	ResolveArticleAudience(ctx context.Context, arg ResolveArticleAudienceParams) ([]uuid.UUID, error)
 	UpsertNotificationUser(ctx context.Context, arg UpsertNotificationUserParams) error

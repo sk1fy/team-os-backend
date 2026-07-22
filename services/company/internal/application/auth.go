@@ -69,6 +69,11 @@ func (s *Service) Register(ctx context.Context, input RegisterInput, meta Sessio
 	}); err != nil {
 		return AuthResult{}, internal("Не удалось назначить владельца", err)
 	}
+	if err = s.emit(ctx, queries, companyID, userID, "teamos.company.company.created.v1", map[string]any{
+		"companyId": companyID.String(), "name": companyName, "ownerUserId": userID.String(),
+	}); err != nil {
+		return AuthResult{}, err
+	}
 	if err = s.emit(ctx, queries, companyID, userID, "teamos.org.user.created.v1", map[string]any{
 		"user": userEventSnapshot(userFromDB(user, nil), nil),
 	}); err != nil {

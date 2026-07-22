@@ -11,8 +11,53 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func (h *Handler) GetCourses(w http.ResponseWriter, r *http.Request) {
-	response, err := h.academy.GetCourses(outgoingContext(r), &academyv1.GetCoursesRequest{})
+func (h *Handler) GetCourses(w http.ResponseWriter, r *http.Request, params api.GetCoursesParams) {
+	request := &academyv1.GetCoursesRequest{HasDraft: params.HasDraft}
+	if params.OwnerType != nil {
+		value, err := courseOwnerTypeToProto(*params.OwnerType)
+		if err != nil {
+			apierror.Write(w, apierror.BadRequest("Некорректный тип владельца курса"))
+			return
+		}
+		request.OwnerType = &value
+	}
+	if params.PartnerId != nil {
+		value := params.PartnerId.String()
+		request.PartnerId = &value
+	}
+	if params.Lifecycle != nil {
+		value, err := courseLifecycleToProto(*params.Lifecycle)
+		if err != nil {
+			apierror.Write(w, apierror.BadRequest("Некорректный статус жизненного цикла курса"))
+			return
+		}
+		request.Lifecycle = &value
+	}
+	if params.Distribution != nil {
+		value, err := courseDistributionToProto(*params.Distribution)
+		if err != nil {
+			apierror.Write(w, apierror.BadRequest("Некорректный статус распространения курса"))
+			return
+		}
+		request.Distribution = &value
+	}
+	if params.LatestVersion != nil {
+		if *params.LatestVersion < 0 {
+			apierror.Write(w, apierror.BadRequest("Номер версии не может быть отрицательным"))
+			return
+		}
+		value := uint32(*params.LatestVersion)
+		request.LatestVersion = &value
+	}
+	if params.OriginType != nil {
+		value, err := courseOriginTypeToProto(*params.OriginType)
+		if err != nil {
+			apierror.Write(w, apierror.BadRequest("Некорректное происхождение курса"))
+			return
+		}
+		request.OriginType = &value
+	}
+	response, err := h.academy.GetCourses(outgoingContext(r), request)
 	if err != nil {
 		h.writeAcademyRPCError(w, r, err)
 		return
@@ -40,6 +85,7 @@ func (h *Handler) GetCourse(w http.ResponseWriter, r *http.Request, id api.Id) {
 }
 
 func (h *Handler) GetPublicCourse(w http.ResponseWriter, r *http.Request, id api.Id) {
+	markLegacyAcademyEndpoint(w, publicAcademyAccessSuccessor)
 	response, err := h.academy.GetPublicCourse(outgoingContext(r), &academyv1.GetPublicCourseRequest{Id: id.String()})
 	if err != nil {
 		h.writeAcademyRPCError(w, r, err)
@@ -109,6 +155,9 @@ func (h *Handler) CreateCourse(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) CreateCourseFromKb(w http.ResponseWriter, r *http.Request) {
+	if guardLegacyAcademyWrite(w, academyCoursesSuccessor) {
+		return
+	}
 	var input api.CreateCourseFromKbInput
 	if !decode(w, r, &input) {
 		return
@@ -152,6 +201,9 @@ func (h *Handler) CreateCourseFromKb(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) UpdateCourse(w http.ResponseWriter, r *http.Request, id api.Id) {
+	if guardLegacyAcademyWrite(w, academyCoursesSuccessor) {
+		return
+	}
 	var input api.UpdateCourseInput
 	if !decode(w, r, &input) {
 		return
@@ -206,7 +258,353 @@ func (h *Handler) DeleteCourse(w http.ResponseWriter, r *http.Request, id api.Id
 	w.WriteHeader(http.StatusNoContent)
 }
 
+func (h *Handler) ArchiveAcademyCourse(w http.ResponseWriter, r *http.Request, courseID api.CourseId) {
+	response, err := h.academy.ArchiveCourse(outgoingContext(r), &academyv1.ArchiveCourseRequest{Id: courseID.String()})
+	if err != nil {
+		h.writeAcademyRPCError(w, r, err)
+		return
+	}
+	converted, err := courseFromProto(response.GetCourse())
+	if err != nil {
+		h.writeConversionError(w, r, err)
+		return
+	}
+	writeJSON(w, http.StatusOK, converted)
+}
+
+func (h *Handler) RestoreAcademyCourse(w http.ResponseWriter, r *http.Request, courseID api.CourseId) {
+	response, err := h.academy.RestoreCourse(outgoingContext(r), &academyv1.RestoreCourseRequest{Id: courseID.String()})
+	if err != nil {
+		h.writeAcademyRPCError(w, r, err)
+		return
+	}
+	converted, err := courseFromProto(response.GetCourse())
+	if err != nil {
+		h.writeConversionError(w, r, err)
+		return
+	}
+	writeJSON(w, http.StatusOK, converted)
+}
+
+func (h *Handler) GetCourseVersions(w http.ResponseWriter, r *http.Request, courseID api.CourseId) {
+	response, err := h.academy.GetCourseVersions(outgoingContext(r), &academyv1.GetCourseVersionsRequest{CourseId: courseID.String()})
+	if err != nil {
+		h.writeAcademyRPCError(w, r, err)
+		return
+	}
+	converted, err := courseVersionsFromProto(response.GetVersions())
+	if err != nil {
+		h.writeConversionError(w, r, err)
+		return
+	}
+	writeJSON(w, http.StatusOK, converted)
+}
+
+func (h *Handler) GetCourseVersion(w http.ResponseWriter, r *http.Request, courseID api.CourseId, versionID api.VersionId) {
+	response, err := h.academy.GetCourseVersion(outgoingContext(r), &academyv1.GetCourseVersionRequest{
+		CourseId: courseID.String(), VersionId: versionID.String(),
+	})
+	if err != nil {
+		h.writeAcademyRPCError(w, r, err)
+		return
+	}
+	converted, err := courseVersionDetailFromProto(response)
+	if err != nil {
+		h.writeConversionError(w, r, err)
+		return
+	}
+	writeJSON(w, http.StatusOK, converted)
+}
+
+func (h *Handler) CreateCourseDraft(w http.ResponseWriter, r *http.Request, courseID api.CourseId) {
+	response, err := h.academy.CreateCourseDraft(outgoingContext(r), &academyv1.CreateCourseDraftRequest{CourseId: courseID.String()})
+	if err != nil {
+		h.writeAcademyRPCError(w, r, err)
+		return
+	}
+	converted, err := courseVersionFromProto(response.GetVersion())
+	if err != nil {
+		h.writeConversionError(w, r, err)
+		return
+	}
+	writeJSON(w, http.StatusCreated, converted)
+}
+
+func (h *Handler) UpdateCourseDraft(w http.ResponseWriter, r *http.Request, courseID api.CourseId) {
+	var input api.UpdateCourseDraftInput
+	if !decode(w, r, &input) {
+		return
+	}
+	request := &academyv1.UpdateCourseDraftRequest{
+		CourseId: courseID.String(), Title: input.Title, Description: input.Description,
+		Sequential: input.Sequential,
+	}
+	if input.CoverFileId != nil {
+		value := input.CoverFileId.String()
+		request.CoverFileId = &value
+	}
+	if input.DefaultInternalDeadlineDays != nil {
+		if *input.DefaultInternalDeadlineDays < 1 {
+			apierror.Write(w, apierror.BadRequest("Срок выполнения должен быть не меньше одного дня"))
+			return
+		}
+		value := uint32(*input.DefaultInternalDeadlineDays)
+		request.DefaultInternalDeadlineDays = &value
+	}
+	response, err := h.academy.UpdateCourseDraft(outgoingContext(r), request)
+	if err != nil {
+		h.writeAcademyRPCError(w, r, err)
+		return
+	}
+	converted, err := courseVersionFromProto(response.GetVersion())
+	if err != nil {
+		h.writeConversionError(w, r, err)
+		return
+	}
+	writeJSON(w, http.StatusOK, converted)
+}
+
+func (h *Handler) PublishCourseVersion(w http.ResponseWriter, r *http.Request, courseID api.CourseId, params api.PublishCourseVersionParams) {
+	response, err := h.academy.PublishCourseVersion(outgoingContext(r), &academyv1.PublishCourseVersionRequest{
+		CourseId: courseID.String(), IdempotencyKey: string(params.IdempotencyKey),
+	})
+	if err != nil {
+		h.writeAcademyRPCError(w, r, err)
+		return
+	}
+	converted, err := courseVersionFromProto(response.GetVersion())
+	if err != nil {
+		h.writeConversionError(w, r, err)
+		return
+	}
+	writeJSON(w, http.StatusOK, converted)
+}
+
+func (h *Handler) CreateCourseVersionSection(w http.ResponseWriter, r *http.Request, versionID api.VersionId) {
+	var input api.CreateCourseVersionSectionInput
+	if !decode(w, r, &input) {
+		return
+	}
+	response, err := h.academy.CreateCourseVersionSection(outgoingContext(r), &academyv1.CreateCourseVersionSectionRequest{
+		VersionId: versionID.String(), Title: input.Title,
+	})
+	if err != nil {
+		h.writeAcademyRPCError(w, r, err)
+		return
+	}
+	converted, err := courseVersionSectionFromProto(response.GetSection())
+	if err != nil {
+		h.writeConversionError(w, r, err)
+		return
+	}
+	writeJSON(w, http.StatusCreated, converted)
+}
+
+func (h *Handler) UpdateCourseVersionSection(w http.ResponseWriter, r *http.Request, sectionID api.SectionId) {
+	var input api.UpdateCourseVersionSectionInput
+	if !decode(w, r, &input) {
+		return
+	}
+	request := &academyv1.UpdateCourseVersionSectionRequest{Id: sectionID.String(), Title: input.Title}
+	if input.Order != nil {
+		if *input.Order < 0 {
+			apierror.Write(w, apierror.BadRequest("Некорректный порядок раздела"))
+			return
+		}
+		value := uint32(*input.Order)
+		request.Order = &value
+	}
+	response, err := h.academy.UpdateCourseVersionSection(outgoingContext(r), request)
+	if err != nil {
+		h.writeAcademyRPCError(w, r, err)
+		return
+	}
+	converted, err := courseVersionSectionFromProto(response.GetSection())
+	if err != nil {
+		h.writeConversionError(w, r, err)
+		return
+	}
+	writeJSON(w, http.StatusOK, converted)
+}
+
+func (h *Handler) DeleteCourseVersionSection(w http.ResponseWriter, r *http.Request, sectionID api.SectionId) {
+	_, err := h.academy.DeleteCourseVersionSection(outgoingContext(r), &academyv1.DeleteCourseVersionSectionRequest{Id: sectionID.String()})
+	if err != nil {
+		h.writeAcademyRPCError(w, r, err)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *Handler) CreateCourseVersionLesson(w http.ResponseWriter, r *http.Request, versionID api.VersionId) {
+	var input api.CreateCourseVersionLessonInput
+	if !decode(w, r, &input) {
+		return
+	}
+	request := &academyv1.CreateCourseVersionLessonRequest{
+		VersionId: versionID.String(), SectionVersionId: input.SectionVersionId.String(), Title: input.Title,
+	}
+	if input.Content != nil {
+		content, err := richTextToStruct(*input.Content)
+		if err != nil {
+			apierror.Write(w, apierror.BadRequest("Некорректное содержимое урока"))
+			return
+		}
+		request.Content = content
+	}
+	if input.SourceType != nil {
+		value, err := courseLessonSourceTypeToProto(*input.SourceType)
+		if err != nil {
+			apierror.Write(w, apierror.BadRequest("Некорректный источник урока"))
+			return
+		}
+		request.SourceType = &value
+	}
+	if input.SourceArticleId != nil {
+		value := input.SourceArticleId.String()
+		request.SourceArticleId = &value
+	}
+	if !setPositiveUint32(w, input.SourceArticleVersion, "Версия статьи должна быть больше нуля", func(value *uint32) { request.SourceArticleVersion = value }) ||
+		!setPositiveUint32(w, input.EstimatedMinutes, "Продолжительность урока должна быть не меньше одной минуты", func(value *uint32) { request.EstimatedMinutes = value }) {
+		return
+	}
+	response, err := h.academy.CreateCourseVersionLesson(outgoingContext(r), request)
+	if err != nil {
+		h.writeAcademyRPCError(w, r, err)
+		return
+	}
+	converted, err := courseVersionLessonFromProto(response.GetLesson())
+	if err != nil {
+		h.writeConversionError(w, r, err)
+		return
+	}
+	writeJSON(w, http.StatusCreated, converted)
+}
+
+func (h *Handler) UpdateCourseVersionLesson(w http.ResponseWriter, r *http.Request, lessonID api.LessonId) {
+	var input api.UpdateCourseVersionLessonInput
+	if !decode(w, r, &input) {
+		return
+	}
+	request := &academyv1.UpdateCourseVersionLessonRequest{Id: lessonID.String(), Title: input.Title}
+	if input.Content != nil {
+		content, err := richTextToStruct(*input.Content)
+		if err != nil {
+			apierror.Write(w, apierror.BadRequest("Некорректное содержимое урока"))
+			return
+		}
+		request.Content = content
+	}
+	if input.SourceType != nil {
+		value, err := courseLessonSourceTypeToProto(*input.SourceType)
+		if err != nil {
+			apierror.Write(w, apierror.BadRequest("Некорректный источник урока"))
+			return
+		}
+		request.SourceType = &value
+	}
+	if input.SourceArticleId != nil {
+		value := input.SourceArticleId.String()
+		request.SourceArticleId = &value
+	}
+	if !setPositiveUint32(w, input.SourceArticleVersion, "Версия статьи должна быть больше нуля", func(value *uint32) { request.SourceArticleVersion = value }) ||
+		!setPositiveUint32(w, input.EstimatedMinutes, "Продолжительность урока должна быть не меньше одной минуты", func(value *uint32) { request.EstimatedMinutes = value }) {
+		return
+	}
+	response, err := h.academy.UpdateCourseVersionLesson(outgoingContext(r), request)
+	if err != nil {
+		h.writeAcademyRPCError(w, r, err)
+		return
+	}
+	converted, err := courseVersionLessonFromProto(response.GetLesson())
+	if err != nil {
+		h.writeConversionError(w, r, err)
+		return
+	}
+	writeJSON(w, http.StatusOK, converted)
+}
+
+func (h *Handler) DeleteCourseVersionLesson(w http.ResponseWriter, r *http.Request, lessonID api.LessonId) {
+	_, err := h.academy.DeleteCourseVersionLesson(outgoingContext(r), &academyv1.DeleteCourseVersionLessonRequest{Id: lessonID.String()})
+	if err != nil {
+		h.writeAcademyRPCError(w, r, err)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *Handler) MoveCourseVersionLesson(w http.ResponseWriter, r *http.Request, lessonID api.LessonId) {
+	var input api.MoveCourseVersionLessonInput
+	if !decode(w, r, &input) {
+		return
+	}
+	if input.Order < 0 {
+		apierror.Write(w, apierror.BadRequest("Некорректный порядок урока"))
+		return
+	}
+	response, err := h.academy.MoveCourseVersionLesson(outgoingContext(r), &academyv1.MoveCourseVersionLessonRequest{
+		Id: lessonID.String(), SectionVersionId: input.SectionVersionId.String(), Order: uint32(input.Order),
+	})
+	if err != nil {
+		h.writeAcademyRPCError(w, r, err)
+		return
+	}
+	converted, err := courseVersionLessonFromProto(response.GetLesson())
+	if err != nil {
+		h.writeConversionError(w, r, err)
+		return
+	}
+	writeJSON(w, http.StatusOK, converted)
+}
+
+func (h *Handler) UpsertCourseVersionQuiz(w http.ResponseWriter, r *http.Request, lessonID api.LessonId) {
+	var input api.UpsertCourseVersionQuizInput
+	if !decode(w, r, &input) {
+		return
+	}
+	questions, err := quizQuestionsToProto(input.Questions)
+	if err != nil {
+		apierror.Write(w, apierror.BadRequest("Некорректные вопросы теста"))
+		return
+	}
+	if input.PassingScore < 0 || input.PassingScore > 100 {
+		apierror.Write(w, apierror.BadRequest("Проходной балл должен быть от 0 до 100"))
+		return
+	}
+	request := &academyv1.UpsertCourseVersionQuizRequest{
+		LessonVersionId: lessonID.String(), Questions: questions, PassingScore: uint32(input.PassingScore),
+	}
+	if !setPositiveUint32(w, input.MaxAttempts, "Число попыток должно быть не меньше одной", func(value *uint32) { request.MaxAttempts = value }) {
+		return
+	}
+	response, err := h.academy.UpsertCourseVersionQuiz(outgoingContext(r), request)
+	if err != nil {
+		h.writeAcademyRPCError(w, r, err)
+		return
+	}
+	converted, err := courseVersionQuizFromProto(response.GetQuiz())
+	if err != nil {
+		h.writeConversionError(w, r, err)
+		return
+	}
+	writeJSON(w, http.StatusOK, converted)
+}
+
+func setPositiveUint32(w http.ResponseWriter, value *int, message string, set func(*uint32)) bool {
+	if value == nil {
+		return true
+	}
+	if *value < 1 {
+		apierror.Write(w, apierror.BadRequest(message))
+		return false
+	}
+	converted := uint32(*value)
+	set(&converted)
+	return true
+}
+
 func (h *Handler) GetCourseSections(w http.ResponseWriter, r *http.Request, courseID api.ID) {
+	markLegacyAcademyEndpoint(w, academyCoursesSuccessor)
 	response, err := h.academy.GetCourseSections(outgoingContext(r), &academyv1.GetCourseSectionsRequest{
 		CourseId: courseID.String(),
 	})
@@ -223,6 +621,9 @@ func (h *Handler) GetCourseSections(w http.ResponseWriter, r *http.Request, cour
 }
 
 func (h *Handler) CreateCourseSection(w http.ResponseWriter, r *http.Request, courseID api.ID) {
+	if guardLegacyAcademyWrite(w, academyCoursesSuccessor) {
+		return
+	}
 	var input api.CreateCourseSectionInput
 	if !decode(w, r, &input) {
 		return
@@ -243,6 +644,9 @@ func (h *Handler) CreateCourseSection(w http.ResponseWriter, r *http.Request, co
 }
 
 func (h *Handler) UpdateCourseSection(w http.ResponseWriter, r *http.Request, id api.Id) {
+	if guardLegacyAcademyWrite(w, academyCoursesSuccessor) {
+		return
+	}
 	var input api.UpdateCourseSectionInput
 	if !decode(w, r, &input) {
 		return
@@ -263,6 +667,9 @@ func (h *Handler) UpdateCourseSection(w http.ResponseWriter, r *http.Request, id
 }
 
 func (h *Handler) DeleteCourseSection(w http.ResponseWriter, r *http.Request, id api.Id) {
+	if guardLegacyAcademyWrite(w, academyCoursesSuccessor) {
+		return
+	}
 	_, err := h.academy.DeleteCourseSection(outgoingContext(r), &academyv1.DeleteCourseSectionRequest{Id: id.String()})
 	if err != nil {
 		h.writeAcademyRPCError(w, r, err)
@@ -272,6 +679,7 @@ func (h *Handler) DeleteCourseSection(w http.ResponseWriter, r *http.Request, id
 }
 
 func (h *Handler) GetLessons(w http.ResponseWriter, r *http.Request, params api.GetLessonsParams) {
+	markLegacyAcademyEndpoint(w, academyCoursesSuccessor)
 	request := &academyv1.GetLessonsRequest{}
 	if params.CourseId != nil {
 		courseID := params.CourseId.String()
@@ -291,6 +699,9 @@ func (h *Handler) GetLessons(w http.ResponseWriter, r *http.Request, params api.
 }
 
 func (h *Handler) CreateLesson(w http.ResponseWriter, r *http.Request) {
+	if guardLegacyAcademyWrite(w, academyCoursesSuccessor) {
+		return
+	}
 	var input api.CreateLessonInput
 	if !decode(w, r, &input) {
 		return
@@ -332,6 +743,9 @@ func (h *Handler) CreateLesson(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) UpdateLesson(w http.ResponseWriter, r *http.Request, id api.Id) {
+	if guardLegacyAcademyWrite(w, academyCoursesSuccessor) {
+		return
+	}
 	var input api.UpdateLessonInput
 	if !decode(w, r, &input) {
 		return
@@ -371,6 +785,9 @@ func (h *Handler) UpdateLesson(w http.ResponseWriter, r *http.Request, id api.Id
 }
 
 func (h *Handler) DeleteLesson(w http.ResponseWriter, r *http.Request, id api.Id) {
+	if guardLegacyAcademyWrite(w, academyCoursesSuccessor) {
+		return
+	}
 	_, err := h.academy.DeleteLesson(outgoingContext(r), &academyv1.DeleteLessonRequest{Id: id.String()})
 	if err != nil {
 		h.writeAcademyRPCError(w, r, err)
@@ -380,6 +797,9 @@ func (h *Handler) DeleteLesson(w http.ResponseWriter, r *http.Request, id api.Id
 }
 
 func (h *Handler) MoveLesson(w http.ResponseWriter, r *http.Request, id api.Id) {
+	if guardLegacyAcademyWrite(w, academyCoursesSuccessor) {
+		return
+	}
 	var input api.MoveLessonInput
 	if !decode(w, r, &input) {
 		return
@@ -404,6 +824,7 @@ func (h *Handler) MoveLesson(w http.ResponseWriter, r *http.Request, id api.Id) 
 }
 
 func (h *Handler) GetQuizzes(w http.ResponseWriter, r *http.Request, params api.GetQuizzesParams) {
+	markLegacyAcademyEndpoint(w, academyCoursesSuccessor)
 	request := &academyv1.GetQuizzesRequest{}
 	if params.LessonId != nil {
 		lessonID := params.LessonId.String()
@@ -423,6 +844,9 @@ func (h *Handler) GetQuizzes(w http.ResponseWriter, r *http.Request, params api.
 }
 
 func (h *Handler) UpsertQuiz(w http.ResponseWriter, r *http.Request) {
+	if guardLegacyAcademyWrite(w, academyCoursesSuccessor) {
+		return
+	}
 	var input api.UpsertQuizInput
 	if !decode(w, r, &input) {
 		return
@@ -496,6 +920,10 @@ func (h *Handler) AssignCourse(w http.ResponseWriter, r *http.Request) {
 		assigneeID := input.AssigneeId.String()
 		request.AssigneeId = &assigneeID
 	}
+	if input.CourseVersionId != nil {
+		versionID := input.CourseVersionId.String()
+		request.CourseVersionId = &versionID
+	}
 	if input.DueDate != nil {
 		if datetime, dateErr := input.DueDate.AsISODateTime(); dateErr == nil {
 			request.DueDate = timestamppb.New(datetime.UTC())
@@ -515,6 +943,7 @@ func (h *Handler) AssignCourse(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetProgress(w http.ResponseWriter, r *http.Request, params api.GetProgressParams) {
+	markLegacyAcademyEndpoint(w, academyEnrollmentsSuccessor)
 	request := &academyv1.GetProgressRequest{}
 	if params.CourseId != nil {
 		courseID := params.CourseId.String()
@@ -534,6 +963,9 @@ func (h *Handler) GetProgress(w http.ResponseWriter, r *http.Request, params api
 }
 
 func (h *Handler) MarkLessonComplete(w http.ResponseWriter, r *http.Request, lessonID api.ID) {
+	if guardLegacyAcademyWrite(w, academyEnrollmentsSuccessor) {
+		return
+	}
 	var input api.MarkLessonCompleteInput
 	if !decode(w, r, &input) {
 		return

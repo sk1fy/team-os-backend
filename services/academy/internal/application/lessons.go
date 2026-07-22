@@ -19,6 +19,27 @@ func (s *Service) GetLessons(ctx context.Context, actor Actor, courseID *uuid.UU
 		if err := s.requireCourseAccess(ctx, queries, actor, *courseID); err != nil {
 			return nil, err
 		}
+		courseRow, err := queries.GetCourse(ctx, db.GetCourseParams{CompanyID: actor.CompanyID, ID: *courseID})
+		if err != nil {
+			return nil, internal("Не удалось получить курс", err)
+		}
+		version, err := s.displayCourseVersion(ctx, queries, actor, courseFromRow(courseRow))
+		if err != nil {
+			return nil, err
+		}
+		if version != nil {
+			versionRows, versionErr := queries.GetCourseVersionLessons(ctx, db.GetCourseVersionLessonsParams{
+				CompanyID: actor.CompanyID, CourseVersionID: version.ID,
+			})
+			if versionErr != nil {
+				return nil, internal("Не удалось получить уроки версии", versionErr)
+			}
+			result := make([]Lesson, len(versionRows))
+			for index := range versionRows {
+				result[index] = versionLessonAsLegacy(versionRows[index], *courseID)
+			}
+			return result, nil
+		}
 		rows, err := queries.GetCourseLessons(ctx, db.GetCourseLessonsParams{
 			CompanyID: actor.CompanyID, CourseID: *courseID,
 		})
@@ -27,34 +48,35 @@ func (s *Service) GetLessons(ctx context.Context, actor Actor, courseID *uuid.UU
 		}
 		return lessonsFromRows(rows), nil
 	}
-	if !canReadAcademy(actor) {
-		return nil, forbidden("Недостаточно прав для просмотра академии")
-	}
-	if !actor.canManage() {
-		visibleCourses, err := s.GetCourses(ctx, actor)
-		if err != nil {
-			return nil, err
-		}
-		courseIDs := make([]uuid.UUID, len(visibleCourses))
-		for index := range visibleCourses {
-			courseIDs[index] = visibleCourses[index].ID
-		}
-		if len(courseIDs) == 0 {
-			return []Lesson{}, nil
-		}
-		rows, err := queries.GetLessonsByCourseIds(ctx, db.GetLessonsByCourseIdsParams{
-			CompanyID: actor.CompanyID, CourseIds: courseIDs,
-		})
-		if err != nil {
-			return nil, internal("Не удалось получить уроки", err)
-		}
-		return lessonsFromRows(rows), nil
-	}
-	rows, err := queries.GetLessons(ctx, actor.CompanyID)
+	visibleCourses, err := s.GetCourses(ctx, actor)
 	if err != nil {
-		return nil, internal("Не удалось получить уроки", err)
+		return nil, err
 	}
-	return lessonsFromRows(rows), nil
+	result := make([]Lesson, 0)
+	for _, course := range visibleCourses {
+		version, versionErr := s.displayCourseVersion(ctx, queries, actor, course)
+		if versionErr != nil {
+			return nil, versionErr
+		}
+		if version != nil {
+			rows, listErr := queries.GetCourseVersionLessons(ctx, db.GetCourseVersionLessonsParams{
+				CompanyID: actor.CompanyID, CourseVersionID: version.ID,
+			})
+			if listErr != nil {
+				return nil, internal("Не удалось получить уроки версии", listErr)
+			}
+			for _, row := range rows {
+				result = append(result, versionLessonAsLegacy(row, course.ID))
+			}
+			continue
+		}
+		rows, listErr := queries.GetCourseLessons(ctx, db.GetCourseLessonsParams{CompanyID: actor.CompanyID, CourseID: course.ID})
+		if listErr != nil {
+			return nil, internal("Не удалось получить уроки", listErr)
+		}
+		result = append(result, lessonsFromRows(rows)...)
+	}
+	return result, nil
 }
 
 type CreateLessonInput struct {
@@ -67,8 +89,9 @@ type CreateLessonInput struct {
 }
 
 func (s *Service) CreateLesson(ctx context.Context, actor Actor, input CreateLessonInput) (Lesson, error) {
-	if !actor.canManage() {
-		return Lesson{}, forbidden("Недостаточно прав для изменения академии")
+	currentCourse, err := s.requireCourseEditAccess(ctx, db.New(s.pool), actor, input.CourseID)
+	if err != nil {
+		return Lesson{}, err
 	}
 	title, err := requiredText(input.Title, "Укажите название урока")
 	if err != nil {
@@ -108,6 +131,22 @@ func (s *Service) CreateLesson(ctx context.Context, actor Actor, input CreateLes
 	} else if len(content) == 0 {
 		content = defaultLessonContent
 	}
+	if currentCourse.CurrentDraftVersionID != nil {
+		sourceType := "manual"
+		if input.SourceMode != nil && *input.SourceMode == "link" {
+			sourceType = "kb_link"
+		} else if input.SourceArticleID != nil {
+			sourceType = "kb_snapshot"
+		}
+		created, createErr := s.CreateCourseVersionLesson(ctx, actor, CreateCourseVersionLessonInput{
+			VersionID: *currentCourse.CurrentDraftVersionID, SectionVersionID: input.SectionID,
+			Title: title, Content: content, SourceType: &sourceType, SourceArticleID: input.SourceArticleID,
+		})
+		if createErr != nil {
+			return Lesson{}, createErr
+		}
+		return courseVersionLessonAsLegacy(created, input.CourseID), nil
+	}
 
 	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
@@ -115,6 +154,9 @@ func (s *Service) CreateLesson(ctx context.Context, actor Actor, input CreateLes
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
 	queries := db.New(tx)
+	if _, err = s.requireCourseEditAccess(ctx, queries, actor, input.CourseID); err != nil {
+		return Lesson{}, err
+	}
 	if err = queries.LockCourseOrder(ctx, input.CourseID); err != nil {
 		return Lesson{}, internal("Не удалось заблокировать порядок курса", err)
 	}
@@ -168,9 +210,6 @@ type UpdateLessonInput struct {
 }
 
 func (s *Service) UpdateLesson(ctx context.Context, actor Actor, input UpdateLessonInput) (Lesson, error) {
-	if !actor.canManage() {
-		return Lesson{}, forbidden("Недостаточно прав для изменения академии")
-	}
 	if input.SourceMode != nil && *input.SourceMode != "link" && *input.SourceMode != "copy" {
 		return Lesson{}, validation("Некорректный режим импорта статьи")
 	}
@@ -180,6 +219,40 @@ func (s *Service) UpdateLesson(ctx context.Context, actor Actor, input UpdateLes
 			return Lesson{}, validation("Некорректное содержимое урока")
 		}
 		input.Content = normalizedContent
+	}
+	rootQueries := db.New(s.pool)
+	if versionLesson, versionErr := rootQueries.GetCourseVersionLesson(ctx, db.GetCourseVersionLessonParams{
+		CompanyID: actor.CompanyID, ID: input.ID,
+	}); versionErr == nil {
+		if versionLesson.SourceType == "kb_link" && len(input.Content) > 0 {
+			return Lesson{}, validation("Содержимое связанного урока обновляется в базе знаний; используйте режим copy")
+		}
+		version, getErr := rootQueries.GetCourseVersion(ctx, db.GetCourseVersionParams{
+			CompanyID: actor.CompanyID, ID: versionLesson.CourseVersionID,
+		})
+		if getErr != nil {
+			return Lesson{}, internal("Не удалось получить версию курса", getErr)
+		}
+		versionInput := UpdateCourseVersionLessonInput{
+			ID: input.ID, Title: input.Title, Content: input.Content, SetContent: len(input.Content) > 0,
+			SourceArticleID: input.SourceArticleID,
+		}
+		if input.SourceMode != nil {
+			sourceType := "manual"
+			if *input.SourceMode == "link" {
+				sourceType = "kb_link"
+			} else if input.SourceArticleID != nil || versionLesson.SourceArticleID.Valid {
+				sourceType = "kb_snapshot"
+			}
+			versionInput.SourceType = &sourceType
+		}
+		updated, updateErr := s.UpdateCourseVersionLesson(ctx, actor, versionInput)
+		if updateErr != nil {
+			return Lesson{}, updateErr
+		}
+		return courseVersionLessonAsLegacy(updated, version.CourseID), nil
+	} else if !isNoRows(versionErr) {
+		return Lesson{}, internal("Не удалось проверить урок версии", versionErr)
 	}
 
 	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{})
@@ -195,6 +268,9 @@ func (s *Service) UpdateLesson(ctx context.Context, actor Actor, input UpdateLes
 			return Lesson{}, notFound("Урок")
 		}
 		return Lesson{}, internal("Не удалось получить урок", err)
+	}
+	if _, err = s.requireCourseEditAccess(ctx, queries, actor, current.CourseID); err != nil {
+		return Lesson{}, err
 	}
 
 	nextMode := textPointer(current.SourceMode)
@@ -266,8 +342,13 @@ func (s *Service) UpdateLesson(ctx context.Context, actor Actor, input UpdateLes
 }
 
 func (s *Service) DeleteLesson(ctx context.Context, actor Actor, id uuid.UUID) error {
-	if !actor.canManage() {
-		return forbidden("Недостаточно прав для изменения академии")
+	rootQueries := db.New(s.pool)
+	if _, versionErr := rootQueries.GetCourseVersionLesson(ctx, db.GetCourseVersionLessonParams{
+		CompanyID: actor.CompanyID, ID: id,
+	}); versionErr == nil {
+		return s.DeleteCourseVersionLesson(ctx, actor, id)
+	} else if !isNoRows(versionErr) {
+		return internal("Не удалось проверить урок версии", versionErr)
 	}
 	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
@@ -283,18 +364,11 @@ func (s *Service) DeleteLesson(ctx context.Context, actor Actor, id uuid.UUID) e
 		}
 		return internal("Не удалось получить урок", err)
 	}
-	if err = queries.RemoveLessonsFromProgress(ctx, db.RemoveLessonsFromProgressParams{
-		CompanyID: actor.CompanyID, CourseID: lesson.CourseID, LessonIds: []uuid.UUID{id},
-	}); err != nil {
-		return internal("Не удалось обновить прогресс", err)
+	if _, err = s.requireCourseEditAccess(ctx, queries, actor, lesson.CourseID); err != nil {
+		return err
 	}
 	if _, err = queries.DeleteLesson(ctx, db.DeleteLessonParams{CompanyID: actor.CompanyID, ID: id}); err != nil {
 		return internal("Не удалось удалить урок", err)
-	}
-	if err = queries.RecomputeCourseProgressAfterLessonDelete(ctx, db.RecomputeCourseProgressAfterLessonDeleteParams{
-		CompanyID: actor.CompanyID, CourseID: lesson.CourseID,
-	}); err != nil {
-		return internal("Не удалось пересчитать прогресс", err)
 	}
 	if err = tx.Commit(ctx); err != nil {
 		return internal("Не удалось удалить урок", err)
@@ -309,11 +383,28 @@ type MoveLessonInput struct {
 }
 
 func (s *Service) MoveLesson(ctx context.Context, actor Actor, input MoveLessonInput) (Lesson, error) {
-	if !actor.canManage() {
-		return Lesson{}, forbidden("Недостаточно прав для изменения академии")
-	}
 	if input.Order < 0 {
 		return Lesson{}, validation("Порядок урока не может быть отрицательным")
+	}
+	rootQueries := db.New(s.pool)
+	if versionLesson, versionErr := rootQueries.GetCourseVersionLesson(ctx, db.GetCourseVersionLessonParams{
+		CompanyID: actor.CompanyID, ID: input.ID,
+	}); versionErr == nil {
+		version, getErr := rootQueries.GetCourseVersion(ctx, db.GetCourseVersionParams{
+			CompanyID: actor.CompanyID, ID: versionLesson.CourseVersionID,
+		})
+		if getErr != nil {
+			return Lesson{}, internal("Не удалось получить версию курса", getErr)
+		}
+		moved, moveErr := s.MoveCourseVersionLesson(ctx, actor, MoveCourseVersionLessonInput{
+			ID: input.ID, SectionVersionID: input.SectionID, Order: input.Order,
+		})
+		if moveErr != nil {
+			return Lesson{}, moveErr
+		}
+		return courseVersionLessonAsLegacy(moved, version.CourseID), nil
+	} else if !isNoRows(versionErr) {
+		return Lesson{}, internal("Не удалось проверить урок версии", versionErr)
 	}
 	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
@@ -328,6 +419,9 @@ func (s *Service) MoveLesson(ctx context.Context, actor Actor, input MoveLessonI
 			return Lesson{}, notFound("Урок")
 		}
 		return Lesson{}, internal("Не удалось получить урок", err)
+	}
+	if _, err = s.requireCourseEditAccess(ctx, queries, actor, lesson.CourseID); err != nil {
+		return Lesson{}, err
 	}
 	if err = queries.LockCourseOrder(ctx, lesson.CourseID); err != nil {
 		return Lesson{}, internal("Не удалось заблокировать порядок курса", err)

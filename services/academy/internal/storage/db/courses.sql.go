@@ -13,6 +13,65 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const archiveCourse = `-- name: ArchiveCourse :one
+UPDATE courses
+SET lifecycle_status = 'archived',
+    archived_at = $1,
+    archived_by_id = $2,
+    updated_at = $1
+WHERE company_id = $3
+  AND id = $4
+  AND lifecycle_status = 'active'
+RETURNING id, company_id, title, description, cover_url, status, author_id,
+    sequential, deadline_days, created_at, updated_at, visibility,
+    owner_type, owner_user_id, created_by_id, lifecycle_status,
+    distribution_status, archived_at, archived_by_id, deleted_at, deleted_by_id,
+    current_draft_version_id, latest_published_version_id
+`
+
+type ArchiveCourseParams struct {
+	ArchivedAt   pgtype.Timestamptz `json:"archived_at"`
+	ArchivedByID uuid.NullUUID      `json:"archived_by_id"`
+	CompanyID    uuid.UUID          `json:"company_id"`
+	ID           uuid.UUID          `json:"id"`
+}
+
+func (q *Queries) ArchiveCourse(ctx context.Context, arg ArchiveCourseParams) (Course, error) {
+	row := q.db.QueryRow(ctx, archiveCourse,
+		arg.ArchivedAt,
+		arg.ArchivedByID,
+		arg.CompanyID,
+		arg.ID,
+	)
+	var i Course
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.Title,
+		&i.Description,
+		&i.CoverUrl,
+		&i.Status,
+		&i.AuthorID,
+		&i.Sequential,
+		&i.DeadlineDays,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Visibility,
+		&i.OwnerType,
+		&i.OwnerUserID,
+		&i.CreatedByID,
+		&i.LifecycleStatus,
+		&i.DistributionStatus,
+		&i.ArchivedAt,
+		&i.ArchivedByID,
+		&i.DeletedAt,
+		&i.DeletedByID,
+		&i.CurrentDraftVersionID,
+		&i.LatestPublishedVersionID,
+	)
+	return i, err
+}
+
 const createCourse = `-- name: CreateCourse :one
 INSERT INTO courses (
     id, company_id, title, description, cover_url, status, author_id,
@@ -20,7 +79,10 @@ INSERT INTO courses (
 )
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $10, $11)
 RETURNING id, company_id, title, description, cover_url, status, author_id,
-    sequential, deadline_days, created_at, updated_at, visibility
+    sequential, deadline_days, created_at, updated_at, visibility,
+    owner_type, owner_user_id, created_by_id, lifecycle_status,
+    distribution_status, archived_at, archived_by_id, deleted_at, deleted_by_id,
+    current_draft_version_id, latest_published_version_id
 `
 
 type CreateCourseParams struct {
@@ -65,22 +127,116 @@ func (q *Queries) CreateCourse(ctx context.Context, arg CreateCourseParams) (Cou
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Visibility,
+		&i.OwnerType,
+		&i.OwnerUserID,
+		&i.CreatedByID,
+		&i.LifecycleStatus,
+		&i.DistributionStatus,
+		&i.ArchivedAt,
+		&i.ArchivedByID,
+		&i.DeletedAt,
+		&i.DeletedByID,
+		&i.CurrentDraftVersionID,
+		&i.LatestPublishedVersionID,
 	)
 	return i, err
 }
 
-const deleteCourse = `-- name: DeleteCourse :execrows
+const createOwnedCourse = `-- name: CreateOwnedCourse :one
+INSERT INTO courses (
+    id, company_id, title, description, cover_url, status, author_id,
+    sequential, deadline_days, created_at, updated_at, visibility,
+    owner_type, owner_user_id, created_by_id
+)
+VALUES (
+    $1, $2, $3, $4,
+    $5, $6, $7,
+    $8, $9, $10,
+    $10, $11, $12,
+    $13, $14
+)
+RETURNING id, company_id, title, description, cover_url, status, author_id,
+    sequential, deadline_days, created_at, updated_at, visibility,
+    owner_type, owner_user_id, created_by_id, lifecycle_status,
+    distribution_status, archived_at, archived_by_id, deleted_at, deleted_by_id,
+    current_draft_version_id, latest_published_version_id
+`
+
+type CreateOwnedCourseParams struct {
+	ID           uuid.UUID     `json:"id"`
+	CompanyID    uuid.UUID     `json:"company_id"`
+	Title        string        `json:"title"`
+	Description  pgtype.Text   `json:"description"`
+	CoverUrl     pgtype.Text   `json:"cover_url"`
+	Status       string        `json:"status"`
+	AuthorID     uuid.UUID     `json:"author_id"`
+	Sequential   bool          `json:"sequential"`
+	DeadlineDays pgtype.Int4   `json:"deadline_days"`
+	CreatedAt    time.Time     `json:"created_at"`
+	Visibility   string        `json:"visibility"`
+	OwnerType    string        `json:"owner_type"`
+	OwnerUserID  uuid.NullUUID `json:"owner_user_id"`
+	CreatedByID  uuid.NullUUID `json:"created_by_id"`
+}
+
+func (q *Queries) CreateOwnedCourse(ctx context.Context, arg CreateOwnedCourseParams) (Course, error) {
+	row := q.db.QueryRow(ctx, createOwnedCourse,
+		arg.ID,
+		arg.CompanyID,
+		arg.Title,
+		arg.Description,
+		arg.CoverUrl,
+		arg.Status,
+		arg.AuthorID,
+		arg.Sequential,
+		arg.DeadlineDays,
+		arg.CreatedAt,
+		arg.Visibility,
+		arg.OwnerType,
+		arg.OwnerUserID,
+		arg.CreatedByID,
+	)
+	var i Course
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.Title,
+		&i.Description,
+		&i.CoverUrl,
+		&i.Status,
+		&i.AuthorID,
+		&i.Sequential,
+		&i.DeadlineDays,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Visibility,
+		&i.OwnerType,
+		&i.OwnerUserID,
+		&i.CreatedByID,
+		&i.LifecycleStatus,
+		&i.DistributionStatus,
+		&i.ArchivedAt,
+		&i.ArchivedByID,
+		&i.DeletedAt,
+		&i.DeletedByID,
+		&i.CurrentDraftVersionID,
+		&i.LatestPublishedVersionID,
+	)
+	return i, err
+}
+
+const deleteCourseLegacyHard = `-- name: DeleteCourseLegacyHard :execrows
 DELETE FROM courses
 WHERE company_id = $1 AND id = $2
 `
 
-type DeleteCourseParams struct {
+type DeleteCourseLegacyHardParams struct {
 	CompanyID uuid.UUID `json:"company_id"`
 	ID        uuid.UUID `json:"id"`
 }
 
-func (q *Queries) DeleteCourse(ctx context.Context, arg DeleteCourseParams) (int64, error) {
-	result, err := q.db.Exec(ctx, deleteCourse, arg.CompanyID, arg.ID)
+func (q *Queries) DeleteCourseLegacyHard(ctx context.Context, arg DeleteCourseLegacyHardParams) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteCourseLegacyHard, arg.CompanyID, arg.ID)
 	if err != nil {
 		return 0, err
 	}
@@ -89,7 +245,10 @@ func (q *Queries) DeleteCourse(ctx context.Context, arg DeleteCourseParams) (int
 
 const getCourse = `-- name: GetCourse :one
 SELECT id, company_id, title, description, cover_url, status, author_id,
-    sequential, deadline_days, created_at, updated_at, visibility
+    sequential, deadline_days, created_at, updated_at, visibility,
+    owner_type, owner_user_id, created_by_id, lifecycle_status,
+    distribution_status, archived_at, archived_by_id, deleted_at, deleted_by_id,
+    current_draft_version_id, latest_published_version_id
 FROM courses
 WHERE company_id = $1 AND id = $2
 `
@@ -115,15 +274,76 @@ func (q *Queries) GetCourse(ctx context.Context, arg GetCourseParams) (Course, e
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Visibility,
+		&i.OwnerType,
+		&i.OwnerUserID,
+		&i.CreatedByID,
+		&i.LifecycleStatus,
+		&i.DistributionStatus,
+		&i.ArchivedAt,
+		&i.ArchivedByID,
+		&i.DeletedAt,
+		&i.DeletedByID,
+		&i.CurrentDraftVersionID,
+		&i.LatestPublishedVersionID,
+	)
+	return i, err
+}
+
+const getCourseForUpdate = `-- name: GetCourseForUpdate :one
+SELECT id, company_id, title, description, cover_url, status, author_id,
+    sequential, deadline_days, created_at, updated_at, visibility,
+    owner_type, owner_user_id, created_by_id, lifecycle_status,
+    distribution_status, archived_at, archived_by_id, deleted_at, deleted_by_id,
+    current_draft_version_id, latest_published_version_id
+FROM courses
+WHERE company_id = $1 AND id = $2
+FOR UPDATE
+`
+
+type GetCourseForUpdateParams struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	ID        uuid.UUID `json:"id"`
+}
+
+func (q *Queries) GetCourseForUpdate(ctx context.Context, arg GetCourseForUpdateParams) (Course, error) {
+	row := q.db.QueryRow(ctx, getCourseForUpdate, arg.CompanyID, arg.ID)
+	var i Course
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.Title,
+		&i.Description,
+		&i.CoverUrl,
+		&i.Status,
+		&i.AuthorID,
+		&i.Sequential,
+		&i.DeadlineDays,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Visibility,
+		&i.OwnerType,
+		&i.OwnerUserID,
+		&i.CreatedByID,
+		&i.LifecycleStatus,
+		&i.DistributionStatus,
+		&i.ArchivedAt,
+		&i.ArchivedByID,
+		&i.DeletedAt,
+		&i.DeletedByID,
+		&i.CurrentDraftVersionID,
+		&i.LatestPublishedVersionID,
 	)
 	return i, err
 }
 
 const getCourses = `-- name: GetCourses :many
 SELECT id, company_id, title, description, cover_url, status, author_id,
-    sequential, deadline_days, created_at, updated_at, visibility
+    sequential, deadline_days, created_at, updated_at, visibility,
+    owner_type, owner_user_id, created_by_id, lifecycle_status,
+    distribution_status, archived_at, archived_by_id, deleted_at, deleted_by_id,
+    current_draft_version_id, latest_published_version_id
 FROM courses
-WHERE company_id = $1
+WHERE company_id = $1 AND lifecycle_status <> 'deleted'
 ORDER BY created_at, id
 `
 
@@ -149,6 +369,17 @@ func (q *Queries) GetCourses(ctx context.Context, companyID uuid.UUID) ([]Course
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Visibility,
+			&i.OwnerType,
+			&i.OwnerUserID,
+			&i.CreatedByID,
+			&i.LifecycleStatus,
+			&i.DistributionStatus,
+			&i.ArchivedAt,
+			&i.ArchivedByID,
+			&i.DeletedAt,
+			&i.DeletedByID,
+			&i.CurrentDraftVersionID,
+			&i.LatestPublishedVersionID,
 		); err != nil {
 			return nil, err
 		}
@@ -162,7 +393,10 @@ func (q *Queries) GetCourses(ctx context.Context, companyID uuid.UUID) ([]Course
 
 const getCoursesByIds = `-- name: GetCoursesByIds :many
 SELECT id, company_id, title, description, cover_url, status, author_id,
-    sequential, deadline_days, created_at, updated_at, visibility
+    sequential, deadline_days, created_at, updated_at, visibility,
+    owner_type, owner_user_id, created_by_id, lifecycle_status,
+    distribution_status, archived_at, archived_by_id, deleted_at, deleted_by_id,
+    current_draft_version_id, latest_published_version_id
 FROM courses
 WHERE company_id = $1 AND id = ANY($2::uuid[])
 ORDER BY created_at, id
@@ -195,6 +429,90 @@ func (q *Queries) GetCoursesByIds(ctx context.Context, arg GetCoursesByIdsParams
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Visibility,
+			&i.OwnerType,
+			&i.OwnerUserID,
+			&i.CreatedByID,
+			&i.LifecycleStatus,
+			&i.DistributionStatus,
+			&i.ArchivedAt,
+			&i.ArchivedByID,
+			&i.DeletedAt,
+			&i.DeletedByID,
+			&i.CurrentDraftVersionID,
+			&i.LatestPublishedVersionID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getCoursesFiltered = `-- name: GetCoursesFiltered :many
+SELECT id, company_id, title, description, cover_url, status, author_id,
+    sequential, deadline_days, created_at, updated_at, visibility,
+    owner_type, owner_user_id, created_by_id, lifecycle_status,
+    distribution_status, archived_at, archived_by_id, deleted_at, deleted_by_id,
+    current_draft_version_id, latest_published_version_id
+FROM courses
+WHERE company_id = $1
+  AND ($2::text IS NULL OR owner_type = $2)
+  AND ($3::uuid IS NULL OR owner_user_id = $3)
+  AND ($4::text IS NULL OR lifecycle_status = $4)
+  AND ($5::text IS NULL OR distribution_status = $5)
+ORDER BY created_at, id
+`
+
+type GetCoursesFilteredParams struct {
+	CompanyID          uuid.UUID     `json:"company_id"`
+	OwnerType          pgtype.Text   `json:"owner_type"`
+	OwnerUserID        uuid.NullUUID `json:"owner_user_id"`
+	LifecycleStatus    pgtype.Text   `json:"lifecycle_status"`
+	DistributionStatus pgtype.Text   `json:"distribution_status"`
+}
+
+func (q *Queries) GetCoursesFiltered(ctx context.Context, arg GetCoursesFilteredParams) ([]Course, error) {
+	rows, err := q.db.Query(ctx, getCoursesFiltered,
+		arg.CompanyID,
+		arg.OwnerType,
+		arg.OwnerUserID,
+		arg.LifecycleStatus,
+		arg.DistributionStatus,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Course{}
+	for rows.Next() {
+		var i Course
+		if err := rows.Scan(
+			&i.ID,
+			&i.CompanyID,
+			&i.Title,
+			&i.Description,
+			&i.CoverUrl,
+			&i.Status,
+			&i.AuthorID,
+			&i.Sequential,
+			&i.DeadlineDays,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Visibility,
+			&i.OwnerType,
+			&i.OwnerUserID,
+			&i.CreatedByID,
+			&i.LifecycleStatus,
+			&i.DistributionStatus,
+			&i.ArchivedAt,
+			&i.ArchivedByID,
+			&i.DeletedAt,
+			&i.DeletedByID,
+			&i.CurrentDraftVersionID,
+			&i.LatestPublishedVersionID,
 		); err != nil {
 			return nil, err
 		}
@@ -208,9 +526,16 @@ func (q *Queries) GetCoursesByIds(ctx context.Context, arg GetCoursesByIdsParams
 
 const getPublicCourse = `-- name: GetPublicCourse :one
 SELECT id, company_id, title, description, cover_url, status, author_id,
-    sequential, deadline_days, created_at, updated_at, visibility
+    sequential, deadline_days, created_at, updated_at, visibility,
+    owner_type, owner_user_id, created_by_id, lifecycle_status,
+    distribution_status, archived_at, archived_by_id, deleted_at, deleted_by_id,
+    current_draft_version_id, latest_published_version_id
 FROM courses
-WHERE id = $1 AND status = 'published' AND visibility = 'public'
+WHERE id = $1
+  AND status = 'published'
+  AND visibility = 'public'
+  AND lifecycle_status = 'active'
+  AND distribution_status <> 'blocked'
 `
 
 func (q *Queries) GetPublicCourse(ctx context.Context, id uuid.UUID) (Course, error) {
@@ -229,6 +554,17 @@ func (q *Queries) GetPublicCourse(ctx context.Context, id uuid.UUID) (Course, er
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Visibility,
+		&i.OwnerType,
+		&i.OwnerUserID,
+		&i.CreatedByID,
+		&i.LifecycleStatus,
+		&i.DistributionStatus,
+		&i.ArchivedAt,
+		&i.ArchivedByID,
+		&i.DeletedAt,
+		&i.DeletedByID,
+		&i.CurrentDraftVersionID,
+		&i.LatestPublishedVersionID,
 	)
 	return i, err
 }
@@ -242,6 +578,118 @@ func (q *Queries) LockCourseOrder(ctx context.Context, courseID uuid.UUID) error
 	return err
 }
 
+const restoreCourse = `-- name: RestoreCourse :one
+UPDATE courses
+SET lifecycle_status = 'active',
+    archived_at = NULL,
+    archived_by_id = NULL,
+    updated_at = $1
+WHERE company_id = $2
+  AND id = $3
+  AND lifecycle_status = 'archived'
+RETURNING id, company_id, title, description, cover_url, status, author_id,
+    sequential, deadline_days, created_at, updated_at, visibility,
+    owner_type, owner_user_id, created_by_id, lifecycle_status,
+    distribution_status, archived_at, archived_by_id, deleted_at, deleted_by_id,
+    current_draft_version_id, latest_published_version_id
+`
+
+type RestoreCourseParams struct {
+	RestoredAt time.Time `json:"restored_at"`
+	CompanyID  uuid.UUID `json:"company_id"`
+	ID         uuid.UUID `json:"id"`
+}
+
+func (q *Queries) RestoreCourse(ctx context.Context, arg RestoreCourseParams) (Course, error) {
+	row := q.db.QueryRow(ctx, restoreCourse, arg.RestoredAt, arg.CompanyID, arg.ID)
+	var i Course
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.Title,
+		&i.Description,
+		&i.CoverUrl,
+		&i.Status,
+		&i.AuthorID,
+		&i.Sequential,
+		&i.DeadlineDays,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Visibility,
+		&i.OwnerType,
+		&i.OwnerUserID,
+		&i.CreatedByID,
+		&i.LifecycleStatus,
+		&i.DistributionStatus,
+		&i.ArchivedAt,
+		&i.ArchivedByID,
+		&i.DeletedAt,
+		&i.DeletedByID,
+		&i.CurrentDraftVersionID,
+		&i.LatestPublishedVersionID,
+	)
+	return i, err
+}
+
+const softDeleteCourse = `-- name: SoftDeleteCourse :one
+UPDATE courses
+SET lifecycle_status = 'deleted',
+    deleted_at = $1,
+    deleted_by_id = $2,
+    updated_at = $1
+WHERE company_id = $3
+  AND id = $4
+  AND lifecycle_status <> 'deleted'
+RETURNING id, company_id, title, description, cover_url, status, author_id,
+    sequential, deadline_days, created_at, updated_at, visibility,
+    owner_type, owner_user_id, created_by_id, lifecycle_status,
+    distribution_status, archived_at, archived_by_id, deleted_at, deleted_by_id,
+    current_draft_version_id, latest_published_version_id
+`
+
+type SoftDeleteCourseParams struct {
+	DeletedAt   pgtype.Timestamptz `json:"deleted_at"`
+	DeletedByID uuid.NullUUID      `json:"deleted_by_id"`
+	CompanyID   uuid.UUID          `json:"company_id"`
+	ID          uuid.UUID          `json:"id"`
+}
+
+func (q *Queries) SoftDeleteCourse(ctx context.Context, arg SoftDeleteCourseParams) (Course, error) {
+	row := q.db.QueryRow(ctx, softDeleteCourse,
+		arg.DeletedAt,
+		arg.DeletedByID,
+		arg.CompanyID,
+		arg.ID,
+	)
+	var i Course
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.Title,
+		&i.Description,
+		&i.CoverUrl,
+		&i.Status,
+		&i.AuthorID,
+		&i.Sequential,
+		&i.DeadlineDays,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Visibility,
+		&i.OwnerType,
+		&i.OwnerUserID,
+		&i.CreatedByID,
+		&i.LifecycleStatus,
+		&i.DistributionStatus,
+		&i.ArchivedAt,
+		&i.ArchivedByID,
+		&i.DeletedAt,
+		&i.DeletedByID,
+		&i.CurrentDraftVersionID,
+		&i.LatestPublishedVersionID,
+	)
+	return i, err
+}
+
 const updateCourse = `-- name: UpdateCourse :one
 UPDATE courses
 SET title = coalesce($3, title),
@@ -251,9 +699,12 @@ SET title = coalesce($3, title),
     deadline_days = CASE WHEN $8::boolean THEN $9 ELSE deadline_days END,
     visibility = coalesce($10, visibility),
     updated_at = $11
-WHERE company_id = $1 AND id = $2
+WHERE company_id = $1 AND id = $2 AND lifecycle_status <> 'deleted'
 RETURNING id, company_id, title, description, cover_url, status, author_id,
-    sequential, deadline_days, created_at, updated_at, visibility
+    sequential, deadline_days, created_at, updated_at, visibility,
+    owner_type, owner_user_id, created_by_id, lifecycle_status,
+    distribution_status, archived_at, archived_by_id, deleted_at, deleted_by_id,
+    current_draft_version_id, latest_published_version_id
 `
 
 type UpdateCourseParams struct {
@@ -298,6 +749,75 @@ func (q *Queries) UpdateCourse(ctx context.Context, arg UpdateCourseParams) (Cou
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Visibility,
+		&i.OwnerType,
+		&i.OwnerUserID,
+		&i.CreatedByID,
+		&i.LifecycleStatus,
+		&i.DistributionStatus,
+		&i.ArchivedAt,
+		&i.ArchivedByID,
+		&i.DeletedAt,
+		&i.DeletedByID,
+		&i.CurrentDraftVersionID,
+		&i.LatestPublishedVersionID,
+	)
+	return i, err
+}
+
+const updateCourseDistributionStatus = `-- name: UpdateCourseDistributionStatus :one
+UPDATE courses
+SET distribution_status = $1,
+    updated_at = $2
+WHERE company_id = $3
+  AND id = $4
+  AND owner_type = 'partner'
+  AND lifecycle_status <> 'deleted'
+RETURNING id, company_id, title, description, cover_url, status, author_id,
+    sequential, deadline_days, created_at, updated_at, visibility,
+    owner_type, owner_user_id, created_by_id, lifecycle_status,
+    distribution_status, archived_at, archived_by_id, deleted_at, deleted_by_id,
+    current_draft_version_id, latest_published_version_id
+`
+
+type UpdateCourseDistributionStatusParams struct {
+	DistributionStatus string    `json:"distribution_status"`
+	UpdatedAt          time.Time `json:"updated_at"`
+	CompanyID          uuid.UUID `json:"company_id"`
+	ID                 uuid.UUID `json:"id"`
+}
+
+func (q *Queries) UpdateCourseDistributionStatus(ctx context.Context, arg UpdateCourseDistributionStatusParams) (Course, error) {
+	row := q.db.QueryRow(ctx, updateCourseDistributionStatus,
+		arg.DistributionStatus,
+		arg.UpdatedAt,
+		arg.CompanyID,
+		arg.ID,
+	)
+	var i Course
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.Title,
+		&i.Description,
+		&i.CoverUrl,
+		&i.Status,
+		&i.AuthorID,
+		&i.Sequential,
+		&i.DeadlineDays,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Visibility,
+		&i.OwnerType,
+		&i.OwnerUserID,
+		&i.CreatedByID,
+		&i.LifecycleStatus,
+		&i.DistributionStatus,
+		&i.ArchivedAt,
+		&i.ArchivedByID,
+		&i.DeletedAt,
+		&i.DeletedByID,
+		&i.CurrentDraftVersionID,
+		&i.LatestPublishedVersionID,
 	)
 	return i, err
 }

@@ -128,12 +128,44 @@ func (s *Server) DeleteFile(ctx context.Context, req *filesv1.DeleteFileRequest)
 	}
 	return &filesv1.DeleteFileResponse{}, nil
 }
+
+func (s *Server) CloneFilesForOwner(ctx context.Context, req *filesv1.CloneFilesForOwnerRequest) (*filesv1.CloneFilesForOwnerResponse, error) {
+	actor, err := s.auth.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	target, err := ownerFromProto(req.GetTargetOwner())
+	if err != nil {
+		return nil, err
+	}
+	sourceIDs := make([]uuid.UUID, 0, len(req.GetSourceFileIds()))
+	for _, rawID := range req.GetSourceFileIds() {
+		id, parseErr := uuid.Parse(rawID)
+		if parseErr != nil {
+			return nil, status.Error(codes.InvalidArgument, "Некорректный идентификатор исходного файла")
+		}
+		sourceIDs = append(sourceIDs, id)
+	}
+	operation, err := s.service.CloneFilesForOwner(
+		ctx, actor.companyID, actor.userID, actor.role,
+		req.GetIdempotencyKey(), target, sourceIDs,
+	)
+	if err != nil {
+		return nil, domainError(err)
+	}
+	return cloneOperationToProto(operation), nil
+}
+
 func domainError(err error) error {
 	switch {
 	case errors.Is(err, application.ErrNotFound):
 		return status.Error(codes.NotFound, application.ErrNotFound.Error())
-	case errors.Is(err, application.ErrForbidden), errors.Is(err, application.ErrUploadForbidden):
+	case errors.Is(err, application.ErrForbidden), errors.Is(err, application.ErrUploadForbidden), errors.Is(err, application.ErrCloneForbidden):
 		return status.Error(codes.PermissionDenied, err.Error())
+	case errors.Is(err, application.ErrIdempotencyKey):
+		return status.Error(codes.AlreadyExists, err.Error())
+	case errors.Is(err, application.ErrInvalidClone):
+		return status.Error(codes.InvalidArgument, err.Error())
 	case errors.Is(err, domain.ErrFileTooLarge):
 		return status.Error(codes.ResourceExhausted, err.Error())
 	case errors.Is(err, domain.ErrInvalidName), errors.Is(err, domain.ErrInvalidSize), errors.Is(err, domain.ErrContentTypeDenied), errors.Is(err, domain.ErrContentTypeMismatch), errors.Is(err, domain.ErrInvalidPurpose):
@@ -141,6 +173,70 @@ func domainError(err error) error {
 	default:
 		return status.Error(codes.Internal, "Не удалось обработать файл")
 	}
+}
+
+func ownerFromProto(value *filesv1.FileOwner) (domain.FileOwner, error) {
+	if value == nil {
+		return domain.FileOwner{}, status.Error(codes.InvalidArgument, "Укажите владельца копий файлов")
+	}
+	id, err := uuid.Parse(value.GetId())
+	if err != nil {
+		return domain.FileOwner{}, status.Error(codes.InvalidArgument, "Некорректный идентификатор владельца файлов")
+	}
+	ownerType := domain.OwnerType("")
+	switch value.GetType() {
+	case filesv1.FileOwnerType_FILE_OWNER_TYPE_COURSE_VERSION:
+		ownerType = domain.OwnerCourseVersion
+	case filesv1.FileOwnerType_FILE_OWNER_TYPE_TEMPLATE_VERSION:
+		ownerType = domain.OwnerTemplateVersion
+	case filesv1.FileOwnerType_FILE_OWNER_TYPE_ARTICLE_VERSION:
+		ownerType = domain.OwnerArticleVersion
+	default:
+		return domain.FileOwner{}, status.Error(codes.InvalidArgument, "Некорректный тип владельца файлов")
+	}
+	return domain.FileOwner{Type: ownerType, ID: id}, nil
+}
+
+func ownerToProto(value domain.FileOwner) *filesv1.FileOwner {
+	ownerType := filesv1.FileOwnerType_FILE_OWNER_TYPE_UNSPECIFIED
+	switch value.Type {
+	case domain.OwnerCourseVersion:
+		ownerType = filesv1.FileOwnerType_FILE_OWNER_TYPE_COURSE_VERSION
+	case domain.OwnerTemplateVersion:
+		ownerType = filesv1.FileOwnerType_FILE_OWNER_TYPE_TEMPLATE_VERSION
+	case domain.OwnerArticleVersion:
+		ownerType = filesv1.FileOwnerType_FILE_OWNER_TYPE_ARTICLE_VERSION
+	}
+	return &filesv1.FileOwner{Type: ownerType, Id: value.ID.String()}
+}
+
+func cloneOperationToProto(value domain.CloneOperation) *filesv1.CloneFilesForOwnerResponse {
+	state := filesv1.FileCloneState_FILE_CLONE_STATE_UNSPECIFIED
+	switch value.State {
+	case domain.ClonePending:
+		state = filesv1.FileCloneState_FILE_CLONE_STATE_PENDING
+	case domain.CloneInProgress:
+		state = filesv1.FileCloneState_FILE_CLONE_STATE_IN_PROGRESS
+	case domain.CloneSucceeded:
+		state = filesv1.FileCloneState_FILE_CLONE_STATE_SUCCEEDED
+	case domain.CloneFailed:
+		state = filesv1.FileCloneState_FILE_CLONE_STATE_FAILED
+	}
+	files := make([]*filesv1.ClonedFile, 0, len(value.Files))
+	for _, file := range value.Files {
+		files = append(files, &filesv1.ClonedFile{
+			SourceFileId: file.SourceFileID.String(), File: toProto(file.File),
+		})
+	}
+	response := &filesv1.CloneFilesForOwnerResponse{
+		OperationId: value.ID.String(), State: state,
+		TargetOwner: ownerToProto(value.TargetOwner), Files: files,
+		UpdatedAt: timestamppb.New(value.UpdatedAt),
+	}
+	if value.ErrorMessage != "" {
+		response.ErrorMessage = &value.ErrorMessage
+	}
+	return response
 }
 func fromProtoPurpose(v filesv1.FilePurpose) domain.Purpose {
 	switch v {

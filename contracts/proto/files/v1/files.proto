@@ -10,6 +10,10 @@ service FilesService {
   rpc UploadFile(stream UploadFileRequest) returns (UploadFileResponse);
   rpc GetFile(GetFileRequest) returns (GetFileResponse);
   rpc DeleteFile(DeleteFileRequest) returns (DeleteFileResponse);
+  // Creates independent physical objects for another aggregate owner. The
+  // idempotency key covers the ordered source set and target owner so Academy
+  // can safely retry its course/template copy saga.
+  rpc CloneFilesForOwner(CloneFilesForOwnerRequest) returns (CloneFilesForOwnerResponse);
 }
 
 enum FilePurpose {
@@ -17,6 +21,26 @@ enum FilePurpose {
   FILE_PURPOSE_ATTACHMENT = 1;
   FILE_PURPOSE_AVATAR = 2;
   FILE_PURPOSE_LOGO = 3;
+}
+
+enum FileOwnerType {
+  FILE_OWNER_TYPE_UNSPECIFIED = 0;
+  FILE_OWNER_TYPE_COURSE_VERSION = 1;
+  FILE_OWNER_TYPE_TEMPLATE_VERSION = 2;
+  FILE_OWNER_TYPE_ARTICLE_VERSION = 3;
+}
+
+enum FileCloneState {
+  FILE_CLONE_STATE_UNSPECIFIED = 0;
+  FILE_CLONE_STATE_PENDING = 1;
+  FILE_CLONE_STATE_IN_PROGRESS = 2;
+  FILE_CLONE_STATE_SUCCEEDED = 3;
+  FILE_CLONE_STATE_FAILED = 4;
+}
+
+message FileOwner {
+  FileOwnerType type = 1;
+  string id = 2;
 }
 
 message FileMetadata {
@@ -52,3 +76,23 @@ message GetFileResponse {
 }
 message DeleteFileRequest { string id = 1; }
 message DeleteFileResponse {}
+
+message ClonedFile {
+  string source_file_id = 1;
+  FileMetadata file = 2;
+}
+
+message CloneFilesForOwnerRequest {
+  repeated string source_file_ids = 1;
+  FileOwner target_owner = 2;
+  string idempotency_key = 3;
+}
+
+message CloneFilesForOwnerResponse {
+  string operation_id = 1;
+  FileCloneState state = 2;
+  FileOwner target_owner = 3;
+  repeated ClonedFile files = 4;
+  optional string error_message = 5;
+  google.protobuf.Timestamp updated_at = 6;
+}

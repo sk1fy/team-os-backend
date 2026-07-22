@@ -4,6 +4,7 @@ sql:
     schema:
       - migrations/000001_init.up.sql
       - migrations/000004_section_visibility.up.sql
+      - migrations/000005_partner_access_and_reuse.up.sql
     queries: internal/storage/queries
     gen:
       go:

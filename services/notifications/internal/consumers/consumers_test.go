@@ -26,3 +26,13 @@ func TestDurableName(t *testing.T) {
 		t.Fatalf("durableName(%q) = %q, ожидалось %q", subject, got, want)
 	}
 }
+
+func TestVerificationEmailSubjectHasDurableConsumer(t *testing.T) {
+	const want = "teamos.academy.external_email_verification.requested.v1"
+	for _, subject := range subjects {
+		if subject == want {
+			return
+		}
+	}
+	t.Fatalf("для %q не зарегистрирован durable consumer", want)
+}

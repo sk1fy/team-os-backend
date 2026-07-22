@@ -14,7 +14,28 @@ service AcademyService {
   rpc CreateCourse(CreateCourseRequest) returns (CreateCourseResponse);
   rpc CreateCourseFromKb(CreateCourseFromKbRequest) returns (CreateCourseFromKbResponse);
   rpc UpdateCourse(UpdateCourseRequest) returns (UpdateCourseResponse);
+  rpc ArchiveCourse(ArchiveCourseRequest) returns (ArchiveCourseResponse);
+  rpc RestoreCourse(RestoreCourseRequest) returns (RestoreCourseResponse);
   rpc DeleteCourse(DeleteCourseRequest) returns (DeleteCourseResponse);
+
+  rpc GetCourseVersions(GetCourseVersionsRequest) returns (GetCourseVersionsResponse);
+  rpc GetCourseVersion(GetCourseVersionRequest) returns (GetCourseVersionResponse);
+  rpc CreateCourseDraft(CreateCourseDraftRequest) returns (CreateCourseDraftResponse);
+  rpc UpdateCourseDraft(UpdateCourseDraftRequest) returns (UpdateCourseDraftResponse);
+  rpc PublishCourseVersion(PublishCourseVersionRequest) returns (PublishCourseVersionResponse);
+  rpc GetPublishedCourseVersion(GetPublishedCourseVersionRequest) returns (GetPublishedCourseVersionResponse);
+
+  rpc CreateCourseVersionSection(CreateCourseVersionSectionRequest) returns (CreateCourseVersionSectionResponse);
+  rpc UpdateCourseVersionSection(UpdateCourseVersionSectionRequest) returns (UpdateCourseVersionSectionResponse);
+  rpc DeleteCourseVersionSection(DeleteCourseVersionSectionRequest) returns (DeleteCourseVersionSectionResponse);
+
+  rpc CreateCourseVersionLesson(CreateCourseVersionLessonRequest) returns (CreateCourseVersionLessonResponse);
+  rpc UpdateCourseVersionLesson(UpdateCourseVersionLessonRequest) returns (UpdateCourseVersionLessonResponse);
+  rpc DeleteCourseVersionLesson(DeleteCourseVersionLessonRequest) returns (DeleteCourseVersionLessonResponse);
+  rpc MoveCourseVersionLesson(MoveCourseVersionLessonRequest) returns (MoveCourseVersionLessonResponse);
+
+  rpc UpsertCourseVersionQuiz(UpsertCourseVersionQuizRequest) returns (UpsertCourseVersionQuizResponse);
+  rpc DeleteCourseVersionQuiz(DeleteCourseVersionQuizRequest) returns (DeleteCourseVersionQuizResponse);
 
   rpc GetCourseSections(GetCourseSectionsRequest) returns (GetCourseSectionsResponse);
   rpc CreateCourseSection(CreateCourseSectionRequest) returns (CreateCourseSectionResponse);
@@ -32,9 +53,92 @@ service AcademyService {
 
   rpc GetAssignments(GetAssignmentsRequest) returns (GetAssignmentsResponse);
   rpc AssignCourse(AssignCourseRequest) returns (AssignCourseResponse);
+  rpc RevokeAssignment(RevokeAssignmentRequest) returns (RevokeAssignmentResponse);
 
   rpc GetProgress(GetProgressRequest) returns (GetProgressResponse);
   rpc MarkLessonComplete(MarkLessonCompleteRequest) returns (MarkLessonCompleteResponse);
+
+  // Enrollment is the source of truth for both internal and, in later phases,
+  // external learning progress. Internal caller identity is taken from JWT by
+  // the gateway/application layer and is never trusted from the request body.
+  rpc GetEnrollments(GetEnrollmentsRequest) returns (GetEnrollmentsResponse);
+  rpc SelfEnrollCourse(SelfEnrollCourseRequest) returns (SelfEnrollCourseResponse);
+  rpc GetCatalogCourseVersion(GetCatalogCourseVersionRequest) returns (GetCatalogCourseVersionResponse);
+  rpc GetEnrollment(GetEnrollmentRequest) returns (GetEnrollmentResponse);
+  rpc GetEnrollmentOutline(GetEnrollmentOutlineRequest) returns (GetEnrollmentOutlineResponse);
+  rpc GetEnrollmentLesson(GetEnrollmentLessonRequest) returns (GetEnrollmentLessonResponse);
+  rpc ResumeEnrollment(ResumeEnrollmentRequest) returns (ResumeEnrollmentResponse);
+  rpc CompleteEnrollmentLesson(CompleteEnrollmentLessonRequest) returns (CompleteEnrollmentLessonResponse);
+  rpc SubmitEnrollmentQuizAttempt(SubmitEnrollmentQuizAttemptRequest) returns (SubmitEnrollmentQuizAttemptResponse);
+  rpc GetEnrollmentReport(GetEnrollmentReportRequest) returns (GetEnrollmentReportResponse);
+
+  // Partner course administration. Authorization is object-scoped: partner
+  // authors can preview only their own courses, while only owner/admin can
+  // apply restrictions, inspect cross-partner groups and copy originals.
+  rpc GetPartnerCourseGroups(GetPartnerCourseGroupsRequest) returns (GetPartnerCourseGroupsResponse);
+  rpc GetPartnerCoursesReport(GetPartnerCoursesReportRequest) returns (GetPartnerCoursesReportResponse);
+  rpc GetCourseVersionPreview(GetCourseVersionPreviewRequest) returns (GetCourseVersionPreviewResponse);
+  rpc SubmitCoursePreviewQuizAttempt(SubmitCoursePreviewQuizAttemptRequest) returns (SubmitCoursePreviewQuizAttemptResponse);
+  rpc PausePartnerCourseDistribution(PausePartnerCourseDistributionRequest) returns (PausePartnerCourseDistributionResponse);
+  rpc BlockPartnerCourse(BlockPartnerCourseRequest) returns (BlockPartnerCourseResponse);
+  rpc ResolvePartnerCourseRestriction(ResolvePartnerCourseRestrictionRequest) returns (ResolvePartnerCourseRestrictionResponse);
+  rpc GetCourseRestrictions(GetCourseRestrictionsRequest) returns (GetCourseRestrictionsResponse);
+  rpc CopyPartnerCourseVersionToCompany(CopyPartnerCourseVersionToCompanyRequest) returns (CopyPartnerCourseVersionToCompanyResponse);
+
+  // CourseTemplate is a separate versioned aggregate. Templates cannot be
+  // assigned or learned; instantiation always creates an independent course
+  // draft and the server derives its owner from the authenticated actor.
+  rpc GetCourseTemplates(GetCourseTemplatesRequest) returns (GetCourseTemplatesResponse);
+  rpc GetCourseTemplate(GetCourseTemplateRequest) returns (GetCourseTemplateResponse);
+  rpc CreateCourseTemplate(CreateCourseTemplateRequest) returns (CreateCourseTemplateResponse);
+  rpc UpdateCourseTemplateDraft(UpdateCourseTemplateDraftRequest) returns (UpdateCourseTemplateDraftResponse);
+  rpc CreateCourseTemplateDraft(CreateCourseTemplateDraftRequest) returns (CreateCourseTemplateDraftResponse);
+  rpc PublishCourseTemplateVersion(PublishCourseTemplateVersionRequest) returns (PublishCourseTemplateVersionResponse);
+  rpc ArchiveCourseTemplate(ArchiveCourseTemplateRequest) returns (ArchiveCourseTemplateResponse);
+  rpc InstantiateCourseTemplateVersion(InstantiateCourseTemplateVersionRequest) returns (InstantiateCourseTemplateVersionResponse);
+
+  // Personal external access is created by an authenticated partner for an
+  // exact immutable version of their own course. Tokens are returned only by
+  // create/rotate/repeat responses and are stored by Academy only as hashes.
+  rpc CreateExternalPersonalAccess(CreateExternalPersonalAccessRequest) returns (CreateExternalPersonalAccessResponse);
+  rpc GetExternalPersonalAccesses(GetExternalPersonalAccessesRequest) returns (GetExternalPersonalAccessesResponse);
+  rpc GetExternalPersonalAccess(GetExternalPersonalAccessRequest) returns (GetExternalPersonalAccessResponse);
+  rpc ExtendExternalPersonalAccess(ExtendExternalPersonalAccessRequest) returns (ExtendExternalPersonalAccessResponse);
+  rpc RotateExternalPersonalAccessToken(RotateExternalPersonalAccessTokenRequest) returns (RotateExternalPersonalAccessTokenResponse);
+  rpc RevokeExternalPersonalAccess(RevokeExternalPersonalAccessRequest) returns (RevokeExternalPersonalAccessResponse);
+  rpc RepeatExternalPersonalAccess(RepeatExternalPersonalAccessRequest) returns (RepeatExternalPersonalAccessResponse);
+
+  // External campaigns are version-pinned distribution aggregates. Partner
+  // campaigns are restricted to the actor's own course; company candidate
+  // campaigns are restricted to owner/admin and company-owned courses.
+  rpc CreateExternalCampaign(CreateExternalCampaignRequest) returns (CreateExternalCampaignResponse);
+  rpc GetExternalCampaigns(GetExternalCampaignsRequest) returns (GetExternalCampaignsResponse);
+  rpc GetExternalCampaign(GetExternalCampaignRequest) returns (GetExternalCampaignResponse);
+  rpc PauseExternalCampaign(PauseExternalCampaignRequest) returns (PauseExternalCampaignResponse);
+  rpc ResumeExternalCampaign(ResumeExternalCampaignRequest) returns (ResumeExternalCampaignResponse);
+  rpc RotateExternalCampaignToken(RotateExternalCampaignTokenRequest) returns (RotateExternalCampaignTokenResponse);
+  rpc RevokeExternalCampaign(RevokeExternalCampaignRequest) returns (RevokeExternalCampaignResponse);
+  rpc GetExternalCampaignReport(GetExternalCampaignReportRequest) returns (GetExternalCampaignReportResponse);
+  rpc GetCourseExternalReport(GetCourseExternalReportRequest) returns (GetCourseExternalReportResponse);
+
+  // Public calls do not accept the internal TeamOS JWT. Once verification is
+  // complete, the opaque external session is supplied in trusted gRPC
+  // metadata by gateway and is scoped to one Academy company/learner.
+  rpc GetPublicAcademyAccess(GetPublicAcademyAccessRequest) returns (GetPublicAcademyAccessResponse);
+  rpc RequestPublicAcademyVerification(RequestPublicAcademyVerificationRequest) returns (RequestPublicAcademyVerificationResponse);
+  rpc ConfirmPublicAcademyVerification(ConfirmPublicAcademyVerificationRequest) returns (ConfirmPublicAcademyVerificationResponse);
+  rpc ActivatePublicAcademyAccess(ActivatePublicAcademyAccessRequest) returns (ActivatePublicAcademyAccessResponse);
+  rpc GetPublicAcademyEnrollment(GetPublicAcademyEnrollmentRequest) returns (GetPublicAcademyEnrollmentResponse);
+  rpc GetPublicAcademyEnrollmentOutline(GetPublicAcademyEnrollmentOutlineRequest) returns (GetPublicAcademyEnrollmentOutlineResponse);
+  rpc GetPublicAcademyEnrollmentLesson(GetPublicAcademyEnrollmentLessonRequest) returns (GetPublicAcademyEnrollmentLessonResponse);
+  rpc CompletePublicAcademyEnrollmentLesson(CompletePublicAcademyEnrollmentLessonRequest) returns (CompletePublicAcademyEnrollmentLessonResponse);
+  rpc SubmitPublicAcademyQuizAttempt(SubmitPublicAcademyQuizAttemptRequest) returns (SubmitPublicAcademyQuizAttemptResponse);
+  rpc GetPublicAcademyEnrollmentResults(GetPublicAcademyEnrollmentResultsRequest) returns (GetPublicAcademyEnrollmentResultsResponse);
+
+  rpc GetExternalLearners(GetExternalLearnersRequest) returns (GetExternalLearnersResponse);
+  rpc GetExternalLearner(GetExternalLearnerRequest) returns (GetExternalLearnerResponse);
+  rpc GetExternalLearnerEnrollments(GetExternalLearnerEnrollmentsRequest) returns (GetExternalLearnerEnrollmentsResponse);
+  rpc GetExternalLearnerTimeline(GetExternalLearnerTimelineRequest) returns (GetExternalLearnerTimelineResponse);
 }
 
 enum CourseStatus {
@@ -48,6 +152,48 @@ enum CourseVisibility {
   COURSE_VISIBILITY_PUBLIC = 1;
   COURSE_VISIBILITY_COMPANY = 2;
   COURSE_VISIBILITY_RESTRICTED = 3;
+}
+
+enum CourseOwnerType {
+  COURSE_OWNER_TYPE_UNSPECIFIED = 0;
+  COURSE_OWNER_TYPE_COMPANY = 1;
+  COURSE_OWNER_TYPE_PARTNER = 2;
+}
+
+enum CourseLifecycleStatus {
+  COURSE_LIFECYCLE_STATUS_UNSPECIFIED = 0;
+  COURSE_LIFECYCLE_STATUS_ACTIVE = 1;
+  COURSE_LIFECYCLE_STATUS_ARCHIVED = 2;
+  COURSE_LIFECYCLE_STATUS_DELETED = 3;
+}
+
+enum CourseDistributionStatus {
+  COURSE_DISTRIBUTION_STATUS_UNSPECIFIED = 0;
+  COURSE_DISTRIBUTION_STATUS_ACTIVE = 1;
+  COURSE_DISTRIBUTION_STATUS_PAUSED = 2;
+  COURSE_DISTRIBUTION_STATUS_BLOCKED = 3;
+}
+
+enum CourseOriginType {
+  COURSE_ORIGIN_TYPE_UNSPECIFIED = 0;
+  COURSE_ORIGIN_TYPE_PARTNER_COURSE = 1;
+  COURSE_ORIGIN_TYPE_SYSTEM_TEMPLATE = 2;
+  COURSE_ORIGIN_TYPE_COMPANY_TEMPLATE = 3;
+}
+
+enum CourseVersionStatus {
+  COURSE_VERSION_STATUS_UNSPECIFIED = 0;
+  COURSE_VERSION_STATUS_DRAFT = 1;
+  COURSE_VERSION_STATUS_PUBLISHED = 2;
+  COURSE_VERSION_STATUS_RETIRED = 3;
+}
+
+enum CourseLessonSourceType {
+  COURSE_LESSON_SOURCE_TYPE_UNSPECIFIED = 0;
+  COURSE_LESSON_SOURCE_TYPE_MANUAL = 1;
+  COURSE_LESSON_SOURCE_TYPE_KB_LINK = 2;
+  COURSE_LESSON_SOURCE_TYPE_KB_SNAPSHOT = 3;
+  COURSE_LESSON_SOURCE_TYPE_TEMPLATE_SNAPSHOT = 4;
 }
 
 enum LessonSourceMode {
@@ -79,6 +225,120 @@ enum CourseProgressStatus {
   COURSE_PROGRESS_STATUS_OVERDUE = 4;
 }
 
+enum EnrollmentLearnerType {
+  ENROLLMENT_LEARNER_TYPE_UNSPECIFIED = 0;
+  ENROLLMENT_LEARNER_TYPE_USER = 1;
+  ENROLLMENT_LEARNER_TYPE_EXTERNAL = 2;
+}
+
+enum EnrollmentSourceType {
+  ENROLLMENT_SOURCE_TYPE_UNSPECIFIED = 0;
+  ENROLLMENT_SOURCE_TYPE_ASSIGNMENT = 1;
+  ENROLLMENT_SOURCE_TYPE_PERSONAL_ACCESS = 2;
+  ENROLLMENT_SOURCE_TYPE_PARTNER_PROMO_CAMPAIGN = 3;
+  ENROLLMENT_SOURCE_TYPE_COMPANY_CANDIDATE_CAMPAIGN = 4;
+  ENROLLMENT_SOURCE_TYPE_REPEAT_TRAINING = 5;
+  ENROLLMENT_SOURCE_TYPE_LEGACY = 6;
+  ENROLLMENT_SOURCE_TYPE_SELF_ENROLLMENT = 7;
+}
+
+enum EnrollmentProgressStatus {
+  ENROLLMENT_PROGRESS_STATUS_UNSPECIFIED = 0;
+  ENROLLMENT_PROGRESS_STATUS_NOT_STARTED = 1;
+  ENROLLMENT_PROGRESS_STATUS_IN_PROGRESS = 2;
+  ENROLLMENT_PROGRESS_STATUS_COMPLETED = 3;
+}
+
+enum EnrollmentAccessStatus {
+  ENROLLMENT_ACCESS_STATUS_UNSPECIFIED = 0;
+  ENROLLMENT_ACCESS_STATUS_INVITED = 1;
+  ENROLLMENT_ACCESS_STATUS_READY = 2;
+  ENROLLMENT_ACCESS_STATUS_ACTIVE = 3;
+  ENROLLMENT_ACCESS_STATUS_EXPIRED = 4;
+  ENROLLMENT_ACCESS_STATUS_FROZEN = 5;
+  ENROLLMENT_ACCESS_STATUS_SUSPENDED = 6;
+  ENROLLMENT_ACCESS_STATUS_REVOKED = 7;
+  ENROLLMENT_ACCESS_STATUS_CLOSED = 8;
+}
+
+enum EnrollmentLessonStatus {
+  ENROLLMENT_LESSON_STATUS_UNSPECIFIED = 0;
+  ENROLLMENT_LESSON_STATUS_AVAILABLE = 1;
+  ENROLLMENT_LESSON_STATUS_CURRENT = 2;
+  ENROLLMENT_LESSON_STATUS_COMPLETED = 3;
+}
+
+enum CourseRestrictionType {
+  COURSE_RESTRICTION_TYPE_UNSPECIFIED = 0;
+  COURSE_RESTRICTION_TYPE_PAUSE = 1;
+  COURSE_RESTRICTION_TYPE_BLOCK = 2;
+}
+
+enum CourseTemplateType {
+  COURSE_TEMPLATE_TYPE_UNSPECIFIED = 0;
+  COURSE_TEMPLATE_TYPE_SYSTEM = 1;
+  COURSE_TEMPLATE_TYPE_COMPANY = 2;
+}
+
+enum CourseTemplateLifecycleStatus {
+  COURSE_TEMPLATE_LIFECYCLE_STATUS_UNSPECIFIED = 0;
+  COURSE_TEMPLATE_LIFECYCLE_STATUS_ACTIVE = 1;
+  COURSE_TEMPLATE_LIFECYCLE_STATUS_ARCHIVED = 2;
+}
+
+enum ExternalPersonalAccessStatus {
+  EXTERNAL_PERSONAL_ACCESS_STATUS_UNSPECIFIED = 0;
+  EXTERNAL_PERSONAL_ACCESS_STATUS_ISSUED = 1;
+  EXTERNAL_PERSONAL_ACCESS_STATUS_ACTIVATED = 2;
+  EXTERNAL_PERSONAL_ACCESS_STATUS_REVOKED = 3;
+  EXTERNAL_PERSONAL_ACCESS_STATUS_CLOSED = 4;
+}
+
+enum ExternalCampaignOwnerType {
+  EXTERNAL_CAMPAIGN_OWNER_TYPE_UNSPECIFIED = 0;
+  EXTERNAL_CAMPAIGN_OWNER_TYPE_COMPANY = 1;
+  EXTERNAL_CAMPAIGN_OWNER_TYPE_PARTNER = 2;
+}
+
+enum ExternalCampaignPurpose {
+  EXTERNAL_CAMPAIGN_PURPOSE_UNSPECIFIED = 0;
+  EXTERNAL_CAMPAIGN_PURPOSE_COMPANY_CANDIDATE = 1;
+  EXTERNAL_CAMPAIGN_PURPOSE_PARTNER_PROMO = 2;
+}
+
+enum ExternalCampaignStatus {
+  EXTERNAL_CAMPAIGN_STATUS_UNSPECIFIED = 0;
+  EXTERNAL_CAMPAIGN_STATUS_ACTIVE = 1;
+  EXTERNAL_CAMPAIGN_STATUS_PAUSED = 2;
+  EXTERNAL_CAMPAIGN_STATUS_REVOKED = 3;
+  EXTERNAL_CAMPAIGN_STATUS_CLOSED = 4;
+}
+
+enum ExternalLearnerTimelineEventType {
+  EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_UNSPECIFIED = 0;
+  EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_ACCESS_ISSUED = 1;
+  EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_VERIFICATION_REQUESTED = 2;
+  EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_EMAIL_VERIFIED = 3;
+  EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_ACTIVATED = 4;
+  EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_LESSON_COMPLETED = 5;
+  EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_QUIZ_SUBMITTED = 6;
+  EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_COURSE_COMPLETED = 7;
+  EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_DEADLINE_EXPIRED = 8;
+  EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_ACCESS_EXTENDED = 9;
+  EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_TOKEN_ROTATED = 10;
+  EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_ACCESS_REVOKED = 11;
+  EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_FROZEN = 12;
+  EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_SUSPENDED = 13;
+  EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_REPEAT_CREATED = 14;
+}
+
+enum PublicAcademyAccessKind {
+  PUBLIC_ACADEMY_ACCESS_KIND_UNSPECIFIED = 0;
+  PUBLIC_ACADEMY_ACCESS_KIND_PERSONAL_ACCESS = 1;
+  PUBLIC_ACADEMY_ACCESS_KIND_PARTNER_PROMO_CAMPAIGN = 2;
+  PUBLIC_ACADEMY_ACCESS_KIND_COMPANY_CANDIDATE_CAMPAIGN = 3;
+}
+
 message Course {
   string id = 1;
   string title = 2;
@@ -91,6 +351,13 @@ message Course {
   google.protobuf.Timestamp created_at = 9;
   google.protobuf.Timestamp updated_at = 10;
   CourseVisibility visibility = 11;
+  optional CourseOwnerType owner_type = 12;
+  optional string owner_user_id = 13;
+  optional string created_by_id = 14;
+  optional CourseLifecycleStatus lifecycle_status = 15;
+  optional CourseDistributionStatus distribution_status = 16;
+  optional string current_draft_version_id = 17;
+  optional string latest_published_version_id = 18;
 }
 
 message CourseSection {
@@ -133,6 +400,110 @@ message Quiz {
   optional uint32 max_attempts = 5;
 }
 
+// CourseVersion is the editor-facing immutable-version metadata. Published
+// versions and their nested content must never be mutated.
+message CourseVersion {
+  string id = 1;
+  string course_id = 2;
+  uint32 number = 3;
+  CourseVersionStatus status = 4;
+  string title = 5;
+  optional string description = 6;
+  optional string cover_file_id = 7;
+  optional string cover_url = 8;
+  bool sequential = 9;
+  optional uint32 default_internal_deadline_days = 10;
+  string created_by_id = 11;
+  google.protobuf.Timestamp created_at = 12;
+  optional string published_by_id = 13;
+  optional google.protobuf.Timestamp published_at = 14;
+  optional string content_hash = 15;
+}
+
+message CourseVersionSection {
+  string id = 1;
+  string course_version_id = 2;
+  string title = 3;
+  uint32 order = 4;
+}
+
+message CourseVersionLesson {
+  string id = 1;
+  string course_version_id = 2;
+  string section_version_id = 3;
+  string stable_key = 4;
+  string title = 5;
+  uint32 order = 6;
+  google.protobuf.Struct content = 7;
+  CourseLessonSourceType source_type = 8;
+  optional string source_article_id = 9;
+  optional uint32 source_article_version = 10;
+  optional string source_template_id = 11;
+  optional string source_template_version_id = 12;
+  optional uint32 estimated_minutes = 13;
+  optional string quiz_version_id = 14;
+}
+
+message CourseVersionQuiz {
+  string id = 1;
+  string course_version_id = 2;
+  string lesson_version_id = 3;
+  repeated QuizQuestion questions = 4;
+  uint32 passing_score = 5;
+  optional uint32 max_attempts = 6;
+}
+
+// Learner quiz types intentionally omit QuizOption.correct. Never expose the
+// editor-facing QuizQuestion DTO in learner/public responses.
+message LearnerQuizOption {
+  string id = 1;
+  string text = 2;
+}
+
+message LearnerQuizQuestion {
+  string id = 1;
+  QuizQuestionType type = 2;
+  string text = 3;
+  repeated LearnerQuizOption options = 4;
+}
+
+message LearnerCourseVersionQuiz {
+  string id = 1;
+  repeated LearnerQuizQuestion questions = 2;
+  uint32 passing_score = 3;
+  optional uint32 max_attempts = 4;
+}
+
+message LearnerCourseVersionLesson {
+  string id = 1;
+  string course_version_id = 2;
+  string section_version_id = 3;
+  string stable_key = 4;
+  string title = 5;
+  uint32 order = 6;
+  google.protobuf.Struct content = 7;
+  optional uint32 estimated_minutes = 8;
+  optional LearnerCourseVersionQuiz quiz = 9;
+}
+
+message LearnerCourseVersionSection {
+  string id = 1;
+  string title = 2;
+  uint32 order = 3;
+  repeated LearnerCourseVersionLesson lessons = 4;
+}
+
+message LearnerPublishedCourseVersion {
+  string id = 1;
+  string course_id = 2;
+  uint32 number = 3;
+  string title = 4;
+  optional string description = 5;
+  optional string cover_url = 6;
+  bool sequential = 7;
+  repeated LearnerCourseVersionSection sections = 8;
+}
+
 message CourseAssignment {
   string id = 1;
   string course_id = 2;
@@ -142,6 +513,9 @@ message CourseAssignment {
   optional google.protobuf.Timestamp due_date = 6;
   string assigned_by_id = 7;
   google.protobuf.Timestamp created_at = 8;
+  // Optional while legacy assignments are backfilled. New assignments always
+  // pin the published course version selected at assignment time.
+  optional string course_version_id = 9;
 }
 
 message QuizAttempt {
@@ -152,6 +526,9 @@ message QuizAttempt {
   bool passed = 5;
   bool pending_review = 6;
   google.protobuf.Timestamp created_at = 7;
+  optional string enrollment_id = 8;
+  optional string quiz_version_id = 9;
+  optional uint32 attempt_number = 10;
 }
 
 message CourseProgress {
@@ -162,9 +539,314 @@ message CourseProgress {
   repeated QuizAttempt quiz_attempts = 5;
   optional google.protobuf.Timestamp started_at = 6;
   optional google.protobuf.Timestamp completed_at = 7;
+  optional string enrollment_id = 8;
+  optional string course_version_id = 9;
+  optional uint32 progress_percent = 10;
+  optional string current_lesson_version_id = 11;
 }
 
-message GetCoursesRequest {}
+message CourseEnrollment {
+  string id = 1;
+  string course_id = 2;
+  string course_version_id = 3;
+  EnrollmentLearnerType learner_type = 4;
+  // Domain validation requires exactly one learner identity.
+  optional string user_id = 5;
+  optional string external_learner_id = 6;
+  EnrollmentSourceType source_type = 7;
+  optional string source_id = 8;
+  uint32 attempt_number = 9;
+  EnrollmentProgressStatus progress_status = 10;
+  EnrollmentAccessStatus access_status = 11;
+  optional string current_lesson_version_id = 12;
+  optional google.protobuf.Timestamp activated_at = 13;
+  optional google.protobuf.Timestamp access_until = 14;
+  optional google.protobuf.Timestamp started_at = 15;
+  optional google.protobuf.Timestamp completed_at = 16;
+  optional google.protobuf.Timestamp last_activity_at = 17;
+  optional google.protobuf.Timestamp frozen_at = 18;
+  optional google.protobuf.Timestamp suspended_at = 19;
+  google.protobuf.Timestamp created_at = 20;
+  google.protobuf.Timestamp updated_at = 21;
+  uint32 progress_percent = 22;
+  // An internal assignment deadline is reporting metadata and never blocks
+  // access. External access_until has different hard-expiry semantics.
+  optional google.protobuf.Timestamp due_date = 23;
+  bool overdue = 24;
+  string company_id = 25;
+  uint32 version_number = 26;
+}
+
+message EnrollmentLessonProgress {
+  string enrollment_id = 1;
+  string lesson_version_id = 2;
+  EnrollmentLessonStatus status = 3;
+  optional google.protobuf.Timestamp first_opened_at = 4;
+  optional google.protobuf.Timestamp completed_at = 5;
+  uint64 active_seconds = 6;
+  optional google.protobuf.Struct last_position = 7;
+}
+
+message EnrollmentQuizAnswer {
+  string question_id = 1;
+  repeated string selected_option_ids = 2;
+  optional string text = 3;
+}
+
+message EnrollmentQuizAttempt {
+  string id = 1;
+  string enrollment_id = 2;
+  string quiz_version_id = 3;
+  uint32 attempt_number = 4;
+  repeated EnrollmentQuizAnswer answers = 5;
+  uint32 score = 6;
+  bool passed = 7;
+  bool pending_review = 8;
+  optional string reviewed_by_id = 9;
+  optional google.protobuf.Timestamp reviewed_at = 10;
+  optional string review_comment = 11;
+  google.protobuf.Timestamp created_at = 12;
+}
+
+message EnrollmentOutlineLesson {
+  string lesson_version_id = 1;
+  string section_version_id = 2;
+  string title = 3;
+  uint32 order = 4;
+  // Absence means the lesson is still locked and no progress row exists.
+  optional EnrollmentLessonStatus status = 5;
+  optional uint32 estimated_minutes = 6;
+  bool has_quiz = 7;
+}
+
+message EnrollmentOutlineSection {
+  string section_version_id = 1;
+  string title = 2;
+  uint32 order = 3;
+  repeated EnrollmentOutlineLesson lessons = 4;
+}
+
+message EnrollmentOutline {
+  CourseEnrollment enrollment = 1;
+  repeated EnrollmentOutlineSection sections = 2;
+}
+
+message EnrollmentLesson {
+  CourseEnrollment enrollment = 1;
+  LearnerCourseVersionLesson lesson = 2;
+  EnrollmentLessonProgress progress = 3;
+}
+
+message EnrollmentProgressSnapshot {
+  CourseEnrollment enrollment = 1;
+  repeated EnrollmentLessonProgress lessons = 2;
+  repeated EnrollmentQuizAttempt quiz_attempts = 3;
+}
+
+message EnrollmentReport {
+  CourseEnrollment enrollment = 1;
+  CourseVersion version = 2;
+  repeated EnrollmentLessonProgress lessons = 3;
+  repeated EnrollmentQuizAttempt quiz_attempts = 4;
+  uint64 active_seconds = 5;
+}
+
+message CourseRestriction {
+  string id = 1;
+  string company_id = 2;
+  string course_id = 3;
+  CourseRestrictionType type = 4;
+  string reason = 5;
+  string created_by_id = 6;
+  google.protobuf.Timestamp created_at = 7;
+  optional string resolved_by_id = 8;
+  optional google.protobuf.Timestamp resolved_at = 9;
+  optional string resolution_reason = 10;
+}
+
+message CourseOrigin {
+  CourseOriginType type = 1;
+  optional string source_course_id = 2;
+  optional string source_course_version_id = 3;
+  optional string source_partner_id = 4;
+  optional string source_template_id = 5;
+  optional string source_template_version_id = 6;
+  string instantiated_by_id = 7;
+  google.protobuf.Timestamp instantiated_at = 8;
+  string acquisition_type = 9;
+  optional string entitlement_id = 10;
+}
+
+message PartnerCourseCopyResult {
+  Course course = 1;
+  CourseVersion draft = 2;
+  CourseOrigin origin = 3;
+}
+
+// Academy deliberately returns partner IDs, not company-owned user profiles.
+// The gateway may hydrate display names via the company service.
+message PartnerCourseGroup {
+  string partner_id = 1;
+  repeated Course courses = 2;
+}
+
+message PartnerCourseReportSummary {
+  uint32 total_courses = 1;
+  uint32 active_courses = 2;
+  uint32 archived_courses = 3;
+  uint32 deleted_courses = 4;
+  uint32 paused_courses = 5;
+  uint32 blocked_courses = 6;
+}
+
+message PartnerCourseOperationalReport {
+  Course course = 1;
+  uint32 version_count = 2;
+  uint32 enrollment_count = 3;
+  uint32 active_enrollment_count = 4;
+  uint32 completed_enrollment_count = 5;
+  uint32 average_progress_percent = 6;
+}
+
+message PartnerCoursesReport {
+  string partner_id = 1;
+  PartnerCourseReportSummary summary = 2;
+  repeated PartnerCourseOperationalReport operational_courses = 3;
+  repeated CourseExternalReport courses = 4;
+}
+
+// Preview content uses learner-safe quiz DTOs and is never associated with an
+// enrollment. Calling preview or submitting a preview attempt cannot create or
+// mutate learner progress.
+message CourseVersionPreview {
+  Course course = 1;
+  LearnerPublishedCourseVersion version = 2;
+  bool persists_progress = 3;
+}
+
+message CoursePreviewQuizAttemptResult {
+  string quiz_version_id = 1;
+  uint32 score = 2;
+  bool passed = 3;
+  bool pending_review = 4;
+}
+
+message CourseTemplate {
+  string id = 1;
+  string company_id = 2;
+  CourseTemplateType type = 3;
+  optional string system_template_key = 4;
+  CourseTemplateLifecycleStatus lifecycle_status = 5;
+  optional string current_draft_version_id = 6;
+  optional string latest_published_version_id = 7;
+  string created_by_id = 8;
+  google.protobuf.Timestamp created_at = 9;
+  google.protobuf.Timestamp updated_at = 10;
+}
+
+message CourseTemplateVersion {
+  string id = 1;
+  string template_id = 2;
+  uint32 number = 3;
+  CourseVersionStatus status = 4;
+  string title = 5;
+  optional string description = 6;
+  optional string cover_file_id = 7;
+  bool sequential = 8;
+  string created_by_id = 9;
+  google.protobuf.Timestamp created_at = 10;
+  optional string published_by_id = 11;
+  optional google.protobuf.Timestamp published_at = 12;
+  optional string content_hash = 13;
+}
+
+message CourseTemplateVersionSection {
+  string id = 1;
+  string template_version_id = 2;
+  string stable_key = 3;
+  string title = 4;
+  uint32 order = 5;
+}
+
+message CourseTemplateVersionLesson {
+  string id = 1;
+  string template_version_id = 2;
+  string section_version_id = 3;
+  string stable_key = 4;
+  string title = 5;
+  uint32 order = 6;
+  google.protobuf.Struct content = 7;
+  CourseLessonSourceType source_type = 8;
+  optional string source_article_id = 9;
+  optional uint32 source_article_version = 10;
+  optional uint32 estimated_minutes = 11;
+  optional string quiz_version_id = 12;
+}
+
+message CourseTemplateVersionQuiz {
+  string id = 1;
+  string template_version_id = 2;
+  string lesson_version_id = 3;
+  repeated QuizQuestion questions = 4;
+  uint32 passing_score = 5;
+  optional uint32 max_attempts = 6;
+}
+
+message CourseTemplateVersionContent {
+  repeated CourseTemplateVersionSection sections = 1;
+  repeated CourseTemplateVersionLesson lessons = 2;
+  repeated CourseTemplateVersionQuiz quizzes = 3;
+}
+
+message CourseTemplateVersionDetails {
+  CourseTemplateVersion version = 1;
+  CourseTemplateVersionContent content = 2;
+}
+
+message CourseTemplateDraftQuizInput {
+  repeated QuizQuestion questions = 1;
+  uint32 passing_score = 2;
+  optional uint32 max_attempts = 3;
+}
+
+message CourseTemplateDraftLessonInput {
+  string stable_key = 1;
+  string title = 2;
+  uint32 order = 3;
+  google.protobuf.Struct content = 4;
+  optional CourseLessonSourceType source_type = 5;
+  optional string source_article_id = 6;
+  optional uint32 source_article_version = 7;
+  optional uint32 estimated_minutes = 8;
+  optional CourseTemplateDraftQuizInput quiz = 9;
+}
+
+message CourseTemplateDraftSectionInput {
+  string stable_key = 1;
+  string title = 2;
+  uint32 order = 3;
+  repeated CourseTemplateDraftLessonInput lessons = 4;
+}
+
+message CourseTemplateDraftContentInput {
+  repeated CourseTemplateDraftSectionInput sections = 1;
+}
+
+message CourseTemplateInstantiationResult {
+  Course course = 1;
+  CourseVersion draft = 2;
+  CourseOrigin origin = 3;
+}
+
+message GetCoursesRequest {
+  optional CourseOwnerType owner_type = 1;
+  optional string partner_id = 2;
+  optional CourseLifecycleStatus lifecycle = 3;
+  optional CourseDistributionStatus distribution = 4;
+  optional bool has_draft = 5;
+  optional uint32 latest_version = 6;
+  optional CourseOriginType origin_type = 7;
+}
 
 message GetCoursesResponse {
   repeated Course courses = 1;
@@ -231,11 +913,175 @@ message UpdateCourseResponse {
   Course course = 1;
 }
 
+message ArchiveCourseRequest {
+  string id = 1;
+}
+
+message ArchiveCourseResponse {
+  Course course = 1;
+}
+
+message RestoreCourseRequest {
+  string id = 1;
+}
+
+message RestoreCourseResponse {
+  Course course = 1;
+}
+
 message DeleteCourseRequest {
   string id = 1;
 }
 
 message DeleteCourseResponse {}
+
+message GetCourseVersionsRequest {
+  string course_id = 1;
+}
+
+message GetCourseVersionsResponse {
+  repeated CourseVersion versions = 1;
+}
+
+message GetCourseVersionRequest {
+  string course_id = 1;
+  string version_id = 2;
+}
+
+message GetCourseVersionResponse {
+  CourseVersion version = 1;
+  repeated CourseVersionSection sections = 2;
+  repeated CourseVersionLesson lessons = 3;
+  repeated CourseVersionQuiz quizzes = 4;
+}
+
+message CreateCourseDraftRequest {
+  string course_id = 1;
+}
+
+message CreateCourseDraftResponse {
+  CourseVersion version = 1;
+}
+
+message UpdateCourseDraftRequest {
+  string course_id = 1;
+  optional string title = 2;
+  optional string description = 3;
+  optional string cover_file_id = 4;
+  optional bool sequential = 5;
+  // Zero clears the default deadline.
+  optional uint32 default_internal_deadline_days = 6;
+}
+
+message UpdateCourseDraftResponse {
+  CourseVersion version = 1;
+}
+
+message PublishCourseVersionRequest {
+  string course_id = 1;
+  string idempotency_key = 2;
+}
+
+message PublishCourseVersionResponse {
+  CourseVersion version = 1;
+}
+
+message GetPublishedCourseVersionRequest {
+  string course_id = 1;
+  // When omitted, the latest published version is returned.
+  optional string version_id = 2;
+}
+
+message GetPublishedCourseVersionResponse {
+  LearnerPublishedCourseVersion version = 1;
+}
+
+message CreateCourseVersionSectionRequest {
+  string version_id = 1;
+  string title = 2;
+}
+
+message CreateCourseVersionSectionResponse {
+  CourseVersionSection section = 1;
+}
+
+message UpdateCourseVersionSectionRequest {
+  string id = 1;
+  optional string title = 2;
+  optional uint32 order = 3;
+}
+
+message UpdateCourseVersionSectionResponse {
+  CourseVersionSection section = 1;
+}
+
+message DeleteCourseVersionSectionRequest {
+  string id = 1;
+}
+
+message DeleteCourseVersionSectionResponse {}
+
+message CreateCourseVersionLessonRequest {
+  string version_id = 1;
+  string section_version_id = 2;
+  string title = 3;
+  optional google.protobuf.Struct content = 4;
+  optional CourseLessonSourceType source_type = 5;
+  optional string source_article_id = 6;
+  optional uint32 source_article_version = 7;
+  optional uint32 estimated_minutes = 8;
+}
+
+message CreateCourseVersionLessonResponse {
+  CourseVersionLesson lesson = 1;
+}
+
+message UpdateCourseVersionLessonRequest {
+  string id = 1;
+  optional string title = 2;
+  optional google.protobuf.Struct content = 3;
+  optional CourseLessonSourceType source_type = 4;
+  optional string source_article_id = 5;
+  optional uint32 source_article_version = 6;
+  optional uint32 estimated_minutes = 7;
+}
+
+message UpdateCourseVersionLessonResponse {
+  CourseVersionLesson lesson = 1;
+}
+
+message DeleteCourseVersionLessonRequest {
+  string id = 1;
+}
+
+message DeleteCourseVersionLessonResponse {}
+
+message MoveCourseVersionLessonRequest {
+  string id = 1;
+  string section_version_id = 2;
+  uint32 order = 3;
+}
+
+message MoveCourseVersionLessonResponse {
+  CourseVersionLesson lesson = 1;
+}
+
+message UpsertCourseVersionQuizRequest {
+  string lesson_version_id = 1;
+  repeated QuizQuestion questions = 2;
+  uint32 passing_score = 3;
+  optional uint32 max_attempts = 4;
+}
+
+message UpsertCourseVersionQuizResponse {
+  CourseVersionQuiz quiz = 1;
+}
+
+message DeleteCourseVersionQuizRequest {
+  string lesson_version_id = 1;
+}
+
+message DeleteCourseVersionQuizResponse {}
 
 message GetCourseSectionsRequest {
   string course_id = 1;
@@ -349,11 +1195,20 @@ message AssignCourseRequest {
   AssigneeType assignee_type = 2;
   optional string assignee_id = 3;
   optional google.protobuf.Timestamp due_date = 4;
+  // If omitted, the server pins the latest published version atomically.
+  optional string course_version_id = 5;
 }
 
 message AssignCourseResponse {
   CourseAssignment assignment = 1;
+  repeated string enrollment_ids = 2;
 }
+
+message RevokeAssignmentRequest {
+  string assignment_id = 1;
+}
+
+message RevokeAssignmentResponse {}
 
 message GetProgressRequest {
   optional string course_id = 1;
@@ -371,4 +1226,740 @@ message MarkLessonCompleteRequest {
 
 message MarkLessonCompleteResponse {
   CourseProgress progress = 1;
+}
+
+message GetEnrollmentsRequest {
+  optional string course_id = 1;
+  optional string course_version_id = 2;
+  // Owner/admin reporting filter. Employee requests are always scoped to the
+  // caller regardless of this field.
+  optional string user_id = 3;
+  optional EnrollmentProgressStatus progress_status = 4;
+  optional EnrollmentAccessStatus access_status = 5;
+}
+
+message GetEnrollmentsResponse {
+  repeated CourseEnrollment enrollments = 1;
+}
+
+message SelfEnrollCourseRequest {
+  string course_id = 1;
+}
+
+message SelfEnrollCourseResponse {
+  CourseEnrollment enrollment = 1;
+}
+
+message GetCatalogCourseVersionRequest {
+  string course_id = 1;
+}
+
+message GetCatalogCourseVersionResponse {
+  LearnerPublishedCourseVersion version = 1;
+}
+
+message GetEnrollmentRequest {
+  string enrollment_id = 1;
+}
+
+message GetEnrollmentResponse {
+  CourseEnrollment enrollment = 1;
+}
+
+message GetEnrollmentOutlineRequest {
+  string enrollment_id = 1;
+}
+
+message GetEnrollmentOutlineResponse {
+  EnrollmentOutline outline = 1;
+}
+
+message GetEnrollmentLessonRequest {
+  string enrollment_id = 1;
+  string lesson_version_id = 2;
+}
+
+message GetEnrollmentLessonResponse {
+  EnrollmentLesson lesson = 1;
+}
+
+message ResumeEnrollmentRequest {
+  string enrollment_id = 1;
+}
+
+message ResumeEnrollmentResponse {
+  CourseEnrollment enrollment = 1;
+  optional EnrollmentLesson current_lesson = 2;
+}
+
+message CompleteEnrollmentLessonRequest {
+  string enrollment_id = 1;
+  string lesson_version_id = 2;
+  optional uint64 active_seconds = 3;
+  optional google.protobuf.Struct last_position = 4;
+  string idempotency_key = 5;
+}
+
+message CompleteEnrollmentLessonResponse {
+  EnrollmentProgressSnapshot progress = 1;
+}
+
+message SubmitEnrollmentQuizAttemptRequest {
+  string enrollment_id = 1;
+  string quiz_version_id = 2;
+  repeated EnrollmentQuizAnswer answers = 3;
+  optional uint64 active_seconds = 4;
+  optional google.protobuf.Struct last_position = 5;
+  string idempotency_key = 6;
+}
+
+message SubmitEnrollmentQuizAttemptResponse {
+  EnrollmentQuizAttempt attempt = 1;
+  EnrollmentProgressSnapshot progress = 2;
+}
+
+message GetEnrollmentReportRequest {
+  string enrollment_id = 1;
+}
+
+message GetEnrollmentReportResponse {
+  EnrollmentReport report = 1;
+}
+
+message GetPartnerCourseGroupsRequest {
+  optional CourseLifecycleStatus lifecycle = 1;
+  optional CourseDistributionStatus distribution = 2;
+}
+
+message GetPartnerCourseGroupsResponse {
+  repeated PartnerCourseGroup groups = 1;
+}
+
+message GetPartnerCoursesReportRequest {
+  string partner_id = 1;
+}
+
+message GetPartnerCoursesReportResponse {
+  PartnerCoursesReport report = 1;
+}
+
+message GetCourseVersionPreviewRequest {
+  string course_id = 1;
+  string version_id = 2;
+}
+
+message GetCourseVersionPreviewResponse {
+  CourseVersionPreview preview = 1;
+}
+
+message SubmitCoursePreviewQuizAttemptRequest {
+  string course_id = 1;
+  string version_id = 2;
+  string quiz_version_id = 3;
+  repeated EnrollmentQuizAnswer answers = 4;
+}
+
+message SubmitCoursePreviewQuizAttemptResponse {
+  CoursePreviewQuizAttemptResult result = 1;
+}
+
+message PausePartnerCourseDistributionRequest {
+  string course_id = 1;
+  string reason = 2;
+}
+
+message PausePartnerCourseDistributionResponse {
+  CourseRestriction restriction = 1;
+}
+
+message BlockPartnerCourseRequest {
+  string course_id = 1;
+  string reason = 2;
+}
+
+message BlockPartnerCourseResponse {
+  CourseRestriction restriction = 1;
+}
+
+message ResolvePartnerCourseRestrictionRequest {
+  string course_id = 1;
+  string reason = 2;
+}
+
+message ResolvePartnerCourseRestrictionResponse {
+  CourseRestriction restriction = 1;
+}
+
+message GetCourseRestrictionsRequest {
+  string course_id = 1;
+}
+
+message GetCourseRestrictionsResponse {
+  repeated CourseRestriction restrictions = 1;
+}
+
+message CopyPartnerCourseVersionToCompanyRequest {
+  string course_id = 1;
+  string version_id = 2;
+  string idempotency_key = 3;
+}
+
+message CopyPartnerCourseVersionToCompanyResponse {
+  PartnerCourseCopyResult result = 1;
+}
+
+message GetCourseTemplatesRequest {
+  optional CourseTemplateType type = 1;
+  optional CourseTemplateLifecycleStatus lifecycle_status = 2;
+}
+
+message GetCourseTemplatesResponse {
+  repeated CourseTemplate templates = 1;
+}
+
+message GetCourseTemplateRequest {
+  string template_id = 1;
+  // When present, includes content for exactly this immutable/draft version.
+  optional string version_id = 2;
+}
+
+message GetCourseTemplateResponse {
+  CourseTemplate template = 1;
+  repeated CourseTemplateVersion versions = 2;
+  optional CourseTemplateVersionDetails selected_version = 3;
+}
+
+message CreateCourseTemplateRequest {
+  string title = 1;
+  optional string description = 2;
+  optional string cover_file_id = 3;
+  optional bool sequential = 4;
+  optional CourseTemplateDraftContentInput content = 5;
+}
+
+message CreateCourseTemplateResponse {
+  CourseTemplate template = 1;
+  CourseTemplateVersion draft = 2;
+}
+
+message UpdateCourseTemplateDraftRequest {
+  string template_id = 1;
+  optional string title = 2;
+  optional string description = 3;
+  optional string cover_file_id = 4;
+  optional bool sequential = 5;
+  // Supplying content atomically replaces the draft content. Published
+  // versions are immutable and can never be targeted by this command.
+  optional CourseTemplateDraftContentInput content = 6;
+}
+
+message UpdateCourseTemplateDraftResponse {
+  CourseTemplateVersionDetails draft = 1;
+}
+
+message CreateCourseTemplateDraftRequest {
+  string template_id = 1;
+}
+
+message CreateCourseTemplateDraftResponse {
+  CourseTemplateVersionDetails draft = 1;
+}
+
+message PublishCourseTemplateVersionRequest {
+  string template_id = 1;
+  string idempotency_key = 2;
+}
+
+message PublishCourseTemplateVersionResponse {
+  CourseTemplateVersion version = 1;
+}
+
+message ArchiveCourseTemplateRequest {
+  string template_id = 1;
+}
+
+message ArchiveCourseTemplateResponse {
+  CourseTemplate template = 1;
+}
+
+message InstantiateCourseTemplateVersionRequest {
+  string version_id = 1;
+  string idempotency_key = 2;
+}
+
+message InstantiateCourseTemplateVersionResponse {
+  CourseTemplateInstantiationResult result = 1;
+}
+
+message ExternalPersonalAccess {
+  string id = 1;
+  string company_id = 2;
+  string course_id = 3;
+  string course_version_id = 4;
+  string partner_owner_id = 5;
+  optional string external_learner_id = 6;
+  string expected_email = 7;
+  optional string recipient_first_name = 8;
+  optional string recipient_last_name = 9;
+  uint32 deadline_days = 10;
+  ExternalPersonalAccessStatus status = 11;
+  string token_prefix = 12;
+  optional string enrollment_id = 13;
+  string issued_by_id = 14;
+  google.protobuf.Timestamp issued_at = 15;
+  optional google.protobuf.Timestamp activated_at = 16;
+  optional google.protobuf.Timestamp revoked_at = 17;
+}
+
+message ExternalPersonalAccessCreated {
+  ExternalPersonalAccess access = 1;
+  string token = 2;
+}
+
+message ExternalCampaign {
+  string id = 1;
+  string company_id = 2;
+  string course_id = 3;
+  string course_version_id = 4;
+  ExternalCampaignOwnerType owner_type = 5;
+  optional string owner_user_id = 6;
+  ExternalCampaignPurpose purpose = 7;
+  string name = 8;
+  uint32 deadline_days = 9;
+  ExternalCampaignStatus status = 10;
+  string token_prefix = 11;
+  string created_by_id = 12;
+  google.protobuf.Timestamp created_at = 13;
+  optional google.protobuf.Timestamp paused_at = 14;
+  optional google.protobuf.Timestamp revoked_at = 15;
+}
+
+message ExternalCampaignCreated {
+  ExternalCampaign campaign = 1;
+  // Full token is returned only on create/rotation and is never persisted or
+  // logged by gateway/Academy.
+  string token = 2;
+}
+
+message CampaignFunnel {
+  uint64 views = 1;
+  uint64 unique_visitors = 2;
+  uint64 form_submits = 3;
+  uint64 verified_emails = 4;
+  uint64 activations = 5;
+  uint64 completions = 6;
+}
+
+message CampaignLessonDropOff {
+  string lesson_version_id = 1;
+  uint64 reached = 2;
+  uint64 completed = 3;
+}
+
+message CampaignAttribution {
+  optional string utm_source = 1;
+  optional string utm_medium = 2;
+  optional string utm_campaign = 3;
+  optional string referrer = 4;
+  uint64 visits = 5;
+  uint64 activations = 6;
+  uint64 completions = 7;
+  optional string utm_content = 8;
+  optional string utm_term = 9;
+}
+
+message CampaignVersionAnalytics {
+  string course_version_id = 1;
+  uint32 version_number = 2;
+  uint64 activations = 3;
+  uint64 completions = 4;
+  double average_progress_percent = 5;
+}
+
+message CampaignAnalytics {
+  uint64 first_lesson_starts = 1;
+  uint64 lesson_completions = 2;
+  uint64 quiz_submissions = 3;
+  uint64 expired_enrollments = 4;
+  uint64 return_visits = 5;
+  double average_progress_percent = 6;
+  double median_progress_percent = 7;
+  optional uint64 average_completion_seconds = 8;
+  optional uint64 median_completion_seconds = 9;
+  repeated CampaignLessonDropOff lesson_drop_off = 10;
+  repeated CampaignAttribution attribution = 11;
+  repeated CampaignVersionAnalytics versions = 12;
+}
+
+message ExternalCampaignReport {
+  ExternalCampaign campaign = 1;
+  CampaignFunnel funnel = 2;
+  repeated CourseEnrollment enrollments = 3;
+  CampaignAnalytics analytics = 4;
+}
+
+message CourseExternalReport {
+  string course_id = 1;
+  repeated CourseEnrollment enrollments = 2;
+}
+
+message ExternalLearnerTimelineEvent {
+  string id = 1;
+  ExternalLearnerTimelineEventType type = 2;
+  google.protobuf.Timestamp occurred_at = 3;
+  optional string course_id = 4;
+  optional string course_version_id = 5;
+  optional string enrollment_id = 6;
+  optional EnrollmentSourceType source_type = 7;
+  optional string source_id = 8;
+  optional string course_title = 9;
+  optional uint32 version_number = 10;
+  optional uint32 progress_percent = 11;
+  optional EnrollmentAccessStatus access_status = 12;
+  bool deleted_course = 13;
+}
+
+message ExternalLearnerTimeline {
+  ExternalLearner learner = 1;
+  repeated ExternalLearnerTimelineEvent events = 2;
+}
+
+message ExternalLearner {
+  string id = 1;
+  string company_id = 2;
+  string email = 3;
+  string normalized_email = 4;
+  optional string first_name = 5;
+  optional string last_name = 6;
+  optional string phone = 7;
+  optional google.protobuf.Timestamp email_verified_at = 8;
+  google.protobuf.Timestamp created_at = 9;
+  google.protobuf.Timestamp updated_at = 10;
+}
+
+message PublicAcademyOutlineLesson {
+  string id = 1;
+  string title = 2;
+  uint32 order = 3;
+  optional uint32 estimated_minutes = 4;
+}
+
+message PublicAcademyOutlineSection {
+  string id = 1;
+  string title = 2;
+  uint32 order = 3;
+  repeated PublicAcademyOutlineLesson lessons = 4;
+}
+
+message PublicAcademyAccess {
+  PublicAcademyAccessKind kind = 1;
+  string course_id = 2;
+  string course_version_id = 3;
+  string title = 4;
+  optional string description = 5;
+  optional string cover_url = 6;
+  CourseOwnerType owner_type = 7;
+  optional string owner_user_id = 8;
+  uint32 deadline_days = 9;
+  bool available = 10;
+  optional string unavailable_reason = 11;
+  bool email_verification_required = 12;
+  repeated PublicAcademyOutlineSection outline = 13;
+}
+
+message ExternalVerificationChallenge {
+  string challenge_id = 1;
+  google.protobuf.Timestamp expires_at = 2;
+}
+
+message ExternalVerificationConfirmed {
+  string learner_id = 1;
+  google.protobuf.Timestamp verified_at = 2;
+  // Internal transport-only values used by gateway to set the HttpOnly
+  // cookie. They are never serialized into the public JSON response.
+  string session_token = 3;
+  google.protobuf.Timestamp session_expires_at = 4;
+}
+
+message ExternalQuizAttemptResult {
+  string id = 1;
+  uint32 score = 2;
+  bool passed = 3;
+  bool pending_review = 4;
+  optional uint32 attempts_remaining = 5;
+  google.protobuf.Timestamp created_at = 6;
+}
+
+message ExternalEnrollmentResults {
+  CourseEnrollment enrollment = 1;
+  repeated string completed_lesson_ids = 2;
+  repeated ExternalQuizAttemptResult quiz_attempts = 3;
+}
+
+message CreateExternalPersonalAccessRequest {
+  string course_id = 1;
+  string course_version_id = 2;
+  string email = 3;
+  optional string first_name = 4;
+  optional string last_name = 5;
+  uint32 deadline_days = 6;
+}
+
+message CreateExternalPersonalAccessResponse {
+  ExternalPersonalAccessCreated created = 1;
+}
+
+message GetExternalPersonalAccessesRequest {
+  string course_id = 1;
+}
+
+message GetExternalPersonalAccessesResponse {
+  repeated ExternalPersonalAccess accesses = 1;
+}
+
+message GetExternalPersonalAccessRequest {
+  string access_id = 1;
+}
+
+message GetExternalPersonalAccessResponse {
+  ExternalPersonalAccess access = 1;
+}
+
+message ExtendExternalPersonalAccessRequest {
+  string access_id = 1;
+  uint32 deadline_days = 2;
+}
+
+message ExtendExternalPersonalAccessResponse {
+  ExternalPersonalAccess access = 1;
+}
+
+message RotateExternalPersonalAccessTokenRequest {
+  string access_id = 1;
+}
+
+message RotateExternalPersonalAccessTokenResponse {
+  ExternalPersonalAccessCreated created = 1;
+}
+
+message RevokeExternalPersonalAccessRequest {
+  string access_id = 1;
+}
+
+message RevokeExternalPersonalAccessResponse {
+  ExternalPersonalAccess access = 1;
+}
+
+message RepeatExternalPersonalAccessRequest {
+  string access_id = 1;
+}
+
+message RepeatExternalPersonalAccessResponse {
+  ExternalPersonalAccessCreated created = 1;
+}
+
+message CreateExternalCampaignRequest {
+  string course_id = 1;
+  string course_version_id = 2;
+  string name = 3;
+  ExternalCampaignPurpose purpose = 4;
+  uint32 deadline_days = 5;
+}
+
+message CreateExternalCampaignResponse {
+  ExternalCampaignCreated created = 1;
+}
+
+message GetExternalCampaignsRequest {
+  string course_id = 1;
+}
+
+message GetExternalCampaignsResponse {
+  repeated ExternalCampaign campaigns = 1;
+}
+
+message GetExternalCampaignRequest {
+  string campaign_id = 1;
+}
+
+message GetExternalCampaignResponse {
+  ExternalCampaign campaign = 1;
+}
+
+message PauseExternalCampaignRequest {
+  string campaign_id = 1;
+}
+
+message PauseExternalCampaignResponse {
+  ExternalCampaign campaign = 1;
+}
+
+message ResumeExternalCampaignRequest {
+  string campaign_id = 1;
+}
+
+message ResumeExternalCampaignResponse {
+  ExternalCampaign campaign = 1;
+}
+
+message RotateExternalCampaignTokenRequest {
+  string campaign_id = 1;
+}
+
+message RotateExternalCampaignTokenResponse {
+  ExternalCampaignCreated created = 1;
+}
+
+message RevokeExternalCampaignRequest {
+  string campaign_id = 1;
+}
+
+message RevokeExternalCampaignResponse {
+  ExternalCampaign campaign = 1;
+}
+
+message GetExternalCampaignReportRequest {
+  string campaign_id = 1;
+}
+
+message GetExternalCampaignReportResponse {
+  ExternalCampaignReport report = 1;
+}
+
+message GetCourseExternalReportRequest {
+  string course_id = 1;
+}
+
+message GetCourseExternalReportResponse {
+  CourseExternalReport report = 1;
+}
+
+message GetPublicAcademyAccessRequest {
+  string token = 1;
+  bytes visitor_hash = 2;
+  optional string utm_source = 3;
+  optional string utm_medium = 4;
+  optional string utm_campaign = 5;
+  optional string utm_content = 6;
+  optional string utm_term = 7;
+  optional string referrer = 8;
+}
+
+message GetPublicAcademyAccessResponse {
+  PublicAcademyAccess access = 1;
+}
+
+message RequestPublicAcademyVerificationRequest {
+  string access_token = 1;
+  string email = 2;
+  optional string first_name = 3;
+  optional string last_name = 4;
+  bytes visitor_hash = 5;
+}
+
+message RequestPublicAcademyVerificationResponse {
+  ExternalVerificationChallenge challenge = 1;
+}
+
+message ConfirmPublicAcademyVerificationRequest {
+  string challenge_id = 1;
+  string code = 2;
+}
+
+message ConfirmPublicAcademyVerificationResponse {
+  ExternalVerificationConfirmed confirmed = 1;
+}
+
+message ActivatePublicAcademyAccessRequest {
+  string access_token = 1;
+  string idempotency_key = 2;
+  bytes visitor_hash = 3;
+}
+
+message ActivatePublicAcademyAccessResponse {
+  CourseEnrollment enrollment = 1;
+}
+
+message GetPublicAcademyEnrollmentRequest {
+  string enrollment_id = 1;
+}
+
+message GetPublicAcademyEnrollmentResponse {
+  CourseEnrollment enrollment = 1;
+}
+
+message GetPublicAcademyEnrollmentOutlineRequest {
+  string enrollment_id = 1;
+}
+
+message GetPublicAcademyEnrollmentOutlineResponse {
+  EnrollmentOutline outline = 1;
+}
+
+message GetPublicAcademyEnrollmentLessonRequest {
+  string enrollment_id = 1;
+  string lesson_version_id = 2;
+}
+
+message GetPublicAcademyEnrollmentLessonResponse {
+  EnrollmentLesson lesson = 1;
+}
+
+message CompletePublicAcademyEnrollmentLessonRequest {
+  string enrollment_id = 1;
+  string lesson_version_id = 2;
+  string idempotency_key = 3;
+}
+
+message CompletePublicAcademyEnrollmentLessonResponse {
+  CourseEnrollment enrollment = 1;
+}
+
+message SubmitPublicAcademyQuizAttemptRequest {
+  string enrollment_id = 1;
+  string quiz_version_id = 2;
+  string idempotency_key = 3;
+  repeated EnrollmentQuizAnswer answers = 4;
+}
+
+message SubmitPublicAcademyQuizAttemptResponse {
+  ExternalQuizAttemptResult result = 1;
+}
+
+message GetPublicAcademyEnrollmentResultsRequest {
+  string enrollment_id = 1;
+}
+
+message GetPublicAcademyEnrollmentResultsResponse {
+  ExternalEnrollmentResults results = 1;
+}
+
+message GetExternalLearnersRequest {}
+
+message GetExternalLearnersResponse {
+  repeated ExternalLearner learners = 1;
+}
+
+message GetExternalLearnerRequest {
+  string learner_id = 1;
+}
+
+message GetExternalLearnerResponse {
+  ExternalLearner learner = 1;
+}
+
+message GetExternalLearnerEnrollmentsRequest {
+  string learner_id = 1;
+}
+
+message GetExternalLearnerEnrollmentsResponse {
+  repeated CourseEnrollment enrollments = 1;
+}
+
+message GetExternalLearnerTimelineRequest {
+  string learner_id = 1;
+}
+
+message GetExternalLearnerTimelineResponse {
+  ExternalLearnerTimeline timeline = 1;
 }

@@ -55,6 +55,16 @@ func (s *Store) Put(ctx context.Context, key string, r io.Reader, size int64, co
 	_, err := s.client.PutObject(ctx, s.bucket, key, r, size, minio.PutObjectOptions{ContentType: contentType})
 	return err
 }
+func (s *Store) Copy(ctx context.Context, sourceKey, targetKey string) error {
+	_, err := s.client.CopyObject(ctx, minio.CopyDestOptions{
+		Bucket: s.bucket,
+		Object: targetKey,
+	}, minio.CopySrcOptions{
+		Bucket: s.bucket,
+		Object: sourceKey,
+	})
+	return err
+}
 func (s *Store) Remove(ctx context.Context, key string) error {
 	return s.client.RemoveObject(ctx, s.bucket, key, minio.RemoveObjectOptions{})
 }

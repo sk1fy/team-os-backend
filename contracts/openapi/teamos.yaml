@@ -971,6 +971,60 @@ paths:
         default:
           $ref: '#/components/responses/Error'
 
+  /api/v1/kb/articles/{id}/partner-policy:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    get:
+      tags: [Knowledge Base]
+      operationId: getArticlePartnerPolicy
+      summary: Получить правила доступа и копирования статьи для партнёров
+      responses:
+        '200':
+          $ref: '#/components/responses/ArticlePartnerPolicy'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+    put:
+      tags: [Knowledge Base]
+      operationId: updateArticlePartnerPolicy
+      summary: Изменить правила доступа и копирования статьи для партнёров
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateArticlePartnerPolicyInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/ArticlePartnerPolicy'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/kb/articles/{id}/course-copy-permission:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    get:
+      tags: [Knowledge Base]
+      operationId: checkArticleCourseCopyPermission
+      summary: Проверить доступ текущего партнёра к snapshot-копии статьи
+      parameters:
+        - name: articleVersionId
+          in: query
+          required: false
+          description: Проверяемая опубликованная версия; без параметра используется текущая
+          schema:
+            $ref: '#/components/schemas/ID'
+      responses:
+        '200':
+          $ref: '#/components/responses/ArticleCourseCopyPermission'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
   /api/v1/tasks/boards:
     get:
       tags: [Tasks]
@@ -1192,6 +1246,36 @@ paths:
       tags: [Academy]
       operationId: getCourses
       summary: Получить курсы
+      parameters:
+        - name: ownerType
+          in: query
+          schema:
+            $ref: '#/components/schemas/CourseOwnerType'
+        - name: partnerId
+          in: query
+          schema:
+            $ref: '#/components/schemas/ID'
+        - name: lifecycle
+          in: query
+          schema:
+            $ref: '#/components/schemas/CourseLifecycleStatus'
+        - name: distribution
+          in: query
+          schema:
+            $ref: '#/components/schemas/CourseDistributionStatus'
+        - name: hasDraft
+          in: query
+          schema:
+            type: boolean
+        - name: latestVersion
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+        - name: originType
+          in: query
+          schema:
+            $ref: '#/components/schemas/CourseOriginType'
       responses:
         '200':
           $ref: '#/components/responses/Courses'
@@ -1224,6 +1308,7 @@ paths:
       security: []
       tags: [Academy]
       operationId: getPublicCourse
+      deprecated: true
       summary: Получить опубликованный публичный курс с материалами
       responses:
         '200':
@@ -1567,6 +1652,1509 @@ paths:
         default:
           $ref: '#/components/responses/Error'
 
+  /api/v1/academy/enrollments:
+    get:
+      tags: [Academy]
+      operationId: getAcademyEnrollments
+      summary: Получить внутренние прохождения в доступной области
+      parameters:
+        - name: courseId
+          in: query
+          schema:
+            $ref: '#/components/schemas/ID'
+        - name: courseVersionId
+          in: query
+          schema:
+            $ref: '#/components/schemas/ID'
+        - name: userId
+          in: query
+          description: Фильтр для owner/admin; сотрудник всегда видит только себя.
+          schema:
+            $ref: '#/components/schemas/ID'
+        - name: progressStatus
+          in: query
+          schema:
+            $ref: '#/components/schemas/EnrollmentProgressStatus'
+        - name: accessStatus
+          in: query
+          schema:
+            $ref: '#/components/schemas/EnrollmentAccessStatus'
+      responses:
+        '200':
+          $ref: '#/components/responses/AcademyEnrollments'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/enrollments/{enrollmentId}:
+    parameters:
+      - $ref: '#/components/parameters/EnrollmentId'
+    get:
+      tags: [Academy]
+      operationId: getAcademyEnrollment
+      summary: Получить внутреннее прохождение зафиксированной версии
+      responses:
+        '200':
+          $ref: '#/components/responses/AcademyEnrollment'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/enrollments/{enrollmentId}/outline:
+    parameters:
+      - $ref: '#/components/parameters/EnrollmentId'
+    get:
+      tags: [Academy]
+      operationId: getAcademyEnrollmentOutline
+      summary: Получить структуру зафиксированной версии и server-side доступность уроков
+      responses:
+        '200':
+          $ref: '#/components/responses/AcademyEnrollmentOutline'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/enrollments/{enrollmentId}/lessons/{lessonVersionId}:
+    parameters:
+      - $ref: '#/components/parameters/EnrollmentId'
+      - $ref: '#/components/parameters/LessonVersionId'
+    get:
+      tags: [Academy]
+      operationId: getAcademyEnrollmentLesson
+      summary: Получить доступный урок внутреннего прохождения
+      responses:
+        '200':
+          $ref: '#/components/responses/AcademyEnrollmentLesson'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/enrollments/{enrollmentId}/resume:
+    parameters:
+      - $ref: '#/components/parameters/EnrollmentId'
+    post:
+      tags: [Academy]
+      operationId: resumeAcademyEnrollment
+      summary: Получить вычисленную сервером точку продолжения
+      responses:
+        '200':
+          $ref: '#/components/responses/AcademyEnrollmentResume'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/enrollments/{enrollmentId}/lessons/{lessonVersionId}/complete:
+    parameters:
+      - $ref: '#/components/parameters/EnrollmentId'
+      - $ref: '#/components/parameters/LessonVersionId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+    post:
+      tags: [Academy]
+      operationId: completeAcademyEnrollmentLesson
+      summary: Атомарно завершить урок и разблокировать следующий
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteEnrollmentLessonInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/EnrollmentProgressSnapshot'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/enrollments/{enrollmentId}/quizzes/{quizVersionId}/attempts:
+    parameters:
+      - $ref: '#/components/parameters/EnrollmentId'
+      - $ref: '#/components/parameters/QuizVersionId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+    post:
+      tags: [Academy]
+      operationId: submitAcademyEnrollmentQuizAttempt
+      summary: Атомарно оценить тест, завершить урок и обновить unlock/progress
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitEnrollmentQuizAttemptInput'
+      responses:
+        '201':
+          $ref: '#/components/responses/EnrollmentQuizAttemptSubmitted'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/courses/{courseId}/draft:
+    parameters:
+      - $ref: '#/components/parameters/CourseId'
+    get:
+      tags: [Academy]
+      operationId: getCourseDraft
+      summary: Получить текущий черновик курса для редактора
+      responses:
+        '200':
+          $ref: '#/components/responses/CourseVersionAuthorDetail'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+    patch:
+      tags: [Academy]
+      operationId: updateCourseDraft
+      summary: Обновить метаданные черновика курса
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCourseDraftInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/CourseVersion'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+    post:
+      tags: [Academy]
+      operationId: createCourseDraft
+      summary: Создать черновик следующей версии курса
+      responses:
+        '201':
+          $ref: '#/components/responses/CourseVersion'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/courses/{courseId}/versions:
+    parameters:
+      - $ref: '#/components/parameters/CourseId'
+    get:
+      tags: [Academy]
+      operationId: getCourseVersions
+      summary: Получить версии курса
+      responses:
+        '200':
+          $ref: '#/components/responses/CourseVersions'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/courses/{courseId}/versions/{versionId}:
+    parameters:
+      - $ref: '#/components/parameters/CourseId'
+      - $ref: '#/components/parameters/VersionId'
+    get:
+      tags: [Academy]
+      operationId: getCourseVersion
+      summary: Получить конкретную версию курса
+      responses:
+        '200':
+          $ref: '#/components/responses/CourseVersionDetail'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/courses/{courseId}/versions/{versionId}/preview:
+    parameters:
+      - $ref: '#/components/parameters/CourseId'
+      - $ref: '#/components/parameters/VersionId'
+    get:
+      tags: [Academy]
+      operationId: getCourseVersionPreview
+      summary: Предпросмотреть версию курса без создания прохождения и прогресса
+      responses:
+        '200':
+          $ref: '#/components/responses/CourseVersionPreview'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/courses/{courseId}/versions/{versionId}/preview/quizzes/{quizVersionId}/attempts:
+    parameters:
+      - $ref: '#/components/parameters/CourseId'
+      - $ref: '#/components/parameters/VersionId'
+      - name: quizVersionId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+    post:
+      tags: [Academy]
+      operationId: submitCoursePreviewQuizAttempt
+      summary: Проверить ответы в режиме preview без сохранения попытки или прогресса
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitCoursePreviewQuizAttemptInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/CoursePreviewQuizAttemptResult'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/courses/{courseId}/publish:
+    parameters:
+      - $ref: '#/components/parameters/CourseId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+    post:
+      tags: [Academy]
+      operationId: publishCourseVersion
+      summary: Опубликовать текущий черновик курса
+      responses:
+        '200':
+          $ref: '#/components/responses/CourseVersion'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/courses/{courseId}/archive:
+    parameters:
+      - $ref: '#/components/parameters/CourseId'
+    post:
+      tags: [Academy]
+      operationId: archiveAcademyCourse
+      summary: Архивировать курс с сохранением истории
+      responses:
+        '200':
+          $ref: '#/components/responses/Course'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/courses/{courseId}/restore:
+    parameters:
+      - $ref: '#/components/parameters/CourseId'
+    post:
+      tags: [Academy]
+      operationId: restoreAcademyCourse
+      summary: Вернуть курс из архива без автоматического размораживания прохождений
+      responses:
+        '200':
+          $ref: '#/components/responses/Course'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/course-versions/{versionId}/sections:
+    parameters:
+      - $ref: '#/components/parameters/VersionId'
+    post:
+      tags: [Academy]
+      operationId: createCourseVersionSection
+      summary: Создать раздел в черновике версии
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCourseVersionSectionInput'
+      responses:
+        '201':
+          $ref: '#/components/responses/CourseVersionSection'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/course-version-sections/{sectionId}:
+    parameters:
+      - $ref: '#/components/parameters/SectionId'
+    patch:
+      tags: [Academy]
+      operationId: updateCourseVersionSection
+      summary: Обновить раздел черновика версии
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCourseVersionSectionInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/CourseVersionSection'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags: [Academy]
+      operationId: deleteCourseVersionSection
+      summary: Удалить раздел черновика версии
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/course-versions/{versionId}/lessons:
+    parameters:
+      - $ref: '#/components/parameters/VersionId'
+    post:
+      tags: [Academy]
+      operationId: createCourseVersionLesson
+      summary: Создать урок в черновике версии
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCourseVersionLessonInput'
+      responses:
+        '201':
+          $ref: '#/components/responses/CourseVersionLesson'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/course-version-lessons/{lessonId}:
+    parameters:
+      - $ref: '#/components/parameters/LessonId'
+    patch:
+      tags: [Academy]
+      operationId: updateCourseVersionLesson
+      summary: Обновить урок черновика версии
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCourseVersionLessonInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/CourseVersionLesson'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags: [Academy]
+      operationId: deleteCourseVersionLesson
+      summary: Удалить урок черновика версии
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/course-version-lessons/{lessonId}/move:
+    parameters:
+      - $ref: '#/components/parameters/LessonId'
+    post:
+      tags: [Academy]
+      operationId: moveCourseVersionLesson
+      summary: Переместить урок внутри черновика версии
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MoveCourseVersionLessonInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/CourseVersionLesson'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/course-version-lessons/{lessonId}/quiz:
+    parameters:
+      - $ref: '#/components/parameters/LessonId'
+    put:
+      tags: [Academy]
+      operationId: upsertCourseVersionQuiz
+      summary: Создать или обновить тест урока в черновике версии
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpsertCourseVersionQuizInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/CourseVersionQuiz'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags: [Academy]
+      operationId: deleteCourseVersionLessonQuiz
+      summary: Удалить тест из урока черновика
+      responses:
+        '204':
+          description: Тест удалён
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/course-versions/{versionId}/learner:
+    parameters:
+      - $ref: '#/components/parameters/VersionId'
+    get:
+      tags: [Academy]
+      operationId: getCourseVersionLearner
+      summary: Получить learner-safe содержимое опубликованной версии
+      responses:
+        '200':
+          $ref: '#/components/responses/CourseVersionLearnerDetail'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/courses/{courseId}/assignments:
+    parameters:
+      - $ref: '#/components/parameters/CourseId'
+    get:
+      tags: [Academy]
+      operationId: getCourseAssignments
+      summary: Получить назначения курса
+      responses:
+        '200':
+          $ref: '#/components/responses/CourseAssignmentSummaries'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+    post:
+      tags: [Academy]
+      operationId: createCourseAssignment
+      summary: Назначить опубликованную версию курса
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCourseAssignmentInput'
+      responses:
+        '201':
+          $ref: '#/components/responses/CourseAssignmentSummary'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/assignments/{assignmentId}:
+    parameters:
+      - name: assignmentId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+    delete:
+      tags: [Academy]
+      operationId: revokeCourseAssignment
+      summary: Отозвать назначение и доступ незавершённых прохождений
+      responses:
+        '204':
+          description: Назначение отозвано
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/learning/me:
+    get:
+      tags: [Academy]
+      operationId: getMyLearning
+      summary: Получить сводку обучения текущего пользователя
+      responses:
+        '200':
+          $ref: '#/components/responses/MyLearningSummary'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/enrollments/me:
+    get:
+      tags: [Academy]
+      operationId: getMyEnrollments
+      summary: Получить прохождения текущего пользователя
+      parameters:
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/EnrollmentProgressStatus'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          $ref: '#/components/responses/PaginatedEnrollmentSummaries'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/catalog:
+    get:
+      tags: [Academy]
+      operationId: getAcademyCatalog
+      summary: Получить доступный текущему пользователю каталог
+      parameters:
+        - name: q
+          in: query
+          schema:
+            type: string
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          $ref: '#/components/responses/PaginatedCatalogCourseCards'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/catalog/{courseId}/enroll:
+    parameters:
+      - $ref: '#/components/parameters/CourseId'
+    post:
+      tags: [Academy]
+      operationId: selfEnrollAcademyCourse
+      summary: Самостоятельно записаться на доступный курс каталога
+      responses:
+        '201':
+          $ref: '#/components/responses/EnrollmentSummary'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/courses/{courseId}/my-enrollment:
+    parameters:
+      - $ref: '#/components/parameters/CourseId'
+    get:
+      tags: [Academy]
+      operationId: getMyCourseEnrollment
+      summary: Получить идентификатор актуального прохождения курса
+      responses:
+        '200':
+          $ref: '#/components/responses/MyCourseEnrollment'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/reports/internal:
+    get:
+      tags: [Academy]
+      operationId: getAcademyInternalReport
+      summary: Получить внутренний отчёт по сотрудникам
+      parameters:
+        - $ref: '#/components/parameters/AcademyReportQuery'
+        - $ref: '#/components/parameters/AcademyReportCourseId'
+        - $ref: '#/components/parameters/AcademyReportDepartmentId'
+        - $ref: '#/components/parameters/AcademyReportPositionId'
+        - $ref: '#/components/parameters/AcademyReportStatus'
+        - $ref: '#/components/parameters/AcademyReportSort'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          $ref: '#/components/responses/InternalReportResult'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/reports/internal/export:
+    get:
+      tags: [Academy]
+      operationId: exportAcademyInternalReport
+      summary: Выгрузить внутренний отчёт в CSV
+      parameters:
+        - $ref: '#/components/parameters/AcademyReportQuery'
+        - $ref: '#/components/parameters/AcademyReportCourseId'
+        - $ref: '#/components/parameters/AcademyReportDepartmentId'
+        - $ref: '#/components/parameters/AcademyReportPositionId'
+        - $ref: '#/components/parameters/AcademyReportStatus'
+        - $ref: '#/components/parameters/AcademyReportSort'
+      responses:
+        '200':
+          description: UTF-8 CSV
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+          content:
+            text/csv:
+              schema:
+                type: string
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/reports/external:
+    get:
+      tags: [Academy]
+      operationId: getAcademyExternalReport
+      summary: Получить отчёт партнёра по внешним прохождениям его курсов
+      parameters:
+        - name: q
+          in: query
+          schema:
+            type: string
+        - name: courseId
+          in: query
+          schema:
+            $ref: '#/components/schemas/ID'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          $ref: '#/components/responses/PaginatedPartnerExternalReportRows'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/templates/{templateId}/preview:
+    parameters:
+      - $ref: '#/components/parameters/TemplateId'
+    get:
+      tags: [Academy]
+      operationId: getCourseTemplatePreview
+      summary: Получить опубликованную версию шаблона для предпросмотра
+      description: В CourseVersionAuthorDetail поле courseId содержит идентификатор корневого шаблона; курс не создаётся.
+      responses:
+        '200':
+          $ref: '#/components/responses/CourseVersionAuthorDetail'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/courses/{courseId}/restrictions/pause:
+    parameters:
+      - $ref: '#/components/parameters/CourseId'
+    post:
+      tags: [Academy]
+      operationId: pausePartnerCourseDistribution
+      summary: Приостановить распространение партнёрского курса
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourseRestrictionInput'
+      responses:
+        '201':
+          $ref: '#/components/responses/CourseRestriction'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/courses/{courseId}/restrictions/block:
+    parameters:
+      - $ref: '#/components/parameters/CourseId'
+    post:
+      tags: [Academy]
+      operationId: blockPartnerCourse
+      summary: Экстренно заблокировать партнёрский курс
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourseRestrictionInput'
+      responses:
+        '201':
+          $ref: '#/components/responses/CourseRestriction'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/courses/{courseId}/restrictions/resolve:
+    parameters:
+      - $ref: '#/components/parameters/CourseId'
+    post:
+      tags: [Academy]
+      operationId: resolvePartnerCourseRestriction
+      summary: Снять приостановку или блокировку партнёрского курса
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourseRestrictionInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/CourseRestriction'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/courses/{courseId}/restrictions:
+    parameters:
+      - $ref: '#/components/parameters/CourseId'
+    get:
+      tags: [Academy]
+      operationId: getCourseRestrictions
+      summary: Получить историю ограничений курса
+      responses:
+        '200':
+          $ref: '#/components/responses/CourseRestrictions'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/partner-course-groups:
+    get:
+      tags: [Academy]
+      operationId: getPartnerCourseGroups
+      summary: Получить партнёрские курсы, сгруппированные по владельцам
+      parameters:
+        - name: lifecycle
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/CourseLifecycleStatus'
+        - name: distribution
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/CourseDistributionStatus'
+      responses:
+        '200':
+          $ref: '#/components/responses/PartnerCourseGroups'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/partner-courses/{courseId}/versions/{versionId}/copy-to-company:
+    parameters:
+      - $ref: '#/components/parameters/CourseId'
+      - $ref: '#/components/parameters/VersionId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+    post:
+      tags: [Academy]
+      operationId: copyPartnerCourseVersionToCompany
+      summary: Скопировать опубликованную версию партнёрского курса в курс компании
+      responses:
+        '201':
+          $ref: '#/components/responses/PartnerCourseCopy'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/templates:
+    get:
+      tags: [Academy]
+      operationId: getCourseTemplates
+      summary: Получить доступные шаблоны курсов
+      parameters:
+        - name: type
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/CourseTemplateType'
+        - name: lifecycle
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/CourseTemplateLifecycleStatus'
+      responses:
+        '200':
+          $ref: '#/components/responses/CourseTemplates'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+    post:
+      tags: [Academy]
+      operationId: createCourseTemplate
+      summary: Создать корпоративный шаблон курса
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCourseTemplateInput'
+      responses:
+        '201':
+          $ref: '#/components/responses/CourseTemplate'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/templates/{templateId}:
+    parameters:
+      - $ref: '#/components/parameters/TemplateId'
+    get:
+      tags: [Academy]
+      operationId: getCourseTemplate
+      summary: Получить шаблон курса
+      parameters:
+        - name: versionId
+          in: query
+          required: false
+          description: Включить контент выбранной версии шаблона
+          schema:
+            $ref: '#/components/schemas/ID'
+      responses:
+        '200':
+          $ref: '#/components/responses/CourseTemplate'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/templates/{templateId}/draft:
+    parameters:
+      - $ref: '#/components/parameters/TemplateId'
+    patch:
+      tags: [Academy]
+      operationId: updateCourseTemplateDraft
+      summary: Обновить метаданные черновика шаблона
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCourseTemplateDraftInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/CourseTemplateVersion'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+    post:
+      tags: [Academy]
+      operationId: createCourseTemplateDraft
+      summary: Создать черновик следующей версии шаблона
+      responses:
+        '201':
+          $ref: '#/components/responses/CourseTemplateVersion'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/templates/{templateId}/publish:
+    parameters:
+      - $ref: '#/components/parameters/TemplateId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+    post:
+      tags: [Academy]
+      operationId: publishCourseTemplateVersion
+      summary: Опубликовать текущий черновик шаблона
+      responses:
+        '200':
+          $ref: '#/components/responses/CourseTemplateVersion'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/templates/{templateId}/archive:
+    parameters:
+      - $ref: '#/components/parameters/TemplateId'
+    post:
+      tags: [Academy]
+      operationId: archiveCourseTemplate
+      summary: Архивировать шаблон курса
+      responses:
+        '200':
+          $ref: '#/components/responses/CourseTemplate'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/template-versions/{versionId}/instantiate:
+    parameters:
+      - $ref: '#/components/parameters/VersionId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+    post:
+      tags: [Academy]
+      operationId: instantiateCourseTemplateVersion
+      summary: Создать независимый черновик курса из версии шаблона
+      responses:
+        '201':
+          $ref: '#/components/responses/TemplateInstantiation'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/courses/{courseId}/versions/{versionId}/personal-accesses:
+    parameters:
+      - $ref: '#/components/parameters/CourseId'
+      - $ref: '#/components/parameters/VersionId'
+    post:
+      tags: [Academy]
+      operationId: createExternalPersonalAccess
+      summary: Создать персональный внешний доступ к версии курса
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateExternalPersonalAccessInput'
+      responses:
+        '201':
+          $ref: '#/components/responses/ExternalPersonalAccessCreated'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/courses/{courseId}/personal-accesses:
+    parameters:
+      - $ref: '#/components/parameters/CourseId'
+    get:
+      tags: [Academy]
+      operationId: getExternalPersonalAccesses
+      summary: Получить персональные доступы курса
+      responses:
+        '200':
+          $ref: '#/components/responses/ExternalPersonalAccesses'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/personal-accesses/{accessId}:
+    parameters:
+      - $ref: '#/components/parameters/AccessId'
+    get:
+      tags: [Academy]
+      operationId: getExternalPersonalAccess
+      summary: Получить персональный доступ и его состояние
+      responses:
+        '200':
+          $ref: '#/components/responses/ExternalPersonalAccess'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/personal-accesses/{accessId}/extend:
+    parameters:
+      - $ref: '#/components/parameters/AccessId'
+    post:
+      tags: [Academy]
+      operationId: extendExternalPersonalAccess
+      summary: Продлить текущее внешнее прохождение
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExtendExternalPersonalAccessInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/ExternalPersonalAccess'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/personal-accesses/{accessId}/rotate-token:
+    parameters:
+      - $ref: '#/components/parameters/AccessId'
+    post:
+      tags: [Academy]
+      operationId: rotateExternalPersonalAccessToken
+      summary: Заменить токен персонального доступа без изменения прогресса
+      responses:
+        '200':
+          $ref: '#/components/responses/ExternalPersonalAccessCreated'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/personal-accesses/{accessId}/revoke:
+    parameters:
+      - $ref: '#/components/parameters/AccessId'
+    post:
+      tags: [Academy]
+      operationId: revokeExternalPersonalAccess
+      summary: Отозвать персональный доступ
+      responses:
+        '200':
+          $ref: '#/components/responses/ExternalPersonalAccess'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/personal-accesses/{accessId}/repeat:
+    parameters:
+      - $ref: '#/components/parameters/AccessId'
+    post:
+      tags: [Academy]
+      operationId: repeatExternalPersonalAccess
+      summary: Создать отдельное повторное прохождение по персональному доступу
+      responses:
+        '201':
+          $ref: '#/components/responses/ExternalPersonalAccessCreated'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/courses/{courseId}/versions/{versionId}/campaigns:
+    parameters:
+      - $ref: '#/components/parameters/CourseId'
+      - $ref: '#/components/parameters/VersionId'
+    post:
+      tags: [Academy]
+      operationId: createExternalCampaign
+      summary: Создать внешнюю кампанию для версии курса
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateExternalCampaignInput'
+      responses:
+        '201':
+          $ref: '#/components/responses/ExternalCampaignCreated'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/courses/{courseId}/campaigns:
+    parameters:
+      - $ref: '#/components/parameters/CourseId'
+    get:
+      tags: [Academy]
+      operationId: getExternalCampaigns
+      summary: Получить внешние кампании курса
+      responses:
+        '200':
+          $ref: '#/components/responses/ExternalCampaigns'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/campaigns/{campaignId}:
+    parameters:
+      - $ref: '#/components/parameters/CampaignId'
+    get:
+      tags: [Academy]
+      operationId: getExternalCampaign
+      summary: Получить внешнюю кампанию
+      responses:
+        '200':
+          $ref: '#/components/responses/ExternalCampaign'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/campaigns/{campaignId}/pause:
+    parameters:
+      - $ref: '#/components/parameters/CampaignId'
+    post:
+      tags: [Academy]
+      operationId: pauseExternalCampaign
+      summary: Приостановить внешнюю кампанию
+      responses:
+        '200':
+          $ref: '#/components/responses/ExternalCampaign'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/campaigns/{campaignId}/resume:
+    parameters:
+      - $ref: '#/components/parameters/CampaignId'
+    post:
+      tags: [Academy]
+      operationId: resumeExternalCampaign
+      summary: Возобновить внешнюю кампанию
+      responses:
+        '200':
+          $ref: '#/components/responses/ExternalCampaign'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/campaigns/{campaignId}/rotate-token:
+    parameters:
+      - $ref: '#/components/parameters/CampaignId'
+    post:
+      tags: [Academy]
+      operationId: rotateExternalCampaignToken
+      summary: Заменить публичный токен кампании
+      responses:
+        '200':
+          $ref: '#/components/responses/ExternalCampaignCreated'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/campaigns/{campaignId}/revoke:
+    parameters:
+      - $ref: '#/components/parameters/CampaignId'
+    post:
+      tags: [Academy]
+      operationId: revokeExternalCampaign
+      summary: Отозвать внешнюю кампанию
+      responses:
+        '200':
+          $ref: '#/components/responses/ExternalCampaign'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/public/academy/access/{token}:
+    parameters:
+      - $ref: '#/components/parameters/PublicAcademyToken'
+    get:
+      security: []
+      tags: [Academy]
+      operationId: getPublicAcademyAccess
+      summary: Получить landing metadata внешнего доступа без контента уроков
+      responses:
+        '200':
+          $ref: '#/components/responses/PublicAcademyAccess'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/public/academy/access/{token}/request-verification:
+    parameters:
+      - $ref: '#/components/parameters/PublicAcademyToken'
+    post:
+      security: []
+      tags: [Academy]
+      operationId: requestPublicAcademyVerification
+      summary: Запросить email-код для внешнего доступа
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestExternalVerificationInput'
+      responses:
+        '202':
+          $ref: '#/components/responses/ExternalVerificationChallenge'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/public/academy/verifications/{challengeId}/confirm:
+    parameters:
+      - $ref: '#/components/parameters/ChallengeId'
+    post:
+      security: []
+      tags: [Academy]
+      operationId: confirmPublicAcademyVerification
+      summary: Подтвердить email внешнего ученика
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfirmExternalVerificationInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/ExternalVerificationConfirmed'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/public/academy/access/{token}/activate:
+    parameters:
+      - $ref: '#/components/parameters/PublicAcademyToken'
+      - $ref: '#/components/parameters/IdempotencyKey'
+    post:
+      security:
+        - externalSessionCookie: []
+      tags: [Academy]
+      operationId: activatePublicAcademyAccess
+      summary: Активировать внешнее прохождение и запустить дедлайн
+      responses:
+        '200':
+          $ref: '#/components/responses/ExternalEnrollment'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/public/academy/enrollments/{enrollmentId}:
+    parameters:
+      - $ref: '#/components/parameters/EnrollmentId'
+    get:
+      security:
+        - externalSessionCookie: []
+      tags: [Academy]
+      operationId: getPublicAcademyEnrollment
+      summary: Получить состояние внешнего прохождения
+      responses:
+        '200':
+          $ref: '#/components/responses/ExternalEnrollment'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/public/academy/enrollments/{enrollmentId}/outline:
+    parameters:
+      - $ref: '#/components/parameters/EnrollmentId'
+    get:
+      security:
+        - externalSessionCookie: []
+      tags: [Academy]
+      operationId: getPublicAcademyEnrollmentOutline
+      summary: Получить outline зафиксированной версии курса
+      responses:
+        '200':
+          $ref: '#/components/responses/ExternalEnrollmentOutline'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/public/academy/enrollments/{enrollmentId}/lessons/{lessonVersionId}:
+    parameters:
+      - $ref: '#/components/parameters/EnrollmentId'
+      - $ref: '#/components/parameters/LessonVersionId'
+    get:
+      security:
+        - externalSessionCookie: []
+      tags: [Academy]
+      operationId: getPublicAcademyEnrollmentLesson
+      summary: Получить доступный урок внешнего прохождения
+      responses:
+        '200':
+          $ref: '#/components/responses/ExternalEnrollmentLesson'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/public/academy/enrollments/{enrollmentId}/lessons/{lessonVersionId}/complete:
+    parameters:
+      - $ref: '#/components/parameters/EnrollmentId'
+      - $ref: '#/components/parameters/LessonVersionId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+    post:
+      security:
+        - externalSessionCookie: []
+      tags: [Academy]
+      operationId: completePublicAcademyEnrollmentLesson
+      summary: Завершить урок внешнего прохождения
+      responses:
+        '200':
+          $ref: '#/components/responses/ExternalEnrollment'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/public/academy/enrollments/{enrollmentId}/quizzes/{quizVersionId}/attempts:
+    parameters:
+      - $ref: '#/components/parameters/EnrollmentId'
+      - $ref: '#/components/parameters/QuizVersionId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+    post:
+      security:
+        - externalSessionCookie: []
+      tags: [Academy]
+      operationId: submitPublicAcademyQuizAttempt
+      summary: Отправить ответы на тест внешнего прохождения
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitExternalQuizAttemptInput'
+      responses:
+        '201':
+          $ref: '#/components/responses/ExternalQuizAttemptResult'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/public/academy/enrollments/{enrollmentId}/results:
+    parameters:
+      - $ref: '#/components/parameters/EnrollmentId'
+    get:
+      security:
+        - externalSessionCookie: []
+      tags: [Academy]
+      operationId: getPublicAcademyEnrollmentResults
+      summary: Получить собственные результаты внешнего прохождения
+      responses:
+        '200':
+          $ref: '#/components/responses/ExternalEnrollmentResults'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/external-learners:
+    get:
+      tags: [Academy]
+      operationId: getExternalLearners
+      summary: Получить реестр внешних учеников в разрешённой области
+      responses:
+        '200':
+          $ref: '#/components/responses/ExternalLearners'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/external-learners/{learnerId}:
+    parameters:
+      - $ref: '#/components/parameters/LearnerId'
+    get:
+      tags: [Academy]
+      operationId: getExternalLearner
+      summary: Получить карточку внешнего ученика
+      responses:
+        '200':
+          $ref: '#/components/responses/ExternalLearner'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/external-learners/{learnerId}/enrollments:
+    parameters:
+      - $ref: '#/components/parameters/LearnerId'
+    get:
+      tags: [Academy]
+      operationId: getExternalLearnerEnrollments
+      summary: Получить прохождения внешнего ученика
+      responses:
+        '200':
+          $ref: '#/components/responses/ExternalEnrollments'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/external-learners/{learnerId}/timeline:
+    parameters:
+      - $ref: '#/components/parameters/LearnerId'
+    get:
+      tags: [Academy]
+      operationId: getExternalLearnerTimeline
+      summary: Получить единую хронологию внешнего ученика в разрешённой области
+      responses:
+        '200':
+          $ref: '#/components/responses/ExternalLearnerTimeline'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/enrollments/{enrollmentId}/report:
+    parameters:
+      - $ref: '#/components/parameters/EnrollmentId'
+    get:
+      tags: [Academy]
+      operationId: getAcademyEnrollmentReport
+      summary: Получить индивидуальный отчёт по прохождению
+      responses:
+        '200':
+          $ref: '#/components/responses/EnrollmentReport'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/campaigns/{campaignId}/report:
+    parameters:
+      - $ref: '#/components/parameters/CampaignId'
+    get:
+      tags: [Academy]
+      operationId: getExternalCampaignReport
+      summary: Получить воронку и результаты внешней кампании
+      responses:
+        '200':
+          $ref: '#/components/responses/CampaignReport'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/courses/{courseId}/external-report:
+    parameters:
+      - $ref: '#/components/parameters/CourseId'
+    get:
+      tags: [Academy]
+      operationId: getCourseExternalReport
+      summary: Получить отчёт по внешним прохождениям курса
+      responses:
+        '200':
+          $ref: '#/components/responses/CourseExternalReport'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/academy/partners/{partnerId}/courses-report:
+    parameters:
+      - $ref: '#/components/parameters/PartnerId'
+    get:
+      tags: [Academy]
+      operationId: getPartnerCoursesReport
+      summary: Получить отчёт по курсам конкретного партнёра
+      responses:
+        '200':
+          $ref: '#/components/responses/PartnerCoursesReport'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
   /api/v1/notifications:
     get:
       tags: [Notifications]
@@ -1904,6 +3492,10 @@ components:
       type: apiKey
       in: cookie
       name: teamos_refresh
+    externalSessionCookie:
+      type: apiKey
+      in: cookie
+      name: teamos_academy_external
 
   headers:
     RefreshCookie:
@@ -1913,6 +3505,16 @@ components:
       schema:
         type: string
         example: teamos_refresh=opaque-token; Path=/api/v1/auth; HttpOnly; SameSite=Lax
+    ExternalSessionCookie:
+      description: Отдельная HttpOnly-cookie внешнего ученика, ограниченная публичной Академией.
+      schema:
+        type: string
+        example: teamos_academy_external=opaque-token; Path=/api/v1/public/academy; HttpOnly; Secure; SameSite=Lax
+    AcademyVisitorCookie:
+      description: Анонимный first-party идентификатор аналитики; в Academy передаётся только его SHA-256 hash.
+      schema:
+        type: string
+        example: teamos_academy_visitor=opaque-random-256-bit; Path=/api/v1/public/academy; HttpOnly; Secure; SameSite=Lax
 
   parameters:
     Id:
@@ -1935,6 +3537,147 @@ components:
       schema:
         type: string
         minLength: 1
+    CourseId:
+      name: courseId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/ID'
+    VersionId:
+      name: versionId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/ID'
+    SectionId:
+      name: sectionId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/ID'
+    LessonId:
+      name: lessonId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/ID'
+    LessonVersionId:
+      name: lessonVersionId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/ID'
+    QuizVersionId:
+      name: quizVersionId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/ID'
+    TemplateId:
+      name: templateId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/ID'
+    Page:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    PageSize:
+      name: pageSize
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+    AcademyReportQuery:
+      name: q
+      in: query
+      schema:
+        type: string
+    AcademyReportCourseId:
+      name: courseId
+      in: query
+      schema:
+        $ref: '#/components/schemas/ID'
+    AcademyReportDepartmentId:
+      name: departmentId
+      in: query
+      schema:
+        $ref: '#/components/schemas/ID'
+    AcademyReportPositionId:
+      name: positionId
+      in: query
+      schema:
+        $ref: '#/components/schemas/ID'
+    AcademyReportStatus:
+      name: status
+      in: query
+      schema:
+        type: string
+        enum: [not_started, in_progress, completed, overdue, frozen]
+    AcademyReportSort:
+      name: sort
+      in: query
+      schema:
+        type: string
+        enum: [updated_desc, updated_asc, title_asc, title_desc, deadline_asc, status]
+    AccessId:
+      name: accessId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/ID'
+    CampaignId:
+      name: campaignId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/ID'
+    ChallengeId:
+      name: challengeId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/ID'
+    EnrollmentId:
+      name: enrollmentId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/ID'
+    LearnerId:
+      name: learnerId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/ID'
+    PartnerId:
+      name: partnerId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/ID'
+    PublicAcademyToken:
+      name: token
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 32
+        maxLength: 512
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema:
+        type: string
+        minLength: 8
+        maxLength: 255
 
   responses:
     NoContent:
@@ -2082,6 +3825,18 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/ArticleVersion'
+    ArticlePartnerPolicy:
+      description: Правила доступа и snapshot-копирования статьи для партнёров
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ArticlePartnerPolicy'
+    ArticleCourseCopyPermission:
+      description: Результат проверки возможности создать snapshot-копию статьи
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ArticleCourseCopyPermission'
     Acknowledgements:
       description: Отметки об ознакомлении
       content:
@@ -2232,6 +3987,368 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/CourseProgress'
+    AcademyEnrollment:
+      description: Прохождение зафиксированной версии курса
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AcademyEnrollment'
+    AcademyEnrollments:
+      description: Прохождения в доступной области
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/AcademyEnrollment'
+    AcademyEnrollmentOutline:
+      description: Структура зафиксированной версии с доступностью уроков
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AcademyEnrollmentOutline'
+    AcademyEnrollmentLesson:
+      description: Доступный урок внутреннего прохождения без правильных ответов
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AcademyEnrollmentLesson'
+    AcademyEnrollmentResume:
+      description: Вычисленная сервером точка продолжения
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AcademyEnrollmentResume'
+    EnrollmentProgressSnapshot:
+      description: Атомарно обновлённое состояние прохождения
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/EnrollmentProgressSnapshot'
+    EnrollmentQuizAttemptSubmitted:
+      description: Результат попытки и атомарно обновлённый прогресс
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/EnrollmentQuizAttemptSubmitted'
+    CourseVersion:
+      description: Версия курса
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CourseVersion'
+    CourseVersionDetail:
+      description: Версия курса с полным снимком контента для редактора
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CourseVersionDetail'
+    CourseVersionAuthorDetail:
+      description: Вложенная версия курса для V2-редактора
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CourseVersionAuthorDetail'
+    CourseVersionLearnerDetail:
+      description: Learner-safe версия курса без правильных ответов
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CourseVersionLearnerDetail'
+    CourseAssignmentSummary:
+      description: Сводка назначения курса
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CourseAssignmentSummary'
+    CourseAssignmentSummaries:
+      description: Сводки назначений курса
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/CourseAssignmentSummary'
+    EnrollmentSummary:
+      description: Сводка прохождения для V2
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/EnrollmentSummary'
+    PaginatedEnrollmentSummaries:
+      description: Страница прохождений пользователя
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PaginatedEnrollmentSummaries'
+    MyLearningSummary:
+      description: Сводка обучения текущего пользователя
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MyLearningSummary'
+    PaginatedCatalogCourseCards:
+      description: Страница каталога курсов
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PaginatedCatalogCourseCards'
+    MyCourseEnrollment:
+      description: Актуальное прохождение курса текущим пользователем
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MyCourseEnrollment'
+    InternalReportResult:
+      description: Внутренний отчёт по сотрудникам
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/InternalReportResult'
+    PaginatedPartnerExternalReportRows:
+      description: Внешние прохождения курсов текущего партнёра
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PaginatedPartnerExternalReportRows'
+    CourseVersions:
+      description: Версии курса
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/CourseVersion'
+    CourseVersionSection:
+      description: Раздел версии курса
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CourseVersionSection'
+    CourseVersionLesson:
+      description: Урок версии курса
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CourseVersionLesson'
+    CourseVersionQuiz:
+      description: Тест версии курса для редактора
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CourseVersionQuiz'
+    CourseVersionPreview:
+      description: Learner-safe preview, который никогда не создаёт enrollment или progress
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CourseVersionPreview'
+    CoursePreviewQuizAttemptResult:
+      description: Одноразовый результат теста в preview без сохранения попытки
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CoursePreviewQuizAttemptResult'
+    CourseRestriction:
+      description: Ограничение распространения курса
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CourseRestriction'
+    CourseRestrictions:
+      description: История ограничений курса
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/CourseRestriction'
+    PartnerCourseCopy:
+      description: Независимая копия партнёрского курса
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PartnerCourseCopyResult'
+    PartnerCourseGroups:
+      description: Партнёрские курсы, сгруппированные по owner user ID
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/PartnerCourseGroup'
+    CourseTemplate:
+      description: Шаблон курса
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CourseTemplate'
+    CourseTemplates:
+      description: Доступные шаблоны курсов
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/CourseTemplate'
+    CourseTemplateVersion:
+      description: Версия шаблона курса
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CourseTemplateVersion'
+    TemplateInstantiation:
+      description: Курс, созданный из версии шаблона
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TemplateInstantiationResult'
+    ExternalPersonalAccess:
+      description: Персональный внешний доступ
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ExternalPersonalAccess'
+    ExternalPersonalAccesses:
+      description: Персональные внешние доступы
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/ExternalPersonalAccess'
+    ExternalPersonalAccessCreated:
+      description: Персональный доступ и токен, показываемый один раз
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ExternalPersonalAccessCreated'
+    ExternalCampaign:
+      description: Внешняя кампания
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ExternalCampaign'
+    ExternalCampaigns:
+      description: Внешние кампании
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/ExternalCampaign'
+    ExternalCampaignCreated:
+      description: Кампания и токен, показываемый один раз
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ExternalCampaignCreated'
+    PublicAcademyAccess:
+      description: Landing metadata внешнего доступа без контента уроков
+      headers:
+        Set-Cookie:
+          $ref: '#/components/headers/AcademyVisitorCookie'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PublicAcademyAccess'
+    ExternalVerificationChallenge:
+      description: Запрос email-верификации принят
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ExternalVerificationChallenge'
+    ExternalVerificationConfirmed:
+      description: Email подтверждён, внешняя сессия установлена
+      headers:
+        Set-Cookie:
+          $ref: '#/components/headers/ExternalSessionCookie'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ExternalVerificationConfirmed'
+    ExternalEnrollment:
+      description: Внешнее прохождение
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ExternalEnrollment'
+    ExternalEnrollmentOutline:
+      description: Структура зафиксированной версии курса
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ExternalEnrollmentOutline'
+    ExternalEnrollmentLesson:
+      description: Доступный урок внешнего прохождения
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ExternalEnrollmentLesson'
+    ExternalQuizAttemptResult:
+      description: Результат попытки теста без правильных ответов
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ExternalQuizAttemptResult'
+    ExternalEnrollmentResults:
+      description: Собственные результаты внешнего ученика
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ExternalEnrollmentResults'
+    ExternalLearner:
+      description: Внешний ученик
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ExternalLearner'
+    ExternalLearners:
+      description: Внешние ученики
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/ExternalLearner'
+    ExternalEnrollments:
+      description: Внешние прохождения
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/ExternalEnrollment'
+    ExternalLearnerTimeline:
+      description: Хронология внешнего ученика, отфильтрованная по правам на курсы
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ExternalLearnerTimeline'
+    EnrollmentReport:
+      description: Индивидуальный отчёт по прохождению
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/EnrollmentReport'
+    CampaignReport:
+      description: Отчёт по воронке кампании
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CampaignReport'
+    CourseExternalReport:
+      description: Отчёт по внешним прохождениям курса
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CourseExternalReport'
+    PartnerCoursesReport:
+      description: Отчёт по курсам партнёра
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PartnerCoursesReport'
     Notifications:
       description: Уведомления
       content:
@@ -2917,6 +5034,30 @@ components:
           items:
             $ref: '#/components/schemas/ID'
 
+    PartnerAccessMode:
+      type: string
+      enum: [none, all, selected]
+      default: none
+    PartnerReusePolicy:
+      type: string
+      enum: [not_allowed, copy_allowed]
+      default: not_allowed
+    PartnerAccessSettings:
+      type: object
+      additionalProperties: false
+      required: [mode, partnerIds]
+      properties:
+        mode:
+          $ref: '#/components/schemas/PartnerAccessMode'
+        partnerIds:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/ID'
+      description: >-
+        По умолчанию none. При selected список partnerIds обязателен; при none/all
+        backend сохраняет пустой список.
+
     ArticleSection:
       type: object
       additionalProperties: false
@@ -2979,6 +5120,10 @@ components:
           $ref: '#/components/schemas/ISODateTime'
         updatedAt:
           $ref: '#/components/schemas/ISODateTime'
+        partnerAccess:
+          $ref: '#/components/schemas/PartnerAccessSettings'
+        partnerReusePolicy:
+          $ref: '#/components/schemas/PartnerReusePolicy'
     ArticleVersion:
       type: object
       additionalProperties: false
@@ -2999,6 +5144,45 @@ components:
           $ref: '#/components/schemas/ID'
         createdAt:
           $ref: '#/components/schemas/ISODateTime'
+    ArticlePartnerPolicy:
+      type: object
+      additionalProperties: false
+      required: [articleId, access, reusePolicy, updatedAt]
+      properties:
+        articleId:
+          $ref: '#/components/schemas/ID'
+        access:
+          $ref: '#/components/schemas/PartnerAccessSettings'
+        reusePolicy:
+          $ref: '#/components/schemas/PartnerReusePolicy'
+        updatedAt:
+          $ref: '#/components/schemas/ISODateTime'
+        updatedById:
+          $ref: '#/components/schemas/ID'
+    UpdateArticlePartnerPolicyInput:
+      type: object
+      additionalProperties: false
+      required: [access, reusePolicy]
+      properties:
+        access:
+          $ref: '#/components/schemas/PartnerAccessSettings'
+        reusePolicy:
+          $ref: '#/components/schemas/PartnerReusePolicy'
+    ArticleCourseCopyPermission:
+      type: object
+      additionalProperties: false
+      required: [canRead, canCopy, reusePolicy]
+      properties:
+        canRead:
+          type: boolean
+        canCopy:
+          type: boolean
+        reusePolicy:
+          $ref: '#/components/schemas/PartnerReusePolicy'
+        denialReason:
+          type: string
+        resolvedArticleVersionId:
+          $ref: '#/components/schemas/ID'
     Acknowledgement:
       type: object
       additionalProperties: false
@@ -3055,6 +5239,10 @@ components:
           $ref: '#/components/schemas/ArticleStatus'
         requiresAcknowledgement:
           type: boolean
+        partnerAccess:
+          $ref: '#/components/schemas/PartnerAccessSettings'
+        partnerReusePolicy:
+          $ref: '#/components/schemas/PartnerReusePolicy'
     UpdateArticleInput:
       type: object
       additionalProperties: false
@@ -3071,6 +5259,10 @@ components:
           $ref: '#/components/schemas/ArticleStatus'
         requiresAcknowledgement:
           type: boolean
+        partnerAccess:
+          $ref: '#/components/schemas/PartnerAccessSettings'
+        partnerReusePolicy:
+          $ref: '#/components/schemas/PartnerReusePolicy'
     RollbackArticleInput:
       type: object
       additionalProperties: false
@@ -3396,6 +5588,18 @@ components:
     CourseVisibility:
       type: string
       enum: [public, company, restricted]
+    CourseOwnerType:
+      type: string
+      enum: [company, partner]
+    CourseLifecycleStatus:
+      type: string
+      enum: [active, archived, deleted]
+    CourseDistributionStatus:
+      type: string
+      enum: [active, paused, blocked]
+    CourseOriginType:
+      type: string
+      enum: [partner_course, system_template, company_template]
     Course:
       type: object
       additionalProperties: false
@@ -3425,6 +5629,22 @@ components:
           $ref: '#/components/schemas/ISODateTime'
         updatedAt:
           $ref: '#/components/schemas/ISODateTime'
+        ownerType:
+          $ref: '#/components/schemas/CourseOwnerType'
+        ownerUserId:
+          $ref: '#/components/schemas/ID'
+        createdById:
+          $ref: '#/components/schemas/ID'
+        lifecycleStatus:
+          $ref: '#/components/schemas/CourseLifecycleStatus'
+        distributionStatus:
+          $ref: '#/components/schemas/CourseDistributionStatus'
+        currentDraftVersionId:
+          $ref: '#/components/schemas/ID'
+        latestPublishedVersionId:
+          $ref: '#/components/schemas/ID'
+        originType:
+          $ref: '#/components/schemas/CourseOriginType'
     CourseSection:
       type: object
       additionalProperties: false
@@ -3527,6 +5747,9 @@ components:
           $ref: '#/components/schemas/ID'
         courseId:
           $ref: '#/components/schemas/ID'
+        courseVersionId:
+          $ref: '#/components/schemas/ID'
+          description: Зафиксированная версия; отсутствует только у legacy-строк до backfill.
         assigneeType:
           $ref: '#/components/schemas/AssigneeType'
         assigneeId:
@@ -3563,6 +5786,13 @@ components:
           type: boolean
         createdAt:
           $ref: '#/components/schemas/ISODateTime'
+        enrollmentId:
+          $ref: '#/components/schemas/ID'
+        quizVersionId:
+          $ref: '#/components/schemas/ID'
+        attemptNumber:
+          type: integer
+          minimum: 1
     CourseProgress:
       type: object
       additionalProperties: false
@@ -3587,6 +5817,16 @@ components:
           $ref: '#/components/schemas/ISODateTime'
         completedAt:
           $ref: '#/components/schemas/ISODateTime'
+        enrollmentId:
+          $ref: '#/components/schemas/ID'
+        courseVersionId:
+          $ref: '#/components/schemas/ID'
+        progressPercent:
+          type: integer
+          minimum: 0
+          maximum: 100
+        currentLessonVersionId:
+          $ref: '#/components/schemas/ID'
     CreateCourseInput:
       type: object
       additionalProperties: false
@@ -3755,6 +5995,9 @@ components:
       properties:
         courseId:
           $ref: '#/components/schemas/ID'
+        courseVersionId:
+          $ref: '#/components/schemas/ID'
+          description: Если не передано, сервер атомарно фиксирует последнюю опубликованную версию.
         assigneeType:
           $ref: '#/components/schemas/AssigneeType'
         assigneeId:
@@ -3771,6 +6014,2157 @@ components:
         userId:
           $ref: '#/components/schemas/ID'
 
+    CourseVersionStatus:
+      type: string
+      enum: [draft, published, retired]
+    CourseVersion:
+      type: object
+      additionalProperties: false
+      required: [id, courseId, number, status, title, sequential, createdById, createdAt]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        courseId:
+          $ref: '#/components/schemas/ID'
+        number:
+          type: integer
+          minimum: 1
+        status:
+          $ref: '#/components/schemas/CourseVersionStatus'
+        title:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        coverFileId:
+          $ref: '#/components/schemas/ID'
+        coverUrl:
+          type: string
+          format: uri
+        sequential:
+          type: boolean
+        defaultInternalDeadlineDays:
+          type: integer
+          minimum: 1
+        createdById:
+          $ref: '#/components/schemas/ID'
+        createdAt:
+          $ref: '#/components/schemas/ISODateTime'
+        publishedById:
+          $ref: '#/components/schemas/ID'
+        publishedAt:
+          $ref: '#/components/schemas/ISODateTime'
+        contentHash:
+          type: string
+    CourseVersionSection:
+      type: object
+      additionalProperties: false
+      required: [id, courseVersionId, title, order]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        courseVersionId:
+          $ref: '#/components/schemas/ID'
+        title:
+          type: string
+          minLength: 1
+        order:
+          type: integer
+          minimum: 0
+    CourseVersionDetail:
+      type: object
+      additionalProperties: false
+      required: [version, sections, lessons, quizzes]
+      properties:
+        version:
+          $ref: '#/components/schemas/CourseVersion'
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/CourseVersionSection'
+        lessons:
+          type: array
+          items:
+            $ref: '#/components/schemas/CourseVersionLesson'
+        quizzes:
+          type: array
+          items:
+            $ref: '#/components/schemas/CourseVersionQuiz'
+    QuizLearnerOption:
+      type: object
+      additionalProperties: false
+      required: [id, text]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        text:
+          type: string
+    QuizLearnerQuestion:
+      type: object
+      additionalProperties: false
+      required: [id, type, text, options]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        type:
+          $ref: '#/components/schemas/QuizQuestionType'
+        text:
+          type: string
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuizLearnerOption'
+    QuizLearnerDetail:
+      type: object
+      additionalProperties: false
+      required: [id, lessonId, questions, passingScore]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        lessonId:
+          $ref: '#/components/schemas/ID'
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuizLearnerQuestion'
+        passingScore:
+          type: integer
+          minimum: 0
+          maximum: 100
+        maxAttempts:
+          type: integer
+          minimum: 1
+        attemptsUsed:
+          type: integer
+          minimum: 0
+    LessonAuthor:
+      type: object
+      additionalProperties: false
+      required: [id, courseId, sectionId, versionId, title, order, content]
+      properties:
+        id: { $ref: '#/components/schemas/ID' }
+        courseId: { $ref: '#/components/schemas/ID' }
+        sectionId: { $ref: '#/components/schemas/ID' }
+        versionId: { $ref: '#/components/schemas/ID' }
+        title: { type: string }
+        order: { type: integer, minimum: 0 }
+        content: { $ref: '#/components/schemas/RichTextContent' }
+        sourceArticleId: { $ref: '#/components/schemas/ID' }
+        sourceMode:
+          type: string
+          enum: [link, copy]
+        quiz: { $ref: '#/components/schemas/Quiz' }
+        estimatedMinutes: { type: integer, minimum: 1 }
+    SectionAuthor:
+      type: object
+      additionalProperties: false
+      required: [id, courseId, versionId, title, order, lessons]
+      properties:
+        id: { $ref: '#/components/schemas/ID' }
+        courseId: { $ref: '#/components/schemas/ID' }
+        versionId: { $ref: '#/components/schemas/ID' }
+        title: { type: string }
+        order: { type: integer, minimum: 0 }
+        lessons:
+          type: array
+          items: { $ref: '#/components/schemas/LessonAuthor' }
+    CourseVersionAuthorDetail:
+      type: object
+      additionalProperties: false
+      required: [id, courseId, versionNumber, status, title, sequential, sections, createdAt, updatedAt]
+      properties:
+        id: { $ref: '#/components/schemas/ID' }
+        courseId: { $ref: '#/components/schemas/ID' }
+        versionNumber: { type: integer, minimum: 1 }
+        status:
+          type: string
+          enum: [draft, published]
+        title: { type: string }
+        description: { type: string }
+        sequential: { type: boolean }
+        deadlineDays: { type: integer, minimum: 1 }
+        sections:
+          type: array
+          items: { $ref: '#/components/schemas/SectionAuthor' }
+        publishedAt: { $ref: '#/components/schemas/ISODateTime' }
+        createdAt: { $ref: '#/components/schemas/ISODateTime' }
+        updatedAt: { $ref: '#/components/schemas/ISODateTime' }
+    LessonLearnerSummary:
+      type: object
+      additionalProperties: false
+      required: [id, title, order, locked, completed, hasQuiz]
+      properties:
+        id: { $ref: '#/components/schemas/ID' }
+        title: { type: string }
+        order: { type: integer, minimum: 0 }
+        locked: { type: boolean }
+        completed: { type: boolean }
+        hasQuiz: { type: boolean }
+        lockReason: { type: string }
+        content: { $ref: '#/components/schemas/RichTextContent' }
+        quiz: { $ref: '#/components/schemas/QuizLearnerDetail' }
+        estimatedMinutes: { type: integer, minimum: 1 }
+    SectionLearner:
+      type: object
+      additionalProperties: false
+      required: [id, title, order, lessons]
+      properties:
+        id: { $ref: '#/components/schemas/ID' }
+        title: { type: string }
+        order: { type: integer, minimum: 0 }
+        lessons:
+          type: array
+          items: { $ref: '#/components/schemas/LessonLearnerSummary' }
+    CourseVersionLearnerDetail:
+      type: object
+      additionalProperties: false
+      required: [id, courseId, versionNumber, title, sequential, sections]
+      properties:
+        id: { $ref: '#/components/schemas/ID' }
+        courseId: { $ref: '#/components/schemas/ID' }
+        versionNumber: { type: integer, minimum: 1 }
+        title: { type: string }
+        description: { type: string }
+        sequential: { type: boolean }
+        sections:
+          type: array
+          items: { $ref: '#/components/schemas/SectionLearner' }
+    AssignmentTargetType:
+      type: string
+      enum: [user, position, department]
+    CreateCourseAssignmentInput:
+      type: object
+      additionalProperties: false
+      required: [targetType, targetId]
+      properties:
+        targetType: { $ref: '#/components/schemas/AssignmentTargetType' }
+        targetId: { $ref: '#/components/schemas/ID' }
+        dueDate: { $ref: '#/components/schemas/ISODateTime' }
+        courseVersionId: { $ref: '#/components/schemas/ID' }
+    CourseAssignmentSummary:
+      type: object
+      additionalProperties: false
+      required: [id, courseId, courseVersionId, targetType, targetId, assignedById, createdAt, activeEnrollments, completedEnrollments]
+      properties:
+        id: { $ref: '#/components/schemas/ID' }
+        courseId: { $ref: '#/components/schemas/ID' }
+        courseVersionId: { $ref: '#/components/schemas/ID' }
+        targetType: { $ref: '#/components/schemas/AssignmentTargetType' }
+        targetId: { $ref: '#/components/schemas/ID' }
+        targetName: { type: string }
+        dueDate: { $ref: '#/components/schemas/ISODateTime' }
+        assignedById: { $ref: '#/components/schemas/ID' }
+        assignedByName: { type: string }
+        createdAt: { $ref: '#/components/schemas/ISODateTime' }
+        activeEnrollments: { type: integer, minimum: 0 }
+        completedEnrollments: { type: integer, minimum: 0 }
+    EnrollmentSummary:
+      type: object
+      additionalProperties: false
+      required: [id, courseId, courseVersionId, courseTitle, learnerType, progressStatus, accessStatus, percent, completedLessons, totalLessons]
+      properties:
+        id: { $ref: '#/components/schemas/ID' }
+        courseId: { $ref: '#/components/schemas/ID' }
+        courseVersionId: { $ref: '#/components/schemas/ID' }
+        courseTitle: { type: string }
+        courseCoverUrl: { type: string, format: uri }
+        learnerType:
+          type: string
+          enum: [user, external]
+        progressStatus: { $ref: '#/components/schemas/EnrollmentProgressStatus' }
+        accessStatus: { $ref: '#/components/schemas/EnrollmentAccessStatus' }
+        percent: { type: integer, minimum: 0, maximum: 100 }
+        completedLessons: { type: integer, minimum: 0 }
+        totalLessons: { type: integer, minimum: 0 }
+        currentLessonId: { $ref: '#/components/schemas/ID' }
+        activatedAt: { $ref: '#/components/schemas/ISODateTime' }
+        accessUntil: { $ref: '#/components/schemas/ISODateTime' }
+        dueDate: { $ref: '#/components/schemas/ISODateTime' }
+        startedAt: { $ref: '#/components/schemas/ISODateTime' }
+        completedAt: { $ref: '#/components/schemas/ISODateTime' }
+        lastActivityAt: { $ref: '#/components/schemas/ISODateTime' }
+        assignmentId: { $ref: '#/components/schemas/ID' }
+        campaignId: { $ref: '#/components/schemas/ID' }
+    PaginatedEnrollmentSummaries:
+      type: object
+      additionalProperties: false
+      required: [items, page, pageSize, total, totalPages]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/EnrollmentSummary' }
+        page: { type: integer, minimum: 1 }
+        pageSize: { type: integer, minimum: 1 }
+        total: { type: integer, minimum: 0 }
+        totalPages: { type: integer, minimum: 0 }
+    MyLearningStats:
+      type: object
+      additionalProperties: false
+      required: [inProgress, completed, overdue, totalAssigned]
+      properties:
+        inProgress: { type: integer, minimum: 0 }
+        completed: { type: integer, minimum: 0 }
+        overdue: { type: integer, minimum: 0 }
+        totalAssigned: { type: integer, minimum: 0 }
+    MyLearningSummary:
+      type: object
+      additionalProperties: false
+      required: [stats, enrollments]
+      properties:
+        continueEnrollment: { $ref: '#/components/schemas/EnrollmentSummary' }
+        stats: { $ref: '#/components/schemas/MyLearningStats' }
+        enrollments:
+          type: array
+          items: { $ref: '#/components/schemas/EnrollmentSummary' }
+    CatalogCourseCard:
+      type: object
+      additionalProperties: false
+      required: [id, title, lessonCount]
+      properties:
+        id: { $ref: '#/components/schemas/ID' }
+        title: { type: string }
+        description: { type: string }
+        coverUrl: { type: string, format: uri }
+        lessonCount: { type: integer, minimum: 0 }
+        estimatedMinutes: { type: integer, minimum: 0 }
+        latestVersionNumber: { type: integer, minimum: 1 }
+        enrolled: { type: boolean }
+        enrollmentId: { $ref: '#/components/schemas/ID' }
+        progressPercent: { type: integer, minimum: 0, maximum: 100 }
+    PaginatedCatalogCourseCards:
+      type: object
+      additionalProperties: false
+      required: [items, page, pageSize, total, totalPages]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/CatalogCourseCard' }
+        page: { type: integer, minimum: 1 }
+        pageSize: { type: integer, minimum: 1 }
+        total: { type: integer, minimum: 0 }
+        totalPages: { type: integer, minimum: 0 }
+    MyCourseEnrollment:
+      type: object
+      additionalProperties: false
+      required: [enrollmentId]
+      properties:
+        enrollmentId: { $ref: '#/components/schemas/ID' }
+    InternalReportStatus:
+      type: string
+      enum: [not_started, in_progress, completed, overdue, frozen]
+    InternalReportRow:
+      type: object
+      additionalProperties: false
+      required: [userId, userName, courseId, courseTitle, status, percent, completedLessons, totalLessons]
+      properties:
+        enrollmentId: { $ref: '#/components/schemas/ID' }
+        userId: { $ref: '#/components/schemas/ID' }
+        userName: { type: string }
+        departmentName: { type: string }
+        positionName: { type: string }
+        courseId: { $ref: '#/components/schemas/ID' }
+        courseTitle: { type: string }
+        status: { $ref: '#/components/schemas/InternalReportStatus' }
+        percent: { type: integer, minimum: 0, maximum: 100 }
+        completedLessons: { type: integer, minimum: 0 }
+        totalLessons: { type: integer, minimum: 0 }
+        dueDate: { $ref: '#/components/schemas/ISODateTime' }
+        startedAt: { $ref: '#/components/schemas/ISODateTime' }
+        completedAt: { $ref: '#/components/schemas/ISODateTime' }
+        lastActivityAt: { $ref: '#/components/schemas/ISODateTime' }
+    InternalReportResult:
+      type: object
+      additionalProperties: false
+      required: [items, page, pageSize, total, totalPages, filtersApplied]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/InternalReportRow' }
+        page: { type: integer, minimum: 1 }
+        pageSize: { type: integer, minimum: 1 }
+        total: { type: integer, minimum: 0 }
+        totalPages: { type: integer, minimum: 0 }
+        filtersApplied:
+          type: object
+          additionalProperties: true
+    PartnerExternalReportRow:
+      type: object
+      additionalProperties: false
+      required: [enrollmentId, courseId, courseTitle, learnerEmail, progressStatus, accessStatus, percent]
+      properties:
+        enrollmentId: { $ref: '#/components/schemas/ID' }
+        courseId: { $ref: '#/components/schemas/ID' }
+        courseTitle: { type: string }
+        learnerEmail: { type: string, format: email }
+        learnerName: { type: string }
+        progressStatus: { type: string }
+        accessStatus: { type: string }
+        percent: { type: integer, minimum: 0, maximum: 100 }
+        activatedAt: { $ref: '#/components/schemas/ISODateTime' }
+        completedAt: { $ref: '#/components/schemas/ISODateTime' }
+    PaginatedPartnerExternalReportRows:
+      type: object
+      additionalProperties: false
+      required: [items, page, pageSize, total, totalPages]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/PartnerExternalReportRow' }
+        page: { type: integer, minimum: 1 }
+        pageSize: { type: integer, minimum: 1 }
+        total: { type: integer, minimum: 0 }
+        totalPages: { type: integer, minimum: 0 }
+    CourseLessonSourceType:
+      type: string
+      enum: [manual, kb_link, kb_snapshot, template_snapshot]
+    CourseVersionLesson:
+      type: object
+      additionalProperties: false
+      required: [id, courseVersionId, sectionVersionId, stableKey, title, order, content, sourceType]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        courseVersionId:
+          $ref: '#/components/schemas/ID'
+        sectionVersionId:
+          $ref: '#/components/schemas/ID'
+        stableKey:
+          type: string
+          minLength: 1
+        title:
+          type: string
+          minLength: 1
+        order:
+          type: integer
+          minimum: 0
+        content:
+          $ref: '#/components/schemas/RichTextContent'
+        sourceType:
+          $ref: '#/components/schemas/CourseLessonSourceType'
+        sourceArticleId:
+          $ref: '#/components/schemas/ID'
+        sourceArticleVersion:
+          type: integer
+          minimum: 1
+        sourceTemplateId:
+          $ref: '#/components/schemas/ID'
+        sourceTemplateVersionId:
+          $ref: '#/components/schemas/ID'
+        estimatedMinutes:
+          type: integer
+          minimum: 1
+        quizVersionId:
+          $ref: '#/components/schemas/ID'
+    CourseVersionQuiz:
+      type: object
+      additionalProperties: false
+      required: [id, courseVersionId, lessonVersionId, questions, passingScore]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        courseVersionId:
+          $ref: '#/components/schemas/ID'
+        lessonVersionId:
+          $ref: '#/components/schemas/ID'
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuizQuestion'
+        passingScore:
+          type: integer
+          minimum: 0
+          maximum: 100
+        maxAttempts:
+          type: integer
+          minimum: 1
+    UpdateCourseDraftInput:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        title:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        coverFileId:
+          $ref: '#/components/schemas/ID'
+        sequential:
+          type: boolean
+        defaultInternalDeadlineDays:
+          type: integer
+          minimum: 1
+    CreateCourseVersionSectionInput:
+      type: object
+      additionalProperties: false
+      required: [title]
+      properties:
+        title:
+          type: string
+          minLength: 1
+    UpdateCourseVersionSectionInput:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        title:
+          type: string
+          minLength: 1
+        order:
+          type: integer
+          minimum: 0
+    CreateCourseVersionLessonInput:
+      type: object
+      additionalProperties: false
+      required: [sectionVersionId, title]
+      properties:
+        sectionVersionId:
+          $ref: '#/components/schemas/ID'
+        title:
+          type: string
+          minLength: 1
+        content:
+          $ref: '#/components/schemas/RichTextContent'
+        sourceType:
+          $ref: '#/components/schemas/CourseLessonSourceType'
+        sourceArticleId:
+          $ref: '#/components/schemas/ID'
+        sourceArticleVersion:
+          type: integer
+          minimum: 1
+        estimatedMinutes:
+          type: integer
+          minimum: 1
+    UpdateCourseVersionLessonInput:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        title:
+          type: string
+          minLength: 1
+        content:
+          $ref: '#/components/schemas/RichTextContent'
+        sourceType:
+          $ref: '#/components/schemas/CourseLessonSourceType'
+        sourceArticleId:
+          $ref: '#/components/schemas/ID'
+        sourceArticleVersion:
+          type: integer
+          minimum: 1
+        estimatedMinutes:
+          type: integer
+          minimum: 1
+    MoveCourseVersionLessonInput:
+      type: object
+      additionalProperties: false
+      required: [sectionVersionId, order]
+      properties:
+        sectionVersionId:
+          $ref: '#/components/schemas/ID'
+        order:
+          type: integer
+          minimum: 0
+    UpsertCourseVersionQuizInput:
+      type: object
+      additionalProperties: false
+      required: [questions, passingScore]
+      properties:
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuizQuestion'
+        passingScore:
+          type: integer
+          minimum: 0
+          maximum: 100
+        maxAttempts:
+          type: integer
+          minimum: 1
+
+    CourseVersionPreview:
+      type: object
+      additionalProperties: false
+      required: [course, version, persistsProgress]
+      properties:
+        course:
+          $ref: '#/components/schemas/Course'
+        version:
+          $ref: '#/components/schemas/LearnerCourseVersionPreview'
+        persistsProgress:
+          type: boolean
+          enum: [false]
+          description: Всегда false; preview не создаёт enrollment, progress или quiz attempts.
+    LearnerCourseVersionPreview:
+      type: object
+      additionalProperties: false
+      required: [id, courseId, number, title, sequential, sections]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        courseId:
+          $ref: '#/components/schemas/ID'
+        number:
+          type: integer
+          minimum: 1
+        title:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        coverUrl:
+          type: string
+          format: uri
+        sequential:
+          type: boolean
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/CoursePreviewSection'
+    CoursePreviewSection:
+      type: object
+      additionalProperties: false
+      required: [id, title, order, lessons]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        title:
+          type: string
+          minLength: 1
+        order:
+          type: integer
+          minimum: 0
+        lessons:
+          type: array
+          items:
+            $ref: '#/components/schemas/CoursePreviewLesson'
+    CoursePreviewLesson:
+      type: object
+      additionalProperties: false
+      required: [id, courseVersionId, sectionVersionId, stableKey, title, order, content]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        courseVersionId:
+          $ref: '#/components/schemas/ID'
+        sectionVersionId:
+          $ref: '#/components/schemas/ID'
+        stableKey:
+          type: string
+          minLength: 1
+        title:
+          type: string
+          minLength: 1
+        order:
+          type: integer
+          minimum: 0
+        content:
+          $ref: '#/components/schemas/RichTextContent'
+        estimatedMinutes:
+          type: integer
+          minimum: 1
+        quiz:
+          $ref: '#/components/schemas/LearnerQuiz'
+    SubmitCoursePreviewQuizAttemptInput:
+      type: object
+      additionalProperties: false
+      required: [answers]
+      properties:
+        answers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalQuizAnswer'
+    CoursePreviewQuizAttemptResult:
+      type: object
+      additionalProperties: false
+      required: [quizVersionId, score, passed, pendingReview]
+      properties:
+        quizVersionId:
+          $ref: '#/components/schemas/ID'
+        score:
+          type: integer
+          minimum: 0
+          maximum: 100
+        passed:
+          type: boolean
+        pendingReview:
+          type: boolean
+
+    CourseRestrictionType:
+      type: string
+      enum: [pause, block]
+    CourseRestriction:
+      type: object
+      additionalProperties: false
+      required: [id, courseId, type, reason, createdById, createdAt]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        companyId:
+          $ref: '#/components/schemas/ID'
+        courseId:
+          $ref: '#/components/schemas/ID'
+        type:
+          $ref: '#/components/schemas/CourseRestrictionType'
+        reason:
+          type: string
+          minLength: 1
+        createdById:
+          $ref: '#/components/schemas/ID'
+        createdAt:
+          $ref: '#/components/schemas/ISODateTime'
+        resolvedById:
+          $ref: '#/components/schemas/ID'
+        resolvedAt:
+          $ref: '#/components/schemas/ISODateTime'
+        resolutionReason:
+          type: string
+    CourseRestrictionInput:
+      type: object
+      additionalProperties: false
+      required: [reason]
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+    CourseOrigin:
+      type: object
+      additionalProperties: false
+      required: [type, instantiatedById, instantiatedAt, acquisitionType]
+      properties:
+        type:
+          $ref: '#/components/schemas/CourseOriginType'
+        sourceCourseId:
+          $ref: '#/components/schemas/ID'
+        sourceCourseVersionId:
+          $ref: '#/components/schemas/ID'
+        sourcePartnerId:
+          $ref: '#/components/schemas/ID'
+        sourceTemplateId:
+          $ref: '#/components/schemas/ID'
+        sourceTemplateVersionId:
+          $ref: '#/components/schemas/ID'
+        instantiatedById:
+          $ref: '#/components/schemas/ID'
+        instantiatedAt:
+          $ref: '#/components/schemas/ISODateTime'
+        acquisitionType:
+          type: string
+          enum: [free_copy]
+        entitlementId:
+          $ref: '#/components/schemas/ID'
+    PartnerCourseCopyResult:
+      type: object
+      additionalProperties: false
+      required: [course, draft, origin]
+      properties:
+        course:
+          $ref: '#/components/schemas/Course'
+        draft:
+          $ref: '#/components/schemas/CourseVersion'
+        origin:
+          $ref: '#/components/schemas/CourseOrigin'
+    PartnerCourseGroup:
+      type: object
+      additionalProperties: false
+      required: [partnerId, courses]
+      properties:
+        partnerId:
+          $ref: '#/components/schemas/ID'
+        courses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Course'
+
+    CourseTemplateType:
+      type: string
+      enum: [system, company]
+    CourseTemplateLifecycleStatus:
+      type: string
+      enum: [active, archived]
+    CourseTemplate:
+      type: object
+      additionalProperties: false
+      required: [id, type, lifecycleStatus, createdById, createdAt]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        type:
+          $ref: '#/components/schemas/CourseTemplateType'
+        systemTemplateKey:
+          type: string
+        lifecycleStatus:
+          $ref: '#/components/schemas/CourseTemplateLifecycleStatus'
+        currentDraftVersionId:
+          $ref: '#/components/schemas/ID'
+        latestPublishedVersionId:
+          $ref: '#/components/schemas/ID'
+        createdById:
+          $ref: '#/components/schemas/ID'
+        createdAt:
+          $ref: '#/components/schemas/ISODateTime'
+        updatedAt:
+          $ref: '#/components/schemas/ISODateTime'
+        versions:
+          type: array
+          items:
+            $ref: '#/components/schemas/CourseTemplateVersion'
+        selectedVersion:
+          $ref: '#/components/schemas/CourseTemplateVersion'
+    CourseTemplateVersion:
+      type: object
+      additionalProperties: false
+      required: [id, templateId, number, status, title, createdById, createdAt]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        templateId:
+          $ref: '#/components/schemas/ID'
+        number:
+          type: integer
+          minimum: 1
+        status:
+          $ref: '#/components/schemas/CourseVersionStatus'
+        title:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        coverFileId:
+          $ref: '#/components/schemas/ID'
+        sequential:
+          type: boolean
+        createdById:
+          $ref: '#/components/schemas/ID'
+        createdAt:
+          $ref: '#/components/schemas/ISODateTime'
+        publishedById:
+          $ref: '#/components/schemas/ID'
+        publishedAt:
+          $ref: '#/components/schemas/ISODateTime'
+        contentHash:
+          type: string
+        content:
+          $ref: '#/components/schemas/CourseTemplateVersionContent'
+    CourseTemplateVersionSection:
+      type: object
+      additionalProperties: false
+      required: [id, templateVersionId, stableKey, title, order]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        templateVersionId:
+          $ref: '#/components/schemas/ID'
+        stableKey:
+          type: string
+          minLength: 1
+        title:
+          type: string
+          minLength: 1
+        order:
+          type: integer
+          minimum: 0
+    CourseTemplateVersionLesson:
+      type: object
+      additionalProperties: false
+      required: [id, templateVersionId, sectionVersionId, stableKey, title, order, content, sourceType]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        templateVersionId:
+          $ref: '#/components/schemas/ID'
+        sectionVersionId:
+          $ref: '#/components/schemas/ID'
+        stableKey:
+          type: string
+          minLength: 1
+        title:
+          type: string
+          minLength: 1
+        order:
+          type: integer
+          minimum: 0
+        content:
+          $ref: '#/components/schemas/RichTextContent'
+        sourceType:
+          $ref: '#/components/schemas/CourseLessonSourceType'
+        sourceArticleId:
+          $ref: '#/components/schemas/ID'
+        sourceArticleVersion:
+          type: integer
+          minimum: 1
+        estimatedMinutes:
+          type: integer
+          minimum: 1
+        quizVersionId:
+          $ref: '#/components/schemas/ID'
+    CourseTemplateVersionQuiz:
+      type: object
+      additionalProperties: false
+      required: [id, templateVersionId, lessonVersionId, questions, passingScore]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        templateVersionId:
+          $ref: '#/components/schemas/ID'
+        lessonVersionId:
+          $ref: '#/components/schemas/ID'
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuizQuestion'
+        passingScore:
+          type: integer
+          minimum: 0
+          maximum: 100
+        maxAttempts:
+          type: integer
+          minimum: 1
+    CourseTemplateVersionContent:
+      type: object
+      additionalProperties: false
+      required: [sections, lessons, quizzes]
+      properties:
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/CourseTemplateVersionSection'
+        lessons:
+          type: array
+          items:
+            $ref: '#/components/schemas/CourseTemplateVersionLesson'
+        quizzes:
+          type: array
+          items:
+            $ref: '#/components/schemas/CourseTemplateVersionQuiz'
+    CourseTemplateDraftQuizInput:
+      type: object
+      additionalProperties: false
+      required: [questions, passingScore]
+      properties:
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuizQuestion'
+        passingScore:
+          type: integer
+          minimum: 0
+          maximum: 100
+        maxAttempts:
+          type: integer
+          minimum: 1
+    CourseTemplateDraftLessonInput:
+      type: object
+      additionalProperties: false
+      required: [stableKey, title, order, content]
+      properties:
+        stableKey:
+          type: string
+          minLength: 1
+        title:
+          type: string
+          minLength: 1
+        order:
+          type: integer
+          minimum: 0
+        content:
+          $ref: '#/components/schemas/RichTextContent'
+        sourceType:
+          $ref: '#/components/schemas/CourseLessonSourceType'
+        sourceArticleId:
+          $ref: '#/components/schemas/ID'
+        sourceArticleVersion:
+          type: integer
+          minimum: 1
+        estimatedMinutes:
+          type: integer
+          minimum: 1
+        quiz:
+          $ref: '#/components/schemas/CourseTemplateDraftQuizInput'
+    CourseTemplateDraftSectionInput:
+      type: object
+      additionalProperties: false
+      required: [stableKey, title, order, lessons]
+      properties:
+        stableKey:
+          type: string
+          minLength: 1
+        title:
+          type: string
+          minLength: 1
+        order:
+          type: integer
+          minimum: 0
+        lessons:
+          type: array
+          items:
+            $ref: '#/components/schemas/CourseTemplateDraftLessonInput'
+    CourseTemplateDraftContentInput:
+      type: object
+      additionalProperties: false
+      required: [sections]
+      properties:
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/CourseTemplateDraftSectionInput'
+    CreateCourseTemplateInput:
+      type: object
+      additionalProperties: false
+      required: [title]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        coverFileId:
+          $ref: '#/components/schemas/ID'
+        sequential:
+          type: boolean
+        content:
+          $ref: '#/components/schemas/CourseTemplateDraftContentInput'
+    UpdateCourseTemplateDraftInput:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        title:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        coverFileId:
+          $ref: '#/components/schemas/ID'
+        sequential:
+          type: boolean
+        content:
+          $ref: '#/components/schemas/CourseTemplateDraftContentInput'
+    TemplateInstantiationResult:
+      type: object
+      additionalProperties: false
+      required: [course, draft, origin]
+      properties:
+        course:
+          $ref: '#/components/schemas/Course'
+        draft:
+          $ref: '#/components/schemas/CourseVersion'
+        origin:
+          $ref: '#/components/schemas/CourseOrigin'
+
+    ExternalAccessStatus:
+      type: string
+      enum: [issued, activated, revoked, closed]
+    CreateExternalPersonalAccessInput:
+      type: object
+      additionalProperties: false
+      required: [email, deadlineDays]
+      properties:
+        email:
+          type: string
+          format: email
+        firstName:
+          type: string
+        lastName:
+          type: string
+        deadlineDays:
+          type: integer
+          minimum: 1
+          maximum: 7
+    ExtendExternalPersonalAccessInput:
+      type: object
+      additionalProperties: false
+      required: [deadlineDays]
+      properties:
+        deadlineDays:
+          type: integer
+          minimum: 1
+          maximum: 7
+    ExternalPersonalAccess:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - companyId
+        - courseId
+        - courseVersionId
+        - partnerOwnerId
+        - expectedEmail
+        - deadlineDays
+        - status
+        - tokenPrefix
+        - issuedById
+        - issuedAt
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        companyId:
+          $ref: '#/components/schemas/ID'
+        courseId:
+          $ref: '#/components/schemas/ID'
+        courseVersionId:
+          $ref: '#/components/schemas/ID'
+        partnerOwnerId:
+          $ref: '#/components/schemas/ID'
+        externalLearnerId:
+          $ref: '#/components/schemas/ID'
+        expectedEmail:
+          type: string
+          format: email
+        recipientFirstName:
+          type: string
+        recipientLastName:
+          type: string
+        deadlineDays:
+          type: integer
+          minimum: 1
+          maximum: 7
+        status:
+          $ref: '#/components/schemas/ExternalAccessStatus'
+        tokenPrefix:
+          type: string
+        enrollmentId:
+          $ref: '#/components/schemas/ID'
+        issuedById:
+          $ref: '#/components/schemas/ID'
+        issuedAt:
+          $ref: '#/components/schemas/ISODateTime'
+        activatedAt:
+          $ref: '#/components/schemas/ISODateTime'
+        revokedAt:
+          $ref: '#/components/schemas/ISODateTime'
+    ExternalPersonalAccessCreated:
+      type: object
+      additionalProperties: false
+      required: [access, token]
+      properties:
+        access:
+          $ref: '#/components/schemas/ExternalPersonalAccess'
+        token:
+          type: string
+          minLength: 32
+          description: Полный токен возвращается только один раз.
+
+    ExternalCampaignOwnerType:
+      type: string
+      enum: [company, partner]
+    ExternalCampaignPurpose:
+      type: string
+      enum: [company_candidate, partner_promo]
+    ExternalCampaignStatus:
+      type: string
+      enum: [active, paused, revoked, closed]
+    CreateExternalCampaignInput:
+      type: object
+      additionalProperties: false
+      required: [name, purpose, deadlineDays]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        purpose:
+          $ref: '#/components/schemas/ExternalCampaignPurpose'
+        deadlineDays:
+          type: integer
+          minimum: 1
+          maximum: 7
+    ExternalCampaign:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - companyId
+        - courseId
+        - courseVersionId
+        - ownerType
+        - purpose
+        - name
+        - deadlineDays
+        - status
+        - tokenPrefix
+        - createdById
+        - createdAt
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        companyId:
+          $ref: '#/components/schemas/ID'
+        courseId:
+          $ref: '#/components/schemas/ID'
+        courseVersionId:
+          $ref: '#/components/schemas/ID'
+        ownerType:
+          $ref: '#/components/schemas/ExternalCampaignOwnerType'
+        ownerUserId:
+          $ref: '#/components/schemas/ID'
+        purpose:
+          $ref: '#/components/schemas/ExternalCampaignPurpose'
+        name:
+          type: string
+        deadlineDays:
+          type: integer
+          minimum: 1
+          maximum: 7
+        status:
+          $ref: '#/components/schemas/ExternalCampaignStatus'
+        tokenPrefix:
+          type: string
+        createdById:
+          $ref: '#/components/schemas/ID'
+        createdAt:
+          $ref: '#/components/schemas/ISODateTime'
+        pausedAt:
+          $ref: '#/components/schemas/ISODateTime'
+        revokedAt:
+          $ref: '#/components/schemas/ISODateTime'
+    ExternalCampaignCreated:
+      type: object
+      additionalProperties: false
+      required: [campaign, token]
+      properties:
+        campaign:
+          $ref: '#/components/schemas/ExternalCampaign'
+        token:
+          type: string
+          minLength: 32
+          description: Полный токен возвращается только один раз.
+
+    PublicAcademyAccessKind:
+      type: string
+      enum: [personal_access, partner_promo_campaign, company_candidate_campaign]
+    PublicAcademyAccess:
+      type: object
+      additionalProperties: false
+      required:
+        - kind
+        - courseId
+        - courseVersionId
+        - title
+        - ownerType
+        - deadlineDays
+        - available
+        - emailVerificationRequired
+        - outline
+      properties:
+        kind:
+          $ref: '#/components/schemas/PublicAcademyAccessKind'
+        courseId:
+          $ref: '#/components/schemas/ID'
+        courseVersionId:
+          $ref: '#/components/schemas/ID'
+        title:
+          type: string
+        description:
+          type: string
+        coverUrl:
+          type: string
+          format: uri
+        ownerType:
+          $ref: '#/components/schemas/CourseOwnerType'
+        ownerUserId:
+          $ref: '#/components/schemas/ID'
+        deadlineDays:
+          type: integer
+          minimum: 1
+          maximum: 7
+        available:
+          type: boolean
+        unavailableReason:
+          type: string
+        emailVerificationRequired:
+          type: boolean
+        outline:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicAcademyOutlineSection'
+    PublicAcademyOutlineSection:
+      type: object
+      additionalProperties: false
+      required: [id, title, order, lessons]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        title:
+          type: string
+        order:
+          type: integer
+          minimum: 0
+        lessons:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicAcademyOutlineLesson'
+    PublicAcademyOutlineLesson:
+      type: object
+      additionalProperties: false
+      required: [id, title, order]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        title:
+          type: string
+        order:
+          type: integer
+          minimum: 0
+        estimatedMinutes:
+          type: integer
+          minimum: 1
+    RequestExternalVerificationInput:
+      type: object
+      additionalProperties: false
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+        firstName:
+          type: string
+        lastName:
+          type: string
+    ExternalVerificationChallenge:
+      type: object
+      additionalProperties: false
+      required: [challengeId, expiresAt]
+      properties:
+        challengeId:
+          $ref: '#/components/schemas/ID'
+        expiresAt:
+          $ref: '#/components/schemas/ISODateTime'
+    ConfirmExternalVerificationInput:
+      type: object
+      additionalProperties: false
+      required: [code]
+      properties:
+        code:
+          type: string
+          pattern: '^[0-9]{6}$'
+    ExternalVerificationConfirmed:
+      type: object
+      additionalProperties: false
+      required: [learnerId, verifiedAt]
+      properties:
+        learnerId:
+          $ref: '#/components/schemas/ID'
+        verifiedAt:
+          $ref: '#/components/schemas/ISODateTime'
+
+    EnrollmentLearnerType:
+      type: string
+      enum: [user, external]
+    EnrollmentSourceType:
+      type: string
+      enum:
+        - assignment
+        - personal_access
+        - partner_promo_campaign
+        - company_candidate_campaign
+        - repeat_training
+        - legacy
+        - self_enrollment
+    EnrollmentProgressStatus:
+      type: string
+      enum: [not_started, in_progress, completed]
+    EnrollmentAccessStatus:
+      type: string
+      enum: [invited, ready, active, expired, frozen, suspended, revoked, closed]
+    EnrollmentLessonStatus:
+      type: string
+      enum: [available, current, completed, locked]
+    AcademyEnrollment:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - companyId
+        - courseId
+        - courseVersionId
+        - learnerType
+        - sourceType
+        - attemptNumber
+        - progressStatus
+        - accessStatus
+        - progressPercent
+        - overdue
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        companyId:
+          $ref: '#/components/schemas/ID'
+        courseId:
+          $ref: '#/components/schemas/ID'
+        courseVersionId:
+          $ref: '#/components/schemas/ID'
+        learnerType:
+          $ref: '#/components/schemas/EnrollmentLearnerType'
+        userId:
+          $ref: '#/components/schemas/ID'
+          description: Ровно один из userId/externalLearnerId задан; проверяет domain.
+        externalLearnerId:
+          $ref: '#/components/schemas/ID'
+        sourceType:
+          $ref: '#/components/schemas/EnrollmentSourceType'
+        sourceId:
+          $ref: '#/components/schemas/ID'
+        attemptNumber:
+          type: integer
+          minimum: 1
+        progressStatus:
+          $ref: '#/components/schemas/EnrollmentProgressStatus'
+        accessStatus:
+          $ref: '#/components/schemas/EnrollmentAccessStatus'
+        currentLessonVersionId:
+          $ref: '#/components/schemas/ID'
+        progressPercent:
+          type: integer
+          minimum: 0
+          maximum: 100
+        activatedAt:
+          $ref: '#/components/schemas/ISODateTime'
+        accessUntil:
+          $ref: '#/components/schemas/ISODateTime'
+        dueDate:
+          $ref: '#/components/schemas/ISODateTime'
+          description: Срок внутреннего назначения; overdue не блокирует доступ.
+        overdue:
+          type: boolean
+        startedAt:
+          $ref: '#/components/schemas/ISODateTime'
+        completedAt:
+          $ref: '#/components/schemas/ISODateTime'
+        lastActivityAt:
+          $ref: '#/components/schemas/ISODateTime'
+        frozenAt:
+          $ref: '#/components/schemas/ISODateTime'
+        suspendedAt:
+          $ref: '#/components/schemas/ISODateTime'
+        createdAt:
+          $ref: '#/components/schemas/ISODateTime'
+        updatedAt:
+          $ref: '#/components/schemas/ISODateTime'
+    EnrollmentLessonProgress:
+      type: object
+      additionalProperties: false
+      required: [enrollmentId, lessonVersionId, status, activeSeconds]
+      properties:
+        enrollmentId:
+          $ref: '#/components/schemas/ID'
+        lessonVersionId:
+          $ref: '#/components/schemas/ID'
+        status:
+          $ref: '#/components/schemas/EnrollmentLessonStatus'
+        firstOpenedAt:
+          $ref: '#/components/schemas/ISODateTime'
+        completedAt:
+          $ref: '#/components/schemas/ISODateTime'
+        activeSeconds:
+          type: integer
+          format: int64
+          minimum: 0
+        lastPosition:
+          type: object
+          additionalProperties: true
+    AcademyEnrollmentOutline:
+      type: object
+      additionalProperties: false
+      required: [enrollment, sections]
+      properties:
+        enrollment:
+          $ref: '#/components/schemas/AcademyEnrollment'
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalEnrollmentOutlineSection'
+    AcademyEnrollmentLesson:
+      type: object
+      additionalProperties: false
+      required: [enrollment, lesson]
+      properties:
+        enrollment:
+          $ref: '#/components/schemas/AcademyEnrollment'
+        lesson:
+          $ref: '#/components/schemas/ExternalEnrollmentLesson'
+        progress:
+          $ref: '#/components/schemas/EnrollmentLessonProgress'
+    AcademyEnrollmentResume:
+      type: object
+      additionalProperties: false
+      required: [enrollment]
+      properties:
+        enrollment:
+          $ref: '#/components/schemas/AcademyEnrollment'
+        currentLesson:
+          $ref: '#/components/schemas/AcademyEnrollmentLesson'
+    CompleteEnrollmentLessonInput:
+      type: object
+      additionalProperties: false
+      properties:
+        activeSeconds:
+          type: integer
+          format: int64
+          minimum: 0
+        lastPosition:
+          type: object
+          additionalProperties: true
+    SubmitEnrollmentQuizAttemptInput:
+      type: object
+      additionalProperties: false
+      required: [answers]
+      properties:
+        answers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalQuizAnswer'
+        activeSeconds:
+          type: integer
+          format: int64
+          minimum: 0
+        lastPosition:
+          type: object
+          additionalProperties: true
+    EnrollmentQuizAttempt:
+      type: object
+      additionalProperties: false
+      required: [id, enrollmentId, quizVersionId, attemptNumber, score, passed, pendingReview, createdAt]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        enrollmentId:
+          $ref: '#/components/schemas/ID'
+        quizVersionId:
+          $ref: '#/components/schemas/ID'
+        attemptNumber:
+          type: integer
+          minimum: 1
+        answers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalQuizAnswer'
+        score:
+          type: integer
+          minimum: 0
+          maximum: 100
+        passed:
+          type: boolean
+        pendingReview:
+          type: boolean
+        reviewedById:
+          $ref: '#/components/schemas/ID'
+        reviewedAt:
+          $ref: '#/components/schemas/ISODateTime'
+        reviewComment:
+          type: string
+        createdAt:
+          $ref: '#/components/schemas/ISODateTime'
+    EnrollmentProgressSnapshot:
+      type: object
+      additionalProperties: false
+      required: [enrollment, lessons, quizAttempts]
+      properties:
+        enrollment:
+          $ref: '#/components/schemas/AcademyEnrollment'
+        lessons:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnrollmentLessonProgress'
+        quizAttempts:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnrollmentQuizAttempt'
+    EnrollmentQuizAttemptSubmitted:
+      type: object
+      additionalProperties: false
+      required: [attempt, progress]
+      properties:
+        attempt:
+          $ref: '#/components/schemas/EnrollmentQuizAttempt'
+        progress:
+          $ref: '#/components/schemas/EnrollmentProgressSnapshot'
+    ExternalEnrollment:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - companyId
+        - courseId
+        - courseVersionId
+        - versionNumber
+        - learnerType
+        - externalLearnerId
+        - sourceType
+        - attemptNumber
+        - progressStatus
+        - accessStatus
+        - progressPercent
+        - createdAt
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        companyId:
+          $ref: '#/components/schemas/ID'
+        courseId:
+          $ref: '#/components/schemas/ID'
+        courseVersionId:
+          $ref: '#/components/schemas/ID'
+        versionNumber:
+          type: integer
+          minimum: 1
+        learnerType:
+          $ref: '#/components/schemas/EnrollmentLearnerType'
+        externalLearnerId:
+          $ref: '#/components/schemas/ID'
+        sourceType:
+          $ref: '#/components/schemas/EnrollmentSourceType'
+        sourceId:
+          $ref: '#/components/schemas/ID'
+        attemptNumber:
+          type: integer
+          minimum: 1
+        progressStatus:
+          $ref: '#/components/schemas/EnrollmentProgressStatus'
+        accessStatus:
+          $ref: '#/components/schemas/EnrollmentAccessStatus'
+        currentLessonVersionId:
+          $ref: '#/components/schemas/ID'
+        progressPercent:
+          type: integer
+          minimum: 0
+          maximum: 100
+        activatedAt:
+          $ref: '#/components/schemas/ISODateTime'
+        accessUntil:
+          $ref: '#/components/schemas/ISODateTime'
+        startedAt:
+          $ref: '#/components/schemas/ISODateTime'
+        completedAt:
+          $ref: '#/components/schemas/ISODateTime'
+        lastActivityAt:
+          $ref: '#/components/schemas/ISODateTime'
+        createdAt:
+          $ref: '#/components/schemas/ISODateTime'
+    ExternalEnrollmentOutline:
+      type: object
+      additionalProperties: false
+      required: [enrollment, sections]
+      properties:
+        enrollment:
+          $ref: '#/components/schemas/ExternalEnrollment'
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalEnrollmentOutlineSection'
+    ExternalEnrollmentOutlineSection:
+      type: object
+      additionalProperties: false
+      required: [id, title, order, lessons]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        title:
+          type: string
+        order:
+          type: integer
+          minimum: 0
+        lessons:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalEnrollmentOutlineLesson'
+    ExternalEnrollmentOutlineLesson:
+      type: object
+      additionalProperties: false
+      required: [id, title, order, status]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        title:
+          type: string
+        order:
+          type: integer
+          minimum: 0
+        status:
+          $ref: '#/components/schemas/EnrollmentLessonStatus'
+        lockReason:
+          type: string
+        estimatedMinutes:
+          type: integer
+          minimum: 1
+    LearnerQuizOption:
+      type: object
+      additionalProperties: false
+      required: [id, text]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        text:
+          type: string
+    LearnerQuizQuestion:
+      type: object
+      additionalProperties: false
+      required: [id, type, text, options]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        type:
+          $ref: '#/components/schemas/QuizQuestionType'
+        text:
+          type: string
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/LearnerQuizOption'
+    LearnerQuiz:
+      type: object
+      additionalProperties: false
+      required: [id, questions, passingScore]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/LearnerQuizQuestion'
+        passingScore:
+          type: integer
+          minimum: 0
+          maximum: 100
+        maxAttempts:
+          type: integer
+          minimum: 1
+    ExternalEnrollmentLesson:
+      type: object
+      additionalProperties: false
+      required: [id, courseVersionId, sectionVersionId, title, order, content, status]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        courseVersionId:
+          $ref: '#/components/schemas/ID'
+        sectionVersionId:
+          $ref: '#/components/schemas/ID'
+        title:
+          type: string
+        order:
+          type: integer
+          minimum: 0
+        content:
+          $ref: '#/components/schemas/RichTextContent'
+        status:
+          $ref: '#/components/schemas/EnrollmentLessonStatus'
+        estimatedMinutes:
+          type: integer
+          minimum: 1
+        quiz:
+          $ref: '#/components/schemas/LearnerQuiz'
+    ExternalQuizAnswer:
+      type: object
+      additionalProperties: false
+      required: [questionId]
+      properties:
+        questionId:
+          $ref: '#/components/schemas/ID'
+        optionIds:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/ID'
+        text:
+          type: string
+    SubmitExternalQuizAttemptInput:
+      type: object
+      additionalProperties: false
+      required: [answers]
+      properties:
+        answers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalQuizAnswer'
+    ExternalQuizAttemptResult:
+      type: object
+      additionalProperties: false
+      required: [id, score, passed, pendingReview, createdAt]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        score:
+          type: integer
+          minimum: 0
+          maximum: 100
+        passed:
+          type: boolean
+        pendingReview:
+          type: boolean
+        attemptsRemaining:
+          type: integer
+          minimum: 0
+        createdAt:
+          $ref: '#/components/schemas/ISODateTime'
+    ExternalEnrollmentResults:
+      type: object
+      additionalProperties: false
+      required: [enrollment, completedLessonIds, quizAttempts]
+      properties:
+        enrollment:
+          $ref: '#/components/schemas/ExternalEnrollment'
+        completedLessonIds:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/ID'
+        quizAttempts:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalQuizAttemptResult'
+
+    ExternalLearner:
+      type: object
+      additionalProperties: false
+      required: [id, companyId, email, normalizedEmail, createdAt, updatedAt]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        companyId:
+          $ref: '#/components/schemas/ID'
+        email:
+          type: string
+          format: email
+        normalizedEmail:
+          type: string
+          format: email
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phone:
+          type: string
+        emailVerifiedAt:
+          $ref: '#/components/schemas/ISODateTime'
+        createdAt:
+          $ref: '#/components/schemas/ISODateTime'
+        updatedAt:
+          $ref: '#/components/schemas/ISODateTime'
+    EnrollmentReport:
+      type: object
+      additionalProperties: false
+      required: [enrollment, lessons, quizAttempts, activeSeconds]
+      properties:
+        learner:
+          $ref: '#/components/schemas/ExternalLearner'
+          description: Присутствует только для внешнего ученика.
+        enrollment:
+          $ref: '#/components/schemas/AcademyEnrollment'
+        lessons:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnrollmentLessonProgress'
+        quizAttempts:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnrollmentQuizAttempt'
+        activeSeconds:
+          type: integer
+          minimum: 0
+          description: Приблизительное активное время обучения.
+    CampaignFunnel:
+      type: object
+      additionalProperties: false
+      required: [views, uniqueVisitors, formSubmits, verifiedEmails, activations, completions]
+      properties:
+        views:
+          type: integer
+          minimum: 0
+        uniqueVisitors:
+          type: integer
+          minimum: 0
+        formSubmits:
+          type: integer
+          minimum: 0
+        verifiedEmails:
+          type: integer
+          minimum: 0
+        activations:
+          type: integer
+          minimum: 0
+        completions:
+          type: integer
+          minimum: 0
+    CampaignLessonDropOff:
+      type: object
+      additionalProperties: false
+      required: [lessonVersionId, reached, completed]
+      properties:
+        lessonVersionId:
+          $ref: '#/components/schemas/ID'
+        reached:
+          type: integer
+          minimum: 0
+        completed:
+          type: integer
+          minimum: 0
+    CampaignAttribution:
+      type: object
+      additionalProperties: false
+      required: [visits, activations, completions]
+      properties:
+        utmSource:
+          type: string
+        utmMedium:
+          type: string
+        utmCampaign:
+          type: string
+        utmContent:
+          type: string
+        utmTerm:
+          type: string
+        referrer:
+          type: string
+        visits:
+          type: integer
+          minimum: 0
+        activations:
+          type: integer
+          minimum: 0
+        completions:
+          type: integer
+          minimum: 0
+    CampaignVersionAnalytics:
+      type: object
+      additionalProperties: false
+      required: [courseVersionId, versionNumber, activations, completions, averageProgressPercent]
+      properties:
+        courseVersionId:
+          $ref: '#/components/schemas/ID'
+        versionNumber:
+          type: integer
+          minimum: 1
+        activations:
+          type: integer
+          minimum: 0
+        completions:
+          type: integer
+          minimum: 0
+        averageProgressPercent:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 100
+    CampaignAnalytics:
+      type: object
+      additionalProperties: false
+      required:
+        - firstLessonStarts
+        - lessonCompletions
+        - quizSubmissions
+        - expiredEnrollments
+        - returnVisits
+        - averageProgressPercent
+        - medianProgressPercent
+        - lessonDropOff
+        - attribution
+        - versions
+      properties:
+        firstLessonStarts:
+          type: integer
+          minimum: 0
+        lessonCompletions:
+          type: integer
+          minimum: 0
+        quizSubmissions:
+          type: integer
+          minimum: 0
+        expiredEnrollments:
+          type: integer
+          minimum: 0
+        returnVisits:
+          type: integer
+          minimum: 0
+        averageProgressPercent:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 100
+        medianProgressPercent:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 100
+        averageCompletionSeconds:
+          type: integer
+          minimum: 0
+        medianCompletionSeconds:
+          type: integer
+          minimum: 0
+        lessonDropOff:
+          type: array
+          items:
+            $ref: '#/components/schemas/CampaignLessonDropOff'
+        attribution:
+          type: array
+          items:
+            $ref: '#/components/schemas/CampaignAttribution'
+        versions:
+          type: array
+          items:
+            $ref: '#/components/schemas/CampaignVersionAnalytics'
+    CampaignReport:
+      type: object
+      additionalProperties: false
+      required: [campaign, funnel, enrollments]
+      properties:
+        campaign:
+          $ref: '#/components/schemas/ExternalCampaign'
+        funnel:
+          $ref: '#/components/schemas/CampaignFunnel'
+        enrollments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalEnrollment'
+        analytics:
+          $ref: '#/components/schemas/CampaignAnalytics'
+    CourseExternalReport:
+      type: object
+      additionalProperties: false
+      required: [courseId, enrollments]
+      properties:
+        courseId:
+          $ref: '#/components/schemas/ID'
+        enrollments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalEnrollment'
+    ExternalLearnerTimelineEventType:
+      type: string
+      enum:
+        - access_issued
+        - verification_requested
+        - email_verified
+        - activated
+        - lesson_completed
+        - quiz_submitted
+        - course_completed
+        - deadline_expired
+        - access_extended
+        - token_rotated
+        - access_revoked
+        - frozen
+        - suspended
+        - repeat_created
+    ExternalLearnerTimelineEvent:
+      type: object
+      additionalProperties: false
+      required: [id, type, occurredAt, deletedCourse]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        type:
+          $ref: '#/components/schemas/ExternalLearnerTimelineEventType'
+        occurredAt:
+          $ref: '#/components/schemas/ISODateTime'
+        courseId:
+          $ref: '#/components/schemas/ID'
+        courseVersionId:
+          $ref: '#/components/schemas/ID'
+        enrollmentId:
+          $ref: '#/components/schemas/ID'
+        sourceType:
+          $ref: '#/components/schemas/EnrollmentSourceType'
+        sourceId:
+          $ref: '#/components/schemas/ID'
+        courseTitle:
+          type: string
+        versionNumber:
+          type: integer
+          minimum: 1
+        progressPercent:
+          type: integer
+          minimum: 0
+          maximum: 100
+        accessStatus:
+          $ref: '#/components/schemas/EnrollmentAccessStatus'
+        deletedCourse:
+          type: boolean
+    ExternalLearnerTimeline:
+      type: object
+      additionalProperties: false
+      required: [learner, events]
+      properties:
+        learner:
+          $ref: '#/components/schemas/ExternalLearner'
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalLearnerTimelineEvent'
+    PartnerCoursesReport:
+      type: object
+      additionalProperties: false
+      required: [partnerId, courses]
+      properties:
+        partnerId:
+          $ref: '#/components/schemas/ID'
+        summary:
+          $ref: '#/components/schemas/PartnerCourseReportSummary'
+        operationalCourses:
+          type: array
+          description: Операционный срез доступен до подключения внешней аналитики.
+          items:
+            $ref: '#/components/schemas/PartnerCourseOperationalReport'
+        courses:
+          type: array
+          items:
+            $ref: '#/components/schemas/CourseExternalReport'
+    PartnerCourseReportSummary:
+      type: object
+      additionalProperties: false
+      required: [totalCourses, activeCourses, archivedCourses, deletedCourses, pausedCourses, blockedCourses]
+      properties:
+        totalCourses:
+          type: integer
+          minimum: 0
+        activeCourses:
+          type: integer
+          minimum: 0
+        archivedCourses:
+          type: integer
+          minimum: 0
+        deletedCourses:
+          type: integer
+          minimum: 0
+        pausedCourses:
+          type: integer
+          minimum: 0
+        blockedCourses:
+          type: integer
+          minimum: 0
+    PartnerCourseOperationalReport:
+      type: object
+      additionalProperties: false
+      required:
+        - course
+        - versionCount
+        - enrollmentCount
+        - activeEnrollmentCount
+        - completedEnrollmentCount
+        - averageProgressPercent
+      properties:
+        course:
+          $ref: '#/components/schemas/Course'
+        versionCount:
+          type: integer
+          minimum: 0
+        enrollmentCount:
+          type: integer
+          minimum: 0
+        activeEnrollmentCount:
+          type: integer
+          minimum: 0
+        completedEnrollmentCount:
+          type: integer
+          minimum: 0
+        averageProgressPercent:
+          type: integer
+          minimum: 0
+          maximum: 100
+
     NotificationType:
       type: string
       enum:
@@ -3782,6 +8176,8 @@ components:
         - course_assigned
         - course_due
         - mention
+        - course_published
+        - course_restriction
     AppNotification:
       type: object
       additionalProperties: false

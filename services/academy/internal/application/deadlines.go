@@ -14,7 +14,9 @@ const dueSoonWindow = 72 * time.Hour
 
 // ProcessDeadlines emits course.due_soon once per assignment three days before
 // the effective deadline (assignment dueDate or course deadlineDays, §10.4)
-// and flags progress of expired assignments as overdue.
+// External expirations are materialized in the new enrollment model. Internal
+// overdue state is derived from assignment deadlines by reports and is no
+// longer written to the legacy progress projection.
 func (s *Service) ProcessDeadlines(ctx context.Context) error {
 	now := s.now().UTC()
 
@@ -57,25 +59,45 @@ func (s *Service) ProcessDeadlines(ctx context.Context) error {
 		}
 	}
 
-	overdue, err := queries.GetOverdueAssignments(ctx, now)
+	companyIDs, err := queries.ListExternalMaintenanceCompanyIDs(ctx)
 	if err != nil {
-		return internal("Не удалось получить просроченные назначения", err)
+		return internal("Не удалось получить компании для обработки внешних сроков", err)
 	}
-	for _, assignment := range overdue {
-		if len(assignment.ResolvedUserIds) == 0 {
-			continue
+	for _, companyID := range companyIDs {
+		for batch := 0; batch < 10; batch++ {
+			expired, expireErr := queries.MaterializeExpiredExternalEnrollments(ctx, db.MaterializeExpiredExternalEnrollmentsParams{
+				Now: now, CompanyID: companyID, BatchSize: 100,
+			})
+			if expireErr != nil {
+				return internal("Не удалось обновить истёкшие внешние прохождения", expireErr)
+			}
+			if len(expired) < 100 {
+				break
+			}
 		}
-		if err = queries.InsertOverdueProgress(ctx, db.InsertOverdueProgressParams{
-			CompanyID: assignment.CompanyID, CourseID: assignment.CourseID,
-			UserIds: assignment.ResolvedUserIds,
-		}); err != nil {
-			return internal("Не удалось создать просроченный прогресс", err)
+		for batch := 0; batch < 10; batch++ {
+			expired, expireErr := queries.MaterializeExpiredExternalChallenges(ctx, db.MaterializeExpiredExternalChallengesParams{
+				CompanyID: companyID, Now: now, BatchSize: 100,
+			})
+			if expireErr != nil {
+				return internal("Не удалось очистить истёкшие подтверждения", expireErr)
+			}
+			if len(expired) < 100 {
+				break
+			}
 		}
-		if _, err = queries.MarkProgressOverdue(ctx, db.MarkProgressOverdueParams{
-			CompanyID: assignment.CompanyID, CourseID: assignment.CourseID,
-			UserIds: assignment.ResolvedUserIds,
+	}
+	campaigns, err := queries.ListExternalCampaignIDsForAnalyticsMaintenance(ctx)
+	if err != nil {
+		return internal("Не удалось получить кампании для агрегации", err)
+	}
+	dayStart := now.Truncate(24 * time.Hour)
+	for _, campaign := range campaigns {
+		if _, err = queries.RebuildExternalCampaignFunnelDaily(ctx, db.RebuildExternalCampaignFunnelDailyParams{
+			CompanyID: campaign.CompanyID, CampaignID: campaign.CampaignID,
+			FromTime: dayStart.Add(-24 * time.Hour), ToTime: dayStart.Add(24 * time.Hour), AggregatedAt: now,
 		}); err != nil {
-			return internal("Не удалось отметить просроченный прогресс", err)
+			return internal("Не удалось обновить воронку кампании", err)
 		}
 	}
 

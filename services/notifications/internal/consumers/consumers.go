@@ -21,6 +21,9 @@ var subjects = []string{
 	"teamos.tasks.task.due_soon.v1",
 	"teamos.academy.course.assigned.v1",
 	"teamos.academy.course.due_soon.v1",
+	"teamos.academy.course.version.published.v1",
+	"teamos.academy.course.distribution.changed.v1",
+	"teamos.academy.external_email_verification.requested.v1",
 	"teamos.tasks.mention.created.v1",
 	"teamos.kb.mention.created.v1",
 }

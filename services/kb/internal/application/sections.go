@@ -12,6 +12,28 @@ import (
 )
 
 func (s *Service) GetSections(ctx context.Context, actor Actor) ([]Section, error) {
+	if actor.Role == "partner" {
+		rows, err := db.New(s.pool).ListPartnerVisibleSections(ctx, db.ListPartnerVisibleSectionsParams{
+			CompanyID: actor.CompanyID, PartnerID: actor.UserID,
+		})
+		if err != nil {
+			return nil, internal("Не удалось получить доступные разделы", err)
+		}
+		sections := make([]Section, 0, len(rows))
+		for _, row := range rows {
+			access, mapErr := accessFromJSON(row.Access)
+			if mapErr != nil {
+				return nil, mapErr
+			}
+			sections = append(sections, Section{
+				ID: row.ID, CompanyID: row.CompanyID, Name: row.Name,
+				ParentID: uuidPointer(row.ParentID), Order: row.Order, Access: access,
+				Visibility: row.Visibility, PartnerAccess: PartnerAccessSettings{Mode: "selected"},
+				CreatedAt: row.CreatedAt, UpdatedAt: row.UpdatedAt,
+			})
+		}
+		return sections, nil
+	}
 	sections, byID, err := s.loadSections(ctx, actor.CompanyID)
 	if err != nil {
 		return nil, err

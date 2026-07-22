@@ -42,7 +42,7 @@ func New(limit int, window time.Duration, trustedProxies ...netip.Prefix) *Limit
 
 func (l *Limiter) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodOptions || !strings.HasPrefix(r.URL.Path, "/api/v1/auth/") {
+		if r.Method == http.MethodOptions || !rateLimitedPath(r.Method, r.URL.Path) {
 			next.ServeHTTP(w, r)
 			return
 		}
@@ -54,6 +54,11 @@ func (l *Limiter) Middleware(next http.Handler) http.Handler {
 		}
 		next.ServeHTTP(w, r)
 	})
+}
+
+func rateLimitedPath(method, path string) bool {
+	return strings.HasPrefix(path, "/api/v1/auth/") ||
+		(method == http.MethodPost && strings.HasPrefix(path, "/api/v1/public/academy/"))
 }
 
 func (l *Limiter) allow(key string) (bool, time.Duration) {

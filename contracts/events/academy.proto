@@ -15,6 +15,246 @@ enum CourseAssigneeType {
   COURSE_ASSIGNEE_TYPE_EXTERNAL = 4;
 }
 
+enum AcademyCourseOwnerType {
+  ACADEMY_COURSE_OWNER_TYPE_UNSPECIFIED = 0;
+  ACADEMY_COURSE_OWNER_TYPE_COMPANY = 1;
+  ACADEMY_COURSE_OWNER_TYPE_PARTNER = 2;
+}
+
+enum AcademyCourseLifecycleStatus {
+  ACADEMY_COURSE_LIFECYCLE_STATUS_UNSPECIFIED = 0;
+  ACADEMY_COURSE_LIFECYCLE_STATUS_ACTIVE = 1;
+  ACADEMY_COURSE_LIFECYCLE_STATUS_ARCHIVED = 2;
+  ACADEMY_COURSE_LIFECYCLE_STATUS_DELETED = 3;
+}
+
+enum AcademyCourseDistributionStatus {
+  ACADEMY_COURSE_DISTRIBUTION_STATUS_UNSPECIFIED = 0;
+  ACADEMY_COURSE_DISTRIBUTION_STATUS_ACTIVE = 1;
+  ACADEMY_COURSE_DISTRIBUTION_STATUS_PAUSED = 2;
+  ACADEMY_COURSE_DISTRIBUTION_STATUS_BLOCKED = 3;
+}
+
+enum AcademyCourseRestrictionType {
+  ACADEMY_COURSE_RESTRICTION_TYPE_UNSPECIFIED = 0;
+  ACADEMY_COURSE_RESTRICTION_TYPE_PAUSE = 1;
+  ACADEMY_COURSE_RESTRICTION_TYPE_BLOCK = 2;
+}
+
+enum AcademyCourseTemplateType {
+  ACADEMY_COURSE_TEMPLATE_TYPE_UNSPECIFIED = 0;
+  ACADEMY_COURSE_TEMPLATE_TYPE_SYSTEM = 1;
+  ACADEMY_COURSE_TEMPLATE_TYPE_COMPANY = 2;
+}
+
+enum AcademyEnrollmentLearnerType {
+  ACADEMY_ENROLLMENT_LEARNER_TYPE_UNSPECIFIED = 0;
+  ACADEMY_ENROLLMENT_LEARNER_TYPE_USER = 1;
+  ACADEMY_ENROLLMENT_LEARNER_TYPE_EXTERNAL = 2;
+}
+
+enum AcademyEnrollmentSourceType {
+  ACADEMY_ENROLLMENT_SOURCE_TYPE_UNSPECIFIED = 0;
+  ACADEMY_ENROLLMENT_SOURCE_TYPE_ASSIGNMENT = 1;
+  ACADEMY_ENROLLMENT_SOURCE_TYPE_PERSONAL_ACCESS = 2;
+  ACADEMY_ENROLLMENT_SOURCE_TYPE_PARTNER_PROMO_CAMPAIGN = 3;
+  ACADEMY_ENROLLMENT_SOURCE_TYPE_COMPANY_CANDIDATE_CAMPAIGN = 4;
+  ACADEMY_ENROLLMENT_SOURCE_TYPE_REPEAT_TRAINING = 5;
+  ACADEMY_ENROLLMENT_SOURCE_TYPE_LEGACY = 6;
+  ACADEMY_ENROLLMENT_SOURCE_TYPE_SELF_ENROLLMENT = 7;
+}
+
+enum AcademyEnrollmentProgressStatus {
+  ACADEMY_ENROLLMENT_PROGRESS_STATUS_UNSPECIFIED = 0;
+  ACADEMY_ENROLLMENT_PROGRESS_STATUS_NOT_STARTED = 1;
+  ACADEMY_ENROLLMENT_PROGRESS_STATUS_IN_PROGRESS = 2;
+  ACADEMY_ENROLLMENT_PROGRESS_STATUS_COMPLETED = 3;
+}
+
+enum AcademyExternalCampaignPurpose {
+  ACADEMY_EXTERNAL_CAMPAIGN_PURPOSE_UNSPECIFIED = 0;
+  ACADEMY_EXTERNAL_CAMPAIGN_PURPOSE_COMPANY_CANDIDATE = 1;
+  ACADEMY_EXTERNAL_CAMPAIGN_PURPOSE_PARTNER_PROMO = 2;
+}
+
+enum AcademyExternalCampaignStatus {
+  ACADEMY_EXTERNAL_CAMPAIGN_STATUS_UNSPECIFIED = 0;
+  ACADEMY_EXTERNAL_CAMPAIGN_STATUS_ACTIVE = 1;
+  ACADEMY_EXTERNAL_CAMPAIGN_STATUS_PAUSED = 2;
+  ACADEMY_EXTERNAL_CAMPAIGN_STATUS_REVOKED = 3;
+  ACADEMY_EXTERNAL_CAMPAIGN_STATUS_CLOSED = 4;
+}
+
+message AcademyCourseCreatedEvent {
+  EventMetadata metadata = 1;
+  AcademyCourseCreatedPayload payload = 2;
+}
+
+message AcademyCourseCreatedPayload {
+  string course_id = 1;
+  AcademyCourseOwnerType owner_type = 2;
+  optional string owner_user_id = 3;
+  string created_by_id = 4;
+  AcademyCourseLifecycleStatus lifecycle_status = 5;
+  AcademyCourseDistributionStatus distribution_status = 6;
+}
+
+message AcademyCourseLifecycleChangedEvent {
+  EventMetadata metadata = 1;
+  AcademyCourseLifecycleChangedPayload payload = 2;
+}
+
+message AcademyCourseLifecycleChangedPayload {
+  string course_id = 1;
+  AcademyCourseLifecycleStatus previous_status = 2;
+  AcademyCourseLifecycleStatus status = 3;
+  optional string reason = 4;
+}
+
+message AcademyCourseDistributionChangedEvent {
+  EventMetadata metadata = 1;
+  AcademyCourseDistributionChangedPayload payload = 2;
+}
+
+message AcademyCourseDistributionChangedPayload {
+  string course_id = 1;
+  AcademyCourseDistributionStatus previous_status = 2;
+  AcademyCourseDistributionStatus status = 3;
+  optional string reason = 4;
+  optional string partner_user_id = 5;
+  optional string course_title = 6;
+  optional string link = 7;
+  repeated string recipient_user_ids = 8;
+}
+
+// Published under teamos.academy.course.version.draft_created.v1.
+message AcademyCourseVersionDraftCreatedEvent {
+  EventMetadata metadata = 1;
+  AcademyCourseVersionDraftCreatedPayload payload = 2;
+}
+
+message AcademyCourseVersionDraftCreatedPayload {
+  string course_id = 1;
+  string course_version_id = 2;
+  uint32 version_number = 3;
+  AcademyCourseOwnerType owner_type = 4;
+  optional string owner_user_id = 5;
+  string created_by_id = 6;
+  optional string based_on_version_id = 7;
+}
+
+// Published under teamos.academy.course.version.published.v1.
+message AcademyCourseVersionPublishedEvent {
+  EventMetadata metadata = 1;
+  AcademyCourseVersionPublishedPayload payload = 2;
+}
+
+message AcademyCourseVersionPublishedPayload {
+  string course_id = 1;
+  string course_version_id = 2;
+  uint32 version_number = 3;
+  AcademyCourseOwnerType owner_type = 4;
+  optional string owner_user_id = 5;
+  string published_by_id = 6;
+  google.protobuf.Timestamp published_at = 7;
+  string content_hash = 8;
+  optional string course_title = 9;
+  optional string link = 10;
+  repeated string recipient_user_ids = 11;
+}
+
+// Published under teamos.academy.course.restriction.applied.v1.
+message AcademyCourseRestrictionAppliedEvent {
+  EventMetadata metadata = 1;
+  AcademyCourseRestrictionAppliedPayload payload = 2;
+}
+
+message AcademyCourseRestrictionAppliedPayload {
+  string restriction_id = 1;
+  string course_id = 2;
+  string partner_user_id = 3;
+  AcademyCourseRestrictionType type = 4;
+  string reason = 5;
+  string applied_by_id = 6;
+  google.protobuf.Timestamp applied_at = 7;
+  optional string course_title = 8;
+  optional string link = 9;
+  repeated string recipient_user_ids = 10;
+}
+
+// Published under teamos.academy.course.restriction.resolved.v1.
+message AcademyCourseRestrictionResolvedEvent {
+  EventMetadata metadata = 1;
+  AcademyCourseRestrictionResolvedPayload payload = 2;
+}
+
+message AcademyCourseRestrictionResolvedPayload {
+  string restriction_id = 1;
+  string course_id = 2;
+  string partner_user_id = 3;
+  AcademyCourseRestrictionType type = 4;
+  string resolution_reason = 5;
+  string resolved_by_id = 6;
+  google.protobuf.Timestamp resolved_at = 7;
+  optional string course_title = 8;
+  optional string link = 9;
+  repeated string recipient_user_ids = 10;
+}
+
+// Published under teamos.academy.course.copied.v1.
+message AcademyPartnerCourseCopiedEvent {
+  EventMetadata metadata = 1;
+  AcademyPartnerCourseCopiedPayload payload = 2;
+}
+
+message AcademyPartnerCourseCopiedPayload {
+  string source_course_id = 1;
+  string source_course_version_id = 2;
+  string source_partner_user_id = 3;
+  string target_course_id = 4;
+  string target_draft_version_id = 5;
+  string copied_by_id = 6;
+  google.protobuf.Timestamp copied_at = 7;
+  optional string target_course_title = 8;
+}
+
+// Published under teamos.academy.template.version.published.v1.
+message AcademyTemplateVersionPublishedEvent {
+  EventMetadata metadata = 1;
+  AcademyTemplateVersionPublishedPayload payload = 2;
+}
+
+message AcademyTemplateVersionPublishedPayload {
+  string template_id = 1;
+  string template_version_id = 2;
+  uint32 version_number = 3;
+  AcademyCourseTemplateType template_type = 4;
+  optional string system_template_key = 5;
+  string published_by_id = 6;
+  google.protobuf.Timestamp published_at = 7;
+  string content_hash = 8;
+}
+
+// Published under teamos.academy.template.instantiated.v1.
+message AcademyTemplateInstantiatedEvent {
+  EventMetadata metadata = 1;
+  AcademyTemplateInstantiatedPayload payload = 2;
+}
+
+message AcademyTemplateInstantiatedPayload {
+  string template_id = 1;
+  string template_version_id = 2;
+  uint32 template_version_number = 3;
+  AcademyCourseTemplateType template_type = 4;
+  optional string system_template_key = 5;
+  string target_course_id = 6;
+  string target_draft_version_id = 7;
+  AcademyCourseOwnerType target_owner_type = 8;
+  optional string target_owner_user_id = 9;
+  string instantiated_by_id = 10;
+  google.protobuf.Timestamp instantiated_at = 11;
+}
+
 message AcademyCourseAssignedEvent {
   EventMetadata metadata = 1;
   AcademyCourseAssignedPayload payload = 2;
@@ -31,6 +271,66 @@ message AcademyCourseAssignedPayload {
   string assigned_by_id = 8;
   string link = 9;
   repeated string recipient_user_ids = 10;
+  optional string course_version_id = 11;
+  repeated string enrollment_ids = 12;
+}
+
+// Published under teamos.academy.enrollment.activated.v1.
+message AcademyEnrollmentActivatedEvent {
+  EventMetadata metadata = 1;
+  AcademyEnrollmentActivatedPayload payload = 2;
+}
+
+message AcademyEnrollmentActivatedPayload {
+  string enrollment_id = 1;
+  string course_id = 2;
+  string course_version_id = 3;
+  AcademyEnrollmentLearnerType learner_type = 4;
+  optional string user_id = 5;
+  optional string external_learner_id = 6;
+  AcademyEnrollmentSourceType source_type = 7;
+  optional string source_id = 8;
+  uint32 attempt_number = 9;
+  google.protobuf.Timestamp activated_at = 10;
+  optional google.protobuf.Timestamp access_until = 11;
+}
+
+// Published under teamos.academy.enrollment.progressed.v1.
+message AcademyEnrollmentProgressedEvent {
+  EventMetadata metadata = 1;
+  AcademyEnrollmentProgressedPayload payload = 2;
+}
+
+message AcademyEnrollmentProgressedPayload {
+  string enrollment_id = 1;
+  string course_id = 2;
+  string course_version_id = 3;
+  AcademyEnrollmentLearnerType learner_type = 4;
+  optional string user_id = 5;
+  optional string external_learner_id = 6;
+  AcademyEnrollmentProgressStatus progress_status = 7;
+  uint32 progress_percent = 8;
+  optional string completed_lesson_version_id = 9;
+  optional string current_lesson_version_id = 10;
+  optional string quiz_attempt_id = 11;
+  google.protobuf.Timestamp occurred_at = 12;
+}
+
+// Published under teamos.academy.enrollment.completed.v1.
+message AcademyEnrollmentCompletedEvent {
+  EventMetadata metadata = 1;
+  AcademyEnrollmentCompletedPayload payload = 2;
+}
+
+message AcademyEnrollmentCompletedPayload {
+  string enrollment_id = 1;
+  string course_id = 2;
+  string course_version_id = 3;
+  AcademyEnrollmentLearnerType learner_type = 4;
+  optional string user_id = 5;
+  optional string external_learner_id = 6;
+  uint32 attempt_number = 7;
+  google.protobuf.Timestamp completed_at = 8;
 }
 
 message AcademyCourseDueSoonEvent {
@@ -56,4 +356,58 @@ message AcademyCourseDeletedEvent {
 
 message AcademyCourseDeletedPayload {
   string course_id = 1;
+  optional AcademyCourseOwnerType owner_type = 2;
+  optional string owner_user_id = 3;
+  optional string deleted_by_id = 4;
+  optional google.protobuf.Timestamp deleted_at = 5;
+  optional string course_title = 6;
+}
+
+// Published under teamos.academy.external_email_verification.requested.v1.
+// encrypted_delivery_payload is nonce || AES-256-GCM ciphertext. Its plaintext
+// is JSON with recipientEmail and verificationCode. AAD is challenge_id.
+message AcademyExternalEmailVerificationRequestedEvent {
+  EventMetadata metadata = 1;
+  AcademyExternalEmailVerificationRequestedPayload payload = 2;
+}
+
+message AcademyExternalEmailVerificationRequestedPayload {
+  string challenge_id = 1;
+  bytes encrypted_delivery_payload = 2;
+  google.protobuf.Timestamp expires_at = 3;
+  string purpose = 4;
+  optional string key_id = 5;
+}
+
+// Published under teamos.academy.external_campaign.created.v1. The public
+// token and its hash are intentionally excluded.
+message AcademyExternalCampaignCreatedEvent {
+  EventMetadata metadata = 1;
+  AcademyExternalCampaignCreatedPayload payload = 2;
+}
+
+message AcademyExternalCampaignCreatedPayload {
+  string campaign_id = 1;
+  string course_id = 2;
+  string course_version_id = 3;
+  AcademyCourseOwnerType owner_type = 4;
+  optional string owner_user_id = 5;
+  AcademyExternalCampaignPurpose purpose = 6;
+  string created_by_id = 7;
+  google.protobuf.Timestamp created_at = 8;
+}
+
+// Published under teamos.academy.external_campaign.status_changed.v1.
+message AcademyExternalCampaignStatusChangedEvent {
+  EventMetadata metadata = 1;
+  AcademyExternalCampaignStatusChangedPayload payload = 2;
+}
+
+message AcademyExternalCampaignStatusChangedPayload {
+  string campaign_id = 1;
+  string course_id = 2;
+  AcademyExternalCampaignStatus previous_status = 3;
+  AcademyExternalCampaignStatus status = 4;
+  string changed_by_id = 5;
+  google.protobuf.Timestamp changed_at = 6;
 }

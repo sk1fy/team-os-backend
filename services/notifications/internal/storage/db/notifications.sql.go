@@ -10,7 +10,63 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
+
+const claimEmailDelivery = `-- name: ClaimEmailDelivery :one
+UPDATE email_deliveries
+SET status = 'sending',
+    attempts = attempts + 1,
+    last_attempt_at = $1,
+    last_error_code = NULL,
+    updated_at = $1
+WHERE company_id = $2
+  AND challenge_id = $3
+  AND expires_at > $1
+  AND attempts < max_attempts
+  AND (
+    status IN ('pending', 'failed')
+    OR (status = 'sending' AND last_attempt_at <= $4)
+  )
+RETURNING id, event_id, company_id, challenge_id, purpose,
+  recipient_fingerprint, status, attempts, max_attempts, expires_at,
+  last_attempt_at, sent_at, last_error_code, created_at, updated_at
+`
+
+type ClaimEmailDeliveryParams struct {
+	NowAt       pgtype.Timestamptz `json:"now_at"`
+	CompanyID   uuid.UUID          `json:"company_id"`
+	ChallengeID uuid.UUID          `json:"challenge_id"`
+	StaleBefore pgtype.Timestamptz `json:"stale_before"`
+}
+
+func (q *Queries) ClaimEmailDelivery(ctx context.Context, arg ClaimEmailDeliveryParams) (EmailDelivery, error) {
+	row := q.db.QueryRow(ctx, claimEmailDelivery,
+		arg.NowAt,
+		arg.CompanyID,
+		arg.ChallengeID,
+		arg.StaleBefore,
+	)
+	var i EmailDelivery
+	err := row.Scan(
+		&i.ID,
+		&i.EventID,
+		&i.CompanyID,
+		&i.ChallengeID,
+		&i.Purpose,
+		&i.RecipientFingerprint,
+		&i.Status,
+		&i.Attempts,
+		&i.MaxAttempts,
+		&i.ExpiresAt,
+		&i.LastAttemptAt,
+		&i.SentAt,
+		&i.LastErrorCode,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
 
 const countUnread = `-- name: CountUnread :one
 SELECT count(*)
@@ -47,6 +103,94 @@ type DeactivateNotificationUserParams struct {
 
 func (q *Queries) DeactivateNotificationUser(ctx context.Context, arg DeactivateNotificationUserParams) error {
 	_, err := q.db.Exec(ctx, deactivateNotificationUser, arg.CompanyID, arg.UserID, arg.LastEventAt)
+	return err
+}
+
+const expireEmailDelivery = `-- name: ExpireEmailDelivery :exec
+UPDATE email_deliveries
+SET status = 'expired', updated_at = $1
+WHERE company_id = $2
+  AND challenge_id = $3
+  AND status <> 'sent'
+  AND expires_at <= $1
+`
+
+type ExpireEmailDeliveryParams struct {
+	NowAt       time.Time `json:"now_at"`
+	CompanyID   uuid.UUID `json:"company_id"`
+	ChallengeID uuid.UUID `json:"challenge_id"`
+}
+
+func (q *Queries) ExpireEmailDelivery(ctx context.Context, arg ExpireEmailDeliveryParams) error {
+	_, err := q.db.Exec(ctx, expireEmailDelivery, arg.NowAt, arg.CompanyID, arg.ChallengeID)
+	return err
+}
+
+const getEmailDelivery = `-- name: GetEmailDelivery :one
+SELECT id, event_id, company_id, challenge_id, purpose,
+  recipient_fingerprint, status, attempts, max_attempts, expires_at,
+  last_attempt_at, sent_at, last_error_code, created_at, updated_at
+FROM email_deliveries
+WHERE company_id = $1 AND challenge_id = $2
+`
+
+type GetEmailDeliveryParams struct {
+	CompanyID   uuid.UUID `json:"company_id"`
+	ChallengeID uuid.UUID `json:"challenge_id"`
+}
+
+func (q *Queries) GetEmailDelivery(ctx context.Context, arg GetEmailDeliveryParams) (EmailDelivery, error) {
+	row := q.db.QueryRow(ctx, getEmailDelivery, arg.CompanyID, arg.ChallengeID)
+	var i EmailDelivery
+	err := row.Scan(
+		&i.ID,
+		&i.EventID,
+		&i.CompanyID,
+		&i.ChallengeID,
+		&i.Purpose,
+		&i.RecipientFingerprint,
+		&i.Status,
+		&i.Attempts,
+		&i.MaxAttempts,
+		&i.ExpiresAt,
+		&i.LastAttemptAt,
+		&i.SentAt,
+		&i.LastErrorCode,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const insertEmailDelivery = `-- name: InsertEmailDelivery :exec
+INSERT INTO email_deliveries (
+  id, event_id, company_id, challenge_id, purpose, recipient_fingerprint,
+  expires_at
+)
+VALUES ($1, $2, $3, $4, $5, $6, $7)
+ON CONFLICT DO NOTHING
+`
+
+type InsertEmailDeliveryParams struct {
+	ID                   uuid.UUID `json:"id"`
+	EventID              uuid.UUID `json:"event_id"`
+	CompanyID            uuid.UUID `json:"company_id"`
+	ChallengeID          uuid.UUID `json:"challenge_id"`
+	Purpose              string    `json:"purpose"`
+	RecipientFingerprint []byte    `json:"recipient_fingerprint"`
+	ExpiresAt            time.Time `json:"expires_at"`
+}
+
+func (q *Queries) InsertEmailDelivery(ctx context.Context, arg InsertEmailDeliveryParams) error {
+	_, err := q.db.Exec(ctx, insertEmailDelivery,
+		arg.ID,
+		arg.EventID,
+		arg.CompanyID,
+		arg.ChallengeID,
+		arg.Purpose,
+		arg.RecipientFingerprint,
+		arg.ExpiresAt,
+	)
 	return err
 }
 
@@ -162,6 +306,52 @@ type MarkAllReadParams struct {
 
 func (q *Queries) MarkAllRead(ctx context.Context, arg MarkAllReadParams) error {
 	_, err := q.db.Exec(ctx, markAllRead, arg.CompanyID, arg.UserID)
+	return err
+}
+
+const markEmailDeliveryFailed = `-- name: MarkEmailDeliveryFailed :exec
+UPDATE email_deliveries
+SET status = 'failed', last_error_code = $1,
+    updated_at = $2
+WHERE company_id = $3
+  AND challenge_id = $4
+  AND status = 'sending'
+`
+
+type MarkEmailDeliveryFailedParams struct {
+	ErrorCode   *string   `json:"error_code"`
+	FailedAt    time.Time `json:"failed_at"`
+	CompanyID   uuid.UUID `json:"company_id"`
+	ChallengeID uuid.UUID `json:"challenge_id"`
+}
+
+func (q *Queries) MarkEmailDeliveryFailed(ctx context.Context, arg MarkEmailDeliveryFailedParams) error {
+	_, err := q.db.Exec(ctx, markEmailDeliveryFailed,
+		arg.ErrorCode,
+		arg.FailedAt,
+		arg.CompanyID,
+		arg.ChallengeID,
+	)
+	return err
+}
+
+const markEmailDeliverySent = `-- name: MarkEmailDeliverySent :exec
+UPDATE email_deliveries
+SET status = 'sent', sent_at = $1, last_error_code = NULL,
+    updated_at = $1
+WHERE company_id = $2
+  AND challenge_id = $3
+  AND status = 'sending'
+`
+
+type MarkEmailDeliverySentParams struct {
+	SentAt      pgtype.Timestamptz `json:"sent_at"`
+	CompanyID   uuid.UUID          `json:"company_id"`
+	ChallengeID uuid.UUID          `json:"challenge_id"`
+}
+
+func (q *Queries) MarkEmailDeliverySent(ctx context.Context, arg MarkEmailDeliverySentParams) error {
+	_, err := q.db.Exec(ctx, markEmailDeliverySent, arg.SentAt, arg.CompanyID, arg.ChallengeID)
 	return err
 }
 

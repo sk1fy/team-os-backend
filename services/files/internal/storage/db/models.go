@@ -20,3 +20,24 @@ type File struct {
 	Purpose     string             `json:"purpose"`
 	CreatedAt   pgtype.Timestamptz `json:"created_at"`
 }
+
+type FileClone struct {
+	OperationID  uuid.UUID `json:"operation_id"`
+	Ordinal      int32     `json:"ordinal"`
+	SourceFileID uuid.UUID `json:"source_file_id"`
+	TargetFileID uuid.UUID `json:"target_file_id"`
+}
+
+type FileCloneOperation struct {
+	ID              uuid.UUID          `json:"id"`
+	CompanyID       uuid.UUID          `json:"company_id"`
+	IdempotencyKey  string             `json:"idempotency_key"`
+	RequestedBy     uuid.UUID          `json:"requested_by"`
+	TargetOwnerType string             `json:"target_owner_type"`
+	TargetOwnerID   uuid.UUID          `json:"target_owner_id"`
+	SourceFileIds   []uuid.UUID        `json:"source_file_ids"`
+	State           string             `json:"state"`
+	ErrorMessage    pgtype.Text        `json:"error_message"`
+	CreatedAt       pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt       pgtype.Timestamptz `json:"updated_at"`
+}

@@ -67,6 +67,63 @@ func (k *Kb) GetArticlesByIds(ctx context.Context, token string, ids []uuid.UUID
 	return articles, nil
 }
 
+func (k *Kb) GetArticleSnapshotForCourseCopy(
+	ctx context.Context,
+	token string,
+	articleID uuid.UUID,
+	articleVersionID *uuid.UUID,
+	targetPartnerID *uuid.UUID,
+) (application.KbArticleSnapshot, error) {
+	request := &kbv1.GetArticleSnapshotForCourseCopyRequest{ArticleId: articleID.String()}
+	if articleVersionID != nil {
+		value := articleVersionID.String()
+		request.ArticleVersionId = &value
+	}
+	if targetPartnerID != nil {
+		value := targetPartnerID.String()
+		request.TargetPartnerId = &value
+	}
+	response, err := callWithResilience(ctx, token, k.breaker, func(callContext context.Context) (*kbv1.GetArticleSnapshotForCourseCopyResponse, error) {
+		return k.client.GetArticleSnapshotForCourseCopy(callContext, request)
+	})
+	if err != nil {
+		return application.KbArticleSnapshot{}, fmt.Errorf("kb.GetArticleSnapshotForCourseCopy: %w", err)
+	}
+	snapshot := response.GetSnapshot()
+	if snapshot == nil {
+		return application.KbArticleSnapshot{}, errors.New("kb returned an empty article snapshot")
+	}
+	resolvedArticleID, err := uuid.Parse(snapshot.GetArticleId())
+	if err != nil {
+		return application.KbArticleSnapshot{}, fmt.Errorf("invalid snapshot article id %q", snapshot.GetArticleId())
+	}
+	resolvedVersionID, err := uuid.Parse(snapshot.GetArticleVersionId())
+	if err != nil {
+		return application.KbArticleSnapshot{}, fmt.Errorf("invalid snapshot article version id %q", snapshot.GetArticleVersionId())
+	}
+	content, err := json.Marshal(snapshot.GetContent().AsMap())
+	if err != nil {
+		return application.KbArticleSnapshot{}, fmt.Errorf("encode snapshot content: %w", err)
+	}
+	fileIDs := make([]uuid.UUID, 0, len(snapshot.GetAttachments()))
+	for _, attachment := range snapshot.GetAttachments() {
+		fileID, parseErr := uuid.Parse(attachment.GetFileId())
+		if parseErr != nil {
+			return application.KbArticleSnapshot{}, fmt.Errorf("invalid snapshot file id %q", attachment.GetFileId())
+		}
+		fileIDs = append(fileIDs, fileID)
+	}
+	result := application.KbArticleSnapshot{
+		ArticleID: resolvedArticleID, ArticleVersionID: resolvedVersionID,
+		Version: int32(snapshot.GetVersion()), Title: snapshot.GetTitle(), Content: content,
+		FileIDs: fileIDs, ContentHash: snapshot.GetContentHash(),
+	}
+	if capturedAt := snapshot.GetCapturedAt(); capturedAt != nil {
+		result.CapturedAt = capturedAt.AsTime()
+	}
+	return result, nil
+}
+
 func (k *Kb) GetSections(ctx context.Context, token string) ([]application.KbSection, error) {
 	response, err := callWithResilience(ctx, token, k.breaker, func(callContext context.Context) (*kbv1.GetSectionsResponse, error) {
 		return k.client.GetSections(callContext, &kbv1.GetSectionsRequest{})

@@ -37,6 +37,28 @@ func (c *Company) ValidateUser(ctx context.Context, token string, userID uuid.UU
 	return nil
 }
 
+func (c *Company) GetManagerUserIDs(ctx context.Context, token string) ([]uuid.UUID, error) {
+	response, err := callWithResilience(ctx, token, c.breaker, func(callContext context.Context) (*companyv1.GetUsersResponse, error) {
+		return c.client.GetUsers(callContext, &companyv1.GetUsersRequest{})
+	})
+	if err != nil {
+		return nil, fmt.Errorf("company.GetUsers: %w", err)
+	}
+	result := make([]uuid.UUID, 0, len(response.GetUsers()))
+	for _, user := range response.GetUsers() {
+		if user.GetStatus() != companyv1.UserStatus_USER_STATUS_ACTIVE ||
+			(user.GetRole() != companyv1.UserRole_USER_ROLE_OWNER && user.GetRole() != companyv1.UserRole_USER_ROLE_ADMIN) {
+			continue
+		}
+		id, parseErr := uuid.Parse(user.GetId())
+		if parseErr != nil {
+			return nil, fmt.Errorf("company.GetUsers: invalid manager id %q", user.GetId())
+		}
+		result = append(result, id)
+	}
+	return result, nil
+}
+
 func (c *Company) ResolvePositionUsers(ctx context.Context, token string, positionID uuid.UUID) ([]uuid.UUID, error) {
 	response, err := callWithResilience(ctx, token, c.breaker, func(callContext context.Context) (*companyv1.ResolvePositionUsersResponse, error) {
 		return c.client.ResolvePositionUsers(callContext, &companyv1.ResolvePositionUsersRequest{

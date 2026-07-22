@@ -31,6 +31,7 @@ func Setup(ctx context.Context, pool *pgxpool.Pool, service *application.Service
 
 	workerBundle := river.NewWorkers()
 	river.AddWorker(workerBundle, NewDeadlinesWorker(service))
+	river.AddWorker(workerBundle, NewFileClonesWorker(service))
 
 	periodicJobs := []*river.PeriodicJob{
 		river.NewPeriodicJob(
@@ -38,6 +39,11 @@ func Setup(ctx context.Context, pool *pgxpool.Pool, service *application.Service
 			func() (river.JobArgs, *river.InsertOpts) {
 				return DeadlinesArgs{}, nil
 			},
+			&river.PeriodicJobOpts{RunOnStart: true},
+		),
+		river.NewPeriodicJob(
+			river.PeriodicInterval(time.Minute),
+			func() (river.JobArgs, *river.InsertOpts) { return FileClonesArgs{}, nil },
 			&river.PeriodicJobOpts{RunOnStart: true},
 		),
 	}

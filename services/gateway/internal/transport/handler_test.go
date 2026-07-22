@@ -54,7 +54,9 @@ type stubCompanyServer struct {
 
 type stubAcademyServer struct {
 	academyv1.UnimplementedAcademyServiceServer
-	getCourseFn func(context.Context, *academyv1.GetCourseRequest) (*academyv1.GetCourseResponse, error)
+	getCourseFn                func(context.Context, *academyv1.GetCourseRequest) (*academyv1.GetCourseResponse, error)
+	completeEnrollmentLessonFn func(context.Context, *academyv1.CompleteEnrollmentLessonRequest) (*academyv1.CompleteEnrollmentLessonResponse, error)
+	submitEnrollmentQuizFn     func(context.Context, *academyv1.SubmitEnrollmentQuizAttemptRequest) (*academyv1.SubmitEnrollmentQuizAttemptResponse, error)
 }
 
 func (s *stubAcademyServer) GetCourse(ctx context.Context, request *academyv1.GetCourseRequest) (*academyv1.GetCourseResponse, error) {
@@ -62,6 +64,20 @@ func (s *stubAcademyServer) GetCourse(ctx context.Context, request *academyv1.Ge
 		return nil, status.Error(codes.Unimplemented, "unexpected GetCourse call")
 	}
 	return s.getCourseFn(ctx, request)
+}
+
+func (s *stubAcademyServer) CompleteEnrollmentLesson(ctx context.Context, request *academyv1.CompleteEnrollmentLessonRequest) (*academyv1.CompleteEnrollmentLessonResponse, error) {
+	if s.completeEnrollmentLessonFn == nil {
+		return nil, status.Error(codes.Unimplemented, "unexpected CompleteEnrollmentLesson call")
+	}
+	return s.completeEnrollmentLessonFn(ctx, request)
+}
+
+func (s *stubAcademyServer) SubmitEnrollmentQuizAttempt(ctx context.Context, request *academyv1.SubmitEnrollmentQuizAttemptRequest) (*academyv1.SubmitEnrollmentQuizAttemptResponse, error) {
+	if s.submitEnrollmentQuizFn == nil {
+		return nil, status.Error(codes.Unimplemented, "unexpected SubmitEnrollmentQuizAttempt call")
+	}
+	return s.submitEnrollmentQuizFn(ctx, request)
 }
 
 func (s *stubCompanyServer) GetUser(ctx context.Context, request *companyv1.GetUserRequest) (*companyv1.GetUserResponse, error) {
@@ -202,6 +218,48 @@ func TestGatewayReturnsNotFoundEnvelopeForUnknownEntities(t *testing.T) {
 		handler := newTestGatewayWithAcademy(t, company, academy)
 		assertErrorEnvelope(t, performRequest(handler, http.MethodGet, "/api/v1/academy/courses/"+testChildID, "", nil), http.StatusNotFound, "Курс не найден")
 	})
+}
+
+func TestGatewayForwardsEnrollmentIdempotencyKeys(t *testing.T) {
+	var completeKey, quizKey string
+	academy := &stubAcademyServer{
+		completeEnrollmentLessonFn: func(_ context.Context, request *academyv1.CompleteEnrollmentLessonRequest) (*academyv1.CompleteEnrollmentLessonResponse, error) {
+			completeKey = request.GetIdempotencyKey()
+			return nil, status.Error(codes.InvalidArgument, "проверка завершена")
+		},
+		submitEnrollmentQuizFn: func(_ context.Context, request *academyv1.SubmitEnrollmentQuizAttemptRequest) (*academyv1.SubmitEnrollmentQuizAttemptResponse, error) {
+			quizKey = request.GetIdempotencyKey()
+			return nil, status.Error(codes.InvalidArgument, "проверка завершена")
+		},
+	}
+	handler := newTestGatewayWithAcademy(t, &stubCompanyServer{}, academy)
+
+	completeRequest := httptest.NewRequestWithContext(
+		context.Background(),
+		http.MethodPost,
+		"/api/v1/academy/enrollments/"+testChildID+"/lessons/"+testDepartmentID+"/complete",
+		strings.NewReader(`{}`),
+	)
+	completeRequest.Header.Set("Content-Type", "application/json")
+	completeRequest.Header.Set("Idempotency-Key", "complete-key-1")
+	handler.ServeHTTP(httptest.NewRecorder(), completeRequest)
+
+	quizRequest := httptest.NewRequestWithContext(
+		context.Background(),
+		http.MethodPost,
+		"/api/v1/academy/enrollments/"+testChildID+"/quizzes/"+testDepartmentID+"/attempts",
+		strings.NewReader(`{"answers":[]}`),
+	)
+	quizRequest.Header.Set("Content-Type", "application/json")
+	quizRequest.Header.Set("Idempotency-Key", "quiz-key-1")
+	handler.ServeHTTP(httptest.NewRecorder(), quizRequest)
+
+	if completeKey != "complete-key-1" {
+		t.Fatalf("CompleteEnrollmentLesson idempotency key = %q", completeKey)
+	}
+	if quizKey != "quiz-key-1" {
+		t.Fatalf("SubmitEnrollmentQuizAttempt idempotency key = %q", quizKey)
+	}
 }
 
 func TestGatewayRejectsMalformedEntityIDsWithoutCallingServices(t *testing.T) {

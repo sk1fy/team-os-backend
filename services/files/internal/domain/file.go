@@ -41,6 +41,47 @@ type Upload struct {
 	Purpose           Purpose
 }
 
+type OwnerType string
+
+const (
+	OwnerCourseVersion   OwnerType = "course_version"
+	OwnerTemplateVersion OwnerType = "template_version"
+	OwnerArticleVersion  OwnerType = "article_version"
+)
+
+type CloneState string
+
+const (
+	ClonePending    CloneState = "pending"
+	CloneInProgress CloneState = "in_progress"
+	CloneSucceeded  CloneState = "succeeded"
+	CloneFailed     CloneState = "failed"
+)
+
+type FileOwner struct {
+	Type OwnerType
+	ID   uuid.UUID
+}
+
+type ClonedFile struct {
+	SourceFileID uuid.UUID
+	File         File
+}
+
+type CloneOperation struct {
+	ID             uuid.UUID
+	CompanyID      uuid.UUID
+	IdempotencyKey string
+	RequestedBy    uuid.UUID
+	TargetOwner    FileOwner
+	SourceFileIDs  []uuid.UUID
+	State          CloneState
+	Files          []ClonedFile
+	ErrorMessage   string
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
+}
+
 func ValidateUpload(v Upload, maxSize int64, allowed map[string]struct{}) error {
 	name := strings.TrimSpace(v.Name)
 	if name == "" || len(name) > 255 || filepath.Base(name) != name || strings.ContainsAny(name, "\x00/\\") {

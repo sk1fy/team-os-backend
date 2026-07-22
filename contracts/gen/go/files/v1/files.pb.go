@@ -74,6 +74,165 @@ func (FilePurpose) EnumDescriptor() ([]byte, []int) {
 	return file_proto_files_v1_files_proto_rawDescGZIP(), []int{0}
 }
 
+type FileOwnerType int32
+
+const (
+	FileOwnerType_FILE_OWNER_TYPE_UNSPECIFIED      FileOwnerType = 0
+	FileOwnerType_FILE_OWNER_TYPE_COURSE_VERSION   FileOwnerType = 1
+	FileOwnerType_FILE_OWNER_TYPE_TEMPLATE_VERSION FileOwnerType = 2
+	FileOwnerType_FILE_OWNER_TYPE_ARTICLE_VERSION  FileOwnerType = 3
+)
+
+// Enum value maps for FileOwnerType.
+var (
+	FileOwnerType_name = map[int32]string{
+		0: "FILE_OWNER_TYPE_UNSPECIFIED",
+		1: "FILE_OWNER_TYPE_COURSE_VERSION",
+		2: "FILE_OWNER_TYPE_TEMPLATE_VERSION",
+		3: "FILE_OWNER_TYPE_ARTICLE_VERSION",
+	}
+	FileOwnerType_value = map[string]int32{
+		"FILE_OWNER_TYPE_UNSPECIFIED":      0,
+		"FILE_OWNER_TYPE_COURSE_VERSION":   1,
+		"FILE_OWNER_TYPE_TEMPLATE_VERSION": 2,
+		"FILE_OWNER_TYPE_ARTICLE_VERSION":  3,
+	}
+)
+
+func (x FileOwnerType) Enum() *FileOwnerType {
+	p := new(FileOwnerType)
+	*p = x
+	return p
+}
+
+func (x FileOwnerType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (FileOwnerType) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_files_v1_files_proto_enumTypes[1].Descriptor()
+}
+
+func (FileOwnerType) Type() protoreflect.EnumType {
+	return &file_proto_files_v1_files_proto_enumTypes[1]
+}
+
+func (x FileOwnerType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use FileOwnerType.Descriptor instead.
+func (FileOwnerType) EnumDescriptor() ([]byte, []int) {
+	return file_proto_files_v1_files_proto_rawDescGZIP(), []int{1}
+}
+
+type FileCloneState int32
+
+const (
+	FileCloneState_FILE_CLONE_STATE_UNSPECIFIED FileCloneState = 0
+	FileCloneState_FILE_CLONE_STATE_PENDING     FileCloneState = 1
+	FileCloneState_FILE_CLONE_STATE_IN_PROGRESS FileCloneState = 2
+	FileCloneState_FILE_CLONE_STATE_SUCCEEDED   FileCloneState = 3
+	FileCloneState_FILE_CLONE_STATE_FAILED      FileCloneState = 4
+)
+
+// Enum value maps for FileCloneState.
+var (
+	FileCloneState_name = map[int32]string{
+		0: "FILE_CLONE_STATE_UNSPECIFIED",
+		1: "FILE_CLONE_STATE_PENDING",
+		2: "FILE_CLONE_STATE_IN_PROGRESS",
+		3: "FILE_CLONE_STATE_SUCCEEDED",
+		4: "FILE_CLONE_STATE_FAILED",
+	}
+	FileCloneState_value = map[string]int32{
+		"FILE_CLONE_STATE_UNSPECIFIED": 0,
+		"FILE_CLONE_STATE_PENDING":     1,
+		"FILE_CLONE_STATE_IN_PROGRESS": 2,
+		"FILE_CLONE_STATE_SUCCEEDED":   3,
+		"FILE_CLONE_STATE_FAILED":      4,
+	}
+)
+
+func (x FileCloneState) Enum() *FileCloneState {
+	p := new(FileCloneState)
+	*p = x
+	return p
+}
+
+func (x FileCloneState) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (FileCloneState) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_files_v1_files_proto_enumTypes[2].Descriptor()
+}
+
+func (FileCloneState) Type() protoreflect.EnumType {
+	return &file_proto_files_v1_files_proto_enumTypes[2]
+}
+
+func (x FileCloneState) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use FileCloneState.Descriptor instead.
+func (FileCloneState) EnumDescriptor() ([]byte, []int) {
+	return file_proto_files_v1_files_proto_rawDescGZIP(), []int{2}
+}
+
+type FileOwner struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Type          FileOwnerType          `protobuf:"varint,1,opt,name=type,proto3,enum=teamos.files.v1.FileOwnerType" json:"type,omitempty"`
+	Id            string                 `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FileOwner) Reset() {
+	*x = FileOwner{}
+	mi := &file_proto_files_v1_files_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FileOwner) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FileOwner) ProtoMessage() {}
+
+func (x *FileOwner) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_files_v1_files_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FileOwner.ProtoReflect.Descriptor instead.
+func (*FileOwner) Descriptor() ([]byte, []int) {
+	return file_proto_files_v1_files_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *FileOwner) GetType() FileOwnerType {
+	if x != nil {
+		return x.Type
+	}
+	return FileOwnerType_FILE_OWNER_TYPE_UNSPECIFIED
+}
+
+func (x *FileOwner) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
 type FileMetadata struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -90,7 +249,7 @@ type FileMetadata struct {
 
 func (x *FileMetadata) Reset() {
 	*x = FileMetadata{}
-	mi := &file_proto_files_v1_files_proto_msgTypes[0]
+	mi := &file_proto_files_v1_files_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -102,7 +261,7 @@ func (x *FileMetadata) String() string {
 func (*FileMetadata) ProtoMessage() {}
 
 func (x *FileMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_files_v1_files_proto_msgTypes[0]
+	mi := &file_proto_files_v1_files_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -115,7 +274,7 @@ func (x *FileMetadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FileMetadata.ProtoReflect.Descriptor instead.
 func (*FileMetadata) Descriptor() ([]byte, []int) {
-	return file_proto_files_v1_files_proto_rawDescGZIP(), []int{0}
+	return file_proto_files_v1_files_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *FileMetadata) GetId() string {
@@ -186,7 +345,7 @@ type UploadFileInfo struct {
 
 func (x *UploadFileInfo) Reset() {
 	*x = UploadFileInfo{}
-	mi := &file_proto_files_v1_files_proto_msgTypes[1]
+	mi := &file_proto_files_v1_files_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -198,7 +357,7 @@ func (x *UploadFileInfo) String() string {
 func (*UploadFileInfo) ProtoMessage() {}
 
 func (x *UploadFileInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_files_v1_files_proto_msgTypes[1]
+	mi := &file_proto_files_v1_files_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -211,7 +370,7 @@ func (x *UploadFileInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UploadFileInfo.ProtoReflect.Descriptor instead.
 func (*UploadFileInfo) Descriptor() ([]byte, []int) {
-	return file_proto_files_v1_files_proto_rawDescGZIP(), []int{1}
+	return file_proto_files_v1_files_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *UploadFileInfo) GetName() string {
@@ -255,7 +414,7 @@ type UploadFileRequest struct {
 
 func (x *UploadFileRequest) Reset() {
 	*x = UploadFileRequest{}
-	mi := &file_proto_files_v1_files_proto_msgTypes[2]
+	mi := &file_proto_files_v1_files_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -267,7 +426,7 @@ func (x *UploadFileRequest) String() string {
 func (*UploadFileRequest) ProtoMessage() {}
 
 func (x *UploadFileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_files_v1_files_proto_msgTypes[2]
+	mi := &file_proto_files_v1_files_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -280,7 +439,7 @@ func (x *UploadFileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UploadFileRequest.ProtoReflect.Descriptor instead.
 func (*UploadFileRequest) Descriptor() ([]byte, []int) {
-	return file_proto_files_v1_files_proto_rawDescGZIP(), []int{2}
+	return file_proto_files_v1_files_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *UploadFileRequest) GetPayload() isUploadFileRequest_Payload {
@@ -333,7 +492,7 @@ type UploadFileResponse struct {
 
 func (x *UploadFileResponse) Reset() {
 	*x = UploadFileResponse{}
-	mi := &file_proto_files_v1_files_proto_msgTypes[3]
+	mi := &file_proto_files_v1_files_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -345,7 +504,7 @@ func (x *UploadFileResponse) String() string {
 func (*UploadFileResponse) ProtoMessage() {}
 
 func (x *UploadFileResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_files_v1_files_proto_msgTypes[3]
+	mi := &file_proto_files_v1_files_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -358,7 +517,7 @@ func (x *UploadFileResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UploadFileResponse.ProtoReflect.Descriptor instead.
 func (*UploadFileResponse) Descriptor() ([]byte, []int) {
-	return file_proto_files_v1_files_proto_rawDescGZIP(), []int{3}
+	return file_proto_files_v1_files_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *UploadFileResponse) GetFile() *FileMetadata {
@@ -377,7 +536,7 @@ type GetFileRequest struct {
 
 func (x *GetFileRequest) Reset() {
 	*x = GetFileRequest{}
-	mi := &file_proto_files_v1_files_proto_msgTypes[4]
+	mi := &file_proto_files_v1_files_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -389,7 +548,7 @@ func (x *GetFileRequest) String() string {
 func (*GetFileRequest) ProtoMessage() {}
 
 func (x *GetFileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_files_v1_files_proto_msgTypes[4]
+	mi := &file_proto_files_v1_files_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -402,7 +561,7 @@ func (x *GetFileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetFileRequest.ProtoReflect.Descriptor instead.
 func (*GetFileRequest) Descriptor() ([]byte, []int) {
-	return file_proto_files_v1_files_proto_rawDescGZIP(), []int{4}
+	return file_proto_files_v1_files_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *GetFileRequest) GetId() string {
@@ -422,7 +581,7 @@ type GetFileResponse struct {
 
 func (x *GetFileResponse) Reset() {
 	*x = GetFileResponse{}
-	mi := &file_proto_files_v1_files_proto_msgTypes[5]
+	mi := &file_proto_files_v1_files_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -434,7 +593,7 @@ func (x *GetFileResponse) String() string {
 func (*GetFileResponse) ProtoMessage() {}
 
 func (x *GetFileResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_files_v1_files_proto_msgTypes[5]
+	mi := &file_proto_files_v1_files_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -447,7 +606,7 @@ func (x *GetFileResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetFileResponse.ProtoReflect.Descriptor instead.
 func (*GetFileResponse) Descriptor() ([]byte, []int) {
-	return file_proto_files_v1_files_proto_rawDescGZIP(), []int{5}
+	return file_proto_files_v1_files_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *GetFileResponse) GetFile() *FileMetadata {
@@ -473,7 +632,7 @@ type DeleteFileRequest struct {
 
 func (x *DeleteFileRequest) Reset() {
 	*x = DeleteFileRequest{}
-	mi := &file_proto_files_v1_files_proto_msgTypes[6]
+	mi := &file_proto_files_v1_files_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -485,7 +644,7 @@ func (x *DeleteFileRequest) String() string {
 func (*DeleteFileRequest) ProtoMessage() {}
 
 func (x *DeleteFileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_files_v1_files_proto_msgTypes[6]
+	mi := &file_proto_files_v1_files_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -498,7 +657,7 @@ func (x *DeleteFileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteFileRequest.ProtoReflect.Descriptor instead.
 func (*DeleteFileRequest) Descriptor() ([]byte, []int) {
-	return file_proto_files_v1_files_proto_rawDescGZIP(), []int{6}
+	return file_proto_files_v1_files_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *DeleteFileRequest) GetId() string {
@@ -516,7 +675,7 @@ type DeleteFileResponse struct {
 
 func (x *DeleteFileResponse) Reset() {
 	*x = DeleteFileResponse{}
-	mi := &file_proto_files_v1_files_proto_msgTypes[7]
+	mi := &file_proto_files_v1_files_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -528,7 +687,7 @@ func (x *DeleteFileResponse) String() string {
 func (*DeleteFileResponse) ProtoMessage() {}
 
 func (x *DeleteFileResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_files_v1_files_proto_msgTypes[7]
+	mi := &file_proto_files_v1_files_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -541,14 +700,213 @@ func (x *DeleteFileResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteFileResponse.ProtoReflect.Descriptor instead.
 func (*DeleteFileResponse) Descriptor() ([]byte, []int) {
-	return file_proto_files_v1_files_proto_rawDescGZIP(), []int{7}
+	return file_proto_files_v1_files_proto_rawDescGZIP(), []int{8}
+}
+
+type ClonedFile struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	SourceFileId  string                 `protobuf:"bytes,1,opt,name=source_file_id,json=sourceFileId,proto3" json:"source_file_id,omitempty"`
+	File          *FileMetadata          `protobuf:"bytes,2,opt,name=file,proto3" json:"file,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ClonedFile) Reset() {
+	*x = ClonedFile{}
+	mi := &file_proto_files_v1_files_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ClonedFile) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ClonedFile) ProtoMessage() {}
+
+func (x *ClonedFile) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_files_v1_files_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ClonedFile.ProtoReflect.Descriptor instead.
+func (*ClonedFile) Descriptor() ([]byte, []int) {
+	return file_proto_files_v1_files_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *ClonedFile) GetSourceFileId() string {
+	if x != nil {
+		return x.SourceFileId
+	}
+	return ""
+}
+
+func (x *ClonedFile) GetFile() *FileMetadata {
+	if x != nil {
+		return x.File
+	}
+	return nil
+}
+
+type CloneFilesForOwnerRequest struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	SourceFileIds  []string               `protobuf:"bytes,1,rep,name=source_file_ids,json=sourceFileIds,proto3" json:"source_file_ids,omitempty"`
+	TargetOwner    *FileOwner             `protobuf:"bytes,2,opt,name=target_owner,json=targetOwner,proto3" json:"target_owner,omitempty"`
+	IdempotencyKey string                 `protobuf:"bytes,3,opt,name=idempotency_key,json=idempotencyKey,proto3" json:"idempotency_key,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *CloneFilesForOwnerRequest) Reset() {
+	*x = CloneFilesForOwnerRequest{}
+	mi := &file_proto_files_v1_files_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CloneFilesForOwnerRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CloneFilesForOwnerRequest) ProtoMessage() {}
+
+func (x *CloneFilesForOwnerRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_files_v1_files_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CloneFilesForOwnerRequest.ProtoReflect.Descriptor instead.
+func (*CloneFilesForOwnerRequest) Descriptor() ([]byte, []int) {
+	return file_proto_files_v1_files_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *CloneFilesForOwnerRequest) GetSourceFileIds() []string {
+	if x != nil {
+		return x.SourceFileIds
+	}
+	return nil
+}
+
+func (x *CloneFilesForOwnerRequest) GetTargetOwner() *FileOwner {
+	if x != nil {
+		return x.TargetOwner
+	}
+	return nil
+}
+
+func (x *CloneFilesForOwnerRequest) GetIdempotencyKey() string {
+	if x != nil {
+		return x.IdempotencyKey
+	}
+	return ""
+}
+
+type CloneFilesForOwnerResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	OperationId   string                 `protobuf:"bytes,1,opt,name=operation_id,json=operationId,proto3" json:"operation_id,omitempty"`
+	State         FileCloneState         `protobuf:"varint,2,opt,name=state,proto3,enum=teamos.files.v1.FileCloneState" json:"state,omitempty"`
+	TargetOwner   *FileOwner             `protobuf:"bytes,3,opt,name=target_owner,json=targetOwner,proto3" json:"target_owner,omitempty"`
+	Files         []*ClonedFile          `protobuf:"bytes,4,rep,name=files,proto3" json:"files,omitempty"`
+	ErrorMessage  *string                `protobuf:"bytes,5,opt,name=error_message,json=errorMessage,proto3,oneof" json:"error_message,omitempty"`
+	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CloneFilesForOwnerResponse) Reset() {
+	*x = CloneFilesForOwnerResponse{}
+	mi := &file_proto_files_v1_files_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CloneFilesForOwnerResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CloneFilesForOwnerResponse) ProtoMessage() {}
+
+func (x *CloneFilesForOwnerResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_files_v1_files_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CloneFilesForOwnerResponse.ProtoReflect.Descriptor instead.
+func (*CloneFilesForOwnerResponse) Descriptor() ([]byte, []int) {
+	return file_proto_files_v1_files_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *CloneFilesForOwnerResponse) GetOperationId() string {
+	if x != nil {
+		return x.OperationId
+	}
+	return ""
+}
+
+func (x *CloneFilesForOwnerResponse) GetState() FileCloneState {
+	if x != nil {
+		return x.State
+	}
+	return FileCloneState_FILE_CLONE_STATE_UNSPECIFIED
+}
+
+func (x *CloneFilesForOwnerResponse) GetTargetOwner() *FileOwner {
+	if x != nil {
+		return x.TargetOwner
+	}
+	return nil
+}
+
+func (x *CloneFilesForOwnerResponse) GetFiles() []*ClonedFile {
+	if x != nil {
+		return x.Files
+	}
+	return nil
+}
+
+func (x *CloneFilesForOwnerResponse) GetErrorMessage() string {
+	if x != nil && x.ErrorMessage != nil {
+		return *x.ErrorMessage
+	}
+	return ""
+}
+
+func (x *CloneFilesForOwnerResponse) GetUpdatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return nil
 }
 
 var File_proto_files_v1_files_proto protoreflect.FileDescriptor
 
 const file_proto_files_v1_files_proto_rawDesc = "" +
 	"\n" +
-	"\x1aproto/files/v1/files.proto\x12\x0fteamos.files.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\x9c\x02\n" +
+	"\x1aproto/files/v1/files.proto\x12\x0fteamos.files.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"O\n" +
+	"\tFileOwner\x122\n" +
+	"\x04type\x18\x01 \x01(\x0e2\x1e.teamos.files.v1.FileOwnerTypeR\x04type\x12\x0e\n" +
+	"\x02id\x18\x02 \x01(\tR\x02id\"\x9c\x02\n" +
 	"\fFileMetadata\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1d\n" +
 	"\n" +
@@ -579,18 +937,47 @@ const file_proto_files_v1_files_proto_rawDesc = "" +
 	"\fdownload_url\x18\x02 \x01(\tR\vdownloadUrl\"#\n" +
 	"\x11DeleteFileRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"\x14\n" +
-	"\x12DeleteFileResponse*x\n" +
+	"\x12DeleteFileResponse\"e\n" +
+	"\n" +
+	"ClonedFile\x12$\n" +
+	"\x0esource_file_id\x18\x01 \x01(\tR\fsourceFileId\x121\n" +
+	"\x04file\x18\x02 \x01(\v2\x1d.teamos.files.v1.FileMetadataR\x04file\"\xab\x01\n" +
+	"\x19CloneFilesForOwnerRequest\x12&\n" +
+	"\x0fsource_file_ids\x18\x01 \x03(\tR\rsourceFileIds\x12=\n" +
+	"\ftarget_owner\x18\x02 \x01(\v2\x1a.teamos.files.v1.FileOwnerR\vtargetOwner\x12'\n" +
+	"\x0fidempotency_key\x18\x03 \x01(\tR\x0eidempotencyKey\"\xdf\x02\n" +
+	"\x1aCloneFilesForOwnerResponse\x12!\n" +
+	"\foperation_id\x18\x01 \x01(\tR\voperationId\x125\n" +
+	"\x05state\x18\x02 \x01(\x0e2\x1f.teamos.files.v1.FileCloneStateR\x05state\x12=\n" +
+	"\ftarget_owner\x18\x03 \x01(\v2\x1a.teamos.files.v1.FileOwnerR\vtargetOwner\x121\n" +
+	"\x05files\x18\x04 \x03(\v2\x1b.teamos.files.v1.ClonedFileR\x05files\x12(\n" +
+	"\rerror_message\x18\x05 \x01(\tH\x00R\ferrorMessage\x88\x01\x01\x129\n" +
+	"\n" +
+	"updated_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAtB\x10\n" +
+	"\x0e_error_message*x\n" +
 	"\vFilePurpose\x12\x1c\n" +
 	"\x18FILE_PURPOSE_UNSPECIFIED\x10\x00\x12\x1b\n" +
 	"\x17FILE_PURPOSE_ATTACHMENT\x10\x01\x12\x17\n" +
 	"\x13FILE_PURPOSE_AVATAR\x10\x02\x12\x15\n" +
-	"\x11FILE_PURPOSE_LOGO\x10\x032\x8c\x02\n" +
+	"\x11FILE_PURPOSE_LOGO\x10\x03*\x9f\x01\n" +
+	"\rFileOwnerType\x12\x1f\n" +
+	"\x1bFILE_OWNER_TYPE_UNSPECIFIED\x10\x00\x12\"\n" +
+	"\x1eFILE_OWNER_TYPE_COURSE_VERSION\x10\x01\x12$\n" +
+	" FILE_OWNER_TYPE_TEMPLATE_VERSION\x10\x02\x12#\n" +
+	"\x1fFILE_OWNER_TYPE_ARTICLE_VERSION\x10\x03*\xaf\x01\n" +
+	"\x0eFileCloneState\x12 \n" +
+	"\x1cFILE_CLONE_STATE_UNSPECIFIED\x10\x00\x12\x1c\n" +
+	"\x18FILE_CLONE_STATE_PENDING\x10\x01\x12 \n" +
+	"\x1cFILE_CLONE_STATE_IN_PROGRESS\x10\x02\x12\x1e\n" +
+	"\x1aFILE_CLONE_STATE_SUCCEEDED\x10\x03\x12\x1b\n" +
+	"\x17FILE_CLONE_STATE_FAILED\x10\x042\xfb\x02\n" +
 	"\fFilesService\x12W\n" +
 	"\n" +
 	"UploadFile\x12\".teamos.files.v1.UploadFileRequest\x1a#.teamos.files.v1.UploadFileResponse(\x01\x12L\n" +
 	"\aGetFile\x12\x1f.teamos.files.v1.GetFileRequest\x1a .teamos.files.v1.GetFileResponse\x12U\n" +
 	"\n" +
-	"DeleteFile\x12\".teamos.files.v1.DeleteFileRequest\x1a#.teamos.files.v1.DeleteFileResponseBDZBgithub.com/sk1fy/team-os-backend/contracts/gen/go/files/v1;filesv1b\x06proto3"
+	"DeleteFile\x12\".teamos.files.v1.DeleteFileRequest\x1a#.teamos.files.v1.DeleteFileResponse\x12m\n" +
+	"\x12CloneFilesForOwner\x12*.teamos.files.v1.CloneFilesForOwnerRequest\x1a+.teamos.files.v1.CloneFilesForOwnerResponseBDZBgithub.com/sk1fy/team-os-backend/contracts/gen/go/files/v1;filesv1b\x06proto3"
 
 var (
 	file_proto_files_v1_files_proto_rawDescOnce sync.Once
@@ -604,38 +991,53 @@ func file_proto_files_v1_files_proto_rawDescGZIP() []byte {
 	return file_proto_files_v1_files_proto_rawDescData
 }
 
-var file_proto_files_v1_files_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_proto_files_v1_files_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_proto_files_v1_files_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_proto_files_v1_files_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_proto_files_v1_files_proto_goTypes = []any{
-	(FilePurpose)(0),              // 0: teamos.files.v1.FilePurpose
-	(*FileMetadata)(nil),          // 1: teamos.files.v1.FileMetadata
-	(*UploadFileInfo)(nil),        // 2: teamos.files.v1.UploadFileInfo
-	(*UploadFileRequest)(nil),     // 3: teamos.files.v1.UploadFileRequest
-	(*UploadFileResponse)(nil),    // 4: teamos.files.v1.UploadFileResponse
-	(*GetFileRequest)(nil),        // 5: teamos.files.v1.GetFileRequest
-	(*GetFileResponse)(nil),       // 6: teamos.files.v1.GetFileResponse
-	(*DeleteFileRequest)(nil),     // 7: teamos.files.v1.DeleteFileRequest
-	(*DeleteFileResponse)(nil),    // 8: teamos.files.v1.DeleteFileResponse
-	(*timestamppb.Timestamp)(nil), // 9: google.protobuf.Timestamp
+	(FilePurpose)(0),                   // 0: teamos.files.v1.FilePurpose
+	(FileOwnerType)(0),                 // 1: teamos.files.v1.FileOwnerType
+	(FileCloneState)(0),                // 2: teamos.files.v1.FileCloneState
+	(*FileOwner)(nil),                  // 3: teamos.files.v1.FileOwner
+	(*FileMetadata)(nil),               // 4: teamos.files.v1.FileMetadata
+	(*UploadFileInfo)(nil),             // 5: teamos.files.v1.UploadFileInfo
+	(*UploadFileRequest)(nil),          // 6: teamos.files.v1.UploadFileRequest
+	(*UploadFileResponse)(nil),         // 7: teamos.files.v1.UploadFileResponse
+	(*GetFileRequest)(nil),             // 8: teamos.files.v1.GetFileRequest
+	(*GetFileResponse)(nil),            // 9: teamos.files.v1.GetFileResponse
+	(*DeleteFileRequest)(nil),          // 10: teamos.files.v1.DeleteFileRequest
+	(*DeleteFileResponse)(nil),         // 11: teamos.files.v1.DeleteFileResponse
+	(*ClonedFile)(nil),                 // 12: teamos.files.v1.ClonedFile
+	(*CloneFilesForOwnerRequest)(nil),  // 13: teamos.files.v1.CloneFilesForOwnerRequest
+	(*CloneFilesForOwnerResponse)(nil), // 14: teamos.files.v1.CloneFilesForOwnerResponse
+	(*timestamppb.Timestamp)(nil),      // 15: google.protobuf.Timestamp
 }
 var file_proto_files_v1_files_proto_depIdxs = []int32{
-	0, // 0: teamos.files.v1.FileMetadata.purpose:type_name -> teamos.files.v1.FilePurpose
-	9, // 1: teamos.files.v1.FileMetadata.created_at:type_name -> google.protobuf.Timestamp
-	0, // 2: teamos.files.v1.UploadFileInfo.purpose:type_name -> teamos.files.v1.FilePurpose
-	2, // 3: teamos.files.v1.UploadFileRequest.info:type_name -> teamos.files.v1.UploadFileInfo
-	1, // 4: teamos.files.v1.UploadFileResponse.file:type_name -> teamos.files.v1.FileMetadata
-	1, // 5: teamos.files.v1.GetFileResponse.file:type_name -> teamos.files.v1.FileMetadata
-	3, // 6: teamos.files.v1.FilesService.UploadFile:input_type -> teamos.files.v1.UploadFileRequest
-	5, // 7: teamos.files.v1.FilesService.GetFile:input_type -> teamos.files.v1.GetFileRequest
-	7, // 8: teamos.files.v1.FilesService.DeleteFile:input_type -> teamos.files.v1.DeleteFileRequest
-	4, // 9: teamos.files.v1.FilesService.UploadFile:output_type -> teamos.files.v1.UploadFileResponse
-	6, // 10: teamos.files.v1.FilesService.GetFile:output_type -> teamos.files.v1.GetFileResponse
-	8, // 11: teamos.files.v1.FilesService.DeleteFile:output_type -> teamos.files.v1.DeleteFileResponse
-	9, // [9:12] is the sub-list for method output_type
-	6, // [6:9] is the sub-list for method input_type
-	6, // [6:6] is the sub-list for extension type_name
-	6, // [6:6] is the sub-list for extension extendee
-	0, // [0:6] is the sub-list for field type_name
+	1,  // 0: teamos.files.v1.FileOwner.type:type_name -> teamos.files.v1.FileOwnerType
+	0,  // 1: teamos.files.v1.FileMetadata.purpose:type_name -> teamos.files.v1.FilePurpose
+	15, // 2: teamos.files.v1.FileMetadata.created_at:type_name -> google.protobuf.Timestamp
+	0,  // 3: teamos.files.v1.UploadFileInfo.purpose:type_name -> teamos.files.v1.FilePurpose
+	5,  // 4: teamos.files.v1.UploadFileRequest.info:type_name -> teamos.files.v1.UploadFileInfo
+	4,  // 5: teamos.files.v1.UploadFileResponse.file:type_name -> teamos.files.v1.FileMetadata
+	4,  // 6: teamos.files.v1.GetFileResponse.file:type_name -> teamos.files.v1.FileMetadata
+	4,  // 7: teamos.files.v1.ClonedFile.file:type_name -> teamos.files.v1.FileMetadata
+	3,  // 8: teamos.files.v1.CloneFilesForOwnerRequest.target_owner:type_name -> teamos.files.v1.FileOwner
+	2,  // 9: teamos.files.v1.CloneFilesForOwnerResponse.state:type_name -> teamos.files.v1.FileCloneState
+	3,  // 10: teamos.files.v1.CloneFilesForOwnerResponse.target_owner:type_name -> teamos.files.v1.FileOwner
+	12, // 11: teamos.files.v1.CloneFilesForOwnerResponse.files:type_name -> teamos.files.v1.ClonedFile
+	15, // 12: teamos.files.v1.CloneFilesForOwnerResponse.updated_at:type_name -> google.protobuf.Timestamp
+	6,  // 13: teamos.files.v1.FilesService.UploadFile:input_type -> teamos.files.v1.UploadFileRequest
+	8,  // 14: teamos.files.v1.FilesService.GetFile:input_type -> teamos.files.v1.GetFileRequest
+	10, // 15: teamos.files.v1.FilesService.DeleteFile:input_type -> teamos.files.v1.DeleteFileRequest
+	13, // 16: teamos.files.v1.FilesService.CloneFilesForOwner:input_type -> teamos.files.v1.CloneFilesForOwnerRequest
+	7,  // 17: teamos.files.v1.FilesService.UploadFile:output_type -> teamos.files.v1.UploadFileResponse
+	9,  // 18: teamos.files.v1.FilesService.GetFile:output_type -> teamos.files.v1.GetFileResponse
+	11, // 19: teamos.files.v1.FilesService.DeleteFile:output_type -> teamos.files.v1.DeleteFileResponse
+	14, // 20: teamos.files.v1.FilesService.CloneFilesForOwner:output_type -> teamos.files.v1.CloneFilesForOwnerResponse
+	17, // [17:21] is the sub-list for method output_type
+	13, // [13:17] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_proto_files_v1_files_proto_init() }
@@ -643,17 +1045,18 @@ func file_proto_files_v1_files_proto_init() {
 	if File_proto_files_v1_files_proto != nil {
 		return
 	}
-	file_proto_files_v1_files_proto_msgTypes[2].OneofWrappers = []any{
+	file_proto_files_v1_files_proto_msgTypes[3].OneofWrappers = []any{
 		(*UploadFileRequest_Info)(nil),
 		(*UploadFileRequest_Chunk)(nil),
 	}
+	file_proto_files_v1_files_proto_msgTypes[11].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_files_v1_files_proto_rawDesc), len(file_proto_files_v1_files_proto_rawDesc)),
-			NumEnums:      1,
-			NumMessages:   8,
+			NumEnums:      3,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

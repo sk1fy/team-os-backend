@@ -124,6 +124,318 @@ func (CourseVisibility) EnumDescriptor() ([]byte, []int) {
 	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{1}
 }
 
+type CourseOwnerType int32
+
+const (
+	CourseOwnerType_COURSE_OWNER_TYPE_UNSPECIFIED CourseOwnerType = 0
+	CourseOwnerType_COURSE_OWNER_TYPE_COMPANY     CourseOwnerType = 1
+	CourseOwnerType_COURSE_OWNER_TYPE_PARTNER     CourseOwnerType = 2
+)
+
+// Enum value maps for CourseOwnerType.
+var (
+	CourseOwnerType_name = map[int32]string{
+		0: "COURSE_OWNER_TYPE_UNSPECIFIED",
+		1: "COURSE_OWNER_TYPE_COMPANY",
+		2: "COURSE_OWNER_TYPE_PARTNER",
+	}
+	CourseOwnerType_value = map[string]int32{
+		"COURSE_OWNER_TYPE_UNSPECIFIED": 0,
+		"COURSE_OWNER_TYPE_COMPANY":     1,
+		"COURSE_OWNER_TYPE_PARTNER":     2,
+	}
+)
+
+func (x CourseOwnerType) Enum() *CourseOwnerType {
+	p := new(CourseOwnerType)
+	*p = x
+	return p
+}
+
+func (x CourseOwnerType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (CourseOwnerType) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_academy_v1_academy_proto_enumTypes[2].Descriptor()
+}
+
+func (CourseOwnerType) Type() protoreflect.EnumType {
+	return &file_proto_academy_v1_academy_proto_enumTypes[2]
+}
+
+func (x CourseOwnerType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use CourseOwnerType.Descriptor instead.
+func (CourseOwnerType) EnumDescriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{2}
+}
+
+type CourseLifecycleStatus int32
+
+const (
+	CourseLifecycleStatus_COURSE_LIFECYCLE_STATUS_UNSPECIFIED CourseLifecycleStatus = 0
+	CourseLifecycleStatus_COURSE_LIFECYCLE_STATUS_ACTIVE      CourseLifecycleStatus = 1
+	CourseLifecycleStatus_COURSE_LIFECYCLE_STATUS_ARCHIVED    CourseLifecycleStatus = 2
+	CourseLifecycleStatus_COURSE_LIFECYCLE_STATUS_DELETED     CourseLifecycleStatus = 3
+)
+
+// Enum value maps for CourseLifecycleStatus.
+var (
+	CourseLifecycleStatus_name = map[int32]string{
+		0: "COURSE_LIFECYCLE_STATUS_UNSPECIFIED",
+		1: "COURSE_LIFECYCLE_STATUS_ACTIVE",
+		2: "COURSE_LIFECYCLE_STATUS_ARCHIVED",
+		3: "COURSE_LIFECYCLE_STATUS_DELETED",
+	}
+	CourseLifecycleStatus_value = map[string]int32{
+		"COURSE_LIFECYCLE_STATUS_UNSPECIFIED": 0,
+		"COURSE_LIFECYCLE_STATUS_ACTIVE":      1,
+		"COURSE_LIFECYCLE_STATUS_ARCHIVED":    2,
+		"COURSE_LIFECYCLE_STATUS_DELETED":     3,
+	}
+)
+
+func (x CourseLifecycleStatus) Enum() *CourseLifecycleStatus {
+	p := new(CourseLifecycleStatus)
+	*p = x
+	return p
+}
+
+func (x CourseLifecycleStatus) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (CourseLifecycleStatus) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_academy_v1_academy_proto_enumTypes[3].Descriptor()
+}
+
+func (CourseLifecycleStatus) Type() protoreflect.EnumType {
+	return &file_proto_academy_v1_academy_proto_enumTypes[3]
+}
+
+func (x CourseLifecycleStatus) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use CourseLifecycleStatus.Descriptor instead.
+func (CourseLifecycleStatus) EnumDescriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{3}
+}
+
+type CourseDistributionStatus int32
+
+const (
+	CourseDistributionStatus_COURSE_DISTRIBUTION_STATUS_UNSPECIFIED CourseDistributionStatus = 0
+	CourseDistributionStatus_COURSE_DISTRIBUTION_STATUS_ACTIVE      CourseDistributionStatus = 1
+	CourseDistributionStatus_COURSE_DISTRIBUTION_STATUS_PAUSED      CourseDistributionStatus = 2
+	CourseDistributionStatus_COURSE_DISTRIBUTION_STATUS_BLOCKED     CourseDistributionStatus = 3
+)
+
+// Enum value maps for CourseDistributionStatus.
+var (
+	CourseDistributionStatus_name = map[int32]string{
+		0: "COURSE_DISTRIBUTION_STATUS_UNSPECIFIED",
+		1: "COURSE_DISTRIBUTION_STATUS_ACTIVE",
+		2: "COURSE_DISTRIBUTION_STATUS_PAUSED",
+		3: "COURSE_DISTRIBUTION_STATUS_BLOCKED",
+	}
+	CourseDistributionStatus_value = map[string]int32{
+		"COURSE_DISTRIBUTION_STATUS_UNSPECIFIED": 0,
+		"COURSE_DISTRIBUTION_STATUS_ACTIVE":      1,
+		"COURSE_DISTRIBUTION_STATUS_PAUSED":      2,
+		"COURSE_DISTRIBUTION_STATUS_BLOCKED":     3,
+	}
+)
+
+func (x CourseDistributionStatus) Enum() *CourseDistributionStatus {
+	p := new(CourseDistributionStatus)
+	*p = x
+	return p
+}
+
+func (x CourseDistributionStatus) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (CourseDistributionStatus) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_academy_v1_academy_proto_enumTypes[4].Descriptor()
+}
+
+func (CourseDistributionStatus) Type() protoreflect.EnumType {
+	return &file_proto_academy_v1_academy_proto_enumTypes[4]
+}
+
+func (x CourseDistributionStatus) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use CourseDistributionStatus.Descriptor instead.
+func (CourseDistributionStatus) EnumDescriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{4}
+}
+
+type CourseOriginType int32
+
+const (
+	CourseOriginType_COURSE_ORIGIN_TYPE_UNSPECIFIED      CourseOriginType = 0
+	CourseOriginType_COURSE_ORIGIN_TYPE_PARTNER_COURSE   CourseOriginType = 1
+	CourseOriginType_COURSE_ORIGIN_TYPE_SYSTEM_TEMPLATE  CourseOriginType = 2
+	CourseOriginType_COURSE_ORIGIN_TYPE_COMPANY_TEMPLATE CourseOriginType = 3
+)
+
+// Enum value maps for CourseOriginType.
+var (
+	CourseOriginType_name = map[int32]string{
+		0: "COURSE_ORIGIN_TYPE_UNSPECIFIED",
+		1: "COURSE_ORIGIN_TYPE_PARTNER_COURSE",
+		2: "COURSE_ORIGIN_TYPE_SYSTEM_TEMPLATE",
+		3: "COURSE_ORIGIN_TYPE_COMPANY_TEMPLATE",
+	}
+	CourseOriginType_value = map[string]int32{
+		"COURSE_ORIGIN_TYPE_UNSPECIFIED":      0,
+		"COURSE_ORIGIN_TYPE_PARTNER_COURSE":   1,
+		"COURSE_ORIGIN_TYPE_SYSTEM_TEMPLATE":  2,
+		"COURSE_ORIGIN_TYPE_COMPANY_TEMPLATE": 3,
+	}
+)
+
+func (x CourseOriginType) Enum() *CourseOriginType {
+	p := new(CourseOriginType)
+	*p = x
+	return p
+}
+
+func (x CourseOriginType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (CourseOriginType) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_academy_v1_academy_proto_enumTypes[5].Descriptor()
+}
+
+func (CourseOriginType) Type() protoreflect.EnumType {
+	return &file_proto_academy_v1_academy_proto_enumTypes[5]
+}
+
+func (x CourseOriginType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use CourseOriginType.Descriptor instead.
+func (CourseOriginType) EnumDescriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{5}
+}
+
+type CourseVersionStatus int32
+
+const (
+	CourseVersionStatus_COURSE_VERSION_STATUS_UNSPECIFIED CourseVersionStatus = 0
+	CourseVersionStatus_COURSE_VERSION_STATUS_DRAFT       CourseVersionStatus = 1
+	CourseVersionStatus_COURSE_VERSION_STATUS_PUBLISHED   CourseVersionStatus = 2
+	CourseVersionStatus_COURSE_VERSION_STATUS_RETIRED     CourseVersionStatus = 3
+)
+
+// Enum value maps for CourseVersionStatus.
+var (
+	CourseVersionStatus_name = map[int32]string{
+		0: "COURSE_VERSION_STATUS_UNSPECIFIED",
+		1: "COURSE_VERSION_STATUS_DRAFT",
+		2: "COURSE_VERSION_STATUS_PUBLISHED",
+		3: "COURSE_VERSION_STATUS_RETIRED",
+	}
+	CourseVersionStatus_value = map[string]int32{
+		"COURSE_VERSION_STATUS_UNSPECIFIED": 0,
+		"COURSE_VERSION_STATUS_DRAFT":       1,
+		"COURSE_VERSION_STATUS_PUBLISHED":   2,
+		"COURSE_VERSION_STATUS_RETIRED":     3,
+	}
+)
+
+func (x CourseVersionStatus) Enum() *CourseVersionStatus {
+	p := new(CourseVersionStatus)
+	*p = x
+	return p
+}
+
+func (x CourseVersionStatus) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (CourseVersionStatus) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_academy_v1_academy_proto_enumTypes[6].Descriptor()
+}
+
+func (CourseVersionStatus) Type() protoreflect.EnumType {
+	return &file_proto_academy_v1_academy_proto_enumTypes[6]
+}
+
+func (x CourseVersionStatus) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use CourseVersionStatus.Descriptor instead.
+func (CourseVersionStatus) EnumDescriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{6}
+}
+
+type CourseLessonSourceType int32
+
+const (
+	CourseLessonSourceType_COURSE_LESSON_SOURCE_TYPE_UNSPECIFIED       CourseLessonSourceType = 0
+	CourseLessonSourceType_COURSE_LESSON_SOURCE_TYPE_MANUAL            CourseLessonSourceType = 1
+	CourseLessonSourceType_COURSE_LESSON_SOURCE_TYPE_KB_LINK           CourseLessonSourceType = 2
+	CourseLessonSourceType_COURSE_LESSON_SOURCE_TYPE_KB_SNAPSHOT       CourseLessonSourceType = 3
+	CourseLessonSourceType_COURSE_LESSON_SOURCE_TYPE_TEMPLATE_SNAPSHOT CourseLessonSourceType = 4
+)
+
+// Enum value maps for CourseLessonSourceType.
+var (
+	CourseLessonSourceType_name = map[int32]string{
+		0: "COURSE_LESSON_SOURCE_TYPE_UNSPECIFIED",
+		1: "COURSE_LESSON_SOURCE_TYPE_MANUAL",
+		2: "COURSE_LESSON_SOURCE_TYPE_KB_LINK",
+		3: "COURSE_LESSON_SOURCE_TYPE_KB_SNAPSHOT",
+		4: "COURSE_LESSON_SOURCE_TYPE_TEMPLATE_SNAPSHOT",
+	}
+	CourseLessonSourceType_value = map[string]int32{
+		"COURSE_LESSON_SOURCE_TYPE_UNSPECIFIED":       0,
+		"COURSE_LESSON_SOURCE_TYPE_MANUAL":            1,
+		"COURSE_LESSON_SOURCE_TYPE_KB_LINK":           2,
+		"COURSE_LESSON_SOURCE_TYPE_KB_SNAPSHOT":       3,
+		"COURSE_LESSON_SOURCE_TYPE_TEMPLATE_SNAPSHOT": 4,
+	}
+)
+
+func (x CourseLessonSourceType) Enum() *CourseLessonSourceType {
+	p := new(CourseLessonSourceType)
+	*p = x
+	return p
+}
+
+func (x CourseLessonSourceType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (CourseLessonSourceType) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_academy_v1_academy_proto_enumTypes[7].Descriptor()
+}
+
+func (CourseLessonSourceType) Type() protoreflect.EnumType {
+	return &file_proto_academy_v1_academy_proto_enumTypes[7]
+}
+
+func (x CourseLessonSourceType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use CourseLessonSourceType.Descriptor instead.
+func (CourseLessonSourceType) EnumDescriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{7}
+}
+
 type LessonSourceMode int32
 
 const (
@@ -157,11 +469,11 @@ func (x LessonSourceMode) String() string {
 }
 
 func (LessonSourceMode) Descriptor() protoreflect.EnumDescriptor {
-	return file_proto_academy_v1_academy_proto_enumTypes[2].Descriptor()
+	return file_proto_academy_v1_academy_proto_enumTypes[8].Descriptor()
 }
 
 func (LessonSourceMode) Type() protoreflect.EnumType {
-	return &file_proto_academy_v1_academy_proto_enumTypes[2]
+	return &file_proto_academy_v1_academy_proto_enumTypes[8]
 }
 
 func (x LessonSourceMode) Number() protoreflect.EnumNumber {
@@ -170,7 +482,7 @@ func (x LessonSourceMode) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use LessonSourceMode.Descriptor instead.
 func (LessonSourceMode) EnumDescriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{2}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{8}
 }
 
 type QuizQuestionType int32
@@ -209,11 +521,11 @@ func (x QuizQuestionType) String() string {
 }
 
 func (QuizQuestionType) Descriptor() protoreflect.EnumDescriptor {
-	return file_proto_academy_v1_academy_proto_enumTypes[3].Descriptor()
+	return file_proto_academy_v1_academy_proto_enumTypes[9].Descriptor()
 }
 
 func (QuizQuestionType) Type() protoreflect.EnumType {
-	return &file_proto_academy_v1_academy_proto_enumTypes[3]
+	return &file_proto_academy_v1_academy_proto_enumTypes[9]
 }
 
 func (x QuizQuestionType) Number() protoreflect.EnumNumber {
@@ -222,7 +534,7 @@ func (x QuizQuestionType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use QuizQuestionType.Descriptor instead.
 func (QuizQuestionType) EnumDescriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{3}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{9}
 }
 
 type AssigneeType int32
@@ -264,11 +576,11 @@ func (x AssigneeType) String() string {
 }
 
 func (AssigneeType) Descriptor() protoreflect.EnumDescriptor {
-	return file_proto_academy_v1_academy_proto_enumTypes[4].Descriptor()
+	return file_proto_academy_v1_academy_proto_enumTypes[10].Descriptor()
 }
 
 func (AssigneeType) Type() protoreflect.EnumType {
-	return &file_proto_academy_v1_academy_proto_enumTypes[4]
+	return &file_proto_academy_v1_academy_proto_enumTypes[10]
 }
 
 func (x AssigneeType) Number() protoreflect.EnumNumber {
@@ -277,7 +589,7 @@ func (x AssigneeType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use AssigneeType.Descriptor instead.
 func (AssigneeType) EnumDescriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{4}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{10}
 }
 
 type CourseProgressStatus int32
@@ -319,11 +631,11 @@ func (x CourseProgressStatus) String() string {
 }
 
 func (CourseProgressStatus) Descriptor() protoreflect.EnumDescriptor {
-	return file_proto_academy_v1_academy_proto_enumTypes[5].Descriptor()
+	return file_proto_academy_v1_academy_proto_enumTypes[11].Descriptor()
 }
 
 func (CourseProgressStatus) Type() protoreflect.EnumType {
-	return &file_proto_academy_v1_academy_proto_enumTypes[5]
+	return &file_proto_academy_v1_academy_proto_enumTypes[11]
 }
 
 func (x CourseProgressStatus) Number() protoreflect.EnumNumber {
@@ -332,24 +644,807 @@ func (x CourseProgressStatus) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use CourseProgressStatus.Descriptor instead.
 func (CourseProgressStatus) EnumDescriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{5}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{11}
+}
+
+type EnrollmentLearnerType int32
+
+const (
+	EnrollmentLearnerType_ENROLLMENT_LEARNER_TYPE_UNSPECIFIED EnrollmentLearnerType = 0
+	EnrollmentLearnerType_ENROLLMENT_LEARNER_TYPE_USER        EnrollmentLearnerType = 1
+	EnrollmentLearnerType_ENROLLMENT_LEARNER_TYPE_EXTERNAL    EnrollmentLearnerType = 2
+)
+
+// Enum value maps for EnrollmentLearnerType.
+var (
+	EnrollmentLearnerType_name = map[int32]string{
+		0: "ENROLLMENT_LEARNER_TYPE_UNSPECIFIED",
+		1: "ENROLLMENT_LEARNER_TYPE_USER",
+		2: "ENROLLMENT_LEARNER_TYPE_EXTERNAL",
+	}
+	EnrollmentLearnerType_value = map[string]int32{
+		"ENROLLMENT_LEARNER_TYPE_UNSPECIFIED": 0,
+		"ENROLLMENT_LEARNER_TYPE_USER":        1,
+		"ENROLLMENT_LEARNER_TYPE_EXTERNAL":    2,
+	}
+)
+
+func (x EnrollmentLearnerType) Enum() *EnrollmentLearnerType {
+	p := new(EnrollmentLearnerType)
+	*p = x
+	return p
+}
+
+func (x EnrollmentLearnerType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (EnrollmentLearnerType) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_academy_v1_academy_proto_enumTypes[12].Descriptor()
+}
+
+func (EnrollmentLearnerType) Type() protoreflect.EnumType {
+	return &file_proto_academy_v1_academy_proto_enumTypes[12]
+}
+
+func (x EnrollmentLearnerType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use EnrollmentLearnerType.Descriptor instead.
+func (EnrollmentLearnerType) EnumDescriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{12}
+}
+
+type EnrollmentSourceType int32
+
+const (
+	EnrollmentSourceType_ENROLLMENT_SOURCE_TYPE_UNSPECIFIED                EnrollmentSourceType = 0
+	EnrollmentSourceType_ENROLLMENT_SOURCE_TYPE_ASSIGNMENT                 EnrollmentSourceType = 1
+	EnrollmentSourceType_ENROLLMENT_SOURCE_TYPE_PERSONAL_ACCESS            EnrollmentSourceType = 2
+	EnrollmentSourceType_ENROLLMENT_SOURCE_TYPE_PARTNER_PROMO_CAMPAIGN     EnrollmentSourceType = 3
+	EnrollmentSourceType_ENROLLMENT_SOURCE_TYPE_COMPANY_CANDIDATE_CAMPAIGN EnrollmentSourceType = 4
+	EnrollmentSourceType_ENROLLMENT_SOURCE_TYPE_REPEAT_TRAINING            EnrollmentSourceType = 5
+	EnrollmentSourceType_ENROLLMENT_SOURCE_TYPE_LEGACY                     EnrollmentSourceType = 6
+	EnrollmentSourceType_ENROLLMENT_SOURCE_TYPE_SELF_ENROLLMENT            EnrollmentSourceType = 7
+)
+
+// Enum value maps for EnrollmentSourceType.
+var (
+	EnrollmentSourceType_name = map[int32]string{
+		0: "ENROLLMENT_SOURCE_TYPE_UNSPECIFIED",
+		1: "ENROLLMENT_SOURCE_TYPE_ASSIGNMENT",
+		2: "ENROLLMENT_SOURCE_TYPE_PERSONAL_ACCESS",
+		3: "ENROLLMENT_SOURCE_TYPE_PARTNER_PROMO_CAMPAIGN",
+		4: "ENROLLMENT_SOURCE_TYPE_COMPANY_CANDIDATE_CAMPAIGN",
+		5: "ENROLLMENT_SOURCE_TYPE_REPEAT_TRAINING",
+		6: "ENROLLMENT_SOURCE_TYPE_LEGACY",
+		7: "ENROLLMENT_SOURCE_TYPE_SELF_ENROLLMENT",
+	}
+	EnrollmentSourceType_value = map[string]int32{
+		"ENROLLMENT_SOURCE_TYPE_UNSPECIFIED":                0,
+		"ENROLLMENT_SOURCE_TYPE_ASSIGNMENT":                 1,
+		"ENROLLMENT_SOURCE_TYPE_PERSONAL_ACCESS":            2,
+		"ENROLLMENT_SOURCE_TYPE_PARTNER_PROMO_CAMPAIGN":     3,
+		"ENROLLMENT_SOURCE_TYPE_COMPANY_CANDIDATE_CAMPAIGN": 4,
+		"ENROLLMENT_SOURCE_TYPE_REPEAT_TRAINING":            5,
+		"ENROLLMENT_SOURCE_TYPE_LEGACY":                     6,
+		"ENROLLMENT_SOURCE_TYPE_SELF_ENROLLMENT":            7,
+	}
+)
+
+func (x EnrollmentSourceType) Enum() *EnrollmentSourceType {
+	p := new(EnrollmentSourceType)
+	*p = x
+	return p
+}
+
+func (x EnrollmentSourceType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (EnrollmentSourceType) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_academy_v1_academy_proto_enumTypes[13].Descriptor()
+}
+
+func (EnrollmentSourceType) Type() protoreflect.EnumType {
+	return &file_proto_academy_v1_academy_proto_enumTypes[13]
+}
+
+func (x EnrollmentSourceType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use EnrollmentSourceType.Descriptor instead.
+func (EnrollmentSourceType) EnumDescriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{13}
+}
+
+type EnrollmentProgressStatus int32
+
+const (
+	EnrollmentProgressStatus_ENROLLMENT_PROGRESS_STATUS_UNSPECIFIED EnrollmentProgressStatus = 0
+	EnrollmentProgressStatus_ENROLLMENT_PROGRESS_STATUS_NOT_STARTED EnrollmentProgressStatus = 1
+	EnrollmentProgressStatus_ENROLLMENT_PROGRESS_STATUS_IN_PROGRESS EnrollmentProgressStatus = 2
+	EnrollmentProgressStatus_ENROLLMENT_PROGRESS_STATUS_COMPLETED   EnrollmentProgressStatus = 3
+)
+
+// Enum value maps for EnrollmentProgressStatus.
+var (
+	EnrollmentProgressStatus_name = map[int32]string{
+		0: "ENROLLMENT_PROGRESS_STATUS_UNSPECIFIED",
+		1: "ENROLLMENT_PROGRESS_STATUS_NOT_STARTED",
+		2: "ENROLLMENT_PROGRESS_STATUS_IN_PROGRESS",
+		3: "ENROLLMENT_PROGRESS_STATUS_COMPLETED",
+	}
+	EnrollmentProgressStatus_value = map[string]int32{
+		"ENROLLMENT_PROGRESS_STATUS_UNSPECIFIED": 0,
+		"ENROLLMENT_PROGRESS_STATUS_NOT_STARTED": 1,
+		"ENROLLMENT_PROGRESS_STATUS_IN_PROGRESS": 2,
+		"ENROLLMENT_PROGRESS_STATUS_COMPLETED":   3,
+	}
+)
+
+func (x EnrollmentProgressStatus) Enum() *EnrollmentProgressStatus {
+	p := new(EnrollmentProgressStatus)
+	*p = x
+	return p
+}
+
+func (x EnrollmentProgressStatus) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (EnrollmentProgressStatus) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_academy_v1_academy_proto_enumTypes[14].Descriptor()
+}
+
+func (EnrollmentProgressStatus) Type() protoreflect.EnumType {
+	return &file_proto_academy_v1_academy_proto_enumTypes[14]
+}
+
+func (x EnrollmentProgressStatus) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use EnrollmentProgressStatus.Descriptor instead.
+func (EnrollmentProgressStatus) EnumDescriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{14}
+}
+
+type EnrollmentAccessStatus int32
+
+const (
+	EnrollmentAccessStatus_ENROLLMENT_ACCESS_STATUS_UNSPECIFIED EnrollmentAccessStatus = 0
+	EnrollmentAccessStatus_ENROLLMENT_ACCESS_STATUS_INVITED     EnrollmentAccessStatus = 1
+	EnrollmentAccessStatus_ENROLLMENT_ACCESS_STATUS_READY       EnrollmentAccessStatus = 2
+	EnrollmentAccessStatus_ENROLLMENT_ACCESS_STATUS_ACTIVE      EnrollmentAccessStatus = 3
+	EnrollmentAccessStatus_ENROLLMENT_ACCESS_STATUS_EXPIRED     EnrollmentAccessStatus = 4
+	EnrollmentAccessStatus_ENROLLMENT_ACCESS_STATUS_FROZEN      EnrollmentAccessStatus = 5
+	EnrollmentAccessStatus_ENROLLMENT_ACCESS_STATUS_SUSPENDED   EnrollmentAccessStatus = 6
+	EnrollmentAccessStatus_ENROLLMENT_ACCESS_STATUS_REVOKED     EnrollmentAccessStatus = 7
+	EnrollmentAccessStatus_ENROLLMENT_ACCESS_STATUS_CLOSED      EnrollmentAccessStatus = 8
+)
+
+// Enum value maps for EnrollmentAccessStatus.
+var (
+	EnrollmentAccessStatus_name = map[int32]string{
+		0: "ENROLLMENT_ACCESS_STATUS_UNSPECIFIED",
+		1: "ENROLLMENT_ACCESS_STATUS_INVITED",
+		2: "ENROLLMENT_ACCESS_STATUS_READY",
+		3: "ENROLLMENT_ACCESS_STATUS_ACTIVE",
+		4: "ENROLLMENT_ACCESS_STATUS_EXPIRED",
+		5: "ENROLLMENT_ACCESS_STATUS_FROZEN",
+		6: "ENROLLMENT_ACCESS_STATUS_SUSPENDED",
+		7: "ENROLLMENT_ACCESS_STATUS_REVOKED",
+		8: "ENROLLMENT_ACCESS_STATUS_CLOSED",
+	}
+	EnrollmentAccessStatus_value = map[string]int32{
+		"ENROLLMENT_ACCESS_STATUS_UNSPECIFIED": 0,
+		"ENROLLMENT_ACCESS_STATUS_INVITED":     1,
+		"ENROLLMENT_ACCESS_STATUS_READY":       2,
+		"ENROLLMENT_ACCESS_STATUS_ACTIVE":      3,
+		"ENROLLMENT_ACCESS_STATUS_EXPIRED":     4,
+		"ENROLLMENT_ACCESS_STATUS_FROZEN":      5,
+		"ENROLLMENT_ACCESS_STATUS_SUSPENDED":   6,
+		"ENROLLMENT_ACCESS_STATUS_REVOKED":     7,
+		"ENROLLMENT_ACCESS_STATUS_CLOSED":      8,
+	}
+)
+
+func (x EnrollmentAccessStatus) Enum() *EnrollmentAccessStatus {
+	p := new(EnrollmentAccessStatus)
+	*p = x
+	return p
+}
+
+func (x EnrollmentAccessStatus) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (EnrollmentAccessStatus) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_academy_v1_academy_proto_enumTypes[15].Descriptor()
+}
+
+func (EnrollmentAccessStatus) Type() protoreflect.EnumType {
+	return &file_proto_academy_v1_academy_proto_enumTypes[15]
+}
+
+func (x EnrollmentAccessStatus) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use EnrollmentAccessStatus.Descriptor instead.
+func (EnrollmentAccessStatus) EnumDescriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{15}
+}
+
+type EnrollmentLessonStatus int32
+
+const (
+	EnrollmentLessonStatus_ENROLLMENT_LESSON_STATUS_UNSPECIFIED EnrollmentLessonStatus = 0
+	EnrollmentLessonStatus_ENROLLMENT_LESSON_STATUS_AVAILABLE   EnrollmentLessonStatus = 1
+	EnrollmentLessonStatus_ENROLLMENT_LESSON_STATUS_CURRENT     EnrollmentLessonStatus = 2
+	EnrollmentLessonStatus_ENROLLMENT_LESSON_STATUS_COMPLETED   EnrollmentLessonStatus = 3
+)
+
+// Enum value maps for EnrollmentLessonStatus.
+var (
+	EnrollmentLessonStatus_name = map[int32]string{
+		0: "ENROLLMENT_LESSON_STATUS_UNSPECIFIED",
+		1: "ENROLLMENT_LESSON_STATUS_AVAILABLE",
+		2: "ENROLLMENT_LESSON_STATUS_CURRENT",
+		3: "ENROLLMENT_LESSON_STATUS_COMPLETED",
+	}
+	EnrollmentLessonStatus_value = map[string]int32{
+		"ENROLLMENT_LESSON_STATUS_UNSPECIFIED": 0,
+		"ENROLLMENT_LESSON_STATUS_AVAILABLE":   1,
+		"ENROLLMENT_LESSON_STATUS_CURRENT":     2,
+		"ENROLLMENT_LESSON_STATUS_COMPLETED":   3,
+	}
+)
+
+func (x EnrollmentLessonStatus) Enum() *EnrollmentLessonStatus {
+	p := new(EnrollmentLessonStatus)
+	*p = x
+	return p
+}
+
+func (x EnrollmentLessonStatus) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (EnrollmentLessonStatus) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_academy_v1_academy_proto_enumTypes[16].Descriptor()
+}
+
+func (EnrollmentLessonStatus) Type() protoreflect.EnumType {
+	return &file_proto_academy_v1_academy_proto_enumTypes[16]
+}
+
+func (x EnrollmentLessonStatus) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use EnrollmentLessonStatus.Descriptor instead.
+func (EnrollmentLessonStatus) EnumDescriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{16}
+}
+
+type CourseRestrictionType int32
+
+const (
+	CourseRestrictionType_COURSE_RESTRICTION_TYPE_UNSPECIFIED CourseRestrictionType = 0
+	CourseRestrictionType_COURSE_RESTRICTION_TYPE_PAUSE       CourseRestrictionType = 1
+	CourseRestrictionType_COURSE_RESTRICTION_TYPE_BLOCK       CourseRestrictionType = 2
+)
+
+// Enum value maps for CourseRestrictionType.
+var (
+	CourseRestrictionType_name = map[int32]string{
+		0: "COURSE_RESTRICTION_TYPE_UNSPECIFIED",
+		1: "COURSE_RESTRICTION_TYPE_PAUSE",
+		2: "COURSE_RESTRICTION_TYPE_BLOCK",
+	}
+	CourseRestrictionType_value = map[string]int32{
+		"COURSE_RESTRICTION_TYPE_UNSPECIFIED": 0,
+		"COURSE_RESTRICTION_TYPE_PAUSE":       1,
+		"COURSE_RESTRICTION_TYPE_BLOCK":       2,
+	}
+)
+
+func (x CourseRestrictionType) Enum() *CourseRestrictionType {
+	p := new(CourseRestrictionType)
+	*p = x
+	return p
+}
+
+func (x CourseRestrictionType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (CourseRestrictionType) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_academy_v1_academy_proto_enumTypes[17].Descriptor()
+}
+
+func (CourseRestrictionType) Type() protoreflect.EnumType {
+	return &file_proto_academy_v1_academy_proto_enumTypes[17]
+}
+
+func (x CourseRestrictionType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use CourseRestrictionType.Descriptor instead.
+func (CourseRestrictionType) EnumDescriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{17}
+}
+
+type CourseTemplateType int32
+
+const (
+	CourseTemplateType_COURSE_TEMPLATE_TYPE_UNSPECIFIED CourseTemplateType = 0
+	CourseTemplateType_COURSE_TEMPLATE_TYPE_SYSTEM      CourseTemplateType = 1
+	CourseTemplateType_COURSE_TEMPLATE_TYPE_COMPANY     CourseTemplateType = 2
+)
+
+// Enum value maps for CourseTemplateType.
+var (
+	CourseTemplateType_name = map[int32]string{
+		0: "COURSE_TEMPLATE_TYPE_UNSPECIFIED",
+		1: "COURSE_TEMPLATE_TYPE_SYSTEM",
+		2: "COURSE_TEMPLATE_TYPE_COMPANY",
+	}
+	CourseTemplateType_value = map[string]int32{
+		"COURSE_TEMPLATE_TYPE_UNSPECIFIED": 0,
+		"COURSE_TEMPLATE_TYPE_SYSTEM":      1,
+		"COURSE_TEMPLATE_TYPE_COMPANY":     2,
+	}
+)
+
+func (x CourseTemplateType) Enum() *CourseTemplateType {
+	p := new(CourseTemplateType)
+	*p = x
+	return p
+}
+
+func (x CourseTemplateType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (CourseTemplateType) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_academy_v1_academy_proto_enumTypes[18].Descriptor()
+}
+
+func (CourseTemplateType) Type() protoreflect.EnumType {
+	return &file_proto_academy_v1_academy_proto_enumTypes[18]
+}
+
+func (x CourseTemplateType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use CourseTemplateType.Descriptor instead.
+func (CourseTemplateType) EnumDescriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{18}
+}
+
+type CourseTemplateLifecycleStatus int32
+
+const (
+	CourseTemplateLifecycleStatus_COURSE_TEMPLATE_LIFECYCLE_STATUS_UNSPECIFIED CourseTemplateLifecycleStatus = 0
+	CourseTemplateLifecycleStatus_COURSE_TEMPLATE_LIFECYCLE_STATUS_ACTIVE      CourseTemplateLifecycleStatus = 1
+	CourseTemplateLifecycleStatus_COURSE_TEMPLATE_LIFECYCLE_STATUS_ARCHIVED    CourseTemplateLifecycleStatus = 2
+)
+
+// Enum value maps for CourseTemplateLifecycleStatus.
+var (
+	CourseTemplateLifecycleStatus_name = map[int32]string{
+		0: "COURSE_TEMPLATE_LIFECYCLE_STATUS_UNSPECIFIED",
+		1: "COURSE_TEMPLATE_LIFECYCLE_STATUS_ACTIVE",
+		2: "COURSE_TEMPLATE_LIFECYCLE_STATUS_ARCHIVED",
+	}
+	CourseTemplateLifecycleStatus_value = map[string]int32{
+		"COURSE_TEMPLATE_LIFECYCLE_STATUS_UNSPECIFIED": 0,
+		"COURSE_TEMPLATE_LIFECYCLE_STATUS_ACTIVE":      1,
+		"COURSE_TEMPLATE_LIFECYCLE_STATUS_ARCHIVED":    2,
+	}
+)
+
+func (x CourseTemplateLifecycleStatus) Enum() *CourseTemplateLifecycleStatus {
+	p := new(CourseTemplateLifecycleStatus)
+	*p = x
+	return p
+}
+
+func (x CourseTemplateLifecycleStatus) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (CourseTemplateLifecycleStatus) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_academy_v1_academy_proto_enumTypes[19].Descriptor()
+}
+
+func (CourseTemplateLifecycleStatus) Type() protoreflect.EnumType {
+	return &file_proto_academy_v1_academy_proto_enumTypes[19]
+}
+
+func (x CourseTemplateLifecycleStatus) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use CourseTemplateLifecycleStatus.Descriptor instead.
+func (CourseTemplateLifecycleStatus) EnumDescriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{19}
+}
+
+type ExternalPersonalAccessStatus int32
+
+const (
+	ExternalPersonalAccessStatus_EXTERNAL_PERSONAL_ACCESS_STATUS_UNSPECIFIED ExternalPersonalAccessStatus = 0
+	ExternalPersonalAccessStatus_EXTERNAL_PERSONAL_ACCESS_STATUS_ISSUED      ExternalPersonalAccessStatus = 1
+	ExternalPersonalAccessStatus_EXTERNAL_PERSONAL_ACCESS_STATUS_ACTIVATED   ExternalPersonalAccessStatus = 2
+	ExternalPersonalAccessStatus_EXTERNAL_PERSONAL_ACCESS_STATUS_REVOKED     ExternalPersonalAccessStatus = 3
+	ExternalPersonalAccessStatus_EXTERNAL_PERSONAL_ACCESS_STATUS_CLOSED      ExternalPersonalAccessStatus = 4
+)
+
+// Enum value maps for ExternalPersonalAccessStatus.
+var (
+	ExternalPersonalAccessStatus_name = map[int32]string{
+		0: "EXTERNAL_PERSONAL_ACCESS_STATUS_UNSPECIFIED",
+		1: "EXTERNAL_PERSONAL_ACCESS_STATUS_ISSUED",
+		2: "EXTERNAL_PERSONAL_ACCESS_STATUS_ACTIVATED",
+		3: "EXTERNAL_PERSONAL_ACCESS_STATUS_REVOKED",
+		4: "EXTERNAL_PERSONAL_ACCESS_STATUS_CLOSED",
+	}
+	ExternalPersonalAccessStatus_value = map[string]int32{
+		"EXTERNAL_PERSONAL_ACCESS_STATUS_UNSPECIFIED": 0,
+		"EXTERNAL_PERSONAL_ACCESS_STATUS_ISSUED":      1,
+		"EXTERNAL_PERSONAL_ACCESS_STATUS_ACTIVATED":   2,
+		"EXTERNAL_PERSONAL_ACCESS_STATUS_REVOKED":     3,
+		"EXTERNAL_PERSONAL_ACCESS_STATUS_CLOSED":      4,
+	}
+)
+
+func (x ExternalPersonalAccessStatus) Enum() *ExternalPersonalAccessStatus {
+	p := new(ExternalPersonalAccessStatus)
+	*p = x
+	return p
+}
+
+func (x ExternalPersonalAccessStatus) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ExternalPersonalAccessStatus) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_academy_v1_academy_proto_enumTypes[20].Descriptor()
+}
+
+func (ExternalPersonalAccessStatus) Type() protoreflect.EnumType {
+	return &file_proto_academy_v1_academy_proto_enumTypes[20]
+}
+
+func (x ExternalPersonalAccessStatus) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ExternalPersonalAccessStatus.Descriptor instead.
+func (ExternalPersonalAccessStatus) EnumDescriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{20}
+}
+
+type ExternalCampaignOwnerType int32
+
+const (
+	ExternalCampaignOwnerType_EXTERNAL_CAMPAIGN_OWNER_TYPE_UNSPECIFIED ExternalCampaignOwnerType = 0
+	ExternalCampaignOwnerType_EXTERNAL_CAMPAIGN_OWNER_TYPE_COMPANY     ExternalCampaignOwnerType = 1
+	ExternalCampaignOwnerType_EXTERNAL_CAMPAIGN_OWNER_TYPE_PARTNER     ExternalCampaignOwnerType = 2
+)
+
+// Enum value maps for ExternalCampaignOwnerType.
+var (
+	ExternalCampaignOwnerType_name = map[int32]string{
+		0: "EXTERNAL_CAMPAIGN_OWNER_TYPE_UNSPECIFIED",
+		1: "EXTERNAL_CAMPAIGN_OWNER_TYPE_COMPANY",
+		2: "EXTERNAL_CAMPAIGN_OWNER_TYPE_PARTNER",
+	}
+	ExternalCampaignOwnerType_value = map[string]int32{
+		"EXTERNAL_CAMPAIGN_OWNER_TYPE_UNSPECIFIED": 0,
+		"EXTERNAL_CAMPAIGN_OWNER_TYPE_COMPANY":     1,
+		"EXTERNAL_CAMPAIGN_OWNER_TYPE_PARTNER":     2,
+	}
+)
+
+func (x ExternalCampaignOwnerType) Enum() *ExternalCampaignOwnerType {
+	p := new(ExternalCampaignOwnerType)
+	*p = x
+	return p
+}
+
+func (x ExternalCampaignOwnerType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ExternalCampaignOwnerType) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_academy_v1_academy_proto_enumTypes[21].Descriptor()
+}
+
+func (ExternalCampaignOwnerType) Type() protoreflect.EnumType {
+	return &file_proto_academy_v1_academy_proto_enumTypes[21]
+}
+
+func (x ExternalCampaignOwnerType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ExternalCampaignOwnerType.Descriptor instead.
+func (ExternalCampaignOwnerType) EnumDescriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{21}
+}
+
+type ExternalCampaignPurpose int32
+
+const (
+	ExternalCampaignPurpose_EXTERNAL_CAMPAIGN_PURPOSE_UNSPECIFIED       ExternalCampaignPurpose = 0
+	ExternalCampaignPurpose_EXTERNAL_CAMPAIGN_PURPOSE_COMPANY_CANDIDATE ExternalCampaignPurpose = 1
+	ExternalCampaignPurpose_EXTERNAL_CAMPAIGN_PURPOSE_PARTNER_PROMO     ExternalCampaignPurpose = 2
+)
+
+// Enum value maps for ExternalCampaignPurpose.
+var (
+	ExternalCampaignPurpose_name = map[int32]string{
+		0: "EXTERNAL_CAMPAIGN_PURPOSE_UNSPECIFIED",
+		1: "EXTERNAL_CAMPAIGN_PURPOSE_COMPANY_CANDIDATE",
+		2: "EXTERNAL_CAMPAIGN_PURPOSE_PARTNER_PROMO",
+	}
+	ExternalCampaignPurpose_value = map[string]int32{
+		"EXTERNAL_CAMPAIGN_PURPOSE_UNSPECIFIED":       0,
+		"EXTERNAL_CAMPAIGN_PURPOSE_COMPANY_CANDIDATE": 1,
+		"EXTERNAL_CAMPAIGN_PURPOSE_PARTNER_PROMO":     2,
+	}
+)
+
+func (x ExternalCampaignPurpose) Enum() *ExternalCampaignPurpose {
+	p := new(ExternalCampaignPurpose)
+	*p = x
+	return p
+}
+
+func (x ExternalCampaignPurpose) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ExternalCampaignPurpose) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_academy_v1_academy_proto_enumTypes[22].Descriptor()
+}
+
+func (ExternalCampaignPurpose) Type() protoreflect.EnumType {
+	return &file_proto_academy_v1_academy_proto_enumTypes[22]
+}
+
+func (x ExternalCampaignPurpose) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ExternalCampaignPurpose.Descriptor instead.
+func (ExternalCampaignPurpose) EnumDescriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{22}
+}
+
+type ExternalCampaignStatus int32
+
+const (
+	ExternalCampaignStatus_EXTERNAL_CAMPAIGN_STATUS_UNSPECIFIED ExternalCampaignStatus = 0
+	ExternalCampaignStatus_EXTERNAL_CAMPAIGN_STATUS_ACTIVE      ExternalCampaignStatus = 1
+	ExternalCampaignStatus_EXTERNAL_CAMPAIGN_STATUS_PAUSED      ExternalCampaignStatus = 2
+	ExternalCampaignStatus_EXTERNAL_CAMPAIGN_STATUS_REVOKED     ExternalCampaignStatus = 3
+	ExternalCampaignStatus_EXTERNAL_CAMPAIGN_STATUS_CLOSED      ExternalCampaignStatus = 4
+)
+
+// Enum value maps for ExternalCampaignStatus.
+var (
+	ExternalCampaignStatus_name = map[int32]string{
+		0: "EXTERNAL_CAMPAIGN_STATUS_UNSPECIFIED",
+		1: "EXTERNAL_CAMPAIGN_STATUS_ACTIVE",
+		2: "EXTERNAL_CAMPAIGN_STATUS_PAUSED",
+		3: "EXTERNAL_CAMPAIGN_STATUS_REVOKED",
+		4: "EXTERNAL_CAMPAIGN_STATUS_CLOSED",
+	}
+	ExternalCampaignStatus_value = map[string]int32{
+		"EXTERNAL_CAMPAIGN_STATUS_UNSPECIFIED": 0,
+		"EXTERNAL_CAMPAIGN_STATUS_ACTIVE":      1,
+		"EXTERNAL_CAMPAIGN_STATUS_PAUSED":      2,
+		"EXTERNAL_CAMPAIGN_STATUS_REVOKED":     3,
+		"EXTERNAL_CAMPAIGN_STATUS_CLOSED":      4,
+	}
+)
+
+func (x ExternalCampaignStatus) Enum() *ExternalCampaignStatus {
+	p := new(ExternalCampaignStatus)
+	*p = x
+	return p
+}
+
+func (x ExternalCampaignStatus) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ExternalCampaignStatus) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_academy_v1_academy_proto_enumTypes[23].Descriptor()
+}
+
+func (ExternalCampaignStatus) Type() protoreflect.EnumType {
+	return &file_proto_academy_v1_academy_proto_enumTypes[23]
+}
+
+func (x ExternalCampaignStatus) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ExternalCampaignStatus.Descriptor instead.
+func (ExternalCampaignStatus) EnumDescriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{23}
+}
+
+type ExternalLearnerTimelineEventType int32
+
+const (
+	ExternalLearnerTimelineEventType_EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_UNSPECIFIED            ExternalLearnerTimelineEventType = 0
+	ExternalLearnerTimelineEventType_EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_ACCESS_ISSUED          ExternalLearnerTimelineEventType = 1
+	ExternalLearnerTimelineEventType_EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_VERIFICATION_REQUESTED ExternalLearnerTimelineEventType = 2
+	ExternalLearnerTimelineEventType_EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_EMAIL_VERIFIED         ExternalLearnerTimelineEventType = 3
+	ExternalLearnerTimelineEventType_EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_ACTIVATED              ExternalLearnerTimelineEventType = 4
+	ExternalLearnerTimelineEventType_EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_LESSON_COMPLETED       ExternalLearnerTimelineEventType = 5
+	ExternalLearnerTimelineEventType_EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_QUIZ_SUBMITTED         ExternalLearnerTimelineEventType = 6
+	ExternalLearnerTimelineEventType_EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_COURSE_COMPLETED       ExternalLearnerTimelineEventType = 7
+	ExternalLearnerTimelineEventType_EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_DEADLINE_EXPIRED       ExternalLearnerTimelineEventType = 8
+	ExternalLearnerTimelineEventType_EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_ACCESS_EXTENDED        ExternalLearnerTimelineEventType = 9
+	ExternalLearnerTimelineEventType_EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_TOKEN_ROTATED          ExternalLearnerTimelineEventType = 10
+	ExternalLearnerTimelineEventType_EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_ACCESS_REVOKED         ExternalLearnerTimelineEventType = 11
+	ExternalLearnerTimelineEventType_EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_FROZEN                 ExternalLearnerTimelineEventType = 12
+	ExternalLearnerTimelineEventType_EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_SUSPENDED              ExternalLearnerTimelineEventType = 13
+	ExternalLearnerTimelineEventType_EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_REPEAT_CREATED         ExternalLearnerTimelineEventType = 14
+)
+
+// Enum value maps for ExternalLearnerTimelineEventType.
+var (
+	ExternalLearnerTimelineEventType_name = map[int32]string{
+		0:  "EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_UNSPECIFIED",
+		1:  "EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_ACCESS_ISSUED",
+		2:  "EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_VERIFICATION_REQUESTED",
+		3:  "EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_EMAIL_VERIFIED",
+		4:  "EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_ACTIVATED",
+		5:  "EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_LESSON_COMPLETED",
+		6:  "EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_QUIZ_SUBMITTED",
+		7:  "EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_COURSE_COMPLETED",
+		8:  "EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_DEADLINE_EXPIRED",
+		9:  "EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_ACCESS_EXTENDED",
+		10: "EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_TOKEN_ROTATED",
+		11: "EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_ACCESS_REVOKED",
+		12: "EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_FROZEN",
+		13: "EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_SUSPENDED",
+		14: "EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_REPEAT_CREATED",
+	}
+	ExternalLearnerTimelineEventType_value = map[string]int32{
+		"EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_UNSPECIFIED":            0,
+		"EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_ACCESS_ISSUED":          1,
+		"EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_VERIFICATION_REQUESTED": 2,
+		"EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_EMAIL_VERIFIED":         3,
+		"EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_ACTIVATED":              4,
+		"EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_LESSON_COMPLETED":       5,
+		"EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_QUIZ_SUBMITTED":         6,
+		"EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_COURSE_COMPLETED":       7,
+		"EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_DEADLINE_EXPIRED":       8,
+		"EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_ACCESS_EXTENDED":        9,
+		"EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_TOKEN_ROTATED":          10,
+		"EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_ACCESS_REVOKED":         11,
+		"EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_FROZEN":                 12,
+		"EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_SUSPENDED":              13,
+		"EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_REPEAT_CREATED":         14,
+	}
+)
+
+func (x ExternalLearnerTimelineEventType) Enum() *ExternalLearnerTimelineEventType {
+	p := new(ExternalLearnerTimelineEventType)
+	*p = x
+	return p
+}
+
+func (x ExternalLearnerTimelineEventType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ExternalLearnerTimelineEventType) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_academy_v1_academy_proto_enumTypes[24].Descriptor()
+}
+
+func (ExternalLearnerTimelineEventType) Type() protoreflect.EnumType {
+	return &file_proto_academy_v1_academy_proto_enumTypes[24]
+}
+
+func (x ExternalLearnerTimelineEventType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ExternalLearnerTimelineEventType.Descriptor instead.
+func (ExternalLearnerTimelineEventType) EnumDescriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{24}
+}
+
+type PublicAcademyAccessKind int32
+
+const (
+	PublicAcademyAccessKind_PUBLIC_ACADEMY_ACCESS_KIND_UNSPECIFIED                PublicAcademyAccessKind = 0
+	PublicAcademyAccessKind_PUBLIC_ACADEMY_ACCESS_KIND_PERSONAL_ACCESS            PublicAcademyAccessKind = 1
+	PublicAcademyAccessKind_PUBLIC_ACADEMY_ACCESS_KIND_PARTNER_PROMO_CAMPAIGN     PublicAcademyAccessKind = 2
+	PublicAcademyAccessKind_PUBLIC_ACADEMY_ACCESS_KIND_COMPANY_CANDIDATE_CAMPAIGN PublicAcademyAccessKind = 3
+)
+
+// Enum value maps for PublicAcademyAccessKind.
+var (
+	PublicAcademyAccessKind_name = map[int32]string{
+		0: "PUBLIC_ACADEMY_ACCESS_KIND_UNSPECIFIED",
+		1: "PUBLIC_ACADEMY_ACCESS_KIND_PERSONAL_ACCESS",
+		2: "PUBLIC_ACADEMY_ACCESS_KIND_PARTNER_PROMO_CAMPAIGN",
+		3: "PUBLIC_ACADEMY_ACCESS_KIND_COMPANY_CANDIDATE_CAMPAIGN",
+	}
+	PublicAcademyAccessKind_value = map[string]int32{
+		"PUBLIC_ACADEMY_ACCESS_KIND_UNSPECIFIED":                0,
+		"PUBLIC_ACADEMY_ACCESS_KIND_PERSONAL_ACCESS":            1,
+		"PUBLIC_ACADEMY_ACCESS_KIND_PARTNER_PROMO_CAMPAIGN":     2,
+		"PUBLIC_ACADEMY_ACCESS_KIND_COMPANY_CANDIDATE_CAMPAIGN": 3,
+	}
+)
+
+func (x PublicAcademyAccessKind) Enum() *PublicAcademyAccessKind {
+	p := new(PublicAcademyAccessKind)
+	*p = x
+	return p
+}
+
+func (x PublicAcademyAccessKind) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (PublicAcademyAccessKind) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_academy_v1_academy_proto_enumTypes[25].Descriptor()
+}
+
+func (PublicAcademyAccessKind) Type() protoreflect.EnumType {
+	return &file_proto_academy_v1_academy_proto_enumTypes[25]
+}
+
+func (x PublicAcademyAccessKind) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use PublicAcademyAccessKind.Descriptor instead.
+func (PublicAcademyAccessKind) EnumDescriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{25}
 }
 
 type Course struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
-	Description   *string                `protobuf:"bytes,3,opt,name=description,proto3,oneof" json:"description,omitempty"`
-	CoverUrl      *string                `protobuf:"bytes,4,opt,name=cover_url,json=coverUrl,proto3,oneof" json:"cover_url,omitempty"`
-	Status        CourseStatus           `protobuf:"varint,5,opt,name=status,proto3,enum=teamos.academy.v1.CourseStatus" json:"status,omitempty"`
-	AuthorId      string                 `protobuf:"bytes,6,opt,name=author_id,json=authorId,proto3" json:"author_id,omitempty"`
-	Sequential    bool                   `protobuf:"varint,7,opt,name=sequential,proto3" json:"sequential,omitempty"`
-	DeadlineDays  *uint32                `protobuf:"varint,8,opt,name=deadline_days,json=deadlineDays,proto3,oneof" json:"deadline_days,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	Visibility    CourseVisibility       `protobuf:"varint,11,opt,name=visibility,proto3,enum=teamos.academy.v1.CourseVisibility" json:"visibility,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                    protoimpl.MessageState    `protogen:"open.v1"`
+	Id                       string                    `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Title                    string                    `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	Description              *string                   `protobuf:"bytes,3,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	CoverUrl                 *string                   `protobuf:"bytes,4,opt,name=cover_url,json=coverUrl,proto3,oneof" json:"cover_url,omitempty"`
+	Status                   CourseStatus              `protobuf:"varint,5,opt,name=status,proto3,enum=teamos.academy.v1.CourseStatus" json:"status,omitempty"`
+	AuthorId                 string                    `protobuf:"bytes,6,opt,name=author_id,json=authorId,proto3" json:"author_id,omitempty"`
+	Sequential               bool                      `protobuf:"varint,7,opt,name=sequential,proto3" json:"sequential,omitempty"`
+	DeadlineDays             *uint32                   `protobuf:"varint,8,opt,name=deadline_days,json=deadlineDays,proto3,oneof" json:"deadline_days,omitempty"`
+	CreatedAt                *timestamppb.Timestamp    `protobuf:"bytes,9,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt                *timestamppb.Timestamp    `protobuf:"bytes,10,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	Visibility               CourseVisibility          `protobuf:"varint,11,opt,name=visibility,proto3,enum=teamos.academy.v1.CourseVisibility" json:"visibility,omitempty"`
+	OwnerType                *CourseOwnerType          `protobuf:"varint,12,opt,name=owner_type,json=ownerType,proto3,enum=teamos.academy.v1.CourseOwnerType,oneof" json:"owner_type,omitempty"`
+	OwnerUserId              *string                   `protobuf:"bytes,13,opt,name=owner_user_id,json=ownerUserId,proto3,oneof" json:"owner_user_id,omitempty"`
+	CreatedById              *string                   `protobuf:"bytes,14,opt,name=created_by_id,json=createdById,proto3,oneof" json:"created_by_id,omitempty"`
+	LifecycleStatus          *CourseLifecycleStatus    `protobuf:"varint,15,opt,name=lifecycle_status,json=lifecycleStatus,proto3,enum=teamos.academy.v1.CourseLifecycleStatus,oneof" json:"lifecycle_status,omitempty"`
+	DistributionStatus       *CourseDistributionStatus `protobuf:"varint,16,opt,name=distribution_status,json=distributionStatus,proto3,enum=teamos.academy.v1.CourseDistributionStatus,oneof" json:"distribution_status,omitempty"`
+	CurrentDraftVersionId    *string                   `protobuf:"bytes,17,opt,name=current_draft_version_id,json=currentDraftVersionId,proto3,oneof" json:"current_draft_version_id,omitempty"`
+	LatestPublishedVersionId *string                   `protobuf:"bytes,18,opt,name=latest_published_version_id,json=latestPublishedVersionId,proto3,oneof" json:"latest_published_version_id,omitempty"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
 }
 
 func (x *Course) Reset() {
@@ -457,6 +1552,55 @@ func (x *Course) GetVisibility() CourseVisibility {
 		return x.Visibility
 	}
 	return CourseVisibility_COURSE_VISIBILITY_UNSPECIFIED
+}
+
+func (x *Course) GetOwnerType() CourseOwnerType {
+	if x != nil && x.OwnerType != nil {
+		return *x.OwnerType
+	}
+	return CourseOwnerType_COURSE_OWNER_TYPE_UNSPECIFIED
+}
+
+func (x *Course) GetOwnerUserId() string {
+	if x != nil && x.OwnerUserId != nil {
+		return *x.OwnerUserId
+	}
+	return ""
+}
+
+func (x *Course) GetCreatedById() string {
+	if x != nil && x.CreatedById != nil {
+		return *x.CreatedById
+	}
+	return ""
+}
+
+func (x *Course) GetLifecycleStatus() CourseLifecycleStatus {
+	if x != nil && x.LifecycleStatus != nil {
+		return *x.LifecycleStatus
+	}
+	return CourseLifecycleStatus_COURSE_LIFECYCLE_STATUS_UNSPECIFIED
+}
+
+func (x *Course) GetDistributionStatus() CourseDistributionStatus {
+	if x != nil && x.DistributionStatus != nil {
+		return *x.DistributionStatus
+	}
+	return CourseDistributionStatus_COURSE_DISTRIBUTION_STATUS_UNSPECIFIED
+}
+
+func (x *Course) GetCurrentDraftVersionId() string {
+	if x != nil && x.CurrentDraftVersionId != nil {
+		return *x.CurrentDraftVersionId
+	}
+	return ""
+}
+
+func (x *Course) GetLatestPublishedVersionId() string {
+	if x != nil && x.LatestPublishedVersionId != nil {
+		return *x.LatestPublishedVersionId
+	}
+	return ""
 }
 
 type CourseSection struct {
@@ -839,23 +1983,950 @@ func (x *Quiz) GetMaxAttempts() uint32 {
 	return 0
 }
 
-type CourseAssignment struct {
+// CourseVersion is the editor-facing immutable-version metadata. Published
+// versions and their nested content must never be mutated.
+type CourseVersion struct {
+	state                       protoimpl.MessageState `protogen:"open.v1"`
+	Id                          string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	CourseId                    string                 `protobuf:"bytes,2,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	Number                      uint32                 `protobuf:"varint,3,opt,name=number,proto3" json:"number,omitempty"`
+	Status                      CourseVersionStatus    `protobuf:"varint,4,opt,name=status,proto3,enum=teamos.academy.v1.CourseVersionStatus" json:"status,omitempty"`
+	Title                       string                 `protobuf:"bytes,5,opt,name=title,proto3" json:"title,omitempty"`
+	Description                 *string                `protobuf:"bytes,6,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	CoverFileId                 *string                `protobuf:"bytes,7,opt,name=cover_file_id,json=coverFileId,proto3,oneof" json:"cover_file_id,omitempty"`
+	CoverUrl                    *string                `protobuf:"bytes,8,opt,name=cover_url,json=coverUrl,proto3,oneof" json:"cover_url,omitempty"`
+	Sequential                  bool                   `protobuf:"varint,9,opt,name=sequential,proto3" json:"sequential,omitempty"`
+	DefaultInternalDeadlineDays *uint32                `protobuf:"varint,10,opt,name=default_internal_deadline_days,json=defaultInternalDeadlineDays,proto3,oneof" json:"default_internal_deadline_days,omitempty"`
+	CreatedById                 string                 `protobuf:"bytes,11,opt,name=created_by_id,json=createdById,proto3" json:"created_by_id,omitempty"`
+	CreatedAt                   *timestamppb.Timestamp `protobuf:"bytes,12,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	PublishedById               *string                `protobuf:"bytes,13,opt,name=published_by_id,json=publishedById,proto3,oneof" json:"published_by_id,omitempty"`
+	PublishedAt                 *timestamppb.Timestamp `protobuf:"bytes,14,opt,name=published_at,json=publishedAt,proto3,oneof" json:"published_at,omitempty"`
+	ContentHash                 *string                `protobuf:"bytes,15,opt,name=content_hash,json=contentHash,proto3,oneof" json:"content_hash,omitempty"`
+	unknownFields               protoimpl.UnknownFields
+	sizeCache                   protoimpl.SizeCache
+}
+
+func (x *CourseVersion) Reset() {
+	*x = CourseVersion{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CourseVersion) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CourseVersion) ProtoMessage() {}
+
+func (x *CourseVersion) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CourseVersion.ProtoReflect.Descriptor instead.
+func (*CourseVersion) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *CourseVersion) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *CourseVersion) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+func (x *CourseVersion) GetNumber() uint32 {
+	if x != nil {
+		return x.Number
+	}
+	return 0
+}
+
+func (x *CourseVersion) GetStatus() CourseVersionStatus {
+	if x != nil {
+		return x.Status
+	}
+	return CourseVersionStatus_COURSE_VERSION_STATUS_UNSPECIFIED
+}
+
+func (x *CourseVersion) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *CourseVersion) GetDescription() string {
+	if x != nil && x.Description != nil {
+		return *x.Description
+	}
+	return ""
+}
+
+func (x *CourseVersion) GetCoverFileId() string {
+	if x != nil && x.CoverFileId != nil {
+		return *x.CoverFileId
+	}
+	return ""
+}
+
+func (x *CourseVersion) GetCoverUrl() string {
+	if x != nil && x.CoverUrl != nil {
+		return *x.CoverUrl
+	}
+	return ""
+}
+
+func (x *CourseVersion) GetSequential() bool {
+	if x != nil {
+		return x.Sequential
+	}
+	return false
+}
+
+func (x *CourseVersion) GetDefaultInternalDeadlineDays() uint32 {
+	if x != nil && x.DefaultInternalDeadlineDays != nil {
+		return *x.DefaultInternalDeadlineDays
+	}
+	return 0
+}
+
+func (x *CourseVersion) GetCreatedById() string {
+	if x != nil {
+		return x.CreatedById
+	}
+	return ""
+}
+
+func (x *CourseVersion) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *CourseVersion) GetPublishedById() string {
+	if x != nil && x.PublishedById != nil {
+		return *x.PublishedById
+	}
+	return ""
+}
+
+func (x *CourseVersion) GetPublishedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.PublishedAt
+	}
+	return nil
+}
+
+func (x *CourseVersion) GetContentHash() string {
+	if x != nil && x.ContentHash != nil {
+		return *x.ContentHash
+	}
+	return ""
+}
+
+type CourseVersionSection struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	Id              string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	CourseVersionId string                 `protobuf:"bytes,2,opt,name=course_version_id,json=courseVersionId,proto3" json:"course_version_id,omitempty"`
+	Title           string                 `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
+	Order           uint32                 `protobuf:"varint,4,opt,name=order,proto3" json:"order,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *CourseVersionSection) Reset() {
+	*x = CourseVersionSection{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CourseVersionSection) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CourseVersionSection) ProtoMessage() {}
+
+func (x *CourseVersionSection) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CourseVersionSection.ProtoReflect.Descriptor instead.
+func (*CourseVersionSection) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *CourseVersionSection) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *CourseVersionSection) GetCourseVersionId() string {
+	if x != nil {
+		return x.CourseVersionId
+	}
+	return ""
+}
+
+func (x *CourseVersionSection) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *CourseVersionSection) GetOrder() uint32 {
+	if x != nil {
+		return x.Order
+	}
+	return 0
+}
+
+type CourseVersionLesson struct {
+	state                   protoimpl.MessageState `protogen:"open.v1"`
+	Id                      string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	CourseVersionId         string                 `protobuf:"bytes,2,opt,name=course_version_id,json=courseVersionId,proto3" json:"course_version_id,omitempty"`
+	SectionVersionId        string                 `protobuf:"bytes,3,opt,name=section_version_id,json=sectionVersionId,proto3" json:"section_version_id,omitempty"`
+	StableKey               string                 `protobuf:"bytes,4,opt,name=stable_key,json=stableKey,proto3" json:"stable_key,omitempty"`
+	Title                   string                 `protobuf:"bytes,5,opt,name=title,proto3" json:"title,omitempty"`
+	Order                   uint32                 `protobuf:"varint,6,opt,name=order,proto3" json:"order,omitempty"`
+	Content                 *structpb.Struct       `protobuf:"bytes,7,opt,name=content,proto3" json:"content,omitempty"`
+	SourceType              CourseLessonSourceType `protobuf:"varint,8,opt,name=source_type,json=sourceType,proto3,enum=teamos.academy.v1.CourseLessonSourceType" json:"source_type,omitempty"`
+	SourceArticleId         *string                `protobuf:"bytes,9,opt,name=source_article_id,json=sourceArticleId,proto3,oneof" json:"source_article_id,omitempty"`
+	SourceArticleVersion    *uint32                `protobuf:"varint,10,opt,name=source_article_version,json=sourceArticleVersion,proto3,oneof" json:"source_article_version,omitempty"`
+	SourceTemplateId        *string                `protobuf:"bytes,11,opt,name=source_template_id,json=sourceTemplateId,proto3,oneof" json:"source_template_id,omitempty"`
+	SourceTemplateVersionId *string                `protobuf:"bytes,12,opt,name=source_template_version_id,json=sourceTemplateVersionId,proto3,oneof" json:"source_template_version_id,omitempty"`
+	EstimatedMinutes        *uint32                `protobuf:"varint,13,opt,name=estimated_minutes,json=estimatedMinutes,proto3,oneof" json:"estimated_minutes,omitempty"`
+	QuizVersionId           *string                `protobuf:"bytes,14,opt,name=quiz_version_id,json=quizVersionId,proto3,oneof" json:"quiz_version_id,omitempty"`
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
+}
+
+func (x *CourseVersionLesson) Reset() {
+	*x = CourseVersionLesson{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CourseVersionLesson) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CourseVersionLesson) ProtoMessage() {}
+
+func (x *CourseVersionLesson) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CourseVersionLesson.ProtoReflect.Descriptor instead.
+func (*CourseVersionLesson) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *CourseVersionLesson) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *CourseVersionLesson) GetCourseVersionId() string {
+	if x != nil {
+		return x.CourseVersionId
+	}
+	return ""
+}
+
+func (x *CourseVersionLesson) GetSectionVersionId() string {
+	if x != nil {
+		return x.SectionVersionId
+	}
+	return ""
+}
+
+func (x *CourseVersionLesson) GetStableKey() string {
+	if x != nil {
+		return x.StableKey
+	}
+	return ""
+}
+
+func (x *CourseVersionLesson) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *CourseVersionLesson) GetOrder() uint32 {
+	if x != nil {
+		return x.Order
+	}
+	return 0
+}
+
+func (x *CourseVersionLesson) GetContent() *structpb.Struct {
+	if x != nil {
+		return x.Content
+	}
+	return nil
+}
+
+func (x *CourseVersionLesson) GetSourceType() CourseLessonSourceType {
+	if x != nil {
+		return x.SourceType
+	}
+	return CourseLessonSourceType_COURSE_LESSON_SOURCE_TYPE_UNSPECIFIED
+}
+
+func (x *CourseVersionLesson) GetSourceArticleId() string {
+	if x != nil && x.SourceArticleId != nil {
+		return *x.SourceArticleId
+	}
+	return ""
+}
+
+func (x *CourseVersionLesson) GetSourceArticleVersion() uint32 {
+	if x != nil && x.SourceArticleVersion != nil {
+		return *x.SourceArticleVersion
+	}
+	return 0
+}
+
+func (x *CourseVersionLesson) GetSourceTemplateId() string {
+	if x != nil && x.SourceTemplateId != nil {
+		return *x.SourceTemplateId
+	}
+	return ""
+}
+
+func (x *CourseVersionLesson) GetSourceTemplateVersionId() string {
+	if x != nil && x.SourceTemplateVersionId != nil {
+		return *x.SourceTemplateVersionId
+	}
+	return ""
+}
+
+func (x *CourseVersionLesson) GetEstimatedMinutes() uint32 {
+	if x != nil && x.EstimatedMinutes != nil {
+		return *x.EstimatedMinutes
+	}
+	return 0
+}
+
+func (x *CourseVersionLesson) GetQuizVersionId() string {
+	if x != nil && x.QuizVersionId != nil {
+		return *x.QuizVersionId
+	}
+	return ""
+}
+
+type CourseVersionQuiz struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	Id              string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	CourseVersionId string                 `protobuf:"bytes,2,opt,name=course_version_id,json=courseVersionId,proto3" json:"course_version_id,omitempty"`
+	LessonVersionId string                 `protobuf:"bytes,3,opt,name=lesson_version_id,json=lessonVersionId,proto3" json:"lesson_version_id,omitempty"`
+	Questions       []*QuizQuestion        `protobuf:"bytes,4,rep,name=questions,proto3" json:"questions,omitempty"`
+	PassingScore    uint32                 `protobuf:"varint,5,opt,name=passing_score,json=passingScore,proto3" json:"passing_score,omitempty"`
+	MaxAttempts     *uint32                `protobuf:"varint,6,opt,name=max_attempts,json=maxAttempts,proto3,oneof" json:"max_attempts,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *CourseVersionQuiz) Reset() {
+	*x = CourseVersionQuiz{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CourseVersionQuiz) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CourseVersionQuiz) ProtoMessage() {}
+
+func (x *CourseVersionQuiz) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CourseVersionQuiz.ProtoReflect.Descriptor instead.
+func (*CourseVersionQuiz) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *CourseVersionQuiz) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *CourseVersionQuiz) GetCourseVersionId() string {
+	if x != nil {
+		return x.CourseVersionId
+	}
+	return ""
+}
+
+func (x *CourseVersionQuiz) GetLessonVersionId() string {
+	if x != nil {
+		return x.LessonVersionId
+	}
+	return ""
+}
+
+func (x *CourseVersionQuiz) GetQuestions() []*QuizQuestion {
+	if x != nil {
+		return x.Questions
+	}
+	return nil
+}
+
+func (x *CourseVersionQuiz) GetPassingScore() uint32 {
+	if x != nil {
+		return x.PassingScore
+	}
+	return 0
+}
+
+func (x *CourseVersionQuiz) GetMaxAttempts() uint32 {
+	if x != nil && x.MaxAttempts != nil {
+		return *x.MaxAttempts
+	}
+	return 0
+}
+
+// Learner quiz types intentionally omit QuizOption.correct. Never expose the
+// editor-facing QuizQuestion DTO in learner/public responses.
+type LearnerQuizOption struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	CourseId      string                 `protobuf:"bytes,2,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
-	AssigneeType  AssigneeType           `protobuf:"varint,3,opt,name=assignee_type,json=assigneeType,proto3,enum=teamos.academy.v1.AssigneeType" json:"assignee_type,omitempty"`
-	AssigneeId    *string                `protobuf:"bytes,4,opt,name=assignee_id,json=assigneeId,proto3,oneof" json:"assignee_id,omitempty"`
-	InviteToken   *string                `protobuf:"bytes,5,opt,name=invite_token,json=inviteToken,proto3,oneof" json:"invite_token,omitempty"`
-	DueDate       *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=due_date,json=dueDate,proto3,oneof" json:"due_date,omitempty"`
-	AssignedById  string                 `protobuf:"bytes,7,opt,name=assigned_by_id,json=assignedById,proto3" json:"assigned_by_id,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	Text          string                 `protobuf:"bytes,2,opt,name=text,proto3" json:"text,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
+func (x *LearnerQuizOption) Reset() {
+	*x = LearnerQuizOption{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LearnerQuizOption) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LearnerQuizOption) ProtoMessage() {}
+
+func (x *LearnerQuizOption) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LearnerQuizOption.ProtoReflect.Descriptor instead.
+func (*LearnerQuizOption) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *LearnerQuizOption) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *LearnerQuizOption) GetText() string {
+	if x != nil {
+		return x.Text
+	}
+	return ""
+}
+
+type LearnerQuizQuestion struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Type          QuizQuestionType       `protobuf:"varint,2,opt,name=type,proto3,enum=teamos.academy.v1.QuizQuestionType" json:"type,omitempty"`
+	Text          string                 `protobuf:"bytes,3,opt,name=text,proto3" json:"text,omitempty"`
+	Options       []*LearnerQuizOption   `protobuf:"bytes,4,rep,name=options,proto3" json:"options,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LearnerQuizQuestion) Reset() {
+	*x = LearnerQuizQuestion{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LearnerQuizQuestion) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LearnerQuizQuestion) ProtoMessage() {}
+
+func (x *LearnerQuizQuestion) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LearnerQuizQuestion.ProtoReflect.Descriptor instead.
+func (*LearnerQuizQuestion) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *LearnerQuizQuestion) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *LearnerQuizQuestion) GetType() QuizQuestionType {
+	if x != nil {
+		return x.Type
+	}
+	return QuizQuestionType_QUIZ_QUESTION_TYPE_UNSPECIFIED
+}
+
+func (x *LearnerQuizQuestion) GetText() string {
+	if x != nil {
+		return x.Text
+	}
+	return ""
+}
+
+func (x *LearnerQuizQuestion) GetOptions() []*LearnerQuizOption {
+	if x != nil {
+		return x.Options
+	}
+	return nil
+}
+
+type LearnerCourseVersionQuiz struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Questions     []*LearnerQuizQuestion `protobuf:"bytes,2,rep,name=questions,proto3" json:"questions,omitempty"`
+	PassingScore  uint32                 `protobuf:"varint,3,opt,name=passing_score,json=passingScore,proto3" json:"passing_score,omitempty"`
+	MaxAttempts   *uint32                `protobuf:"varint,4,opt,name=max_attempts,json=maxAttempts,proto3,oneof" json:"max_attempts,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LearnerCourseVersionQuiz) Reset() {
+	*x = LearnerCourseVersionQuiz{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LearnerCourseVersionQuiz) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LearnerCourseVersionQuiz) ProtoMessage() {}
+
+func (x *LearnerCourseVersionQuiz) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LearnerCourseVersionQuiz.ProtoReflect.Descriptor instead.
+func (*LearnerCourseVersionQuiz) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *LearnerCourseVersionQuiz) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *LearnerCourseVersionQuiz) GetQuestions() []*LearnerQuizQuestion {
+	if x != nil {
+		return x.Questions
+	}
+	return nil
+}
+
+func (x *LearnerCourseVersionQuiz) GetPassingScore() uint32 {
+	if x != nil {
+		return x.PassingScore
+	}
+	return 0
+}
+
+func (x *LearnerCourseVersionQuiz) GetMaxAttempts() uint32 {
+	if x != nil && x.MaxAttempts != nil {
+		return *x.MaxAttempts
+	}
+	return 0
+}
+
+type LearnerCourseVersionLesson struct {
+	state            protoimpl.MessageState    `protogen:"open.v1"`
+	Id               string                    `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	CourseVersionId  string                    `protobuf:"bytes,2,opt,name=course_version_id,json=courseVersionId,proto3" json:"course_version_id,omitempty"`
+	SectionVersionId string                    `protobuf:"bytes,3,opt,name=section_version_id,json=sectionVersionId,proto3" json:"section_version_id,omitempty"`
+	StableKey        string                    `protobuf:"bytes,4,opt,name=stable_key,json=stableKey,proto3" json:"stable_key,omitempty"`
+	Title            string                    `protobuf:"bytes,5,opt,name=title,proto3" json:"title,omitempty"`
+	Order            uint32                    `protobuf:"varint,6,opt,name=order,proto3" json:"order,omitempty"`
+	Content          *structpb.Struct          `protobuf:"bytes,7,opt,name=content,proto3" json:"content,omitempty"`
+	EstimatedMinutes *uint32                   `protobuf:"varint,8,opt,name=estimated_minutes,json=estimatedMinutes,proto3,oneof" json:"estimated_minutes,omitempty"`
+	Quiz             *LearnerCourseVersionQuiz `protobuf:"bytes,9,opt,name=quiz,proto3,oneof" json:"quiz,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *LearnerCourseVersionLesson) Reset() {
+	*x = LearnerCourseVersionLesson{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LearnerCourseVersionLesson) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LearnerCourseVersionLesson) ProtoMessage() {}
+
+func (x *LearnerCourseVersionLesson) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LearnerCourseVersionLesson.ProtoReflect.Descriptor instead.
+func (*LearnerCourseVersionLesson) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *LearnerCourseVersionLesson) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *LearnerCourseVersionLesson) GetCourseVersionId() string {
+	if x != nil {
+		return x.CourseVersionId
+	}
+	return ""
+}
+
+func (x *LearnerCourseVersionLesson) GetSectionVersionId() string {
+	if x != nil {
+		return x.SectionVersionId
+	}
+	return ""
+}
+
+func (x *LearnerCourseVersionLesson) GetStableKey() string {
+	if x != nil {
+		return x.StableKey
+	}
+	return ""
+}
+
+func (x *LearnerCourseVersionLesson) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *LearnerCourseVersionLesson) GetOrder() uint32 {
+	if x != nil {
+		return x.Order
+	}
+	return 0
+}
+
+func (x *LearnerCourseVersionLesson) GetContent() *structpb.Struct {
+	if x != nil {
+		return x.Content
+	}
+	return nil
+}
+
+func (x *LearnerCourseVersionLesson) GetEstimatedMinutes() uint32 {
+	if x != nil && x.EstimatedMinutes != nil {
+		return *x.EstimatedMinutes
+	}
+	return 0
+}
+
+func (x *LearnerCourseVersionLesson) GetQuiz() *LearnerCourseVersionQuiz {
+	if x != nil {
+		return x.Quiz
+	}
+	return nil
+}
+
+type LearnerCourseVersionSection struct {
+	state         protoimpl.MessageState        `protogen:"open.v1"`
+	Id            string                        `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Title         string                        `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	Order         uint32                        `protobuf:"varint,3,opt,name=order,proto3" json:"order,omitempty"`
+	Lessons       []*LearnerCourseVersionLesson `protobuf:"bytes,4,rep,name=lessons,proto3" json:"lessons,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LearnerCourseVersionSection) Reset() {
+	*x = LearnerCourseVersionSection{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LearnerCourseVersionSection) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LearnerCourseVersionSection) ProtoMessage() {}
+
+func (x *LearnerCourseVersionSection) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LearnerCourseVersionSection.ProtoReflect.Descriptor instead.
+func (*LearnerCourseVersionSection) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *LearnerCourseVersionSection) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *LearnerCourseVersionSection) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *LearnerCourseVersionSection) GetOrder() uint32 {
+	if x != nil {
+		return x.Order
+	}
+	return 0
+}
+
+func (x *LearnerCourseVersionSection) GetLessons() []*LearnerCourseVersionLesson {
+	if x != nil {
+		return x.Lessons
+	}
+	return nil
+}
+
+type LearnerPublishedCourseVersion struct {
+	state         protoimpl.MessageState         `protogen:"open.v1"`
+	Id            string                         `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	CourseId      string                         `protobuf:"bytes,2,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	Number        uint32                         `protobuf:"varint,3,opt,name=number,proto3" json:"number,omitempty"`
+	Title         string                         `protobuf:"bytes,4,opt,name=title,proto3" json:"title,omitempty"`
+	Description   *string                        `protobuf:"bytes,5,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	CoverUrl      *string                        `protobuf:"bytes,6,opt,name=cover_url,json=coverUrl,proto3,oneof" json:"cover_url,omitempty"`
+	Sequential    bool                           `protobuf:"varint,7,opt,name=sequential,proto3" json:"sequential,omitempty"`
+	Sections      []*LearnerCourseVersionSection `protobuf:"bytes,8,rep,name=sections,proto3" json:"sections,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LearnerPublishedCourseVersion) Reset() {
+	*x = LearnerPublishedCourseVersion{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LearnerPublishedCourseVersion) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LearnerPublishedCourseVersion) ProtoMessage() {}
+
+func (x *LearnerPublishedCourseVersion) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LearnerPublishedCourseVersion.ProtoReflect.Descriptor instead.
+func (*LearnerPublishedCourseVersion) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *LearnerPublishedCourseVersion) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *LearnerPublishedCourseVersion) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+func (x *LearnerPublishedCourseVersion) GetNumber() uint32 {
+	if x != nil {
+		return x.Number
+	}
+	return 0
+}
+
+func (x *LearnerPublishedCourseVersion) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *LearnerPublishedCourseVersion) GetDescription() string {
+	if x != nil && x.Description != nil {
+		return *x.Description
+	}
+	return ""
+}
+
+func (x *LearnerPublishedCourseVersion) GetCoverUrl() string {
+	if x != nil && x.CoverUrl != nil {
+		return *x.CoverUrl
+	}
+	return ""
+}
+
+func (x *LearnerPublishedCourseVersion) GetSequential() bool {
+	if x != nil {
+		return x.Sequential
+	}
+	return false
+}
+
+func (x *LearnerPublishedCourseVersion) GetSections() []*LearnerCourseVersionSection {
+	if x != nil {
+		return x.Sections
+	}
+	return nil
+}
+
+type CourseAssignment struct {
+	state        protoimpl.MessageState `protogen:"open.v1"`
+	Id           string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	CourseId     string                 `protobuf:"bytes,2,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	AssigneeType AssigneeType           `protobuf:"varint,3,opt,name=assignee_type,json=assigneeType,proto3,enum=teamos.academy.v1.AssigneeType" json:"assignee_type,omitempty"`
+	AssigneeId   *string                `protobuf:"bytes,4,opt,name=assignee_id,json=assigneeId,proto3,oneof" json:"assignee_id,omitempty"`
+	InviteToken  *string                `protobuf:"bytes,5,opt,name=invite_token,json=inviteToken,proto3,oneof" json:"invite_token,omitempty"`
+	DueDate      *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=due_date,json=dueDate,proto3,oneof" json:"due_date,omitempty"`
+	AssignedById string                 `protobuf:"bytes,7,opt,name=assigned_by_id,json=assignedById,proto3" json:"assigned_by_id,omitempty"`
+	CreatedAt    *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	// Optional while legacy assignments are backfilled. New assignments always
+	// pin the published course version selected at assignment time.
+	CourseVersionId *string `protobuf:"bytes,9,opt,name=course_version_id,json=courseVersionId,proto3,oneof" json:"course_version_id,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
 func (x *CourseAssignment) Reset() {
 	*x = CourseAssignment{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[6]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -867,7 +2938,7 @@ func (x *CourseAssignment) String() string {
 func (*CourseAssignment) ProtoMessage() {}
 
 func (x *CourseAssignment) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[6]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -880,7 +2951,7 @@ func (x *CourseAssignment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CourseAssignment.ProtoReflect.Descriptor instead.
 func (*CourseAssignment) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{6}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *CourseAssignment) GetId() string {
@@ -939,6 +3010,13 @@ func (x *CourseAssignment) GetCreatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *CourseAssignment) GetCourseVersionId() string {
+	if x != nil && x.CourseVersionId != nil {
+		return *x.CourseVersionId
+	}
+	return ""
+}
+
 type QuizAttempt struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -948,13 +3026,16 @@ type QuizAttempt struct {
 	Passed        bool                   `protobuf:"varint,5,opt,name=passed,proto3" json:"passed,omitempty"`
 	PendingReview bool                   `protobuf:"varint,6,opt,name=pending_review,json=pendingReview,proto3" json:"pending_review,omitempty"`
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	EnrollmentId  *string                `protobuf:"bytes,8,opt,name=enrollment_id,json=enrollmentId,proto3,oneof" json:"enrollment_id,omitempty"`
+	QuizVersionId *string                `protobuf:"bytes,9,opt,name=quiz_version_id,json=quizVersionId,proto3,oneof" json:"quiz_version_id,omitempty"`
+	AttemptNumber *uint32                `protobuf:"varint,10,opt,name=attempt_number,json=attemptNumber,proto3,oneof" json:"attempt_number,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *QuizAttempt) Reset() {
 	*x = QuizAttempt{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[7]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -966,7 +3047,7 @@ func (x *QuizAttempt) String() string {
 func (*QuizAttempt) ProtoMessage() {}
 
 func (x *QuizAttempt) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[7]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -979,7 +3060,7 @@ func (x *QuizAttempt) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QuizAttempt.ProtoReflect.Descriptor instead.
 func (*QuizAttempt) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{7}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *QuizAttempt) GetId() string {
@@ -1031,22 +3112,47 @@ func (x *QuizAttempt) GetCreatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *QuizAttempt) GetEnrollmentId() string {
+	if x != nil && x.EnrollmentId != nil {
+		return *x.EnrollmentId
+	}
+	return ""
+}
+
+func (x *QuizAttempt) GetQuizVersionId() string {
+	if x != nil && x.QuizVersionId != nil {
+		return *x.QuizVersionId
+	}
+	return ""
+}
+
+func (x *QuizAttempt) GetAttemptNumber() uint32 {
+	if x != nil && x.AttemptNumber != nil {
+		return *x.AttemptNumber
+	}
+	return 0
+}
+
 type CourseProgress struct {
-	state              protoimpl.MessageState `protogen:"open.v1"`
-	UserId             string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	CourseId           string                 `protobuf:"bytes,2,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
-	Status             CourseProgressStatus   `protobuf:"varint,3,opt,name=status,proto3,enum=teamos.academy.v1.CourseProgressStatus" json:"status,omitempty"`
-	CompletedLessonIds []string               `protobuf:"bytes,4,rep,name=completed_lesson_ids,json=completedLessonIds,proto3" json:"completed_lesson_ids,omitempty"`
-	QuizAttempts       []*QuizAttempt         `protobuf:"bytes,5,rep,name=quiz_attempts,json=quizAttempts,proto3" json:"quiz_attempts,omitempty"`
-	StartedAt          *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=started_at,json=startedAt,proto3,oneof" json:"started_at,omitempty"`
-	CompletedAt        *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=completed_at,json=completedAt,proto3,oneof" json:"completed_at,omitempty"`
-	unknownFields      protoimpl.UnknownFields
-	sizeCache          protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"open.v1"`
+	UserId                 string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	CourseId               string                 `protobuf:"bytes,2,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	Status                 CourseProgressStatus   `protobuf:"varint,3,opt,name=status,proto3,enum=teamos.academy.v1.CourseProgressStatus" json:"status,omitempty"`
+	CompletedLessonIds     []string               `protobuf:"bytes,4,rep,name=completed_lesson_ids,json=completedLessonIds,proto3" json:"completed_lesson_ids,omitempty"`
+	QuizAttempts           []*QuizAttempt         `protobuf:"bytes,5,rep,name=quiz_attempts,json=quizAttempts,proto3" json:"quiz_attempts,omitempty"`
+	StartedAt              *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=started_at,json=startedAt,proto3,oneof" json:"started_at,omitempty"`
+	CompletedAt            *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=completed_at,json=completedAt,proto3,oneof" json:"completed_at,omitempty"`
+	EnrollmentId           *string                `protobuf:"bytes,8,opt,name=enrollment_id,json=enrollmentId,proto3,oneof" json:"enrollment_id,omitempty"`
+	CourseVersionId        *string                `protobuf:"bytes,9,opt,name=course_version_id,json=courseVersionId,proto3,oneof" json:"course_version_id,omitempty"`
+	ProgressPercent        *uint32                `protobuf:"varint,10,opt,name=progress_percent,json=progressPercent,proto3,oneof" json:"progress_percent,omitempty"`
+	CurrentLessonVersionId *string                `protobuf:"bytes,11,opt,name=current_lesson_version_id,json=currentLessonVersionId,proto3,oneof" json:"current_lesson_version_id,omitempty"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *CourseProgress) Reset() {
 	*x = CourseProgress{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[8]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1058,7 +3164,7 @@ func (x *CourseProgress) String() string {
 func (*CourseProgress) ProtoMessage() {}
 
 func (x *CourseProgress) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[8]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1071,7 +3177,7 @@ func (x *CourseProgress) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CourseProgress.ProtoReflect.Descriptor instead.
 func (*CourseProgress) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{8}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *CourseProgress) GetUserId() string {
@@ -1123,15 +3229,2703 @@ func (x *CourseProgress) GetCompletedAt() *timestamppb.Timestamp {
 	return nil
 }
 
-type GetCoursesRequest struct {
+func (x *CourseProgress) GetEnrollmentId() string {
+	if x != nil && x.EnrollmentId != nil {
+		return *x.EnrollmentId
+	}
+	return ""
+}
+
+func (x *CourseProgress) GetCourseVersionId() string {
+	if x != nil && x.CourseVersionId != nil {
+		return *x.CourseVersionId
+	}
+	return ""
+}
+
+func (x *CourseProgress) GetProgressPercent() uint32 {
+	if x != nil && x.ProgressPercent != nil {
+		return *x.ProgressPercent
+	}
+	return 0
+}
+
+func (x *CourseProgress) GetCurrentLessonVersionId() string {
+	if x != nil && x.CurrentLessonVersionId != nil {
+		return *x.CurrentLessonVersionId
+	}
+	return ""
+}
+
+type CourseEnrollment struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	Id              string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	CourseId        string                 `protobuf:"bytes,2,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	CourseVersionId string                 `protobuf:"bytes,3,opt,name=course_version_id,json=courseVersionId,proto3" json:"course_version_id,omitempty"`
+	LearnerType     EnrollmentLearnerType  `protobuf:"varint,4,opt,name=learner_type,json=learnerType,proto3,enum=teamos.academy.v1.EnrollmentLearnerType" json:"learner_type,omitempty"`
+	// Domain validation requires exactly one learner identity.
+	UserId                 *string                  `protobuf:"bytes,5,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`
+	ExternalLearnerId      *string                  `protobuf:"bytes,6,opt,name=external_learner_id,json=externalLearnerId,proto3,oneof" json:"external_learner_id,omitempty"`
+	SourceType             EnrollmentSourceType     `protobuf:"varint,7,opt,name=source_type,json=sourceType,proto3,enum=teamos.academy.v1.EnrollmentSourceType" json:"source_type,omitempty"`
+	SourceId               *string                  `protobuf:"bytes,8,opt,name=source_id,json=sourceId,proto3,oneof" json:"source_id,omitempty"`
+	AttemptNumber          uint32                   `protobuf:"varint,9,opt,name=attempt_number,json=attemptNumber,proto3" json:"attempt_number,omitempty"`
+	ProgressStatus         EnrollmentProgressStatus `protobuf:"varint,10,opt,name=progress_status,json=progressStatus,proto3,enum=teamos.academy.v1.EnrollmentProgressStatus" json:"progress_status,omitempty"`
+	AccessStatus           EnrollmentAccessStatus   `protobuf:"varint,11,opt,name=access_status,json=accessStatus,proto3,enum=teamos.academy.v1.EnrollmentAccessStatus" json:"access_status,omitempty"`
+	CurrentLessonVersionId *string                  `protobuf:"bytes,12,opt,name=current_lesson_version_id,json=currentLessonVersionId,proto3,oneof" json:"current_lesson_version_id,omitempty"`
+	ActivatedAt            *timestamppb.Timestamp   `protobuf:"bytes,13,opt,name=activated_at,json=activatedAt,proto3,oneof" json:"activated_at,omitempty"`
+	AccessUntil            *timestamppb.Timestamp   `protobuf:"bytes,14,opt,name=access_until,json=accessUntil,proto3,oneof" json:"access_until,omitempty"`
+	StartedAt              *timestamppb.Timestamp   `protobuf:"bytes,15,opt,name=started_at,json=startedAt,proto3,oneof" json:"started_at,omitempty"`
+	CompletedAt            *timestamppb.Timestamp   `protobuf:"bytes,16,opt,name=completed_at,json=completedAt,proto3,oneof" json:"completed_at,omitempty"`
+	LastActivityAt         *timestamppb.Timestamp   `protobuf:"bytes,17,opt,name=last_activity_at,json=lastActivityAt,proto3,oneof" json:"last_activity_at,omitempty"`
+	FrozenAt               *timestamppb.Timestamp   `protobuf:"bytes,18,opt,name=frozen_at,json=frozenAt,proto3,oneof" json:"frozen_at,omitempty"`
+	SuspendedAt            *timestamppb.Timestamp   `protobuf:"bytes,19,opt,name=suspended_at,json=suspendedAt,proto3,oneof" json:"suspended_at,omitempty"`
+	CreatedAt              *timestamppb.Timestamp   `protobuf:"bytes,20,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt              *timestamppb.Timestamp   `protobuf:"bytes,21,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	ProgressPercent        uint32                   `protobuf:"varint,22,opt,name=progress_percent,json=progressPercent,proto3" json:"progress_percent,omitempty"`
+	// An internal assignment deadline is reporting metadata and never blocks
+	// access. External access_until has different hard-expiry semantics.
+	DueDate       *timestamppb.Timestamp `protobuf:"bytes,23,opt,name=due_date,json=dueDate,proto3,oneof" json:"due_date,omitempty"`
+	Overdue       bool                   `protobuf:"varint,24,opt,name=overdue,proto3" json:"overdue,omitempty"`
+	CompanyId     string                 `protobuf:"bytes,25,opt,name=company_id,json=companyId,proto3" json:"company_id,omitempty"`
+	VersionNumber uint32                 `protobuf:"varint,26,opt,name=version_number,json=versionNumber,proto3" json:"version_number,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CourseEnrollment) Reset() {
+	*x = CourseEnrollment{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CourseEnrollment) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CourseEnrollment) ProtoMessage() {}
+
+func (x *CourseEnrollment) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CourseEnrollment.ProtoReflect.Descriptor instead.
+func (*CourseEnrollment) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *CourseEnrollment) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *CourseEnrollment) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+func (x *CourseEnrollment) GetCourseVersionId() string {
+	if x != nil {
+		return x.CourseVersionId
+	}
+	return ""
+}
+
+func (x *CourseEnrollment) GetLearnerType() EnrollmentLearnerType {
+	if x != nil {
+		return x.LearnerType
+	}
+	return EnrollmentLearnerType_ENROLLMENT_LEARNER_TYPE_UNSPECIFIED
+}
+
+func (x *CourseEnrollment) GetUserId() string {
+	if x != nil && x.UserId != nil {
+		return *x.UserId
+	}
+	return ""
+}
+
+func (x *CourseEnrollment) GetExternalLearnerId() string {
+	if x != nil && x.ExternalLearnerId != nil {
+		return *x.ExternalLearnerId
+	}
+	return ""
+}
+
+func (x *CourseEnrollment) GetSourceType() EnrollmentSourceType {
+	if x != nil {
+		return x.SourceType
+	}
+	return EnrollmentSourceType_ENROLLMENT_SOURCE_TYPE_UNSPECIFIED
+}
+
+func (x *CourseEnrollment) GetSourceId() string {
+	if x != nil && x.SourceId != nil {
+		return *x.SourceId
+	}
+	return ""
+}
+
+func (x *CourseEnrollment) GetAttemptNumber() uint32 {
+	if x != nil {
+		return x.AttemptNumber
+	}
+	return 0
+}
+
+func (x *CourseEnrollment) GetProgressStatus() EnrollmentProgressStatus {
+	if x != nil {
+		return x.ProgressStatus
+	}
+	return EnrollmentProgressStatus_ENROLLMENT_PROGRESS_STATUS_UNSPECIFIED
+}
+
+func (x *CourseEnrollment) GetAccessStatus() EnrollmentAccessStatus {
+	if x != nil {
+		return x.AccessStatus
+	}
+	return EnrollmentAccessStatus_ENROLLMENT_ACCESS_STATUS_UNSPECIFIED
+}
+
+func (x *CourseEnrollment) GetCurrentLessonVersionId() string {
+	if x != nil && x.CurrentLessonVersionId != nil {
+		return *x.CurrentLessonVersionId
+	}
+	return ""
+}
+
+func (x *CourseEnrollment) GetActivatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ActivatedAt
+	}
+	return nil
+}
+
+func (x *CourseEnrollment) GetAccessUntil() *timestamppb.Timestamp {
+	if x != nil {
+		return x.AccessUntil
+	}
+	return nil
+}
+
+func (x *CourseEnrollment) GetStartedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.StartedAt
+	}
+	return nil
+}
+
+func (x *CourseEnrollment) GetCompletedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CompletedAt
+	}
+	return nil
+}
+
+func (x *CourseEnrollment) GetLastActivityAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.LastActivityAt
+	}
+	return nil
+}
+
+func (x *CourseEnrollment) GetFrozenAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.FrozenAt
+	}
+	return nil
+}
+
+func (x *CourseEnrollment) GetSuspendedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.SuspendedAt
+	}
+	return nil
+}
+
+func (x *CourseEnrollment) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *CourseEnrollment) GetUpdatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return nil
+}
+
+func (x *CourseEnrollment) GetProgressPercent() uint32 {
+	if x != nil {
+		return x.ProgressPercent
+	}
+	return 0
+}
+
+func (x *CourseEnrollment) GetDueDate() *timestamppb.Timestamp {
+	if x != nil {
+		return x.DueDate
+	}
+	return nil
+}
+
+func (x *CourseEnrollment) GetOverdue() bool {
+	if x != nil {
+		return x.Overdue
+	}
+	return false
+}
+
+func (x *CourseEnrollment) GetCompanyId() string {
+	if x != nil {
+		return x.CompanyId
+	}
+	return ""
+}
+
+func (x *CourseEnrollment) GetVersionNumber() uint32 {
+	if x != nil {
+		return x.VersionNumber
+	}
+	return 0
+}
+
+type EnrollmentLessonProgress struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	EnrollmentId    string                 `protobuf:"bytes,1,opt,name=enrollment_id,json=enrollmentId,proto3" json:"enrollment_id,omitempty"`
+	LessonVersionId string                 `protobuf:"bytes,2,opt,name=lesson_version_id,json=lessonVersionId,proto3" json:"lesson_version_id,omitempty"`
+	Status          EnrollmentLessonStatus `protobuf:"varint,3,opt,name=status,proto3,enum=teamos.academy.v1.EnrollmentLessonStatus" json:"status,omitempty"`
+	FirstOpenedAt   *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=first_opened_at,json=firstOpenedAt,proto3,oneof" json:"first_opened_at,omitempty"`
+	CompletedAt     *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=completed_at,json=completedAt,proto3,oneof" json:"completed_at,omitempty"`
+	ActiveSeconds   uint64                 `protobuf:"varint,6,opt,name=active_seconds,json=activeSeconds,proto3" json:"active_seconds,omitempty"`
+	LastPosition    *structpb.Struct       `protobuf:"bytes,7,opt,name=last_position,json=lastPosition,proto3,oneof" json:"last_position,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *EnrollmentLessonProgress) Reset() {
+	*x = EnrollmentLessonProgress{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EnrollmentLessonProgress) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EnrollmentLessonProgress) ProtoMessage() {}
+
+func (x *EnrollmentLessonProgress) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EnrollmentLessonProgress.ProtoReflect.Descriptor instead.
+func (*EnrollmentLessonProgress) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *EnrollmentLessonProgress) GetEnrollmentId() string {
+	if x != nil {
+		return x.EnrollmentId
+	}
+	return ""
+}
+
+func (x *EnrollmentLessonProgress) GetLessonVersionId() string {
+	if x != nil {
+		return x.LessonVersionId
+	}
+	return ""
+}
+
+func (x *EnrollmentLessonProgress) GetStatus() EnrollmentLessonStatus {
+	if x != nil {
+		return x.Status
+	}
+	return EnrollmentLessonStatus_ENROLLMENT_LESSON_STATUS_UNSPECIFIED
+}
+
+func (x *EnrollmentLessonProgress) GetFirstOpenedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.FirstOpenedAt
+	}
+	return nil
+}
+
+func (x *EnrollmentLessonProgress) GetCompletedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CompletedAt
+	}
+	return nil
+}
+
+func (x *EnrollmentLessonProgress) GetActiveSeconds() uint64 {
+	if x != nil {
+		return x.ActiveSeconds
+	}
+	return 0
+}
+
+func (x *EnrollmentLessonProgress) GetLastPosition() *structpb.Struct {
+	if x != nil {
+		return x.LastPosition
+	}
+	return nil
+}
+
+type EnrollmentQuizAnswer struct {
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	QuestionId        string                 `protobuf:"bytes,1,opt,name=question_id,json=questionId,proto3" json:"question_id,omitempty"`
+	SelectedOptionIds []string               `protobuf:"bytes,2,rep,name=selected_option_ids,json=selectedOptionIds,proto3" json:"selected_option_ids,omitempty"`
+	Text              *string                `protobuf:"bytes,3,opt,name=text,proto3,oneof" json:"text,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *EnrollmentQuizAnswer) Reset() {
+	*x = EnrollmentQuizAnswer{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EnrollmentQuizAnswer) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EnrollmentQuizAnswer) ProtoMessage() {}
+
+func (x *EnrollmentQuizAnswer) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EnrollmentQuizAnswer.ProtoReflect.Descriptor instead.
+func (*EnrollmentQuizAnswer) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *EnrollmentQuizAnswer) GetQuestionId() string {
+	if x != nil {
+		return x.QuestionId
+	}
+	return ""
+}
+
+func (x *EnrollmentQuizAnswer) GetSelectedOptionIds() []string {
+	if x != nil {
+		return x.SelectedOptionIds
+	}
+	return nil
+}
+
+func (x *EnrollmentQuizAnswer) GetText() string {
+	if x != nil && x.Text != nil {
+		return *x.Text
+	}
+	return ""
+}
+
+type EnrollmentQuizAttempt struct {
+	state         protoimpl.MessageState  `protogen:"open.v1"`
+	Id            string                  `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	EnrollmentId  string                  `protobuf:"bytes,2,opt,name=enrollment_id,json=enrollmentId,proto3" json:"enrollment_id,omitempty"`
+	QuizVersionId string                  `protobuf:"bytes,3,opt,name=quiz_version_id,json=quizVersionId,proto3" json:"quiz_version_id,omitempty"`
+	AttemptNumber uint32                  `protobuf:"varint,4,opt,name=attempt_number,json=attemptNumber,proto3" json:"attempt_number,omitempty"`
+	Answers       []*EnrollmentQuizAnswer `protobuf:"bytes,5,rep,name=answers,proto3" json:"answers,omitempty"`
+	Score         uint32                  `protobuf:"varint,6,opt,name=score,proto3" json:"score,omitempty"`
+	Passed        bool                    `protobuf:"varint,7,opt,name=passed,proto3" json:"passed,omitempty"`
+	PendingReview bool                    `protobuf:"varint,8,opt,name=pending_review,json=pendingReview,proto3" json:"pending_review,omitempty"`
+	ReviewedById  *string                 `protobuf:"bytes,9,opt,name=reviewed_by_id,json=reviewedById,proto3,oneof" json:"reviewed_by_id,omitempty"`
+	ReviewedAt    *timestamppb.Timestamp  `protobuf:"bytes,10,opt,name=reviewed_at,json=reviewedAt,proto3,oneof" json:"reviewed_at,omitempty"`
+	ReviewComment *string                 `protobuf:"bytes,11,opt,name=review_comment,json=reviewComment,proto3,oneof" json:"review_comment,omitempty"`
+	CreatedAt     *timestamppb.Timestamp  `protobuf:"bytes,12,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *EnrollmentQuizAttempt) Reset() {
+	*x = EnrollmentQuizAttempt{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EnrollmentQuizAttempt) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EnrollmentQuizAttempt) ProtoMessage() {}
+
+func (x *EnrollmentQuizAttempt) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EnrollmentQuizAttempt.ProtoReflect.Descriptor instead.
+func (*EnrollmentQuizAttempt) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *EnrollmentQuizAttempt) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *EnrollmentQuizAttempt) GetEnrollmentId() string {
+	if x != nil {
+		return x.EnrollmentId
+	}
+	return ""
+}
+
+func (x *EnrollmentQuizAttempt) GetQuizVersionId() string {
+	if x != nil {
+		return x.QuizVersionId
+	}
+	return ""
+}
+
+func (x *EnrollmentQuizAttempt) GetAttemptNumber() uint32 {
+	if x != nil {
+		return x.AttemptNumber
+	}
+	return 0
+}
+
+func (x *EnrollmentQuizAttempt) GetAnswers() []*EnrollmentQuizAnswer {
+	if x != nil {
+		return x.Answers
+	}
+	return nil
+}
+
+func (x *EnrollmentQuizAttempt) GetScore() uint32 {
+	if x != nil {
+		return x.Score
+	}
+	return 0
+}
+
+func (x *EnrollmentQuizAttempt) GetPassed() bool {
+	if x != nil {
+		return x.Passed
+	}
+	return false
+}
+
+func (x *EnrollmentQuizAttempt) GetPendingReview() bool {
+	if x != nil {
+		return x.PendingReview
+	}
+	return false
+}
+
+func (x *EnrollmentQuizAttempt) GetReviewedById() string {
+	if x != nil && x.ReviewedById != nil {
+		return *x.ReviewedById
+	}
+	return ""
+}
+
+func (x *EnrollmentQuizAttempt) GetReviewedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ReviewedAt
+	}
+	return nil
+}
+
+func (x *EnrollmentQuizAttempt) GetReviewComment() string {
+	if x != nil && x.ReviewComment != nil {
+		return *x.ReviewComment
+	}
+	return ""
+}
+
+func (x *EnrollmentQuizAttempt) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+type EnrollmentOutlineLesson struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	LessonVersionId  string                 `protobuf:"bytes,1,opt,name=lesson_version_id,json=lessonVersionId,proto3" json:"lesson_version_id,omitempty"`
+	SectionVersionId string                 `protobuf:"bytes,2,opt,name=section_version_id,json=sectionVersionId,proto3" json:"section_version_id,omitempty"`
+	Title            string                 `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
+	Order            uint32                 `protobuf:"varint,4,opt,name=order,proto3" json:"order,omitempty"`
+	// Absence means the lesson is still locked and no progress row exists.
+	Status           *EnrollmentLessonStatus `protobuf:"varint,5,opt,name=status,proto3,enum=teamos.academy.v1.EnrollmentLessonStatus,oneof" json:"status,omitempty"`
+	EstimatedMinutes *uint32                 `protobuf:"varint,6,opt,name=estimated_minutes,json=estimatedMinutes,proto3,oneof" json:"estimated_minutes,omitempty"`
+	HasQuiz          bool                    `protobuf:"varint,7,opt,name=has_quiz,json=hasQuiz,proto3" json:"has_quiz,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *EnrollmentOutlineLesson) Reset() {
+	*x = EnrollmentOutlineLesson{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EnrollmentOutlineLesson) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EnrollmentOutlineLesson) ProtoMessage() {}
+
+func (x *EnrollmentOutlineLesson) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EnrollmentOutlineLesson.ProtoReflect.Descriptor instead.
+func (*EnrollmentOutlineLesson) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *EnrollmentOutlineLesson) GetLessonVersionId() string {
+	if x != nil {
+		return x.LessonVersionId
+	}
+	return ""
+}
+
+func (x *EnrollmentOutlineLesson) GetSectionVersionId() string {
+	if x != nil {
+		return x.SectionVersionId
+	}
+	return ""
+}
+
+func (x *EnrollmentOutlineLesson) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *EnrollmentOutlineLesson) GetOrder() uint32 {
+	if x != nil {
+		return x.Order
+	}
+	return 0
+}
+
+func (x *EnrollmentOutlineLesson) GetStatus() EnrollmentLessonStatus {
+	if x != nil && x.Status != nil {
+		return *x.Status
+	}
+	return EnrollmentLessonStatus_ENROLLMENT_LESSON_STATUS_UNSPECIFIED
+}
+
+func (x *EnrollmentOutlineLesson) GetEstimatedMinutes() uint32 {
+	if x != nil && x.EstimatedMinutes != nil {
+		return *x.EstimatedMinutes
+	}
+	return 0
+}
+
+func (x *EnrollmentOutlineLesson) GetHasQuiz() bool {
+	if x != nil {
+		return x.HasQuiz
+	}
+	return false
+}
+
+type EnrollmentOutlineSection struct {
+	state            protoimpl.MessageState     `protogen:"open.v1"`
+	SectionVersionId string                     `protobuf:"bytes,1,opt,name=section_version_id,json=sectionVersionId,proto3" json:"section_version_id,omitempty"`
+	Title            string                     `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	Order            uint32                     `protobuf:"varint,3,opt,name=order,proto3" json:"order,omitempty"`
+	Lessons          []*EnrollmentOutlineLesson `protobuf:"bytes,4,rep,name=lessons,proto3" json:"lessons,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *EnrollmentOutlineSection) Reset() {
+	*x = EnrollmentOutlineSection{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EnrollmentOutlineSection) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EnrollmentOutlineSection) ProtoMessage() {}
+
+func (x *EnrollmentOutlineSection) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EnrollmentOutlineSection.ProtoReflect.Descriptor instead.
+func (*EnrollmentOutlineSection) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{24}
+}
+
+func (x *EnrollmentOutlineSection) GetSectionVersionId() string {
+	if x != nil {
+		return x.SectionVersionId
+	}
+	return ""
+}
+
+func (x *EnrollmentOutlineSection) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *EnrollmentOutlineSection) GetOrder() uint32 {
+	if x != nil {
+		return x.Order
+	}
+	return 0
+}
+
+func (x *EnrollmentOutlineSection) GetLessons() []*EnrollmentOutlineLesson {
+	if x != nil {
+		return x.Lessons
+	}
+	return nil
+}
+
+type EnrollmentOutline struct {
+	state         protoimpl.MessageState      `protogen:"open.v1"`
+	Enrollment    *CourseEnrollment           `protobuf:"bytes,1,opt,name=enrollment,proto3" json:"enrollment,omitempty"`
+	Sections      []*EnrollmentOutlineSection `protobuf:"bytes,2,rep,name=sections,proto3" json:"sections,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *EnrollmentOutline) Reset() {
+	*x = EnrollmentOutline{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EnrollmentOutline) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EnrollmentOutline) ProtoMessage() {}
+
+func (x *EnrollmentOutline) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EnrollmentOutline.ProtoReflect.Descriptor instead.
+func (*EnrollmentOutline) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{25}
+}
+
+func (x *EnrollmentOutline) GetEnrollment() *CourseEnrollment {
+	if x != nil {
+		return x.Enrollment
+	}
+	return nil
+}
+
+func (x *EnrollmentOutline) GetSections() []*EnrollmentOutlineSection {
+	if x != nil {
+		return x.Sections
+	}
+	return nil
+}
+
+type EnrollmentLesson struct {
+	state         protoimpl.MessageState      `protogen:"open.v1"`
+	Enrollment    *CourseEnrollment           `protobuf:"bytes,1,opt,name=enrollment,proto3" json:"enrollment,omitempty"`
+	Lesson        *LearnerCourseVersionLesson `protobuf:"bytes,2,opt,name=lesson,proto3" json:"lesson,omitempty"`
+	Progress      *EnrollmentLessonProgress   `protobuf:"bytes,3,opt,name=progress,proto3" json:"progress,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *EnrollmentLesson) Reset() {
+	*x = EnrollmentLesson{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[26]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EnrollmentLesson) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EnrollmentLesson) ProtoMessage() {}
+
+func (x *EnrollmentLesson) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[26]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EnrollmentLesson.ProtoReflect.Descriptor instead.
+func (*EnrollmentLesson) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{26}
+}
+
+func (x *EnrollmentLesson) GetEnrollment() *CourseEnrollment {
+	if x != nil {
+		return x.Enrollment
+	}
+	return nil
+}
+
+func (x *EnrollmentLesson) GetLesson() *LearnerCourseVersionLesson {
+	if x != nil {
+		return x.Lesson
+	}
+	return nil
+}
+
+func (x *EnrollmentLesson) GetProgress() *EnrollmentLessonProgress {
+	if x != nil {
+		return x.Progress
+	}
+	return nil
+}
+
+type EnrollmentProgressSnapshot struct {
+	state         protoimpl.MessageState      `protogen:"open.v1"`
+	Enrollment    *CourseEnrollment           `protobuf:"bytes,1,opt,name=enrollment,proto3" json:"enrollment,omitempty"`
+	Lessons       []*EnrollmentLessonProgress `protobuf:"bytes,2,rep,name=lessons,proto3" json:"lessons,omitempty"`
+	QuizAttempts  []*EnrollmentQuizAttempt    `protobuf:"bytes,3,rep,name=quiz_attempts,json=quizAttempts,proto3" json:"quiz_attempts,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *EnrollmentProgressSnapshot) Reset() {
+	*x = EnrollmentProgressSnapshot{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EnrollmentProgressSnapshot) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EnrollmentProgressSnapshot) ProtoMessage() {}
+
+func (x *EnrollmentProgressSnapshot) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EnrollmentProgressSnapshot.ProtoReflect.Descriptor instead.
+func (*EnrollmentProgressSnapshot) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{27}
+}
+
+func (x *EnrollmentProgressSnapshot) GetEnrollment() *CourseEnrollment {
+	if x != nil {
+		return x.Enrollment
+	}
+	return nil
+}
+
+func (x *EnrollmentProgressSnapshot) GetLessons() []*EnrollmentLessonProgress {
+	if x != nil {
+		return x.Lessons
+	}
+	return nil
+}
+
+func (x *EnrollmentProgressSnapshot) GetQuizAttempts() []*EnrollmentQuizAttempt {
+	if x != nil {
+		return x.QuizAttempts
+	}
+	return nil
+}
+
+type EnrollmentReport struct {
+	state         protoimpl.MessageState      `protogen:"open.v1"`
+	Enrollment    *CourseEnrollment           `protobuf:"bytes,1,opt,name=enrollment,proto3" json:"enrollment,omitempty"`
+	Version       *CourseVersion              `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"`
+	Lessons       []*EnrollmentLessonProgress `protobuf:"bytes,3,rep,name=lessons,proto3" json:"lessons,omitempty"`
+	QuizAttempts  []*EnrollmentQuizAttempt    `protobuf:"bytes,4,rep,name=quiz_attempts,json=quizAttempts,proto3" json:"quiz_attempts,omitempty"`
+	ActiveSeconds uint64                      `protobuf:"varint,5,opt,name=active_seconds,json=activeSeconds,proto3" json:"active_seconds,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *EnrollmentReport) Reset() {
+	*x = EnrollmentReport{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[28]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EnrollmentReport) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EnrollmentReport) ProtoMessage() {}
+
+func (x *EnrollmentReport) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[28]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EnrollmentReport.ProtoReflect.Descriptor instead.
+func (*EnrollmentReport) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{28}
+}
+
+func (x *EnrollmentReport) GetEnrollment() *CourseEnrollment {
+	if x != nil {
+		return x.Enrollment
+	}
+	return nil
+}
+
+func (x *EnrollmentReport) GetVersion() *CourseVersion {
+	if x != nil {
+		return x.Version
+	}
+	return nil
+}
+
+func (x *EnrollmentReport) GetLessons() []*EnrollmentLessonProgress {
+	if x != nil {
+		return x.Lessons
+	}
+	return nil
+}
+
+func (x *EnrollmentReport) GetQuizAttempts() []*EnrollmentQuizAttempt {
+	if x != nil {
+		return x.QuizAttempts
+	}
+	return nil
+}
+
+func (x *EnrollmentReport) GetActiveSeconds() uint64 {
+	if x != nil {
+		return x.ActiveSeconds
+	}
+	return 0
+}
+
+type CourseRestriction struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	Id               string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	CompanyId        string                 `protobuf:"bytes,2,opt,name=company_id,json=companyId,proto3" json:"company_id,omitempty"`
+	CourseId         string                 `protobuf:"bytes,3,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	Type             CourseRestrictionType  `protobuf:"varint,4,opt,name=type,proto3,enum=teamos.academy.v1.CourseRestrictionType" json:"type,omitempty"`
+	Reason           string                 `protobuf:"bytes,5,opt,name=reason,proto3" json:"reason,omitempty"`
+	CreatedById      string                 `protobuf:"bytes,6,opt,name=created_by_id,json=createdById,proto3" json:"created_by_id,omitempty"`
+	CreatedAt        *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	ResolvedById     *string                `protobuf:"bytes,8,opt,name=resolved_by_id,json=resolvedById,proto3,oneof" json:"resolved_by_id,omitempty"`
+	ResolvedAt       *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=resolved_at,json=resolvedAt,proto3,oneof" json:"resolved_at,omitempty"`
+	ResolutionReason *string                `protobuf:"bytes,10,opt,name=resolution_reason,json=resolutionReason,proto3,oneof" json:"resolution_reason,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *CourseRestriction) Reset() {
+	*x = CourseRestriction{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[29]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CourseRestriction) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CourseRestriction) ProtoMessage() {}
+
+func (x *CourseRestriction) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[29]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CourseRestriction.ProtoReflect.Descriptor instead.
+func (*CourseRestriction) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{29}
+}
+
+func (x *CourseRestriction) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *CourseRestriction) GetCompanyId() string {
+	if x != nil {
+		return x.CompanyId
+	}
+	return ""
+}
+
+func (x *CourseRestriction) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+func (x *CourseRestriction) GetType() CourseRestrictionType {
+	if x != nil {
+		return x.Type
+	}
+	return CourseRestrictionType_COURSE_RESTRICTION_TYPE_UNSPECIFIED
+}
+
+func (x *CourseRestriction) GetReason() string {
+	if x != nil {
+		return x.Reason
+	}
+	return ""
+}
+
+func (x *CourseRestriction) GetCreatedById() string {
+	if x != nil {
+		return x.CreatedById
+	}
+	return ""
+}
+
+func (x *CourseRestriction) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *CourseRestriction) GetResolvedById() string {
+	if x != nil && x.ResolvedById != nil {
+		return *x.ResolvedById
+	}
+	return ""
+}
+
+func (x *CourseRestriction) GetResolvedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ResolvedAt
+	}
+	return nil
+}
+
+func (x *CourseRestriction) GetResolutionReason() string {
+	if x != nil && x.ResolutionReason != nil {
+		return *x.ResolutionReason
+	}
+	return ""
+}
+
+type CourseOrigin struct {
+	state                   protoimpl.MessageState `protogen:"open.v1"`
+	Type                    CourseOriginType       `protobuf:"varint,1,opt,name=type,proto3,enum=teamos.academy.v1.CourseOriginType" json:"type,omitempty"`
+	SourceCourseId          *string                `protobuf:"bytes,2,opt,name=source_course_id,json=sourceCourseId,proto3,oneof" json:"source_course_id,omitempty"`
+	SourceCourseVersionId   *string                `protobuf:"bytes,3,opt,name=source_course_version_id,json=sourceCourseVersionId,proto3,oneof" json:"source_course_version_id,omitempty"`
+	SourcePartnerId         *string                `protobuf:"bytes,4,opt,name=source_partner_id,json=sourcePartnerId,proto3,oneof" json:"source_partner_id,omitempty"`
+	SourceTemplateId        *string                `protobuf:"bytes,5,opt,name=source_template_id,json=sourceTemplateId,proto3,oneof" json:"source_template_id,omitempty"`
+	SourceTemplateVersionId *string                `protobuf:"bytes,6,opt,name=source_template_version_id,json=sourceTemplateVersionId,proto3,oneof" json:"source_template_version_id,omitempty"`
+	InstantiatedById        string                 `protobuf:"bytes,7,opt,name=instantiated_by_id,json=instantiatedById,proto3" json:"instantiated_by_id,omitempty"`
+	InstantiatedAt          *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=instantiated_at,json=instantiatedAt,proto3" json:"instantiated_at,omitempty"`
+	AcquisitionType         string                 `protobuf:"bytes,9,opt,name=acquisition_type,json=acquisitionType,proto3" json:"acquisition_type,omitempty"`
+	EntitlementId           *string                `protobuf:"bytes,10,opt,name=entitlement_id,json=entitlementId,proto3,oneof" json:"entitlement_id,omitempty"`
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
+}
+
+func (x *CourseOrigin) Reset() {
+	*x = CourseOrigin{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[30]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CourseOrigin) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CourseOrigin) ProtoMessage() {}
+
+func (x *CourseOrigin) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[30]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CourseOrigin.ProtoReflect.Descriptor instead.
+func (*CourseOrigin) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{30}
+}
+
+func (x *CourseOrigin) GetType() CourseOriginType {
+	if x != nil {
+		return x.Type
+	}
+	return CourseOriginType_COURSE_ORIGIN_TYPE_UNSPECIFIED
+}
+
+func (x *CourseOrigin) GetSourceCourseId() string {
+	if x != nil && x.SourceCourseId != nil {
+		return *x.SourceCourseId
+	}
+	return ""
+}
+
+func (x *CourseOrigin) GetSourceCourseVersionId() string {
+	if x != nil && x.SourceCourseVersionId != nil {
+		return *x.SourceCourseVersionId
+	}
+	return ""
+}
+
+func (x *CourseOrigin) GetSourcePartnerId() string {
+	if x != nil && x.SourcePartnerId != nil {
+		return *x.SourcePartnerId
+	}
+	return ""
+}
+
+func (x *CourseOrigin) GetSourceTemplateId() string {
+	if x != nil && x.SourceTemplateId != nil {
+		return *x.SourceTemplateId
+	}
+	return ""
+}
+
+func (x *CourseOrigin) GetSourceTemplateVersionId() string {
+	if x != nil && x.SourceTemplateVersionId != nil {
+		return *x.SourceTemplateVersionId
+	}
+	return ""
+}
+
+func (x *CourseOrigin) GetInstantiatedById() string {
+	if x != nil {
+		return x.InstantiatedById
+	}
+	return ""
+}
+
+func (x *CourseOrigin) GetInstantiatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.InstantiatedAt
+	}
+	return nil
+}
+
+func (x *CourseOrigin) GetAcquisitionType() string {
+	if x != nil {
+		return x.AcquisitionType
+	}
+	return ""
+}
+
+func (x *CourseOrigin) GetEntitlementId() string {
+	if x != nil && x.EntitlementId != nil {
+		return *x.EntitlementId
+	}
+	return ""
+}
+
+type PartnerCourseCopyResult struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	Course        *Course                `protobuf:"bytes,1,opt,name=course,proto3" json:"course,omitempty"`
+	Draft         *CourseVersion         `protobuf:"bytes,2,opt,name=draft,proto3" json:"draft,omitempty"`
+	Origin        *CourseOrigin          `protobuf:"bytes,3,opt,name=origin,proto3" json:"origin,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PartnerCourseCopyResult) Reset() {
+	*x = PartnerCourseCopyResult{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[31]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PartnerCourseCopyResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PartnerCourseCopyResult) ProtoMessage() {}
+
+func (x *PartnerCourseCopyResult) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[31]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PartnerCourseCopyResult.ProtoReflect.Descriptor instead.
+func (*PartnerCourseCopyResult) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{31}
+}
+
+func (x *PartnerCourseCopyResult) GetCourse() *Course {
+	if x != nil {
+		return x.Course
+	}
+	return nil
+}
+
+func (x *PartnerCourseCopyResult) GetDraft() *CourseVersion {
+	if x != nil {
+		return x.Draft
+	}
+	return nil
+}
+
+func (x *PartnerCourseCopyResult) GetOrigin() *CourseOrigin {
+	if x != nil {
+		return x.Origin
+	}
+	return nil
+}
+
+// Academy deliberately returns partner IDs, not company-owned user profiles.
+// The gateway may hydrate display names via the company service.
+type PartnerCourseGroup struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	PartnerId     string                 `protobuf:"bytes,1,opt,name=partner_id,json=partnerId,proto3" json:"partner_id,omitempty"`
+	Courses       []*Course              `protobuf:"bytes,2,rep,name=courses,proto3" json:"courses,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PartnerCourseGroup) Reset() {
+	*x = PartnerCourseGroup{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[32]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PartnerCourseGroup) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PartnerCourseGroup) ProtoMessage() {}
+
+func (x *PartnerCourseGroup) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[32]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PartnerCourseGroup.ProtoReflect.Descriptor instead.
+func (*PartnerCourseGroup) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{32}
+}
+
+func (x *PartnerCourseGroup) GetPartnerId() string {
+	if x != nil {
+		return x.PartnerId
+	}
+	return ""
+}
+
+func (x *PartnerCourseGroup) GetCourses() []*Course {
+	if x != nil {
+		return x.Courses
+	}
+	return nil
+}
+
+type PartnerCourseReportSummary struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	TotalCourses    uint32                 `protobuf:"varint,1,opt,name=total_courses,json=totalCourses,proto3" json:"total_courses,omitempty"`
+	ActiveCourses   uint32                 `protobuf:"varint,2,opt,name=active_courses,json=activeCourses,proto3" json:"active_courses,omitempty"`
+	ArchivedCourses uint32                 `protobuf:"varint,3,opt,name=archived_courses,json=archivedCourses,proto3" json:"archived_courses,omitempty"`
+	DeletedCourses  uint32                 `protobuf:"varint,4,opt,name=deleted_courses,json=deletedCourses,proto3" json:"deleted_courses,omitempty"`
+	PausedCourses   uint32                 `protobuf:"varint,5,opt,name=paused_courses,json=pausedCourses,proto3" json:"paused_courses,omitempty"`
+	BlockedCourses  uint32                 `protobuf:"varint,6,opt,name=blocked_courses,json=blockedCourses,proto3" json:"blocked_courses,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *PartnerCourseReportSummary) Reset() {
+	*x = PartnerCourseReportSummary{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[33]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PartnerCourseReportSummary) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PartnerCourseReportSummary) ProtoMessage() {}
+
+func (x *PartnerCourseReportSummary) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[33]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PartnerCourseReportSummary.ProtoReflect.Descriptor instead.
+func (*PartnerCourseReportSummary) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{33}
+}
+
+func (x *PartnerCourseReportSummary) GetTotalCourses() uint32 {
+	if x != nil {
+		return x.TotalCourses
+	}
+	return 0
+}
+
+func (x *PartnerCourseReportSummary) GetActiveCourses() uint32 {
+	if x != nil {
+		return x.ActiveCourses
+	}
+	return 0
+}
+
+func (x *PartnerCourseReportSummary) GetArchivedCourses() uint32 {
+	if x != nil {
+		return x.ArchivedCourses
+	}
+	return 0
+}
+
+func (x *PartnerCourseReportSummary) GetDeletedCourses() uint32 {
+	if x != nil {
+		return x.DeletedCourses
+	}
+	return 0
+}
+
+func (x *PartnerCourseReportSummary) GetPausedCourses() uint32 {
+	if x != nil {
+		return x.PausedCourses
+	}
+	return 0
+}
+
+func (x *PartnerCourseReportSummary) GetBlockedCourses() uint32 {
+	if x != nil {
+		return x.BlockedCourses
+	}
+	return 0
+}
+
+type PartnerCourseOperationalReport struct {
+	state                    protoimpl.MessageState `protogen:"open.v1"`
+	Course                   *Course                `protobuf:"bytes,1,opt,name=course,proto3" json:"course,omitempty"`
+	VersionCount             uint32                 `protobuf:"varint,2,opt,name=version_count,json=versionCount,proto3" json:"version_count,omitempty"`
+	EnrollmentCount          uint32                 `protobuf:"varint,3,opt,name=enrollment_count,json=enrollmentCount,proto3" json:"enrollment_count,omitempty"`
+	ActiveEnrollmentCount    uint32                 `protobuf:"varint,4,opt,name=active_enrollment_count,json=activeEnrollmentCount,proto3" json:"active_enrollment_count,omitempty"`
+	CompletedEnrollmentCount uint32                 `protobuf:"varint,5,opt,name=completed_enrollment_count,json=completedEnrollmentCount,proto3" json:"completed_enrollment_count,omitempty"`
+	AverageProgressPercent   uint32                 `protobuf:"varint,6,opt,name=average_progress_percent,json=averageProgressPercent,proto3" json:"average_progress_percent,omitempty"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
+}
+
+func (x *PartnerCourseOperationalReport) Reset() {
+	*x = PartnerCourseOperationalReport{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[34]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PartnerCourseOperationalReport) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PartnerCourseOperationalReport) ProtoMessage() {}
+
+func (x *PartnerCourseOperationalReport) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[34]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PartnerCourseOperationalReport.ProtoReflect.Descriptor instead.
+func (*PartnerCourseOperationalReport) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{34}
+}
+
+func (x *PartnerCourseOperationalReport) GetCourse() *Course {
+	if x != nil {
+		return x.Course
+	}
+	return nil
+}
+
+func (x *PartnerCourseOperationalReport) GetVersionCount() uint32 {
+	if x != nil {
+		return x.VersionCount
+	}
+	return 0
+}
+
+func (x *PartnerCourseOperationalReport) GetEnrollmentCount() uint32 {
+	if x != nil {
+		return x.EnrollmentCount
+	}
+	return 0
+}
+
+func (x *PartnerCourseOperationalReport) GetActiveEnrollmentCount() uint32 {
+	if x != nil {
+		return x.ActiveEnrollmentCount
+	}
+	return 0
+}
+
+func (x *PartnerCourseOperationalReport) GetCompletedEnrollmentCount() uint32 {
+	if x != nil {
+		return x.CompletedEnrollmentCount
+	}
+	return 0
+}
+
+func (x *PartnerCourseOperationalReport) GetAverageProgressPercent() uint32 {
+	if x != nil {
+		return x.AverageProgressPercent
+	}
+	return 0
+}
+
+type PartnerCoursesReport struct {
+	state              protoimpl.MessageState            `protogen:"open.v1"`
+	PartnerId          string                            `protobuf:"bytes,1,opt,name=partner_id,json=partnerId,proto3" json:"partner_id,omitempty"`
+	Summary            *PartnerCourseReportSummary       `protobuf:"bytes,2,opt,name=summary,proto3" json:"summary,omitempty"`
+	OperationalCourses []*PartnerCourseOperationalReport `protobuf:"bytes,3,rep,name=operational_courses,json=operationalCourses,proto3" json:"operational_courses,omitempty"`
+	Courses            []*CourseExternalReport           `protobuf:"bytes,4,rep,name=courses,proto3" json:"courses,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *PartnerCoursesReport) Reset() {
+	*x = PartnerCoursesReport{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[35]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PartnerCoursesReport) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PartnerCoursesReport) ProtoMessage() {}
+
+func (x *PartnerCoursesReport) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[35]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PartnerCoursesReport.ProtoReflect.Descriptor instead.
+func (*PartnerCoursesReport) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{35}
+}
+
+func (x *PartnerCoursesReport) GetPartnerId() string {
+	if x != nil {
+		return x.PartnerId
+	}
+	return ""
+}
+
+func (x *PartnerCoursesReport) GetSummary() *PartnerCourseReportSummary {
+	if x != nil {
+		return x.Summary
+	}
+	return nil
+}
+
+func (x *PartnerCoursesReport) GetOperationalCourses() []*PartnerCourseOperationalReport {
+	if x != nil {
+		return x.OperationalCourses
+	}
+	return nil
+}
+
+func (x *PartnerCoursesReport) GetCourses() []*CourseExternalReport {
+	if x != nil {
+		return x.Courses
+	}
+	return nil
+}
+
+// Preview content uses learner-safe quiz DTOs and is never associated with an
+// enrollment. Calling preview or submitting a preview attempt cannot create or
+// mutate learner progress.
+type CourseVersionPreview struct {
+	state            protoimpl.MessageState         `protogen:"open.v1"`
+	Course           *Course                        `protobuf:"bytes,1,opt,name=course,proto3" json:"course,omitempty"`
+	Version          *LearnerPublishedCourseVersion `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"`
+	PersistsProgress bool                           `protobuf:"varint,3,opt,name=persists_progress,json=persistsProgress,proto3" json:"persists_progress,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *CourseVersionPreview) Reset() {
+	*x = CourseVersionPreview{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[36]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CourseVersionPreview) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CourseVersionPreview) ProtoMessage() {}
+
+func (x *CourseVersionPreview) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[36]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CourseVersionPreview.ProtoReflect.Descriptor instead.
+func (*CourseVersionPreview) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{36}
+}
+
+func (x *CourseVersionPreview) GetCourse() *Course {
+	if x != nil {
+		return x.Course
+	}
+	return nil
+}
+
+func (x *CourseVersionPreview) GetVersion() *LearnerPublishedCourseVersion {
+	if x != nil {
+		return x.Version
+	}
+	return nil
+}
+
+func (x *CourseVersionPreview) GetPersistsProgress() bool {
+	if x != nil {
+		return x.PersistsProgress
+	}
+	return false
+}
+
+type CoursePreviewQuizAttemptResult struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	QuizVersionId string                 `protobuf:"bytes,1,opt,name=quiz_version_id,json=quizVersionId,proto3" json:"quiz_version_id,omitempty"`
+	Score         uint32                 `protobuf:"varint,2,opt,name=score,proto3" json:"score,omitempty"`
+	Passed        bool                   `protobuf:"varint,3,opt,name=passed,proto3" json:"passed,omitempty"`
+	PendingReview bool                   `protobuf:"varint,4,opt,name=pending_review,json=pendingReview,proto3" json:"pending_review,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CoursePreviewQuizAttemptResult) Reset() {
+	*x = CoursePreviewQuizAttemptResult{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[37]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CoursePreviewQuizAttemptResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CoursePreviewQuizAttemptResult) ProtoMessage() {}
+
+func (x *CoursePreviewQuizAttemptResult) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[37]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CoursePreviewQuizAttemptResult.ProtoReflect.Descriptor instead.
+func (*CoursePreviewQuizAttemptResult) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{37}
+}
+
+func (x *CoursePreviewQuizAttemptResult) GetQuizVersionId() string {
+	if x != nil {
+		return x.QuizVersionId
+	}
+	return ""
+}
+
+func (x *CoursePreviewQuizAttemptResult) GetScore() uint32 {
+	if x != nil {
+		return x.Score
+	}
+	return 0
+}
+
+func (x *CoursePreviewQuizAttemptResult) GetPassed() bool {
+	if x != nil {
+		return x.Passed
+	}
+	return false
+}
+
+func (x *CoursePreviewQuizAttemptResult) GetPendingReview() bool {
+	if x != nil {
+		return x.PendingReview
+	}
+	return false
+}
+
+type CourseTemplate struct {
+	state                    protoimpl.MessageState        `protogen:"open.v1"`
+	Id                       string                        `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	CompanyId                string                        `protobuf:"bytes,2,opt,name=company_id,json=companyId,proto3" json:"company_id,omitempty"`
+	Type                     CourseTemplateType            `protobuf:"varint,3,opt,name=type,proto3,enum=teamos.academy.v1.CourseTemplateType" json:"type,omitempty"`
+	SystemTemplateKey        *string                       `protobuf:"bytes,4,opt,name=system_template_key,json=systemTemplateKey,proto3,oneof" json:"system_template_key,omitempty"`
+	LifecycleStatus          CourseTemplateLifecycleStatus `protobuf:"varint,5,opt,name=lifecycle_status,json=lifecycleStatus,proto3,enum=teamos.academy.v1.CourseTemplateLifecycleStatus" json:"lifecycle_status,omitempty"`
+	CurrentDraftVersionId    *string                       `protobuf:"bytes,6,opt,name=current_draft_version_id,json=currentDraftVersionId,proto3,oneof" json:"current_draft_version_id,omitempty"`
+	LatestPublishedVersionId *string                       `protobuf:"bytes,7,opt,name=latest_published_version_id,json=latestPublishedVersionId,proto3,oneof" json:"latest_published_version_id,omitempty"`
+	CreatedById              string                        `protobuf:"bytes,8,opt,name=created_by_id,json=createdById,proto3" json:"created_by_id,omitempty"`
+	CreatedAt                *timestamppb.Timestamp        `protobuf:"bytes,9,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt                *timestamppb.Timestamp        `protobuf:"bytes,10,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
+}
+
+func (x *CourseTemplate) Reset() {
+	*x = CourseTemplate{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[38]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CourseTemplate) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CourseTemplate) ProtoMessage() {}
+
+func (x *CourseTemplate) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[38]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CourseTemplate.ProtoReflect.Descriptor instead.
+func (*CourseTemplate) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{38}
+}
+
+func (x *CourseTemplate) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *CourseTemplate) GetCompanyId() string {
+	if x != nil {
+		return x.CompanyId
+	}
+	return ""
+}
+
+func (x *CourseTemplate) GetType() CourseTemplateType {
+	if x != nil {
+		return x.Type
+	}
+	return CourseTemplateType_COURSE_TEMPLATE_TYPE_UNSPECIFIED
+}
+
+func (x *CourseTemplate) GetSystemTemplateKey() string {
+	if x != nil && x.SystemTemplateKey != nil {
+		return *x.SystemTemplateKey
+	}
+	return ""
+}
+
+func (x *CourseTemplate) GetLifecycleStatus() CourseTemplateLifecycleStatus {
+	if x != nil {
+		return x.LifecycleStatus
+	}
+	return CourseTemplateLifecycleStatus_COURSE_TEMPLATE_LIFECYCLE_STATUS_UNSPECIFIED
+}
+
+func (x *CourseTemplate) GetCurrentDraftVersionId() string {
+	if x != nil && x.CurrentDraftVersionId != nil {
+		return *x.CurrentDraftVersionId
+	}
+	return ""
+}
+
+func (x *CourseTemplate) GetLatestPublishedVersionId() string {
+	if x != nil && x.LatestPublishedVersionId != nil {
+		return *x.LatestPublishedVersionId
+	}
+	return ""
+}
+
+func (x *CourseTemplate) GetCreatedById() string {
+	if x != nil {
+		return x.CreatedById
+	}
+	return ""
+}
+
+func (x *CourseTemplate) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *CourseTemplate) GetUpdatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return nil
+}
+
+type CourseTemplateVersion struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	TemplateId    string                 `protobuf:"bytes,2,opt,name=template_id,json=templateId,proto3" json:"template_id,omitempty"`
+	Number        uint32                 `protobuf:"varint,3,opt,name=number,proto3" json:"number,omitempty"`
+	Status        CourseVersionStatus    `protobuf:"varint,4,opt,name=status,proto3,enum=teamos.academy.v1.CourseVersionStatus" json:"status,omitempty"`
+	Title         string                 `protobuf:"bytes,5,opt,name=title,proto3" json:"title,omitempty"`
+	Description   *string                `protobuf:"bytes,6,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	CoverFileId   *string                `protobuf:"bytes,7,opt,name=cover_file_id,json=coverFileId,proto3,oneof" json:"cover_file_id,omitempty"`
+	Sequential    bool                   `protobuf:"varint,8,opt,name=sequential,proto3" json:"sequential,omitempty"`
+	CreatedById   string                 `protobuf:"bytes,9,opt,name=created_by_id,json=createdById,proto3" json:"created_by_id,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	PublishedById *string                `protobuf:"bytes,11,opt,name=published_by_id,json=publishedById,proto3,oneof" json:"published_by_id,omitempty"`
+	PublishedAt   *timestamppb.Timestamp `protobuf:"bytes,12,opt,name=published_at,json=publishedAt,proto3,oneof" json:"published_at,omitempty"`
+	ContentHash   *string                `protobuf:"bytes,13,opt,name=content_hash,json=contentHash,proto3,oneof" json:"content_hash,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CourseTemplateVersion) Reset() {
+	*x = CourseTemplateVersion{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[39]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CourseTemplateVersion) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CourseTemplateVersion) ProtoMessage() {}
+
+func (x *CourseTemplateVersion) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[39]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CourseTemplateVersion.ProtoReflect.Descriptor instead.
+func (*CourseTemplateVersion) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{39}
+}
+
+func (x *CourseTemplateVersion) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *CourseTemplateVersion) GetTemplateId() string {
+	if x != nil {
+		return x.TemplateId
+	}
+	return ""
+}
+
+func (x *CourseTemplateVersion) GetNumber() uint32 {
+	if x != nil {
+		return x.Number
+	}
+	return 0
+}
+
+func (x *CourseTemplateVersion) GetStatus() CourseVersionStatus {
+	if x != nil {
+		return x.Status
+	}
+	return CourseVersionStatus_COURSE_VERSION_STATUS_UNSPECIFIED
+}
+
+func (x *CourseTemplateVersion) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *CourseTemplateVersion) GetDescription() string {
+	if x != nil && x.Description != nil {
+		return *x.Description
+	}
+	return ""
+}
+
+func (x *CourseTemplateVersion) GetCoverFileId() string {
+	if x != nil && x.CoverFileId != nil {
+		return *x.CoverFileId
+	}
+	return ""
+}
+
+func (x *CourseTemplateVersion) GetSequential() bool {
+	if x != nil {
+		return x.Sequential
+	}
+	return false
+}
+
+func (x *CourseTemplateVersion) GetCreatedById() string {
+	if x != nil {
+		return x.CreatedById
+	}
+	return ""
+}
+
+func (x *CourseTemplateVersion) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *CourseTemplateVersion) GetPublishedById() string {
+	if x != nil && x.PublishedById != nil {
+		return *x.PublishedById
+	}
+	return ""
+}
+
+func (x *CourseTemplateVersion) GetPublishedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.PublishedAt
+	}
+	return nil
+}
+
+func (x *CourseTemplateVersion) GetContentHash() string {
+	if x != nil && x.ContentHash != nil {
+		return *x.ContentHash
+	}
+	return ""
+}
+
+type CourseTemplateVersionSection struct {
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	Id                string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	TemplateVersionId string                 `protobuf:"bytes,2,opt,name=template_version_id,json=templateVersionId,proto3" json:"template_version_id,omitempty"`
+	StableKey         string                 `protobuf:"bytes,3,opt,name=stable_key,json=stableKey,proto3" json:"stable_key,omitempty"`
+	Title             string                 `protobuf:"bytes,4,opt,name=title,proto3" json:"title,omitempty"`
+	Order             uint32                 `protobuf:"varint,5,opt,name=order,proto3" json:"order,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *CourseTemplateVersionSection) Reset() {
+	*x = CourseTemplateVersionSection{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[40]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CourseTemplateVersionSection) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CourseTemplateVersionSection) ProtoMessage() {}
+
+func (x *CourseTemplateVersionSection) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[40]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CourseTemplateVersionSection.ProtoReflect.Descriptor instead.
+func (*CourseTemplateVersionSection) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{40}
+}
+
+func (x *CourseTemplateVersionSection) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *CourseTemplateVersionSection) GetTemplateVersionId() string {
+	if x != nil {
+		return x.TemplateVersionId
+	}
+	return ""
+}
+
+func (x *CourseTemplateVersionSection) GetStableKey() string {
+	if x != nil {
+		return x.StableKey
+	}
+	return ""
+}
+
+func (x *CourseTemplateVersionSection) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *CourseTemplateVersionSection) GetOrder() uint32 {
+	if x != nil {
+		return x.Order
+	}
+	return 0
+}
+
+type CourseTemplateVersionLesson struct {
+	state                protoimpl.MessageState `protogen:"open.v1"`
+	Id                   string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	TemplateVersionId    string                 `protobuf:"bytes,2,opt,name=template_version_id,json=templateVersionId,proto3" json:"template_version_id,omitempty"`
+	SectionVersionId     string                 `protobuf:"bytes,3,opt,name=section_version_id,json=sectionVersionId,proto3" json:"section_version_id,omitempty"`
+	StableKey            string                 `protobuf:"bytes,4,opt,name=stable_key,json=stableKey,proto3" json:"stable_key,omitempty"`
+	Title                string                 `protobuf:"bytes,5,opt,name=title,proto3" json:"title,omitempty"`
+	Order                uint32                 `protobuf:"varint,6,opt,name=order,proto3" json:"order,omitempty"`
+	Content              *structpb.Struct       `protobuf:"bytes,7,opt,name=content,proto3" json:"content,omitempty"`
+	SourceType           CourseLessonSourceType `protobuf:"varint,8,opt,name=source_type,json=sourceType,proto3,enum=teamos.academy.v1.CourseLessonSourceType" json:"source_type,omitempty"`
+	SourceArticleId      *string                `protobuf:"bytes,9,opt,name=source_article_id,json=sourceArticleId,proto3,oneof" json:"source_article_id,omitempty"`
+	SourceArticleVersion *uint32                `protobuf:"varint,10,opt,name=source_article_version,json=sourceArticleVersion,proto3,oneof" json:"source_article_version,omitempty"`
+	EstimatedMinutes     *uint32                `protobuf:"varint,11,opt,name=estimated_minutes,json=estimatedMinutes,proto3,oneof" json:"estimated_minutes,omitempty"`
+	QuizVersionId        *string                `protobuf:"bytes,12,opt,name=quiz_version_id,json=quizVersionId,proto3,oneof" json:"quiz_version_id,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
+}
+
+func (x *CourseTemplateVersionLesson) Reset() {
+	*x = CourseTemplateVersionLesson{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[41]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CourseTemplateVersionLesson) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CourseTemplateVersionLesson) ProtoMessage() {}
+
+func (x *CourseTemplateVersionLesson) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[41]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CourseTemplateVersionLesson.ProtoReflect.Descriptor instead.
+func (*CourseTemplateVersionLesson) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{41}
+}
+
+func (x *CourseTemplateVersionLesson) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *CourseTemplateVersionLesson) GetTemplateVersionId() string {
+	if x != nil {
+		return x.TemplateVersionId
+	}
+	return ""
+}
+
+func (x *CourseTemplateVersionLesson) GetSectionVersionId() string {
+	if x != nil {
+		return x.SectionVersionId
+	}
+	return ""
+}
+
+func (x *CourseTemplateVersionLesson) GetStableKey() string {
+	if x != nil {
+		return x.StableKey
+	}
+	return ""
+}
+
+func (x *CourseTemplateVersionLesson) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *CourseTemplateVersionLesson) GetOrder() uint32 {
+	if x != nil {
+		return x.Order
+	}
+	return 0
+}
+
+func (x *CourseTemplateVersionLesson) GetContent() *structpb.Struct {
+	if x != nil {
+		return x.Content
+	}
+	return nil
+}
+
+func (x *CourseTemplateVersionLesson) GetSourceType() CourseLessonSourceType {
+	if x != nil {
+		return x.SourceType
+	}
+	return CourseLessonSourceType_COURSE_LESSON_SOURCE_TYPE_UNSPECIFIED
+}
+
+func (x *CourseTemplateVersionLesson) GetSourceArticleId() string {
+	if x != nil && x.SourceArticleId != nil {
+		return *x.SourceArticleId
+	}
+	return ""
+}
+
+func (x *CourseTemplateVersionLesson) GetSourceArticleVersion() uint32 {
+	if x != nil && x.SourceArticleVersion != nil {
+		return *x.SourceArticleVersion
+	}
+	return 0
+}
+
+func (x *CourseTemplateVersionLesson) GetEstimatedMinutes() uint32 {
+	if x != nil && x.EstimatedMinutes != nil {
+		return *x.EstimatedMinutes
+	}
+	return 0
+}
+
+func (x *CourseTemplateVersionLesson) GetQuizVersionId() string {
+	if x != nil && x.QuizVersionId != nil {
+		return *x.QuizVersionId
+	}
+	return ""
+}
+
+type CourseTemplateVersionQuiz struct {
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	Id                string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	TemplateVersionId string                 `protobuf:"bytes,2,opt,name=template_version_id,json=templateVersionId,proto3" json:"template_version_id,omitempty"`
+	LessonVersionId   string                 `protobuf:"bytes,3,opt,name=lesson_version_id,json=lessonVersionId,proto3" json:"lesson_version_id,omitempty"`
+	Questions         []*QuizQuestion        `protobuf:"bytes,4,rep,name=questions,proto3" json:"questions,omitempty"`
+	PassingScore      uint32                 `protobuf:"varint,5,opt,name=passing_score,json=passingScore,proto3" json:"passing_score,omitempty"`
+	MaxAttempts       *uint32                `protobuf:"varint,6,opt,name=max_attempts,json=maxAttempts,proto3,oneof" json:"max_attempts,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *CourseTemplateVersionQuiz) Reset() {
+	*x = CourseTemplateVersionQuiz{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[42]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CourseTemplateVersionQuiz) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CourseTemplateVersionQuiz) ProtoMessage() {}
+
+func (x *CourseTemplateVersionQuiz) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[42]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CourseTemplateVersionQuiz.ProtoReflect.Descriptor instead.
+func (*CourseTemplateVersionQuiz) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{42}
+}
+
+func (x *CourseTemplateVersionQuiz) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *CourseTemplateVersionQuiz) GetTemplateVersionId() string {
+	if x != nil {
+		return x.TemplateVersionId
+	}
+	return ""
+}
+
+func (x *CourseTemplateVersionQuiz) GetLessonVersionId() string {
+	if x != nil {
+		return x.LessonVersionId
+	}
+	return ""
+}
+
+func (x *CourseTemplateVersionQuiz) GetQuestions() []*QuizQuestion {
+	if x != nil {
+		return x.Questions
+	}
+	return nil
+}
+
+func (x *CourseTemplateVersionQuiz) GetPassingScore() uint32 {
+	if x != nil {
+		return x.PassingScore
+	}
+	return 0
+}
+
+func (x *CourseTemplateVersionQuiz) GetMaxAttempts() uint32 {
+	if x != nil && x.MaxAttempts != nil {
+		return *x.MaxAttempts
+	}
+	return 0
+}
+
+type CourseTemplateVersionContent struct {
+	state         protoimpl.MessageState          `protogen:"open.v1"`
+	Sections      []*CourseTemplateVersionSection `protobuf:"bytes,1,rep,name=sections,proto3" json:"sections,omitempty"`
+	Lessons       []*CourseTemplateVersionLesson  `protobuf:"bytes,2,rep,name=lessons,proto3" json:"lessons,omitempty"`
+	Quizzes       []*CourseTemplateVersionQuiz    `protobuf:"bytes,3,rep,name=quizzes,proto3" json:"quizzes,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CourseTemplateVersionContent) Reset() {
+	*x = CourseTemplateVersionContent{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[43]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CourseTemplateVersionContent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CourseTemplateVersionContent) ProtoMessage() {}
+
+func (x *CourseTemplateVersionContent) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[43]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CourseTemplateVersionContent.ProtoReflect.Descriptor instead.
+func (*CourseTemplateVersionContent) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{43}
+}
+
+func (x *CourseTemplateVersionContent) GetSections() []*CourseTemplateVersionSection {
+	if x != nil {
+		return x.Sections
+	}
+	return nil
+}
+
+func (x *CourseTemplateVersionContent) GetLessons() []*CourseTemplateVersionLesson {
+	if x != nil {
+		return x.Lessons
+	}
+	return nil
+}
+
+func (x *CourseTemplateVersionContent) GetQuizzes() []*CourseTemplateVersionQuiz {
+	if x != nil {
+		return x.Quizzes
+	}
+	return nil
+}
+
+type CourseTemplateVersionDetails struct {
+	state         protoimpl.MessageState        `protogen:"open.v1"`
+	Version       *CourseTemplateVersion        `protobuf:"bytes,1,opt,name=version,proto3" json:"version,omitempty"`
+	Content       *CourseTemplateVersionContent `protobuf:"bytes,2,opt,name=content,proto3" json:"content,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CourseTemplateVersionDetails) Reset() {
+	*x = CourseTemplateVersionDetails{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[44]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CourseTemplateVersionDetails) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CourseTemplateVersionDetails) ProtoMessage() {}
+
+func (x *CourseTemplateVersionDetails) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[44]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CourseTemplateVersionDetails.ProtoReflect.Descriptor instead.
+func (*CourseTemplateVersionDetails) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{44}
+}
+
+func (x *CourseTemplateVersionDetails) GetVersion() *CourseTemplateVersion {
+	if x != nil {
+		return x.Version
+	}
+	return nil
+}
+
+func (x *CourseTemplateVersionDetails) GetContent() *CourseTemplateVersionContent {
+	if x != nil {
+		return x.Content
+	}
+	return nil
+}
+
+type CourseTemplateDraftQuizInput struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Questions     []*QuizQuestion        `protobuf:"bytes,1,rep,name=questions,proto3" json:"questions,omitempty"`
+	PassingScore  uint32                 `protobuf:"varint,2,opt,name=passing_score,json=passingScore,proto3" json:"passing_score,omitempty"`
+	MaxAttempts   *uint32                `protobuf:"varint,3,opt,name=max_attempts,json=maxAttempts,proto3,oneof" json:"max_attempts,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CourseTemplateDraftQuizInput) Reset() {
+	*x = CourseTemplateDraftQuizInput{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[45]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CourseTemplateDraftQuizInput) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CourseTemplateDraftQuizInput) ProtoMessage() {}
+
+func (x *CourseTemplateDraftQuizInput) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[45]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CourseTemplateDraftQuizInput.ProtoReflect.Descriptor instead.
+func (*CourseTemplateDraftQuizInput) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{45}
+}
+
+func (x *CourseTemplateDraftQuizInput) GetQuestions() []*QuizQuestion {
+	if x != nil {
+		return x.Questions
+	}
+	return nil
+}
+
+func (x *CourseTemplateDraftQuizInput) GetPassingScore() uint32 {
+	if x != nil {
+		return x.PassingScore
+	}
+	return 0
+}
+
+func (x *CourseTemplateDraftQuizInput) GetMaxAttempts() uint32 {
+	if x != nil && x.MaxAttempts != nil {
+		return *x.MaxAttempts
+	}
+	return 0
+}
+
+type CourseTemplateDraftLessonInput struct {
+	state                protoimpl.MessageState        `protogen:"open.v1"`
+	StableKey            string                        `protobuf:"bytes,1,opt,name=stable_key,json=stableKey,proto3" json:"stable_key,omitempty"`
+	Title                string                        `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	Order                uint32                        `protobuf:"varint,3,opt,name=order,proto3" json:"order,omitempty"`
+	Content              *structpb.Struct              `protobuf:"bytes,4,opt,name=content,proto3" json:"content,omitempty"`
+	SourceType           *CourseLessonSourceType       `protobuf:"varint,5,opt,name=source_type,json=sourceType,proto3,enum=teamos.academy.v1.CourseLessonSourceType,oneof" json:"source_type,omitempty"`
+	SourceArticleId      *string                       `protobuf:"bytes,6,opt,name=source_article_id,json=sourceArticleId,proto3,oneof" json:"source_article_id,omitempty"`
+	SourceArticleVersion *uint32                       `protobuf:"varint,7,opt,name=source_article_version,json=sourceArticleVersion,proto3,oneof" json:"source_article_version,omitempty"`
+	EstimatedMinutes     *uint32                       `protobuf:"varint,8,opt,name=estimated_minutes,json=estimatedMinutes,proto3,oneof" json:"estimated_minutes,omitempty"`
+	Quiz                 *CourseTemplateDraftQuizInput `protobuf:"bytes,9,opt,name=quiz,proto3,oneof" json:"quiz,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
+}
+
+func (x *CourseTemplateDraftLessonInput) Reset() {
+	*x = CourseTemplateDraftLessonInput{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[46]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CourseTemplateDraftLessonInput) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CourseTemplateDraftLessonInput) ProtoMessage() {}
+
+func (x *CourseTemplateDraftLessonInput) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[46]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CourseTemplateDraftLessonInput.ProtoReflect.Descriptor instead.
+func (*CourseTemplateDraftLessonInput) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{46}
+}
+
+func (x *CourseTemplateDraftLessonInput) GetStableKey() string {
+	if x != nil {
+		return x.StableKey
+	}
+	return ""
+}
+
+func (x *CourseTemplateDraftLessonInput) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *CourseTemplateDraftLessonInput) GetOrder() uint32 {
+	if x != nil {
+		return x.Order
+	}
+	return 0
+}
+
+func (x *CourseTemplateDraftLessonInput) GetContent() *structpb.Struct {
+	if x != nil {
+		return x.Content
+	}
+	return nil
+}
+
+func (x *CourseTemplateDraftLessonInput) GetSourceType() CourseLessonSourceType {
+	if x != nil && x.SourceType != nil {
+		return *x.SourceType
+	}
+	return CourseLessonSourceType_COURSE_LESSON_SOURCE_TYPE_UNSPECIFIED
+}
+
+func (x *CourseTemplateDraftLessonInput) GetSourceArticleId() string {
+	if x != nil && x.SourceArticleId != nil {
+		return *x.SourceArticleId
+	}
+	return ""
+}
+
+func (x *CourseTemplateDraftLessonInput) GetSourceArticleVersion() uint32 {
+	if x != nil && x.SourceArticleVersion != nil {
+		return *x.SourceArticleVersion
+	}
+	return 0
+}
+
+func (x *CourseTemplateDraftLessonInput) GetEstimatedMinutes() uint32 {
+	if x != nil && x.EstimatedMinutes != nil {
+		return *x.EstimatedMinutes
+	}
+	return 0
+}
+
+func (x *CourseTemplateDraftLessonInput) GetQuiz() *CourseTemplateDraftQuizInput {
+	if x != nil {
+		return x.Quiz
+	}
+	return nil
+}
+
+type CourseTemplateDraftSectionInput struct {
+	state         protoimpl.MessageState            `protogen:"open.v1"`
+	StableKey     string                            `protobuf:"bytes,1,opt,name=stable_key,json=stableKey,proto3" json:"stable_key,omitempty"`
+	Title         string                            `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	Order         uint32                            `protobuf:"varint,3,opt,name=order,proto3" json:"order,omitempty"`
+	Lessons       []*CourseTemplateDraftLessonInput `protobuf:"bytes,4,rep,name=lessons,proto3" json:"lessons,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CourseTemplateDraftSectionInput) Reset() {
+	*x = CourseTemplateDraftSectionInput{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[47]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CourseTemplateDraftSectionInput) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CourseTemplateDraftSectionInput) ProtoMessage() {}
+
+func (x *CourseTemplateDraftSectionInput) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[47]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CourseTemplateDraftSectionInput.ProtoReflect.Descriptor instead.
+func (*CourseTemplateDraftSectionInput) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{47}
+}
+
+func (x *CourseTemplateDraftSectionInput) GetStableKey() string {
+	if x != nil {
+		return x.StableKey
+	}
+	return ""
+}
+
+func (x *CourseTemplateDraftSectionInput) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *CourseTemplateDraftSectionInput) GetOrder() uint32 {
+	if x != nil {
+		return x.Order
+	}
+	return 0
+}
+
+func (x *CourseTemplateDraftSectionInput) GetLessons() []*CourseTemplateDraftLessonInput {
+	if x != nil {
+		return x.Lessons
+	}
+	return nil
+}
+
+type CourseTemplateDraftContentInput struct {
+	state         protoimpl.MessageState             `protogen:"open.v1"`
+	Sections      []*CourseTemplateDraftSectionInput `protobuf:"bytes,1,rep,name=sections,proto3" json:"sections,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CourseTemplateDraftContentInput) Reset() {
+	*x = CourseTemplateDraftContentInput{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[48]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CourseTemplateDraftContentInput) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CourseTemplateDraftContentInput) ProtoMessage() {}
+
+func (x *CourseTemplateDraftContentInput) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[48]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CourseTemplateDraftContentInput.ProtoReflect.Descriptor instead.
+func (*CourseTemplateDraftContentInput) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{48}
+}
+
+func (x *CourseTemplateDraftContentInput) GetSections() []*CourseTemplateDraftSectionInput {
+	if x != nil {
+		return x.Sections
+	}
+	return nil
+}
+
+type CourseTemplateInstantiationResult struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Course        *Course                `protobuf:"bytes,1,opt,name=course,proto3" json:"course,omitempty"`
+	Draft         *CourseVersion         `protobuf:"bytes,2,opt,name=draft,proto3" json:"draft,omitempty"`
+	Origin        *CourseOrigin          `protobuf:"bytes,3,opt,name=origin,proto3" json:"origin,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CourseTemplateInstantiationResult) Reset() {
+	*x = CourseTemplateInstantiationResult{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[49]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CourseTemplateInstantiationResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CourseTemplateInstantiationResult) ProtoMessage() {}
+
+func (x *CourseTemplateInstantiationResult) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[49]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CourseTemplateInstantiationResult.ProtoReflect.Descriptor instead.
+func (*CourseTemplateInstantiationResult) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{49}
+}
+
+func (x *CourseTemplateInstantiationResult) GetCourse() *Course {
+	if x != nil {
+		return x.Course
+	}
+	return nil
+}
+
+func (x *CourseTemplateInstantiationResult) GetDraft() *CourseVersion {
+	if x != nil {
+		return x.Draft
+	}
+	return nil
+}
+
+func (x *CourseTemplateInstantiationResult) GetOrigin() *CourseOrigin {
+	if x != nil {
+		return x.Origin
+	}
+	return nil
+}
+
+type GetCoursesRequest struct {
+	state         protoimpl.MessageState    `protogen:"open.v1"`
+	OwnerType     *CourseOwnerType          `protobuf:"varint,1,opt,name=owner_type,json=ownerType,proto3,enum=teamos.academy.v1.CourseOwnerType,oneof" json:"owner_type,omitempty"`
+	PartnerId     *string                   `protobuf:"bytes,2,opt,name=partner_id,json=partnerId,proto3,oneof" json:"partner_id,omitempty"`
+	Lifecycle     *CourseLifecycleStatus    `protobuf:"varint,3,opt,name=lifecycle,proto3,enum=teamos.academy.v1.CourseLifecycleStatus,oneof" json:"lifecycle,omitempty"`
+	Distribution  *CourseDistributionStatus `protobuf:"varint,4,opt,name=distribution,proto3,enum=teamos.academy.v1.CourseDistributionStatus,oneof" json:"distribution,omitempty"`
+	HasDraft      *bool                     `protobuf:"varint,5,opt,name=has_draft,json=hasDraft,proto3,oneof" json:"has_draft,omitempty"`
+	LatestVersion *uint32                   `protobuf:"varint,6,opt,name=latest_version,json=latestVersion,proto3,oneof" json:"latest_version,omitempty"`
+	OriginType    *CourseOriginType         `protobuf:"varint,7,opt,name=origin_type,json=originType,proto3,enum=teamos.academy.v1.CourseOriginType,oneof" json:"origin_type,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetCoursesRequest) Reset() {
 	*x = GetCoursesRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[9]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1143,7 +5937,7 @@ func (x *GetCoursesRequest) String() string {
 func (*GetCoursesRequest) ProtoMessage() {}
 
 func (x *GetCoursesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[9]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1156,7 +5950,56 @@ func (x *GetCoursesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCoursesRequest.ProtoReflect.Descriptor instead.
 func (*GetCoursesRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{9}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{50}
+}
+
+func (x *GetCoursesRequest) GetOwnerType() CourseOwnerType {
+	if x != nil && x.OwnerType != nil {
+		return *x.OwnerType
+	}
+	return CourseOwnerType_COURSE_OWNER_TYPE_UNSPECIFIED
+}
+
+func (x *GetCoursesRequest) GetPartnerId() string {
+	if x != nil && x.PartnerId != nil {
+		return *x.PartnerId
+	}
+	return ""
+}
+
+func (x *GetCoursesRequest) GetLifecycle() CourseLifecycleStatus {
+	if x != nil && x.Lifecycle != nil {
+		return *x.Lifecycle
+	}
+	return CourseLifecycleStatus_COURSE_LIFECYCLE_STATUS_UNSPECIFIED
+}
+
+func (x *GetCoursesRequest) GetDistribution() CourseDistributionStatus {
+	if x != nil && x.Distribution != nil {
+		return *x.Distribution
+	}
+	return CourseDistributionStatus_COURSE_DISTRIBUTION_STATUS_UNSPECIFIED
+}
+
+func (x *GetCoursesRequest) GetHasDraft() bool {
+	if x != nil && x.HasDraft != nil {
+		return *x.HasDraft
+	}
+	return false
+}
+
+func (x *GetCoursesRequest) GetLatestVersion() uint32 {
+	if x != nil && x.LatestVersion != nil {
+		return *x.LatestVersion
+	}
+	return 0
+}
+
+func (x *GetCoursesRequest) GetOriginType() CourseOriginType {
+	if x != nil && x.OriginType != nil {
+		return *x.OriginType
+	}
+	return CourseOriginType_COURSE_ORIGIN_TYPE_UNSPECIFIED
 }
 
 type GetCoursesResponse struct {
@@ -1168,7 +6011,7 @@ type GetCoursesResponse struct {
 
 func (x *GetCoursesResponse) Reset() {
 	*x = GetCoursesResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[10]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1180,7 +6023,7 @@ func (x *GetCoursesResponse) String() string {
 func (*GetCoursesResponse) ProtoMessage() {}
 
 func (x *GetCoursesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[10]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1193,7 +6036,7 @@ func (x *GetCoursesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCoursesResponse.ProtoReflect.Descriptor instead.
 func (*GetCoursesResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{10}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{51}
 }
 
 func (x *GetCoursesResponse) GetCourses() []*Course {
@@ -1212,7 +6055,7 @@ type GetCourseRequest struct {
 
 func (x *GetCourseRequest) Reset() {
 	*x = GetCourseRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[11]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1224,7 +6067,7 @@ func (x *GetCourseRequest) String() string {
 func (*GetCourseRequest) ProtoMessage() {}
 
 func (x *GetCourseRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[11]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1237,7 +6080,7 @@ func (x *GetCourseRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCourseRequest.ProtoReflect.Descriptor instead.
 func (*GetCourseRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{11}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{52}
 }
 
 func (x *GetCourseRequest) GetId() string {
@@ -1256,7 +6099,7 @@ type GetCourseResponse struct {
 
 func (x *GetCourseResponse) Reset() {
 	*x = GetCourseResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[12]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1268,7 +6111,7 @@ func (x *GetCourseResponse) String() string {
 func (*GetCourseResponse) ProtoMessage() {}
 
 func (x *GetCourseResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[12]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1281,7 +6124,7 @@ func (x *GetCourseResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCourseResponse.ProtoReflect.Descriptor instead.
 func (*GetCourseResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{12}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{53}
 }
 
 func (x *GetCourseResponse) GetCourse() *Course {
@@ -1300,7 +6143,7 @@ type GetPublicCourseRequest struct {
 
 func (x *GetPublicCourseRequest) Reset() {
 	*x = GetPublicCourseRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[13]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1312,7 +6155,7 @@ func (x *GetPublicCourseRequest) String() string {
 func (*GetPublicCourseRequest) ProtoMessage() {}
 
 func (x *GetPublicCourseRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[13]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1325,7 +6168,7 @@ func (x *GetPublicCourseRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPublicCourseRequest.ProtoReflect.Descriptor instead.
 func (*GetPublicCourseRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{13}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{54}
 }
 
 func (x *GetPublicCourseRequest) GetId() string {
@@ -1346,7 +6189,7 @@ type GetPublicCourseResponse struct {
 
 func (x *GetPublicCourseResponse) Reset() {
 	*x = GetPublicCourseResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[14]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1358,7 +6201,7 @@ func (x *GetPublicCourseResponse) String() string {
 func (*GetPublicCourseResponse) ProtoMessage() {}
 
 func (x *GetPublicCourseResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[14]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1371,7 +6214,7 @@ func (x *GetPublicCourseResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPublicCourseResponse.ProtoReflect.Descriptor instead.
 func (*GetPublicCourseResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{14}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{55}
 }
 
 func (x *GetPublicCourseResponse) GetCourse() *Course {
@@ -1409,7 +6252,7 @@ type CreateCourseRequest struct {
 
 func (x *CreateCourseRequest) Reset() {
 	*x = CreateCourseRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[15]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1421,7 +6264,7 @@ func (x *CreateCourseRequest) String() string {
 func (*CreateCourseRequest) ProtoMessage() {}
 
 func (x *CreateCourseRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[15]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1434,7 +6277,7 @@ func (x *CreateCourseRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateCourseRequest.ProtoReflect.Descriptor instead.
 func (*CreateCourseRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{15}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{56}
 }
 
 func (x *CreateCourseRequest) GetTitle() string {
@@ -1488,7 +6331,7 @@ type CreateCourseResponse struct {
 
 func (x *CreateCourseResponse) Reset() {
 	*x = CreateCourseResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[16]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[57]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1500,7 +6343,7 @@ func (x *CreateCourseResponse) String() string {
 func (*CreateCourseResponse) ProtoMessage() {}
 
 func (x *CreateCourseResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[16]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[57]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1513,7 +6356,7 @@ func (x *CreateCourseResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateCourseResponse.ProtoReflect.Descriptor instead.
 func (*CreateCourseResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{16}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{57}
 }
 
 func (x *CreateCourseResponse) GetCourse() *Course {
@@ -1539,7 +6382,7 @@ type CreateCourseFromKbRequest struct {
 
 func (x *CreateCourseFromKbRequest) Reset() {
 	*x = CreateCourseFromKbRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[17]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[58]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1551,7 +6394,7 @@ func (x *CreateCourseFromKbRequest) String() string {
 func (*CreateCourseFromKbRequest) ProtoMessage() {}
 
 func (x *CreateCourseFromKbRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[17]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[58]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1564,7 +6407,7 @@ func (x *CreateCourseFromKbRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateCourseFromKbRequest.ProtoReflect.Descriptor instead.
 func (*CreateCourseFromKbRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{17}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{58}
 }
 
 func (x *CreateCourseFromKbRequest) GetTitle() string {
@@ -1632,7 +6475,7 @@ type CreateCourseFromKbResponse struct {
 
 func (x *CreateCourseFromKbResponse) Reset() {
 	*x = CreateCourseFromKbResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[18]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[59]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1644,7 +6487,7 @@ func (x *CreateCourseFromKbResponse) String() string {
 func (*CreateCourseFromKbResponse) ProtoMessage() {}
 
 func (x *CreateCourseFromKbResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[18]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[59]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1657,7 +6500,7 @@ func (x *CreateCourseFromKbResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateCourseFromKbResponse.ProtoReflect.Descriptor instead.
 func (*CreateCourseFromKbResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{18}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{59}
 }
 
 func (x *CreateCourseFromKbResponse) GetCourse() *Course {
@@ -1683,7 +6526,7 @@ type UpdateCourseRequest struct {
 
 func (x *UpdateCourseRequest) Reset() {
 	*x = UpdateCourseRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[19]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[60]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1695,7 +6538,7 @@ func (x *UpdateCourseRequest) String() string {
 func (*UpdateCourseRequest) ProtoMessage() {}
 
 func (x *UpdateCourseRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[19]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[60]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1708,7 +6551,7 @@ func (x *UpdateCourseRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateCourseRequest.ProtoReflect.Descriptor instead.
 func (*UpdateCourseRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{19}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{60}
 }
 
 func (x *UpdateCourseRequest) GetId() string {
@@ -1769,7 +6612,7 @@ type UpdateCourseResponse struct {
 
 func (x *UpdateCourseResponse) Reset() {
 	*x = UpdateCourseResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[20]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[61]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1781,7 +6624,7 @@ func (x *UpdateCourseResponse) String() string {
 func (*UpdateCourseResponse) ProtoMessage() {}
 
 func (x *UpdateCourseResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[20]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[61]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1794,10 +6637,186 @@ func (x *UpdateCourseResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateCourseResponse.ProtoReflect.Descriptor instead.
 func (*UpdateCourseResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{20}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{61}
 }
 
 func (x *UpdateCourseResponse) GetCourse() *Course {
+	if x != nil {
+		return x.Course
+	}
+	return nil
+}
+
+type ArchiveCourseRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ArchiveCourseRequest) Reset() {
+	*x = ArchiveCourseRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[62]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ArchiveCourseRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ArchiveCourseRequest) ProtoMessage() {}
+
+func (x *ArchiveCourseRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[62]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ArchiveCourseRequest.ProtoReflect.Descriptor instead.
+func (*ArchiveCourseRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{62}
+}
+
+func (x *ArchiveCourseRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+type ArchiveCourseResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Course        *Course                `protobuf:"bytes,1,opt,name=course,proto3" json:"course,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ArchiveCourseResponse) Reset() {
+	*x = ArchiveCourseResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[63]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ArchiveCourseResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ArchiveCourseResponse) ProtoMessage() {}
+
+func (x *ArchiveCourseResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[63]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ArchiveCourseResponse.ProtoReflect.Descriptor instead.
+func (*ArchiveCourseResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{63}
+}
+
+func (x *ArchiveCourseResponse) GetCourse() *Course {
+	if x != nil {
+		return x.Course
+	}
+	return nil
+}
+
+type RestoreCourseRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RestoreCourseRequest) Reset() {
+	*x = RestoreCourseRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[64]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RestoreCourseRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RestoreCourseRequest) ProtoMessage() {}
+
+func (x *RestoreCourseRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[64]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RestoreCourseRequest.ProtoReflect.Descriptor instead.
+func (*RestoreCourseRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{64}
+}
+
+func (x *RestoreCourseRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+type RestoreCourseResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Course        *Course                `protobuf:"bytes,1,opt,name=course,proto3" json:"course,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RestoreCourseResponse) Reset() {
+	*x = RestoreCourseResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[65]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RestoreCourseResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RestoreCourseResponse) ProtoMessage() {}
+
+func (x *RestoreCourseResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[65]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RestoreCourseResponse.ProtoReflect.Descriptor instead.
+func (*RestoreCourseResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{65}
+}
+
+func (x *RestoreCourseResponse) GetCourse() *Course {
 	if x != nil {
 		return x.Course
 	}
@@ -1813,7 +6832,7 @@ type DeleteCourseRequest struct {
 
 func (x *DeleteCourseRequest) Reset() {
 	*x = DeleteCourseRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[21]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[66]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1825,7 +6844,7 @@ func (x *DeleteCourseRequest) String() string {
 func (*DeleteCourseRequest) ProtoMessage() {}
 
 func (x *DeleteCourseRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[21]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[66]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1838,7 +6857,7 @@ func (x *DeleteCourseRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteCourseRequest.ProtoReflect.Descriptor instead.
 func (*DeleteCourseRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{21}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{66}
 }
 
 func (x *DeleteCourseRequest) GetId() string {
@@ -1856,7 +6875,7 @@ type DeleteCourseResponse struct {
 
 func (x *DeleteCourseResponse) Reset() {
 	*x = DeleteCourseResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[22]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[67]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1868,7 +6887,7 @@ func (x *DeleteCourseResponse) String() string {
 func (*DeleteCourseResponse) ProtoMessage() {}
 
 func (x *DeleteCourseResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[22]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[67]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1881,7 +6900,1561 @@ func (x *DeleteCourseResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteCourseResponse.ProtoReflect.Descriptor instead.
 func (*DeleteCourseResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{22}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{67}
+}
+
+type GetCourseVersionsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CourseId      string                 `protobuf:"bytes,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetCourseVersionsRequest) Reset() {
+	*x = GetCourseVersionsRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[68]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCourseVersionsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCourseVersionsRequest) ProtoMessage() {}
+
+func (x *GetCourseVersionsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[68]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCourseVersionsRequest.ProtoReflect.Descriptor instead.
+func (*GetCourseVersionsRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{68}
+}
+
+func (x *GetCourseVersionsRequest) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+type GetCourseVersionsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Versions      []*CourseVersion       `protobuf:"bytes,1,rep,name=versions,proto3" json:"versions,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetCourseVersionsResponse) Reset() {
+	*x = GetCourseVersionsResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[69]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCourseVersionsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCourseVersionsResponse) ProtoMessage() {}
+
+func (x *GetCourseVersionsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[69]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCourseVersionsResponse.ProtoReflect.Descriptor instead.
+func (*GetCourseVersionsResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{69}
+}
+
+func (x *GetCourseVersionsResponse) GetVersions() []*CourseVersion {
+	if x != nil {
+		return x.Versions
+	}
+	return nil
+}
+
+type GetCourseVersionRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CourseId      string                 `protobuf:"bytes,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	VersionId     string                 `protobuf:"bytes,2,opt,name=version_id,json=versionId,proto3" json:"version_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetCourseVersionRequest) Reset() {
+	*x = GetCourseVersionRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[70]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCourseVersionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCourseVersionRequest) ProtoMessage() {}
+
+func (x *GetCourseVersionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[70]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCourseVersionRequest.ProtoReflect.Descriptor instead.
+func (*GetCourseVersionRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{70}
+}
+
+func (x *GetCourseVersionRequest) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+func (x *GetCourseVersionRequest) GetVersionId() string {
+	if x != nil {
+		return x.VersionId
+	}
+	return ""
+}
+
+type GetCourseVersionResponse struct {
+	state         protoimpl.MessageState  `protogen:"open.v1"`
+	Version       *CourseVersion          `protobuf:"bytes,1,opt,name=version,proto3" json:"version,omitempty"`
+	Sections      []*CourseVersionSection `protobuf:"bytes,2,rep,name=sections,proto3" json:"sections,omitempty"`
+	Lessons       []*CourseVersionLesson  `protobuf:"bytes,3,rep,name=lessons,proto3" json:"lessons,omitempty"`
+	Quizzes       []*CourseVersionQuiz    `protobuf:"bytes,4,rep,name=quizzes,proto3" json:"quizzes,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetCourseVersionResponse) Reset() {
+	*x = GetCourseVersionResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[71]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCourseVersionResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCourseVersionResponse) ProtoMessage() {}
+
+func (x *GetCourseVersionResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[71]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCourseVersionResponse.ProtoReflect.Descriptor instead.
+func (*GetCourseVersionResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{71}
+}
+
+func (x *GetCourseVersionResponse) GetVersion() *CourseVersion {
+	if x != nil {
+		return x.Version
+	}
+	return nil
+}
+
+func (x *GetCourseVersionResponse) GetSections() []*CourseVersionSection {
+	if x != nil {
+		return x.Sections
+	}
+	return nil
+}
+
+func (x *GetCourseVersionResponse) GetLessons() []*CourseVersionLesson {
+	if x != nil {
+		return x.Lessons
+	}
+	return nil
+}
+
+func (x *GetCourseVersionResponse) GetQuizzes() []*CourseVersionQuiz {
+	if x != nil {
+		return x.Quizzes
+	}
+	return nil
+}
+
+type CreateCourseDraftRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CourseId      string                 `protobuf:"bytes,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateCourseDraftRequest) Reset() {
+	*x = CreateCourseDraftRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[72]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateCourseDraftRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateCourseDraftRequest) ProtoMessage() {}
+
+func (x *CreateCourseDraftRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[72]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateCourseDraftRequest.ProtoReflect.Descriptor instead.
+func (*CreateCourseDraftRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{72}
+}
+
+func (x *CreateCourseDraftRequest) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+type CreateCourseDraftResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Version       *CourseVersion         `protobuf:"bytes,1,opt,name=version,proto3" json:"version,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateCourseDraftResponse) Reset() {
+	*x = CreateCourseDraftResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[73]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateCourseDraftResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateCourseDraftResponse) ProtoMessage() {}
+
+func (x *CreateCourseDraftResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[73]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateCourseDraftResponse.ProtoReflect.Descriptor instead.
+func (*CreateCourseDraftResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{73}
+}
+
+func (x *CreateCourseDraftResponse) GetVersion() *CourseVersion {
+	if x != nil {
+		return x.Version
+	}
+	return nil
+}
+
+type UpdateCourseDraftRequest struct {
+	state       protoimpl.MessageState `protogen:"open.v1"`
+	CourseId    string                 `protobuf:"bytes,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	Title       *string                `protobuf:"bytes,2,opt,name=title,proto3,oneof" json:"title,omitempty"`
+	Description *string                `protobuf:"bytes,3,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	CoverFileId *string                `protobuf:"bytes,4,opt,name=cover_file_id,json=coverFileId,proto3,oneof" json:"cover_file_id,omitempty"`
+	Sequential  *bool                  `protobuf:"varint,5,opt,name=sequential,proto3,oneof" json:"sequential,omitempty"`
+	// Zero clears the default deadline.
+	DefaultInternalDeadlineDays *uint32 `protobuf:"varint,6,opt,name=default_internal_deadline_days,json=defaultInternalDeadlineDays,proto3,oneof" json:"default_internal_deadline_days,omitempty"`
+	unknownFields               protoimpl.UnknownFields
+	sizeCache                   protoimpl.SizeCache
+}
+
+func (x *UpdateCourseDraftRequest) Reset() {
+	*x = UpdateCourseDraftRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[74]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateCourseDraftRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateCourseDraftRequest) ProtoMessage() {}
+
+func (x *UpdateCourseDraftRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[74]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateCourseDraftRequest.ProtoReflect.Descriptor instead.
+func (*UpdateCourseDraftRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{74}
+}
+
+func (x *UpdateCourseDraftRequest) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+func (x *UpdateCourseDraftRequest) GetTitle() string {
+	if x != nil && x.Title != nil {
+		return *x.Title
+	}
+	return ""
+}
+
+func (x *UpdateCourseDraftRequest) GetDescription() string {
+	if x != nil && x.Description != nil {
+		return *x.Description
+	}
+	return ""
+}
+
+func (x *UpdateCourseDraftRequest) GetCoverFileId() string {
+	if x != nil && x.CoverFileId != nil {
+		return *x.CoverFileId
+	}
+	return ""
+}
+
+func (x *UpdateCourseDraftRequest) GetSequential() bool {
+	if x != nil && x.Sequential != nil {
+		return *x.Sequential
+	}
+	return false
+}
+
+func (x *UpdateCourseDraftRequest) GetDefaultInternalDeadlineDays() uint32 {
+	if x != nil && x.DefaultInternalDeadlineDays != nil {
+		return *x.DefaultInternalDeadlineDays
+	}
+	return 0
+}
+
+type UpdateCourseDraftResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Version       *CourseVersion         `protobuf:"bytes,1,opt,name=version,proto3" json:"version,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateCourseDraftResponse) Reset() {
+	*x = UpdateCourseDraftResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[75]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateCourseDraftResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateCourseDraftResponse) ProtoMessage() {}
+
+func (x *UpdateCourseDraftResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[75]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateCourseDraftResponse.ProtoReflect.Descriptor instead.
+func (*UpdateCourseDraftResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{75}
+}
+
+func (x *UpdateCourseDraftResponse) GetVersion() *CourseVersion {
+	if x != nil {
+		return x.Version
+	}
+	return nil
+}
+
+type PublishCourseVersionRequest struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	CourseId       string                 `protobuf:"bytes,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	IdempotencyKey string                 `protobuf:"bytes,2,opt,name=idempotency_key,json=idempotencyKey,proto3" json:"idempotency_key,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *PublishCourseVersionRequest) Reset() {
+	*x = PublishCourseVersionRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[76]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PublishCourseVersionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PublishCourseVersionRequest) ProtoMessage() {}
+
+func (x *PublishCourseVersionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[76]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PublishCourseVersionRequest.ProtoReflect.Descriptor instead.
+func (*PublishCourseVersionRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{76}
+}
+
+func (x *PublishCourseVersionRequest) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+func (x *PublishCourseVersionRequest) GetIdempotencyKey() string {
+	if x != nil {
+		return x.IdempotencyKey
+	}
+	return ""
+}
+
+type PublishCourseVersionResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Version       *CourseVersion         `protobuf:"bytes,1,opt,name=version,proto3" json:"version,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PublishCourseVersionResponse) Reset() {
+	*x = PublishCourseVersionResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[77]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PublishCourseVersionResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PublishCourseVersionResponse) ProtoMessage() {}
+
+func (x *PublishCourseVersionResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[77]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PublishCourseVersionResponse.ProtoReflect.Descriptor instead.
+func (*PublishCourseVersionResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{77}
+}
+
+func (x *PublishCourseVersionResponse) GetVersion() *CourseVersion {
+	if x != nil {
+		return x.Version
+	}
+	return nil
+}
+
+type GetPublishedCourseVersionRequest struct {
+	state    protoimpl.MessageState `protogen:"open.v1"`
+	CourseId string                 `protobuf:"bytes,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	// When omitted, the latest published version is returned.
+	VersionId     *string `protobuf:"bytes,2,opt,name=version_id,json=versionId,proto3,oneof" json:"version_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetPublishedCourseVersionRequest) Reset() {
+	*x = GetPublishedCourseVersionRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[78]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPublishedCourseVersionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPublishedCourseVersionRequest) ProtoMessage() {}
+
+func (x *GetPublishedCourseVersionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[78]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPublishedCourseVersionRequest.ProtoReflect.Descriptor instead.
+func (*GetPublishedCourseVersionRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{78}
+}
+
+func (x *GetPublishedCourseVersionRequest) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+func (x *GetPublishedCourseVersionRequest) GetVersionId() string {
+	if x != nil && x.VersionId != nil {
+		return *x.VersionId
+	}
+	return ""
+}
+
+type GetPublishedCourseVersionResponse struct {
+	state         protoimpl.MessageState         `protogen:"open.v1"`
+	Version       *LearnerPublishedCourseVersion `protobuf:"bytes,1,opt,name=version,proto3" json:"version,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetPublishedCourseVersionResponse) Reset() {
+	*x = GetPublishedCourseVersionResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[79]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPublishedCourseVersionResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPublishedCourseVersionResponse) ProtoMessage() {}
+
+func (x *GetPublishedCourseVersionResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[79]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPublishedCourseVersionResponse.ProtoReflect.Descriptor instead.
+func (*GetPublishedCourseVersionResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{79}
+}
+
+func (x *GetPublishedCourseVersionResponse) GetVersion() *LearnerPublishedCourseVersion {
+	if x != nil {
+		return x.Version
+	}
+	return nil
+}
+
+type CreateCourseVersionSectionRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	VersionId     string                 `protobuf:"bytes,1,opt,name=version_id,json=versionId,proto3" json:"version_id,omitempty"`
+	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateCourseVersionSectionRequest) Reset() {
+	*x = CreateCourseVersionSectionRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[80]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateCourseVersionSectionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateCourseVersionSectionRequest) ProtoMessage() {}
+
+func (x *CreateCourseVersionSectionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[80]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateCourseVersionSectionRequest.ProtoReflect.Descriptor instead.
+func (*CreateCourseVersionSectionRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{80}
+}
+
+func (x *CreateCourseVersionSectionRequest) GetVersionId() string {
+	if x != nil {
+		return x.VersionId
+	}
+	return ""
+}
+
+func (x *CreateCourseVersionSectionRequest) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+type CreateCourseVersionSectionResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Section       *CourseVersionSection  `protobuf:"bytes,1,opt,name=section,proto3" json:"section,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateCourseVersionSectionResponse) Reset() {
+	*x = CreateCourseVersionSectionResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[81]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateCourseVersionSectionResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateCourseVersionSectionResponse) ProtoMessage() {}
+
+func (x *CreateCourseVersionSectionResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[81]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateCourseVersionSectionResponse.ProtoReflect.Descriptor instead.
+func (*CreateCourseVersionSectionResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{81}
+}
+
+func (x *CreateCourseVersionSectionResponse) GetSection() *CourseVersionSection {
+	if x != nil {
+		return x.Section
+	}
+	return nil
+}
+
+type UpdateCourseVersionSectionRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Title         *string                `protobuf:"bytes,2,opt,name=title,proto3,oneof" json:"title,omitempty"`
+	Order         *uint32                `protobuf:"varint,3,opt,name=order,proto3,oneof" json:"order,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateCourseVersionSectionRequest) Reset() {
+	*x = UpdateCourseVersionSectionRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[82]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateCourseVersionSectionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateCourseVersionSectionRequest) ProtoMessage() {}
+
+func (x *UpdateCourseVersionSectionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[82]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateCourseVersionSectionRequest.ProtoReflect.Descriptor instead.
+func (*UpdateCourseVersionSectionRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{82}
+}
+
+func (x *UpdateCourseVersionSectionRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *UpdateCourseVersionSectionRequest) GetTitle() string {
+	if x != nil && x.Title != nil {
+		return *x.Title
+	}
+	return ""
+}
+
+func (x *UpdateCourseVersionSectionRequest) GetOrder() uint32 {
+	if x != nil && x.Order != nil {
+		return *x.Order
+	}
+	return 0
+}
+
+type UpdateCourseVersionSectionResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Section       *CourseVersionSection  `protobuf:"bytes,1,opt,name=section,proto3" json:"section,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateCourseVersionSectionResponse) Reset() {
+	*x = UpdateCourseVersionSectionResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[83]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateCourseVersionSectionResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateCourseVersionSectionResponse) ProtoMessage() {}
+
+func (x *UpdateCourseVersionSectionResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[83]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateCourseVersionSectionResponse.ProtoReflect.Descriptor instead.
+func (*UpdateCourseVersionSectionResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{83}
+}
+
+func (x *UpdateCourseVersionSectionResponse) GetSection() *CourseVersionSection {
+	if x != nil {
+		return x.Section
+	}
+	return nil
+}
+
+type DeleteCourseVersionSectionRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteCourseVersionSectionRequest) Reset() {
+	*x = DeleteCourseVersionSectionRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[84]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteCourseVersionSectionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteCourseVersionSectionRequest) ProtoMessage() {}
+
+func (x *DeleteCourseVersionSectionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[84]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteCourseVersionSectionRequest.ProtoReflect.Descriptor instead.
+func (*DeleteCourseVersionSectionRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{84}
+}
+
+func (x *DeleteCourseVersionSectionRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+type DeleteCourseVersionSectionResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteCourseVersionSectionResponse) Reset() {
+	*x = DeleteCourseVersionSectionResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[85]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteCourseVersionSectionResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteCourseVersionSectionResponse) ProtoMessage() {}
+
+func (x *DeleteCourseVersionSectionResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[85]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteCourseVersionSectionResponse.ProtoReflect.Descriptor instead.
+func (*DeleteCourseVersionSectionResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{85}
+}
+
+type CreateCourseVersionLessonRequest struct {
+	state                protoimpl.MessageState  `protogen:"open.v1"`
+	VersionId            string                  `protobuf:"bytes,1,opt,name=version_id,json=versionId,proto3" json:"version_id,omitempty"`
+	SectionVersionId     string                  `protobuf:"bytes,2,opt,name=section_version_id,json=sectionVersionId,proto3" json:"section_version_id,omitempty"`
+	Title                string                  `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
+	Content              *structpb.Struct        `protobuf:"bytes,4,opt,name=content,proto3,oneof" json:"content,omitempty"`
+	SourceType           *CourseLessonSourceType `protobuf:"varint,5,opt,name=source_type,json=sourceType,proto3,enum=teamos.academy.v1.CourseLessonSourceType,oneof" json:"source_type,omitempty"`
+	SourceArticleId      *string                 `protobuf:"bytes,6,opt,name=source_article_id,json=sourceArticleId,proto3,oneof" json:"source_article_id,omitempty"`
+	SourceArticleVersion *uint32                 `protobuf:"varint,7,opt,name=source_article_version,json=sourceArticleVersion,proto3,oneof" json:"source_article_version,omitempty"`
+	EstimatedMinutes     *uint32                 `protobuf:"varint,8,opt,name=estimated_minutes,json=estimatedMinutes,proto3,oneof" json:"estimated_minutes,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
+}
+
+func (x *CreateCourseVersionLessonRequest) Reset() {
+	*x = CreateCourseVersionLessonRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[86]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateCourseVersionLessonRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateCourseVersionLessonRequest) ProtoMessage() {}
+
+func (x *CreateCourseVersionLessonRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[86]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateCourseVersionLessonRequest.ProtoReflect.Descriptor instead.
+func (*CreateCourseVersionLessonRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{86}
+}
+
+func (x *CreateCourseVersionLessonRequest) GetVersionId() string {
+	if x != nil {
+		return x.VersionId
+	}
+	return ""
+}
+
+func (x *CreateCourseVersionLessonRequest) GetSectionVersionId() string {
+	if x != nil {
+		return x.SectionVersionId
+	}
+	return ""
+}
+
+func (x *CreateCourseVersionLessonRequest) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *CreateCourseVersionLessonRequest) GetContent() *structpb.Struct {
+	if x != nil {
+		return x.Content
+	}
+	return nil
+}
+
+func (x *CreateCourseVersionLessonRequest) GetSourceType() CourseLessonSourceType {
+	if x != nil && x.SourceType != nil {
+		return *x.SourceType
+	}
+	return CourseLessonSourceType_COURSE_LESSON_SOURCE_TYPE_UNSPECIFIED
+}
+
+func (x *CreateCourseVersionLessonRequest) GetSourceArticleId() string {
+	if x != nil && x.SourceArticleId != nil {
+		return *x.SourceArticleId
+	}
+	return ""
+}
+
+func (x *CreateCourseVersionLessonRequest) GetSourceArticleVersion() uint32 {
+	if x != nil && x.SourceArticleVersion != nil {
+		return *x.SourceArticleVersion
+	}
+	return 0
+}
+
+func (x *CreateCourseVersionLessonRequest) GetEstimatedMinutes() uint32 {
+	if x != nil && x.EstimatedMinutes != nil {
+		return *x.EstimatedMinutes
+	}
+	return 0
+}
+
+type CreateCourseVersionLessonResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Lesson        *CourseVersionLesson   `protobuf:"bytes,1,opt,name=lesson,proto3" json:"lesson,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateCourseVersionLessonResponse) Reset() {
+	*x = CreateCourseVersionLessonResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[87]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateCourseVersionLessonResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateCourseVersionLessonResponse) ProtoMessage() {}
+
+func (x *CreateCourseVersionLessonResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[87]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateCourseVersionLessonResponse.ProtoReflect.Descriptor instead.
+func (*CreateCourseVersionLessonResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{87}
+}
+
+func (x *CreateCourseVersionLessonResponse) GetLesson() *CourseVersionLesson {
+	if x != nil {
+		return x.Lesson
+	}
+	return nil
+}
+
+type UpdateCourseVersionLessonRequest struct {
+	state                protoimpl.MessageState  `protogen:"open.v1"`
+	Id                   string                  `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Title                *string                 `protobuf:"bytes,2,opt,name=title,proto3,oneof" json:"title,omitempty"`
+	Content              *structpb.Struct        `protobuf:"bytes,3,opt,name=content,proto3,oneof" json:"content,omitempty"`
+	SourceType           *CourseLessonSourceType `protobuf:"varint,4,opt,name=source_type,json=sourceType,proto3,enum=teamos.academy.v1.CourseLessonSourceType,oneof" json:"source_type,omitempty"`
+	SourceArticleId      *string                 `protobuf:"bytes,5,opt,name=source_article_id,json=sourceArticleId,proto3,oneof" json:"source_article_id,omitempty"`
+	SourceArticleVersion *uint32                 `protobuf:"varint,6,opt,name=source_article_version,json=sourceArticleVersion,proto3,oneof" json:"source_article_version,omitempty"`
+	EstimatedMinutes     *uint32                 `protobuf:"varint,7,opt,name=estimated_minutes,json=estimatedMinutes,proto3,oneof" json:"estimated_minutes,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
+}
+
+func (x *UpdateCourseVersionLessonRequest) Reset() {
+	*x = UpdateCourseVersionLessonRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[88]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateCourseVersionLessonRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateCourseVersionLessonRequest) ProtoMessage() {}
+
+func (x *UpdateCourseVersionLessonRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[88]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateCourseVersionLessonRequest.ProtoReflect.Descriptor instead.
+func (*UpdateCourseVersionLessonRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{88}
+}
+
+func (x *UpdateCourseVersionLessonRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *UpdateCourseVersionLessonRequest) GetTitle() string {
+	if x != nil && x.Title != nil {
+		return *x.Title
+	}
+	return ""
+}
+
+func (x *UpdateCourseVersionLessonRequest) GetContent() *structpb.Struct {
+	if x != nil {
+		return x.Content
+	}
+	return nil
+}
+
+func (x *UpdateCourseVersionLessonRequest) GetSourceType() CourseLessonSourceType {
+	if x != nil && x.SourceType != nil {
+		return *x.SourceType
+	}
+	return CourseLessonSourceType_COURSE_LESSON_SOURCE_TYPE_UNSPECIFIED
+}
+
+func (x *UpdateCourseVersionLessonRequest) GetSourceArticleId() string {
+	if x != nil && x.SourceArticleId != nil {
+		return *x.SourceArticleId
+	}
+	return ""
+}
+
+func (x *UpdateCourseVersionLessonRequest) GetSourceArticleVersion() uint32 {
+	if x != nil && x.SourceArticleVersion != nil {
+		return *x.SourceArticleVersion
+	}
+	return 0
+}
+
+func (x *UpdateCourseVersionLessonRequest) GetEstimatedMinutes() uint32 {
+	if x != nil && x.EstimatedMinutes != nil {
+		return *x.EstimatedMinutes
+	}
+	return 0
+}
+
+type UpdateCourseVersionLessonResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Lesson        *CourseVersionLesson   `protobuf:"bytes,1,opt,name=lesson,proto3" json:"lesson,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateCourseVersionLessonResponse) Reset() {
+	*x = UpdateCourseVersionLessonResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[89]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateCourseVersionLessonResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateCourseVersionLessonResponse) ProtoMessage() {}
+
+func (x *UpdateCourseVersionLessonResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[89]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateCourseVersionLessonResponse.ProtoReflect.Descriptor instead.
+func (*UpdateCourseVersionLessonResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{89}
+}
+
+func (x *UpdateCourseVersionLessonResponse) GetLesson() *CourseVersionLesson {
+	if x != nil {
+		return x.Lesson
+	}
+	return nil
+}
+
+type DeleteCourseVersionLessonRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteCourseVersionLessonRequest) Reset() {
+	*x = DeleteCourseVersionLessonRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[90]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteCourseVersionLessonRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteCourseVersionLessonRequest) ProtoMessage() {}
+
+func (x *DeleteCourseVersionLessonRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[90]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteCourseVersionLessonRequest.ProtoReflect.Descriptor instead.
+func (*DeleteCourseVersionLessonRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{90}
+}
+
+func (x *DeleteCourseVersionLessonRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+type DeleteCourseVersionLessonResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteCourseVersionLessonResponse) Reset() {
+	*x = DeleteCourseVersionLessonResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[91]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteCourseVersionLessonResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteCourseVersionLessonResponse) ProtoMessage() {}
+
+func (x *DeleteCourseVersionLessonResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[91]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteCourseVersionLessonResponse.ProtoReflect.Descriptor instead.
+func (*DeleteCourseVersionLessonResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{91}
+}
+
+type MoveCourseVersionLessonRequest struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	Id               string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	SectionVersionId string                 `protobuf:"bytes,2,opt,name=section_version_id,json=sectionVersionId,proto3" json:"section_version_id,omitempty"`
+	Order            uint32                 `protobuf:"varint,3,opt,name=order,proto3" json:"order,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *MoveCourseVersionLessonRequest) Reset() {
+	*x = MoveCourseVersionLessonRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[92]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MoveCourseVersionLessonRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MoveCourseVersionLessonRequest) ProtoMessage() {}
+
+func (x *MoveCourseVersionLessonRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[92]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MoveCourseVersionLessonRequest.ProtoReflect.Descriptor instead.
+func (*MoveCourseVersionLessonRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{92}
+}
+
+func (x *MoveCourseVersionLessonRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *MoveCourseVersionLessonRequest) GetSectionVersionId() string {
+	if x != nil {
+		return x.SectionVersionId
+	}
+	return ""
+}
+
+func (x *MoveCourseVersionLessonRequest) GetOrder() uint32 {
+	if x != nil {
+		return x.Order
+	}
+	return 0
+}
+
+type MoveCourseVersionLessonResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Lesson        *CourseVersionLesson   `protobuf:"bytes,1,opt,name=lesson,proto3" json:"lesson,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MoveCourseVersionLessonResponse) Reset() {
+	*x = MoveCourseVersionLessonResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[93]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MoveCourseVersionLessonResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MoveCourseVersionLessonResponse) ProtoMessage() {}
+
+func (x *MoveCourseVersionLessonResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[93]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MoveCourseVersionLessonResponse.ProtoReflect.Descriptor instead.
+func (*MoveCourseVersionLessonResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{93}
+}
+
+func (x *MoveCourseVersionLessonResponse) GetLesson() *CourseVersionLesson {
+	if x != nil {
+		return x.Lesson
+	}
+	return nil
+}
+
+type UpsertCourseVersionQuizRequest struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	LessonVersionId string                 `protobuf:"bytes,1,opt,name=lesson_version_id,json=lessonVersionId,proto3" json:"lesson_version_id,omitempty"`
+	Questions       []*QuizQuestion        `protobuf:"bytes,2,rep,name=questions,proto3" json:"questions,omitempty"`
+	PassingScore    uint32                 `protobuf:"varint,3,opt,name=passing_score,json=passingScore,proto3" json:"passing_score,omitempty"`
+	MaxAttempts     *uint32                `protobuf:"varint,4,opt,name=max_attempts,json=maxAttempts,proto3,oneof" json:"max_attempts,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *UpsertCourseVersionQuizRequest) Reset() {
+	*x = UpsertCourseVersionQuizRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[94]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpsertCourseVersionQuizRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpsertCourseVersionQuizRequest) ProtoMessage() {}
+
+func (x *UpsertCourseVersionQuizRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[94]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpsertCourseVersionQuizRequest.ProtoReflect.Descriptor instead.
+func (*UpsertCourseVersionQuizRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{94}
+}
+
+func (x *UpsertCourseVersionQuizRequest) GetLessonVersionId() string {
+	if x != nil {
+		return x.LessonVersionId
+	}
+	return ""
+}
+
+func (x *UpsertCourseVersionQuizRequest) GetQuestions() []*QuizQuestion {
+	if x != nil {
+		return x.Questions
+	}
+	return nil
+}
+
+func (x *UpsertCourseVersionQuizRequest) GetPassingScore() uint32 {
+	if x != nil {
+		return x.PassingScore
+	}
+	return 0
+}
+
+func (x *UpsertCourseVersionQuizRequest) GetMaxAttempts() uint32 {
+	if x != nil && x.MaxAttempts != nil {
+		return *x.MaxAttempts
+	}
+	return 0
+}
+
+type UpsertCourseVersionQuizResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Quiz          *CourseVersionQuiz     `protobuf:"bytes,1,opt,name=quiz,proto3" json:"quiz,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpsertCourseVersionQuizResponse) Reset() {
+	*x = UpsertCourseVersionQuizResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[95]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpsertCourseVersionQuizResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpsertCourseVersionQuizResponse) ProtoMessage() {}
+
+func (x *UpsertCourseVersionQuizResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[95]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpsertCourseVersionQuizResponse.ProtoReflect.Descriptor instead.
+func (*UpsertCourseVersionQuizResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{95}
+}
+
+func (x *UpsertCourseVersionQuizResponse) GetQuiz() *CourseVersionQuiz {
+	if x != nil {
+		return x.Quiz
+	}
+	return nil
+}
+
+type DeleteCourseVersionQuizRequest struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	LessonVersionId string                 `protobuf:"bytes,1,opt,name=lesson_version_id,json=lessonVersionId,proto3" json:"lesson_version_id,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *DeleteCourseVersionQuizRequest) Reset() {
+	*x = DeleteCourseVersionQuizRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[96]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteCourseVersionQuizRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteCourseVersionQuizRequest) ProtoMessage() {}
+
+func (x *DeleteCourseVersionQuizRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[96]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteCourseVersionQuizRequest.ProtoReflect.Descriptor instead.
+func (*DeleteCourseVersionQuizRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{96}
+}
+
+func (x *DeleteCourseVersionQuizRequest) GetLessonVersionId() string {
+	if x != nil {
+		return x.LessonVersionId
+	}
+	return ""
+}
+
+type DeleteCourseVersionQuizResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteCourseVersionQuizResponse) Reset() {
+	*x = DeleteCourseVersionQuizResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[97]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteCourseVersionQuizResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteCourseVersionQuizResponse) ProtoMessage() {}
+
+func (x *DeleteCourseVersionQuizResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[97]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteCourseVersionQuizResponse.ProtoReflect.Descriptor instead.
+func (*DeleteCourseVersionQuizResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{97}
 }
 
 type GetCourseSectionsRequest struct {
@@ -1893,7 +8466,7 @@ type GetCourseSectionsRequest struct {
 
 func (x *GetCourseSectionsRequest) Reset() {
 	*x = GetCourseSectionsRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[23]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[98]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1905,7 +8478,7 @@ func (x *GetCourseSectionsRequest) String() string {
 func (*GetCourseSectionsRequest) ProtoMessage() {}
 
 func (x *GetCourseSectionsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[23]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[98]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1918,7 +8491,7 @@ func (x *GetCourseSectionsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCourseSectionsRequest.ProtoReflect.Descriptor instead.
 func (*GetCourseSectionsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{23}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{98}
 }
 
 func (x *GetCourseSectionsRequest) GetCourseId() string {
@@ -1937,7 +8510,7 @@ type GetCourseSectionsResponse struct {
 
 func (x *GetCourseSectionsResponse) Reset() {
 	*x = GetCourseSectionsResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[24]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[99]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1949,7 +8522,7 @@ func (x *GetCourseSectionsResponse) String() string {
 func (*GetCourseSectionsResponse) ProtoMessage() {}
 
 func (x *GetCourseSectionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[24]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[99]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1962,7 +8535,7 @@ func (x *GetCourseSectionsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCourseSectionsResponse.ProtoReflect.Descriptor instead.
 func (*GetCourseSectionsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{24}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{99}
 }
 
 func (x *GetCourseSectionsResponse) GetSections() []*CourseSection {
@@ -1982,7 +8555,7 @@ type CreateCourseSectionRequest struct {
 
 func (x *CreateCourseSectionRequest) Reset() {
 	*x = CreateCourseSectionRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[25]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[100]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1994,7 +8567,7 @@ func (x *CreateCourseSectionRequest) String() string {
 func (*CreateCourseSectionRequest) ProtoMessage() {}
 
 func (x *CreateCourseSectionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[25]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[100]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2007,7 +8580,7 @@ func (x *CreateCourseSectionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateCourseSectionRequest.ProtoReflect.Descriptor instead.
 func (*CreateCourseSectionRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{25}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{100}
 }
 
 func (x *CreateCourseSectionRequest) GetCourseId() string {
@@ -2033,7 +8606,7 @@ type CreateCourseSectionResponse struct {
 
 func (x *CreateCourseSectionResponse) Reset() {
 	*x = CreateCourseSectionResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[26]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[101]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2045,7 +8618,7 @@ func (x *CreateCourseSectionResponse) String() string {
 func (*CreateCourseSectionResponse) ProtoMessage() {}
 
 func (x *CreateCourseSectionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[26]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[101]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2058,7 +8631,7 @@ func (x *CreateCourseSectionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateCourseSectionResponse.ProtoReflect.Descriptor instead.
 func (*CreateCourseSectionResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{26}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{101}
 }
 
 func (x *CreateCourseSectionResponse) GetSection() *CourseSection {
@@ -2078,7 +8651,7 @@ type UpdateCourseSectionRequest struct {
 
 func (x *UpdateCourseSectionRequest) Reset() {
 	*x = UpdateCourseSectionRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[27]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[102]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2090,7 +8663,7 @@ func (x *UpdateCourseSectionRequest) String() string {
 func (*UpdateCourseSectionRequest) ProtoMessage() {}
 
 func (x *UpdateCourseSectionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[27]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[102]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2103,7 +8676,7 @@ func (x *UpdateCourseSectionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateCourseSectionRequest.ProtoReflect.Descriptor instead.
 func (*UpdateCourseSectionRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{27}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{102}
 }
 
 func (x *UpdateCourseSectionRequest) GetId() string {
@@ -2129,7 +8702,7 @@ type UpdateCourseSectionResponse struct {
 
 func (x *UpdateCourseSectionResponse) Reset() {
 	*x = UpdateCourseSectionResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[28]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[103]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2141,7 +8714,7 @@ func (x *UpdateCourseSectionResponse) String() string {
 func (*UpdateCourseSectionResponse) ProtoMessage() {}
 
 func (x *UpdateCourseSectionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[28]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[103]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2154,7 +8727,7 @@ func (x *UpdateCourseSectionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateCourseSectionResponse.ProtoReflect.Descriptor instead.
 func (*UpdateCourseSectionResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{28}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{103}
 }
 
 func (x *UpdateCourseSectionResponse) GetSection() *CourseSection {
@@ -2173,7 +8746,7 @@ type DeleteCourseSectionRequest struct {
 
 func (x *DeleteCourseSectionRequest) Reset() {
 	*x = DeleteCourseSectionRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[29]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[104]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2185,7 +8758,7 @@ func (x *DeleteCourseSectionRequest) String() string {
 func (*DeleteCourseSectionRequest) ProtoMessage() {}
 
 func (x *DeleteCourseSectionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[29]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[104]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2198,7 +8771,7 @@ func (x *DeleteCourseSectionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteCourseSectionRequest.ProtoReflect.Descriptor instead.
 func (*DeleteCourseSectionRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{29}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{104}
 }
 
 func (x *DeleteCourseSectionRequest) GetId() string {
@@ -2216,7 +8789,7 @@ type DeleteCourseSectionResponse struct {
 
 func (x *DeleteCourseSectionResponse) Reset() {
 	*x = DeleteCourseSectionResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[30]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[105]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2228,7 +8801,7 @@ func (x *DeleteCourseSectionResponse) String() string {
 func (*DeleteCourseSectionResponse) ProtoMessage() {}
 
 func (x *DeleteCourseSectionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[30]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[105]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2241,7 +8814,7 @@ func (x *DeleteCourseSectionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteCourseSectionResponse.ProtoReflect.Descriptor instead.
 func (*DeleteCourseSectionResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{30}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{105}
 }
 
 type GetLessonsRequest struct {
@@ -2253,7 +8826,7 @@ type GetLessonsRequest struct {
 
 func (x *GetLessonsRequest) Reset() {
 	*x = GetLessonsRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[31]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[106]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2265,7 +8838,7 @@ func (x *GetLessonsRequest) String() string {
 func (*GetLessonsRequest) ProtoMessage() {}
 
 func (x *GetLessonsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[31]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[106]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2278,7 +8851,7 @@ func (x *GetLessonsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetLessonsRequest.ProtoReflect.Descriptor instead.
 func (*GetLessonsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{31}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{106}
 }
 
 func (x *GetLessonsRequest) GetCourseId() string {
@@ -2297,7 +8870,7 @@ type GetLessonsResponse struct {
 
 func (x *GetLessonsResponse) Reset() {
 	*x = GetLessonsResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[32]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[107]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2309,7 +8882,7 @@ func (x *GetLessonsResponse) String() string {
 func (*GetLessonsResponse) ProtoMessage() {}
 
 func (x *GetLessonsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[32]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[107]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2322,7 +8895,7 @@ func (x *GetLessonsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetLessonsResponse.ProtoReflect.Descriptor instead.
 func (*GetLessonsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{32}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{107}
 }
 
 func (x *GetLessonsResponse) GetLessons() []*Lesson {
@@ -2346,7 +8919,7 @@ type CreateLessonRequest struct {
 
 func (x *CreateLessonRequest) Reset() {
 	*x = CreateLessonRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[33]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[108]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2358,7 +8931,7 @@ func (x *CreateLessonRequest) String() string {
 func (*CreateLessonRequest) ProtoMessage() {}
 
 func (x *CreateLessonRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[33]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[108]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2371,7 +8944,7 @@ func (x *CreateLessonRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateLessonRequest.ProtoReflect.Descriptor instead.
 func (*CreateLessonRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{33}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{108}
 }
 
 func (x *CreateLessonRequest) GetCourseId() string {
@@ -2425,7 +8998,7 @@ type CreateLessonResponse struct {
 
 func (x *CreateLessonResponse) Reset() {
 	*x = CreateLessonResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[34]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[109]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2437,7 +9010,7 @@ func (x *CreateLessonResponse) String() string {
 func (*CreateLessonResponse) ProtoMessage() {}
 
 func (x *CreateLessonResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[34]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[109]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2450,7 +9023,7 @@ func (x *CreateLessonResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateLessonResponse.ProtoReflect.Descriptor instead.
 func (*CreateLessonResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{34}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{109}
 }
 
 func (x *CreateLessonResponse) GetLesson() *Lesson {
@@ -2473,7 +9046,7 @@ type UpdateLessonRequest struct {
 
 func (x *UpdateLessonRequest) Reset() {
 	*x = UpdateLessonRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[35]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[110]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2485,7 +9058,7 @@ func (x *UpdateLessonRequest) String() string {
 func (*UpdateLessonRequest) ProtoMessage() {}
 
 func (x *UpdateLessonRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[35]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[110]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2498,7 +9071,7 @@ func (x *UpdateLessonRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateLessonRequest.ProtoReflect.Descriptor instead.
 func (*UpdateLessonRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{35}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{110}
 }
 
 func (x *UpdateLessonRequest) GetId() string {
@@ -2545,7 +9118,7 @@ type UpdateLessonResponse struct {
 
 func (x *UpdateLessonResponse) Reset() {
 	*x = UpdateLessonResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[36]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[111]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2557,7 +9130,7 @@ func (x *UpdateLessonResponse) String() string {
 func (*UpdateLessonResponse) ProtoMessage() {}
 
 func (x *UpdateLessonResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[36]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[111]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2570,7 +9143,7 @@ func (x *UpdateLessonResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateLessonResponse.ProtoReflect.Descriptor instead.
 func (*UpdateLessonResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{36}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{111}
 }
 
 func (x *UpdateLessonResponse) GetLesson() *Lesson {
@@ -2589,7 +9162,7 @@ type DeleteLessonRequest struct {
 
 func (x *DeleteLessonRequest) Reset() {
 	*x = DeleteLessonRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[37]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[112]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2601,7 +9174,7 @@ func (x *DeleteLessonRequest) String() string {
 func (*DeleteLessonRequest) ProtoMessage() {}
 
 func (x *DeleteLessonRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[37]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[112]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2614,7 +9187,7 @@ func (x *DeleteLessonRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteLessonRequest.ProtoReflect.Descriptor instead.
 func (*DeleteLessonRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{37}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{112}
 }
 
 func (x *DeleteLessonRequest) GetId() string {
@@ -2632,7 +9205,7 @@ type DeleteLessonResponse struct {
 
 func (x *DeleteLessonResponse) Reset() {
 	*x = DeleteLessonResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[38]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[113]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2644,7 +9217,7 @@ func (x *DeleteLessonResponse) String() string {
 func (*DeleteLessonResponse) ProtoMessage() {}
 
 func (x *DeleteLessonResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[38]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[113]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2657,7 +9230,7 @@ func (x *DeleteLessonResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteLessonResponse.ProtoReflect.Descriptor instead.
 func (*DeleteLessonResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{38}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{113}
 }
 
 type MoveLessonRequest struct {
@@ -2671,7 +9244,7 @@ type MoveLessonRequest struct {
 
 func (x *MoveLessonRequest) Reset() {
 	*x = MoveLessonRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[39]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[114]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2683,7 +9256,7 @@ func (x *MoveLessonRequest) String() string {
 func (*MoveLessonRequest) ProtoMessage() {}
 
 func (x *MoveLessonRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[39]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[114]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2696,7 +9269,7 @@ func (x *MoveLessonRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MoveLessonRequest.ProtoReflect.Descriptor instead.
 func (*MoveLessonRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{39}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{114}
 }
 
 func (x *MoveLessonRequest) GetId() string {
@@ -2729,7 +9302,7 @@ type MoveLessonResponse struct {
 
 func (x *MoveLessonResponse) Reset() {
 	*x = MoveLessonResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[40]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[115]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2741,7 +9314,7 @@ func (x *MoveLessonResponse) String() string {
 func (*MoveLessonResponse) ProtoMessage() {}
 
 func (x *MoveLessonResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[40]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[115]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2754,7 +9327,7 @@ func (x *MoveLessonResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MoveLessonResponse.ProtoReflect.Descriptor instead.
 func (*MoveLessonResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{40}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{115}
 }
 
 func (x *MoveLessonResponse) GetLesson() *Lesson {
@@ -2773,7 +9346,7 @@ type GetQuizzesRequest struct {
 
 func (x *GetQuizzesRequest) Reset() {
 	*x = GetQuizzesRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[41]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[116]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2785,7 +9358,7 @@ func (x *GetQuizzesRequest) String() string {
 func (*GetQuizzesRequest) ProtoMessage() {}
 
 func (x *GetQuizzesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[41]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[116]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2798,7 +9371,7 @@ func (x *GetQuizzesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetQuizzesRequest.ProtoReflect.Descriptor instead.
 func (*GetQuizzesRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{41}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{116}
 }
 
 func (x *GetQuizzesRequest) GetLessonId() string {
@@ -2817,7 +9390,7 @@ type GetQuizzesResponse struct {
 
 func (x *GetQuizzesResponse) Reset() {
 	*x = GetQuizzesResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[42]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[117]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2829,7 +9402,7 @@ func (x *GetQuizzesResponse) String() string {
 func (*GetQuizzesResponse) ProtoMessage() {}
 
 func (x *GetQuizzesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[42]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[117]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2842,7 +9415,7 @@ func (x *GetQuizzesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetQuizzesResponse.ProtoReflect.Descriptor instead.
 func (*GetQuizzesResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{42}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{117}
 }
 
 func (x *GetQuizzesResponse) GetQuizzes() []*Quiz {
@@ -2865,7 +9438,7 @@ type UpsertQuizRequest struct {
 
 func (x *UpsertQuizRequest) Reset() {
 	*x = UpsertQuizRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[43]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[118]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2877,7 +9450,7 @@ func (x *UpsertQuizRequest) String() string {
 func (*UpsertQuizRequest) ProtoMessage() {}
 
 func (x *UpsertQuizRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[43]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[118]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2890,7 +9463,7 @@ func (x *UpsertQuizRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpsertQuizRequest.ProtoReflect.Descriptor instead.
 func (*UpsertQuizRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{43}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{118}
 }
 
 func (x *UpsertQuizRequest) GetId() string {
@@ -2937,7 +9510,7 @@ type UpsertQuizResponse struct {
 
 func (x *UpsertQuizResponse) Reset() {
 	*x = UpsertQuizResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[44]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[119]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2949,7 +9522,7 @@ func (x *UpsertQuizResponse) String() string {
 func (*UpsertQuizResponse) ProtoMessage() {}
 
 func (x *UpsertQuizResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[44]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[119]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2962,7 +9535,7 @@ func (x *UpsertQuizResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpsertQuizResponse.ProtoReflect.Descriptor instead.
 func (*UpsertQuizResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{44}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{119}
 }
 
 func (x *UpsertQuizResponse) GetQuiz() *Quiz {
@@ -2980,7 +9553,7 @@ type GetAssignmentsRequest struct {
 
 func (x *GetAssignmentsRequest) Reset() {
 	*x = GetAssignmentsRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[45]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[120]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2992,7 +9565,7 @@ func (x *GetAssignmentsRequest) String() string {
 func (*GetAssignmentsRequest) ProtoMessage() {}
 
 func (x *GetAssignmentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[45]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[120]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3005,7 +9578,7 @@ func (x *GetAssignmentsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAssignmentsRequest.ProtoReflect.Descriptor instead.
 func (*GetAssignmentsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{45}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{120}
 }
 
 type GetAssignmentsResponse struct {
@@ -3017,7 +9590,7 @@ type GetAssignmentsResponse struct {
 
 func (x *GetAssignmentsResponse) Reset() {
 	*x = GetAssignmentsResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[46]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[121]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3029,7 +9602,7 @@ func (x *GetAssignmentsResponse) String() string {
 func (*GetAssignmentsResponse) ProtoMessage() {}
 
 func (x *GetAssignmentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[46]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[121]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3042,7 +9615,7 @@ func (x *GetAssignmentsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAssignmentsResponse.ProtoReflect.Descriptor instead.
 func (*GetAssignmentsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{46}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{121}
 }
 
 func (x *GetAssignmentsResponse) GetAssignments() []*CourseAssignment {
@@ -3053,18 +9626,20 @@ func (x *GetAssignmentsResponse) GetAssignments() []*CourseAssignment {
 }
 
 type AssignCourseRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	CourseId      string                 `protobuf:"bytes,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
-	AssigneeType  AssigneeType           `protobuf:"varint,2,opt,name=assignee_type,json=assigneeType,proto3,enum=teamos.academy.v1.AssigneeType" json:"assignee_type,omitempty"`
-	AssigneeId    *string                `protobuf:"bytes,3,opt,name=assignee_id,json=assigneeId,proto3,oneof" json:"assignee_id,omitempty"`
-	DueDate       *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=due_date,json=dueDate,proto3,oneof" json:"due_date,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state        protoimpl.MessageState `protogen:"open.v1"`
+	CourseId     string                 `protobuf:"bytes,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	AssigneeType AssigneeType           `protobuf:"varint,2,opt,name=assignee_type,json=assigneeType,proto3,enum=teamos.academy.v1.AssigneeType" json:"assignee_type,omitempty"`
+	AssigneeId   *string                `protobuf:"bytes,3,opt,name=assignee_id,json=assigneeId,proto3,oneof" json:"assignee_id,omitempty"`
+	DueDate      *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=due_date,json=dueDate,proto3,oneof" json:"due_date,omitempty"`
+	// If omitted, the server pins the latest published version atomically.
+	CourseVersionId *string `protobuf:"bytes,5,opt,name=course_version_id,json=courseVersionId,proto3,oneof" json:"course_version_id,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *AssignCourseRequest) Reset() {
 	*x = AssignCourseRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[47]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[122]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3076,7 +9651,7 @@ func (x *AssignCourseRequest) String() string {
 func (*AssignCourseRequest) ProtoMessage() {}
 
 func (x *AssignCourseRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[47]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[122]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3089,7 +9664,7 @@ func (x *AssignCourseRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AssignCourseRequest.ProtoReflect.Descriptor instead.
 func (*AssignCourseRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{47}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{122}
 }
 
 func (x *AssignCourseRequest) GetCourseId() string {
@@ -3120,16 +9695,24 @@ func (x *AssignCourseRequest) GetDueDate() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *AssignCourseRequest) GetCourseVersionId() string {
+	if x != nil && x.CourseVersionId != nil {
+		return *x.CourseVersionId
+	}
+	return ""
+}
+
 type AssignCourseResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Assignment    *CourseAssignment      `protobuf:"bytes,1,opt,name=assignment,proto3" json:"assignment,omitempty"`
+	EnrollmentIds []string               `protobuf:"bytes,2,rep,name=enrollment_ids,json=enrollmentIds,proto3" json:"enrollment_ids,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *AssignCourseResponse) Reset() {
 	*x = AssignCourseResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[48]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[123]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3141,7 +9724,7 @@ func (x *AssignCourseResponse) String() string {
 func (*AssignCourseResponse) ProtoMessage() {}
 
 func (x *AssignCourseResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[48]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[123]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3154,7 +9737,7 @@ func (x *AssignCourseResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AssignCourseResponse.ProtoReflect.Descriptor instead.
 func (*AssignCourseResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{48}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{123}
 }
 
 func (x *AssignCourseResponse) GetAssignment() *CourseAssignment {
@@ -3162,6 +9745,93 @@ func (x *AssignCourseResponse) GetAssignment() *CourseAssignment {
 		return x.Assignment
 	}
 	return nil
+}
+
+func (x *AssignCourseResponse) GetEnrollmentIds() []string {
+	if x != nil {
+		return x.EnrollmentIds
+	}
+	return nil
+}
+
+type RevokeAssignmentRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AssignmentId  string                 `protobuf:"bytes,1,opt,name=assignment_id,json=assignmentId,proto3" json:"assignment_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RevokeAssignmentRequest) Reset() {
+	*x = RevokeAssignmentRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[124]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RevokeAssignmentRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RevokeAssignmentRequest) ProtoMessage() {}
+
+func (x *RevokeAssignmentRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[124]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RevokeAssignmentRequest.ProtoReflect.Descriptor instead.
+func (*RevokeAssignmentRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{124}
+}
+
+func (x *RevokeAssignmentRequest) GetAssignmentId() string {
+	if x != nil {
+		return x.AssignmentId
+	}
+	return ""
+}
+
+type RevokeAssignmentResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RevokeAssignmentResponse) Reset() {
+	*x = RevokeAssignmentResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[125]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RevokeAssignmentResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RevokeAssignmentResponse) ProtoMessage() {}
+
+func (x *RevokeAssignmentResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[125]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RevokeAssignmentResponse.ProtoReflect.Descriptor instead.
+func (*RevokeAssignmentResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{125}
 }
 
 type GetProgressRequest struct {
@@ -3173,7 +9843,7 @@ type GetProgressRequest struct {
 
 func (x *GetProgressRequest) Reset() {
 	*x = GetProgressRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[49]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[126]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3185,7 +9855,7 @@ func (x *GetProgressRequest) String() string {
 func (*GetProgressRequest) ProtoMessage() {}
 
 func (x *GetProgressRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[49]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[126]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3198,7 +9868,7 @@ func (x *GetProgressRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetProgressRequest.ProtoReflect.Descriptor instead.
 func (*GetProgressRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{49}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{126}
 }
 
 func (x *GetProgressRequest) GetCourseId() string {
@@ -3217,7 +9887,7 @@ type GetProgressResponse struct {
 
 func (x *GetProgressResponse) Reset() {
 	*x = GetProgressResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[50]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[127]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3229,7 +9899,7 @@ func (x *GetProgressResponse) String() string {
 func (*GetProgressResponse) ProtoMessage() {}
 
 func (x *GetProgressResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[50]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[127]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3242,7 +9912,7 @@ func (x *GetProgressResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetProgressResponse.ProtoReflect.Descriptor instead.
 func (*GetProgressResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{50}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{127}
 }
 
 func (x *GetProgressResponse) GetProgress() []*CourseProgress {
@@ -3263,7 +9933,7 @@ type MarkLessonCompleteRequest struct {
 
 func (x *MarkLessonCompleteRequest) Reset() {
 	*x = MarkLessonCompleteRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[51]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[128]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3275,7 +9945,7 @@ func (x *MarkLessonCompleteRequest) String() string {
 func (*MarkLessonCompleteRequest) ProtoMessage() {}
 
 func (x *MarkLessonCompleteRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[51]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[128]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3288,7 +9958,7 @@ func (x *MarkLessonCompleteRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MarkLessonCompleteRequest.ProtoReflect.Descriptor instead.
 func (*MarkLessonCompleteRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{51}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{128}
 }
 
 func (x *MarkLessonCompleteRequest) GetLessonId() string {
@@ -3321,7 +9991,7 @@ type MarkLessonCompleteResponse struct {
 
 func (x *MarkLessonCompleteResponse) Reset() {
 	*x = MarkLessonCompleteResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[52]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[129]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3333,7 +10003,7 @@ func (x *MarkLessonCompleteResponse) String() string {
 func (*MarkLessonCompleteResponse) ProtoMessage() {}
 
 func (x *MarkLessonCompleteResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[52]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[129]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3346,7 +10016,7 @@ func (x *MarkLessonCompleteResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MarkLessonCompleteResponse.ProtoReflect.Descriptor instead.
 func (*MarkLessonCompleteResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{52}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{129}
 }
 
 func (x *MarkLessonCompleteResponse) GetProgress() *CourseProgress {
@@ -3356,11 +10026,7464 @@ func (x *MarkLessonCompleteResponse) GetProgress() *CourseProgress {
 	return nil
 }
 
+type GetEnrollmentsRequest struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	CourseId        *string                `protobuf:"bytes,1,opt,name=course_id,json=courseId,proto3,oneof" json:"course_id,omitempty"`
+	CourseVersionId *string                `protobuf:"bytes,2,opt,name=course_version_id,json=courseVersionId,proto3,oneof" json:"course_version_id,omitempty"`
+	// Owner/admin reporting filter. Employee requests are always scoped to the
+	// caller regardless of this field.
+	UserId         *string                   `protobuf:"bytes,3,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`
+	ProgressStatus *EnrollmentProgressStatus `protobuf:"varint,4,opt,name=progress_status,json=progressStatus,proto3,enum=teamos.academy.v1.EnrollmentProgressStatus,oneof" json:"progress_status,omitempty"`
+	AccessStatus   *EnrollmentAccessStatus   `protobuf:"varint,5,opt,name=access_status,json=accessStatus,proto3,enum=teamos.academy.v1.EnrollmentAccessStatus,oneof" json:"access_status,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *GetEnrollmentsRequest) Reset() {
+	*x = GetEnrollmentsRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[130]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetEnrollmentsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetEnrollmentsRequest) ProtoMessage() {}
+
+func (x *GetEnrollmentsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[130]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetEnrollmentsRequest.ProtoReflect.Descriptor instead.
+func (*GetEnrollmentsRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{130}
+}
+
+func (x *GetEnrollmentsRequest) GetCourseId() string {
+	if x != nil && x.CourseId != nil {
+		return *x.CourseId
+	}
+	return ""
+}
+
+func (x *GetEnrollmentsRequest) GetCourseVersionId() string {
+	if x != nil && x.CourseVersionId != nil {
+		return *x.CourseVersionId
+	}
+	return ""
+}
+
+func (x *GetEnrollmentsRequest) GetUserId() string {
+	if x != nil && x.UserId != nil {
+		return *x.UserId
+	}
+	return ""
+}
+
+func (x *GetEnrollmentsRequest) GetProgressStatus() EnrollmentProgressStatus {
+	if x != nil && x.ProgressStatus != nil {
+		return *x.ProgressStatus
+	}
+	return EnrollmentProgressStatus_ENROLLMENT_PROGRESS_STATUS_UNSPECIFIED
+}
+
+func (x *GetEnrollmentsRequest) GetAccessStatus() EnrollmentAccessStatus {
+	if x != nil && x.AccessStatus != nil {
+		return *x.AccessStatus
+	}
+	return EnrollmentAccessStatus_ENROLLMENT_ACCESS_STATUS_UNSPECIFIED
+}
+
+type GetEnrollmentsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Enrollments   []*CourseEnrollment    `protobuf:"bytes,1,rep,name=enrollments,proto3" json:"enrollments,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetEnrollmentsResponse) Reset() {
+	*x = GetEnrollmentsResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[131]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetEnrollmentsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetEnrollmentsResponse) ProtoMessage() {}
+
+func (x *GetEnrollmentsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[131]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetEnrollmentsResponse.ProtoReflect.Descriptor instead.
+func (*GetEnrollmentsResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{131}
+}
+
+func (x *GetEnrollmentsResponse) GetEnrollments() []*CourseEnrollment {
+	if x != nil {
+		return x.Enrollments
+	}
+	return nil
+}
+
+type SelfEnrollCourseRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CourseId      string                 `protobuf:"bytes,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SelfEnrollCourseRequest) Reset() {
+	*x = SelfEnrollCourseRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[132]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SelfEnrollCourseRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SelfEnrollCourseRequest) ProtoMessage() {}
+
+func (x *SelfEnrollCourseRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[132]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SelfEnrollCourseRequest.ProtoReflect.Descriptor instead.
+func (*SelfEnrollCourseRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{132}
+}
+
+func (x *SelfEnrollCourseRequest) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+type SelfEnrollCourseResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Enrollment    *CourseEnrollment      `protobuf:"bytes,1,opt,name=enrollment,proto3" json:"enrollment,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SelfEnrollCourseResponse) Reset() {
+	*x = SelfEnrollCourseResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[133]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SelfEnrollCourseResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SelfEnrollCourseResponse) ProtoMessage() {}
+
+func (x *SelfEnrollCourseResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[133]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SelfEnrollCourseResponse.ProtoReflect.Descriptor instead.
+func (*SelfEnrollCourseResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{133}
+}
+
+func (x *SelfEnrollCourseResponse) GetEnrollment() *CourseEnrollment {
+	if x != nil {
+		return x.Enrollment
+	}
+	return nil
+}
+
+type GetCatalogCourseVersionRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CourseId      string                 `protobuf:"bytes,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetCatalogCourseVersionRequest) Reset() {
+	*x = GetCatalogCourseVersionRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[134]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCatalogCourseVersionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCatalogCourseVersionRequest) ProtoMessage() {}
+
+func (x *GetCatalogCourseVersionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[134]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCatalogCourseVersionRequest.ProtoReflect.Descriptor instead.
+func (*GetCatalogCourseVersionRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{134}
+}
+
+func (x *GetCatalogCourseVersionRequest) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+type GetCatalogCourseVersionResponse struct {
+	state         protoimpl.MessageState         `protogen:"open.v1"`
+	Version       *LearnerPublishedCourseVersion `protobuf:"bytes,1,opt,name=version,proto3" json:"version,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetCatalogCourseVersionResponse) Reset() {
+	*x = GetCatalogCourseVersionResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[135]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCatalogCourseVersionResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCatalogCourseVersionResponse) ProtoMessage() {}
+
+func (x *GetCatalogCourseVersionResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[135]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCatalogCourseVersionResponse.ProtoReflect.Descriptor instead.
+func (*GetCatalogCourseVersionResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{135}
+}
+
+func (x *GetCatalogCourseVersionResponse) GetVersion() *LearnerPublishedCourseVersion {
+	if x != nil {
+		return x.Version
+	}
+	return nil
+}
+
+type GetEnrollmentRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	EnrollmentId  string                 `protobuf:"bytes,1,opt,name=enrollment_id,json=enrollmentId,proto3" json:"enrollment_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetEnrollmentRequest) Reset() {
+	*x = GetEnrollmentRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[136]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetEnrollmentRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetEnrollmentRequest) ProtoMessage() {}
+
+func (x *GetEnrollmentRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[136]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetEnrollmentRequest.ProtoReflect.Descriptor instead.
+func (*GetEnrollmentRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{136}
+}
+
+func (x *GetEnrollmentRequest) GetEnrollmentId() string {
+	if x != nil {
+		return x.EnrollmentId
+	}
+	return ""
+}
+
+type GetEnrollmentResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Enrollment    *CourseEnrollment      `protobuf:"bytes,1,opt,name=enrollment,proto3" json:"enrollment,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetEnrollmentResponse) Reset() {
+	*x = GetEnrollmentResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[137]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetEnrollmentResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetEnrollmentResponse) ProtoMessage() {}
+
+func (x *GetEnrollmentResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[137]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetEnrollmentResponse.ProtoReflect.Descriptor instead.
+func (*GetEnrollmentResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{137}
+}
+
+func (x *GetEnrollmentResponse) GetEnrollment() *CourseEnrollment {
+	if x != nil {
+		return x.Enrollment
+	}
+	return nil
+}
+
+type GetEnrollmentOutlineRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	EnrollmentId  string                 `protobuf:"bytes,1,opt,name=enrollment_id,json=enrollmentId,proto3" json:"enrollment_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetEnrollmentOutlineRequest) Reset() {
+	*x = GetEnrollmentOutlineRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[138]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetEnrollmentOutlineRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetEnrollmentOutlineRequest) ProtoMessage() {}
+
+func (x *GetEnrollmentOutlineRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[138]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetEnrollmentOutlineRequest.ProtoReflect.Descriptor instead.
+func (*GetEnrollmentOutlineRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{138}
+}
+
+func (x *GetEnrollmentOutlineRequest) GetEnrollmentId() string {
+	if x != nil {
+		return x.EnrollmentId
+	}
+	return ""
+}
+
+type GetEnrollmentOutlineResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Outline       *EnrollmentOutline     `protobuf:"bytes,1,opt,name=outline,proto3" json:"outline,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetEnrollmentOutlineResponse) Reset() {
+	*x = GetEnrollmentOutlineResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[139]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetEnrollmentOutlineResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetEnrollmentOutlineResponse) ProtoMessage() {}
+
+func (x *GetEnrollmentOutlineResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[139]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetEnrollmentOutlineResponse.ProtoReflect.Descriptor instead.
+func (*GetEnrollmentOutlineResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{139}
+}
+
+func (x *GetEnrollmentOutlineResponse) GetOutline() *EnrollmentOutline {
+	if x != nil {
+		return x.Outline
+	}
+	return nil
+}
+
+type GetEnrollmentLessonRequest struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	EnrollmentId    string                 `protobuf:"bytes,1,opt,name=enrollment_id,json=enrollmentId,proto3" json:"enrollment_id,omitempty"`
+	LessonVersionId string                 `protobuf:"bytes,2,opt,name=lesson_version_id,json=lessonVersionId,proto3" json:"lesson_version_id,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *GetEnrollmentLessonRequest) Reset() {
+	*x = GetEnrollmentLessonRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[140]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetEnrollmentLessonRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetEnrollmentLessonRequest) ProtoMessage() {}
+
+func (x *GetEnrollmentLessonRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[140]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetEnrollmentLessonRequest.ProtoReflect.Descriptor instead.
+func (*GetEnrollmentLessonRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{140}
+}
+
+func (x *GetEnrollmentLessonRequest) GetEnrollmentId() string {
+	if x != nil {
+		return x.EnrollmentId
+	}
+	return ""
+}
+
+func (x *GetEnrollmentLessonRequest) GetLessonVersionId() string {
+	if x != nil {
+		return x.LessonVersionId
+	}
+	return ""
+}
+
+type GetEnrollmentLessonResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Lesson        *EnrollmentLesson      `protobuf:"bytes,1,opt,name=lesson,proto3" json:"lesson,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetEnrollmentLessonResponse) Reset() {
+	*x = GetEnrollmentLessonResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[141]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetEnrollmentLessonResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetEnrollmentLessonResponse) ProtoMessage() {}
+
+func (x *GetEnrollmentLessonResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[141]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetEnrollmentLessonResponse.ProtoReflect.Descriptor instead.
+func (*GetEnrollmentLessonResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{141}
+}
+
+func (x *GetEnrollmentLessonResponse) GetLesson() *EnrollmentLesson {
+	if x != nil {
+		return x.Lesson
+	}
+	return nil
+}
+
+type ResumeEnrollmentRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	EnrollmentId  string                 `protobuf:"bytes,1,opt,name=enrollment_id,json=enrollmentId,proto3" json:"enrollment_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ResumeEnrollmentRequest) Reset() {
+	*x = ResumeEnrollmentRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[142]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResumeEnrollmentRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResumeEnrollmentRequest) ProtoMessage() {}
+
+func (x *ResumeEnrollmentRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[142]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResumeEnrollmentRequest.ProtoReflect.Descriptor instead.
+func (*ResumeEnrollmentRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{142}
+}
+
+func (x *ResumeEnrollmentRequest) GetEnrollmentId() string {
+	if x != nil {
+		return x.EnrollmentId
+	}
+	return ""
+}
+
+type ResumeEnrollmentResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Enrollment    *CourseEnrollment      `protobuf:"bytes,1,opt,name=enrollment,proto3" json:"enrollment,omitempty"`
+	CurrentLesson *EnrollmentLesson      `protobuf:"bytes,2,opt,name=current_lesson,json=currentLesson,proto3,oneof" json:"current_lesson,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ResumeEnrollmentResponse) Reset() {
+	*x = ResumeEnrollmentResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[143]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResumeEnrollmentResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResumeEnrollmentResponse) ProtoMessage() {}
+
+func (x *ResumeEnrollmentResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[143]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResumeEnrollmentResponse.ProtoReflect.Descriptor instead.
+func (*ResumeEnrollmentResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{143}
+}
+
+func (x *ResumeEnrollmentResponse) GetEnrollment() *CourseEnrollment {
+	if x != nil {
+		return x.Enrollment
+	}
+	return nil
+}
+
+func (x *ResumeEnrollmentResponse) GetCurrentLesson() *EnrollmentLesson {
+	if x != nil {
+		return x.CurrentLesson
+	}
+	return nil
+}
+
+type CompleteEnrollmentLessonRequest struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	EnrollmentId    string                 `protobuf:"bytes,1,opt,name=enrollment_id,json=enrollmentId,proto3" json:"enrollment_id,omitempty"`
+	LessonVersionId string                 `protobuf:"bytes,2,opt,name=lesson_version_id,json=lessonVersionId,proto3" json:"lesson_version_id,omitempty"`
+	ActiveSeconds   *uint64                `protobuf:"varint,3,opt,name=active_seconds,json=activeSeconds,proto3,oneof" json:"active_seconds,omitempty"`
+	LastPosition    *structpb.Struct       `protobuf:"bytes,4,opt,name=last_position,json=lastPosition,proto3,oneof" json:"last_position,omitempty"`
+	IdempotencyKey  string                 `protobuf:"bytes,5,opt,name=idempotency_key,json=idempotencyKey,proto3" json:"idempotency_key,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *CompleteEnrollmentLessonRequest) Reset() {
+	*x = CompleteEnrollmentLessonRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[144]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CompleteEnrollmentLessonRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CompleteEnrollmentLessonRequest) ProtoMessage() {}
+
+func (x *CompleteEnrollmentLessonRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[144]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CompleteEnrollmentLessonRequest.ProtoReflect.Descriptor instead.
+func (*CompleteEnrollmentLessonRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{144}
+}
+
+func (x *CompleteEnrollmentLessonRequest) GetEnrollmentId() string {
+	if x != nil {
+		return x.EnrollmentId
+	}
+	return ""
+}
+
+func (x *CompleteEnrollmentLessonRequest) GetLessonVersionId() string {
+	if x != nil {
+		return x.LessonVersionId
+	}
+	return ""
+}
+
+func (x *CompleteEnrollmentLessonRequest) GetActiveSeconds() uint64 {
+	if x != nil && x.ActiveSeconds != nil {
+		return *x.ActiveSeconds
+	}
+	return 0
+}
+
+func (x *CompleteEnrollmentLessonRequest) GetLastPosition() *structpb.Struct {
+	if x != nil {
+		return x.LastPosition
+	}
+	return nil
+}
+
+func (x *CompleteEnrollmentLessonRequest) GetIdempotencyKey() string {
+	if x != nil {
+		return x.IdempotencyKey
+	}
+	return ""
+}
+
+type CompleteEnrollmentLessonResponse struct {
+	state         protoimpl.MessageState      `protogen:"open.v1"`
+	Progress      *EnrollmentProgressSnapshot `protobuf:"bytes,1,opt,name=progress,proto3" json:"progress,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CompleteEnrollmentLessonResponse) Reset() {
+	*x = CompleteEnrollmentLessonResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[145]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CompleteEnrollmentLessonResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CompleteEnrollmentLessonResponse) ProtoMessage() {}
+
+func (x *CompleteEnrollmentLessonResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[145]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CompleteEnrollmentLessonResponse.ProtoReflect.Descriptor instead.
+func (*CompleteEnrollmentLessonResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{145}
+}
+
+func (x *CompleteEnrollmentLessonResponse) GetProgress() *EnrollmentProgressSnapshot {
+	if x != nil {
+		return x.Progress
+	}
+	return nil
+}
+
+type SubmitEnrollmentQuizAttemptRequest struct {
+	state          protoimpl.MessageState  `protogen:"open.v1"`
+	EnrollmentId   string                  `protobuf:"bytes,1,opt,name=enrollment_id,json=enrollmentId,proto3" json:"enrollment_id,omitempty"`
+	QuizVersionId  string                  `protobuf:"bytes,2,opt,name=quiz_version_id,json=quizVersionId,proto3" json:"quiz_version_id,omitempty"`
+	Answers        []*EnrollmentQuizAnswer `protobuf:"bytes,3,rep,name=answers,proto3" json:"answers,omitempty"`
+	ActiveSeconds  *uint64                 `protobuf:"varint,4,opt,name=active_seconds,json=activeSeconds,proto3,oneof" json:"active_seconds,omitempty"`
+	LastPosition   *structpb.Struct        `protobuf:"bytes,5,opt,name=last_position,json=lastPosition,proto3,oneof" json:"last_position,omitempty"`
+	IdempotencyKey string                  `protobuf:"bytes,6,opt,name=idempotency_key,json=idempotencyKey,proto3" json:"idempotency_key,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *SubmitEnrollmentQuizAttemptRequest) Reset() {
+	*x = SubmitEnrollmentQuizAttemptRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[146]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SubmitEnrollmentQuizAttemptRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SubmitEnrollmentQuizAttemptRequest) ProtoMessage() {}
+
+func (x *SubmitEnrollmentQuizAttemptRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[146]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SubmitEnrollmentQuizAttemptRequest.ProtoReflect.Descriptor instead.
+func (*SubmitEnrollmentQuizAttemptRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{146}
+}
+
+func (x *SubmitEnrollmentQuizAttemptRequest) GetEnrollmentId() string {
+	if x != nil {
+		return x.EnrollmentId
+	}
+	return ""
+}
+
+func (x *SubmitEnrollmentQuizAttemptRequest) GetQuizVersionId() string {
+	if x != nil {
+		return x.QuizVersionId
+	}
+	return ""
+}
+
+func (x *SubmitEnrollmentQuizAttemptRequest) GetAnswers() []*EnrollmentQuizAnswer {
+	if x != nil {
+		return x.Answers
+	}
+	return nil
+}
+
+func (x *SubmitEnrollmentQuizAttemptRequest) GetActiveSeconds() uint64 {
+	if x != nil && x.ActiveSeconds != nil {
+		return *x.ActiveSeconds
+	}
+	return 0
+}
+
+func (x *SubmitEnrollmentQuizAttemptRequest) GetLastPosition() *structpb.Struct {
+	if x != nil {
+		return x.LastPosition
+	}
+	return nil
+}
+
+func (x *SubmitEnrollmentQuizAttemptRequest) GetIdempotencyKey() string {
+	if x != nil {
+		return x.IdempotencyKey
+	}
+	return ""
+}
+
+type SubmitEnrollmentQuizAttemptResponse struct {
+	state         protoimpl.MessageState      `protogen:"open.v1"`
+	Attempt       *EnrollmentQuizAttempt      `protobuf:"bytes,1,opt,name=attempt,proto3" json:"attempt,omitempty"`
+	Progress      *EnrollmentProgressSnapshot `protobuf:"bytes,2,opt,name=progress,proto3" json:"progress,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SubmitEnrollmentQuizAttemptResponse) Reset() {
+	*x = SubmitEnrollmentQuizAttemptResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[147]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SubmitEnrollmentQuizAttemptResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SubmitEnrollmentQuizAttemptResponse) ProtoMessage() {}
+
+func (x *SubmitEnrollmentQuizAttemptResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[147]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SubmitEnrollmentQuizAttemptResponse.ProtoReflect.Descriptor instead.
+func (*SubmitEnrollmentQuizAttemptResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{147}
+}
+
+func (x *SubmitEnrollmentQuizAttemptResponse) GetAttempt() *EnrollmentQuizAttempt {
+	if x != nil {
+		return x.Attempt
+	}
+	return nil
+}
+
+func (x *SubmitEnrollmentQuizAttemptResponse) GetProgress() *EnrollmentProgressSnapshot {
+	if x != nil {
+		return x.Progress
+	}
+	return nil
+}
+
+type GetEnrollmentReportRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	EnrollmentId  string                 `protobuf:"bytes,1,opt,name=enrollment_id,json=enrollmentId,proto3" json:"enrollment_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetEnrollmentReportRequest) Reset() {
+	*x = GetEnrollmentReportRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[148]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetEnrollmentReportRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetEnrollmentReportRequest) ProtoMessage() {}
+
+func (x *GetEnrollmentReportRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[148]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetEnrollmentReportRequest.ProtoReflect.Descriptor instead.
+func (*GetEnrollmentReportRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{148}
+}
+
+func (x *GetEnrollmentReportRequest) GetEnrollmentId() string {
+	if x != nil {
+		return x.EnrollmentId
+	}
+	return ""
+}
+
+type GetEnrollmentReportResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Report        *EnrollmentReport      `protobuf:"bytes,1,opt,name=report,proto3" json:"report,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetEnrollmentReportResponse) Reset() {
+	*x = GetEnrollmentReportResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[149]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetEnrollmentReportResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetEnrollmentReportResponse) ProtoMessage() {}
+
+func (x *GetEnrollmentReportResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[149]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetEnrollmentReportResponse.ProtoReflect.Descriptor instead.
+func (*GetEnrollmentReportResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{149}
+}
+
+func (x *GetEnrollmentReportResponse) GetReport() *EnrollmentReport {
+	if x != nil {
+		return x.Report
+	}
+	return nil
+}
+
+type GetPartnerCourseGroupsRequest struct {
+	state         protoimpl.MessageState    `protogen:"open.v1"`
+	Lifecycle     *CourseLifecycleStatus    `protobuf:"varint,1,opt,name=lifecycle,proto3,enum=teamos.academy.v1.CourseLifecycleStatus,oneof" json:"lifecycle,omitempty"`
+	Distribution  *CourseDistributionStatus `protobuf:"varint,2,opt,name=distribution,proto3,enum=teamos.academy.v1.CourseDistributionStatus,oneof" json:"distribution,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetPartnerCourseGroupsRequest) Reset() {
+	*x = GetPartnerCourseGroupsRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[150]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPartnerCourseGroupsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPartnerCourseGroupsRequest) ProtoMessage() {}
+
+func (x *GetPartnerCourseGroupsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[150]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPartnerCourseGroupsRequest.ProtoReflect.Descriptor instead.
+func (*GetPartnerCourseGroupsRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{150}
+}
+
+func (x *GetPartnerCourseGroupsRequest) GetLifecycle() CourseLifecycleStatus {
+	if x != nil && x.Lifecycle != nil {
+		return *x.Lifecycle
+	}
+	return CourseLifecycleStatus_COURSE_LIFECYCLE_STATUS_UNSPECIFIED
+}
+
+func (x *GetPartnerCourseGroupsRequest) GetDistribution() CourseDistributionStatus {
+	if x != nil && x.Distribution != nil {
+		return *x.Distribution
+	}
+	return CourseDistributionStatus_COURSE_DISTRIBUTION_STATUS_UNSPECIFIED
+}
+
+type GetPartnerCourseGroupsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Groups        []*PartnerCourseGroup  `protobuf:"bytes,1,rep,name=groups,proto3" json:"groups,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetPartnerCourseGroupsResponse) Reset() {
+	*x = GetPartnerCourseGroupsResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[151]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPartnerCourseGroupsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPartnerCourseGroupsResponse) ProtoMessage() {}
+
+func (x *GetPartnerCourseGroupsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[151]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPartnerCourseGroupsResponse.ProtoReflect.Descriptor instead.
+func (*GetPartnerCourseGroupsResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{151}
+}
+
+func (x *GetPartnerCourseGroupsResponse) GetGroups() []*PartnerCourseGroup {
+	if x != nil {
+		return x.Groups
+	}
+	return nil
+}
+
+type GetPartnerCoursesReportRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	PartnerId     string                 `protobuf:"bytes,1,opt,name=partner_id,json=partnerId,proto3" json:"partner_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetPartnerCoursesReportRequest) Reset() {
+	*x = GetPartnerCoursesReportRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[152]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPartnerCoursesReportRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPartnerCoursesReportRequest) ProtoMessage() {}
+
+func (x *GetPartnerCoursesReportRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[152]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPartnerCoursesReportRequest.ProtoReflect.Descriptor instead.
+func (*GetPartnerCoursesReportRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{152}
+}
+
+func (x *GetPartnerCoursesReportRequest) GetPartnerId() string {
+	if x != nil {
+		return x.PartnerId
+	}
+	return ""
+}
+
+type GetPartnerCoursesReportResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Report        *PartnerCoursesReport  `protobuf:"bytes,1,opt,name=report,proto3" json:"report,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetPartnerCoursesReportResponse) Reset() {
+	*x = GetPartnerCoursesReportResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[153]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPartnerCoursesReportResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPartnerCoursesReportResponse) ProtoMessage() {}
+
+func (x *GetPartnerCoursesReportResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[153]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPartnerCoursesReportResponse.ProtoReflect.Descriptor instead.
+func (*GetPartnerCoursesReportResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{153}
+}
+
+func (x *GetPartnerCoursesReportResponse) GetReport() *PartnerCoursesReport {
+	if x != nil {
+		return x.Report
+	}
+	return nil
+}
+
+type GetCourseVersionPreviewRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CourseId      string                 `protobuf:"bytes,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	VersionId     string                 `protobuf:"bytes,2,opt,name=version_id,json=versionId,proto3" json:"version_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetCourseVersionPreviewRequest) Reset() {
+	*x = GetCourseVersionPreviewRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[154]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCourseVersionPreviewRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCourseVersionPreviewRequest) ProtoMessage() {}
+
+func (x *GetCourseVersionPreviewRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[154]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCourseVersionPreviewRequest.ProtoReflect.Descriptor instead.
+func (*GetCourseVersionPreviewRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{154}
+}
+
+func (x *GetCourseVersionPreviewRequest) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+func (x *GetCourseVersionPreviewRequest) GetVersionId() string {
+	if x != nil {
+		return x.VersionId
+	}
+	return ""
+}
+
+type GetCourseVersionPreviewResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Preview       *CourseVersionPreview  `protobuf:"bytes,1,opt,name=preview,proto3" json:"preview,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetCourseVersionPreviewResponse) Reset() {
+	*x = GetCourseVersionPreviewResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[155]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCourseVersionPreviewResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCourseVersionPreviewResponse) ProtoMessage() {}
+
+func (x *GetCourseVersionPreviewResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[155]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCourseVersionPreviewResponse.ProtoReflect.Descriptor instead.
+func (*GetCourseVersionPreviewResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{155}
+}
+
+func (x *GetCourseVersionPreviewResponse) GetPreview() *CourseVersionPreview {
+	if x != nil {
+		return x.Preview
+	}
+	return nil
+}
+
+type SubmitCoursePreviewQuizAttemptRequest struct {
+	state         protoimpl.MessageState  `protogen:"open.v1"`
+	CourseId      string                  `protobuf:"bytes,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	VersionId     string                  `protobuf:"bytes,2,opt,name=version_id,json=versionId,proto3" json:"version_id,omitempty"`
+	QuizVersionId string                  `protobuf:"bytes,3,opt,name=quiz_version_id,json=quizVersionId,proto3" json:"quiz_version_id,omitempty"`
+	Answers       []*EnrollmentQuizAnswer `protobuf:"bytes,4,rep,name=answers,proto3" json:"answers,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SubmitCoursePreviewQuizAttemptRequest) Reset() {
+	*x = SubmitCoursePreviewQuizAttemptRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[156]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SubmitCoursePreviewQuizAttemptRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SubmitCoursePreviewQuizAttemptRequest) ProtoMessage() {}
+
+func (x *SubmitCoursePreviewQuizAttemptRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[156]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SubmitCoursePreviewQuizAttemptRequest.ProtoReflect.Descriptor instead.
+func (*SubmitCoursePreviewQuizAttemptRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{156}
+}
+
+func (x *SubmitCoursePreviewQuizAttemptRequest) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+func (x *SubmitCoursePreviewQuizAttemptRequest) GetVersionId() string {
+	if x != nil {
+		return x.VersionId
+	}
+	return ""
+}
+
+func (x *SubmitCoursePreviewQuizAttemptRequest) GetQuizVersionId() string {
+	if x != nil {
+		return x.QuizVersionId
+	}
+	return ""
+}
+
+func (x *SubmitCoursePreviewQuizAttemptRequest) GetAnswers() []*EnrollmentQuizAnswer {
+	if x != nil {
+		return x.Answers
+	}
+	return nil
+}
+
+type SubmitCoursePreviewQuizAttemptResponse struct {
+	state         protoimpl.MessageState          `protogen:"open.v1"`
+	Result        *CoursePreviewQuizAttemptResult `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SubmitCoursePreviewQuizAttemptResponse) Reset() {
+	*x = SubmitCoursePreviewQuizAttemptResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[157]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SubmitCoursePreviewQuizAttemptResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SubmitCoursePreviewQuizAttemptResponse) ProtoMessage() {}
+
+func (x *SubmitCoursePreviewQuizAttemptResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[157]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SubmitCoursePreviewQuizAttemptResponse.ProtoReflect.Descriptor instead.
+func (*SubmitCoursePreviewQuizAttemptResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{157}
+}
+
+func (x *SubmitCoursePreviewQuizAttemptResponse) GetResult() *CoursePreviewQuizAttemptResult {
+	if x != nil {
+		return x.Result
+	}
+	return nil
+}
+
+type PausePartnerCourseDistributionRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CourseId      string                 `protobuf:"bytes,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	Reason        string                 `protobuf:"bytes,2,opt,name=reason,proto3" json:"reason,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PausePartnerCourseDistributionRequest) Reset() {
+	*x = PausePartnerCourseDistributionRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[158]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PausePartnerCourseDistributionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PausePartnerCourseDistributionRequest) ProtoMessage() {}
+
+func (x *PausePartnerCourseDistributionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[158]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PausePartnerCourseDistributionRequest.ProtoReflect.Descriptor instead.
+func (*PausePartnerCourseDistributionRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{158}
+}
+
+func (x *PausePartnerCourseDistributionRequest) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+func (x *PausePartnerCourseDistributionRequest) GetReason() string {
+	if x != nil {
+		return x.Reason
+	}
+	return ""
+}
+
+type PausePartnerCourseDistributionResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Restriction   *CourseRestriction     `protobuf:"bytes,1,opt,name=restriction,proto3" json:"restriction,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PausePartnerCourseDistributionResponse) Reset() {
+	*x = PausePartnerCourseDistributionResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[159]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PausePartnerCourseDistributionResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PausePartnerCourseDistributionResponse) ProtoMessage() {}
+
+func (x *PausePartnerCourseDistributionResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[159]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PausePartnerCourseDistributionResponse.ProtoReflect.Descriptor instead.
+func (*PausePartnerCourseDistributionResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{159}
+}
+
+func (x *PausePartnerCourseDistributionResponse) GetRestriction() *CourseRestriction {
+	if x != nil {
+		return x.Restriction
+	}
+	return nil
+}
+
+type BlockPartnerCourseRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CourseId      string                 `protobuf:"bytes,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	Reason        string                 `protobuf:"bytes,2,opt,name=reason,proto3" json:"reason,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BlockPartnerCourseRequest) Reset() {
+	*x = BlockPartnerCourseRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[160]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BlockPartnerCourseRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BlockPartnerCourseRequest) ProtoMessage() {}
+
+func (x *BlockPartnerCourseRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[160]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BlockPartnerCourseRequest.ProtoReflect.Descriptor instead.
+func (*BlockPartnerCourseRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{160}
+}
+
+func (x *BlockPartnerCourseRequest) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+func (x *BlockPartnerCourseRequest) GetReason() string {
+	if x != nil {
+		return x.Reason
+	}
+	return ""
+}
+
+type BlockPartnerCourseResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Restriction   *CourseRestriction     `protobuf:"bytes,1,opt,name=restriction,proto3" json:"restriction,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BlockPartnerCourseResponse) Reset() {
+	*x = BlockPartnerCourseResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[161]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BlockPartnerCourseResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BlockPartnerCourseResponse) ProtoMessage() {}
+
+func (x *BlockPartnerCourseResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[161]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BlockPartnerCourseResponse.ProtoReflect.Descriptor instead.
+func (*BlockPartnerCourseResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{161}
+}
+
+func (x *BlockPartnerCourseResponse) GetRestriction() *CourseRestriction {
+	if x != nil {
+		return x.Restriction
+	}
+	return nil
+}
+
+type ResolvePartnerCourseRestrictionRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CourseId      string                 `protobuf:"bytes,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	Reason        string                 `protobuf:"bytes,2,opt,name=reason,proto3" json:"reason,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ResolvePartnerCourseRestrictionRequest) Reset() {
+	*x = ResolvePartnerCourseRestrictionRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[162]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResolvePartnerCourseRestrictionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResolvePartnerCourseRestrictionRequest) ProtoMessage() {}
+
+func (x *ResolvePartnerCourseRestrictionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[162]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResolvePartnerCourseRestrictionRequest.ProtoReflect.Descriptor instead.
+func (*ResolvePartnerCourseRestrictionRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{162}
+}
+
+func (x *ResolvePartnerCourseRestrictionRequest) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+func (x *ResolvePartnerCourseRestrictionRequest) GetReason() string {
+	if x != nil {
+		return x.Reason
+	}
+	return ""
+}
+
+type ResolvePartnerCourseRestrictionResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Restriction   *CourseRestriction     `protobuf:"bytes,1,opt,name=restriction,proto3" json:"restriction,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ResolvePartnerCourseRestrictionResponse) Reset() {
+	*x = ResolvePartnerCourseRestrictionResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[163]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResolvePartnerCourseRestrictionResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResolvePartnerCourseRestrictionResponse) ProtoMessage() {}
+
+func (x *ResolvePartnerCourseRestrictionResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[163]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResolvePartnerCourseRestrictionResponse.ProtoReflect.Descriptor instead.
+func (*ResolvePartnerCourseRestrictionResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{163}
+}
+
+func (x *ResolvePartnerCourseRestrictionResponse) GetRestriction() *CourseRestriction {
+	if x != nil {
+		return x.Restriction
+	}
+	return nil
+}
+
+type GetCourseRestrictionsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CourseId      string                 `protobuf:"bytes,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetCourseRestrictionsRequest) Reset() {
+	*x = GetCourseRestrictionsRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[164]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCourseRestrictionsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCourseRestrictionsRequest) ProtoMessage() {}
+
+func (x *GetCourseRestrictionsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[164]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCourseRestrictionsRequest.ProtoReflect.Descriptor instead.
+func (*GetCourseRestrictionsRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{164}
+}
+
+func (x *GetCourseRestrictionsRequest) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+type GetCourseRestrictionsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Restrictions  []*CourseRestriction   `protobuf:"bytes,1,rep,name=restrictions,proto3" json:"restrictions,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetCourseRestrictionsResponse) Reset() {
+	*x = GetCourseRestrictionsResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[165]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCourseRestrictionsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCourseRestrictionsResponse) ProtoMessage() {}
+
+func (x *GetCourseRestrictionsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[165]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCourseRestrictionsResponse.ProtoReflect.Descriptor instead.
+func (*GetCourseRestrictionsResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{165}
+}
+
+func (x *GetCourseRestrictionsResponse) GetRestrictions() []*CourseRestriction {
+	if x != nil {
+		return x.Restrictions
+	}
+	return nil
+}
+
+type CopyPartnerCourseVersionToCompanyRequest struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	CourseId       string                 `protobuf:"bytes,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	VersionId      string                 `protobuf:"bytes,2,opt,name=version_id,json=versionId,proto3" json:"version_id,omitempty"`
+	IdempotencyKey string                 `protobuf:"bytes,3,opt,name=idempotency_key,json=idempotencyKey,proto3" json:"idempotency_key,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *CopyPartnerCourseVersionToCompanyRequest) Reset() {
+	*x = CopyPartnerCourseVersionToCompanyRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[166]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CopyPartnerCourseVersionToCompanyRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CopyPartnerCourseVersionToCompanyRequest) ProtoMessage() {}
+
+func (x *CopyPartnerCourseVersionToCompanyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[166]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CopyPartnerCourseVersionToCompanyRequest.ProtoReflect.Descriptor instead.
+func (*CopyPartnerCourseVersionToCompanyRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{166}
+}
+
+func (x *CopyPartnerCourseVersionToCompanyRequest) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+func (x *CopyPartnerCourseVersionToCompanyRequest) GetVersionId() string {
+	if x != nil {
+		return x.VersionId
+	}
+	return ""
+}
+
+func (x *CopyPartnerCourseVersionToCompanyRequest) GetIdempotencyKey() string {
+	if x != nil {
+		return x.IdempotencyKey
+	}
+	return ""
+}
+
+type CopyPartnerCourseVersionToCompanyResponse struct {
+	state         protoimpl.MessageState   `protogen:"open.v1"`
+	Result        *PartnerCourseCopyResult `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CopyPartnerCourseVersionToCompanyResponse) Reset() {
+	*x = CopyPartnerCourseVersionToCompanyResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[167]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CopyPartnerCourseVersionToCompanyResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CopyPartnerCourseVersionToCompanyResponse) ProtoMessage() {}
+
+func (x *CopyPartnerCourseVersionToCompanyResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[167]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CopyPartnerCourseVersionToCompanyResponse.ProtoReflect.Descriptor instead.
+func (*CopyPartnerCourseVersionToCompanyResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{167}
+}
+
+func (x *CopyPartnerCourseVersionToCompanyResponse) GetResult() *PartnerCourseCopyResult {
+	if x != nil {
+		return x.Result
+	}
+	return nil
+}
+
+type GetCourseTemplatesRequest struct {
+	state           protoimpl.MessageState         `protogen:"open.v1"`
+	Type            *CourseTemplateType            `protobuf:"varint,1,opt,name=type,proto3,enum=teamos.academy.v1.CourseTemplateType,oneof" json:"type,omitempty"`
+	LifecycleStatus *CourseTemplateLifecycleStatus `protobuf:"varint,2,opt,name=lifecycle_status,json=lifecycleStatus,proto3,enum=teamos.academy.v1.CourseTemplateLifecycleStatus,oneof" json:"lifecycle_status,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *GetCourseTemplatesRequest) Reset() {
+	*x = GetCourseTemplatesRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[168]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCourseTemplatesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCourseTemplatesRequest) ProtoMessage() {}
+
+func (x *GetCourseTemplatesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[168]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCourseTemplatesRequest.ProtoReflect.Descriptor instead.
+func (*GetCourseTemplatesRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{168}
+}
+
+func (x *GetCourseTemplatesRequest) GetType() CourseTemplateType {
+	if x != nil && x.Type != nil {
+		return *x.Type
+	}
+	return CourseTemplateType_COURSE_TEMPLATE_TYPE_UNSPECIFIED
+}
+
+func (x *GetCourseTemplatesRequest) GetLifecycleStatus() CourseTemplateLifecycleStatus {
+	if x != nil && x.LifecycleStatus != nil {
+		return *x.LifecycleStatus
+	}
+	return CourseTemplateLifecycleStatus_COURSE_TEMPLATE_LIFECYCLE_STATUS_UNSPECIFIED
+}
+
+type GetCourseTemplatesResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Templates     []*CourseTemplate      `protobuf:"bytes,1,rep,name=templates,proto3" json:"templates,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetCourseTemplatesResponse) Reset() {
+	*x = GetCourseTemplatesResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[169]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCourseTemplatesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCourseTemplatesResponse) ProtoMessage() {}
+
+func (x *GetCourseTemplatesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[169]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCourseTemplatesResponse.ProtoReflect.Descriptor instead.
+func (*GetCourseTemplatesResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{169}
+}
+
+func (x *GetCourseTemplatesResponse) GetTemplates() []*CourseTemplate {
+	if x != nil {
+		return x.Templates
+	}
+	return nil
+}
+
+type GetCourseTemplateRequest struct {
+	state      protoimpl.MessageState `protogen:"open.v1"`
+	TemplateId string                 `protobuf:"bytes,1,opt,name=template_id,json=templateId,proto3" json:"template_id,omitempty"`
+	// When present, includes content for exactly this immutable/draft version.
+	VersionId     *string `protobuf:"bytes,2,opt,name=version_id,json=versionId,proto3,oneof" json:"version_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetCourseTemplateRequest) Reset() {
+	*x = GetCourseTemplateRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[170]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCourseTemplateRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCourseTemplateRequest) ProtoMessage() {}
+
+func (x *GetCourseTemplateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[170]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCourseTemplateRequest.ProtoReflect.Descriptor instead.
+func (*GetCourseTemplateRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{170}
+}
+
+func (x *GetCourseTemplateRequest) GetTemplateId() string {
+	if x != nil {
+		return x.TemplateId
+	}
+	return ""
+}
+
+func (x *GetCourseTemplateRequest) GetVersionId() string {
+	if x != nil && x.VersionId != nil {
+		return *x.VersionId
+	}
+	return ""
+}
+
+type GetCourseTemplateResponse struct {
+	state           protoimpl.MessageState        `protogen:"open.v1"`
+	Template        *CourseTemplate               `protobuf:"bytes,1,opt,name=template,proto3" json:"template,omitempty"`
+	Versions        []*CourseTemplateVersion      `protobuf:"bytes,2,rep,name=versions,proto3" json:"versions,omitempty"`
+	SelectedVersion *CourseTemplateVersionDetails `protobuf:"bytes,3,opt,name=selected_version,json=selectedVersion,proto3,oneof" json:"selected_version,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *GetCourseTemplateResponse) Reset() {
+	*x = GetCourseTemplateResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[171]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCourseTemplateResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCourseTemplateResponse) ProtoMessage() {}
+
+func (x *GetCourseTemplateResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[171]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCourseTemplateResponse.ProtoReflect.Descriptor instead.
+func (*GetCourseTemplateResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{171}
+}
+
+func (x *GetCourseTemplateResponse) GetTemplate() *CourseTemplate {
+	if x != nil {
+		return x.Template
+	}
+	return nil
+}
+
+func (x *GetCourseTemplateResponse) GetVersions() []*CourseTemplateVersion {
+	if x != nil {
+		return x.Versions
+	}
+	return nil
+}
+
+func (x *GetCourseTemplateResponse) GetSelectedVersion() *CourseTemplateVersionDetails {
+	if x != nil {
+		return x.SelectedVersion
+	}
+	return nil
+}
+
+type CreateCourseTemplateRequest struct {
+	state         protoimpl.MessageState           `protogen:"open.v1"`
+	Title         string                           `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	Description   *string                          `protobuf:"bytes,2,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	CoverFileId   *string                          `protobuf:"bytes,3,opt,name=cover_file_id,json=coverFileId,proto3,oneof" json:"cover_file_id,omitempty"`
+	Sequential    *bool                            `protobuf:"varint,4,opt,name=sequential,proto3,oneof" json:"sequential,omitempty"`
+	Content       *CourseTemplateDraftContentInput `protobuf:"bytes,5,opt,name=content,proto3,oneof" json:"content,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateCourseTemplateRequest) Reset() {
+	*x = CreateCourseTemplateRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[172]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateCourseTemplateRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateCourseTemplateRequest) ProtoMessage() {}
+
+func (x *CreateCourseTemplateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[172]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateCourseTemplateRequest.ProtoReflect.Descriptor instead.
+func (*CreateCourseTemplateRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{172}
+}
+
+func (x *CreateCourseTemplateRequest) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *CreateCourseTemplateRequest) GetDescription() string {
+	if x != nil && x.Description != nil {
+		return *x.Description
+	}
+	return ""
+}
+
+func (x *CreateCourseTemplateRequest) GetCoverFileId() string {
+	if x != nil && x.CoverFileId != nil {
+		return *x.CoverFileId
+	}
+	return ""
+}
+
+func (x *CreateCourseTemplateRequest) GetSequential() bool {
+	if x != nil && x.Sequential != nil {
+		return *x.Sequential
+	}
+	return false
+}
+
+func (x *CreateCourseTemplateRequest) GetContent() *CourseTemplateDraftContentInput {
+	if x != nil {
+		return x.Content
+	}
+	return nil
+}
+
+type CreateCourseTemplateResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Template      *CourseTemplate        `protobuf:"bytes,1,opt,name=template,proto3" json:"template,omitempty"`
+	Draft         *CourseTemplateVersion `protobuf:"bytes,2,opt,name=draft,proto3" json:"draft,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateCourseTemplateResponse) Reset() {
+	*x = CreateCourseTemplateResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[173]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateCourseTemplateResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateCourseTemplateResponse) ProtoMessage() {}
+
+func (x *CreateCourseTemplateResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[173]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateCourseTemplateResponse.ProtoReflect.Descriptor instead.
+func (*CreateCourseTemplateResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{173}
+}
+
+func (x *CreateCourseTemplateResponse) GetTemplate() *CourseTemplate {
+	if x != nil {
+		return x.Template
+	}
+	return nil
+}
+
+func (x *CreateCourseTemplateResponse) GetDraft() *CourseTemplateVersion {
+	if x != nil {
+		return x.Draft
+	}
+	return nil
+}
+
+type UpdateCourseTemplateDraftRequest struct {
+	state       protoimpl.MessageState `protogen:"open.v1"`
+	TemplateId  string                 `protobuf:"bytes,1,opt,name=template_id,json=templateId,proto3" json:"template_id,omitempty"`
+	Title       *string                `protobuf:"bytes,2,opt,name=title,proto3,oneof" json:"title,omitempty"`
+	Description *string                `protobuf:"bytes,3,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	CoverFileId *string                `protobuf:"bytes,4,opt,name=cover_file_id,json=coverFileId,proto3,oneof" json:"cover_file_id,omitempty"`
+	Sequential  *bool                  `protobuf:"varint,5,opt,name=sequential,proto3,oneof" json:"sequential,omitempty"`
+	// Supplying content atomically replaces the draft content. Published
+	// versions are immutable and can never be targeted by this command.
+	Content       *CourseTemplateDraftContentInput `protobuf:"bytes,6,opt,name=content,proto3,oneof" json:"content,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateCourseTemplateDraftRequest) Reset() {
+	*x = UpdateCourseTemplateDraftRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[174]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateCourseTemplateDraftRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateCourseTemplateDraftRequest) ProtoMessage() {}
+
+func (x *UpdateCourseTemplateDraftRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[174]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateCourseTemplateDraftRequest.ProtoReflect.Descriptor instead.
+func (*UpdateCourseTemplateDraftRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{174}
+}
+
+func (x *UpdateCourseTemplateDraftRequest) GetTemplateId() string {
+	if x != nil {
+		return x.TemplateId
+	}
+	return ""
+}
+
+func (x *UpdateCourseTemplateDraftRequest) GetTitle() string {
+	if x != nil && x.Title != nil {
+		return *x.Title
+	}
+	return ""
+}
+
+func (x *UpdateCourseTemplateDraftRequest) GetDescription() string {
+	if x != nil && x.Description != nil {
+		return *x.Description
+	}
+	return ""
+}
+
+func (x *UpdateCourseTemplateDraftRequest) GetCoverFileId() string {
+	if x != nil && x.CoverFileId != nil {
+		return *x.CoverFileId
+	}
+	return ""
+}
+
+func (x *UpdateCourseTemplateDraftRequest) GetSequential() bool {
+	if x != nil && x.Sequential != nil {
+		return *x.Sequential
+	}
+	return false
+}
+
+func (x *UpdateCourseTemplateDraftRequest) GetContent() *CourseTemplateDraftContentInput {
+	if x != nil {
+		return x.Content
+	}
+	return nil
+}
+
+type UpdateCourseTemplateDraftResponse struct {
+	state         protoimpl.MessageState        `protogen:"open.v1"`
+	Draft         *CourseTemplateVersionDetails `protobuf:"bytes,1,opt,name=draft,proto3" json:"draft,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateCourseTemplateDraftResponse) Reset() {
+	*x = UpdateCourseTemplateDraftResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[175]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateCourseTemplateDraftResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateCourseTemplateDraftResponse) ProtoMessage() {}
+
+func (x *UpdateCourseTemplateDraftResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[175]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateCourseTemplateDraftResponse.ProtoReflect.Descriptor instead.
+func (*UpdateCourseTemplateDraftResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{175}
+}
+
+func (x *UpdateCourseTemplateDraftResponse) GetDraft() *CourseTemplateVersionDetails {
+	if x != nil {
+		return x.Draft
+	}
+	return nil
+}
+
+type CreateCourseTemplateDraftRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	TemplateId    string                 `protobuf:"bytes,1,opt,name=template_id,json=templateId,proto3" json:"template_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateCourseTemplateDraftRequest) Reset() {
+	*x = CreateCourseTemplateDraftRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[176]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateCourseTemplateDraftRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateCourseTemplateDraftRequest) ProtoMessage() {}
+
+func (x *CreateCourseTemplateDraftRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[176]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateCourseTemplateDraftRequest.ProtoReflect.Descriptor instead.
+func (*CreateCourseTemplateDraftRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{176}
+}
+
+func (x *CreateCourseTemplateDraftRequest) GetTemplateId() string {
+	if x != nil {
+		return x.TemplateId
+	}
+	return ""
+}
+
+type CreateCourseTemplateDraftResponse struct {
+	state         protoimpl.MessageState        `protogen:"open.v1"`
+	Draft         *CourseTemplateVersionDetails `protobuf:"bytes,1,opt,name=draft,proto3" json:"draft,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateCourseTemplateDraftResponse) Reset() {
+	*x = CreateCourseTemplateDraftResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[177]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateCourseTemplateDraftResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateCourseTemplateDraftResponse) ProtoMessage() {}
+
+func (x *CreateCourseTemplateDraftResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[177]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateCourseTemplateDraftResponse.ProtoReflect.Descriptor instead.
+func (*CreateCourseTemplateDraftResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{177}
+}
+
+func (x *CreateCourseTemplateDraftResponse) GetDraft() *CourseTemplateVersionDetails {
+	if x != nil {
+		return x.Draft
+	}
+	return nil
+}
+
+type PublishCourseTemplateVersionRequest struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	TemplateId     string                 `protobuf:"bytes,1,opt,name=template_id,json=templateId,proto3" json:"template_id,omitempty"`
+	IdempotencyKey string                 `protobuf:"bytes,2,opt,name=idempotency_key,json=idempotencyKey,proto3" json:"idempotency_key,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *PublishCourseTemplateVersionRequest) Reset() {
+	*x = PublishCourseTemplateVersionRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[178]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PublishCourseTemplateVersionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PublishCourseTemplateVersionRequest) ProtoMessage() {}
+
+func (x *PublishCourseTemplateVersionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[178]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PublishCourseTemplateVersionRequest.ProtoReflect.Descriptor instead.
+func (*PublishCourseTemplateVersionRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{178}
+}
+
+func (x *PublishCourseTemplateVersionRequest) GetTemplateId() string {
+	if x != nil {
+		return x.TemplateId
+	}
+	return ""
+}
+
+func (x *PublishCourseTemplateVersionRequest) GetIdempotencyKey() string {
+	if x != nil {
+		return x.IdempotencyKey
+	}
+	return ""
+}
+
+type PublishCourseTemplateVersionResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Version       *CourseTemplateVersion `protobuf:"bytes,1,opt,name=version,proto3" json:"version,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PublishCourseTemplateVersionResponse) Reset() {
+	*x = PublishCourseTemplateVersionResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[179]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PublishCourseTemplateVersionResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PublishCourseTemplateVersionResponse) ProtoMessage() {}
+
+func (x *PublishCourseTemplateVersionResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[179]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PublishCourseTemplateVersionResponse.ProtoReflect.Descriptor instead.
+func (*PublishCourseTemplateVersionResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{179}
+}
+
+func (x *PublishCourseTemplateVersionResponse) GetVersion() *CourseTemplateVersion {
+	if x != nil {
+		return x.Version
+	}
+	return nil
+}
+
+type ArchiveCourseTemplateRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	TemplateId    string                 `protobuf:"bytes,1,opt,name=template_id,json=templateId,proto3" json:"template_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ArchiveCourseTemplateRequest) Reset() {
+	*x = ArchiveCourseTemplateRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[180]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ArchiveCourseTemplateRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ArchiveCourseTemplateRequest) ProtoMessage() {}
+
+func (x *ArchiveCourseTemplateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[180]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ArchiveCourseTemplateRequest.ProtoReflect.Descriptor instead.
+func (*ArchiveCourseTemplateRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{180}
+}
+
+func (x *ArchiveCourseTemplateRequest) GetTemplateId() string {
+	if x != nil {
+		return x.TemplateId
+	}
+	return ""
+}
+
+type ArchiveCourseTemplateResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Template      *CourseTemplate        `protobuf:"bytes,1,opt,name=template,proto3" json:"template,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ArchiveCourseTemplateResponse) Reset() {
+	*x = ArchiveCourseTemplateResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[181]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ArchiveCourseTemplateResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ArchiveCourseTemplateResponse) ProtoMessage() {}
+
+func (x *ArchiveCourseTemplateResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[181]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ArchiveCourseTemplateResponse.ProtoReflect.Descriptor instead.
+func (*ArchiveCourseTemplateResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{181}
+}
+
+func (x *ArchiveCourseTemplateResponse) GetTemplate() *CourseTemplate {
+	if x != nil {
+		return x.Template
+	}
+	return nil
+}
+
+type InstantiateCourseTemplateVersionRequest struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	VersionId      string                 `protobuf:"bytes,1,opt,name=version_id,json=versionId,proto3" json:"version_id,omitempty"`
+	IdempotencyKey string                 `protobuf:"bytes,2,opt,name=idempotency_key,json=idempotencyKey,proto3" json:"idempotency_key,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *InstantiateCourseTemplateVersionRequest) Reset() {
+	*x = InstantiateCourseTemplateVersionRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[182]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *InstantiateCourseTemplateVersionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*InstantiateCourseTemplateVersionRequest) ProtoMessage() {}
+
+func (x *InstantiateCourseTemplateVersionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[182]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use InstantiateCourseTemplateVersionRequest.ProtoReflect.Descriptor instead.
+func (*InstantiateCourseTemplateVersionRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{182}
+}
+
+func (x *InstantiateCourseTemplateVersionRequest) GetVersionId() string {
+	if x != nil {
+		return x.VersionId
+	}
+	return ""
+}
+
+func (x *InstantiateCourseTemplateVersionRequest) GetIdempotencyKey() string {
+	if x != nil {
+		return x.IdempotencyKey
+	}
+	return ""
+}
+
+type InstantiateCourseTemplateVersionResponse struct {
+	state         protoimpl.MessageState             `protogen:"open.v1"`
+	Result        *CourseTemplateInstantiationResult `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *InstantiateCourseTemplateVersionResponse) Reset() {
+	*x = InstantiateCourseTemplateVersionResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[183]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *InstantiateCourseTemplateVersionResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*InstantiateCourseTemplateVersionResponse) ProtoMessage() {}
+
+func (x *InstantiateCourseTemplateVersionResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[183]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use InstantiateCourseTemplateVersionResponse.ProtoReflect.Descriptor instead.
+func (*InstantiateCourseTemplateVersionResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{183}
+}
+
+func (x *InstantiateCourseTemplateVersionResponse) GetResult() *CourseTemplateInstantiationResult {
+	if x != nil {
+		return x.Result
+	}
+	return nil
+}
+
+type ExternalPersonalAccess struct {
+	state              protoimpl.MessageState       `protogen:"open.v1"`
+	Id                 string                       `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	CompanyId          string                       `protobuf:"bytes,2,opt,name=company_id,json=companyId,proto3" json:"company_id,omitempty"`
+	CourseId           string                       `protobuf:"bytes,3,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	CourseVersionId    string                       `protobuf:"bytes,4,opt,name=course_version_id,json=courseVersionId,proto3" json:"course_version_id,omitempty"`
+	PartnerOwnerId     string                       `protobuf:"bytes,5,opt,name=partner_owner_id,json=partnerOwnerId,proto3" json:"partner_owner_id,omitempty"`
+	ExternalLearnerId  *string                      `protobuf:"bytes,6,opt,name=external_learner_id,json=externalLearnerId,proto3,oneof" json:"external_learner_id,omitempty"`
+	ExpectedEmail      string                       `protobuf:"bytes,7,opt,name=expected_email,json=expectedEmail,proto3" json:"expected_email,omitempty"`
+	RecipientFirstName *string                      `protobuf:"bytes,8,opt,name=recipient_first_name,json=recipientFirstName,proto3,oneof" json:"recipient_first_name,omitempty"`
+	RecipientLastName  *string                      `protobuf:"bytes,9,opt,name=recipient_last_name,json=recipientLastName,proto3,oneof" json:"recipient_last_name,omitempty"`
+	DeadlineDays       uint32                       `protobuf:"varint,10,opt,name=deadline_days,json=deadlineDays,proto3" json:"deadline_days,omitempty"`
+	Status             ExternalPersonalAccessStatus `protobuf:"varint,11,opt,name=status,proto3,enum=teamos.academy.v1.ExternalPersonalAccessStatus" json:"status,omitempty"`
+	TokenPrefix        string                       `protobuf:"bytes,12,opt,name=token_prefix,json=tokenPrefix,proto3" json:"token_prefix,omitempty"`
+	EnrollmentId       *string                      `protobuf:"bytes,13,opt,name=enrollment_id,json=enrollmentId,proto3,oneof" json:"enrollment_id,omitempty"`
+	IssuedById         string                       `protobuf:"bytes,14,opt,name=issued_by_id,json=issuedById,proto3" json:"issued_by_id,omitempty"`
+	IssuedAt           *timestamppb.Timestamp       `protobuf:"bytes,15,opt,name=issued_at,json=issuedAt,proto3" json:"issued_at,omitempty"`
+	ActivatedAt        *timestamppb.Timestamp       `protobuf:"bytes,16,opt,name=activated_at,json=activatedAt,proto3,oneof" json:"activated_at,omitempty"`
+	RevokedAt          *timestamppb.Timestamp       `protobuf:"bytes,17,opt,name=revoked_at,json=revokedAt,proto3,oneof" json:"revoked_at,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *ExternalPersonalAccess) Reset() {
+	*x = ExternalPersonalAccess{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[184]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExternalPersonalAccess) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExternalPersonalAccess) ProtoMessage() {}
+
+func (x *ExternalPersonalAccess) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[184]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExternalPersonalAccess.ProtoReflect.Descriptor instead.
+func (*ExternalPersonalAccess) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{184}
+}
+
+func (x *ExternalPersonalAccess) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *ExternalPersonalAccess) GetCompanyId() string {
+	if x != nil {
+		return x.CompanyId
+	}
+	return ""
+}
+
+func (x *ExternalPersonalAccess) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+func (x *ExternalPersonalAccess) GetCourseVersionId() string {
+	if x != nil {
+		return x.CourseVersionId
+	}
+	return ""
+}
+
+func (x *ExternalPersonalAccess) GetPartnerOwnerId() string {
+	if x != nil {
+		return x.PartnerOwnerId
+	}
+	return ""
+}
+
+func (x *ExternalPersonalAccess) GetExternalLearnerId() string {
+	if x != nil && x.ExternalLearnerId != nil {
+		return *x.ExternalLearnerId
+	}
+	return ""
+}
+
+func (x *ExternalPersonalAccess) GetExpectedEmail() string {
+	if x != nil {
+		return x.ExpectedEmail
+	}
+	return ""
+}
+
+func (x *ExternalPersonalAccess) GetRecipientFirstName() string {
+	if x != nil && x.RecipientFirstName != nil {
+		return *x.RecipientFirstName
+	}
+	return ""
+}
+
+func (x *ExternalPersonalAccess) GetRecipientLastName() string {
+	if x != nil && x.RecipientLastName != nil {
+		return *x.RecipientLastName
+	}
+	return ""
+}
+
+func (x *ExternalPersonalAccess) GetDeadlineDays() uint32 {
+	if x != nil {
+		return x.DeadlineDays
+	}
+	return 0
+}
+
+func (x *ExternalPersonalAccess) GetStatus() ExternalPersonalAccessStatus {
+	if x != nil {
+		return x.Status
+	}
+	return ExternalPersonalAccessStatus_EXTERNAL_PERSONAL_ACCESS_STATUS_UNSPECIFIED
+}
+
+func (x *ExternalPersonalAccess) GetTokenPrefix() string {
+	if x != nil {
+		return x.TokenPrefix
+	}
+	return ""
+}
+
+func (x *ExternalPersonalAccess) GetEnrollmentId() string {
+	if x != nil && x.EnrollmentId != nil {
+		return *x.EnrollmentId
+	}
+	return ""
+}
+
+func (x *ExternalPersonalAccess) GetIssuedById() string {
+	if x != nil {
+		return x.IssuedById
+	}
+	return ""
+}
+
+func (x *ExternalPersonalAccess) GetIssuedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.IssuedAt
+	}
+	return nil
+}
+
+func (x *ExternalPersonalAccess) GetActivatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ActivatedAt
+	}
+	return nil
+}
+
+func (x *ExternalPersonalAccess) GetRevokedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.RevokedAt
+	}
+	return nil
+}
+
+type ExternalPersonalAccessCreated struct {
+	state         protoimpl.MessageState  `protogen:"open.v1"`
+	Access        *ExternalPersonalAccess `protobuf:"bytes,1,opt,name=access,proto3" json:"access,omitempty"`
+	Token         string                  `protobuf:"bytes,2,opt,name=token,proto3" json:"token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ExternalPersonalAccessCreated) Reset() {
+	*x = ExternalPersonalAccessCreated{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[185]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExternalPersonalAccessCreated) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExternalPersonalAccessCreated) ProtoMessage() {}
+
+func (x *ExternalPersonalAccessCreated) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[185]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExternalPersonalAccessCreated.ProtoReflect.Descriptor instead.
+func (*ExternalPersonalAccessCreated) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{185}
+}
+
+func (x *ExternalPersonalAccessCreated) GetAccess() *ExternalPersonalAccess {
+	if x != nil {
+		return x.Access
+	}
+	return nil
+}
+
+func (x *ExternalPersonalAccessCreated) GetToken() string {
+	if x != nil {
+		return x.Token
+	}
+	return ""
+}
+
+type ExternalCampaign struct {
+	state           protoimpl.MessageState    `protogen:"open.v1"`
+	Id              string                    `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	CompanyId       string                    `protobuf:"bytes,2,opt,name=company_id,json=companyId,proto3" json:"company_id,omitempty"`
+	CourseId        string                    `protobuf:"bytes,3,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	CourseVersionId string                    `protobuf:"bytes,4,opt,name=course_version_id,json=courseVersionId,proto3" json:"course_version_id,omitempty"`
+	OwnerType       ExternalCampaignOwnerType `protobuf:"varint,5,opt,name=owner_type,json=ownerType,proto3,enum=teamos.academy.v1.ExternalCampaignOwnerType" json:"owner_type,omitempty"`
+	OwnerUserId     *string                   `protobuf:"bytes,6,opt,name=owner_user_id,json=ownerUserId,proto3,oneof" json:"owner_user_id,omitempty"`
+	Purpose         ExternalCampaignPurpose   `protobuf:"varint,7,opt,name=purpose,proto3,enum=teamos.academy.v1.ExternalCampaignPurpose" json:"purpose,omitempty"`
+	Name            string                    `protobuf:"bytes,8,opt,name=name,proto3" json:"name,omitempty"`
+	DeadlineDays    uint32                    `protobuf:"varint,9,opt,name=deadline_days,json=deadlineDays,proto3" json:"deadline_days,omitempty"`
+	Status          ExternalCampaignStatus    `protobuf:"varint,10,opt,name=status,proto3,enum=teamos.academy.v1.ExternalCampaignStatus" json:"status,omitempty"`
+	TokenPrefix     string                    `protobuf:"bytes,11,opt,name=token_prefix,json=tokenPrefix,proto3" json:"token_prefix,omitempty"`
+	CreatedById     string                    `protobuf:"bytes,12,opt,name=created_by_id,json=createdById,proto3" json:"created_by_id,omitempty"`
+	CreatedAt       *timestamppb.Timestamp    `protobuf:"bytes,13,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	PausedAt        *timestamppb.Timestamp    `protobuf:"bytes,14,opt,name=paused_at,json=pausedAt,proto3,oneof" json:"paused_at,omitempty"`
+	RevokedAt       *timestamppb.Timestamp    `protobuf:"bytes,15,opt,name=revoked_at,json=revokedAt,proto3,oneof" json:"revoked_at,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *ExternalCampaign) Reset() {
+	*x = ExternalCampaign{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[186]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExternalCampaign) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExternalCampaign) ProtoMessage() {}
+
+func (x *ExternalCampaign) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[186]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExternalCampaign.ProtoReflect.Descriptor instead.
+func (*ExternalCampaign) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{186}
+}
+
+func (x *ExternalCampaign) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *ExternalCampaign) GetCompanyId() string {
+	if x != nil {
+		return x.CompanyId
+	}
+	return ""
+}
+
+func (x *ExternalCampaign) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+func (x *ExternalCampaign) GetCourseVersionId() string {
+	if x != nil {
+		return x.CourseVersionId
+	}
+	return ""
+}
+
+func (x *ExternalCampaign) GetOwnerType() ExternalCampaignOwnerType {
+	if x != nil {
+		return x.OwnerType
+	}
+	return ExternalCampaignOwnerType_EXTERNAL_CAMPAIGN_OWNER_TYPE_UNSPECIFIED
+}
+
+func (x *ExternalCampaign) GetOwnerUserId() string {
+	if x != nil && x.OwnerUserId != nil {
+		return *x.OwnerUserId
+	}
+	return ""
+}
+
+func (x *ExternalCampaign) GetPurpose() ExternalCampaignPurpose {
+	if x != nil {
+		return x.Purpose
+	}
+	return ExternalCampaignPurpose_EXTERNAL_CAMPAIGN_PURPOSE_UNSPECIFIED
+}
+
+func (x *ExternalCampaign) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *ExternalCampaign) GetDeadlineDays() uint32 {
+	if x != nil {
+		return x.DeadlineDays
+	}
+	return 0
+}
+
+func (x *ExternalCampaign) GetStatus() ExternalCampaignStatus {
+	if x != nil {
+		return x.Status
+	}
+	return ExternalCampaignStatus_EXTERNAL_CAMPAIGN_STATUS_UNSPECIFIED
+}
+
+func (x *ExternalCampaign) GetTokenPrefix() string {
+	if x != nil {
+		return x.TokenPrefix
+	}
+	return ""
+}
+
+func (x *ExternalCampaign) GetCreatedById() string {
+	if x != nil {
+		return x.CreatedById
+	}
+	return ""
+}
+
+func (x *ExternalCampaign) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *ExternalCampaign) GetPausedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.PausedAt
+	}
+	return nil
+}
+
+func (x *ExternalCampaign) GetRevokedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.RevokedAt
+	}
+	return nil
+}
+
+type ExternalCampaignCreated struct {
+	state    protoimpl.MessageState `protogen:"open.v1"`
+	Campaign *ExternalCampaign      `protobuf:"bytes,1,opt,name=campaign,proto3" json:"campaign,omitempty"`
+	// Full token is returned only on create/rotation and is never persisted or
+	// logged by gateway/Academy.
+	Token         string `protobuf:"bytes,2,opt,name=token,proto3" json:"token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ExternalCampaignCreated) Reset() {
+	*x = ExternalCampaignCreated{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[187]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExternalCampaignCreated) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExternalCampaignCreated) ProtoMessage() {}
+
+func (x *ExternalCampaignCreated) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[187]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExternalCampaignCreated.ProtoReflect.Descriptor instead.
+func (*ExternalCampaignCreated) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{187}
+}
+
+func (x *ExternalCampaignCreated) GetCampaign() *ExternalCampaign {
+	if x != nil {
+		return x.Campaign
+	}
+	return nil
+}
+
+func (x *ExternalCampaignCreated) GetToken() string {
+	if x != nil {
+		return x.Token
+	}
+	return ""
+}
+
+type CampaignFunnel struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Views          uint64                 `protobuf:"varint,1,opt,name=views,proto3" json:"views,omitempty"`
+	UniqueVisitors uint64                 `protobuf:"varint,2,opt,name=unique_visitors,json=uniqueVisitors,proto3" json:"unique_visitors,omitempty"`
+	FormSubmits    uint64                 `protobuf:"varint,3,opt,name=form_submits,json=formSubmits,proto3" json:"form_submits,omitempty"`
+	VerifiedEmails uint64                 `protobuf:"varint,4,opt,name=verified_emails,json=verifiedEmails,proto3" json:"verified_emails,omitempty"`
+	Activations    uint64                 `protobuf:"varint,5,opt,name=activations,proto3" json:"activations,omitempty"`
+	Completions    uint64                 `protobuf:"varint,6,opt,name=completions,proto3" json:"completions,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *CampaignFunnel) Reset() {
+	*x = CampaignFunnel{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[188]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CampaignFunnel) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CampaignFunnel) ProtoMessage() {}
+
+func (x *CampaignFunnel) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[188]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CampaignFunnel.ProtoReflect.Descriptor instead.
+func (*CampaignFunnel) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{188}
+}
+
+func (x *CampaignFunnel) GetViews() uint64 {
+	if x != nil {
+		return x.Views
+	}
+	return 0
+}
+
+func (x *CampaignFunnel) GetUniqueVisitors() uint64 {
+	if x != nil {
+		return x.UniqueVisitors
+	}
+	return 0
+}
+
+func (x *CampaignFunnel) GetFormSubmits() uint64 {
+	if x != nil {
+		return x.FormSubmits
+	}
+	return 0
+}
+
+func (x *CampaignFunnel) GetVerifiedEmails() uint64 {
+	if x != nil {
+		return x.VerifiedEmails
+	}
+	return 0
+}
+
+func (x *CampaignFunnel) GetActivations() uint64 {
+	if x != nil {
+		return x.Activations
+	}
+	return 0
+}
+
+func (x *CampaignFunnel) GetCompletions() uint64 {
+	if x != nil {
+		return x.Completions
+	}
+	return 0
+}
+
+type CampaignLessonDropOff struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	LessonVersionId string                 `protobuf:"bytes,1,opt,name=lesson_version_id,json=lessonVersionId,proto3" json:"lesson_version_id,omitempty"`
+	Reached         uint64                 `protobuf:"varint,2,opt,name=reached,proto3" json:"reached,omitempty"`
+	Completed       uint64                 `protobuf:"varint,3,opt,name=completed,proto3" json:"completed,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *CampaignLessonDropOff) Reset() {
+	*x = CampaignLessonDropOff{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[189]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CampaignLessonDropOff) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CampaignLessonDropOff) ProtoMessage() {}
+
+func (x *CampaignLessonDropOff) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[189]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CampaignLessonDropOff.ProtoReflect.Descriptor instead.
+func (*CampaignLessonDropOff) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{189}
+}
+
+func (x *CampaignLessonDropOff) GetLessonVersionId() string {
+	if x != nil {
+		return x.LessonVersionId
+	}
+	return ""
+}
+
+func (x *CampaignLessonDropOff) GetReached() uint64 {
+	if x != nil {
+		return x.Reached
+	}
+	return 0
+}
+
+func (x *CampaignLessonDropOff) GetCompleted() uint64 {
+	if x != nil {
+		return x.Completed
+	}
+	return 0
+}
+
+type CampaignAttribution struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UtmSource     *string                `protobuf:"bytes,1,opt,name=utm_source,json=utmSource,proto3,oneof" json:"utm_source,omitempty"`
+	UtmMedium     *string                `protobuf:"bytes,2,opt,name=utm_medium,json=utmMedium,proto3,oneof" json:"utm_medium,omitempty"`
+	UtmCampaign   *string                `protobuf:"bytes,3,opt,name=utm_campaign,json=utmCampaign,proto3,oneof" json:"utm_campaign,omitempty"`
+	Referrer      *string                `protobuf:"bytes,4,opt,name=referrer,proto3,oneof" json:"referrer,omitempty"`
+	Visits        uint64                 `protobuf:"varint,5,opt,name=visits,proto3" json:"visits,omitempty"`
+	Activations   uint64                 `protobuf:"varint,6,opt,name=activations,proto3" json:"activations,omitempty"`
+	Completions   uint64                 `protobuf:"varint,7,opt,name=completions,proto3" json:"completions,omitempty"`
+	UtmContent    *string                `protobuf:"bytes,8,opt,name=utm_content,json=utmContent,proto3,oneof" json:"utm_content,omitempty"`
+	UtmTerm       *string                `protobuf:"bytes,9,opt,name=utm_term,json=utmTerm,proto3,oneof" json:"utm_term,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CampaignAttribution) Reset() {
+	*x = CampaignAttribution{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[190]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CampaignAttribution) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CampaignAttribution) ProtoMessage() {}
+
+func (x *CampaignAttribution) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[190]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CampaignAttribution.ProtoReflect.Descriptor instead.
+func (*CampaignAttribution) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{190}
+}
+
+func (x *CampaignAttribution) GetUtmSource() string {
+	if x != nil && x.UtmSource != nil {
+		return *x.UtmSource
+	}
+	return ""
+}
+
+func (x *CampaignAttribution) GetUtmMedium() string {
+	if x != nil && x.UtmMedium != nil {
+		return *x.UtmMedium
+	}
+	return ""
+}
+
+func (x *CampaignAttribution) GetUtmCampaign() string {
+	if x != nil && x.UtmCampaign != nil {
+		return *x.UtmCampaign
+	}
+	return ""
+}
+
+func (x *CampaignAttribution) GetReferrer() string {
+	if x != nil && x.Referrer != nil {
+		return *x.Referrer
+	}
+	return ""
+}
+
+func (x *CampaignAttribution) GetVisits() uint64 {
+	if x != nil {
+		return x.Visits
+	}
+	return 0
+}
+
+func (x *CampaignAttribution) GetActivations() uint64 {
+	if x != nil {
+		return x.Activations
+	}
+	return 0
+}
+
+func (x *CampaignAttribution) GetCompletions() uint64 {
+	if x != nil {
+		return x.Completions
+	}
+	return 0
+}
+
+func (x *CampaignAttribution) GetUtmContent() string {
+	if x != nil && x.UtmContent != nil {
+		return *x.UtmContent
+	}
+	return ""
+}
+
+func (x *CampaignAttribution) GetUtmTerm() string {
+	if x != nil && x.UtmTerm != nil {
+		return *x.UtmTerm
+	}
+	return ""
+}
+
+type CampaignVersionAnalytics struct {
+	state                  protoimpl.MessageState `protogen:"open.v1"`
+	CourseVersionId        string                 `protobuf:"bytes,1,opt,name=course_version_id,json=courseVersionId,proto3" json:"course_version_id,omitempty"`
+	VersionNumber          uint32                 `protobuf:"varint,2,opt,name=version_number,json=versionNumber,proto3" json:"version_number,omitempty"`
+	Activations            uint64                 `protobuf:"varint,3,opt,name=activations,proto3" json:"activations,omitempty"`
+	Completions            uint64                 `protobuf:"varint,4,opt,name=completions,proto3" json:"completions,omitempty"`
+	AverageProgressPercent float64                `protobuf:"fixed64,5,opt,name=average_progress_percent,json=averageProgressPercent,proto3" json:"average_progress_percent,omitempty"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *CampaignVersionAnalytics) Reset() {
+	*x = CampaignVersionAnalytics{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[191]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CampaignVersionAnalytics) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CampaignVersionAnalytics) ProtoMessage() {}
+
+func (x *CampaignVersionAnalytics) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[191]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CampaignVersionAnalytics.ProtoReflect.Descriptor instead.
+func (*CampaignVersionAnalytics) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{191}
+}
+
+func (x *CampaignVersionAnalytics) GetCourseVersionId() string {
+	if x != nil {
+		return x.CourseVersionId
+	}
+	return ""
+}
+
+func (x *CampaignVersionAnalytics) GetVersionNumber() uint32 {
+	if x != nil {
+		return x.VersionNumber
+	}
+	return 0
+}
+
+func (x *CampaignVersionAnalytics) GetActivations() uint64 {
+	if x != nil {
+		return x.Activations
+	}
+	return 0
+}
+
+func (x *CampaignVersionAnalytics) GetCompletions() uint64 {
+	if x != nil {
+		return x.Completions
+	}
+	return 0
+}
+
+func (x *CampaignVersionAnalytics) GetAverageProgressPercent() float64 {
+	if x != nil {
+		return x.AverageProgressPercent
+	}
+	return 0
+}
+
+type CampaignAnalytics struct {
+	state                    protoimpl.MessageState      `protogen:"open.v1"`
+	FirstLessonStarts        uint64                      `protobuf:"varint,1,opt,name=first_lesson_starts,json=firstLessonStarts,proto3" json:"first_lesson_starts,omitempty"`
+	LessonCompletions        uint64                      `protobuf:"varint,2,opt,name=lesson_completions,json=lessonCompletions,proto3" json:"lesson_completions,omitempty"`
+	QuizSubmissions          uint64                      `protobuf:"varint,3,opt,name=quiz_submissions,json=quizSubmissions,proto3" json:"quiz_submissions,omitempty"`
+	ExpiredEnrollments       uint64                      `protobuf:"varint,4,opt,name=expired_enrollments,json=expiredEnrollments,proto3" json:"expired_enrollments,omitempty"`
+	ReturnVisits             uint64                      `protobuf:"varint,5,opt,name=return_visits,json=returnVisits,proto3" json:"return_visits,omitempty"`
+	AverageProgressPercent   float64                     `protobuf:"fixed64,6,opt,name=average_progress_percent,json=averageProgressPercent,proto3" json:"average_progress_percent,omitempty"`
+	MedianProgressPercent    float64                     `protobuf:"fixed64,7,opt,name=median_progress_percent,json=medianProgressPercent,proto3" json:"median_progress_percent,omitempty"`
+	AverageCompletionSeconds *uint64                     `protobuf:"varint,8,opt,name=average_completion_seconds,json=averageCompletionSeconds,proto3,oneof" json:"average_completion_seconds,omitempty"`
+	MedianCompletionSeconds  *uint64                     `protobuf:"varint,9,opt,name=median_completion_seconds,json=medianCompletionSeconds,proto3,oneof" json:"median_completion_seconds,omitempty"`
+	LessonDropOff            []*CampaignLessonDropOff    `protobuf:"bytes,10,rep,name=lesson_drop_off,json=lessonDropOff,proto3" json:"lesson_drop_off,omitempty"`
+	Attribution              []*CampaignAttribution      `protobuf:"bytes,11,rep,name=attribution,proto3" json:"attribution,omitempty"`
+	Versions                 []*CampaignVersionAnalytics `protobuf:"bytes,12,rep,name=versions,proto3" json:"versions,omitempty"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
+}
+
+func (x *CampaignAnalytics) Reset() {
+	*x = CampaignAnalytics{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[192]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CampaignAnalytics) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CampaignAnalytics) ProtoMessage() {}
+
+func (x *CampaignAnalytics) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[192]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CampaignAnalytics.ProtoReflect.Descriptor instead.
+func (*CampaignAnalytics) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{192}
+}
+
+func (x *CampaignAnalytics) GetFirstLessonStarts() uint64 {
+	if x != nil {
+		return x.FirstLessonStarts
+	}
+	return 0
+}
+
+func (x *CampaignAnalytics) GetLessonCompletions() uint64 {
+	if x != nil {
+		return x.LessonCompletions
+	}
+	return 0
+}
+
+func (x *CampaignAnalytics) GetQuizSubmissions() uint64 {
+	if x != nil {
+		return x.QuizSubmissions
+	}
+	return 0
+}
+
+func (x *CampaignAnalytics) GetExpiredEnrollments() uint64 {
+	if x != nil {
+		return x.ExpiredEnrollments
+	}
+	return 0
+}
+
+func (x *CampaignAnalytics) GetReturnVisits() uint64 {
+	if x != nil {
+		return x.ReturnVisits
+	}
+	return 0
+}
+
+func (x *CampaignAnalytics) GetAverageProgressPercent() float64 {
+	if x != nil {
+		return x.AverageProgressPercent
+	}
+	return 0
+}
+
+func (x *CampaignAnalytics) GetMedianProgressPercent() float64 {
+	if x != nil {
+		return x.MedianProgressPercent
+	}
+	return 0
+}
+
+func (x *CampaignAnalytics) GetAverageCompletionSeconds() uint64 {
+	if x != nil && x.AverageCompletionSeconds != nil {
+		return *x.AverageCompletionSeconds
+	}
+	return 0
+}
+
+func (x *CampaignAnalytics) GetMedianCompletionSeconds() uint64 {
+	if x != nil && x.MedianCompletionSeconds != nil {
+		return *x.MedianCompletionSeconds
+	}
+	return 0
+}
+
+func (x *CampaignAnalytics) GetLessonDropOff() []*CampaignLessonDropOff {
+	if x != nil {
+		return x.LessonDropOff
+	}
+	return nil
+}
+
+func (x *CampaignAnalytics) GetAttribution() []*CampaignAttribution {
+	if x != nil {
+		return x.Attribution
+	}
+	return nil
+}
+
+func (x *CampaignAnalytics) GetVersions() []*CampaignVersionAnalytics {
+	if x != nil {
+		return x.Versions
+	}
+	return nil
+}
+
+type ExternalCampaignReport struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Campaign      *ExternalCampaign      `protobuf:"bytes,1,opt,name=campaign,proto3" json:"campaign,omitempty"`
+	Funnel        *CampaignFunnel        `protobuf:"bytes,2,opt,name=funnel,proto3" json:"funnel,omitempty"`
+	Enrollments   []*CourseEnrollment    `protobuf:"bytes,3,rep,name=enrollments,proto3" json:"enrollments,omitempty"`
+	Analytics     *CampaignAnalytics     `protobuf:"bytes,4,opt,name=analytics,proto3" json:"analytics,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ExternalCampaignReport) Reset() {
+	*x = ExternalCampaignReport{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[193]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExternalCampaignReport) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExternalCampaignReport) ProtoMessage() {}
+
+func (x *ExternalCampaignReport) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[193]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExternalCampaignReport.ProtoReflect.Descriptor instead.
+func (*ExternalCampaignReport) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{193}
+}
+
+func (x *ExternalCampaignReport) GetCampaign() *ExternalCampaign {
+	if x != nil {
+		return x.Campaign
+	}
+	return nil
+}
+
+func (x *ExternalCampaignReport) GetFunnel() *CampaignFunnel {
+	if x != nil {
+		return x.Funnel
+	}
+	return nil
+}
+
+func (x *ExternalCampaignReport) GetEnrollments() []*CourseEnrollment {
+	if x != nil {
+		return x.Enrollments
+	}
+	return nil
+}
+
+func (x *ExternalCampaignReport) GetAnalytics() *CampaignAnalytics {
+	if x != nil {
+		return x.Analytics
+	}
+	return nil
+}
+
+type CourseExternalReport struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CourseId      string                 `protobuf:"bytes,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	Enrollments   []*CourseEnrollment    `protobuf:"bytes,2,rep,name=enrollments,proto3" json:"enrollments,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CourseExternalReport) Reset() {
+	*x = CourseExternalReport{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[194]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CourseExternalReport) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CourseExternalReport) ProtoMessage() {}
+
+func (x *CourseExternalReport) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[194]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CourseExternalReport.ProtoReflect.Descriptor instead.
+func (*CourseExternalReport) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{194}
+}
+
+func (x *CourseExternalReport) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+func (x *CourseExternalReport) GetEnrollments() []*CourseEnrollment {
+	if x != nil {
+		return x.Enrollments
+	}
+	return nil
+}
+
+type ExternalLearnerTimelineEvent struct {
+	state           protoimpl.MessageState           `protogen:"open.v1"`
+	Id              string                           `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Type            ExternalLearnerTimelineEventType `protobuf:"varint,2,opt,name=type,proto3,enum=teamos.academy.v1.ExternalLearnerTimelineEventType" json:"type,omitempty"`
+	OccurredAt      *timestamppb.Timestamp           `protobuf:"bytes,3,opt,name=occurred_at,json=occurredAt,proto3" json:"occurred_at,omitempty"`
+	CourseId        *string                          `protobuf:"bytes,4,opt,name=course_id,json=courseId,proto3,oneof" json:"course_id,omitempty"`
+	CourseVersionId *string                          `protobuf:"bytes,5,opt,name=course_version_id,json=courseVersionId,proto3,oneof" json:"course_version_id,omitempty"`
+	EnrollmentId    *string                          `protobuf:"bytes,6,opt,name=enrollment_id,json=enrollmentId,proto3,oneof" json:"enrollment_id,omitempty"`
+	SourceType      *EnrollmentSourceType            `protobuf:"varint,7,opt,name=source_type,json=sourceType,proto3,enum=teamos.academy.v1.EnrollmentSourceType,oneof" json:"source_type,omitempty"`
+	SourceId        *string                          `protobuf:"bytes,8,opt,name=source_id,json=sourceId,proto3,oneof" json:"source_id,omitempty"`
+	CourseTitle     *string                          `protobuf:"bytes,9,opt,name=course_title,json=courseTitle,proto3,oneof" json:"course_title,omitempty"`
+	VersionNumber   *uint32                          `protobuf:"varint,10,opt,name=version_number,json=versionNumber,proto3,oneof" json:"version_number,omitempty"`
+	ProgressPercent *uint32                          `protobuf:"varint,11,opt,name=progress_percent,json=progressPercent,proto3,oneof" json:"progress_percent,omitempty"`
+	AccessStatus    *EnrollmentAccessStatus          `protobuf:"varint,12,opt,name=access_status,json=accessStatus,proto3,enum=teamos.academy.v1.EnrollmentAccessStatus,oneof" json:"access_status,omitempty"`
+	DeletedCourse   bool                             `protobuf:"varint,13,opt,name=deleted_course,json=deletedCourse,proto3" json:"deleted_course,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *ExternalLearnerTimelineEvent) Reset() {
+	*x = ExternalLearnerTimelineEvent{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[195]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExternalLearnerTimelineEvent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExternalLearnerTimelineEvent) ProtoMessage() {}
+
+func (x *ExternalLearnerTimelineEvent) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[195]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExternalLearnerTimelineEvent.ProtoReflect.Descriptor instead.
+func (*ExternalLearnerTimelineEvent) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{195}
+}
+
+func (x *ExternalLearnerTimelineEvent) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *ExternalLearnerTimelineEvent) GetType() ExternalLearnerTimelineEventType {
+	if x != nil {
+		return x.Type
+	}
+	return ExternalLearnerTimelineEventType_EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_UNSPECIFIED
+}
+
+func (x *ExternalLearnerTimelineEvent) GetOccurredAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.OccurredAt
+	}
+	return nil
+}
+
+func (x *ExternalLearnerTimelineEvent) GetCourseId() string {
+	if x != nil && x.CourseId != nil {
+		return *x.CourseId
+	}
+	return ""
+}
+
+func (x *ExternalLearnerTimelineEvent) GetCourseVersionId() string {
+	if x != nil && x.CourseVersionId != nil {
+		return *x.CourseVersionId
+	}
+	return ""
+}
+
+func (x *ExternalLearnerTimelineEvent) GetEnrollmentId() string {
+	if x != nil && x.EnrollmentId != nil {
+		return *x.EnrollmentId
+	}
+	return ""
+}
+
+func (x *ExternalLearnerTimelineEvent) GetSourceType() EnrollmentSourceType {
+	if x != nil && x.SourceType != nil {
+		return *x.SourceType
+	}
+	return EnrollmentSourceType_ENROLLMENT_SOURCE_TYPE_UNSPECIFIED
+}
+
+func (x *ExternalLearnerTimelineEvent) GetSourceId() string {
+	if x != nil && x.SourceId != nil {
+		return *x.SourceId
+	}
+	return ""
+}
+
+func (x *ExternalLearnerTimelineEvent) GetCourseTitle() string {
+	if x != nil && x.CourseTitle != nil {
+		return *x.CourseTitle
+	}
+	return ""
+}
+
+func (x *ExternalLearnerTimelineEvent) GetVersionNumber() uint32 {
+	if x != nil && x.VersionNumber != nil {
+		return *x.VersionNumber
+	}
+	return 0
+}
+
+func (x *ExternalLearnerTimelineEvent) GetProgressPercent() uint32 {
+	if x != nil && x.ProgressPercent != nil {
+		return *x.ProgressPercent
+	}
+	return 0
+}
+
+func (x *ExternalLearnerTimelineEvent) GetAccessStatus() EnrollmentAccessStatus {
+	if x != nil && x.AccessStatus != nil {
+		return *x.AccessStatus
+	}
+	return EnrollmentAccessStatus_ENROLLMENT_ACCESS_STATUS_UNSPECIFIED
+}
+
+func (x *ExternalLearnerTimelineEvent) GetDeletedCourse() bool {
+	if x != nil {
+		return x.DeletedCourse
+	}
+	return false
+}
+
+type ExternalLearnerTimeline struct {
+	state         protoimpl.MessageState          `protogen:"open.v1"`
+	Learner       *ExternalLearner                `protobuf:"bytes,1,opt,name=learner,proto3" json:"learner,omitempty"`
+	Events        []*ExternalLearnerTimelineEvent `protobuf:"bytes,2,rep,name=events,proto3" json:"events,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ExternalLearnerTimeline) Reset() {
+	*x = ExternalLearnerTimeline{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[196]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExternalLearnerTimeline) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExternalLearnerTimeline) ProtoMessage() {}
+
+func (x *ExternalLearnerTimeline) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[196]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExternalLearnerTimeline.ProtoReflect.Descriptor instead.
+func (*ExternalLearnerTimeline) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{196}
+}
+
+func (x *ExternalLearnerTimeline) GetLearner() *ExternalLearner {
+	if x != nil {
+		return x.Learner
+	}
+	return nil
+}
+
+func (x *ExternalLearnerTimeline) GetEvents() []*ExternalLearnerTimelineEvent {
+	if x != nil {
+		return x.Events
+	}
+	return nil
+}
+
+type ExternalLearner struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	Id              string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	CompanyId       string                 `protobuf:"bytes,2,opt,name=company_id,json=companyId,proto3" json:"company_id,omitempty"`
+	Email           string                 `protobuf:"bytes,3,opt,name=email,proto3" json:"email,omitempty"`
+	NormalizedEmail string                 `protobuf:"bytes,4,opt,name=normalized_email,json=normalizedEmail,proto3" json:"normalized_email,omitempty"`
+	FirstName       *string                `protobuf:"bytes,5,opt,name=first_name,json=firstName,proto3,oneof" json:"first_name,omitempty"`
+	LastName        *string                `protobuf:"bytes,6,opt,name=last_name,json=lastName,proto3,oneof" json:"last_name,omitempty"`
+	Phone           *string                `protobuf:"bytes,7,opt,name=phone,proto3,oneof" json:"phone,omitempty"`
+	EmailVerifiedAt *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=email_verified_at,json=emailVerifiedAt,proto3,oneof" json:"email_verified_at,omitempty"`
+	CreatedAt       *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt       *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *ExternalLearner) Reset() {
+	*x = ExternalLearner{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[197]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExternalLearner) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExternalLearner) ProtoMessage() {}
+
+func (x *ExternalLearner) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[197]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExternalLearner.ProtoReflect.Descriptor instead.
+func (*ExternalLearner) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{197}
+}
+
+func (x *ExternalLearner) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *ExternalLearner) GetCompanyId() string {
+	if x != nil {
+		return x.CompanyId
+	}
+	return ""
+}
+
+func (x *ExternalLearner) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
+func (x *ExternalLearner) GetNormalizedEmail() string {
+	if x != nil {
+		return x.NormalizedEmail
+	}
+	return ""
+}
+
+func (x *ExternalLearner) GetFirstName() string {
+	if x != nil && x.FirstName != nil {
+		return *x.FirstName
+	}
+	return ""
+}
+
+func (x *ExternalLearner) GetLastName() string {
+	if x != nil && x.LastName != nil {
+		return *x.LastName
+	}
+	return ""
+}
+
+func (x *ExternalLearner) GetPhone() string {
+	if x != nil && x.Phone != nil {
+		return *x.Phone
+	}
+	return ""
+}
+
+func (x *ExternalLearner) GetEmailVerifiedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.EmailVerifiedAt
+	}
+	return nil
+}
+
+func (x *ExternalLearner) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *ExternalLearner) GetUpdatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return nil
+}
+
+type PublicAcademyOutlineLesson struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	Id               string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Title            string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	Order            uint32                 `protobuf:"varint,3,opt,name=order,proto3" json:"order,omitempty"`
+	EstimatedMinutes *uint32                `protobuf:"varint,4,opt,name=estimated_minutes,json=estimatedMinutes,proto3,oneof" json:"estimated_minutes,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *PublicAcademyOutlineLesson) Reset() {
+	*x = PublicAcademyOutlineLesson{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[198]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PublicAcademyOutlineLesson) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PublicAcademyOutlineLesson) ProtoMessage() {}
+
+func (x *PublicAcademyOutlineLesson) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[198]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PublicAcademyOutlineLesson.ProtoReflect.Descriptor instead.
+func (*PublicAcademyOutlineLesson) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{198}
+}
+
+func (x *PublicAcademyOutlineLesson) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *PublicAcademyOutlineLesson) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *PublicAcademyOutlineLesson) GetOrder() uint32 {
+	if x != nil {
+		return x.Order
+	}
+	return 0
+}
+
+func (x *PublicAcademyOutlineLesson) GetEstimatedMinutes() uint32 {
+	if x != nil && x.EstimatedMinutes != nil {
+		return *x.EstimatedMinutes
+	}
+	return 0
+}
+
+type PublicAcademyOutlineSection struct {
+	state         protoimpl.MessageState        `protogen:"open.v1"`
+	Id            string                        `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Title         string                        `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	Order         uint32                        `protobuf:"varint,3,opt,name=order,proto3" json:"order,omitempty"`
+	Lessons       []*PublicAcademyOutlineLesson `protobuf:"bytes,4,rep,name=lessons,proto3" json:"lessons,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PublicAcademyOutlineSection) Reset() {
+	*x = PublicAcademyOutlineSection{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[199]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PublicAcademyOutlineSection) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PublicAcademyOutlineSection) ProtoMessage() {}
+
+func (x *PublicAcademyOutlineSection) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[199]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PublicAcademyOutlineSection.ProtoReflect.Descriptor instead.
+func (*PublicAcademyOutlineSection) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{199}
+}
+
+func (x *PublicAcademyOutlineSection) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *PublicAcademyOutlineSection) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *PublicAcademyOutlineSection) GetOrder() uint32 {
+	if x != nil {
+		return x.Order
+	}
+	return 0
+}
+
+func (x *PublicAcademyOutlineSection) GetLessons() []*PublicAcademyOutlineLesson {
+	if x != nil {
+		return x.Lessons
+	}
+	return nil
+}
+
+type PublicAcademyAccess struct {
+	state                     protoimpl.MessageState         `protogen:"open.v1"`
+	Kind                      PublicAcademyAccessKind        `protobuf:"varint,1,opt,name=kind,proto3,enum=teamos.academy.v1.PublicAcademyAccessKind" json:"kind,omitempty"`
+	CourseId                  string                         `protobuf:"bytes,2,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	CourseVersionId           string                         `protobuf:"bytes,3,opt,name=course_version_id,json=courseVersionId,proto3" json:"course_version_id,omitempty"`
+	Title                     string                         `protobuf:"bytes,4,opt,name=title,proto3" json:"title,omitempty"`
+	Description               *string                        `protobuf:"bytes,5,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	CoverUrl                  *string                        `protobuf:"bytes,6,opt,name=cover_url,json=coverUrl,proto3,oneof" json:"cover_url,omitempty"`
+	OwnerType                 CourseOwnerType                `protobuf:"varint,7,opt,name=owner_type,json=ownerType,proto3,enum=teamos.academy.v1.CourseOwnerType" json:"owner_type,omitempty"`
+	OwnerUserId               *string                        `protobuf:"bytes,8,opt,name=owner_user_id,json=ownerUserId,proto3,oneof" json:"owner_user_id,omitempty"`
+	DeadlineDays              uint32                         `protobuf:"varint,9,opt,name=deadline_days,json=deadlineDays,proto3" json:"deadline_days,omitempty"`
+	Available                 bool                           `protobuf:"varint,10,opt,name=available,proto3" json:"available,omitempty"`
+	UnavailableReason         *string                        `protobuf:"bytes,11,opt,name=unavailable_reason,json=unavailableReason,proto3,oneof" json:"unavailable_reason,omitempty"`
+	EmailVerificationRequired bool                           `protobuf:"varint,12,opt,name=email_verification_required,json=emailVerificationRequired,proto3" json:"email_verification_required,omitempty"`
+	Outline                   []*PublicAcademyOutlineSection `protobuf:"bytes,13,rep,name=outline,proto3" json:"outline,omitempty"`
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
+}
+
+func (x *PublicAcademyAccess) Reset() {
+	*x = PublicAcademyAccess{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[200]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PublicAcademyAccess) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PublicAcademyAccess) ProtoMessage() {}
+
+func (x *PublicAcademyAccess) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[200]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PublicAcademyAccess.ProtoReflect.Descriptor instead.
+func (*PublicAcademyAccess) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{200}
+}
+
+func (x *PublicAcademyAccess) GetKind() PublicAcademyAccessKind {
+	if x != nil {
+		return x.Kind
+	}
+	return PublicAcademyAccessKind_PUBLIC_ACADEMY_ACCESS_KIND_UNSPECIFIED
+}
+
+func (x *PublicAcademyAccess) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+func (x *PublicAcademyAccess) GetCourseVersionId() string {
+	if x != nil {
+		return x.CourseVersionId
+	}
+	return ""
+}
+
+func (x *PublicAcademyAccess) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *PublicAcademyAccess) GetDescription() string {
+	if x != nil && x.Description != nil {
+		return *x.Description
+	}
+	return ""
+}
+
+func (x *PublicAcademyAccess) GetCoverUrl() string {
+	if x != nil && x.CoverUrl != nil {
+		return *x.CoverUrl
+	}
+	return ""
+}
+
+func (x *PublicAcademyAccess) GetOwnerType() CourseOwnerType {
+	if x != nil {
+		return x.OwnerType
+	}
+	return CourseOwnerType_COURSE_OWNER_TYPE_UNSPECIFIED
+}
+
+func (x *PublicAcademyAccess) GetOwnerUserId() string {
+	if x != nil && x.OwnerUserId != nil {
+		return *x.OwnerUserId
+	}
+	return ""
+}
+
+func (x *PublicAcademyAccess) GetDeadlineDays() uint32 {
+	if x != nil {
+		return x.DeadlineDays
+	}
+	return 0
+}
+
+func (x *PublicAcademyAccess) GetAvailable() bool {
+	if x != nil {
+		return x.Available
+	}
+	return false
+}
+
+func (x *PublicAcademyAccess) GetUnavailableReason() string {
+	if x != nil && x.UnavailableReason != nil {
+		return *x.UnavailableReason
+	}
+	return ""
+}
+
+func (x *PublicAcademyAccess) GetEmailVerificationRequired() bool {
+	if x != nil {
+		return x.EmailVerificationRequired
+	}
+	return false
+}
+
+func (x *PublicAcademyAccess) GetOutline() []*PublicAcademyOutlineSection {
+	if x != nil {
+		return x.Outline
+	}
+	return nil
+}
+
+type ExternalVerificationChallenge struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ChallengeId   string                 `protobuf:"bytes,1,opt,name=challenge_id,json=challengeId,proto3" json:"challenge_id,omitempty"`
+	ExpiresAt     *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ExternalVerificationChallenge) Reset() {
+	*x = ExternalVerificationChallenge{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[201]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExternalVerificationChallenge) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExternalVerificationChallenge) ProtoMessage() {}
+
+func (x *ExternalVerificationChallenge) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[201]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExternalVerificationChallenge.ProtoReflect.Descriptor instead.
+func (*ExternalVerificationChallenge) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{201}
+}
+
+func (x *ExternalVerificationChallenge) GetChallengeId() string {
+	if x != nil {
+		return x.ChallengeId
+	}
+	return ""
+}
+
+func (x *ExternalVerificationChallenge) GetExpiresAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ExpiresAt
+	}
+	return nil
+}
+
+type ExternalVerificationConfirmed struct {
+	state      protoimpl.MessageState `protogen:"open.v1"`
+	LearnerId  string                 `protobuf:"bytes,1,opt,name=learner_id,json=learnerId,proto3" json:"learner_id,omitempty"`
+	VerifiedAt *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=verified_at,json=verifiedAt,proto3" json:"verified_at,omitempty"`
+	// Internal transport-only values used by gateway to set the HttpOnly
+	// cookie. They are never serialized into the public JSON response.
+	SessionToken     string                 `protobuf:"bytes,3,opt,name=session_token,json=sessionToken,proto3" json:"session_token,omitempty"`
+	SessionExpiresAt *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=session_expires_at,json=sessionExpiresAt,proto3" json:"session_expires_at,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *ExternalVerificationConfirmed) Reset() {
+	*x = ExternalVerificationConfirmed{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[202]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExternalVerificationConfirmed) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExternalVerificationConfirmed) ProtoMessage() {}
+
+func (x *ExternalVerificationConfirmed) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[202]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExternalVerificationConfirmed.ProtoReflect.Descriptor instead.
+func (*ExternalVerificationConfirmed) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{202}
+}
+
+func (x *ExternalVerificationConfirmed) GetLearnerId() string {
+	if x != nil {
+		return x.LearnerId
+	}
+	return ""
+}
+
+func (x *ExternalVerificationConfirmed) GetVerifiedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.VerifiedAt
+	}
+	return nil
+}
+
+func (x *ExternalVerificationConfirmed) GetSessionToken() string {
+	if x != nil {
+		return x.SessionToken
+	}
+	return ""
+}
+
+func (x *ExternalVerificationConfirmed) GetSessionExpiresAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.SessionExpiresAt
+	}
+	return nil
+}
+
+type ExternalQuizAttemptResult struct {
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	Id                string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Score             uint32                 `protobuf:"varint,2,opt,name=score,proto3" json:"score,omitempty"`
+	Passed            bool                   `protobuf:"varint,3,opt,name=passed,proto3" json:"passed,omitempty"`
+	PendingReview     bool                   `protobuf:"varint,4,opt,name=pending_review,json=pendingReview,proto3" json:"pending_review,omitempty"`
+	AttemptsRemaining *uint32                `protobuf:"varint,5,opt,name=attempts_remaining,json=attemptsRemaining,proto3,oneof" json:"attempts_remaining,omitempty"`
+	CreatedAt         *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *ExternalQuizAttemptResult) Reset() {
+	*x = ExternalQuizAttemptResult{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[203]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExternalQuizAttemptResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExternalQuizAttemptResult) ProtoMessage() {}
+
+func (x *ExternalQuizAttemptResult) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[203]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExternalQuizAttemptResult.ProtoReflect.Descriptor instead.
+func (*ExternalQuizAttemptResult) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{203}
+}
+
+func (x *ExternalQuizAttemptResult) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *ExternalQuizAttemptResult) GetScore() uint32 {
+	if x != nil {
+		return x.Score
+	}
+	return 0
+}
+
+func (x *ExternalQuizAttemptResult) GetPassed() bool {
+	if x != nil {
+		return x.Passed
+	}
+	return false
+}
+
+func (x *ExternalQuizAttemptResult) GetPendingReview() bool {
+	if x != nil {
+		return x.PendingReview
+	}
+	return false
+}
+
+func (x *ExternalQuizAttemptResult) GetAttemptsRemaining() uint32 {
+	if x != nil && x.AttemptsRemaining != nil {
+		return *x.AttemptsRemaining
+	}
+	return 0
+}
+
+func (x *ExternalQuizAttemptResult) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+type ExternalEnrollmentResults struct {
+	state              protoimpl.MessageState       `protogen:"open.v1"`
+	Enrollment         *CourseEnrollment            `protobuf:"bytes,1,opt,name=enrollment,proto3" json:"enrollment,omitempty"`
+	CompletedLessonIds []string                     `protobuf:"bytes,2,rep,name=completed_lesson_ids,json=completedLessonIds,proto3" json:"completed_lesson_ids,omitempty"`
+	QuizAttempts       []*ExternalQuizAttemptResult `protobuf:"bytes,3,rep,name=quiz_attempts,json=quizAttempts,proto3" json:"quiz_attempts,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *ExternalEnrollmentResults) Reset() {
+	*x = ExternalEnrollmentResults{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[204]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExternalEnrollmentResults) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExternalEnrollmentResults) ProtoMessage() {}
+
+func (x *ExternalEnrollmentResults) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[204]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExternalEnrollmentResults.ProtoReflect.Descriptor instead.
+func (*ExternalEnrollmentResults) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{204}
+}
+
+func (x *ExternalEnrollmentResults) GetEnrollment() *CourseEnrollment {
+	if x != nil {
+		return x.Enrollment
+	}
+	return nil
+}
+
+func (x *ExternalEnrollmentResults) GetCompletedLessonIds() []string {
+	if x != nil {
+		return x.CompletedLessonIds
+	}
+	return nil
+}
+
+func (x *ExternalEnrollmentResults) GetQuizAttempts() []*ExternalQuizAttemptResult {
+	if x != nil {
+		return x.QuizAttempts
+	}
+	return nil
+}
+
+type CreateExternalPersonalAccessRequest struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	CourseId        string                 `protobuf:"bytes,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	CourseVersionId string                 `protobuf:"bytes,2,opt,name=course_version_id,json=courseVersionId,proto3" json:"course_version_id,omitempty"`
+	Email           string                 `protobuf:"bytes,3,opt,name=email,proto3" json:"email,omitempty"`
+	FirstName       *string                `protobuf:"bytes,4,opt,name=first_name,json=firstName,proto3,oneof" json:"first_name,omitempty"`
+	LastName        *string                `protobuf:"bytes,5,opt,name=last_name,json=lastName,proto3,oneof" json:"last_name,omitempty"`
+	DeadlineDays    uint32                 `protobuf:"varint,6,opt,name=deadline_days,json=deadlineDays,proto3" json:"deadline_days,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *CreateExternalPersonalAccessRequest) Reset() {
+	*x = CreateExternalPersonalAccessRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[205]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateExternalPersonalAccessRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateExternalPersonalAccessRequest) ProtoMessage() {}
+
+func (x *CreateExternalPersonalAccessRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[205]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateExternalPersonalAccessRequest.ProtoReflect.Descriptor instead.
+func (*CreateExternalPersonalAccessRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{205}
+}
+
+func (x *CreateExternalPersonalAccessRequest) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+func (x *CreateExternalPersonalAccessRequest) GetCourseVersionId() string {
+	if x != nil {
+		return x.CourseVersionId
+	}
+	return ""
+}
+
+func (x *CreateExternalPersonalAccessRequest) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
+func (x *CreateExternalPersonalAccessRequest) GetFirstName() string {
+	if x != nil && x.FirstName != nil {
+		return *x.FirstName
+	}
+	return ""
+}
+
+func (x *CreateExternalPersonalAccessRequest) GetLastName() string {
+	if x != nil && x.LastName != nil {
+		return *x.LastName
+	}
+	return ""
+}
+
+func (x *CreateExternalPersonalAccessRequest) GetDeadlineDays() uint32 {
+	if x != nil {
+		return x.DeadlineDays
+	}
+	return 0
+}
+
+type CreateExternalPersonalAccessResponse struct {
+	state         protoimpl.MessageState         `protogen:"open.v1"`
+	Created       *ExternalPersonalAccessCreated `protobuf:"bytes,1,opt,name=created,proto3" json:"created,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateExternalPersonalAccessResponse) Reset() {
+	*x = CreateExternalPersonalAccessResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[206]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateExternalPersonalAccessResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateExternalPersonalAccessResponse) ProtoMessage() {}
+
+func (x *CreateExternalPersonalAccessResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[206]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateExternalPersonalAccessResponse.ProtoReflect.Descriptor instead.
+func (*CreateExternalPersonalAccessResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{206}
+}
+
+func (x *CreateExternalPersonalAccessResponse) GetCreated() *ExternalPersonalAccessCreated {
+	if x != nil {
+		return x.Created
+	}
+	return nil
+}
+
+type GetExternalPersonalAccessesRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CourseId      string                 `protobuf:"bytes,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetExternalPersonalAccessesRequest) Reset() {
+	*x = GetExternalPersonalAccessesRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[207]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetExternalPersonalAccessesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetExternalPersonalAccessesRequest) ProtoMessage() {}
+
+func (x *GetExternalPersonalAccessesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[207]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetExternalPersonalAccessesRequest.ProtoReflect.Descriptor instead.
+func (*GetExternalPersonalAccessesRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{207}
+}
+
+func (x *GetExternalPersonalAccessesRequest) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+type GetExternalPersonalAccessesResponse struct {
+	state         protoimpl.MessageState    `protogen:"open.v1"`
+	Accesses      []*ExternalPersonalAccess `protobuf:"bytes,1,rep,name=accesses,proto3" json:"accesses,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetExternalPersonalAccessesResponse) Reset() {
+	*x = GetExternalPersonalAccessesResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[208]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetExternalPersonalAccessesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetExternalPersonalAccessesResponse) ProtoMessage() {}
+
+func (x *GetExternalPersonalAccessesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[208]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetExternalPersonalAccessesResponse.ProtoReflect.Descriptor instead.
+func (*GetExternalPersonalAccessesResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{208}
+}
+
+func (x *GetExternalPersonalAccessesResponse) GetAccesses() []*ExternalPersonalAccess {
+	if x != nil {
+		return x.Accesses
+	}
+	return nil
+}
+
+type GetExternalPersonalAccessRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AccessId      string                 `protobuf:"bytes,1,opt,name=access_id,json=accessId,proto3" json:"access_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetExternalPersonalAccessRequest) Reset() {
+	*x = GetExternalPersonalAccessRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[209]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetExternalPersonalAccessRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetExternalPersonalAccessRequest) ProtoMessage() {}
+
+func (x *GetExternalPersonalAccessRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[209]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetExternalPersonalAccessRequest.ProtoReflect.Descriptor instead.
+func (*GetExternalPersonalAccessRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{209}
+}
+
+func (x *GetExternalPersonalAccessRequest) GetAccessId() string {
+	if x != nil {
+		return x.AccessId
+	}
+	return ""
+}
+
+type GetExternalPersonalAccessResponse struct {
+	state         protoimpl.MessageState  `protogen:"open.v1"`
+	Access        *ExternalPersonalAccess `protobuf:"bytes,1,opt,name=access,proto3" json:"access,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetExternalPersonalAccessResponse) Reset() {
+	*x = GetExternalPersonalAccessResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[210]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetExternalPersonalAccessResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetExternalPersonalAccessResponse) ProtoMessage() {}
+
+func (x *GetExternalPersonalAccessResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[210]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetExternalPersonalAccessResponse.ProtoReflect.Descriptor instead.
+func (*GetExternalPersonalAccessResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{210}
+}
+
+func (x *GetExternalPersonalAccessResponse) GetAccess() *ExternalPersonalAccess {
+	if x != nil {
+		return x.Access
+	}
+	return nil
+}
+
+type ExtendExternalPersonalAccessRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AccessId      string                 `protobuf:"bytes,1,opt,name=access_id,json=accessId,proto3" json:"access_id,omitempty"`
+	DeadlineDays  uint32                 `protobuf:"varint,2,opt,name=deadline_days,json=deadlineDays,proto3" json:"deadline_days,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ExtendExternalPersonalAccessRequest) Reset() {
+	*x = ExtendExternalPersonalAccessRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[211]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExtendExternalPersonalAccessRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExtendExternalPersonalAccessRequest) ProtoMessage() {}
+
+func (x *ExtendExternalPersonalAccessRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[211]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExtendExternalPersonalAccessRequest.ProtoReflect.Descriptor instead.
+func (*ExtendExternalPersonalAccessRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{211}
+}
+
+func (x *ExtendExternalPersonalAccessRequest) GetAccessId() string {
+	if x != nil {
+		return x.AccessId
+	}
+	return ""
+}
+
+func (x *ExtendExternalPersonalAccessRequest) GetDeadlineDays() uint32 {
+	if x != nil {
+		return x.DeadlineDays
+	}
+	return 0
+}
+
+type ExtendExternalPersonalAccessResponse struct {
+	state         protoimpl.MessageState  `protogen:"open.v1"`
+	Access        *ExternalPersonalAccess `protobuf:"bytes,1,opt,name=access,proto3" json:"access,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ExtendExternalPersonalAccessResponse) Reset() {
+	*x = ExtendExternalPersonalAccessResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[212]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExtendExternalPersonalAccessResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExtendExternalPersonalAccessResponse) ProtoMessage() {}
+
+func (x *ExtendExternalPersonalAccessResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[212]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExtendExternalPersonalAccessResponse.ProtoReflect.Descriptor instead.
+func (*ExtendExternalPersonalAccessResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{212}
+}
+
+func (x *ExtendExternalPersonalAccessResponse) GetAccess() *ExternalPersonalAccess {
+	if x != nil {
+		return x.Access
+	}
+	return nil
+}
+
+type RotateExternalPersonalAccessTokenRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AccessId      string                 `protobuf:"bytes,1,opt,name=access_id,json=accessId,proto3" json:"access_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RotateExternalPersonalAccessTokenRequest) Reset() {
+	*x = RotateExternalPersonalAccessTokenRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[213]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RotateExternalPersonalAccessTokenRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RotateExternalPersonalAccessTokenRequest) ProtoMessage() {}
+
+func (x *RotateExternalPersonalAccessTokenRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[213]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RotateExternalPersonalAccessTokenRequest.ProtoReflect.Descriptor instead.
+func (*RotateExternalPersonalAccessTokenRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{213}
+}
+
+func (x *RotateExternalPersonalAccessTokenRequest) GetAccessId() string {
+	if x != nil {
+		return x.AccessId
+	}
+	return ""
+}
+
+type RotateExternalPersonalAccessTokenResponse struct {
+	state         protoimpl.MessageState         `protogen:"open.v1"`
+	Created       *ExternalPersonalAccessCreated `protobuf:"bytes,1,opt,name=created,proto3" json:"created,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RotateExternalPersonalAccessTokenResponse) Reset() {
+	*x = RotateExternalPersonalAccessTokenResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[214]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RotateExternalPersonalAccessTokenResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RotateExternalPersonalAccessTokenResponse) ProtoMessage() {}
+
+func (x *RotateExternalPersonalAccessTokenResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[214]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RotateExternalPersonalAccessTokenResponse.ProtoReflect.Descriptor instead.
+func (*RotateExternalPersonalAccessTokenResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{214}
+}
+
+func (x *RotateExternalPersonalAccessTokenResponse) GetCreated() *ExternalPersonalAccessCreated {
+	if x != nil {
+		return x.Created
+	}
+	return nil
+}
+
+type RevokeExternalPersonalAccessRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AccessId      string                 `protobuf:"bytes,1,opt,name=access_id,json=accessId,proto3" json:"access_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RevokeExternalPersonalAccessRequest) Reset() {
+	*x = RevokeExternalPersonalAccessRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[215]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RevokeExternalPersonalAccessRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RevokeExternalPersonalAccessRequest) ProtoMessage() {}
+
+func (x *RevokeExternalPersonalAccessRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[215]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RevokeExternalPersonalAccessRequest.ProtoReflect.Descriptor instead.
+func (*RevokeExternalPersonalAccessRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{215}
+}
+
+func (x *RevokeExternalPersonalAccessRequest) GetAccessId() string {
+	if x != nil {
+		return x.AccessId
+	}
+	return ""
+}
+
+type RevokeExternalPersonalAccessResponse struct {
+	state         protoimpl.MessageState  `protogen:"open.v1"`
+	Access        *ExternalPersonalAccess `protobuf:"bytes,1,opt,name=access,proto3" json:"access,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RevokeExternalPersonalAccessResponse) Reset() {
+	*x = RevokeExternalPersonalAccessResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[216]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RevokeExternalPersonalAccessResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RevokeExternalPersonalAccessResponse) ProtoMessage() {}
+
+func (x *RevokeExternalPersonalAccessResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[216]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RevokeExternalPersonalAccessResponse.ProtoReflect.Descriptor instead.
+func (*RevokeExternalPersonalAccessResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{216}
+}
+
+func (x *RevokeExternalPersonalAccessResponse) GetAccess() *ExternalPersonalAccess {
+	if x != nil {
+		return x.Access
+	}
+	return nil
+}
+
+type RepeatExternalPersonalAccessRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AccessId      string                 `protobuf:"bytes,1,opt,name=access_id,json=accessId,proto3" json:"access_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RepeatExternalPersonalAccessRequest) Reset() {
+	*x = RepeatExternalPersonalAccessRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[217]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RepeatExternalPersonalAccessRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RepeatExternalPersonalAccessRequest) ProtoMessage() {}
+
+func (x *RepeatExternalPersonalAccessRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[217]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RepeatExternalPersonalAccessRequest.ProtoReflect.Descriptor instead.
+func (*RepeatExternalPersonalAccessRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{217}
+}
+
+func (x *RepeatExternalPersonalAccessRequest) GetAccessId() string {
+	if x != nil {
+		return x.AccessId
+	}
+	return ""
+}
+
+type RepeatExternalPersonalAccessResponse struct {
+	state         protoimpl.MessageState         `protogen:"open.v1"`
+	Created       *ExternalPersonalAccessCreated `protobuf:"bytes,1,opt,name=created,proto3" json:"created,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RepeatExternalPersonalAccessResponse) Reset() {
+	*x = RepeatExternalPersonalAccessResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[218]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RepeatExternalPersonalAccessResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RepeatExternalPersonalAccessResponse) ProtoMessage() {}
+
+func (x *RepeatExternalPersonalAccessResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[218]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RepeatExternalPersonalAccessResponse.ProtoReflect.Descriptor instead.
+func (*RepeatExternalPersonalAccessResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{218}
+}
+
+func (x *RepeatExternalPersonalAccessResponse) GetCreated() *ExternalPersonalAccessCreated {
+	if x != nil {
+		return x.Created
+	}
+	return nil
+}
+
+type CreateExternalCampaignRequest struct {
+	state           protoimpl.MessageState  `protogen:"open.v1"`
+	CourseId        string                  `protobuf:"bytes,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	CourseVersionId string                  `protobuf:"bytes,2,opt,name=course_version_id,json=courseVersionId,proto3" json:"course_version_id,omitempty"`
+	Name            string                  `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	Purpose         ExternalCampaignPurpose `protobuf:"varint,4,opt,name=purpose,proto3,enum=teamos.academy.v1.ExternalCampaignPurpose" json:"purpose,omitempty"`
+	DeadlineDays    uint32                  `protobuf:"varint,5,opt,name=deadline_days,json=deadlineDays,proto3" json:"deadline_days,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *CreateExternalCampaignRequest) Reset() {
+	*x = CreateExternalCampaignRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[219]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateExternalCampaignRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateExternalCampaignRequest) ProtoMessage() {}
+
+func (x *CreateExternalCampaignRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[219]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateExternalCampaignRequest.ProtoReflect.Descriptor instead.
+func (*CreateExternalCampaignRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{219}
+}
+
+func (x *CreateExternalCampaignRequest) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+func (x *CreateExternalCampaignRequest) GetCourseVersionId() string {
+	if x != nil {
+		return x.CourseVersionId
+	}
+	return ""
+}
+
+func (x *CreateExternalCampaignRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *CreateExternalCampaignRequest) GetPurpose() ExternalCampaignPurpose {
+	if x != nil {
+		return x.Purpose
+	}
+	return ExternalCampaignPurpose_EXTERNAL_CAMPAIGN_PURPOSE_UNSPECIFIED
+}
+
+func (x *CreateExternalCampaignRequest) GetDeadlineDays() uint32 {
+	if x != nil {
+		return x.DeadlineDays
+	}
+	return 0
+}
+
+type CreateExternalCampaignResponse struct {
+	state         protoimpl.MessageState   `protogen:"open.v1"`
+	Created       *ExternalCampaignCreated `protobuf:"bytes,1,opt,name=created,proto3" json:"created,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateExternalCampaignResponse) Reset() {
+	*x = CreateExternalCampaignResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[220]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateExternalCampaignResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateExternalCampaignResponse) ProtoMessage() {}
+
+func (x *CreateExternalCampaignResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[220]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateExternalCampaignResponse.ProtoReflect.Descriptor instead.
+func (*CreateExternalCampaignResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{220}
+}
+
+func (x *CreateExternalCampaignResponse) GetCreated() *ExternalCampaignCreated {
+	if x != nil {
+		return x.Created
+	}
+	return nil
+}
+
+type GetExternalCampaignsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CourseId      string                 `protobuf:"bytes,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetExternalCampaignsRequest) Reset() {
+	*x = GetExternalCampaignsRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[221]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetExternalCampaignsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetExternalCampaignsRequest) ProtoMessage() {}
+
+func (x *GetExternalCampaignsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[221]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetExternalCampaignsRequest.ProtoReflect.Descriptor instead.
+func (*GetExternalCampaignsRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{221}
+}
+
+func (x *GetExternalCampaignsRequest) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+type GetExternalCampaignsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Campaigns     []*ExternalCampaign    `protobuf:"bytes,1,rep,name=campaigns,proto3" json:"campaigns,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetExternalCampaignsResponse) Reset() {
+	*x = GetExternalCampaignsResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[222]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetExternalCampaignsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetExternalCampaignsResponse) ProtoMessage() {}
+
+func (x *GetExternalCampaignsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[222]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetExternalCampaignsResponse.ProtoReflect.Descriptor instead.
+func (*GetExternalCampaignsResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{222}
+}
+
+func (x *GetExternalCampaignsResponse) GetCampaigns() []*ExternalCampaign {
+	if x != nil {
+		return x.Campaigns
+	}
+	return nil
+}
+
+type GetExternalCampaignRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CampaignId    string                 `protobuf:"bytes,1,opt,name=campaign_id,json=campaignId,proto3" json:"campaign_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetExternalCampaignRequest) Reset() {
+	*x = GetExternalCampaignRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[223]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetExternalCampaignRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetExternalCampaignRequest) ProtoMessage() {}
+
+func (x *GetExternalCampaignRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[223]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetExternalCampaignRequest.ProtoReflect.Descriptor instead.
+func (*GetExternalCampaignRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{223}
+}
+
+func (x *GetExternalCampaignRequest) GetCampaignId() string {
+	if x != nil {
+		return x.CampaignId
+	}
+	return ""
+}
+
+type GetExternalCampaignResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Campaign      *ExternalCampaign      `protobuf:"bytes,1,opt,name=campaign,proto3" json:"campaign,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetExternalCampaignResponse) Reset() {
+	*x = GetExternalCampaignResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[224]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetExternalCampaignResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetExternalCampaignResponse) ProtoMessage() {}
+
+func (x *GetExternalCampaignResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[224]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetExternalCampaignResponse.ProtoReflect.Descriptor instead.
+func (*GetExternalCampaignResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{224}
+}
+
+func (x *GetExternalCampaignResponse) GetCampaign() *ExternalCampaign {
+	if x != nil {
+		return x.Campaign
+	}
+	return nil
+}
+
+type PauseExternalCampaignRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CampaignId    string                 `protobuf:"bytes,1,opt,name=campaign_id,json=campaignId,proto3" json:"campaign_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PauseExternalCampaignRequest) Reset() {
+	*x = PauseExternalCampaignRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[225]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PauseExternalCampaignRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PauseExternalCampaignRequest) ProtoMessage() {}
+
+func (x *PauseExternalCampaignRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[225]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PauseExternalCampaignRequest.ProtoReflect.Descriptor instead.
+func (*PauseExternalCampaignRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{225}
+}
+
+func (x *PauseExternalCampaignRequest) GetCampaignId() string {
+	if x != nil {
+		return x.CampaignId
+	}
+	return ""
+}
+
+type PauseExternalCampaignResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Campaign      *ExternalCampaign      `protobuf:"bytes,1,opt,name=campaign,proto3" json:"campaign,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PauseExternalCampaignResponse) Reset() {
+	*x = PauseExternalCampaignResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[226]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PauseExternalCampaignResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PauseExternalCampaignResponse) ProtoMessage() {}
+
+func (x *PauseExternalCampaignResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[226]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PauseExternalCampaignResponse.ProtoReflect.Descriptor instead.
+func (*PauseExternalCampaignResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{226}
+}
+
+func (x *PauseExternalCampaignResponse) GetCampaign() *ExternalCampaign {
+	if x != nil {
+		return x.Campaign
+	}
+	return nil
+}
+
+type ResumeExternalCampaignRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CampaignId    string                 `protobuf:"bytes,1,opt,name=campaign_id,json=campaignId,proto3" json:"campaign_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ResumeExternalCampaignRequest) Reset() {
+	*x = ResumeExternalCampaignRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[227]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResumeExternalCampaignRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResumeExternalCampaignRequest) ProtoMessage() {}
+
+func (x *ResumeExternalCampaignRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[227]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResumeExternalCampaignRequest.ProtoReflect.Descriptor instead.
+func (*ResumeExternalCampaignRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{227}
+}
+
+func (x *ResumeExternalCampaignRequest) GetCampaignId() string {
+	if x != nil {
+		return x.CampaignId
+	}
+	return ""
+}
+
+type ResumeExternalCampaignResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Campaign      *ExternalCampaign      `protobuf:"bytes,1,opt,name=campaign,proto3" json:"campaign,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ResumeExternalCampaignResponse) Reset() {
+	*x = ResumeExternalCampaignResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[228]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResumeExternalCampaignResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResumeExternalCampaignResponse) ProtoMessage() {}
+
+func (x *ResumeExternalCampaignResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[228]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResumeExternalCampaignResponse.ProtoReflect.Descriptor instead.
+func (*ResumeExternalCampaignResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{228}
+}
+
+func (x *ResumeExternalCampaignResponse) GetCampaign() *ExternalCampaign {
+	if x != nil {
+		return x.Campaign
+	}
+	return nil
+}
+
+type RotateExternalCampaignTokenRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CampaignId    string                 `protobuf:"bytes,1,opt,name=campaign_id,json=campaignId,proto3" json:"campaign_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RotateExternalCampaignTokenRequest) Reset() {
+	*x = RotateExternalCampaignTokenRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[229]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RotateExternalCampaignTokenRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RotateExternalCampaignTokenRequest) ProtoMessage() {}
+
+func (x *RotateExternalCampaignTokenRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[229]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RotateExternalCampaignTokenRequest.ProtoReflect.Descriptor instead.
+func (*RotateExternalCampaignTokenRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{229}
+}
+
+func (x *RotateExternalCampaignTokenRequest) GetCampaignId() string {
+	if x != nil {
+		return x.CampaignId
+	}
+	return ""
+}
+
+type RotateExternalCampaignTokenResponse struct {
+	state         protoimpl.MessageState   `protogen:"open.v1"`
+	Created       *ExternalCampaignCreated `protobuf:"bytes,1,opt,name=created,proto3" json:"created,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RotateExternalCampaignTokenResponse) Reset() {
+	*x = RotateExternalCampaignTokenResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[230]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RotateExternalCampaignTokenResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RotateExternalCampaignTokenResponse) ProtoMessage() {}
+
+func (x *RotateExternalCampaignTokenResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[230]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RotateExternalCampaignTokenResponse.ProtoReflect.Descriptor instead.
+func (*RotateExternalCampaignTokenResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{230}
+}
+
+func (x *RotateExternalCampaignTokenResponse) GetCreated() *ExternalCampaignCreated {
+	if x != nil {
+		return x.Created
+	}
+	return nil
+}
+
+type RevokeExternalCampaignRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CampaignId    string                 `protobuf:"bytes,1,opt,name=campaign_id,json=campaignId,proto3" json:"campaign_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RevokeExternalCampaignRequest) Reset() {
+	*x = RevokeExternalCampaignRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[231]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RevokeExternalCampaignRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RevokeExternalCampaignRequest) ProtoMessage() {}
+
+func (x *RevokeExternalCampaignRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[231]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RevokeExternalCampaignRequest.ProtoReflect.Descriptor instead.
+func (*RevokeExternalCampaignRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{231}
+}
+
+func (x *RevokeExternalCampaignRequest) GetCampaignId() string {
+	if x != nil {
+		return x.CampaignId
+	}
+	return ""
+}
+
+type RevokeExternalCampaignResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Campaign      *ExternalCampaign      `protobuf:"bytes,1,opt,name=campaign,proto3" json:"campaign,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RevokeExternalCampaignResponse) Reset() {
+	*x = RevokeExternalCampaignResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[232]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RevokeExternalCampaignResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RevokeExternalCampaignResponse) ProtoMessage() {}
+
+func (x *RevokeExternalCampaignResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[232]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RevokeExternalCampaignResponse.ProtoReflect.Descriptor instead.
+func (*RevokeExternalCampaignResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{232}
+}
+
+func (x *RevokeExternalCampaignResponse) GetCampaign() *ExternalCampaign {
+	if x != nil {
+		return x.Campaign
+	}
+	return nil
+}
+
+type GetExternalCampaignReportRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CampaignId    string                 `protobuf:"bytes,1,opt,name=campaign_id,json=campaignId,proto3" json:"campaign_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetExternalCampaignReportRequest) Reset() {
+	*x = GetExternalCampaignReportRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[233]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetExternalCampaignReportRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetExternalCampaignReportRequest) ProtoMessage() {}
+
+func (x *GetExternalCampaignReportRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[233]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetExternalCampaignReportRequest.ProtoReflect.Descriptor instead.
+func (*GetExternalCampaignReportRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{233}
+}
+
+func (x *GetExternalCampaignReportRequest) GetCampaignId() string {
+	if x != nil {
+		return x.CampaignId
+	}
+	return ""
+}
+
+type GetExternalCampaignReportResponse struct {
+	state         protoimpl.MessageState  `protogen:"open.v1"`
+	Report        *ExternalCampaignReport `protobuf:"bytes,1,opt,name=report,proto3" json:"report,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetExternalCampaignReportResponse) Reset() {
+	*x = GetExternalCampaignReportResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[234]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetExternalCampaignReportResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetExternalCampaignReportResponse) ProtoMessage() {}
+
+func (x *GetExternalCampaignReportResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[234]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetExternalCampaignReportResponse.ProtoReflect.Descriptor instead.
+func (*GetExternalCampaignReportResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{234}
+}
+
+func (x *GetExternalCampaignReportResponse) GetReport() *ExternalCampaignReport {
+	if x != nil {
+		return x.Report
+	}
+	return nil
+}
+
+type GetCourseExternalReportRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CourseId      string                 `protobuf:"bytes,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetCourseExternalReportRequest) Reset() {
+	*x = GetCourseExternalReportRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[235]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCourseExternalReportRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCourseExternalReportRequest) ProtoMessage() {}
+
+func (x *GetCourseExternalReportRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[235]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCourseExternalReportRequest.ProtoReflect.Descriptor instead.
+func (*GetCourseExternalReportRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{235}
+}
+
+func (x *GetCourseExternalReportRequest) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+type GetCourseExternalReportResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Report        *CourseExternalReport  `protobuf:"bytes,1,opt,name=report,proto3" json:"report,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetCourseExternalReportResponse) Reset() {
+	*x = GetCourseExternalReportResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[236]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCourseExternalReportResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCourseExternalReportResponse) ProtoMessage() {}
+
+func (x *GetCourseExternalReportResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[236]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCourseExternalReportResponse.ProtoReflect.Descriptor instead.
+func (*GetCourseExternalReportResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{236}
+}
+
+func (x *GetCourseExternalReportResponse) GetReport() *CourseExternalReport {
+	if x != nil {
+		return x.Report
+	}
+	return nil
+}
+
+type GetPublicAcademyAccessRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Token         string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	VisitorHash   []byte                 `protobuf:"bytes,2,opt,name=visitor_hash,json=visitorHash,proto3" json:"visitor_hash,omitempty"`
+	UtmSource     *string                `protobuf:"bytes,3,opt,name=utm_source,json=utmSource,proto3,oneof" json:"utm_source,omitempty"`
+	UtmMedium     *string                `protobuf:"bytes,4,opt,name=utm_medium,json=utmMedium,proto3,oneof" json:"utm_medium,omitempty"`
+	UtmCampaign   *string                `protobuf:"bytes,5,opt,name=utm_campaign,json=utmCampaign,proto3,oneof" json:"utm_campaign,omitempty"`
+	UtmContent    *string                `protobuf:"bytes,6,opt,name=utm_content,json=utmContent,proto3,oneof" json:"utm_content,omitempty"`
+	UtmTerm       *string                `protobuf:"bytes,7,opt,name=utm_term,json=utmTerm,proto3,oneof" json:"utm_term,omitempty"`
+	Referrer      *string                `protobuf:"bytes,8,opt,name=referrer,proto3,oneof" json:"referrer,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetPublicAcademyAccessRequest) Reset() {
+	*x = GetPublicAcademyAccessRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[237]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPublicAcademyAccessRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPublicAcademyAccessRequest) ProtoMessage() {}
+
+func (x *GetPublicAcademyAccessRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[237]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPublicAcademyAccessRequest.ProtoReflect.Descriptor instead.
+func (*GetPublicAcademyAccessRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{237}
+}
+
+func (x *GetPublicAcademyAccessRequest) GetToken() string {
+	if x != nil {
+		return x.Token
+	}
+	return ""
+}
+
+func (x *GetPublicAcademyAccessRequest) GetVisitorHash() []byte {
+	if x != nil {
+		return x.VisitorHash
+	}
+	return nil
+}
+
+func (x *GetPublicAcademyAccessRequest) GetUtmSource() string {
+	if x != nil && x.UtmSource != nil {
+		return *x.UtmSource
+	}
+	return ""
+}
+
+func (x *GetPublicAcademyAccessRequest) GetUtmMedium() string {
+	if x != nil && x.UtmMedium != nil {
+		return *x.UtmMedium
+	}
+	return ""
+}
+
+func (x *GetPublicAcademyAccessRequest) GetUtmCampaign() string {
+	if x != nil && x.UtmCampaign != nil {
+		return *x.UtmCampaign
+	}
+	return ""
+}
+
+func (x *GetPublicAcademyAccessRequest) GetUtmContent() string {
+	if x != nil && x.UtmContent != nil {
+		return *x.UtmContent
+	}
+	return ""
+}
+
+func (x *GetPublicAcademyAccessRequest) GetUtmTerm() string {
+	if x != nil && x.UtmTerm != nil {
+		return *x.UtmTerm
+	}
+	return ""
+}
+
+func (x *GetPublicAcademyAccessRequest) GetReferrer() string {
+	if x != nil && x.Referrer != nil {
+		return *x.Referrer
+	}
+	return ""
+}
+
+type GetPublicAcademyAccessResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Access        *PublicAcademyAccess   `protobuf:"bytes,1,opt,name=access,proto3" json:"access,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetPublicAcademyAccessResponse) Reset() {
+	*x = GetPublicAcademyAccessResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[238]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPublicAcademyAccessResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPublicAcademyAccessResponse) ProtoMessage() {}
+
+func (x *GetPublicAcademyAccessResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[238]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPublicAcademyAccessResponse.ProtoReflect.Descriptor instead.
+func (*GetPublicAcademyAccessResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{238}
+}
+
+func (x *GetPublicAcademyAccessResponse) GetAccess() *PublicAcademyAccess {
+	if x != nil {
+		return x.Access
+	}
+	return nil
+}
+
+type RequestPublicAcademyVerificationRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AccessToken   string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
+	Email         string                 `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
+	FirstName     *string                `protobuf:"bytes,3,opt,name=first_name,json=firstName,proto3,oneof" json:"first_name,omitempty"`
+	LastName      *string                `protobuf:"bytes,4,opt,name=last_name,json=lastName,proto3,oneof" json:"last_name,omitempty"`
+	VisitorHash   []byte                 `protobuf:"bytes,5,opt,name=visitor_hash,json=visitorHash,proto3" json:"visitor_hash,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RequestPublicAcademyVerificationRequest) Reset() {
+	*x = RequestPublicAcademyVerificationRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[239]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RequestPublicAcademyVerificationRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RequestPublicAcademyVerificationRequest) ProtoMessage() {}
+
+func (x *RequestPublicAcademyVerificationRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[239]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RequestPublicAcademyVerificationRequest.ProtoReflect.Descriptor instead.
+func (*RequestPublicAcademyVerificationRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{239}
+}
+
+func (x *RequestPublicAcademyVerificationRequest) GetAccessToken() string {
+	if x != nil {
+		return x.AccessToken
+	}
+	return ""
+}
+
+func (x *RequestPublicAcademyVerificationRequest) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
+func (x *RequestPublicAcademyVerificationRequest) GetFirstName() string {
+	if x != nil && x.FirstName != nil {
+		return *x.FirstName
+	}
+	return ""
+}
+
+func (x *RequestPublicAcademyVerificationRequest) GetLastName() string {
+	if x != nil && x.LastName != nil {
+		return *x.LastName
+	}
+	return ""
+}
+
+func (x *RequestPublicAcademyVerificationRequest) GetVisitorHash() []byte {
+	if x != nil {
+		return x.VisitorHash
+	}
+	return nil
+}
+
+type RequestPublicAcademyVerificationResponse struct {
+	state         protoimpl.MessageState         `protogen:"open.v1"`
+	Challenge     *ExternalVerificationChallenge `protobuf:"bytes,1,opt,name=challenge,proto3" json:"challenge,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RequestPublicAcademyVerificationResponse) Reset() {
+	*x = RequestPublicAcademyVerificationResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[240]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RequestPublicAcademyVerificationResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RequestPublicAcademyVerificationResponse) ProtoMessage() {}
+
+func (x *RequestPublicAcademyVerificationResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[240]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RequestPublicAcademyVerificationResponse.ProtoReflect.Descriptor instead.
+func (*RequestPublicAcademyVerificationResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{240}
+}
+
+func (x *RequestPublicAcademyVerificationResponse) GetChallenge() *ExternalVerificationChallenge {
+	if x != nil {
+		return x.Challenge
+	}
+	return nil
+}
+
+type ConfirmPublicAcademyVerificationRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ChallengeId   string                 `protobuf:"bytes,1,opt,name=challenge_id,json=challengeId,proto3" json:"challenge_id,omitempty"`
+	Code          string                 `protobuf:"bytes,2,opt,name=code,proto3" json:"code,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ConfirmPublicAcademyVerificationRequest) Reset() {
+	*x = ConfirmPublicAcademyVerificationRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[241]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ConfirmPublicAcademyVerificationRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ConfirmPublicAcademyVerificationRequest) ProtoMessage() {}
+
+func (x *ConfirmPublicAcademyVerificationRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[241]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ConfirmPublicAcademyVerificationRequest.ProtoReflect.Descriptor instead.
+func (*ConfirmPublicAcademyVerificationRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{241}
+}
+
+func (x *ConfirmPublicAcademyVerificationRequest) GetChallengeId() string {
+	if x != nil {
+		return x.ChallengeId
+	}
+	return ""
+}
+
+func (x *ConfirmPublicAcademyVerificationRequest) GetCode() string {
+	if x != nil {
+		return x.Code
+	}
+	return ""
+}
+
+type ConfirmPublicAcademyVerificationResponse struct {
+	state         protoimpl.MessageState         `protogen:"open.v1"`
+	Confirmed     *ExternalVerificationConfirmed `protobuf:"bytes,1,opt,name=confirmed,proto3" json:"confirmed,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ConfirmPublicAcademyVerificationResponse) Reset() {
+	*x = ConfirmPublicAcademyVerificationResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[242]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ConfirmPublicAcademyVerificationResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ConfirmPublicAcademyVerificationResponse) ProtoMessage() {}
+
+func (x *ConfirmPublicAcademyVerificationResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[242]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ConfirmPublicAcademyVerificationResponse.ProtoReflect.Descriptor instead.
+func (*ConfirmPublicAcademyVerificationResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{242}
+}
+
+func (x *ConfirmPublicAcademyVerificationResponse) GetConfirmed() *ExternalVerificationConfirmed {
+	if x != nil {
+		return x.Confirmed
+	}
+	return nil
+}
+
+type ActivatePublicAcademyAccessRequest struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	AccessToken    string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
+	IdempotencyKey string                 `protobuf:"bytes,2,opt,name=idempotency_key,json=idempotencyKey,proto3" json:"idempotency_key,omitempty"`
+	VisitorHash    []byte                 `protobuf:"bytes,3,opt,name=visitor_hash,json=visitorHash,proto3" json:"visitor_hash,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *ActivatePublicAcademyAccessRequest) Reset() {
+	*x = ActivatePublicAcademyAccessRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[243]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ActivatePublicAcademyAccessRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ActivatePublicAcademyAccessRequest) ProtoMessage() {}
+
+func (x *ActivatePublicAcademyAccessRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[243]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ActivatePublicAcademyAccessRequest.ProtoReflect.Descriptor instead.
+func (*ActivatePublicAcademyAccessRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{243}
+}
+
+func (x *ActivatePublicAcademyAccessRequest) GetAccessToken() string {
+	if x != nil {
+		return x.AccessToken
+	}
+	return ""
+}
+
+func (x *ActivatePublicAcademyAccessRequest) GetIdempotencyKey() string {
+	if x != nil {
+		return x.IdempotencyKey
+	}
+	return ""
+}
+
+func (x *ActivatePublicAcademyAccessRequest) GetVisitorHash() []byte {
+	if x != nil {
+		return x.VisitorHash
+	}
+	return nil
+}
+
+type ActivatePublicAcademyAccessResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Enrollment    *CourseEnrollment      `protobuf:"bytes,1,opt,name=enrollment,proto3" json:"enrollment,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ActivatePublicAcademyAccessResponse) Reset() {
+	*x = ActivatePublicAcademyAccessResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[244]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ActivatePublicAcademyAccessResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ActivatePublicAcademyAccessResponse) ProtoMessage() {}
+
+func (x *ActivatePublicAcademyAccessResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[244]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ActivatePublicAcademyAccessResponse.ProtoReflect.Descriptor instead.
+func (*ActivatePublicAcademyAccessResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{244}
+}
+
+func (x *ActivatePublicAcademyAccessResponse) GetEnrollment() *CourseEnrollment {
+	if x != nil {
+		return x.Enrollment
+	}
+	return nil
+}
+
+type GetPublicAcademyEnrollmentRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	EnrollmentId  string                 `protobuf:"bytes,1,opt,name=enrollment_id,json=enrollmentId,proto3" json:"enrollment_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetPublicAcademyEnrollmentRequest) Reset() {
+	*x = GetPublicAcademyEnrollmentRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[245]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPublicAcademyEnrollmentRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPublicAcademyEnrollmentRequest) ProtoMessage() {}
+
+func (x *GetPublicAcademyEnrollmentRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[245]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPublicAcademyEnrollmentRequest.ProtoReflect.Descriptor instead.
+func (*GetPublicAcademyEnrollmentRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{245}
+}
+
+func (x *GetPublicAcademyEnrollmentRequest) GetEnrollmentId() string {
+	if x != nil {
+		return x.EnrollmentId
+	}
+	return ""
+}
+
+type GetPublicAcademyEnrollmentResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Enrollment    *CourseEnrollment      `protobuf:"bytes,1,opt,name=enrollment,proto3" json:"enrollment,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetPublicAcademyEnrollmentResponse) Reset() {
+	*x = GetPublicAcademyEnrollmentResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[246]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPublicAcademyEnrollmentResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPublicAcademyEnrollmentResponse) ProtoMessage() {}
+
+func (x *GetPublicAcademyEnrollmentResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[246]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPublicAcademyEnrollmentResponse.ProtoReflect.Descriptor instead.
+func (*GetPublicAcademyEnrollmentResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{246}
+}
+
+func (x *GetPublicAcademyEnrollmentResponse) GetEnrollment() *CourseEnrollment {
+	if x != nil {
+		return x.Enrollment
+	}
+	return nil
+}
+
+type GetPublicAcademyEnrollmentOutlineRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	EnrollmentId  string                 `protobuf:"bytes,1,opt,name=enrollment_id,json=enrollmentId,proto3" json:"enrollment_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetPublicAcademyEnrollmentOutlineRequest) Reset() {
+	*x = GetPublicAcademyEnrollmentOutlineRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[247]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPublicAcademyEnrollmentOutlineRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPublicAcademyEnrollmentOutlineRequest) ProtoMessage() {}
+
+func (x *GetPublicAcademyEnrollmentOutlineRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[247]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPublicAcademyEnrollmentOutlineRequest.ProtoReflect.Descriptor instead.
+func (*GetPublicAcademyEnrollmentOutlineRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{247}
+}
+
+func (x *GetPublicAcademyEnrollmentOutlineRequest) GetEnrollmentId() string {
+	if x != nil {
+		return x.EnrollmentId
+	}
+	return ""
+}
+
+type GetPublicAcademyEnrollmentOutlineResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Outline       *EnrollmentOutline     `protobuf:"bytes,1,opt,name=outline,proto3" json:"outline,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetPublicAcademyEnrollmentOutlineResponse) Reset() {
+	*x = GetPublicAcademyEnrollmentOutlineResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[248]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPublicAcademyEnrollmentOutlineResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPublicAcademyEnrollmentOutlineResponse) ProtoMessage() {}
+
+func (x *GetPublicAcademyEnrollmentOutlineResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[248]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPublicAcademyEnrollmentOutlineResponse.ProtoReflect.Descriptor instead.
+func (*GetPublicAcademyEnrollmentOutlineResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{248}
+}
+
+func (x *GetPublicAcademyEnrollmentOutlineResponse) GetOutline() *EnrollmentOutline {
+	if x != nil {
+		return x.Outline
+	}
+	return nil
+}
+
+type GetPublicAcademyEnrollmentLessonRequest struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	EnrollmentId    string                 `protobuf:"bytes,1,opt,name=enrollment_id,json=enrollmentId,proto3" json:"enrollment_id,omitempty"`
+	LessonVersionId string                 `protobuf:"bytes,2,opt,name=lesson_version_id,json=lessonVersionId,proto3" json:"lesson_version_id,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *GetPublicAcademyEnrollmentLessonRequest) Reset() {
+	*x = GetPublicAcademyEnrollmentLessonRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[249]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPublicAcademyEnrollmentLessonRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPublicAcademyEnrollmentLessonRequest) ProtoMessage() {}
+
+func (x *GetPublicAcademyEnrollmentLessonRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[249]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPublicAcademyEnrollmentLessonRequest.ProtoReflect.Descriptor instead.
+func (*GetPublicAcademyEnrollmentLessonRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{249}
+}
+
+func (x *GetPublicAcademyEnrollmentLessonRequest) GetEnrollmentId() string {
+	if x != nil {
+		return x.EnrollmentId
+	}
+	return ""
+}
+
+func (x *GetPublicAcademyEnrollmentLessonRequest) GetLessonVersionId() string {
+	if x != nil {
+		return x.LessonVersionId
+	}
+	return ""
+}
+
+type GetPublicAcademyEnrollmentLessonResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Lesson        *EnrollmentLesson      `protobuf:"bytes,1,opt,name=lesson,proto3" json:"lesson,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetPublicAcademyEnrollmentLessonResponse) Reset() {
+	*x = GetPublicAcademyEnrollmentLessonResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[250]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPublicAcademyEnrollmentLessonResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPublicAcademyEnrollmentLessonResponse) ProtoMessage() {}
+
+func (x *GetPublicAcademyEnrollmentLessonResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[250]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPublicAcademyEnrollmentLessonResponse.ProtoReflect.Descriptor instead.
+func (*GetPublicAcademyEnrollmentLessonResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{250}
+}
+
+func (x *GetPublicAcademyEnrollmentLessonResponse) GetLesson() *EnrollmentLesson {
+	if x != nil {
+		return x.Lesson
+	}
+	return nil
+}
+
+type CompletePublicAcademyEnrollmentLessonRequest struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	EnrollmentId    string                 `protobuf:"bytes,1,opt,name=enrollment_id,json=enrollmentId,proto3" json:"enrollment_id,omitempty"`
+	LessonVersionId string                 `protobuf:"bytes,2,opt,name=lesson_version_id,json=lessonVersionId,proto3" json:"lesson_version_id,omitempty"`
+	IdempotencyKey  string                 `protobuf:"bytes,3,opt,name=idempotency_key,json=idempotencyKey,proto3" json:"idempotency_key,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *CompletePublicAcademyEnrollmentLessonRequest) Reset() {
+	*x = CompletePublicAcademyEnrollmentLessonRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[251]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CompletePublicAcademyEnrollmentLessonRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CompletePublicAcademyEnrollmentLessonRequest) ProtoMessage() {}
+
+func (x *CompletePublicAcademyEnrollmentLessonRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[251]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CompletePublicAcademyEnrollmentLessonRequest.ProtoReflect.Descriptor instead.
+func (*CompletePublicAcademyEnrollmentLessonRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{251}
+}
+
+func (x *CompletePublicAcademyEnrollmentLessonRequest) GetEnrollmentId() string {
+	if x != nil {
+		return x.EnrollmentId
+	}
+	return ""
+}
+
+func (x *CompletePublicAcademyEnrollmentLessonRequest) GetLessonVersionId() string {
+	if x != nil {
+		return x.LessonVersionId
+	}
+	return ""
+}
+
+func (x *CompletePublicAcademyEnrollmentLessonRequest) GetIdempotencyKey() string {
+	if x != nil {
+		return x.IdempotencyKey
+	}
+	return ""
+}
+
+type CompletePublicAcademyEnrollmentLessonResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Enrollment    *CourseEnrollment      `protobuf:"bytes,1,opt,name=enrollment,proto3" json:"enrollment,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CompletePublicAcademyEnrollmentLessonResponse) Reset() {
+	*x = CompletePublicAcademyEnrollmentLessonResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[252]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CompletePublicAcademyEnrollmentLessonResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CompletePublicAcademyEnrollmentLessonResponse) ProtoMessage() {}
+
+func (x *CompletePublicAcademyEnrollmentLessonResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[252]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CompletePublicAcademyEnrollmentLessonResponse.ProtoReflect.Descriptor instead.
+func (*CompletePublicAcademyEnrollmentLessonResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{252}
+}
+
+func (x *CompletePublicAcademyEnrollmentLessonResponse) GetEnrollment() *CourseEnrollment {
+	if x != nil {
+		return x.Enrollment
+	}
+	return nil
+}
+
+type SubmitPublicAcademyQuizAttemptRequest struct {
+	state          protoimpl.MessageState  `protogen:"open.v1"`
+	EnrollmentId   string                  `protobuf:"bytes,1,opt,name=enrollment_id,json=enrollmentId,proto3" json:"enrollment_id,omitempty"`
+	QuizVersionId  string                  `protobuf:"bytes,2,opt,name=quiz_version_id,json=quizVersionId,proto3" json:"quiz_version_id,omitempty"`
+	IdempotencyKey string                  `protobuf:"bytes,3,opt,name=idempotency_key,json=idempotencyKey,proto3" json:"idempotency_key,omitempty"`
+	Answers        []*EnrollmentQuizAnswer `protobuf:"bytes,4,rep,name=answers,proto3" json:"answers,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *SubmitPublicAcademyQuizAttemptRequest) Reset() {
+	*x = SubmitPublicAcademyQuizAttemptRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[253]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SubmitPublicAcademyQuizAttemptRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SubmitPublicAcademyQuizAttemptRequest) ProtoMessage() {}
+
+func (x *SubmitPublicAcademyQuizAttemptRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[253]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SubmitPublicAcademyQuizAttemptRequest.ProtoReflect.Descriptor instead.
+func (*SubmitPublicAcademyQuizAttemptRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{253}
+}
+
+func (x *SubmitPublicAcademyQuizAttemptRequest) GetEnrollmentId() string {
+	if x != nil {
+		return x.EnrollmentId
+	}
+	return ""
+}
+
+func (x *SubmitPublicAcademyQuizAttemptRequest) GetQuizVersionId() string {
+	if x != nil {
+		return x.QuizVersionId
+	}
+	return ""
+}
+
+func (x *SubmitPublicAcademyQuizAttemptRequest) GetIdempotencyKey() string {
+	if x != nil {
+		return x.IdempotencyKey
+	}
+	return ""
+}
+
+func (x *SubmitPublicAcademyQuizAttemptRequest) GetAnswers() []*EnrollmentQuizAnswer {
+	if x != nil {
+		return x.Answers
+	}
+	return nil
+}
+
+type SubmitPublicAcademyQuizAttemptResponse struct {
+	state         protoimpl.MessageState     `protogen:"open.v1"`
+	Result        *ExternalQuizAttemptResult `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SubmitPublicAcademyQuizAttemptResponse) Reset() {
+	*x = SubmitPublicAcademyQuizAttemptResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[254]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SubmitPublicAcademyQuizAttemptResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SubmitPublicAcademyQuizAttemptResponse) ProtoMessage() {}
+
+func (x *SubmitPublicAcademyQuizAttemptResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[254]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SubmitPublicAcademyQuizAttemptResponse.ProtoReflect.Descriptor instead.
+func (*SubmitPublicAcademyQuizAttemptResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{254}
+}
+
+func (x *SubmitPublicAcademyQuizAttemptResponse) GetResult() *ExternalQuizAttemptResult {
+	if x != nil {
+		return x.Result
+	}
+	return nil
+}
+
+type GetPublicAcademyEnrollmentResultsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	EnrollmentId  string                 `protobuf:"bytes,1,opt,name=enrollment_id,json=enrollmentId,proto3" json:"enrollment_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetPublicAcademyEnrollmentResultsRequest) Reset() {
+	*x = GetPublicAcademyEnrollmentResultsRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[255]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPublicAcademyEnrollmentResultsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPublicAcademyEnrollmentResultsRequest) ProtoMessage() {}
+
+func (x *GetPublicAcademyEnrollmentResultsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[255]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPublicAcademyEnrollmentResultsRequest.ProtoReflect.Descriptor instead.
+func (*GetPublicAcademyEnrollmentResultsRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{255}
+}
+
+func (x *GetPublicAcademyEnrollmentResultsRequest) GetEnrollmentId() string {
+	if x != nil {
+		return x.EnrollmentId
+	}
+	return ""
+}
+
+type GetPublicAcademyEnrollmentResultsResponse struct {
+	state         protoimpl.MessageState     `protogen:"open.v1"`
+	Results       *ExternalEnrollmentResults `protobuf:"bytes,1,opt,name=results,proto3" json:"results,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetPublicAcademyEnrollmentResultsResponse) Reset() {
+	*x = GetPublicAcademyEnrollmentResultsResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[256]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPublicAcademyEnrollmentResultsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPublicAcademyEnrollmentResultsResponse) ProtoMessage() {}
+
+func (x *GetPublicAcademyEnrollmentResultsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[256]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPublicAcademyEnrollmentResultsResponse.ProtoReflect.Descriptor instead.
+func (*GetPublicAcademyEnrollmentResultsResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{256}
+}
+
+func (x *GetPublicAcademyEnrollmentResultsResponse) GetResults() *ExternalEnrollmentResults {
+	if x != nil {
+		return x.Results
+	}
+	return nil
+}
+
+type GetExternalLearnersRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetExternalLearnersRequest) Reset() {
+	*x = GetExternalLearnersRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[257]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetExternalLearnersRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetExternalLearnersRequest) ProtoMessage() {}
+
+func (x *GetExternalLearnersRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[257]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetExternalLearnersRequest.ProtoReflect.Descriptor instead.
+func (*GetExternalLearnersRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{257}
+}
+
+type GetExternalLearnersResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Learners      []*ExternalLearner     `protobuf:"bytes,1,rep,name=learners,proto3" json:"learners,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetExternalLearnersResponse) Reset() {
+	*x = GetExternalLearnersResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[258]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetExternalLearnersResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetExternalLearnersResponse) ProtoMessage() {}
+
+func (x *GetExternalLearnersResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[258]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetExternalLearnersResponse.ProtoReflect.Descriptor instead.
+func (*GetExternalLearnersResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{258}
+}
+
+func (x *GetExternalLearnersResponse) GetLearners() []*ExternalLearner {
+	if x != nil {
+		return x.Learners
+	}
+	return nil
+}
+
+type GetExternalLearnerRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	LearnerId     string                 `protobuf:"bytes,1,opt,name=learner_id,json=learnerId,proto3" json:"learner_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetExternalLearnerRequest) Reset() {
+	*x = GetExternalLearnerRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[259]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetExternalLearnerRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetExternalLearnerRequest) ProtoMessage() {}
+
+func (x *GetExternalLearnerRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[259]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetExternalLearnerRequest.ProtoReflect.Descriptor instead.
+func (*GetExternalLearnerRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{259}
+}
+
+func (x *GetExternalLearnerRequest) GetLearnerId() string {
+	if x != nil {
+		return x.LearnerId
+	}
+	return ""
+}
+
+type GetExternalLearnerResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Learner       *ExternalLearner       `protobuf:"bytes,1,opt,name=learner,proto3" json:"learner,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetExternalLearnerResponse) Reset() {
+	*x = GetExternalLearnerResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[260]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetExternalLearnerResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetExternalLearnerResponse) ProtoMessage() {}
+
+func (x *GetExternalLearnerResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[260]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetExternalLearnerResponse.ProtoReflect.Descriptor instead.
+func (*GetExternalLearnerResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{260}
+}
+
+func (x *GetExternalLearnerResponse) GetLearner() *ExternalLearner {
+	if x != nil {
+		return x.Learner
+	}
+	return nil
+}
+
+type GetExternalLearnerEnrollmentsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	LearnerId     string                 `protobuf:"bytes,1,opt,name=learner_id,json=learnerId,proto3" json:"learner_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetExternalLearnerEnrollmentsRequest) Reset() {
+	*x = GetExternalLearnerEnrollmentsRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[261]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetExternalLearnerEnrollmentsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetExternalLearnerEnrollmentsRequest) ProtoMessage() {}
+
+func (x *GetExternalLearnerEnrollmentsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[261]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetExternalLearnerEnrollmentsRequest.ProtoReflect.Descriptor instead.
+func (*GetExternalLearnerEnrollmentsRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{261}
+}
+
+func (x *GetExternalLearnerEnrollmentsRequest) GetLearnerId() string {
+	if x != nil {
+		return x.LearnerId
+	}
+	return ""
+}
+
+type GetExternalLearnerEnrollmentsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Enrollments   []*CourseEnrollment    `protobuf:"bytes,1,rep,name=enrollments,proto3" json:"enrollments,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetExternalLearnerEnrollmentsResponse) Reset() {
+	*x = GetExternalLearnerEnrollmentsResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[262]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetExternalLearnerEnrollmentsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetExternalLearnerEnrollmentsResponse) ProtoMessage() {}
+
+func (x *GetExternalLearnerEnrollmentsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[262]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetExternalLearnerEnrollmentsResponse.ProtoReflect.Descriptor instead.
+func (*GetExternalLearnerEnrollmentsResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{262}
+}
+
+func (x *GetExternalLearnerEnrollmentsResponse) GetEnrollments() []*CourseEnrollment {
+	if x != nil {
+		return x.Enrollments
+	}
+	return nil
+}
+
+type GetExternalLearnerTimelineRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	LearnerId     string                 `protobuf:"bytes,1,opt,name=learner_id,json=learnerId,proto3" json:"learner_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetExternalLearnerTimelineRequest) Reset() {
+	*x = GetExternalLearnerTimelineRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[263]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetExternalLearnerTimelineRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetExternalLearnerTimelineRequest) ProtoMessage() {}
+
+func (x *GetExternalLearnerTimelineRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[263]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetExternalLearnerTimelineRequest.ProtoReflect.Descriptor instead.
+func (*GetExternalLearnerTimelineRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{263}
+}
+
+func (x *GetExternalLearnerTimelineRequest) GetLearnerId() string {
+	if x != nil {
+		return x.LearnerId
+	}
+	return ""
+}
+
+type GetExternalLearnerTimelineResponse struct {
+	state         protoimpl.MessageState   `protogen:"open.v1"`
+	Timeline      *ExternalLearnerTimeline `protobuf:"bytes,1,opt,name=timeline,proto3" json:"timeline,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetExternalLearnerTimelineResponse) Reset() {
+	*x = GetExternalLearnerTimelineResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[264]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetExternalLearnerTimelineResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetExternalLearnerTimelineResponse) ProtoMessage() {}
+
+func (x *GetExternalLearnerTimelineResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[264]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetExternalLearnerTimelineResponse.ProtoReflect.Descriptor instead.
+func (*GetExternalLearnerTimelineResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{264}
+}
+
+func (x *GetExternalLearnerTimelineResponse) GetTimeline() *ExternalLearnerTimeline {
+	if x != nil {
+		return x.Timeline
+	}
+	return nil
+}
+
 var File_proto_academy_v1_academy_proto protoreflect.FileDescriptor
 
 const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"\n" +
-	"\x1eproto/academy/v1/academy.proto\x12\x11teamos.academy.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x82\x04\n" +
+	"\x1eproto/academy/v1/academy.proto\x12\x11teamos.academy.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf8\b\n" +
 	"\x06Course\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12%\n" +
@@ -3379,11 +17502,26 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	" \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12C\n" +
 	"\n" +
 	"visibility\x18\v \x01(\x0e2#.teamos.academy.v1.CourseVisibilityR\n" +
-	"visibilityB\x0e\n" +
+	"visibility\x12F\n" +
+	"\n" +
+	"owner_type\x18\f \x01(\x0e2\".teamos.academy.v1.CourseOwnerTypeH\x03R\townerType\x88\x01\x01\x12'\n" +
+	"\rowner_user_id\x18\r \x01(\tH\x04R\vownerUserId\x88\x01\x01\x12'\n" +
+	"\rcreated_by_id\x18\x0e \x01(\tH\x05R\vcreatedById\x88\x01\x01\x12X\n" +
+	"\x10lifecycle_status\x18\x0f \x01(\x0e2(.teamos.academy.v1.CourseLifecycleStatusH\x06R\x0flifecycleStatus\x88\x01\x01\x12a\n" +
+	"\x13distribution_status\x18\x10 \x01(\x0e2+.teamos.academy.v1.CourseDistributionStatusH\aR\x12distributionStatus\x88\x01\x01\x12<\n" +
+	"\x18current_draft_version_id\x18\x11 \x01(\tH\bR\x15currentDraftVersionId\x88\x01\x01\x12B\n" +
+	"\x1blatest_published_version_id\x18\x12 \x01(\tH\tR\x18latestPublishedVersionId\x88\x01\x01B\x0e\n" +
 	"\f_descriptionB\f\n" +
 	"\n" +
 	"_cover_urlB\x10\n" +
-	"\x0e_deadline_days\"h\n" +
+	"\x0e_deadline_daysB\r\n" +
+	"\v_owner_typeB\x10\n" +
+	"\x0e_owner_user_idB\x10\n" +
+	"\x0e_created_by_idB\x13\n" +
+	"\x11_lifecycle_statusB\x16\n" +
+	"\x14_distribution_statusB\x1b\n" +
+	"\x19_current_draft_version_idB\x1e\n" +
+	"\x1c_latest_published_version_id\"h\n" +
 	"\rCourseSection\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1b\n" +
 	"\tcourse_id\x18\x02 \x01(\tR\bcourseId\x12\x14\n" +
@@ -3421,7 +17559,118 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"\tquestions\x18\x03 \x03(\v2\x1f.teamos.academy.v1.QuizQuestionR\tquestions\x12#\n" +
 	"\rpassing_score\x18\x04 \x01(\rR\fpassingScore\x12&\n" +
 	"\fmax_attempts\x18\x05 \x01(\rH\x00R\vmaxAttempts\x88\x01\x01B\x0f\n" +
-	"\r_max_attempts\"\x9e\x03\n" +
+	"\r_max_attempts\"\x87\x06\n" +
+	"\rCourseVersion\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1b\n" +
+	"\tcourse_id\x18\x02 \x01(\tR\bcourseId\x12\x16\n" +
+	"\x06number\x18\x03 \x01(\rR\x06number\x12>\n" +
+	"\x06status\x18\x04 \x01(\x0e2&.teamos.academy.v1.CourseVersionStatusR\x06status\x12\x14\n" +
+	"\x05title\x18\x05 \x01(\tR\x05title\x12%\n" +
+	"\vdescription\x18\x06 \x01(\tH\x00R\vdescription\x88\x01\x01\x12'\n" +
+	"\rcover_file_id\x18\a \x01(\tH\x01R\vcoverFileId\x88\x01\x01\x12 \n" +
+	"\tcover_url\x18\b \x01(\tH\x02R\bcoverUrl\x88\x01\x01\x12\x1e\n" +
+	"\n" +
+	"sequential\x18\t \x01(\bR\n" +
+	"sequential\x12H\n" +
+	"\x1edefault_internal_deadline_days\x18\n" +
+	" \x01(\rH\x03R\x1bdefaultInternalDeadlineDays\x88\x01\x01\x12\"\n" +
+	"\rcreated_by_id\x18\v \x01(\tR\vcreatedById\x129\n" +
+	"\n" +
+	"created_at\x18\f \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12+\n" +
+	"\x0fpublished_by_id\x18\r \x01(\tH\x04R\rpublishedById\x88\x01\x01\x12B\n" +
+	"\fpublished_at\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampH\x05R\vpublishedAt\x88\x01\x01\x12&\n" +
+	"\fcontent_hash\x18\x0f \x01(\tH\x06R\vcontentHash\x88\x01\x01B\x0e\n" +
+	"\f_descriptionB\x10\n" +
+	"\x0e_cover_file_idB\f\n" +
+	"\n" +
+	"_cover_urlB!\n" +
+	"\x1f_default_internal_deadline_daysB\x12\n" +
+	"\x10_published_by_idB\x0f\n" +
+	"\r_published_atB\x0f\n" +
+	"\r_content_hash\"~\n" +
+	"\x14CourseVersionSection\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12*\n" +
+	"\x11course_version_id\x18\x02 \x01(\tR\x0fcourseVersionId\x12\x14\n" +
+	"\x05title\x18\x03 \x01(\tR\x05title\x12\x14\n" +
+	"\x05order\x18\x04 \x01(\rR\x05order\"\x9a\x06\n" +
+	"\x13CourseVersionLesson\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12*\n" +
+	"\x11course_version_id\x18\x02 \x01(\tR\x0fcourseVersionId\x12,\n" +
+	"\x12section_version_id\x18\x03 \x01(\tR\x10sectionVersionId\x12\x1d\n" +
+	"\n" +
+	"stable_key\x18\x04 \x01(\tR\tstableKey\x12\x14\n" +
+	"\x05title\x18\x05 \x01(\tR\x05title\x12\x14\n" +
+	"\x05order\x18\x06 \x01(\rR\x05order\x121\n" +
+	"\acontent\x18\a \x01(\v2\x17.google.protobuf.StructR\acontent\x12J\n" +
+	"\vsource_type\x18\b \x01(\x0e2).teamos.academy.v1.CourseLessonSourceTypeR\n" +
+	"sourceType\x12/\n" +
+	"\x11source_article_id\x18\t \x01(\tH\x00R\x0fsourceArticleId\x88\x01\x01\x129\n" +
+	"\x16source_article_version\x18\n" +
+	" \x01(\rH\x01R\x14sourceArticleVersion\x88\x01\x01\x121\n" +
+	"\x12source_template_id\x18\v \x01(\tH\x02R\x10sourceTemplateId\x88\x01\x01\x12@\n" +
+	"\x1asource_template_version_id\x18\f \x01(\tH\x03R\x17sourceTemplateVersionId\x88\x01\x01\x120\n" +
+	"\x11estimated_minutes\x18\r \x01(\rH\x04R\x10estimatedMinutes\x88\x01\x01\x12+\n" +
+	"\x0fquiz_version_id\x18\x0e \x01(\tH\x05R\rquizVersionId\x88\x01\x01B\x14\n" +
+	"\x12_source_article_idB\x19\n" +
+	"\x17_source_article_versionB\x15\n" +
+	"\x13_source_template_idB\x1d\n" +
+	"\x1b_source_template_version_idB\x14\n" +
+	"\x12_estimated_minutesB\x12\n" +
+	"\x10_quiz_version_id\"\x98\x02\n" +
+	"\x11CourseVersionQuiz\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12*\n" +
+	"\x11course_version_id\x18\x02 \x01(\tR\x0fcourseVersionId\x12*\n" +
+	"\x11lesson_version_id\x18\x03 \x01(\tR\x0flessonVersionId\x12=\n" +
+	"\tquestions\x18\x04 \x03(\v2\x1f.teamos.academy.v1.QuizQuestionR\tquestions\x12#\n" +
+	"\rpassing_score\x18\x05 \x01(\rR\fpassingScore\x12&\n" +
+	"\fmax_attempts\x18\x06 \x01(\rH\x00R\vmaxAttempts\x88\x01\x01B\x0f\n" +
+	"\r_max_attempts\"7\n" +
+	"\x11LearnerQuizOption\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
+	"\x04text\x18\x02 \x01(\tR\x04text\"\xb2\x01\n" +
+	"\x13LearnerQuizQuestion\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x127\n" +
+	"\x04type\x18\x02 \x01(\x0e2#.teamos.academy.v1.QuizQuestionTypeR\x04type\x12\x12\n" +
+	"\x04text\x18\x03 \x01(\tR\x04text\x12>\n" +
+	"\aoptions\x18\x04 \x03(\v2$.teamos.academy.v1.LearnerQuizOptionR\aoptions\"\xce\x01\n" +
+	"\x18LearnerCourseVersionQuiz\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12D\n" +
+	"\tquestions\x18\x02 \x03(\v2&.teamos.academy.v1.LearnerQuizQuestionR\tquestions\x12#\n" +
+	"\rpassing_score\x18\x03 \x01(\rR\fpassingScore\x12&\n" +
+	"\fmax_attempts\x18\x04 \x01(\rH\x00R\vmaxAttempts\x88\x01\x01B\x0f\n" +
+	"\r_max_attempts\"\x9b\x03\n" +
+	"\x1aLearnerCourseVersionLesson\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12*\n" +
+	"\x11course_version_id\x18\x02 \x01(\tR\x0fcourseVersionId\x12,\n" +
+	"\x12section_version_id\x18\x03 \x01(\tR\x10sectionVersionId\x12\x1d\n" +
+	"\n" +
+	"stable_key\x18\x04 \x01(\tR\tstableKey\x12\x14\n" +
+	"\x05title\x18\x05 \x01(\tR\x05title\x12\x14\n" +
+	"\x05order\x18\x06 \x01(\rR\x05order\x121\n" +
+	"\acontent\x18\a \x01(\v2\x17.google.protobuf.StructR\acontent\x120\n" +
+	"\x11estimated_minutes\x18\b \x01(\rH\x00R\x10estimatedMinutes\x88\x01\x01\x12D\n" +
+	"\x04quiz\x18\t \x01(\v2+.teamos.academy.v1.LearnerCourseVersionQuizH\x01R\x04quiz\x88\x01\x01B\x14\n" +
+	"\x12_estimated_minutesB\a\n" +
+	"\x05_quiz\"\xa2\x01\n" +
+	"\x1bLearnerCourseVersionSection\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
+	"\x05title\x18\x02 \x01(\tR\x05title\x12\x14\n" +
+	"\x05order\x18\x03 \x01(\rR\x05order\x12G\n" +
+	"\alessons\x18\x04 \x03(\v2-.teamos.academy.v1.LearnerCourseVersionLessonR\alessons\"\xcd\x02\n" +
+	"\x1dLearnerPublishedCourseVersion\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1b\n" +
+	"\tcourse_id\x18\x02 \x01(\tR\bcourseId\x12\x16\n" +
+	"\x06number\x18\x03 \x01(\rR\x06number\x12\x14\n" +
+	"\x05title\x18\x04 \x01(\tR\x05title\x12%\n" +
+	"\vdescription\x18\x05 \x01(\tH\x00R\vdescription\x88\x01\x01\x12 \n" +
+	"\tcover_url\x18\x06 \x01(\tH\x01R\bcoverUrl\x88\x01\x01\x12\x1e\n" +
+	"\n" +
+	"sequential\x18\a \x01(\bR\n" +
+	"sequential\x12J\n" +
+	"\bsections\x18\b \x03(\v2..teamos.academy.v1.LearnerCourseVersionSectionR\bsectionsB\x0e\n" +
+	"\f_descriptionB\f\n" +
+	"\n" +
+	"_cover_url\"\xe5\x03\n" +
 	"\x10CourseAssignment\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1b\n" +
 	"\tcourse_id\x18\x02 \x01(\tR\bcourseId\x12D\n" +
@@ -3432,10 +17681,12 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"\bdue_date\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampH\x02R\adueDate\x88\x01\x01\x12$\n" +
 	"\x0eassigned_by_id\x18\a \x01(\tR\fassignedById\x129\n" +
 	"\n" +
-	"created_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAtB\x0e\n" +
+	"created_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12/\n" +
+	"\x11course_version_id\x18\t \x01(\tH\x03R\x0fcourseVersionId\x88\x01\x01B\x0e\n" +
 	"\f_assignee_idB\x0f\n" +
 	"\r_invite_tokenB\v\n" +
-	"\t_due_date\"\xdf\x01\n" +
+	"\t_due_dateB\x14\n" +
+	"\x12_course_version_id\"\x9b\x03\n" +
 	"\vQuizAttempt\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
 	"\aquiz_id\x18\x02 \x01(\tR\x06quizId\x12\x17\n" +
@@ -3444,7 +17695,14 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"\x06passed\x18\x05 \x01(\bR\x06passed\x12%\n" +
 	"\x0epending_review\x18\x06 \x01(\bR\rpendingReview\x129\n" +
 	"\n" +
-	"created_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"\xa2\x03\n" +
+	"created_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12(\n" +
+	"\renrollment_id\x18\b \x01(\tH\x00R\fenrollmentId\x88\x01\x01\x12+\n" +
+	"\x0fquiz_version_id\x18\t \x01(\tH\x01R\rquizVersionId\x88\x01\x01\x12*\n" +
+	"\x0eattempt_number\x18\n" +
+	" \x01(\rH\x02R\rattemptNumber\x88\x01\x01B\x10\n" +
+	"\x0e_enrollment_idB\x12\n" +
+	"\x10_quiz_version_idB\x11\n" +
+	"\x0f_attempt_number\"\xc8\x05\n" +
 	"\x0eCourseProgress\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1b\n" +
 	"\tcourse_id\x18\x02 \x01(\tR\bcourseId\x12?\n" +
@@ -3453,10 +17711,354 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"\rquiz_attempts\x18\x05 \x03(\v2\x1e.teamos.academy.v1.QuizAttemptR\fquizAttempts\x12>\n" +
 	"\n" +
 	"started_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\tstartedAt\x88\x01\x01\x12B\n" +
-	"\fcompleted_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampH\x01R\vcompletedAt\x88\x01\x01B\r\n" +
+	"\fcompleted_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampH\x01R\vcompletedAt\x88\x01\x01\x12(\n" +
+	"\renrollment_id\x18\b \x01(\tH\x02R\fenrollmentId\x88\x01\x01\x12/\n" +
+	"\x11course_version_id\x18\t \x01(\tH\x03R\x0fcourseVersionId\x88\x01\x01\x12.\n" +
+	"\x10progress_percent\x18\n" +
+	" \x01(\rH\x04R\x0fprogressPercent\x88\x01\x01\x12>\n" +
+	"\x19current_lesson_version_id\x18\v \x01(\tH\x05R\x16currentLessonVersionId\x88\x01\x01B\r\n" +
 	"\v_started_atB\x0f\n" +
-	"\r_completed_at\"\x13\n" +
-	"\x11GetCoursesRequest\"I\n" +
+	"\r_completed_atB\x10\n" +
+	"\x0e_enrollment_idB\x14\n" +
+	"\x12_course_version_idB\x13\n" +
+	"\x11_progress_percentB\x1c\n" +
+	"\x1a_current_lesson_version_id\"\xed\f\n" +
+	"\x10CourseEnrollment\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1b\n" +
+	"\tcourse_id\x18\x02 \x01(\tR\bcourseId\x12*\n" +
+	"\x11course_version_id\x18\x03 \x01(\tR\x0fcourseVersionId\x12K\n" +
+	"\flearner_type\x18\x04 \x01(\x0e2(.teamos.academy.v1.EnrollmentLearnerTypeR\vlearnerType\x12\x1c\n" +
+	"\auser_id\x18\x05 \x01(\tH\x00R\x06userId\x88\x01\x01\x123\n" +
+	"\x13external_learner_id\x18\x06 \x01(\tH\x01R\x11externalLearnerId\x88\x01\x01\x12H\n" +
+	"\vsource_type\x18\a \x01(\x0e2'.teamos.academy.v1.EnrollmentSourceTypeR\n" +
+	"sourceType\x12 \n" +
+	"\tsource_id\x18\b \x01(\tH\x02R\bsourceId\x88\x01\x01\x12%\n" +
+	"\x0eattempt_number\x18\t \x01(\rR\rattemptNumber\x12T\n" +
+	"\x0fprogress_status\x18\n" +
+	" \x01(\x0e2+.teamos.academy.v1.EnrollmentProgressStatusR\x0eprogressStatus\x12N\n" +
+	"\raccess_status\x18\v \x01(\x0e2).teamos.academy.v1.EnrollmentAccessStatusR\faccessStatus\x12>\n" +
+	"\x19current_lesson_version_id\x18\f \x01(\tH\x03R\x16currentLessonVersionId\x88\x01\x01\x12B\n" +
+	"\factivated_at\x18\r \x01(\v2\x1a.google.protobuf.TimestampH\x04R\vactivatedAt\x88\x01\x01\x12B\n" +
+	"\faccess_until\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampH\x05R\vaccessUntil\x88\x01\x01\x12>\n" +
+	"\n" +
+	"started_at\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampH\x06R\tstartedAt\x88\x01\x01\x12B\n" +
+	"\fcompleted_at\x18\x10 \x01(\v2\x1a.google.protobuf.TimestampH\aR\vcompletedAt\x88\x01\x01\x12I\n" +
+	"\x10last_activity_at\x18\x11 \x01(\v2\x1a.google.protobuf.TimestampH\bR\x0elastActivityAt\x88\x01\x01\x12<\n" +
+	"\tfrozen_at\x18\x12 \x01(\v2\x1a.google.protobuf.TimestampH\tR\bfrozenAt\x88\x01\x01\x12B\n" +
+	"\fsuspended_at\x18\x13 \x01(\v2\x1a.google.protobuf.TimestampH\n" +
+	"R\vsuspendedAt\x88\x01\x01\x129\n" +
+	"\n" +
+	"created_at\x18\x14 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
+	"\n" +
+	"updated_at\x18\x15 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12)\n" +
+	"\x10progress_percent\x18\x16 \x01(\rR\x0fprogressPercent\x12:\n" +
+	"\bdue_date\x18\x17 \x01(\v2\x1a.google.protobuf.TimestampH\vR\adueDate\x88\x01\x01\x12\x18\n" +
+	"\aoverdue\x18\x18 \x01(\bR\aoverdue\x12\x1d\n" +
+	"\n" +
+	"company_id\x18\x19 \x01(\tR\tcompanyId\x12%\n" +
+	"\x0eversion_number\x18\x1a \x01(\rR\rversionNumberB\n" +
+	"\n" +
+	"\b_user_idB\x16\n" +
+	"\x14_external_learner_idB\f\n" +
+	"\n" +
+	"_source_idB\x1c\n" +
+	"\x1a_current_lesson_version_idB\x0f\n" +
+	"\r_activated_atB\x0f\n" +
+	"\r_access_untilB\r\n" +
+	"\v_started_atB\x0f\n" +
+	"\r_completed_atB\x13\n" +
+	"\x11_last_activity_atB\f\n" +
+	"\n" +
+	"_frozen_atB\x0f\n" +
+	"\r_suspended_atB\v\n" +
+	"\t_due_date\"\xdc\x03\n" +
+	"\x18EnrollmentLessonProgress\x12#\n" +
+	"\renrollment_id\x18\x01 \x01(\tR\fenrollmentId\x12*\n" +
+	"\x11lesson_version_id\x18\x02 \x01(\tR\x0flessonVersionId\x12A\n" +
+	"\x06status\x18\x03 \x01(\x0e2).teamos.academy.v1.EnrollmentLessonStatusR\x06status\x12G\n" +
+	"\x0ffirst_opened_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\rfirstOpenedAt\x88\x01\x01\x12B\n" +
+	"\fcompleted_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampH\x01R\vcompletedAt\x88\x01\x01\x12%\n" +
+	"\x0eactive_seconds\x18\x06 \x01(\x04R\ractiveSeconds\x12A\n" +
+	"\rlast_position\x18\a \x01(\v2\x17.google.protobuf.StructH\x02R\flastPosition\x88\x01\x01B\x12\n" +
+	"\x10_first_opened_atB\x0f\n" +
+	"\r_completed_atB\x10\n" +
+	"\x0e_last_position\"\x89\x01\n" +
+	"\x14EnrollmentQuizAnswer\x12\x1f\n" +
+	"\vquestion_id\x18\x01 \x01(\tR\n" +
+	"questionId\x12.\n" +
+	"\x13selected_option_ids\x18\x02 \x03(\tR\x11selectedOptionIds\x12\x17\n" +
+	"\x04text\x18\x03 \x01(\tH\x00R\x04text\x88\x01\x01B\a\n" +
+	"\x05_text\"\xbd\x04\n" +
+	"\x15EnrollmentQuizAttempt\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12#\n" +
+	"\renrollment_id\x18\x02 \x01(\tR\fenrollmentId\x12&\n" +
+	"\x0fquiz_version_id\x18\x03 \x01(\tR\rquizVersionId\x12%\n" +
+	"\x0eattempt_number\x18\x04 \x01(\rR\rattemptNumber\x12A\n" +
+	"\aanswers\x18\x05 \x03(\v2'.teamos.academy.v1.EnrollmentQuizAnswerR\aanswers\x12\x14\n" +
+	"\x05score\x18\x06 \x01(\rR\x05score\x12\x16\n" +
+	"\x06passed\x18\a \x01(\bR\x06passed\x12%\n" +
+	"\x0epending_review\x18\b \x01(\bR\rpendingReview\x12)\n" +
+	"\x0ereviewed_by_id\x18\t \x01(\tH\x00R\freviewedById\x88\x01\x01\x12@\n" +
+	"\vreviewed_at\x18\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampH\x01R\n" +
+	"reviewedAt\x88\x01\x01\x12*\n" +
+	"\x0ereview_comment\x18\v \x01(\tH\x02R\rreviewComment\x88\x01\x01\x129\n" +
+	"\n" +
+	"created_at\x18\f \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAtB\x11\n" +
+	"\x0f_reviewed_by_idB\x0e\n" +
+	"\f_reviewed_atB\x11\n" +
+	"\x0f_review_comment\"\xd5\x02\n" +
+	"\x17EnrollmentOutlineLesson\x12*\n" +
+	"\x11lesson_version_id\x18\x01 \x01(\tR\x0flessonVersionId\x12,\n" +
+	"\x12section_version_id\x18\x02 \x01(\tR\x10sectionVersionId\x12\x14\n" +
+	"\x05title\x18\x03 \x01(\tR\x05title\x12\x14\n" +
+	"\x05order\x18\x04 \x01(\rR\x05order\x12F\n" +
+	"\x06status\x18\x05 \x01(\x0e2).teamos.academy.v1.EnrollmentLessonStatusH\x00R\x06status\x88\x01\x01\x120\n" +
+	"\x11estimated_minutes\x18\x06 \x01(\rH\x01R\x10estimatedMinutes\x88\x01\x01\x12\x19\n" +
+	"\bhas_quiz\x18\a \x01(\bR\ahasQuizB\t\n" +
+	"\a_statusB\x14\n" +
+	"\x12_estimated_minutes\"\xba\x01\n" +
+	"\x18EnrollmentOutlineSection\x12,\n" +
+	"\x12section_version_id\x18\x01 \x01(\tR\x10sectionVersionId\x12\x14\n" +
+	"\x05title\x18\x02 \x01(\tR\x05title\x12\x14\n" +
+	"\x05order\x18\x03 \x01(\rR\x05order\x12D\n" +
+	"\alessons\x18\x04 \x03(\v2*.teamos.academy.v1.EnrollmentOutlineLessonR\alessons\"\xa1\x01\n" +
+	"\x11EnrollmentOutline\x12C\n" +
+	"\n" +
+	"enrollment\x18\x01 \x01(\v2#.teamos.academy.v1.CourseEnrollmentR\n" +
+	"enrollment\x12G\n" +
+	"\bsections\x18\x02 \x03(\v2+.teamos.academy.v1.EnrollmentOutlineSectionR\bsections\"\xe7\x01\n" +
+	"\x10EnrollmentLesson\x12C\n" +
+	"\n" +
+	"enrollment\x18\x01 \x01(\v2#.teamos.academy.v1.CourseEnrollmentR\n" +
+	"enrollment\x12E\n" +
+	"\x06lesson\x18\x02 \x01(\v2-.teamos.academy.v1.LearnerCourseVersionLessonR\x06lesson\x12G\n" +
+	"\bprogress\x18\x03 \x01(\v2+.teamos.academy.v1.EnrollmentLessonProgressR\bprogress\"\xf7\x01\n" +
+	"\x1aEnrollmentProgressSnapshot\x12C\n" +
+	"\n" +
+	"enrollment\x18\x01 \x01(\v2#.teamos.academy.v1.CourseEnrollmentR\n" +
+	"enrollment\x12E\n" +
+	"\alessons\x18\x02 \x03(\v2+.teamos.academy.v1.EnrollmentLessonProgressR\alessons\x12M\n" +
+	"\rquiz_attempts\x18\x03 \x03(\v2(.teamos.academy.v1.EnrollmentQuizAttemptR\fquizAttempts\"\xd0\x02\n" +
+	"\x10EnrollmentReport\x12C\n" +
+	"\n" +
+	"enrollment\x18\x01 \x01(\v2#.teamos.academy.v1.CourseEnrollmentR\n" +
+	"enrollment\x12:\n" +
+	"\aversion\x18\x02 \x01(\v2 .teamos.academy.v1.CourseVersionR\aversion\x12E\n" +
+	"\alessons\x18\x03 \x03(\v2+.teamos.academy.v1.EnrollmentLessonProgressR\alessons\x12M\n" +
+	"\rquiz_attempts\x18\x04 \x03(\v2(.teamos.academy.v1.EnrollmentQuizAttemptR\fquizAttempts\x12%\n" +
+	"\x0eactive_seconds\x18\x05 \x01(\x04R\ractiveSeconds\"\xec\x03\n" +
+	"\x11CourseRestriction\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1d\n" +
+	"\n" +
+	"company_id\x18\x02 \x01(\tR\tcompanyId\x12\x1b\n" +
+	"\tcourse_id\x18\x03 \x01(\tR\bcourseId\x12<\n" +
+	"\x04type\x18\x04 \x01(\x0e2(.teamos.academy.v1.CourseRestrictionTypeR\x04type\x12\x16\n" +
+	"\x06reason\x18\x05 \x01(\tR\x06reason\x12\"\n" +
+	"\rcreated_by_id\x18\x06 \x01(\tR\vcreatedById\x129\n" +
+	"\n" +
+	"created_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12)\n" +
+	"\x0eresolved_by_id\x18\b \x01(\tH\x00R\fresolvedById\x88\x01\x01\x12@\n" +
+	"\vresolved_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampH\x01R\n" +
+	"resolvedAt\x88\x01\x01\x120\n" +
+	"\x11resolution_reason\x18\n" +
+	" \x01(\tH\x02R\x10resolutionReason\x88\x01\x01B\x11\n" +
+	"\x0f_resolved_by_idB\x0e\n" +
+	"\f_resolved_atB\x14\n" +
+	"\x12_resolution_reason\"\xb5\x05\n" +
+	"\fCourseOrigin\x127\n" +
+	"\x04type\x18\x01 \x01(\x0e2#.teamos.academy.v1.CourseOriginTypeR\x04type\x12-\n" +
+	"\x10source_course_id\x18\x02 \x01(\tH\x00R\x0esourceCourseId\x88\x01\x01\x12<\n" +
+	"\x18source_course_version_id\x18\x03 \x01(\tH\x01R\x15sourceCourseVersionId\x88\x01\x01\x12/\n" +
+	"\x11source_partner_id\x18\x04 \x01(\tH\x02R\x0fsourcePartnerId\x88\x01\x01\x121\n" +
+	"\x12source_template_id\x18\x05 \x01(\tH\x03R\x10sourceTemplateId\x88\x01\x01\x12@\n" +
+	"\x1asource_template_version_id\x18\x06 \x01(\tH\x04R\x17sourceTemplateVersionId\x88\x01\x01\x12,\n" +
+	"\x12instantiated_by_id\x18\a \x01(\tR\x10instantiatedById\x12C\n" +
+	"\x0finstantiated_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\x0einstantiatedAt\x12)\n" +
+	"\x10acquisition_type\x18\t \x01(\tR\x0facquisitionType\x12*\n" +
+	"\x0eentitlement_id\x18\n" +
+	" \x01(\tH\x05R\rentitlementId\x88\x01\x01B\x13\n" +
+	"\x11_source_course_idB\x1b\n" +
+	"\x19_source_course_version_idB\x14\n" +
+	"\x12_source_partner_idB\x15\n" +
+	"\x13_source_template_idB\x1d\n" +
+	"\x1b_source_template_version_idB\x11\n" +
+	"\x0f_entitlement_id\"\xbd\x01\n" +
+	"\x17PartnerCourseCopyResult\x121\n" +
+	"\x06course\x18\x01 \x01(\v2\x19.teamos.academy.v1.CourseR\x06course\x126\n" +
+	"\x05draft\x18\x02 \x01(\v2 .teamos.academy.v1.CourseVersionR\x05draft\x127\n" +
+	"\x06origin\x18\x03 \x01(\v2\x1f.teamos.academy.v1.CourseOriginR\x06origin\"h\n" +
+	"\x12PartnerCourseGroup\x12\x1d\n" +
+	"\n" +
+	"partner_id\x18\x01 \x01(\tR\tpartnerId\x123\n" +
+	"\acourses\x18\x02 \x03(\v2\x19.teamos.academy.v1.CourseR\acourses\"\x8c\x02\n" +
+	"\x1aPartnerCourseReportSummary\x12#\n" +
+	"\rtotal_courses\x18\x01 \x01(\rR\ftotalCourses\x12%\n" +
+	"\x0eactive_courses\x18\x02 \x01(\rR\ractiveCourses\x12)\n" +
+	"\x10archived_courses\x18\x03 \x01(\rR\x0farchivedCourses\x12'\n" +
+	"\x0fdeleted_courses\x18\x04 \x01(\rR\x0edeletedCourses\x12%\n" +
+	"\x0epaused_courses\x18\x05 \x01(\rR\rpausedCourses\x12'\n" +
+	"\x0fblocked_courses\x18\x06 \x01(\rR\x0eblockedCourses\"\xd3\x02\n" +
+	"\x1ePartnerCourseOperationalReport\x121\n" +
+	"\x06course\x18\x01 \x01(\v2\x19.teamos.academy.v1.CourseR\x06course\x12#\n" +
+	"\rversion_count\x18\x02 \x01(\rR\fversionCount\x12)\n" +
+	"\x10enrollment_count\x18\x03 \x01(\rR\x0fenrollmentCount\x126\n" +
+	"\x17active_enrollment_count\x18\x04 \x01(\rR\x15activeEnrollmentCount\x12<\n" +
+	"\x1acompleted_enrollment_count\x18\x05 \x01(\rR\x18completedEnrollmentCount\x128\n" +
+	"\x18average_progress_percent\x18\x06 \x01(\rR\x16averageProgressPercent\"\xa5\x02\n" +
+	"\x14PartnerCoursesReport\x12\x1d\n" +
+	"\n" +
+	"partner_id\x18\x01 \x01(\tR\tpartnerId\x12G\n" +
+	"\asummary\x18\x02 \x01(\v2-.teamos.academy.v1.PartnerCourseReportSummaryR\asummary\x12b\n" +
+	"\x13operational_courses\x18\x03 \x03(\v21.teamos.academy.v1.PartnerCourseOperationalReportR\x12operationalCourses\x12A\n" +
+	"\acourses\x18\x04 \x03(\v2'.teamos.academy.v1.CourseExternalReportR\acourses\"\xc2\x01\n" +
+	"\x14CourseVersionPreview\x121\n" +
+	"\x06course\x18\x01 \x01(\v2\x19.teamos.academy.v1.CourseR\x06course\x12J\n" +
+	"\aversion\x18\x02 \x01(\v20.teamos.academy.v1.LearnerPublishedCourseVersionR\aversion\x12+\n" +
+	"\x11persists_progress\x18\x03 \x01(\bR\x10persistsProgress\"\x9d\x01\n" +
+	"\x1eCoursePreviewQuizAttemptResult\x12&\n" +
+	"\x0fquiz_version_id\x18\x01 \x01(\tR\rquizVersionId\x12\x14\n" +
+	"\x05score\x18\x02 \x01(\rR\x05score\x12\x16\n" +
+	"\x06passed\x18\x03 \x01(\bR\x06passed\x12%\n" +
+	"\x0epending_review\x18\x04 \x01(\bR\rpendingReview\"\xfd\x04\n" +
+	"\x0eCourseTemplate\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1d\n" +
+	"\n" +
+	"company_id\x18\x02 \x01(\tR\tcompanyId\x129\n" +
+	"\x04type\x18\x03 \x01(\x0e2%.teamos.academy.v1.CourseTemplateTypeR\x04type\x123\n" +
+	"\x13system_template_key\x18\x04 \x01(\tH\x00R\x11systemTemplateKey\x88\x01\x01\x12[\n" +
+	"\x10lifecycle_status\x18\x05 \x01(\x0e20.teamos.academy.v1.CourseTemplateLifecycleStatusR\x0flifecycleStatus\x12<\n" +
+	"\x18current_draft_version_id\x18\x06 \x01(\tH\x01R\x15currentDraftVersionId\x88\x01\x01\x12B\n" +
+	"\x1blatest_published_version_id\x18\a \x01(\tH\x02R\x18latestPublishedVersionId\x88\x01\x01\x12\"\n" +
+	"\rcreated_by_id\x18\b \x01(\tR\vcreatedById\x129\n" +
+	"\n" +
+	"created_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
+	"\n" +
+	"updated_at\x18\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAtB\x16\n" +
+	"\x14_system_template_keyB\x1b\n" +
+	"\x19_current_draft_version_idB\x1e\n" +
+	"\x1c_latest_published_version_id\"\xf6\x04\n" +
+	"\x15CourseTemplateVersion\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1f\n" +
+	"\vtemplate_id\x18\x02 \x01(\tR\n" +
+	"templateId\x12\x16\n" +
+	"\x06number\x18\x03 \x01(\rR\x06number\x12>\n" +
+	"\x06status\x18\x04 \x01(\x0e2&.teamos.academy.v1.CourseVersionStatusR\x06status\x12\x14\n" +
+	"\x05title\x18\x05 \x01(\tR\x05title\x12%\n" +
+	"\vdescription\x18\x06 \x01(\tH\x00R\vdescription\x88\x01\x01\x12'\n" +
+	"\rcover_file_id\x18\a \x01(\tH\x01R\vcoverFileId\x88\x01\x01\x12\x1e\n" +
+	"\n" +
+	"sequential\x18\b \x01(\bR\n" +
+	"sequential\x12\"\n" +
+	"\rcreated_by_id\x18\t \x01(\tR\vcreatedById\x129\n" +
+	"\n" +
+	"created_at\x18\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12+\n" +
+	"\x0fpublished_by_id\x18\v \x01(\tH\x02R\rpublishedById\x88\x01\x01\x12B\n" +
+	"\fpublished_at\x18\f \x01(\v2\x1a.google.protobuf.TimestampH\x03R\vpublishedAt\x88\x01\x01\x12&\n" +
+	"\fcontent_hash\x18\r \x01(\tH\x04R\vcontentHash\x88\x01\x01B\x0e\n" +
+	"\f_descriptionB\x10\n" +
+	"\x0e_cover_file_idB\x12\n" +
+	"\x10_published_by_idB\x0f\n" +
+	"\r_published_atB\x0f\n" +
+	"\r_content_hash\"\xa9\x01\n" +
+	"\x1cCourseTemplateVersionSection\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12.\n" +
+	"\x13template_version_id\x18\x02 \x01(\tR\x11templateVersionId\x12\x1d\n" +
+	"\n" +
+	"stable_key\x18\x03 \x01(\tR\tstableKey\x12\x14\n" +
+	"\x05title\x18\x04 \x01(\tR\x05title\x12\x14\n" +
+	"\x05order\x18\x05 \x01(\rR\x05order\"\xfb\x04\n" +
+	"\x1bCourseTemplateVersionLesson\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12.\n" +
+	"\x13template_version_id\x18\x02 \x01(\tR\x11templateVersionId\x12,\n" +
+	"\x12section_version_id\x18\x03 \x01(\tR\x10sectionVersionId\x12\x1d\n" +
+	"\n" +
+	"stable_key\x18\x04 \x01(\tR\tstableKey\x12\x14\n" +
+	"\x05title\x18\x05 \x01(\tR\x05title\x12\x14\n" +
+	"\x05order\x18\x06 \x01(\rR\x05order\x121\n" +
+	"\acontent\x18\a \x01(\v2\x17.google.protobuf.StructR\acontent\x12J\n" +
+	"\vsource_type\x18\b \x01(\x0e2).teamos.academy.v1.CourseLessonSourceTypeR\n" +
+	"sourceType\x12/\n" +
+	"\x11source_article_id\x18\t \x01(\tH\x00R\x0fsourceArticleId\x88\x01\x01\x129\n" +
+	"\x16source_article_version\x18\n" +
+	" \x01(\rH\x01R\x14sourceArticleVersion\x88\x01\x01\x120\n" +
+	"\x11estimated_minutes\x18\v \x01(\rH\x02R\x10estimatedMinutes\x88\x01\x01\x12+\n" +
+	"\x0fquiz_version_id\x18\f \x01(\tH\x03R\rquizVersionId\x88\x01\x01B\x14\n" +
+	"\x12_source_article_idB\x19\n" +
+	"\x17_source_article_versionB\x14\n" +
+	"\x12_estimated_minutesB\x12\n" +
+	"\x10_quiz_version_id\"\xa4\x02\n" +
+	"\x19CourseTemplateVersionQuiz\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12.\n" +
+	"\x13template_version_id\x18\x02 \x01(\tR\x11templateVersionId\x12*\n" +
+	"\x11lesson_version_id\x18\x03 \x01(\tR\x0flessonVersionId\x12=\n" +
+	"\tquestions\x18\x04 \x03(\v2\x1f.teamos.academy.v1.QuizQuestionR\tquestions\x12#\n" +
+	"\rpassing_score\x18\x05 \x01(\rR\fpassingScore\x12&\n" +
+	"\fmax_attempts\x18\x06 \x01(\rH\x00R\vmaxAttempts\x88\x01\x01B\x0f\n" +
+	"\r_max_attempts\"\xfd\x01\n" +
+	"\x1cCourseTemplateVersionContent\x12K\n" +
+	"\bsections\x18\x01 \x03(\v2/.teamos.academy.v1.CourseTemplateVersionSectionR\bsections\x12H\n" +
+	"\alessons\x18\x02 \x03(\v2..teamos.academy.v1.CourseTemplateVersionLessonR\alessons\x12F\n" +
+	"\aquizzes\x18\x03 \x03(\v2,.teamos.academy.v1.CourseTemplateVersionQuizR\aquizzes\"\xad\x01\n" +
+	"\x1cCourseTemplateVersionDetails\x12B\n" +
+	"\aversion\x18\x01 \x01(\v2(.teamos.academy.v1.CourseTemplateVersionR\aversion\x12I\n" +
+	"\acontent\x18\x02 \x01(\v2/.teamos.academy.v1.CourseTemplateVersionContentR\acontent\"\xbb\x01\n" +
+	"\x1cCourseTemplateDraftQuizInput\x12=\n" +
+	"\tquestions\x18\x01 \x03(\v2\x1f.teamos.academy.v1.QuizQuestionR\tquestions\x12#\n" +
+	"\rpassing_score\x18\x02 \x01(\rR\fpassingScore\x12&\n" +
+	"\fmax_attempts\x18\x03 \x01(\rH\x00R\vmaxAttempts\x88\x01\x01B\x0f\n" +
+	"\r_max_attempts\"\xb7\x04\n" +
+	"\x1eCourseTemplateDraftLessonInput\x12\x1d\n" +
+	"\n" +
+	"stable_key\x18\x01 \x01(\tR\tstableKey\x12\x14\n" +
+	"\x05title\x18\x02 \x01(\tR\x05title\x12\x14\n" +
+	"\x05order\x18\x03 \x01(\rR\x05order\x121\n" +
+	"\acontent\x18\x04 \x01(\v2\x17.google.protobuf.StructR\acontent\x12O\n" +
+	"\vsource_type\x18\x05 \x01(\x0e2).teamos.academy.v1.CourseLessonSourceTypeH\x00R\n" +
+	"sourceType\x88\x01\x01\x12/\n" +
+	"\x11source_article_id\x18\x06 \x01(\tH\x01R\x0fsourceArticleId\x88\x01\x01\x129\n" +
+	"\x16source_article_version\x18\a \x01(\rH\x02R\x14sourceArticleVersion\x88\x01\x01\x120\n" +
+	"\x11estimated_minutes\x18\b \x01(\rH\x03R\x10estimatedMinutes\x88\x01\x01\x12H\n" +
+	"\x04quiz\x18\t \x01(\v2/.teamos.academy.v1.CourseTemplateDraftQuizInputH\x04R\x04quiz\x88\x01\x01B\x0e\n" +
+	"\f_source_typeB\x14\n" +
+	"\x12_source_article_idB\x19\n" +
+	"\x17_source_article_versionB\x14\n" +
+	"\x12_estimated_minutesB\a\n" +
+	"\x05_quiz\"\xb9\x01\n" +
+	"\x1fCourseTemplateDraftSectionInput\x12\x1d\n" +
+	"\n" +
+	"stable_key\x18\x01 \x01(\tR\tstableKey\x12\x14\n" +
+	"\x05title\x18\x02 \x01(\tR\x05title\x12\x14\n" +
+	"\x05order\x18\x03 \x01(\rR\x05order\x12K\n" +
+	"\alessons\x18\x04 \x03(\v21.teamos.academy.v1.CourseTemplateDraftLessonInputR\alessons\"q\n" +
+	"\x1fCourseTemplateDraftContentInput\x12N\n" +
+	"\bsections\x18\x01 \x03(\v22.teamos.academy.v1.CourseTemplateDraftSectionInputR\bsections\"\xc7\x01\n" +
+	"!CourseTemplateInstantiationResult\x121\n" +
+	"\x06course\x18\x01 \x01(\v2\x19.teamos.academy.v1.CourseR\x06course\x126\n" +
+	"\x05draft\x18\x02 \x01(\v2 .teamos.academy.v1.CourseVersionR\x05draft\x127\n" +
+	"\x06origin\x18\x03 \x01(\v2\x1f.teamos.academy.v1.CourseOriginR\x06origin\"\xa9\x04\n" +
+	"\x11GetCoursesRequest\x12F\n" +
+	"\n" +
+	"owner_type\x18\x01 \x01(\x0e2\".teamos.academy.v1.CourseOwnerTypeH\x00R\townerType\x88\x01\x01\x12\"\n" +
+	"\n" +
+	"partner_id\x18\x02 \x01(\tH\x01R\tpartnerId\x88\x01\x01\x12K\n" +
+	"\tlifecycle\x18\x03 \x01(\x0e2(.teamos.academy.v1.CourseLifecycleStatusH\x02R\tlifecycle\x88\x01\x01\x12T\n" +
+	"\fdistribution\x18\x04 \x01(\x0e2+.teamos.academy.v1.CourseDistributionStatusH\x03R\fdistribution\x88\x01\x01\x12 \n" +
+	"\thas_draft\x18\x05 \x01(\bH\x04R\bhasDraft\x88\x01\x01\x12*\n" +
+	"\x0elatest_version\x18\x06 \x01(\rH\x05R\rlatestVersion\x88\x01\x01\x12I\n" +
+	"\vorigin_type\x18\a \x01(\x0e2#.teamos.academy.v1.CourseOriginTypeH\x06R\n" +
+	"originType\x88\x01\x01B\r\n" +
+	"\v_owner_typeB\r\n" +
+	"\v_partner_idB\f\n" +
+	"\n" +
+	"_lifecycleB\x0f\n" +
+	"\r_distributionB\f\n" +
+	"\n" +
+	"_has_draftB\x11\n" +
+	"\x0f_latest_versionB\x0e\n" +
+	"\f_origin_type\"I\n" +
 	"\x12GetCoursesResponse\x123\n" +
 	"\acourses\x18\x01 \x03(\v2\x19.teamos.academy.v1.CourseR\acourses\"\"\n" +
 	"\x10GetCourseRequest\x12\x0e\n" +
@@ -3527,10 +18129,137 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"\x0e_deadline_daysB\r\n" +
 	"\v_visibility\"I\n" +
 	"\x14UpdateCourseResponse\x121\n" +
+	"\x06course\x18\x01 \x01(\v2\x19.teamos.academy.v1.CourseR\x06course\"&\n" +
+	"\x14ArchiveCourseRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"J\n" +
+	"\x15ArchiveCourseResponse\x121\n" +
+	"\x06course\x18\x01 \x01(\v2\x19.teamos.academy.v1.CourseR\x06course\"&\n" +
+	"\x14RestoreCourseRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"J\n" +
+	"\x15RestoreCourseResponse\x121\n" +
 	"\x06course\x18\x01 \x01(\v2\x19.teamos.academy.v1.CourseR\x06course\"%\n" +
 	"\x13DeleteCourseRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"\x16\n" +
 	"\x14DeleteCourseResponse\"7\n" +
+	"\x18GetCourseVersionsRequest\x12\x1b\n" +
+	"\tcourse_id\x18\x01 \x01(\tR\bcourseId\"Y\n" +
+	"\x19GetCourseVersionsResponse\x12<\n" +
+	"\bversions\x18\x01 \x03(\v2 .teamos.academy.v1.CourseVersionR\bversions\"U\n" +
+	"\x17GetCourseVersionRequest\x12\x1b\n" +
+	"\tcourse_id\x18\x01 \x01(\tR\bcourseId\x12\x1d\n" +
+	"\n" +
+	"version_id\x18\x02 \x01(\tR\tversionId\"\x9d\x02\n" +
+	"\x18GetCourseVersionResponse\x12:\n" +
+	"\aversion\x18\x01 \x01(\v2 .teamos.academy.v1.CourseVersionR\aversion\x12C\n" +
+	"\bsections\x18\x02 \x03(\v2'.teamos.academy.v1.CourseVersionSectionR\bsections\x12@\n" +
+	"\alessons\x18\x03 \x03(\v2&.teamos.academy.v1.CourseVersionLessonR\alessons\x12>\n" +
+	"\aquizzes\x18\x04 \x03(\v2$.teamos.academy.v1.CourseVersionQuizR\aquizzes\"7\n" +
+	"\x18CreateCourseDraftRequest\x12\x1b\n" +
+	"\tcourse_id\x18\x01 \x01(\tR\bcourseId\"W\n" +
+	"\x19CreateCourseDraftResponse\x12:\n" +
+	"\aversion\x18\x01 \x01(\v2 .teamos.academy.v1.CourseVersionR\aversion\"\xef\x02\n" +
+	"\x18UpdateCourseDraftRequest\x12\x1b\n" +
+	"\tcourse_id\x18\x01 \x01(\tR\bcourseId\x12\x19\n" +
+	"\x05title\x18\x02 \x01(\tH\x00R\x05title\x88\x01\x01\x12%\n" +
+	"\vdescription\x18\x03 \x01(\tH\x01R\vdescription\x88\x01\x01\x12'\n" +
+	"\rcover_file_id\x18\x04 \x01(\tH\x02R\vcoverFileId\x88\x01\x01\x12#\n" +
+	"\n" +
+	"sequential\x18\x05 \x01(\bH\x03R\n" +
+	"sequential\x88\x01\x01\x12H\n" +
+	"\x1edefault_internal_deadline_days\x18\x06 \x01(\rH\x04R\x1bdefaultInternalDeadlineDays\x88\x01\x01B\b\n" +
+	"\x06_titleB\x0e\n" +
+	"\f_descriptionB\x10\n" +
+	"\x0e_cover_file_idB\r\n" +
+	"\v_sequentialB!\n" +
+	"\x1f_default_internal_deadline_days\"W\n" +
+	"\x19UpdateCourseDraftResponse\x12:\n" +
+	"\aversion\x18\x01 \x01(\v2 .teamos.academy.v1.CourseVersionR\aversion\"c\n" +
+	"\x1bPublishCourseVersionRequest\x12\x1b\n" +
+	"\tcourse_id\x18\x01 \x01(\tR\bcourseId\x12'\n" +
+	"\x0fidempotency_key\x18\x02 \x01(\tR\x0eidempotencyKey\"Z\n" +
+	"\x1cPublishCourseVersionResponse\x12:\n" +
+	"\aversion\x18\x01 \x01(\v2 .teamos.academy.v1.CourseVersionR\aversion\"r\n" +
+	" GetPublishedCourseVersionRequest\x12\x1b\n" +
+	"\tcourse_id\x18\x01 \x01(\tR\bcourseId\x12\"\n" +
+	"\n" +
+	"version_id\x18\x02 \x01(\tH\x00R\tversionId\x88\x01\x01B\r\n" +
+	"\v_version_id\"o\n" +
+	"!GetPublishedCourseVersionResponse\x12J\n" +
+	"\aversion\x18\x01 \x01(\v20.teamos.academy.v1.LearnerPublishedCourseVersionR\aversion\"X\n" +
+	"!CreateCourseVersionSectionRequest\x12\x1d\n" +
+	"\n" +
+	"version_id\x18\x01 \x01(\tR\tversionId\x12\x14\n" +
+	"\x05title\x18\x02 \x01(\tR\x05title\"g\n" +
+	"\"CreateCourseVersionSectionResponse\x12A\n" +
+	"\asection\x18\x01 \x01(\v2'.teamos.academy.v1.CourseVersionSectionR\asection\"}\n" +
+	"!UpdateCourseVersionSectionRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x19\n" +
+	"\x05title\x18\x02 \x01(\tH\x00R\x05title\x88\x01\x01\x12\x19\n" +
+	"\x05order\x18\x03 \x01(\rH\x01R\x05order\x88\x01\x01B\b\n" +
+	"\x06_titleB\b\n" +
+	"\x06_order\"g\n" +
+	"\"UpdateCourseVersionSectionResponse\x12A\n" +
+	"\asection\x18\x01 \x01(\v2'.teamos.academy.v1.CourseVersionSectionR\asection\"3\n" +
+	"!DeleteCourseVersionSectionRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"$\n" +
+	"\"DeleteCourseVersionSectionResponse\"\x8f\x04\n" +
+	" CreateCourseVersionLessonRequest\x12\x1d\n" +
+	"\n" +
+	"version_id\x18\x01 \x01(\tR\tversionId\x12,\n" +
+	"\x12section_version_id\x18\x02 \x01(\tR\x10sectionVersionId\x12\x14\n" +
+	"\x05title\x18\x03 \x01(\tR\x05title\x126\n" +
+	"\acontent\x18\x04 \x01(\v2\x17.google.protobuf.StructH\x00R\acontent\x88\x01\x01\x12O\n" +
+	"\vsource_type\x18\x05 \x01(\x0e2).teamos.academy.v1.CourseLessonSourceTypeH\x01R\n" +
+	"sourceType\x88\x01\x01\x12/\n" +
+	"\x11source_article_id\x18\x06 \x01(\tH\x02R\x0fsourceArticleId\x88\x01\x01\x129\n" +
+	"\x16source_article_version\x18\a \x01(\rH\x03R\x14sourceArticleVersion\x88\x01\x01\x120\n" +
+	"\x11estimated_minutes\x18\b \x01(\rH\x04R\x10estimatedMinutes\x88\x01\x01B\n" +
+	"\n" +
+	"\b_contentB\x0e\n" +
+	"\f_source_typeB\x14\n" +
+	"\x12_source_article_idB\x19\n" +
+	"\x17_source_article_versionB\x14\n" +
+	"\x12_estimated_minutes\"c\n" +
+	"!CreateCourseVersionLessonResponse\x12>\n" +
+	"\x06lesson\x18\x01 \x01(\v2&.teamos.academy.v1.CourseVersionLessonR\x06lesson\"\xe1\x03\n" +
+	" UpdateCourseVersionLessonRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x19\n" +
+	"\x05title\x18\x02 \x01(\tH\x00R\x05title\x88\x01\x01\x126\n" +
+	"\acontent\x18\x03 \x01(\v2\x17.google.protobuf.StructH\x01R\acontent\x88\x01\x01\x12O\n" +
+	"\vsource_type\x18\x04 \x01(\x0e2).teamos.academy.v1.CourseLessonSourceTypeH\x02R\n" +
+	"sourceType\x88\x01\x01\x12/\n" +
+	"\x11source_article_id\x18\x05 \x01(\tH\x03R\x0fsourceArticleId\x88\x01\x01\x129\n" +
+	"\x16source_article_version\x18\x06 \x01(\rH\x04R\x14sourceArticleVersion\x88\x01\x01\x120\n" +
+	"\x11estimated_minutes\x18\a \x01(\rH\x05R\x10estimatedMinutes\x88\x01\x01B\b\n" +
+	"\x06_titleB\n" +
+	"\n" +
+	"\b_contentB\x0e\n" +
+	"\f_source_typeB\x14\n" +
+	"\x12_source_article_idB\x19\n" +
+	"\x17_source_article_versionB\x14\n" +
+	"\x12_estimated_minutes\"c\n" +
+	"!UpdateCourseVersionLessonResponse\x12>\n" +
+	"\x06lesson\x18\x01 \x01(\v2&.teamos.academy.v1.CourseVersionLessonR\x06lesson\"2\n" +
+	" DeleteCourseVersionLessonRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"#\n" +
+	"!DeleteCourseVersionLessonResponse\"t\n" +
+	"\x1eMoveCourseVersionLessonRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12,\n" +
+	"\x12section_version_id\x18\x02 \x01(\tR\x10sectionVersionId\x12\x14\n" +
+	"\x05order\x18\x03 \x01(\rR\x05order\"a\n" +
+	"\x1fMoveCourseVersionLessonResponse\x12>\n" +
+	"\x06lesson\x18\x01 \x01(\v2&.teamos.academy.v1.CourseVersionLessonR\x06lesson\"\xe9\x01\n" +
+	"\x1eUpsertCourseVersionQuizRequest\x12*\n" +
+	"\x11lesson_version_id\x18\x01 \x01(\tR\x0flessonVersionId\x12=\n" +
+	"\tquestions\x18\x02 \x03(\v2\x1f.teamos.academy.v1.QuizQuestionR\tquestions\x12#\n" +
+	"\rpassing_score\x18\x03 \x01(\rR\fpassingScore\x12&\n" +
+	"\fmax_attempts\x18\x04 \x01(\rH\x00R\vmaxAttempts\x88\x01\x01B\x0f\n" +
+	"\r_max_attempts\"[\n" +
+	"\x1fUpsertCourseVersionQuizResponse\x128\n" +
+	"\x04quiz\x18\x01 \x01(\v2$.teamos.academy.v1.CourseVersionQuizR\x04quiz\"L\n" +
+	"\x1eDeleteCourseVersionQuizRequest\x12*\n" +
+	"\x11lesson_version_id\x18\x01 \x01(\tR\x0flessonVersionId\"!\n" +
+	"\x1fDeleteCourseVersionQuizResponse\"7\n" +
 	"\x18GetCourseSectionsRequest\x12\x1b\n" +
 	"\tcourse_id\x18\x01 \x01(\tR\bcourseId\"Y\n" +
 	"\x19GetCourseSectionsResponse\x12<\n" +
@@ -3611,19 +18340,25 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"\x04quiz\x18\x01 \x01(\v2\x17.teamos.academy.v1.QuizR\x04quiz\"\x17\n" +
 	"\x15GetAssignmentsRequest\"_\n" +
 	"\x16GetAssignmentsResponse\x12E\n" +
-	"\vassignments\x18\x01 \x03(\v2#.teamos.academy.v1.CourseAssignmentR\vassignments\"\xf7\x01\n" +
+	"\vassignments\x18\x01 \x03(\v2#.teamos.academy.v1.CourseAssignmentR\vassignments\"\xbe\x02\n" +
 	"\x13AssignCourseRequest\x12\x1b\n" +
 	"\tcourse_id\x18\x01 \x01(\tR\bcourseId\x12D\n" +
 	"\rassignee_type\x18\x02 \x01(\x0e2\x1f.teamos.academy.v1.AssigneeTypeR\fassigneeType\x12$\n" +
 	"\vassignee_id\x18\x03 \x01(\tH\x00R\n" +
 	"assigneeId\x88\x01\x01\x12:\n" +
-	"\bdue_date\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampH\x01R\adueDate\x88\x01\x01B\x0e\n" +
+	"\bdue_date\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampH\x01R\adueDate\x88\x01\x01\x12/\n" +
+	"\x11course_version_id\x18\x05 \x01(\tH\x02R\x0fcourseVersionId\x88\x01\x01B\x0e\n" +
 	"\f_assignee_idB\v\n" +
-	"\t_due_date\"[\n" +
+	"\t_due_dateB\x14\n" +
+	"\x12_course_version_id\"\x82\x01\n" +
 	"\x14AssignCourseResponse\x12C\n" +
 	"\n" +
 	"assignment\x18\x01 \x01(\v2#.teamos.academy.v1.CourseAssignmentR\n" +
-	"assignment\"D\n" +
+	"assignment\x12%\n" +
+	"\x0eenrollment_ids\x18\x02 \x03(\tR\renrollmentIds\">\n" +
+	"\x17RevokeAssignmentRequest\x12#\n" +
+	"\rassignment_id\x18\x01 \x01(\tR\fassignmentId\"\x1a\n" +
+	"\x18RevokeAssignmentResponse\"D\n" +
 	"\x12GetProgressRequest\x12 \n" +
 	"\tcourse_id\x18\x01 \x01(\tH\x00R\bcourseId\x88\x01\x01B\f\n" +
 	"\n" +
@@ -3637,7 +18372,618 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"\n" +
 	"\b_user_id\"[\n" +
 	"\x1aMarkLessonCompleteResponse\x12=\n" +
-	"\bprogress\x18\x01 \x01(\v2!.teamos.academy.v1.CourseProgressR\bprogress*c\n" +
+	"\bprogress\x18\x01 \x01(\v2!.teamos.academy.v1.CourseProgressR\bprogress\"\x8e\x03\n" +
+	"\x15GetEnrollmentsRequest\x12 \n" +
+	"\tcourse_id\x18\x01 \x01(\tH\x00R\bcourseId\x88\x01\x01\x12/\n" +
+	"\x11course_version_id\x18\x02 \x01(\tH\x01R\x0fcourseVersionId\x88\x01\x01\x12\x1c\n" +
+	"\auser_id\x18\x03 \x01(\tH\x02R\x06userId\x88\x01\x01\x12Y\n" +
+	"\x0fprogress_status\x18\x04 \x01(\x0e2+.teamos.academy.v1.EnrollmentProgressStatusH\x03R\x0eprogressStatus\x88\x01\x01\x12S\n" +
+	"\raccess_status\x18\x05 \x01(\x0e2).teamos.academy.v1.EnrollmentAccessStatusH\x04R\faccessStatus\x88\x01\x01B\f\n" +
+	"\n" +
+	"_course_idB\x14\n" +
+	"\x12_course_version_idB\n" +
+	"\n" +
+	"\b_user_idB\x12\n" +
+	"\x10_progress_statusB\x10\n" +
+	"\x0e_access_status\"_\n" +
+	"\x16GetEnrollmentsResponse\x12E\n" +
+	"\venrollments\x18\x01 \x03(\v2#.teamos.academy.v1.CourseEnrollmentR\venrollments\"6\n" +
+	"\x17SelfEnrollCourseRequest\x12\x1b\n" +
+	"\tcourse_id\x18\x01 \x01(\tR\bcourseId\"_\n" +
+	"\x18SelfEnrollCourseResponse\x12C\n" +
+	"\n" +
+	"enrollment\x18\x01 \x01(\v2#.teamos.academy.v1.CourseEnrollmentR\n" +
+	"enrollment\"=\n" +
+	"\x1eGetCatalogCourseVersionRequest\x12\x1b\n" +
+	"\tcourse_id\x18\x01 \x01(\tR\bcourseId\"m\n" +
+	"\x1fGetCatalogCourseVersionResponse\x12J\n" +
+	"\aversion\x18\x01 \x01(\v20.teamos.academy.v1.LearnerPublishedCourseVersionR\aversion\";\n" +
+	"\x14GetEnrollmentRequest\x12#\n" +
+	"\renrollment_id\x18\x01 \x01(\tR\fenrollmentId\"\\\n" +
+	"\x15GetEnrollmentResponse\x12C\n" +
+	"\n" +
+	"enrollment\x18\x01 \x01(\v2#.teamos.academy.v1.CourseEnrollmentR\n" +
+	"enrollment\"B\n" +
+	"\x1bGetEnrollmentOutlineRequest\x12#\n" +
+	"\renrollment_id\x18\x01 \x01(\tR\fenrollmentId\"^\n" +
+	"\x1cGetEnrollmentOutlineResponse\x12>\n" +
+	"\aoutline\x18\x01 \x01(\v2$.teamos.academy.v1.EnrollmentOutlineR\aoutline\"m\n" +
+	"\x1aGetEnrollmentLessonRequest\x12#\n" +
+	"\renrollment_id\x18\x01 \x01(\tR\fenrollmentId\x12*\n" +
+	"\x11lesson_version_id\x18\x02 \x01(\tR\x0flessonVersionId\"Z\n" +
+	"\x1bGetEnrollmentLessonResponse\x12;\n" +
+	"\x06lesson\x18\x01 \x01(\v2#.teamos.academy.v1.EnrollmentLessonR\x06lesson\">\n" +
+	"\x17ResumeEnrollmentRequest\x12#\n" +
+	"\renrollment_id\x18\x01 \x01(\tR\fenrollmentId\"\xc3\x01\n" +
+	"\x18ResumeEnrollmentResponse\x12C\n" +
+	"\n" +
+	"enrollment\x18\x01 \x01(\v2#.teamos.academy.v1.CourseEnrollmentR\n" +
+	"enrollment\x12O\n" +
+	"\x0ecurrent_lesson\x18\x02 \x01(\v2#.teamos.academy.v1.EnrollmentLessonH\x00R\rcurrentLesson\x88\x01\x01B\x11\n" +
+	"\x0f_current_lesson\"\xaf\x02\n" +
+	"\x1fCompleteEnrollmentLessonRequest\x12#\n" +
+	"\renrollment_id\x18\x01 \x01(\tR\fenrollmentId\x12*\n" +
+	"\x11lesson_version_id\x18\x02 \x01(\tR\x0flessonVersionId\x12*\n" +
+	"\x0eactive_seconds\x18\x03 \x01(\x04H\x00R\ractiveSeconds\x88\x01\x01\x12A\n" +
+	"\rlast_position\x18\x04 \x01(\v2\x17.google.protobuf.StructH\x01R\flastPosition\x88\x01\x01\x12'\n" +
+	"\x0fidempotency_key\x18\x05 \x01(\tR\x0eidempotencyKeyB\x11\n" +
+	"\x0f_active_secondsB\x10\n" +
+	"\x0e_last_position\"m\n" +
+	" CompleteEnrollmentLessonResponse\x12I\n" +
+	"\bprogress\x18\x01 \x01(\v2-.teamos.academy.v1.EnrollmentProgressSnapshotR\bprogress\"\xf1\x02\n" +
+	"\"SubmitEnrollmentQuizAttemptRequest\x12#\n" +
+	"\renrollment_id\x18\x01 \x01(\tR\fenrollmentId\x12&\n" +
+	"\x0fquiz_version_id\x18\x02 \x01(\tR\rquizVersionId\x12A\n" +
+	"\aanswers\x18\x03 \x03(\v2'.teamos.academy.v1.EnrollmentQuizAnswerR\aanswers\x12*\n" +
+	"\x0eactive_seconds\x18\x04 \x01(\x04H\x00R\ractiveSeconds\x88\x01\x01\x12A\n" +
+	"\rlast_position\x18\x05 \x01(\v2\x17.google.protobuf.StructH\x01R\flastPosition\x88\x01\x01\x12'\n" +
+	"\x0fidempotency_key\x18\x06 \x01(\tR\x0eidempotencyKeyB\x11\n" +
+	"\x0f_active_secondsB\x10\n" +
+	"\x0e_last_position\"\xb4\x01\n" +
+	"#SubmitEnrollmentQuizAttemptResponse\x12B\n" +
+	"\aattempt\x18\x01 \x01(\v2(.teamos.academy.v1.EnrollmentQuizAttemptR\aattempt\x12I\n" +
+	"\bprogress\x18\x02 \x01(\v2-.teamos.academy.v1.EnrollmentProgressSnapshotR\bprogress\"A\n" +
+	"\x1aGetEnrollmentReportRequest\x12#\n" +
+	"\renrollment_id\x18\x01 \x01(\tR\fenrollmentId\"Z\n" +
+	"\x1bGetEnrollmentReportResponse\x12;\n" +
+	"\x06report\x18\x01 \x01(\v2#.teamos.academy.v1.EnrollmentReportR\x06report\"\xe1\x01\n" +
+	"\x1dGetPartnerCourseGroupsRequest\x12K\n" +
+	"\tlifecycle\x18\x01 \x01(\x0e2(.teamos.academy.v1.CourseLifecycleStatusH\x00R\tlifecycle\x88\x01\x01\x12T\n" +
+	"\fdistribution\x18\x02 \x01(\x0e2+.teamos.academy.v1.CourseDistributionStatusH\x01R\fdistribution\x88\x01\x01B\f\n" +
+	"\n" +
+	"_lifecycleB\x0f\n" +
+	"\r_distribution\"_\n" +
+	"\x1eGetPartnerCourseGroupsResponse\x12=\n" +
+	"\x06groups\x18\x01 \x03(\v2%.teamos.academy.v1.PartnerCourseGroupR\x06groups\"?\n" +
+	"\x1eGetPartnerCoursesReportRequest\x12\x1d\n" +
+	"\n" +
+	"partner_id\x18\x01 \x01(\tR\tpartnerId\"b\n" +
+	"\x1fGetPartnerCoursesReportResponse\x12?\n" +
+	"\x06report\x18\x01 \x01(\v2'.teamos.academy.v1.PartnerCoursesReportR\x06report\"\\\n" +
+	"\x1eGetCourseVersionPreviewRequest\x12\x1b\n" +
+	"\tcourse_id\x18\x01 \x01(\tR\bcourseId\x12\x1d\n" +
+	"\n" +
+	"version_id\x18\x02 \x01(\tR\tversionId\"d\n" +
+	"\x1fGetCourseVersionPreviewResponse\x12A\n" +
+	"\apreview\x18\x01 \x01(\v2'.teamos.academy.v1.CourseVersionPreviewR\apreview\"\xce\x01\n" +
+	"%SubmitCoursePreviewQuizAttemptRequest\x12\x1b\n" +
+	"\tcourse_id\x18\x01 \x01(\tR\bcourseId\x12\x1d\n" +
+	"\n" +
+	"version_id\x18\x02 \x01(\tR\tversionId\x12&\n" +
+	"\x0fquiz_version_id\x18\x03 \x01(\tR\rquizVersionId\x12A\n" +
+	"\aanswers\x18\x04 \x03(\v2'.teamos.academy.v1.EnrollmentQuizAnswerR\aanswers\"s\n" +
+	"&SubmitCoursePreviewQuizAttemptResponse\x12I\n" +
+	"\x06result\x18\x01 \x01(\v21.teamos.academy.v1.CoursePreviewQuizAttemptResultR\x06result\"\\\n" +
+	"%PausePartnerCourseDistributionRequest\x12\x1b\n" +
+	"\tcourse_id\x18\x01 \x01(\tR\bcourseId\x12\x16\n" +
+	"\x06reason\x18\x02 \x01(\tR\x06reason\"p\n" +
+	"&PausePartnerCourseDistributionResponse\x12F\n" +
+	"\vrestriction\x18\x01 \x01(\v2$.teamos.academy.v1.CourseRestrictionR\vrestriction\"P\n" +
+	"\x19BlockPartnerCourseRequest\x12\x1b\n" +
+	"\tcourse_id\x18\x01 \x01(\tR\bcourseId\x12\x16\n" +
+	"\x06reason\x18\x02 \x01(\tR\x06reason\"d\n" +
+	"\x1aBlockPartnerCourseResponse\x12F\n" +
+	"\vrestriction\x18\x01 \x01(\v2$.teamos.academy.v1.CourseRestrictionR\vrestriction\"]\n" +
+	"&ResolvePartnerCourseRestrictionRequest\x12\x1b\n" +
+	"\tcourse_id\x18\x01 \x01(\tR\bcourseId\x12\x16\n" +
+	"\x06reason\x18\x02 \x01(\tR\x06reason\"q\n" +
+	"'ResolvePartnerCourseRestrictionResponse\x12F\n" +
+	"\vrestriction\x18\x01 \x01(\v2$.teamos.academy.v1.CourseRestrictionR\vrestriction\";\n" +
+	"\x1cGetCourseRestrictionsRequest\x12\x1b\n" +
+	"\tcourse_id\x18\x01 \x01(\tR\bcourseId\"i\n" +
+	"\x1dGetCourseRestrictionsResponse\x12H\n" +
+	"\frestrictions\x18\x01 \x03(\v2$.teamos.academy.v1.CourseRestrictionR\frestrictions\"\x8f\x01\n" +
+	"(CopyPartnerCourseVersionToCompanyRequest\x12\x1b\n" +
+	"\tcourse_id\x18\x01 \x01(\tR\bcourseId\x12\x1d\n" +
+	"\n" +
+	"version_id\x18\x02 \x01(\tR\tversionId\x12'\n" +
+	"\x0fidempotency_key\x18\x03 \x01(\tR\x0eidempotencyKey\"o\n" +
+	")CopyPartnerCourseVersionToCompanyResponse\x12B\n" +
+	"\x06result\x18\x01 \x01(\v2*.teamos.academy.v1.PartnerCourseCopyResultR\x06result\"\xdb\x01\n" +
+	"\x19GetCourseTemplatesRequest\x12>\n" +
+	"\x04type\x18\x01 \x01(\x0e2%.teamos.academy.v1.CourseTemplateTypeH\x00R\x04type\x88\x01\x01\x12`\n" +
+	"\x10lifecycle_status\x18\x02 \x01(\x0e20.teamos.academy.v1.CourseTemplateLifecycleStatusH\x01R\x0flifecycleStatus\x88\x01\x01B\a\n" +
+	"\x05_typeB\x13\n" +
+	"\x11_lifecycle_status\"]\n" +
+	"\x1aGetCourseTemplatesResponse\x12?\n" +
+	"\ttemplates\x18\x01 \x03(\v2!.teamos.academy.v1.CourseTemplateR\ttemplates\"n\n" +
+	"\x18GetCourseTemplateRequest\x12\x1f\n" +
+	"\vtemplate_id\x18\x01 \x01(\tR\n" +
+	"templateId\x12\"\n" +
+	"\n" +
+	"version_id\x18\x02 \x01(\tH\x00R\tversionId\x88\x01\x01B\r\n" +
+	"\v_version_id\"\x96\x02\n" +
+	"\x19GetCourseTemplateResponse\x12=\n" +
+	"\btemplate\x18\x01 \x01(\v2!.teamos.academy.v1.CourseTemplateR\btemplate\x12D\n" +
+	"\bversions\x18\x02 \x03(\v2(.teamos.academy.v1.CourseTemplateVersionR\bversions\x12_\n" +
+	"\x10selected_version\x18\x03 \x01(\v2/.teamos.academy.v1.CourseTemplateVersionDetailsH\x00R\x0fselectedVersion\x88\x01\x01B\x13\n" +
+	"\x11_selected_version\"\xb8\x02\n" +
+	"\x1bCreateCourseTemplateRequest\x12\x14\n" +
+	"\x05title\x18\x01 \x01(\tR\x05title\x12%\n" +
+	"\vdescription\x18\x02 \x01(\tH\x00R\vdescription\x88\x01\x01\x12'\n" +
+	"\rcover_file_id\x18\x03 \x01(\tH\x01R\vcoverFileId\x88\x01\x01\x12#\n" +
+	"\n" +
+	"sequential\x18\x04 \x01(\bH\x02R\n" +
+	"sequential\x88\x01\x01\x12Q\n" +
+	"\acontent\x18\x05 \x01(\v22.teamos.academy.v1.CourseTemplateDraftContentInputH\x03R\acontent\x88\x01\x01B\x0e\n" +
+	"\f_descriptionB\x10\n" +
+	"\x0e_cover_file_idB\r\n" +
+	"\v_sequentialB\n" +
+	"\n" +
+	"\b_content\"\x9d\x01\n" +
+	"\x1cCreateCourseTemplateResponse\x12=\n" +
+	"\btemplate\x18\x01 \x01(\v2!.teamos.academy.v1.CourseTemplateR\btemplate\x12>\n" +
+	"\x05draft\x18\x02 \x01(\v2(.teamos.academy.v1.CourseTemplateVersionR\x05draft\"\xed\x02\n" +
+	" UpdateCourseTemplateDraftRequest\x12\x1f\n" +
+	"\vtemplate_id\x18\x01 \x01(\tR\n" +
+	"templateId\x12\x19\n" +
+	"\x05title\x18\x02 \x01(\tH\x00R\x05title\x88\x01\x01\x12%\n" +
+	"\vdescription\x18\x03 \x01(\tH\x01R\vdescription\x88\x01\x01\x12'\n" +
+	"\rcover_file_id\x18\x04 \x01(\tH\x02R\vcoverFileId\x88\x01\x01\x12#\n" +
+	"\n" +
+	"sequential\x18\x05 \x01(\bH\x03R\n" +
+	"sequential\x88\x01\x01\x12Q\n" +
+	"\acontent\x18\x06 \x01(\v22.teamos.academy.v1.CourseTemplateDraftContentInputH\x04R\acontent\x88\x01\x01B\b\n" +
+	"\x06_titleB\x0e\n" +
+	"\f_descriptionB\x10\n" +
+	"\x0e_cover_file_idB\r\n" +
+	"\v_sequentialB\n" +
+	"\n" +
+	"\b_content\"j\n" +
+	"!UpdateCourseTemplateDraftResponse\x12E\n" +
+	"\x05draft\x18\x01 \x01(\v2/.teamos.academy.v1.CourseTemplateVersionDetailsR\x05draft\"C\n" +
+	" CreateCourseTemplateDraftRequest\x12\x1f\n" +
+	"\vtemplate_id\x18\x01 \x01(\tR\n" +
+	"templateId\"j\n" +
+	"!CreateCourseTemplateDraftResponse\x12E\n" +
+	"\x05draft\x18\x01 \x01(\v2/.teamos.academy.v1.CourseTemplateVersionDetailsR\x05draft\"o\n" +
+	"#PublishCourseTemplateVersionRequest\x12\x1f\n" +
+	"\vtemplate_id\x18\x01 \x01(\tR\n" +
+	"templateId\x12'\n" +
+	"\x0fidempotency_key\x18\x02 \x01(\tR\x0eidempotencyKey\"j\n" +
+	"$PublishCourseTemplateVersionResponse\x12B\n" +
+	"\aversion\x18\x01 \x01(\v2(.teamos.academy.v1.CourseTemplateVersionR\aversion\"?\n" +
+	"\x1cArchiveCourseTemplateRequest\x12\x1f\n" +
+	"\vtemplate_id\x18\x01 \x01(\tR\n" +
+	"templateId\"^\n" +
+	"\x1dArchiveCourseTemplateResponse\x12=\n" +
+	"\btemplate\x18\x01 \x01(\v2!.teamos.academy.v1.CourseTemplateR\btemplate\"q\n" +
+	"'InstantiateCourseTemplateVersionRequest\x12\x1d\n" +
+	"\n" +
+	"version_id\x18\x01 \x01(\tR\tversionId\x12'\n" +
+	"\x0fidempotency_key\x18\x02 \x01(\tR\x0eidempotencyKey\"x\n" +
+	"(InstantiateCourseTemplateVersionResponse\x12L\n" +
+	"\x06result\x18\x01 \x01(\v24.teamos.academy.v1.CourseTemplateInstantiationResultR\x06result\"\x97\a\n" +
+	"\x16ExternalPersonalAccess\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1d\n" +
+	"\n" +
+	"company_id\x18\x02 \x01(\tR\tcompanyId\x12\x1b\n" +
+	"\tcourse_id\x18\x03 \x01(\tR\bcourseId\x12*\n" +
+	"\x11course_version_id\x18\x04 \x01(\tR\x0fcourseVersionId\x12(\n" +
+	"\x10partner_owner_id\x18\x05 \x01(\tR\x0epartnerOwnerId\x123\n" +
+	"\x13external_learner_id\x18\x06 \x01(\tH\x00R\x11externalLearnerId\x88\x01\x01\x12%\n" +
+	"\x0eexpected_email\x18\a \x01(\tR\rexpectedEmail\x125\n" +
+	"\x14recipient_first_name\x18\b \x01(\tH\x01R\x12recipientFirstName\x88\x01\x01\x123\n" +
+	"\x13recipient_last_name\x18\t \x01(\tH\x02R\x11recipientLastName\x88\x01\x01\x12#\n" +
+	"\rdeadline_days\x18\n" +
+	" \x01(\rR\fdeadlineDays\x12G\n" +
+	"\x06status\x18\v \x01(\x0e2/.teamos.academy.v1.ExternalPersonalAccessStatusR\x06status\x12!\n" +
+	"\ftoken_prefix\x18\f \x01(\tR\vtokenPrefix\x12(\n" +
+	"\renrollment_id\x18\r \x01(\tH\x03R\fenrollmentId\x88\x01\x01\x12 \n" +
+	"\fissued_by_id\x18\x0e \x01(\tR\n" +
+	"issuedById\x127\n" +
+	"\tissued_at\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampR\bissuedAt\x12B\n" +
+	"\factivated_at\x18\x10 \x01(\v2\x1a.google.protobuf.TimestampH\x04R\vactivatedAt\x88\x01\x01\x12>\n" +
+	"\n" +
+	"revoked_at\x18\x11 \x01(\v2\x1a.google.protobuf.TimestampH\x05R\trevokedAt\x88\x01\x01B\x16\n" +
+	"\x14_external_learner_idB\x17\n" +
+	"\x15_recipient_first_nameB\x16\n" +
+	"\x14_recipient_last_nameB\x10\n" +
+	"\x0e_enrollment_idB\x0f\n" +
+	"\r_activated_atB\r\n" +
+	"\v_revoked_at\"x\n" +
+	"\x1dExternalPersonalAccessCreated\x12A\n" +
+	"\x06access\x18\x01 \x01(\v2).teamos.academy.v1.ExternalPersonalAccessR\x06access\x12\x14\n" +
+	"\x05token\x18\x02 \x01(\tR\x05token\"\xf1\x05\n" +
+	"\x10ExternalCampaign\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1d\n" +
+	"\n" +
+	"company_id\x18\x02 \x01(\tR\tcompanyId\x12\x1b\n" +
+	"\tcourse_id\x18\x03 \x01(\tR\bcourseId\x12*\n" +
+	"\x11course_version_id\x18\x04 \x01(\tR\x0fcourseVersionId\x12K\n" +
+	"\n" +
+	"owner_type\x18\x05 \x01(\x0e2,.teamos.academy.v1.ExternalCampaignOwnerTypeR\townerType\x12'\n" +
+	"\rowner_user_id\x18\x06 \x01(\tH\x00R\vownerUserId\x88\x01\x01\x12D\n" +
+	"\apurpose\x18\a \x01(\x0e2*.teamos.academy.v1.ExternalCampaignPurposeR\apurpose\x12\x12\n" +
+	"\x04name\x18\b \x01(\tR\x04name\x12#\n" +
+	"\rdeadline_days\x18\t \x01(\rR\fdeadlineDays\x12A\n" +
+	"\x06status\x18\n" +
+	" \x01(\x0e2).teamos.academy.v1.ExternalCampaignStatusR\x06status\x12!\n" +
+	"\ftoken_prefix\x18\v \x01(\tR\vtokenPrefix\x12\"\n" +
+	"\rcreated_by_id\x18\f \x01(\tR\vcreatedById\x129\n" +
+	"\n" +
+	"created_at\x18\r \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12<\n" +
+	"\tpaused_at\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampH\x01R\bpausedAt\x88\x01\x01\x12>\n" +
+	"\n" +
+	"revoked_at\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampH\x02R\trevokedAt\x88\x01\x01B\x10\n" +
+	"\x0e_owner_user_idB\f\n" +
+	"\n" +
+	"_paused_atB\r\n" +
+	"\v_revoked_at\"p\n" +
+	"\x17ExternalCampaignCreated\x12?\n" +
+	"\bcampaign\x18\x01 \x01(\v2#.teamos.academy.v1.ExternalCampaignR\bcampaign\x12\x14\n" +
+	"\x05token\x18\x02 \x01(\tR\x05token\"\xdf\x01\n" +
+	"\x0eCampaignFunnel\x12\x14\n" +
+	"\x05views\x18\x01 \x01(\x04R\x05views\x12'\n" +
+	"\x0funique_visitors\x18\x02 \x01(\x04R\x0euniqueVisitors\x12!\n" +
+	"\fform_submits\x18\x03 \x01(\x04R\vformSubmits\x12'\n" +
+	"\x0fverified_emails\x18\x04 \x01(\x04R\x0everifiedEmails\x12 \n" +
+	"\vactivations\x18\x05 \x01(\x04R\vactivations\x12 \n" +
+	"\vcompletions\x18\x06 \x01(\x04R\vcompletions\"{\n" +
+	"\x15CampaignLessonDropOff\x12*\n" +
+	"\x11lesson_version_id\x18\x01 \x01(\tR\x0flessonVersionId\x12\x18\n" +
+	"\areached\x18\x02 \x01(\x04R\areached\x12\x1c\n" +
+	"\tcompleted\x18\x03 \x01(\x04R\tcompleted\"\xa1\x03\n" +
+	"\x13CampaignAttribution\x12\"\n" +
+	"\n" +
+	"utm_source\x18\x01 \x01(\tH\x00R\tutmSource\x88\x01\x01\x12\"\n" +
+	"\n" +
+	"utm_medium\x18\x02 \x01(\tH\x01R\tutmMedium\x88\x01\x01\x12&\n" +
+	"\futm_campaign\x18\x03 \x01(\tH\x02R\vutmCampaign\x88\x01\x01\x12\x1f\n" +
+	"\breferrer\x18\x04 \x01(\tH\x03R\breferrer\x88\x01\x01\x12\x16\n" +
+	"\x06visits\x18\x05 \x01(\x04R\x06visits\x12 \n" +
+	"\vactivations\x18\x06 \x01(\x04R\vactivations\x12 \n" +
+	"\vcompletions\x18\a \x01(\x04R\vcompletions\x12$\n" +
+	"\vutm_content\x18\b \x01(\tH\x04R\n" +
+	"utmContent\x88\x01\x01\x12\x1e\n" +
+	"\butm_term\x18\t \x01(\tH\x05R\autmTerm\x88\x01\x01B\r\n" +
+	"\v_utm_sourceB\r\n" +
+	"\v_utm_mediumB\x0f\n" +
+	"\r_utm_campaignB\v\n" +
+	"\t_referrerB\x0e\n" +
+	"\f_utm_contentB\v\n" +
+	"\t_utm_term\"\xeb\x01\n" +
+	"\x18CampaignVersionAnalytics\x12*\n" +
+	"\x11course_version_id\x18\x01 \x01(\tR\x0fcourseVersionId\x12%\n" +
+	"\x0eversion_number\x18\x02 \x01(\rR\rversionNumber\x12 \n" +
+	"\vactivations\x18\x03 \x01(\x04R\vactivations\x12 \n" +
+	"\vcompletions\x18\x04 \x01(\x04R\vcompletions\x128\n" +
+	"\x18average_progress_percent\x18\x05 \x01(\x01R\x16averageProgressPercent\"\x8b\x06\n" +
+	"\x11CampaignAnalytics\x12.\n" +
+	"\x13first_lesson_starts\x18\x01 \x01(\x04R\x11firstLessonStarts\x12-\n" +
+	"\x12lesson_completions\x18\x02 \x01(\x04R\x11lessonCompletions\x12)\n" +
+	"\x10quiz_submissions\x18\x03 \x01(\x04R\x0fquizSubmissions\x12/\n" +
+	"\x13expired_enrollments\x18\x04 \x01(\x04R\x12expiredEnrollments\x12#\n" +
+	"\rreturn_visits\x18\x05 \x01(\x04R\freturnVisits\x128\n" +
+	"\x18average_progress_percent\x18\x06 \x01(\x01R\x16averageProgressPercent\x126\n" +
+	"\x17median_progress_percent\x18\a \x01(\x01R\x15medianProgressPercent\x12A\n" +
+	"\x1aaverage_completion_seconds\x18\b \x01(\x04H\x00R\x18averageCompletionSeconds\x88\x01\x01\x12?\n" +
+	"\x19median_completion_seconds\x18\t \x01(\x04H\x01R\x17medianCompletionSeconds\x88\x01\x01\x12P\n" +
+	"\x0flesson_drop_off\x18\n" +
+	" \x03(\v2(.teamos.academy.v1.CampaignLessonDropOffR\rlessonDropOff\x12H\n" +
+	"\vattribution\x18\v \x03(\v2&.teamos.academy.v1.CampaignAttributionR\vattribution\x12G\n" +
+	"\bversions\x18\f \x03(\v2+.teamos.academy.v1.CampaignVersionAnalyticsR\bversionsB\x1d\n" +
+	"\x1b_average_completion_secondsB\x1c\n" +
+	"\x1a_median_completion_seconds\"\x9f\x02\n" +
+	"\x16ExternalCampaignReport\x12?\n" +
+	"\bcampaign\x18\x01 \x01(\v2#.teamos.academy.v1.ExternalCampaignR\bcampaign\x129\n" +
+	"\x06funnel\x18\x02 \x01(\v2!.teamos.academy.v1.CampaignFunnelR\x06funnel\x12E\n" +
+	"\venrollments\x18\x03 \x03(\v2#.teamos.academy.v1.CourseEnrollmentR\venrollments\x12B\n" +
+	"\tanalytics\x18\x04 \x01(\v2$.teamos.academy.v1.CampaignAnalyticsR\tanalytics\"z\n" +
+	"\x14CourseExternalReport\x12\x1b\n" +
+	"\tcourse_id\x18\x01 \x01(\tR\bcourseId\x12E\n" +
+	"\venrollments\x18\x02 \x03(\v2#.teamos.academy.v1.CourseEnrollmentR\venrollments\"\xc1\x06\n" +
+	"\x1cExternalLearnerTimelineEvent\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12G\n" +
+	"\x04type\x18\x02 \x01(\x0e23.teamos.academy.v1.ExternalLearnerTimelineEventTypeR\x04type\x12;\n" +
+	"\voccurred_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"occurredAt\x12 \n" +
+	"\tcourse_id\x18\x04 \x01(\tH\x00R\bcourseId\x88\x01\x01\x12/\n" +
+	"\x11course_version_id\x18\x05 \x01(\tH\x01R\x0fcourseVersionId\x88\x01\x01\x12(\n" +
+	"\renrollment_id\x18\x06 \x01(\tH\x02R\fenrollmentId\x88\x01\x01\x12M\n" +
+	"\vsource_type\x18\a \x01(\x0e2'.teamos.academy.v1.EnrollmentSourceTypeH\x03R\n" +
+	"sourceType\x88\x01\x01\x12 \n" +
+	"\tsource_id\x18\b \x01(\tH\x04R\bsourceId\x88\x01\x01\x12&\n" +
+	"\fcourse_title\x18\t \x01(\tH\x05R\vcourseTitle\x88\x01\x01\x12*\n" +
+	"\x0eversion_number\x18\n" +
+	" \x01(\rH\x06R\rversionNumber\x88\x01\x01\x12.\n" +
+	"\x10progress_percent\x18\v \x01(\rH\aR\x0fprogressPercent\x88\x01\x01\x12S\n" +
+	"\raccess_status\x18\f \x01(\x0e2).teamos.academy.v1.EnrollmentAccessStatusH\bR\faccessStatus\x88\x01\x01\x12%\n" +
+	"\x0edeleted_course\x18\r \x01(\bR\rdeletedCourseB\f\n" +
+	"\n" +
+	"_course_idB\x14\n" +
+	"\x12_course_version_idB\x10\n" +
+	"\x0e_enrollment_idB\x0e\n" +
+	"\f_source_typeB\f\n" +
+	"\n" +
+	"_source_idB\x0f\n" +
+	"\r_course_titleB\x11\n" +
+	"\x0f_version_numberB\x13\n" +
+	"\x11_progress_percentB\x10\n" +
+	"\x0e_access_status\"\xa0\x01\n" +
+	"\x17ExternalLearnerTimeline\x12<\n" +
+	"\alearner\x18\x01 \x01(\v2\".teamos.academy.v1.ExternalLearnerR\alearner\x12G\n" +
+	"\x06events\x18\x02 \x03(\v2/.teamos.academy.v1.ExternalLearnerTimelineEventR\x06events\"\xe2\x03\n" +
+	"\x0fExternalLearner\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1d\n" +
+	"\n" +
+	"company_id\x18\x02 \x01(\tR\tcompanyId\x12\x14\n" +
+	"\x05email\x18\x03 \x01(\tR\x05email\x12)\n" +
+	"\x10normalized_email\x18\x04 \x01(\tR\x0fnormalizedEmail\x12\"\n" +
+	"\n" +
+	"first_name\x18\x05 \x01(\tH\x00R\tfirstName\x88\x01\x01\x12 \n" +
+	"\tlast_name\x18\x06 \x01(\tH\x01R\blastName\x88\x01\x01\x12\x19\n" +
+	"\x05phone\x18\a \x01(\tH\x02R\x05phone\x88\x01\x01\x12K\n" +
+	"\x11email_verified_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampH\x03R\x0femailVerifiedAt\x88\x01\x01\x129\n" +
+	"\n" +
+	"created_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
+	"\n" +
+	"updated_at\x18\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAtB\r\n" +
+	"\v_first_nameB\f\n" +
+	"\n" +
+	"_last_nameB\b\n" +
+	"\x06_phoneB\x14\n" +
+	"\x12_email_verified_at\"\xa0\x01\n" +
+	"\x1aPublicAcademyOutlineLesson\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
+	"\x05title\x18\x02 \x01(\tR\x05title\x12\x14\n" +
+	"\x05order\x18\x03 \x01(\rR\x05order\x120\n" +
+	"\x11estimated_minutes\x18\x04 \x01(\rH\x00R\x10estimatedMinutes\x88\x01\x01B\x14\n" +
+	"\x12_estimated_minutes\"\xa2\x01\n" +
+	"\x1bPublicAcademyOutlineSection\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
+	"\x05title\x18\x02 \x01(\tR\x05title\x12\x14\n" +
+	"\x05order\x18\x03 \x01(\rR\x05order\x12G\n" +
+	"\alessons\x18\x04 \x03(\v2-.teamos.academy.v1.PublicAcademyOutlineLessonR\alessons\"\xb1\x05\n" +
+	"\x13PublicAcademyAccess\x12>\n" +
+	"\x04kind\x18\x01 \x01(\x0e2*.teamos.academy.v1.PublicAcademyAccessKindR\x04kind\x12\x1b\n" +
+	"\tcourse_id\x18\x02 \x01(\tR\bcourseId\x12*\n" +
+	"\x11course_version_id\x18\x03 \x01(\tR\x0fcourseVersionId\x12\x14\n" +
+	"\x05title\x18\x04 \x01(\tR\x05title\x12%\n" +
+	"\vdescription\x18\x05 \x01(\tH\x00R\vdescription\x88\x01\x01\x12 \n" +
+	"\tcover_url\x18\x06 \x01(\tH\x01R\bcoverUrl\x88\x01\x01\x12A\n" +
+	"\n" +
+	"owner_type\x18\a \x01(\x0e2\".teamos.academy.v1.CourseOwnerTypeR\townerType\x12'\n" +
+	"\rowner_user_id\x18\b \x01(\tH\x02R\vownerUserId\x88\x01\x01\x12#\n" +
+	"\rdeadline_days\x18\t \x01(\rR\fdeadlineDays\x12\x1c\n" +
+	"\tavailable\x18\n" +
+	" \x01(\bR\tavailable\x122\n" +
+	"\x12unavailable_reason\x18\v \x01(\tH\x03R\x11unavailableReason\x88\x01\x01\x12>\n" +
+	"\x1bemail_verification_required\x18\f \x01(\bR\x19emailVerificationRequired\x12H\n" +
+	"\aoutline\x18\r \x03(\v2..teamos.academy.v1.PublicAcademyOutlineSectionR\aoutlineB\x0e\n" +
+	"\f_descriptionB\f\n" +
+	"\n" +
+	"_cover_urlB\x10\n" +
+	"\x0e_owner_user_idB\x15\n" +
+	"\x13_unavailable_reason\"}\n" +
+	"\x1dExternalVerificationChallenge\x12!\n" +
+	"\fchallenge_id\x18\x01 \x01(\tR\vchallengeId\x129\n" +
+	"\n" +
+	"expires_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\texpiresAt\"\xea\x01\n" +
+	"\x1dExternalVerificationConfirmed\x12\x1d\n" +
+	"\n" +
+	"learner_id\x18\x01 \x01(\tR\tlearnerId\x12;\n" +
+	"\vverified_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"verifiedAt\x12#\n" +
+	"\rsession_token\x18\x03 \x01(\tR\fsessionToken\x12H\n" +
+	"\x12session_expires_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\x10sessionExpiresAt\"\x86\x02\n" +
+	"\x19ExternalQuizAttemptResult\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
+	"\x05score\x18\x02 \x01(\rR\x05score\x12\x16\n" +
+	"\x06passed\x18\x03 \x01(\bR\x06passed\x12%\n" +
+	"\x0epending_review\x18\x04 \x01(\bR\rpendingReview\x122\n" +
+	"\x12attempts_remaining\x18\x05 \x01(\rH\x00R\x11attemptsRemaining\x88\x01\x01\x129\n" +
+	"\n" +
+	"created_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAtB\x15\n" +
+	"\x13_attempts_remaining\"\xe5\x01\n" +
+	"\x19ExternalEnrollmentResults\x12C\n" +
+	"\n" +
+	"enrollment\x18\x01 \x01(\v2#.teamos.academy.v1.CourseEnrollmentR\n" +
+	"enrollment\x120\n" +
+	"\x14completed_lesson_ids\x18\x02 \x03(\tR\x12completedLessonIds\x12Q\n" +
+	"\rquiz_attempts\x18\x03 \x03(\v2,.teamos.academy.v1.ExternalQuizAttemptResultR\fquizAttempts\"\x8c\x02\n" +
+	"#CreateExternalPersonalAccessRequest\x12\x1b\n" +
+	"\tcourse_id\x18\x01 \x01(\tR\bcourseId\x12*\n" +
+	"\x11course_version_id\x18\x02 \x01(\tR\x0fcourseVersionId\x12\x14\n" +
+	"\x05email\x18\x03 \x01(\tR\x05email\x12\"\n" +
+	"\n" +
+	"first_name\x18\x04 \x01(\tH\x00R\tfirstName\x88\x01\x01\x12 \n" +
+	"\tlast_name\x18\x05 \x01(\tH\x01R\blastName\x88\x01\x01\x12#\n" +
+	"\rdeadline_days\x18\x06 \x01(\rR\fdeadlineDaysB\r\n" +
+	"\v_first_nameB\f\n" +
+	"\n" +
+	"_last_name\"r\n" +
+	"$CreateExternalPersonalAccessResponse\x12J\n" +
+	"\acreated\x18\x01 \x01(\v20.teamos.academy.v1.ExternalPersonalAccessCreatedR\acreated\"A\n" +
+	"\"GetExternalPersonalAccessesRequest\x12\x1b\n" +
+	"\tcourse_id\x18\x01 \x01(\tR\bcourseId\"l\n" +
+	"#GetExternalPersonalAccessesResponse\x12E\n" +
+	"\baccesses\x18\x01 \x03(\v2).teamos.academy.v1.ExternalPersonalAccessR\baccesses\"?\n" +
+	" GetExternalPersonalAccessRequest\x12\x1b\n" +
+	"\taccess_id\x18\x01 \x01(\tR\baccessId\"f\n" +
+	"!GetExternalPersonalAccessResponse\x12A\n" +
+	"\x06access\x18\x01 \x01(\v2).teamos.academy.v1.ExternalPersonalAccessR\x06access\"g\n" +
+	"#ExtendExternalPersonalAccessRequest\x12\x1b\n" +
+	"\taccess_id\x18\x01 \x01(\tR\baccessId\x12#\n" +
+	"\rdeadline_days\x18\x02 \x01(\rR\fdeadlineDays\"i\n" +
+	"$ExtendExternalPersonalAccessResponse\x12A\n" +
+	"\x06access\x18\x01 \x01(\v2).teamos.academy.v1.ExternalPersonalAccessR\x06access\"G\n" +
+	"(RotateExternalPersonalAccessTokenRequest\x12\x1b\n" +
+	"\taccess_id\x18\x01 \x01(\tR\baccessId\"w\n" +
+	")RotateExternalPersonalAccessTokenResponse\x12J\n" +
+	"\acreated\x18\x01 \x01(\v20.teamos.academy.v1.ExternalPersonalAccessCreatedR\acreated\"B\n" +
+	"#RevokeExternalPersonalAccessRequest\x12\x1b\n" +
+	"\taccess_id\x18\x01 \x01(\tR\baccessId\"i\n" +
+	"$RevokeExternalPersonalAccessResponse\x12A\n" +
+	"\x06access\x18\x01 \x01(\v2).teamos.academy.v1.ExternalPersonalAccessR\x06access\"B\n" +
+	"#RepeatExternalPersonalAccessRequest\x12\x1b\n" +
+	"\taccess_id\x18\x01 \x01(\tR\baccessId\"r\n" +
+	"$RepeatExternalPersonalAccessResponse\x12J\n" +
+	"\acreated\x18\x01 \x01(\v20.teamos.academy.v1.ExternalPersonalAccessCreatedR\acreated\"\xe7\x01\n" +
+	"\x1dCreateExternalCampaignRequest\x12\x1b\n" +
+	"\tcourse_id\x18\x01 \x01(\tR\bcourseId\x12*\n" +
+	"\x11course_version_id\x18\x02 \x01(\tR\x0fcourseVersionId\x12\x12\n" +
+	"\x04name\x18\x03 \x01(\tR\x04name\x12D\n" +
+	"\apurpose\x18\x04 \x01(\x0e2*.teamos.academy.v1.ExternalCampaignPurposeR\apurpose\x12#\n" +
+	"\rdeadline_days\x18\x05 \x01(\rR\fdeadlineDays\"f\n" +
+	"\x1eCreateExternalCampaignResponse\x12D\n" +
+	"\acreated\x18\x01 \x01(\v2*.teamos.academy.v1.ExternalCampaignCreatedR\acreated\":\n" +
+	"\x1bGetExternalCampaignsRequest\x12\x1b\n" +
+	"\tcourse_id\x18\x01 \x01(\tR\bcourseId\"a\n" +
+	"\x1cGetExternalCampaignsResponse\x12A\n" +
+	"\tcampaigns\x18\x01 \x03(\v2#.teamos.academy.v1.ExternalCampaignR\tcampaigns\"=\n" +
+	"\x1aGetExternalCampaignRequest\x12\x1f\n" +
+	"\vcampaign_id\x18\x01 \x01(\tR\n" +
+	"campaignId\"^\n" +
+	"\x1bGetExternalCampaignResponse\x12?\n" +
+	"\bcampaign\x18\x01 \x01(\v2#.teamos.academy.v1.ExternalCampaignR\bcampaign\"?\n" +
+	"\x1cPauseExternalCampaignRequest\x12\x1f\n" +
+	"\vcampaign_id\x18\x01 \x01(\tR\n" +
+	"campaignId\"`\n" +
+	"\x1dPauseExternalCampaignResponse\x12?\n" +
+	"\bcampaign\x18\x01 \x01(\v2#.teamos.academy.v1.ExternalCampaignR\bcampaign\"@\n" +
+	"\x1dResumeExternalCampaignRequest\x12\x1f\n" +
+	"\vcampaign_id\x18\x01 \x01(\tR\n" +
+	"campaignId\"a\n" +
+	"\x1eResumeExternalCampaignResponse\x12?\n" +
+	"\bcampaign\x18\x01 \x01(\v2#.teamos.academy.v1.ExternalCampaignR\bcampaign\"E\n" +
+	"\"RotateExternalCampaignTokenRequest\x12\x1f\n" +
+	"\vcampaign_id\x18\x01 \x01(\tR\n" +
+	"campaignId\"k\n" +
+	"#RotateExternalCampaignTokenResponse\x12D\n" +
+	"\acreated\x18\x01 \x01(\v2*.teamos.academy.v1.ExternalCampaignCreatedR\acreated\"@\n" +
+	"\x1dRevokeExternalCampaignRequest\x12\x1f\n" +
+	"\vcampaign_id\x18\x01 \x01(\tR\n" +
+	"campaignId\"a\n" +
+	"\x1eRevokeExternalCampaignResponse\x12?\n" +
+	"\bcampaign\x18\x01 \x01(\v2#.teamos.academy.v1.ExternalCampaignR\bcampaign\"C\n" +
+	" GetExternalCampaignReportRequest\x12\x1f\n" +
+	"\vcampaign_id\x18\x01 \x01(\tR\n" +
+	"campaignId\"f\n" +
+	"!GetExternalCampaignReportResponse\x12A\n" +
+	"\x06report\x18\x01 \x01(\v2).teamos.academy.v1.ExternalCampaignReportR\x06report\"=\n" +
+	"\x1eGetCourseExternalReportRequest\x12\x1b\n" +
+	"\tcourse_id\x18\x01 \x01(\tR\bcourseId\"b\n" +
+	"\x1fGetCourseExternalReportResponse\x12?\n" +
+	"\x06report\x18\x01 \x01(\v2'.teamos.academy.v1.CourseExternalReportR\x06report\"\x88\x03\n" +
+	"\x1dGetPublicAcademyAccessRequest\x12\x14\n" +
+	"\x05token\x18\x01 \x01(\tR\x05token\x12!\n" +
+	"\fvisitor_hash\x18\x02 \x01(\fR\vvisitorHash\x12\"\n" +
+	"\n" +
+	"utm_source\x18\x03 \x01(\tH\x00R\tutmSource\x88\x01\x01\x12\"\n" +
+	"\n" +
+	"utm_medium\x18\x04 \x01(\tH\x01R\tutmMedium\x88\x01\x01\x12&\n" +
+	"\futm_campaign\x18\x05 \x01(\tH\x02R\vutmCampaign\x88\x01\x01\x12$\n" +
+	"\vutm_content\x18\x06 \x01(\tH\x03R\n" +
+	"utmContent\x88\x01\x01\x12\x1e\n" +
+	"\butm_term\x18\a \x01(\tH\x04R\autmTerm\x88\x01\x01\x12\x1f\n" +
+	"\breferrer\x18\b \x01(\tH\x05R\breferrer\x88\x01\x01B\r\n" +
+	"\v_utm_sourceB\r\n" +
+	"\v_utm_mediumB\x0f\n" +
+	"\r_utm_campaignB\x0e\n" +
+	"\f_utm_contentB\v\n" +
+	"\t_utm_termB\v\n" +
+	"\t_referrer\"`\n" +
+	"\x1eGetPublicAcademyAccessResponse\x12>\n" +
+	"\x06access\x18\x01 \x01(\v2&.teamos.academy.v1.PublicAcademyAccessR\x06access\"\xe8\x01\n" +
+	"'RequestPublicAcademyVerificationRequest\x12!\n" +
+	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12\x14\n" +
+	"\x05email\x18\x02 \x01(\tR\x05email\x12\"\n" +
+	"\n" +
+	"first_name\x18\x03 \x01(\tH\x00R\tfirstName\x88\x01\x01\x12 \n" +
+	"\tlast_name\x18\x04 \x01(\tH\x01R\blastName\x88\x01\x01\x12!\n" +
+	"\fvisitor_hash\x18\x05 \x01(\fR\vvisitorHashB\r\n" +
+	"\v_first_nameB\f\n" +
+	"\n" +
+	"_last_name\"z\n" +
+	"(RequestPublicAcademyVerificationResponse\x12N\n" +
+	"\tchallenge\x18\x01 \x01(\v20.teamos.academy.v1.ExternalVerificationChallengeR\tchallenge\"`\n" +
+	"'ConfirmPublicAcademyVerificationRequest\x12!\n" +
+	"\fchallenge_id\x18\x01 \x01(\tR\vchallengeId\x12\x12\n" +
+	"\x04code\x18\x02 \x01(\tR\x04code\"z\n" +
+	"(ConfirmPublicAcademyVerificationResponse\x12N\n" +
+	"\tconfirmed\x18\x01 \x01(\v20.teamos.academy.v1.ExternalVerificationConfirmedR\tconfirmed\"\x93\x01\n" +
+	"\"ActivatePublicAcademyAccessRequest\x12!\n" +
+	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12'\n" +
+	"\x0fidempotency_key\x18\x02 \x01(\tR\x0eidempotencyKey\x12!\n" +
+	"\fvisitor_hash\x18\x03 \x01(\fR\vvisitorHash\"j\n" +
+	"#ActivatePublicAcademyAccessResponse\x12C\n" +
+	"\n" +
+	"enrollment\x18\x01 \x01(\v2#.teamos.academy.v1.CourseEnrollmentR\n" +
+	"enrollment\"H\n" +
+	"!GetPublicAcademyEnrollmentRequest\x12#\n" +
+	"\renrollment_id\x18\x01 \x01(\tR\fenrollmentId\"i\n" +
+	"\"GetPublicAcademyEnrollmentResponse\x12C\n" +
+	"\n" +
+	"enrollment\x18\x01 \x01(\v2#.teamos.academy.v1.CourseEnrollmentR\n" +
+	"enrollment\"O\n" +
+	"(GetPublicAcademyEnrollmentOutlineRequest\x12#\n" +
+	"\renrollment_id\x18\x01 \x01(\tR\fenrollmentId\"k\n" +
+	")GetPublicAcademyEnrollmentOutlineResponse\x12>\n" +
+	"\aoutline\x18\x01 \x01(\v2$.teamos.academy.v1.EnrollmentOutlineR\aoutline\"z\n" +
+	"'GetPublicAcademyEnrollmentLessonRequest\x12#\n" +
+	"\renrollment_id\x18\x01 \x01(\tR\fenrollmentId\x12*\n" +
+	"\x11lesson_version_id\x18\x02 \x01(\tR\x0flessonVersionId\"g\n" +
+	"(GetPublicAcademyEnrollmentLessonResponse\x12;\n" +
+	"\x06lesson\x18\x01 \x01(\v2#.teamos.academy.v1.EnrollmentLessonR\x06lesson\"\xa8\x01\n" +
+	",CompletePublicAcademyEnrollmentLessonRequest\x12#\n" +
+	"\renrollment_id\x18\x01 \x01(\tR\fenrollmentId\x12*\n" +
+	"\x11lesson_version_id\x18\x02 \x01(\tR\x0flessonVersionId\x12'\n" +
+	"\x0fidempotency_key\x18\x03 \x01(\tR\x0eidempotencyKey\"t\n" +
+	"-CompletePublicAcademyEnrollmentLessonResponse\x12C\n" +
+	"\n" +
+	"enrollment\x18\x01 \x01(\v2#.teamos.academy.v1.CourseEnrollmentR\n" +
+	"enrollment\"\xe0\x01\n" +
+	"%SubmitPublicAcademyQuizAttemptRequest\x12#\n" +
+	"\renrollment_id\x18\x01 \x01(\tR\fenrollmentId\x12&\n" +
+	"\x0fquiz_version_id\x18\x02 \x01(\tR\rquizVersionId\x12'\n" +
+	"\x0fidempotency_key\x18\x03 \x01(\tR\x0eidempotencyKey\x12A\n" +
+	"\aanswers\x18\x04 \x03(\v2'.teamos.academy.v1.EnrollmentQuizAnswerR\aanswers\"n\n" +
+	"&SubmitPublicAcademyQuizAttemptResponse\x12D\n" +
+	"\x06result\x18\x01 \x01(\v2,.teamos.academy.v1.ExternalQuizAttemptResultR\x06result\"O\n" +
+	"(GetPublicAcademyEnrollmentResultsRequest\x12#\n" +
+	"\renrollment_id\x18\x01 \x01(\tR\fenrollmentId\"s\n" +
+	")GetPublicAcademyEnrollmentResultsResponse\x12F\n" +
+	"\aresults\x18\x01 \x01(\v2,.teamos.academy.v1.ExternalEnrollmentResultsR\aresults\"\x1c\n" +
+	"\x1aGetExternalLearnersRequest\"]\n" +
+	"\x1bGetExternalLearnersResponse\x12>\n" +
+	"\blearners\x18\x01 \x03(\v2\".teamos.academy.v1.ExternalLearnerR\blearners\":\n" +
+	"\x19GetExternalLearnerRequest\x12\x1d\n" +
+	"\n" +
+	"learner_id\x18\x01 \x01(\tR\tlearnerId\"Z\n" +
+	"\x1aGetExternalLearnerResponse\x12<\n" +
+	"\alearner\x18\x01 \x01(\v2\".teamos.academy.v1.ExternalLearnerR\alearner\"E\n" +
+	"$GetExternalLearnerEnrollmentsRequest\x12\x1d\n" +
+	"\n" +
+	"learner_id\x18\x01 \x01(\tR\tlearnerId\"n\n" +
+	"%GetExternalLearnerEnrollmentsResponse\x12E\n" +
+	"\venrollments\x18\x01 \x03(\v2#.teamos.academy.v1.CourseEnrollmentR\venrollments\"B\n" +
+	"!GetExternalLearnerTimelineRequest\x12\x1d\n" +
+	"\n" +
+	"learner_id\x18\x01 \x01(\tR\tlearnerId\"l\n" +
+	"\"GetExternalLearnerTimelineResponse\x12F\n" +
+	"\btimeline\x18\x01 \x01(\v2*.teamos.academy.v1.ExternalLearnerTimelineR\btimeline*c\n" +
 	"\fCourseStatus\x12\x1d\n" +
 	"\x19COURSE_STATUS_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13COURSE_STATUS_DRAFT\x10\x01\x12\x1b\n" +
@@ -3646,7 +18992,37 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"\x1dCOURSE_VISIBILITY_UNSPECIFIED\x10\x00\x12\x1c\n" +
 	"\x18COURSE_VISIBILITY_PUBLIC\x10\x01\x12\x1d\n" +
 	"\x19COURSE_VISIBILITY_COMPANY\x10\x02\x12 \n" +
-	"\x1cCOURSE_VISIBILITY_RESTRICTED\x10\x03*p\n" +
+	"\x1cCOURSE_VISIBILITY_RESTRICTED\x10\x03*r\n" +
+	"\x0fCourseOwnerType\x12!\n" +
+	"\x1dCOURSE_OWNER_TYPE_UNSPECIFIED\x10\x00\x12\x1d\n" +
+	"\x19COURSE_OWNER_TYPE_COMPANY\x10\x01\x12\x1d\n" +
+	"\x19COURSE_OWNER_TYPE_PARTNER\x10\x02*\xaf\x01\n" +
+	"\x15CourseLifecycleStatus\x12'\n" +
+	"#COURSE_LIFECYCLE_STATUS_UNSPECIFIED\x10\x00\x12\"\n" +
+	"\x1eCOURSE_LIFECYCLE_STATUS_ACTIVE\x10\x01\x12$\n" +
+	" COURSE_LIFECYCLE_STATUS_ARCHIVED\x10\x02\x12#\n" +
+	"\x1fCOURSE_LIFECYCLE_STATUS_DELETED\x10\x03*\xbc\x01\n" +
+	"\x18CourseDistributionStatus\x12*\n" +
+	"&COURSE_DISTRIBUTION_STATUS_UNSPECIFIED\x10\x00\x12%\n" +
+	"!COURSE_DISTRIBUTION_STATUS_ACTIVE\x10\x01\x12%\n" +
+	"!COURSE_DISTRIBUTION_STATUS_PAUSED\x10\x02\x12&\n" +
+	"\"COURSE_DISTRIBUTION_STATUS_BLOCKED\x10\x03*\xae\x01\n" +
+	"\x10CourseOriginType\x12\"\n" +
+	"\x1eCOURSE_ORIGIN_TYPE_UNSPECIFIED\x10\x00\x12%\n" +
+	"!COURSE_ORIGIN_TYPE_PARTNER_COURSE\x10\x01\x12&\n" +
+	"\"COURSE_ORIGIN_TYPE_SYSTEM_TEMPLATE\x10\x02\x12'\n" +
+	"#COURSE_ORIGIN_TYPE_COMPANY_TEMPLATE\x10\x03*\xa5\x01\n" +
+	"\x13CourseVersionStatus\x12%\n" +
+	"!COURSE_VERSION_STATUS_UNSPECIFIED\x10\x00\x12\x1f\n" +
+	"\x1bCOURSE_VERSION_STATUS_DRAFT\x10\x01\x12#\n" +
+	"\x1fCOURSE_VERSION_STATUS_PUBLISHED\x10\x02\x12!\n" +
+	"\x1dCOURSE_VERSION_STATUS_RETIRED\x10\x03*\xec\x01\n" +
+	"\x16CourseLessonSourceType\x12)\n" +
+	"%COURSE_LESSON_SOURCE_TYPE_UNSPECIFIED\x10\x00\x12$\n" +
+	" COURSE_LESSON_SOURCE_TYPE_MANUAL\x10\x01\x12%\n" +
+	"!COURSE_LESSON_SOURCE_TYPE_KB_LINK\x10\x02\x12)\n" +
+	"%COURSE_LESSON_SOURCE_TYPE_KB_SNAPSHOT\x10\x03\x12/\n" +
+	"+COURSE_LESSON_SOURCE_TYPE_TEMPLATE_SNAPSHOT\x10\x04*p\n" +
 	"\x10LessonSourceMode\x12\"\n" +
 	"\x1eLESSON_SOURCE_MODE_UNSPECIFIED\x10\x00\x12\x1b\n" +
 	"\x17LESSON_SOURCE_MODE_LINK\x10\x01\x12\x1b\n" +
@@ -3667,7 +19043,94 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"\"COURSE_PROGRESS_STATUS_NOT_STARTED\x10\x01\x12&\n" +
 	"\"COURSE_PROGRESS_STATUS_IN_PROGRESS\x10\x02\x12$\n" +
 	" COURSE_PROGRESS_STATUS_COMPLETED\x10\x03\x12\"\n" +
-	"\x1eCOURSE_PROGRESS_STATUS_OVERDUE\x10\x042\xbd\x11\n" +
+	"\x1eCOURSE_PROGRESS_STATUS_OVERDUE\x10\x04*\x88\x01\n" +
+	"\x15EnrollmentLearnerType\x12'\n" +
+	"#ENROLLMENT_LEARNER_TYPE_UNSPECIFIED\x10\x00\x12 \n" +
+	"\x1cENROLLMENT_LEARNER_TYPE_USER\x10\x01\x12$\n" +
+	" ENROLLMENT_LEARNER_TYPE_EXTERNAL\x10\x02*\xf6\x02\n" +
+	"\x14EnrollmentSourceType\x12&\n" +
+	"\"ENROLLMENT_SOURCE_TYPE_UNSPECIFIED\x10\x00\x12%\n" +
+	"!ENROLLMENT_SOURCE_TYPE_ASSIGNMENT\x10\x01\x12*\n" +
+	"&ENROLLMENT_SOURCE_TYPE_PERSONAL_ACCESS\x10\x02\x121\n" +
+	"-ENROLLMENT_SOURCE_TYPE_PARTNER_PROMO_CAMPAIGN\x10\x03\x125\n" +
+	"1ENROLLMENT_SOURCE_TYPE_COMPANY_CANDIDATE_CAMPAIGN\x10\x04\x12*\n" +
+	"&ENROLLMENT_SOURCE_TYPE_REPEAT_TRAINING\x10\x05\x12!\n" +
+	"\x1dENROLLMENT_SOURCE_TYPE_LEGACY\x10\x06\x12*\n" +
+	"&ENROLLMENT_SOURCE_TYPE_SELF_ENROLLMENT\x10\a*\xc8\x01\n" +
+	"\x18EnrollmentProgressStatus\x12*\n" +
+	"&ENROLLMENT_PROGRESS_STATUS_UNSPECIFIED\x10\x00\x12*\n" +
+	"&ENROLLMENT_PROGRESS_STATUS_NOT_STARTED\x10\x01\x12*\n" +
+	"&ENROLLMENT_PROGRESS_STATUS_IN_PROGRESS\x10\x02\x12(\n" +
+	"$ENROLLMENT_PROGRESS_STATUS_COMPLETED\x10\x03*\xef\x02\n" +
+	"\x16EnrollmentAccessStatus\x12(\n" +
+	"$ENROLLMENT_ACCESS_STATUS_UNSPECIFIED\x10\x00\x12$\n" +
+	" ENROLLMENT_ACCESS_STATUS_INVITED\x10\x01\x12\"\n" +
+	"\x1eENROLLMENT_ACCESS_STATUS_READY\x10\x02\x12#\n" +
+	"\x1fENROLLMENT_ACCESS_STATUS_ACTIVE\x10\x03\x12$\n" +
+	" ENROLLMENT_ACCESS_STATUS_EXPIRED\x10\x04\x12#\n" +
+	"\x1fENROLLMENT_ACCESS_STATUS_FROZEN\x10\x05\x12&\n" +
+	"\"ENROLLMENT_ACCESS_STATUS_SUSPENDED\x10\x06\x12$\n" +
+	" ENROLLMENT_ACCESS_STATUS_REVOKED\x10\a\x12#\n" +
+	"\x1fENROLLMENT_ACCESS_STATUS_CLOSED\x10\b*\xb8\x01\n" +
+	"\x16EnrollmentLessonStatus\x12(\n" +
+	"$ENROLLMENT_LESSON_STATUS_UNSPECIFIED\x10\x00\x12&\n" +
+	"\"ENROLLMENT_LESSON_STATUS_AVAILABLE\x10\x01\x12$\n" +
+	" ENROLLMENT_LESSON_STATUS_CURRENT\x10\x02\x12&\n" +
+	"\"ENROLLMENT_LESSON_STATUS_COMPLETED\x10\x03*\x86\x01\n" +
+	"\x15CourseRestrictionType\x12'\n" +
+	"#COURSE_RESTRICTION_TYPE_UNSPECIFIED\x10\x00\x12!\n" +
+	"\x1dCOURSE_RESTRICTION_TYPE_PAUSE\x10\x01\x12!\n" +
+	"\x1dCOURSE_RESTRICTION_TYPE_BLOCK\x10\x02*}\n" +
+	"\x12CourseTemplateType\x12$\n" +
+	" COURSE_TEMPLATE_TYPE_UNSPECIFIED\x10\x00\x12\x1f\n" +
+	"\x1bCOURSE_TEMPLATE_TYPE_SYSTEM\x10\x01\x12 \n" +
+	"\x1cCOURSE_TEMPLATE_TYPE_COMPANY\x10\x02*\xad\x01\n" +
+	"\x1dCourseTemplateLifecycleStatus\x120\n" +
+	",COURSE_TEMPLATE_LIFECYCLE_STATUS_UNSPECIFIED\x10\x00\x12+\n" +
+	"'COURSE_TEMPLATE_LIFECYCLE_STATUS_ACTIVE\x10\x01\x12-\n" +
+	")COURSE_TEMPLATE_LIFECYCLE_STATUS_ARCHIVED\x10\x02*\x83\x02\n" +
+	"\x1cExternalPersonalAccessStatus\x12/\n" +
+	"+EXTERNAL_PERSONAL_ACCESS_STATUS_UNSPECIFIED\x10\x00\x12*\n" +
+	"&EXTERNAL_PERSONAL_ACCESS_STATUS_ISSUED\x10\x01\x12-\n" +
+	")EXTERNAL_PERSONAL_ACCESS_STATUS_ACTIVATED\x10\x02\x12+\n" +
+	"'EXTERNAL_PERSONAL_ACCESS_STATUS_REVOKED\x10\x03\x12*\n" +
+	"&EXTERNAL_PERSONAL_ACCESS_STATUS_CLOSED\x10\x04*\x9d\x01\n" +
+	"\x19ExternalCampaignOwnerType\x12,\n" +
+	"(EXTERNAL_CAMPAIGN_OWNER_TYPE_UNSPECIFIED\x10\x00\x12(\n" +
+	"$EXTERNAL_CAMPAIGN_OWNER_TYPE_COMPANY\x10\x01\x12(\n" +
+	"$EXTERNAL_CAMPAIGN_OWNER_TYPE_PARTNER\x10\x02*\xa2\x01\n" +
+	"\x17ExternalCampaignPurpose\x12)\n" +
+	"%EXTERNAL_CAMPAIGN_PURPOSE_UNSPECIFIED\x10\x00\x12/\n" +
+	"+EXTERNAL_CAMPAIGN_PURPOSE_COMPANY_CANDIDATE\x10\x01\x12+\n" +
+	"'EXTERNAL_CAMPAIGN_PURPOSE_PARTNER_PROMO\x10\x02*\xd7\x01\n" +
+	"\x16ExternalCampaignStatus\x12(\n" +
+	"$EXTERNAL_CAMPAIGN_STATUS_UNSPECIFIED\x10\x00\x12#\n" +
+	"\x1fEXTERNAL_CAMPAIGN_STATUS_ACTIVE\x10\x01\x12#\n" +
+	"\x1fEXTERNAL_CAMPAIGN_STATUS_PAUSED\x10\x02\x12$\n" +
+	" EXTERNAL_CAMPAIGN_STATUS_REVOKED\x10\x03\x12#\n" +
+	"\x1fEXTERNAL_CAMPAIGN_STATUS_CLOSED\x10\x04*\xf1\x06\n" +
+	" ExternalLearnerTimelineEventType\x124\n" +
+	"0EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_UNSPECIFIED\x10\x00\x126\n" +
+	"2EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_ACCESS_ISSUED\x10\x01\x12?\n" +
+	";EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_VERIFICATION_REQUESTED\x10\x02\x127\n" +
+	"3EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_EMAIL_VERIFIED\x10\x03\x122\n" +
+	".EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_ACTIVATED\x10\x04\x129\n" +
+	"5EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_LESSON_COMPLETED\x10\x05\x127\n" +
+	"3EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_QUIZ_SUBMITTED\x10\x06\x129\n" +
+	"5EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_COURSE_COMPLETED\x10\a\x129\n" +
+	"5EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_DEADLINE_EXPIRED\x10\b\x128\n" +
+	"4EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_ACCESS_EXTENDED\x10\t\x126\n" +
+	"2EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_TOKEN_ROTATED\x10\n" +
+	"\x127\n" +
+	"3EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_ACCESS_REVOKED\x10\v\x12/\n" +
+	"+EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_FROZEN\x10\f\x122\n" +
+	".EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_SUSPENDED\x10\r\x127\n" +
+	"3EXTERNAL_LEARNER_TIMELINE_EVENT_TYPE_REPEAT_CREATED\x10\x0e*\xe7\x01\n" +
+	"\x17PublicAcademyAccessKind\x12*\n" +
+	"&PUBLIC_ACADEMY_ACCESS_KIND_UNSPECIFIED\x10\x00\x12.\n" +
+	"*PUBLIC_ACADEMY_ACCESS_KIND_PERSONAL_ACCESS\x10\x01\x125\n" +
+	"1PUBLIC_ACADEMY_ACCESS_KIND_PARTNER_PROMO_CAMPAIGN\x10\x02\x129\n" +
+	"5PUBLIC_ACADEMY_ACCESS_KIND_COMPANY_CANDIDATE_CAMPAIGN\x10\x032\x9e_\n" +
 	"\x0eAcademyService\x12Y\n" +
 	"\n" +
 	"GetCourses\x12$.teamos.academy.v1.GetCoursesRequest\x1a%.teamos.academy.v1.GetCoursesResponse\x12V\n" +
@@ -3675,8 +19138,25 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"\x0fGetPublicCourse\x12).teamos.academy.v1.GetPublicCourseRequest\x1a*.teamos.academy.v1.GetPublicCourseResponse\x12_\n" +
 	"\fCreateCourse\x12&.teamos.academy.v1.CreateCourseRequest\x1a'.teamos.academy.v1.CreateCourseResponse\x12q\n" +
 	"\x12CreateCourseFromKb\x12,.teamos.academy.v1.CreateCourseFromKbRequest\x1a-.teamos.academy.v1.CreateCourseFromKbResponse\x12_\n" +
-	"\fUpdateCourse\x12&.teamos.academy.v1.UpdateCourseRequest\x1a'.teamos.academy.v1.UpdateCourseResponse\x12_\n" +
+	"\fUpdateCourse\x12&.teamos.academy.v1.UpdateCourseRequest\x1a'.teamos.academy.v1.UpdateCourseResponse\x12b\n" +
+	"\rArchiveCourse\x12'.teamos.academy.v1.ArchiveCourseRequest\x1a(.teamos.academy.v1.ArchiveCourseResponse\x12b\n" +
+	"\rRestoreCourse\x12'.teamos.academy.v1.RestoreCourseRequest\x1a(.teamos.academy.v1.RestoreCourseResponse\x12_\n" +
 	"\fDeleteCourse\x12&.teamos.academy.v1.DeleteCourseRequest\x1a'.teamos.academy.v1.DeleteCourseResponse\x12n\n" +
+	"\x11GetCourseVersions\x12+.teamos.academy.v1.GetCourseVersionsRequest\x1a,.teamos.academy.v1.GetCourseVersionsResponse\x12k\n" +
+	"\x10GetCourseVersion\x12*.teamos.academy.v1.GetCourseVersionRequest\x1a+.teamos.academy.v1.GetCourseVersionResponse\x12n\n" +
+	"\x11CreateCourseDraft\x12+.teamos.academy.v1.CreateCourseDraftRequest\x1a,.teamos.academy.v1.CreateCourseDraftResponse\x12n\n" +
+	"\x11UpdateCourseDraft\x12+.teamos.academy.v1.UpdateCourseDraftRequest\x1a,.teamos.academy.v1.UpdateCourseDraftResponse\x12w\n" +
+	"\x14PublishCourseVersion\x12..teamos.academy.v1.PublishCourseVersionRequest\x1a/.teamos.academy.v1.PublishCourseVersionResponse\x12\x86\x01\n" +
+	"\x19GetPublishedCourseVersion\x123.teamos.academy.v1.GetPublishedCourseVersionRequest\x1a4.teamos.academy.v1.GetPublishedCourseVersionResponse\x12\x89\x01\n" +
+	"\x1aCreateCourseVersionSection\x124.teamos.academy.v1.CreateCourseVersionSectionRequest\x1a5.teamos.academy.v1.CreateCourseVersionSectionResponse\x12\x89\x01\n" +
+	"\x1aUpdateCourseVersionSection\x124.teamos.academy.v1.UpdateCourseVersionSectionRequest\x1a5.teamos.academy.v1.UpdateCourseVersionSectionResponse\x12\x89\x01\n" +
+	"\x1aDeleteCourseVersionSection\x124.teamos.academy.v1.DeleteCourseVersionSectionRequest\x1a5.teamos.academy.v1.DeleteCourseVersionSectionResponse\x12\x86\x01\n" +
+	"\x19CreateCourseVersionLesson\x123.teamos.academy.v1.CreateCourseVersionLessonRequest\x1a4.teamos.academy.v1.CreateCourseVersionLessonResponse\x12\x86\x01\n" +
+	"\x19UpdateCourseVersionLesson\x123.teamos.academy.v1.UpdateCourseVersionLessonRequest\x1a4.teamos.academy.v1.UpdateCourseVersionLessonResponse\x12\x86\x01\n" +
+	"\x19DeleteCourseVersionLesson\x123.teamos.academy.v1.DeleteCourseVersionLessonRequest\x1a4.teamos.academy.v1.DeleteCourseVersionLessonResponse\x12\x80\x01\n" +
+	"\x17MoveCourseVersionLesson\x121.teamos.academy.v1.MoveCourseVersionLessonRequest\x1a2.teamos.academy.v1.MoveCourseVersionLessonResponse\x12\x80\x01\n" +
+	"\x17UpsertCourseVersionQuiz\x121.teamos.academy.v1.UpsertCourseVersionQuizRequest\x1a2.teamos.academy.v1.UpsertCourseVersionQuizResponse\x12\x80\x01\n" +
+	"\x17DeleteCourseVersionQuiz\x121.teamos.academy.v1.DeleteCourseVersionQuizRequest\x1a2.teamos.academy.v1.DeleteCourseVersionQuizResponse\x12n\n" +
 	"\x11GetCourseSections\x12+.teamos.academy.v1.GetCourseSectionsRequest\x1a,.teamos.academy.v1.GetCourseSectionsResponse\x12t\n" +
 	"\x13CreateCourseSection\x12-.teamos.academy.v1.CreateCourseSectionRequest\x1a..teamos.academy.v1.CreateCourseSectionResponse\x12t\n" +
 	"\x13UpdateCourseSection\x12-.teamos.academy.v1.UpdateCourseSectionRequest\x1a..teamos.academy.v1.UpdateCourseSectionResponse\x12t\n" +
@@ -3693,9 +19173,67 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"\n" +
 	"UpsertQuiz\x12$.teamos.academy.v1.UpsertQuizRequest\x1a%.teamos.academy.v1.UpsertQuizResponse\x12e\n" +
 	"\x0eGetAssignments\x12(.teamos.academy.v1.GetAssignmentsRequest\x1a).teamos.academy.v1.GetAssignmentsResponse\x12_\n" +
-	"\fAssignCourse\x12&.teamos.academy.v1.AssignCourseRequest\x1a'.teamos.academy.v1.AssignCourseResponse\x12\\\n" +
+	"\fAssignCourse\x12&.teamos.academy.v1.AssignCourseRequest\x1a'.teamos.academy.v1.AssignCourseResponse\x12k\n" +
+	"\x10RevokeAssignment\x12*.teamos.academy.v1.RevokeAssignmentRequest\x1a+.teamos.academy.v1.RevokeAssignmentResponse\x12\\\n" +
 	"\vGetProgress\x12%.teamos.academy.v1.GetProgressRequest\x1a&.teamos.academy.v1.GetProgressResponse\x12q\n" +
-	"\x12MarkLessonComplete\x12,.teamos.academy.v1.MarkLessonCompleteRequest\x1a-.teamos.academy.v1.MarkLessonCompleteResponseBHZFgithub.com/sk1fy/team-os-backend/contracts/gen/go/academy/v1;academyv1b\x06proto3"
+	"\x12MarkLessonComplete\x12,.teamos.academy.v1.MarkLessonCompleteRequest\x1a-.teamos.academy.v1.MarkLessonCompleteResponse\x12e\n" +
+	"\x0eGetEnrollments\x12(.teamos.academy.v1.GetEnrollmentsRequest\x1a).teamos.academy.v1.GetEnrollmentsResponse\x12k\n" +
+	"\x10SelfEnrollCourse\x12*.teamos.academy.v1.SelfEnrollCourseRequest\x1a+.teamos.academy.v1.SelfEnrollCourseResponse\x12\x80\x01\n" +
+	"\x17GetCatalogCourseVersion\x121.teamos.academy.v1.GetCatalogCourseVersionRequest\x1a2.teamos.academy.v1.GetCatalogCourseVersionResponse\x12b\n" +
+	"\rGetEnrollment\x12'.teamos.academy.v1.GetEnrollmentRequest\x1a(.teamos.academy.v1.GetEnrollmentResponse\x12w\n" +
+	"\x14GetEnrollmentOutline\x12..teamos.academy.v1.GetEnrollmentOutlineRequest\x1a/.teamos.academy.v1.GetEnrollmentOutlineResponse\x12t\n" +
+	"\x13GetEnrollmentLesson\x12-.teamos.academy.v1.GetEnrollmentLessonRequest\x1a..teamos.academy.v1.GetEnrollmentLessonResponse\x12k\n" +
+	"\x10ResumeEnrollment\x12*.teamos.academy.v1.ResumeEnrollmentRequest\x1a+.teamos.academy.v1.ResumeEnrollmentResponse\x12\x83\x01\n" +
+	"\x18CompleteEnrollmentLesson\x122.teamos.academy.v1.CompleteEnrollmentLessonRequest\x1a3.teamos.academy.v1.CompleteEnrollmentLessonResponse\x12\x8c\x01\n" +
+	"\x1bSubmitEnrollmentQuizAttempt\x125.teamos.academy.v1.SubmitEnrollmentQuizAttemptRequest\x1a6.teamos.academy.v1.SubmitEnrollmentQuizAttemptResponse\x12t\n" +
+	"\x13GetEnrollmentReport\x12-.teamos.academy.v1.GetEnrollmentReportRequest\x1a..teamos.academy.v1.GetEnrollmentReportResponse\x12}\n" +
+	"\x16GetPartnerCourseGroups\x120.teamos.academy.v1.GetPartnerCourseGroupsRequest\x1a1.teamos.academy.v1.GetPartnerCourseGroupsResponse\x12\x80\x01\n" +
+	"\x17GetPartnerCoursesReport\x121.teamos.academy.v1.GetPartnerCoursesReportRequest\x1a2.teamos.academy.v1.GetPartnerCoursesReportResponse\x12\x80\x01\n" +
+	"\x17GetCourseVersionPreview\x121.teamos.academy.v1.GetCourseVersionPreviewRequest\x1a2.teamos.academy.v1.GetCourseVersionPreviewResponse\x12\x95\x01\n" +
+	"\x1eSubmitCoursePreviewQuizAttempt\x128.teamos.academy.v1.SubmitCoursePreviewQuizAttemptRequest\x1a9.teamos.academy.v1.SubmitCoursePreviewQuizAttemptResponse\x12\x95\x01\n" +
+	"\x1ePausePartnerCourseDistribution\x128.teamos.academy.v1.PausePartnerCourseDistributionRequest\x1a9.teamos.academy.v1.PausePartnerCourseDistributionResponse\x12q\n" +
+	"\x12BlockPartnerCourse\x12,.teamos.academy.v1.BlockPartnerCourseRequest\x1a-.teamos.academy.v1.BlockPartnerCourseResponse\x12\x98\x01\n" +
+	"\x1fResolvePartnerCourseRestriction\x129.teamos.academy.v1.ResolvePartnerCourseRestrictionRequest\x1a:.teamos.academy.v1.ResolvePartnerCourseRestrictionResponse\x12z\n" +
+	"\x15GetCourseRestrictions\x12/.teamos.academy.v1.GetCourseRestrictionsRequest\x1a0.teamos.academy.v1.GetCourseRestrictionsResponse\x12\x9e\x01\n" +
+	"!CopyPartnerCourseVersionToCompany\x12;.teamos.academy.v1.CopyPartnerCourseVersionToCompanyRequest\x1a<.teamos.academy.v1.CopyPartnerCourseVersionToCompanyResponse\x12q\n" +
+	"\x12GetCourseTemplates\x12,.teamos.academy.v1.GetCourseTemplatesRequest\x1a-.teamos.academy.v1.GetCourseTemplatesResponse\x12n\n" +
+	"\x11GetCourseTemplate\x12+.teamos.academy.v1.GetCourseTemplateRequest\x1a,.teamos.academy.v1.GetCourseTemplateResponse\x12w\n" +
+	"\x14CreateCourseTemplate\x12..teamos.academy.v1.CreateCourseTemplateRequest\x1a/.teamos.academy.v1.CreateCourseTemplateResponse\x12\x86\x01\n" +
+	"\x19UpdateCourseTemplateDraft\x123.teamos.academy.v1.UpdateCourseTemplateDraftRequest\x1a4.teamos.academy.v1.UpdateCourseTemplateDraftResponse\x12\x86\x01\n" +
+	"\x19CreateCourseTemplateDraft\x123.teamos.academy.v1.CreateCourseTemplateDraftRequest\x1a4.teamos.academy.v1.CreateCourseTemplateDraftResponse\x12\x8f\x01\n" +
+	"\x1cPublishCourseTemplateVersion\x126.teamos.academy.v1.PublishCourseTemplateVersionRequest\x1a7.teamos.academy.v1.PublishCourseTemplateVersionResponse\x12z\n" +
+	"\x15ArchiveCourseTemplate\x12/.teamos.academy.v1.ArchiveCourseTemplateRequest\x1a0.teamos.academy.v1.ArchiveCourseTemplateResponse\x12\x9b\x01\n" +
+	" InstantiateCourseTemplateVersion\x12:.teamos.academy.v1.InstantiateCourseTemplateVersionRequest\x1a;.teamos.academy.v1.InstantiateCourseTemplateVersionResponse\x12\x8f\x01\n" +
+	"\x1cCreateExternalPersonalAccess\x126.teamos.academy.v1.CreateExternalPersonalAccessRequest\x1a7.teamos.academy.v1.CreateExternalPersonalAccessResponse\x12\x8c\x01\n" +
+	"\x1bGetExternalPersonalAccesses\x125.teamos.academy.v1.GetExternalPersonalAccessesRequest\x1a6.teamos.academy.v1.GetExternalPersonalAccessesResponse\x12\x86\x01\n" +
+	"\x19GetExternalPersonalAccess\x123.teamos.academy.v1.GetExternalPersonalAccessRequest\x1a4.teamos.academy.v1.GetExternalPersonalAccessResponse\x12\x8f\x01\n" +
+	"\x1cExtendExternalPersonalAccess\x126.teamos.academy.v1.ExtendExternalPersonalAccessRequest\x1a7.teamos.academy.v1.ExtendExternalPersonalAccessResponse\x12\x9e\x01\n" +
+	"!RotateExternalPersonalAccessToken\x12;.teamos.academy.v1.RotateExternalPersonalAccessTokenRequest\x1a<.teamos.academy.v1.RotateExternalPersonalAccessTokenResponse\x12\x8f\x01\n" +
+	"\x1cRevokeExternalPersonalAccess\x126.teamos.academy.v1.RevokeExternalPersonalAccessRequest\x1a7.teamos.academy.v1.RevokeExternalPersonalAccessResponse\x12\x8f\x01\n" +
+	"\x1cRepeatExternalPersonalAccess\x126.teamos.academy.v1.RepeatExternalPersonalAccessRequest\x1a7.teamos.academy.v1.RepeatExternalPersonalAccessResponse\x12}\n" +
+	"\x16CreateExternalCampaign\x120.teamos.academy.v1.CreateExternalCampaignRequest\x1a1.teamos.academy.v1.CreateExternalCampaignResponse\x12w\n" +
+	"\x14GetExternalCampaigns\x12..teamos.academy.v1.GetExternalCampaignsRequest\x1a/.teamos.academy.v1.GetExternalCampaignsResponse\x12t\n" +
+	"\x13GetExternalCampaign\x12-.teamos.academy.v1.GetExternalCampaignRequest\x1a..teamos.academy.v1.GetExternalCampaignResponse\x12z\n" +
+	"\x15PauseExternalCampaign\x12/.teamos.academy.v1.PauseExternalCampaignRequest\x1a0.teamos.academy.v1.PauseExternalCampaignResponse\x12}\n" +
+	"\x16ResumeExternalCampaign\x120.teamos.academy.v1.ResumeExternalCampaignRequest\x1a1.teamos.academy.v1.ResumeExternalCampaignResponse\x12\x8c\x01\n" +
+	"\x1bRotateExternalCampaignToken\x125.teamos.academy.v1.RotateExternalCampaignTokenRequest\x1a6.teamos.academy.v1.RotateExternalCampaignTokenResponse\x12}\n" +
+	"\x16RevokeExternalCampaign\x120.teamos.academy.v1.RevokeExternalCampaignRequest\x1a1.teamos.academy.v1.RevokeExternalCampaignResponse\x12\x86\x01\n" +
+	"\x19GetExternalCampaignReport\x123.teamos.academy.v1.GetExternalCampaignReportRequest\x1a4.teamos.academy.v1.GetExternalCampaignReportResponse\x12\x80\x01\n" +
+	"\x17GetCourseExternalReport\x121.teamos.academy.v1.GetCourseExternalReportRequest\x1a2.teamos.academy.v1.GetCourseExternalReportResponse\x12}\n" +
+	"\x16GetPublicAcademyAccess\x120.teamos.academy.v1.GetPublicAcademyAccessRequest\x1a1.teamos.academy.v1.GetPublicAcademyAccessResponse\x12\x9b\x01\n" +
+	" RequestPublicAcademyVerification\x12:.teamos.academy.v1.RequestPublicAcademyVerificationRequest\x1a;.teamos.academy.v1.RequestPublicAcademyVerificationResponse\x12\x9b\x01\n" +
+	" ConfirmPublicAcademyVerification\x12:.teamos.academy.v1.ConfirmPublicAcademyVerificationRequest\x1a;.teamos.academy.v1.ConfirmPublicAcademyVerificationResponse\x12\x8c\x01\n" +
+	"\x1bActivatePublicAcademyAccess\x125.teamos.academy.v1.ActivatePublicAcademyAccessRequest\x1a6.teamos.academy.v1.ActivatePublicAcademyAccessResponse\x12\x89\x01\n" +
+	"\x1aGetPublicAcademyEnrollment\x124.teamos.academy.v1.GetPublicAcademyEnrollmentRequest\x1a5.teamos.academy.v1.GetPublicAcademyEnrollmentResponse\x12\x9e\x01\n" +
+	"!GetPublicAcademyEnrollmentOutline\x12;.teamos.academy.v1.GetPublicAcademyEnrollmentOutlineRequest\x1a<.teamos.academy.v1.GetPublicAcademyEnrollmentOutlineResponse\x12\x9b\x01\n" +
+	" GetPublicAcademyEnrollmentLesson\x12:.teamos.academy.v1.GetPublicAcademyEnrollmentLessonRequest\x1a;.teamos.academy.v1.GetPublicAcademyEnrollmentLessonResponse\x12\xaa\x01\n" +
+	"%CompletePublicAcademyEnrollmentLesson\x12?.teamos.academy.v1.CompletePublicAcademyEnrollmentLessonRequest\x1a@.teamos.academy.v1.CompletePublicAcademyEnrollmentLessonResponse\x12\x95\x01\n" +
+	"\x1eSubmitPublicAcademyQuizAttempt\x128.teamos.academy.v1.SubmitPublicAcademyQuizAttemptRequest\x1a9.teamos.academy.v1.SubmitPublicAcademyQuizAttemptResponse\x12\x9e\x01\n" +
+	"!GetPublicAcademyEnrollmentResults\x12;.teamos.academy.v1.GetPublicAcademyEnrollmentResultsRequest\x1a<.teamos.academy.v1.GetPublicAcademyEnrollmentResultsResponse\x12t\n" +
+	"\x13GetExternalLearners\x12-.teamos.academy.v1.GetExternalLearnersRequest\x1a..teamos.academy.v1.GetExternalLearnersResponse\x12q\n" +
+	"\x12GetExternalLearner\x12,.teamos.academy.v1.GetExternalLearnerRequest\x1a-.teamos.academy.v1.GetExternalLearnerResponse\x12\x92\x01\n" +
+	"\x1dGetExternalLearnerEnrollments\x127.teamos.academy.v1.GetExternalLearnerEnrollmentsRequest\x1a8.teamos.academy.v1.GetExternalLearnerEnrollmentsResponse\x12\x89\x01\n" +
+	"\x1aGetExternalLearnerTimeline\x124.teamos.academy.v1.GetExternalLearnerTimelineRequest\x1a5.teamos.academy.v1.GetExternalLearnerTimelineResponseBHZFgithub.com/sk1fy/team-os-backend/contracts/gen/go/academy/v1;academyv1b\x06proto3"
 
 var (
 	file_proto_academy_v1_academy_proto_rawDescOnce sync.Once
@@ -3709,172 +19247,785 @@ func file_proto_academy_v1_academy_proto_rawDescGZIP() []byte {
 	return file_proto_academy_v1_academy_proto_rawDescData
 }
 
-var file_proto_academy_v1_academy_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
-var file_proto_academy_v1_academy_proto_msgTypes = make([]protoimpl.MessageInfo, 53)
+var file_proto_academy_v1_academy_proto_enumTypes = make([]protoimpl.EnumInfo, 26)
+var file_proto_academy_v1_academy_proto_msgTypes = make([]protoimpl.MessageInfo, 265)
 var file_proto_academy_v1_academy_proto_goTypes = []any{
-	(CourseStatus)(0),                   // 0: teamos.academy.v1.CourseStatus
-	(CourseVisibility)(0),               // 1: teamos.academy.v1.CourseVisibility
-	(LessonSourceMode)(0),               // 2: teamos.academy.v1.LessonSourceMode
-	(QuizQuestionType)(0),               // 3: teamos.academy.v1.QuizQuestionType
-	(AssigneeType)(0),                   // 4: teamos.academy.v1.AssigneeType
-	(CourseProgressStatus)(0),           // 5: teamos.academy.v1.CourseProgressStatus
-	(*Course)(nil),                      // 6: teamos.academy.v1.Course
-	(*CourseSection)(nil),               // 7: teamos.academy.v1.CourseSection
-	(*Lesson)(nil),                      // 8: teamos.academy.v1.Lesson
-	(*QuizOption)(nil),                  // 9: teamos.academy.v1.QuizOption
-	(*QuizQuestion)(nil),                // 10: teamos.academy.v1.QuizQuestion
-	(*Quiz)(nil),                        // 11: teamos.academy.v1.Quiz
-	(*CourseAssignment)(nil),            // 12: teamos.academy.v1.CourseAssignment
-	(*QuizAttempt)(nil),                 // 13: teamos.academy.v1.QuizAttempt
-	(*CourseProgress)(nil),              // 14: teamos.academy.v1.CourseProgress
-	(*GetCoursesRequest)(nil),           // 15: teamos.academy.v1.GetCoursesRequest
-	(*GetCoursesResponse)(nil),          // 16: teamos.academy.v1.GetCoursesResponse
-	(*GetCourseRequest)(nil),            // 17: teamos.academy.v1.GetCourseRequest
-	(*GetCourseResponse)(nil),           // 18: teamos.academy.v1.GetCourseResponse
-	(*GetPublicCourseRequest)(nil),      // 19: teamos.academy.v1.GetPublicCourseRequest
-	(*GetPublicCourseResponse)(nil),     // 20: teamos.academy.v1.GetPublicCourseResponse
-	(*CreateCourseRequest)(nil),         // 21: teamos.academy.v1.CreateCourseRequest
-	(*CreateCourseResponse)(nil),        // 22: teamos.academy.v1.CreateCourseResponse
-	(*CreateCourseFromKbRequest)(nil),   // 23: teamos.academy.v1.CreateCourseFromKbRequest
-	(*CreateCourseFromKbResponse)(nil),  // 24: teamos.academy.v1.CreateCourseFromKbResponse
-	(*UpdateCourseRequest)(nil),         // 25: teamos.academy.v1.UpdateCourseRequest
-	(*UpdateCourseResponse)(nil),        // 26: teamos.academy.v1.UpdateCourseResponse
-	(*DeleteCourseRequest)(nil),         // 27: teamos.academy.v1.DeleteCourseRequest
-	(*DeleteCourseResponse)(nil),        // 28: teamos.academy.v1.DeleteCourseResponse
-	(*GetCourseSectionsRequest)(nil),    // 29: teamos.academy.v1.GetCourseSectionsRequest
-	(*GetCourseSectionsResponse)(nil),   // 30: teamos.academy.v1.GetCourseSectionsResponse
-	(*CreateCourseSectionRequest)(nil),  // 31: teamos.academy.v1.CreateCourseSectionRequest
-	(*CreateCourseSectionResponse)(nil), // 32: teamos.academy.v1.CreateCourseSectionResponse
-	(*UpdateCourseSectionRequest)(nil),  // 33: teamos.academy.v1.UpdateCourseSectionRequest
-	(*UpdateCourseSectionResponse)(nil), // 34: teamos.academy.v1.UpdateCourseSectionResponse
-	(*DeleteCourseSectionRequest)(nil),  // 35: teamos.academy.v1.DeleteCourseSectionRequest
-	(*DeleteCourseSectionResponse)(nil), // 36: teamos.academy.v1.DeleteCourseSectionResponse
-	(*GetLessonsRequest)(nil),           // 37: teamos.academy.v1.GetLessonsRequest
-	(*GetLessonsResponse)(nil),          // 38: teamos.academy.v1.GetLessonsResponse
-	(*CreateLessonRequest)(nil),         // 39: teamos.academy.v1.CreateLessonRequest
-	(*CreateLessonResponse)(nil),        // 40: teamos.academy.v1.CreateLessonResponse
-	(*UpdateLessonRequest)(nil),         // 41: teamos.academy.v1.UpdateLessonRequest
-	(*UpdateLessonResponse)(nil),        // 42: teamos.academy.v1.UpdateLessonResponse
-	(*DeleteLessonRequest)(nil),         // 43: teamos.academy.v1.DeleteLessonRequest
-	(*DeleteLessonResponse)(nil),        // 44: teamos.academy.v1.DeleteLessonResponse
-	(*MoveLessonRequest)(nil),           // 45: teamos.academy.v1.MoveLessonRequest
-	(*MoveLessonResponse)(nil),          // 46: teamos.academy.v1.MoveLessonResponse
-	(*GetQuizzesRequest)(nil),           // 47: teamos.academy.v1.GetQuizzesRequest
-	(*GetQuizzesResponse)(nil),          // 48: teamos.academy.v1.GetQuizzesResponse
-	(*UpsertQuizRequest)(nil),           // 49: teamos.academy.v1.UpsertQuizRequest
-	(*UpsertQuizResponse)(nil),          // 50: teamos.academy.v1.UpsertQuizResponse
-	(*GetAssignmentsRequest)(nil),       // 51: teamos.academy.v1.GetAssignmentsRequest
-	(*GetAssignmentsResponse)(nil),      // 52: teamos.academy.v1.GetAssignmentsResponse
-	(*AssignCourseRequest)(nil),         // 53: teamos.academy.v1.AssignCourseRequest
-	(*AssignCourseResponse)(nil),        // 54: teamos.academy.v1.AssignCourseResponse
-	(*GetProgressRequest)(nil),          // 55: teamos.academy.v1.GetProgressRequest
-	(*GetProgressResponse)(nil),         // 56: teamos.academy.v1.GetProgressResponse
-	(*MarkLessonCompleteRequest)(nil),   // 57: teamos.academy.v1.MarkLessonCompleteRequest
-	(*MarkLessonCompleteResponse)(nil),  // 58: teamos.academy.v1.MarkLessonCompleteResponse
-	(*timestamppb.Timestamp)(nil),       // 59: google.protobuf.Timestamp
-	(*structpb.Struct)(nil),             // 60: google.protobuf.Struct
+	(CourseStatus)(0),                                     // 0: teamos.academy.v1.CourseStatus
+	(CourseVisibility)(0),                                 // 1: teamos.academy.v1.CourseVisibility
+	(CourseOwnerType)(0),                                  // 2: teamos.academy.v1.CourseOwnerType
+	(CourseLifecycleStatus)(0),                            // 3: teamos.academy.v1.CourseLifecycleStatus
+	(CourseDistributionStatus)(0),                         // 4: teamos.academy.v1.CourseDistributionStatus
+	(CourseOriginType)(0),                                 // 5: teamos.academy.v1.CourseOriginType
+	(CourseVersionStatus)(0),                              // 6: teamos.academy.v1.CourseVersionStatus
+	(CourseLessonSourceType)(0),                           // 7: teamos.academy.v1.CourseLessonSourceType
+	(LessonSourceMode)(0),                                 // 8: teamos.academy.v1.LessonSourceMode
+	(QuizQuestionType)(0),                                 // 9: teamos.academy.v1.QuizQuestionType
+	(AssigneeType)(0),                                     // 10: teamos.academy.v1.AssigneeType
+	(CourseProgressStatus)(0),                             // 11: teamos.academy.v1.CourseProgressStatus
+	(EnrollmentLearnerType)(0),                            // 12: teamos.academy.v1.EnrollmentLearnerType
+	(EnrollmentSourceType)(0),                             // 13: teamos.academy.v1.EnrollmentSourceType
+	(EnrollmentProgressStatus)(0),                         // 14: teamos.academy.v1.EnrollmentProgressStatus
+	(EnrollmentAccessStatus)(0),                           // 15: teamos.academy.v1.EnrollmentAccessStatus
+	(EnrollmentLessonStatus)(0),                           // 16: teamos.academy.v1.EnrollmentLessonStatus
+	(CourseRestrictionType)(0),                            // 17: teamos.academy.v1.CourseRestrictionType
+	(CourseTemplateType)(0),                               // 18: teamos.academy.v1.CourseTemplateType
+	(CourseTemplateLifecycleStatus)(0),                    // 19: teamos.academy.v1.CourseTemplateLifecycleStatus
+	(ExternalPersonalAccessStatus)(0),                     // 20: teamos.academy.v1.ExternalPersonalAccessStatus
+	(ExternalCampaignOwnerType)(0),                        // 21: teamos.academy.v1.ExternalCampaignOwnerType
+	(ExternalCampaignPurpose)(0),                          // 22: teamos.academy.v1.ExternalCampaignPurpose
+	(ExternalCampaignStatus)(0),                           // 23: teamos.academy.v1.ExternalCampaignStatus
+	(ExternalLearnerTimelineEventType)(0),                 // 24: teamos.academy.v1.ExternalLearnerTimelineEventType
+	(PublicAcademyAccessKind)(0),                          // 25: teamos.academy.v1.PublicAcademyAccessKind
+	(*Course)(nil),                                        // 26: teamos.academy.v1.Course
+	(*CourseSection)(nil),                                 // 27: teamos.academy.v1.CourseSection
+	(*Lesson)(nil),                                        // 28: teamos.academy.v1.Lesson
+	(*QuizOption)(nil),                                    // 29: teamos.academy.v1.QuizOption
+	(*QuizQuestion)(nil),                                  // 30: teamos.academy.v1.QuizQuestion
+	(*Quiz)(nil),                                          // 31: teamos.academy.v1.Quiz
+	(*CourseVersion)(nil),                                 // 32: teamos.academy.v1.CourseVersion
+	(*CourseVersionSection)(nil),                          // 33: teamos.academy.v1.CourseVersionSection
+	(*CourseVersionLesson)(nil),                           // 34: teamos.academy.v1.CourseVersionLesson
+	(*CourseVersionQuiz)(nil),                             // 35: teamos.academy.v1.CourseVersionQuiz
+	(*LearnerQuizOption)(nil),                             // 36: teamos.academy.v1.LearnerQuizOption
+	(*LearnerQuizQuestion)(nil),                           // 37: teamos.academy.v1.LearnerQuizQuestion
+	(*LearnerCourseVersionQuiz)(nil),                      // 38: teamos.academy.v1.LearnerCourseVersionQuiz
+	(*LearnerCourseVersionLesson)(nil),                    // 39: teamos.academy.v1.LearnerCourseVersionLesson
+	(*LearnerCourseVersionSection)(nil),                   // 40: teamos.academy.v1.LearnerCourseVersionSection
+	(*LearnerPublishedCourseVersion)(nil),                 // 41: teamos.academy.v1.LearnerPublishedCourseVersion
+	(*CourseAssignment)(nil),                              // 42: teamos.academy.v1.CourseAssignment
+	(*QuizAttempt)(nil),                                   // 43: teamos.academy.v1.QuizAttempt
+	(*CourseProgress)(nil),                                // 44: teamos.academy.v1.CourseProgress
+	(*CourseEnrollment)(nil),                              // 45: teamos.academy.v1.CourseEnrollment
+	(*EnrollmentLessonProgress)(nil),                      // 46: teamos.academy.v1.EnrollmentLessonProgress
+	(*EnrollmentQuizAnswer)(nil),                          // 47: teamos.academy.v1.EnrollmentQuizAnswer
+	(*EnrollmentQuizAttempt)(nil),                         // 48: teamos.academy.v1.EnrollmentQuizAttempt
+	(*EnrollmentOutlineLesson)(nil),                       // 49: teamos.academy.v1.EnrollmentOutlineLesson
+	(*EnrollmentOutlineSection)(nil),                      // 50: teamos.academy.v1.EnrollmentOutlineSection
+	(*EnrollmentOutline)(nil),                             // 51: teamos.academy.v1.EnrollmentOutline
+	(*EnrollmentLesson)(nil),                              // 52: teamos.academy.v1.EnrollmentLesson
+	(*EnrollmentProgressSnapshot)(nil),                    // 53: teamos.academy.v1.EnrollmentProgressSnapshot
+	(*EnrollmentReport)(nil),                              // 54: teamos.academy.v1.EnrollmentReport
+	(*CourseRestriction)(nil),                             // 55: teamos.academy.v1.CourseRestriction
+	(*CourseOrigin)(nil),                                  // 56: teamos.academy.v1.CourseOrigin
+	(*PartnerCourseCopyResult)(nil),                       // 57: teamos.academy.v1.PartnerCourseCopyResult
+	(*PartnerCourseGroup)(nil),                            // 58: teamos.academy.v1.PartnerCourseGroup
+	(*PartnerCourseReportSummary)(nil),                    // 59: teamos.academy.v1.PartnerCourseReportSummary
+	(*PartnerCourseOperationalReport)(nil),                // 60: teamos.academy.v1.PartnerCourseOperationalReport
+	(*PartnerCoursesReport)(nil),                          // 61: teamos.academy.v1.PartnerCoursesReport
+	(*CourseVersionPreview)(nil),                          // 62: teamos.academy.v1.CourseVersionPreview
+	(*CoursePreviewQuizAttemptResult)(nil),                // 63: teamos.academy.v1.CoursePreviewQuizAttemptResult
+	(*CourseTemplate)(nil),                                // 64: teamos.academy.v1.CourseTemplate
+	(*CourseTemplateVersion)(nil),                         // 65: teamos.academy.v1.CourseTemplateVersion
+	(*CourseTemplateVersionSection)(nil),                  // 66: teamos.academy.v1.CourseTemplateVersionSection
+	(*CourseTemplateVersionLesson)(nil),                   // 67: teamos.academy.v1.CourseTemplateVersionLesson
+	(*CourseTemplateVersionQuiz)(nil),                     // 68: teamos.academy.v1.CourseTemplateVersionQuiz
+	(*CourseTemplateVersionContent)(nil),                  // 69: teamos.academy.v1.CourseTemplateVersionContent
+	(*CourseTemplateVersionDetails)(nil),                  // 70: teamos.academy.v1.CourseTemplateVersionDetails
+	(*CourseTemplateDraftQuizInput)(nil),                  // 71: teamos.academy.v1.CourseTemplateDraftQuizInput
+	(*CourseTemplateDraftLessonInput)(nil),                // 72: teamos.academy.v1.CourseTemplateDraftLessonInput
+	(*CourseTemplateDraftSectionInput)(nil),               // 73: teamos.academy.v1.CourseTemplateDraftSectionInput
+	(*CourseTemplateDraftContentInput)(nil),               // 74: teamos.academy.v1.CourseTemplateDraftContentInput
+	(*CourseTemplateInstantiationResult)(nil),             // 75: teamos.academy.v1.CourseTemplateInstantiationResult
+	(*GetCoursesRequest)(nil),                             // 76: teamos.academy.v1.GetCoursesRequest
+	(*GetCoursesResponse)(nil),                            // 77: teamos.academy.v1.GetCoursesResponse
+	(*GetCourseRequest)(nil),                              // 78: teamos.academy.v1.GetCourseRequest
+	(*GetCourseResponse)(nil),                             // 79: teamos.academy.v1.GetCourseResponse
+	(*GetPublicCourseRequest)(nil),                        // 80: teamos.academy.v1.GetPublicCourseRequest
+	(*GetPublicCourseResponse)(nil),                       // 81: teamos.academy.v1.GetPublicCourseResponse
+	(*CreateCourseRequest)(nil),                           // 82: teamos.academy.v1.CreateCourseRequest
+	(*CreateCourseResponse)(nil),                          // 83: teamos.academy.v1.CreateCourseResponse
+	(*CreateCourseFromKbRequest)(nil),                     // 84: teamos.academy.v1.CreateCourseFromKbRequest
+	(*CreateCourseFromKbResponse)(nil),                    // 85: teamos.academy.v1.CreateCourseFromKbResponse
+	(*UpdateCourseRequest)(nil),                           // 86: teamos.academy.v1.UpdateCourseRequest
+	(*UpdateCourseResponse)(nil),                          // 87: teamos.academy.v1.UpdateCourseResponse
+	(*ArchiveCourseRequest)(nil),                          // 88: teamos.academy.v1.ArchiveCourseRequest
+	(*ArchiveCourseResponse)(nil),                         // 89: teamos.academy.v1.ArchiveCourseResponse
+	(*RestoreCourseRequest)(nil),                          // 90: teamos.academy.v1.RestoreCourseRequest
+	(*RestoreCourseResponse)(nil),                         // 91: teamos.academy.v1.RestoreCourseResponse
+	(*DeleteCourseRequest)(nil),                           // 92: teamos.academy.v1.DeleteCourseRequest
+	(*DeleteCourseResponse)(nil),                          // 93: teamos.academy.v1.DeleteCourseResponse
+	(*GetCourseVersionsRequest)(nil),                      // 94: teamos.academy.v1.GetCourseVersionsRequest
+	(*GetCourseVersionsResponse)(nil),                     // 95: teamos.academy.v1.GetCourseVersionsResponse
+	(*GetCourseVersionRequest)(nil),                       // 96: teamos.academy.v1.GetCourseVersionRequest
+	(*GetCourseVersionResponse)(nil),                      // 97: teamos.academy.v1.GetCourseVersionResponse
+	(*CreateCourseDraftRequest)(nil),                      // 98: teamos.academy.v1.CreateCourseDraftRequest
+	(*CreateCourseDraftResponse)(nil),                     // 99: teamos.academy.v1.CreateCourseDraftResponse
+	(*UpdateCourseDraftRequest)(nil),                      // 100: teamos.academy.v1.UpdateCourseDraftRequest
+	(*UpdateCourseDraftResponse)(nil),                     // 101: teamos.academy.v1.UpdateCourseDraftResponse
+	(*PublishCourseVersionRequest)(nil),                   // 102: teamos.academy.v1.PublishCourseVersionRequest
+	(*PublishCourseVersionResponse)(nil),                  // 103: teamos.academy.v1.PublishCourseVersionResponse
+	(*GetPublishedCourseVersionRequest)(nil),              // 104: teamos.academy.v1.GetPublishedCourseVersionRequest
+	(*GetPublishedCourseVersionResponse)(nil),             // 105: teamos.academy.v1.GetPublishedCourseVersionResponse
+	(*CreateCourseVersionSectionRequest)(nil),             // 106: teamos.academy.v1.CreateCourseVersionSectionRequest
+	(*CreateCourseVersionSectionResponse)(nil),            // 107: teamos.academy.v1.CreateCourseVersionSectionResponse
+	(*UpdateCourseVersionSectionRequest)(nil),             // 108: teamos.academy.v1.UpdateCourseVersionSectionRequest
+	(*UpdateCourseVersionSectionResponse)(nil),            // 109: teamos.academy.v1.UpdateCourseVersionSectionResponse
+	(*DeleteCourseVersionSectionRequest)(nil),             // 110: teamos.academy.v1.DeleteCourseVersionSectionRequest
+	(*DeleteCourseVersionSectionResponse)(nil),            // 111: teamos.academy.v1.DeleteCourseVersionSectionResponse
+	(*CreateCourseVersionLessonRequest)(nil),              // 112: teamos.academy.v1.CreateCourseVersionLessonRequest
+	(*CreateCourseVersionLessonResponse)(nil),             // 113: teamos.academy.v1.CreateCourseVersionLessonResponse
+	(*UpdateCourseVersionLessonRequest)(nil),              // 114: teamos.academy.v1.UpdateCourseVersionLessonRequest
+	(*UpdateCourseVersionLessonResponse)(nil),             // 115: teamos.academy.v1.UpdateCourseVersionLessonResponse
+	(*DeleteCourseVersionLessonRequest)(nil),              // 116: teamos.academy.v1.DeleteCourseVersionLessonRequest
+	(*DeleteCourseVersionLessonResponse)(nil),             // 117: teamos.academy.v1.DeleteCourseVersionLessonResponse
+	(*MoveCourseVersionLessonRequest)(nil),                // 118: teamos.academy.v1.MoveCourseVersionLessonRequest
+	(*MoveCourseVersionLessonResponse)(nil),               // 119: teamos.academy.v1.MoveCourseVersionLessonResponse
+	(*UpsertCourseVersionQuizRequest)(nil),                // 120: teamos.academy.v1.UpsertCourseVersionQuizRequest
+	(*UpsertCourseVersionQuizResponse)(nil),               // 121: teamos.academy.v1.UpsertCourseVersionQuizResponse
+	(*DeleteCourseVersionQuizRequest)(nil),                // 122: teamos.academy.v1.DeleteCourseVersionQuizRequest
+	(*DeleteCourseVersionQuizResponse)(nil),               // 123: teamos.academy.v1.DeleteCourseVersionQuizResponse
+	(*GetCourseSectionsRequest)(nil),                      // 124: teamos.academy.v1.GetCourseSectionsRequest
+	(*GetCourseSectionsResponse)(nil),                     // 125: teamos.academy.v1.GetCourseSectionsResponse
+	(*CreateCourseSectionRequest)(nil),                    // 126: teamos.academy.v1.CreateCourseSectionRequest
+	(*CreateCourseSectionResponse)(nil),                   // 127: teamos.academy.v1.CreateCourseSectionResponse
+	(*UpdateCourseSectionRequest)(nil),                    // 128: teamos.academy.v1.UpdateCourseSectionRequest
+	(*UpdateCourseSectionResponse)(nil),                   // 129: teamos.academy.v1.UpdateCourseSectionResponse
+	(*DeleteCourseSectionRequest)(nil),                    // 130: teamos.academy.v1.DeleteCourseSectionRequest
+	(*DeleteCourseSectionResponse)(nil),                   // 131: teamos.academy.v1.DeleteCourseSectionResponse
+	(*GetLessonsRequest)(nil),                             // 132: teamos.academy.v1.GetLessonsRequest
+	(*GetLessonsResponse)(nil),                            // 133: teamos.academy.v1.GetLessonsResponse
+	(*CreateLessonRequest)(nil),                           // 134: teamos.academy.v1.CreateLessonRequest
+	(*CreateLessonResponse)(nil),                          // 135: teamos.academy.v1.CreateLessonResponse
+	(*UpdateLessonRequest)(nil),                           // 136: teamos.academy.v1.UpdateLessonRequest
+	(*UpdateLessonResponse)(nil),                          // 137: teamos.academy.v1.UpdateLessonResponse
+	(*DeleteLessonRequest)(nil),                           // 138: teamos.academy.v1.DeleteLessonRequest
+	(*DeleteLessonResponse)(nil),                          // 139: teamos.academy.v1.DeleteLessonResponse
+	(*MoveLessonRequest)(nil),                             // 140: teamos.academy.v1.MoveLessonRequest
+	(*MoveLessonResponse)(nil),                            // 141: teamos.academy.v1.MoveLessonResponse
+	(*GetQuizzesRequest)(nil),                             // 142: teamos.academy.v1.GetQuizzesRequest
+	(*GetQuizzesResponse)(nil),                            // 143: teamos.academy.v1.GetQuizzesResponse
+	(*UpsertQuizRequest)(nil),                             // 144: teamos.academy.v1.UpsertQuizRequest
+	(*UpsertQuizResponse)(nil),                            // 145: teamos.academy.v1.UpsertQuizResponse
+	(*GetAssignmentsRequest)(nil),                         // 146: teamos.academy.v1.GetAssignmentsRequest
+	(*GetAssignmentsResponse)(nil),                        // 147: teamos.academy.v1.GetAssignmentsResponse
+	(*AssignCourseRequest)(nil),                           // 148: teamos.academy.v1.AssignCourseRequest
+	(*AssignCourseResponse)(nil),                          // 149: teamos.academy.v1.AssignCourseResponse
+	(*RevokeAssignmentRequest)(nil),                       // 150: teamos.academy.v1.RevokeAssignmentRequest
+	(*RevokeAssignmentResponse)(nil),                      // 151: teamos.academy.v1.RevokeAssignmentResponse
+	(*GetProgressRequest)(nil),                            // 152: teamos.academy.v1.GetProgressRequest
+	(*GetProgressResponse)(nil),                           // 153: teamos.academy.v1.GetProgressResponse
+	(*MarkLessonCompleteRequest)(nil),                     // 154: teamos.academy.v1.MarkLessonCompleteRequest
+	(*MarkLessonCompleteResponse)(nil),                    // 155: teamos.academy.v1.MarkLessonCompleteResponse
+	(*GetEnrollmentsRequest)(nil),                         // 156: teamos.academy.v1.GetEnrollmentsRequest
+	(*GetEnrollmentsResponse)(nil),                        // 157: teamos.academy.v1.GetEnrollmentsResponse
+	(*SelfEnrollCourseRequest)(nil),                       // 158: teamos.academy.v1.SelfEnrollCourseRequest
+	(*SelfEnrollCourseResponse)(nil),                      // 159: teamos.academy.v1.SelfEnrollCourseResponse
+	(*GetCatalogCourseVersionRequest)(nil),                // 160: teamos.academy.v1.GetCatalogCourseVersionRequest
+	(*GetCatalogCourseVersionResponse)(nil),               // 161: teamos.academy.v1.GetCatalogCourseVersionResponse
+	(*GetEnrollmentRequest)(nil),                          // 162: teamos.academy.v1.GetEnrollmentRequest
+	(*GetEnrollmentResponse)(nil),                         // 163: teamos.academy.v1.GetEnrollmentResponse
+	(*GetEnrollmentOutlineRequest)(nil),                   // 164: teamos.academy.v1.GetEnrollmentOutlineRequest
+	(*GetEnrollmentOutlineResponse)(nil),                  // 165: teamos.academy.v1.GetEnrollmentOutlineResponse
+	(*GetEnrollmentLessonRequest)(nil),                    // 166: teamos.academy.v1.GetEnrollmentLessonRequest
+	(*GetEnrollmentLessonResponse)(nil),                   // 167: teamos.academy.v1.GetEnrollmentLessonResponse
+	(*ResumeEnrollmentRequest)(nil),                       // 168: teamos.academy.v1.ResumeEnrollmentRequest
+	(*ResumeEnrollmentResponse)(nil),                      // 169: teamos.academy.v1.ResumeEnrollmentResponse
+	(*CompleteEnrollmentLessonRequest)(nil),               // 170: teamos.academy.v1.CompleteEnrollmentLessonRequest
+	(*CompleteEnrollmentLessonResponse)(nil),              // 171: teamos.academy.v1.CompleteEnrollmentLessonResponse
+	(*SubmitEnrollmentQuizAttemptRequest)(nil),            // 172: teamos.academy.v1.SubmitEnrollmentQuizAttemptRequest
+	(*SubmitEnrollmentQuizAttemptResponse)(nil),           // 173: teamos.academy.v1.SubmitEnrollmentQuizAttemptResponse
+	(*GetEnrollmentReportRequest)(nil),                    // 174: teamos.academy.v1.GetEnrollmentReportRequest
+	(*GetEnrollmentReportResponse)(nil),                   // 175: teamos.academy.v1.GetEnrollmentReportResponse
+	(*GetPartnerCourseGroupsRequest)(nil),                 // 176: teamos.academy.v1.GetPartnerCourseGroupsRequest
+	(*GetPartnerCourseGroupsResponse)(nil),                // 177: teamos.academy.v1.GetPartnerCourseGroupsResponse
+	(*GetPartnerCoursesReportRequest)(nil),                // 178: teamos.academy.v1.GetPartnerCoursesReportRequest
+	(*GetPartnerCoursesReportResponse)(nil),               // 179: teamos.academy.v1.GetPartnerCoursesReportResponse
+	(*GetCourseVersionPreviewRequest)(nil),                // 180: teamos.academy.v1.GetCourseVersionPreviewRequest
+	(*GetCourseVersionPreviewResponse)(nil),               // 181: teamos.academy.v1.GetCourseVersionPreviewResponse
+	(*SubmitCoursePreviewQuizAttemptRequest)(nil),         // 182: teamos.academy.v1.SubmitCoursePreviewQuizAttemptRequest
+	(*SubmitCoursePreviewQuizAttemptResponse)(nil),        // 183: teamos.academy.v1.SubmitCoursePreviewQuizAttemptResponse
+	(*PausePartnerCourseDistributionRequest)(nil),         // 184: teamos.academy.v1.PausePartnerCourseDistributionRequest
+	(*PausePartnerCourseDistributionResponse)(nil),        // 185: teamos.academy.v1.PausePartnerCourseDistributionResponse
+	(*BlockPartnerCourseRequest)(nil),                     // 186: teamos.academy.v1.BlockPartnerCourseRequest
+	(*BlockPartnerCourseResponse)(nil),                    // 187: teamos.academy.v1.BlockPartnerCourseResponse
+	(*ResolvePartnerCourseRestrictionRequest)(nil),        // 188: teamos.academy.v1.ResolvePartnerCourseRestrictionRequest
+	(*ResolvePartnerCourseRestrictionResponse)(nil),       // 189: teamos.academy.v1.ResolvePartnerCourseRestrictionResponse
+	(*GetCourseRestrictionsRequest)(nil),                  // 190: teamos.academy.v1.GetCourseRestrictionsRequest
+	(*GetCourseRestrictionsResponse)(nil),                 // 191: teamos.academy.v1.GetCourseRestrictionsResponse
+	(*CopyPartnerCourseVersionToCompanyRequest)(nil),      // 192: teamos.academy.v1.CopyPartnerCourseVersionToCompanyRequest
+	(*CopyPartnerCourseVersionToCompanyResponse)(nil),     // 193: teamos.academy.v1.CopyPartnerCourseVersionToCompanyResponse
+	(*GetCourseTemplatesRequest)(nil),                     // 194: teamos.academy.v1.GetCourseTemplatesRequest
+	(*GetCourseTemplatesResponse)(nil),                    // 195: teamos.academy.v1.GetCourseTemplatesResponse
+	(*GetCourseTemplateRequest)(nil),                      // 196: teamos.academy.v1.GetCourseTemplateRequest
+	(*GetCourseTemplateResponse)(nil),                     // 197: teamos.academy.v1.GetCourseTemplateResponse
+	(*CreateCourseTemplateRequest)(nil),                   // 198: teamos.academy.v1.CreateCourseTemplateRequest
+	(*CreateCourseTemplateResponse)(nil),                  // 199: teamos.academy.v1.CreateCourseTemplateResponse
+	(*UpdateCourseTemplateDraftRequest)(nil),              // 200: teamos.academy.v1.UpdateCourseTemplateDraftRequest
+	(*UpdateCourseTemplateDraftResponse)(nil),             // 201: teamos.academy.v1.UpdateCourseTemplateDraftResponse
+	(*CreateCourseTemplateDraftRequest)(nil),              // 202: teamos.academy.v1.CreateCourseTemplateDraftRequest
+	(*CreateCourseTemplateDraftResponse)(nil),             // 203: teamos.academy.v1.CreateCourseTemplateDraftResponse
+	(*PublishCourseTemplateVersionRequest)(nil),           // 204: teamos.academy.v1.PublishCourseTemplateVersionRequest
+	(*PublishCourseTemplateVersionResponse)(nil),          // 205: teamos.academy.v1.PublishCourseTemplateVersionResponse
+	(*ArchiveCourseTemplateRequest)(nil),                  // 206: teamos.academy.v1.ArchiveCourseTemplateRequest
+	(*ArchiveCourseTemplateResponse)(nil),                 // 207: teamos.academy.v1.ArchiveCourseTemplateResponse
+	(*InstantiateCourseTemplateVersionRequest)(nil),       // 208: teamos.academy.v1.InstantiateCourseTemplateVersionRequest
+	(*InstantiateCourseTemplateVersionResponse)(nil),      // 209: teamos.academy.v1.InstantiateCourseTemplateVersionResponse
+	(*ExternalPersonalAccess)(nil),                        // 210: teamos.academy.v1.ExternalPersonalAccess
+	(*ExternalPersonalAccessCreated)(nil),                 // 211: teamos.academy.v1.ExternalPersonalAccessCreated
+	(*ExternalCampaign)(nil),                              // 212: teamos.academy.v1.ExternalCampaign
+	(*ExternalCampaignCreated)(nil),                       // 213: teamos.academy.v1.ExternalCampaignCreated
+	(*CampaignFunnel)(nil),                                // 214: teamos.academy.v1.CampaignFunnel
+	(*CampaignLessonDropOff)(nil),                         // 215: teamos.academy.v1.CampaignLessonDropOff
+	(*CampaignAttribution)(nil),                           // 216: teamos.academy.v1.CampaignAttribution
+	(*CampaignVersionAnalytics)(nil),                      // 217: teamos.academy.v1.CampaignVersionAnalytics
+	(*CampaignAnalytics)(nil),                             // 218: teamos.academy.v1.CampaignAnalytics
+	(*ExternalCampaignReport)(nil),                        // 219: teamos.academy.v1.ExternalCampaignReport
+	(*CourseExternalReport)(nil),                          // 220: teamos.academy.v1.CourseExternalReport
+	(*ExternalLearnerTimelineEvent)(nil),                  // 221: teamos.academy.v1.ExternalLearnerTimelineEvent
+	(*ExternalLearnerTimeline)(nil),                       // 222: teamos.academy.v1.ExternalLearnerTimeline
+	(*ExternalLearner)(nil),                               // 223: teamos.academy.v1.ExternalLearner
+	(*PublicAcademyOutlineLesson)(nil),                    // 224: teamos.academy.v1.PublicAcademyOutlineLesson
+	(*PublicAcademyOutlineSection)(nil),                   // 225: teamos.academy.v1.PublicAcademyOutlineSection
+	(*PublicAcademyAccess)(nil),                           // 226: teamos.academy.v1.PublicAcademyAccess
+	(*ExternalVerificationChallenge)(nil),                 // 227: teamos.academy.v1.ExternalVerificationChallenge
+	(*ExternalVerificationConfirmed)(nil),                 // 228: teamos.academy.v1.ExternalVerificationConfirmed
+	(*ExternalQuizAttemptResult)(nil),                     // 229: teamos.academy.v1.ExternalQuizAttemptResult
+	(*ExternalEnrollmentResults)(nil),                     // 230: teamos.academy.v1.ExternalEnrollmentResults
+	(*CreateExternalPersonalAccessRequest)(nil),           // 231: teamos.academy.v1.CreateExternalPersonalAccessRequest
+	(*CreateExternalPersonalAccessResponse)(nil),          // 232: teamos.academy.v1.CreateExternalPersonalAccessResponse
+	(*GetExternalPersonalAccessesRequest)(nil),            // 233: teamos.academy.v1.GetExternalPersonalAccessesRequest
+	(*GetExternalPersonalAccessesResponse)(nil),           // 234: teamos.academy.v1.GetExternalPersonalAccessesResponse
+	(*GetExternalPersonalAccessRequest)(nil),              // 235: teamos.academy.v1.GetExternalPersonalAccessRequest
+	(*GetExternalPersonalAccessResponse)(nil),             // 236: teamos.academy.v1.GetExternalPersonalAccessResponse
+	(*ExtendExternalPersonalAccessRequest)(nil),           // 237: teamos.academy.v1.ExtendExternalPersonalAccessRequest
+	(*ExtendExternalPersonalAccessResponse)(nil),          // 238: teamos.academy.v1.ExtendExternalPersonalAccessResponse
+	(*RotateExternalPersonalAccessTokenRequest)(nil),      // 239: teamos.academy.v1.RotateExternalPersonalAccessTokenRequest
+	(*RotateExternalPersonalAccessTokenResponse)(nil),     // 240: teamos.academy.v1.RotateExternalPersonalAccessTokenResponse
+	(*RevokeExternalPersonalAccessRequest)(nil),           // 241: teamos.academy.v1.RevokeExternalPersonalAccessRequest
+	(*RevokeExternalPersonalAccessResponse)(nil),          // 242: teamos.academy.v1.RevokeExternalPersonalAccessResponse
+	(*RepeatExternalPersonalAccessRequest)(nil),           // 243: teamos.academy.v1.RepeatExternalPersonalAccessRequest
+	(*RepeatExternalPersonalAccessResponse)(nil),          // 244: teamos.academy.v1.RepeatExternalPersonalAccessResponse
+	(*CreateExternalCampaignRequest)(nil),                 // 245: teamos.academy.v1.CreateExternalCampaignRequest
+	(*CreateExternalCampaignResponse)(nil),                // 246: teamos.academy.v1.CreateExternalCampaignResponse
+	(*GetExternalCampaignsRequest)(nil),                   // 247: teamos.academy.v1.GetExternalCampaignsRequest
+	(*GetExternalCampaignsResponse)(nil),                  // 248: teamos.academy.v1.GetExternalCampaignsResponse
+	(*GetExternalCampaignRequest)(nil),                    // 249: teamos.academy.v1.GetExternalCampaignRequest
+	(*GetExternalCampaignResponse)(nil),                   // 250: teamos.academy.v1.GetExternalCampaignResponse
+	(*PauseExternalCampaignRequest)(nil),                  // 251: teamos.academy.v1.PauseExternalCampaignRequest
+	(*PauseExternalCampaignResponse)(nil),                 // 252: teamos.academy.v1.PauseExternalCampaignResponse
+	(*ResumeExternalCampaignRequest)(nil),                 // 253: teamos.academy.v1.ResumeExternalCampaignRequest
+	(*ResumeExternalCampaignResponse)(nil),                // 254: teamos.academy.v1.ResumeExternalCampaignResponse
+	(*RotateExternalCampaignTokenRequest)(nil),            // 255: teamos.academy.v1.RotateExternalCampaignTokenRequest
+	(*RotateExternalCampaignTokenResponse)(nil),           // 256: teamos.academy.v1.RotateExternalCampaignTokenResponse
+	(*RevokeExternalCampaignRequest)(nil),                 // 257: teamos.academy.v1.RevokeExternalCampaignRequest
+	(*RevokeExternalCampaignResponse)(nil),                // 258: teamos.academy.v1.RevokeExternalCampaignResponse
+	(*GetExternalCampaignReportRequest)(nil),              // 259: teamos.academy.v1.GetExternalCampaignReportRequest
+	(*GetExternalCampaignReportResponse)(nil),             // 260: teamos.academy.v1.GetExternalCampaignReportResponse
+	(*GetCourseExternalReportRequest)(nil),                // 261: teamos.academy.v1.GetCourseExternalReportRequest
+	(*GetCourseExternalReportResponse)(nil),               // 262: teamos.academy.v1.GetCourseExternalReportResponse
+	(*GetPublicAcademyAccessRequest)(nil),                 // 263: teamos.academy.v1.GetPublicAcademyAccessRequest
+	(*GetPublicAcademyAccessResponse)(nil),                // 264: teamos.academy.v1.GetPublicAcademyAccessResponse
+	(*RequestPublicAcademyVerificationRequest)(nil),       // 265: teamos.academy.v1.RequestPublicAcademyVerificationRequest
+	(*RequestPublicAcademyVerificationResponse)(nil),      // 266: teamos.academy.v1.RequestPublicAcademyVerificationResponse
+	(*ConfirmPublicAcademyVerificationRequest)(nil),       // 267: teamos.academy.v1.ConfirmPublicAcademyVerificationRequest
+	(*ConfirmPublicAcademyVerificationResponse)(nil),      // 268: teamos.academy.v1.ConfirmPublicAcademyVerificationResponse
+	(*ActivatePublicAcademyAccessRequest)(nil),            // 269: teamos.academy.v1.ActivatePublicAcademyAccessRequest
+	(*ActivatePublicAcademyAccessResponse)(nil),           // 270: teamos.academy.v1.ActivatePublicAcademyAccessResponse
+	(*GetPublicAcademyEnrollmentRequest)(nil),             // 271: teamos.academy.v1.GetPublicAcademyEnrollmentRequest
+	(*GetPublicAcademyEnrollmentResponse)(nil),            // 272: teamos.academy.v1.GetPublicAcademyEnrollmentResponse
+	(*GetPublicAcademyEnrollmentOutlineRequest)(nil),      // 273: teamos.academy.v1.GetPublicAcademyEnrollmentOutlineRequest
+	(*GetPublicAcademyEnrollmentOutlineResponse)(nil),     // 274: teamos.academy.v1.GetPublicAcademyEnrollmentOutlineResponse
+	(*GetPublicAcademyEnrollmentLessonRequest)(nil),       // 275: teamos.academy.v1.GetPublicAcademyEnrollmentLessonRequest
+	(*GetPublicAcademyEnrollmentLessonResponse)(nil),      // 276: teamos.academy.v1.GetPublicAcademyEnrollmentLessonResponse
+	(*CompletePublicAcademyEnrollmentLessonRequest)(nil),  // 277: teamos.academy.v1.CompletePublicAcademyEnrollmentLessonRequest
+	(*CompletePublicAcademyEnrollmentLessonResponse)(nil), // 278: teamos.academy.v1.CompletePublicAcademyEnrollmentLessonResponse
+	(*SubmitPublicAcademyQuizAttemptRequest)(nil),         // 279: teamos.academy.v1.SubmitPublicAcademyQuizAttemptRequest
+	(*SubmitPublicAcademyQuizAttemptResponse)(nil),        // 280: teamos.academy.v1.SubmitPublicAcademyQuizAttemptResponse
+	(*GetPublicAcademyEnrollmentResultsRequest)(nil),      // 281: teamos.academy.v1.GetPublicAcademyEnrollmentResultsRequest
+	(*GetPublicAcademyEnrollmentResultsResponse)(nil),     // 282: teamos.academy.v1.GetPublicAcademyEnrollmentResultsResponse
+	(*GetExternalLearnersRequest)(nil),                    // 283: teamos.academy.v1.GetExternalLearnersRequest
+	(*GetExternalLearnersResponse)(nil),                   // 284: teamos.academy.v1.GetExternalLearnersResponse
+	(*GetExternalLearnerRequest)(nil),                     // 285: teamos.academy.v1.GetExternalLearnerRequest
+	(*GetExternalLearnerResponse)(nil),                    // 286: teamos.academy.v1.GetExternalLearnerResponse
+	(*GetExternalLearnerEnrollmentsRequest)(nil),          // 287: teamos.academy.v1.GetExternalLearnerEnrollmentsRequest
+	(*GetExternalLearnerEnrollmentsResponse)(nil),         // 288: teamos.academy.v1.GetExternalLearnerEnrollmentsResponse
+	(*GetExternalLearnerTimelineRequest)(nil),             // 289: teamos.academy.v1.GetExternalLearnerTimelineRequest
+	(*GetExternalLearnerTimelineResponse)(nil),            // 290: teamos.academy.v1.GetExternalLearnerTimelineResponse
+	(*timestamppb.Timestamp)(nil),                         // 291: google.protobuf.Timestamp
+	(*structpb.Struct)(nil),                               // 292: google.protobuf.Struct
 }
 var file_proto_academy_v1_academy_proto_depIdxs = []int32{
-	0,  // 0: teamos.academy.v1.Course.status:type_name -> teamos.academy.v1.CourseStatus
-	59, // 1: teamos.academy.v1.Course.created_at:type_name -> google.protobuf.Timestamp
-	59, // 2: teamos.academy.v1.Course.updated_at:type_name -> google.protobuf.Timestamp
-	1,  // 3: teamos.academy.v1.Course.visibility:type_name -> teamos.academy.v1.CourseVisibility
-	60, // 4: teamos.academy.v1.Lesson.content:type_name -> google.protobuf.Struct
-	2,  // 5: teamos.academy.v1.Lesson.source_mode:type_name -> teamos.academy.v1.LessonSourceMode
-	3,  // 6: teamos.academy.v1.QuizQuestion.type:type_name -> teamos.academy.v1.QuizQuestionType
-	9,  // 7: teamos.academy.v1.QuizQuestion.options:type_name -> teamos.academy.v1.QuizOption
-	10, // 8: teamos.academy.v1.Quiz.questions:type_name -> teamos.academy.v1.QuizQuestion
-	4,  // 9: teamos.academy.v1.CourseAssignment.assignee_type:type_name -> teamos.academy.v1.AssigneeType
-	59, // 10: teamos.academy.v1.CourseAssignment.due_date:type_name -> google.protobuf.Timestamp
-	59, // 11: teamos.academy.v1.CourseAssignment.created_at:type_name -> google.protobuf.Timestamp
-	59, // 12: teamos.academy.v1.QuizAttempt.created_at:type_name -> google.protobuf.Timestamp
-	5,  // 13: teamos.academy.v1.CourseProgress.status:type_name -> teamos.academy.v1.CourseProgressStatus
-	13, // 14: teamos.academy.v1.CourseProgress.quiz_attempts:type_name -> teamos.academy.v1.QuizAttempt
-	59, // 15: teamos.academy.v1.CourseProgress.started_at:type_name -> google.protobuf.Timestamp
-	59, // 16: teamos.academy.v1.CourseProgress.completed_at:type_name -> google.protobuf.Timestamp
-	6,  // 17: teamos.academy.v1.GetCoursesResponse.courses:type_name -> teamos.academy.v1.Course
-	6,  // 18: teamos.academy.v1.GetCourseResponse.course:type_name -> teamos.academy.v1.Course
-	6,  // 19: teamos.academy.v1.GetPublicCourseResponse.course:type_name -> teamos.academy.v1.Course
-	7,  // 20: teamos.academy.v1.GetPublicCourseResponse.sections:type_name -> teamos.academy.v1.CourseSection
-	8,  // 21: teamos.academy.v1.GetPublicCourseResponse.lessons:type_name -> teamos.academy.v1.Lesson
-	0,  // 22: teamos.academy.v1.CreateCourseRequest.status:type_name -> teamos.academy.v1.CourseStatus
-	1,  // 23: teamos.academy.v1.CreateCourseRequest.visibility:type_name -> teamos.academy.v1.CourseVisibility
-	6,  // 24: teamos.academy.v1.CreateCourseResponse.course:type_name -> teamos.academy.v1.Course
-	2,  // 25: teamos.academy.v1.CreateCourseFromKbRequest.mode:type_name -> teamos.academy.v1.LessonSourceMode
-	1,  // 26: teamos.academy.v1.CreateCourseFromKbRequest.visibility:type_name -> teamos.academy.v1.CourseVisibility
-	6,  // 27: teamos.academy.v1.CreateCourseFromKbResponse.course:type_name -> teamos.academy.v1.Course
-	0,  // 28: teamos.academy.v1.UpdateCourseRequest.status:type_name -> teamos.academy.v1.CourseStatus
-	1,  // 29: teamos.academy.v1.UpdateCourseRequest.visibility:type_name -> teamos.academy.v1.CourseVisibility
-	6,  // 30: teamos.academy.v1.UpdateCourseResponse.course:type_name -> teamos.academy.v1.Course
-	7,  // 31: teamos.academy.v1.GetCourseSectionsResponse.sections:type_name -> teamos.academy.v1.CourseSection
-	7,  // 32: teamos.academy.v1.CreateCourseSectionResponse.section:type_name -> teamos.academy.v1.CourseSection
-	7,  // 33: teamos.academy.v1.UpdateCourseSectionResponse.section:type_name -> teamos.academy.v1.CourseSection
-	8,  // 34: teamos.academy.v1.GetLessonsResponse.lessons:type_name -> teamos.academy.v1.Lesson
-	60, // 35: teamos.academy.v1.CreateLessonRequest.content:type_name -> google.protobuf.Struct
-	2,  // 36: teamos.academy.v1.CreateLessonRequest.source_mode:type_name -> teamos.academy.v1.LessonSourceMode
-	8,  // 37: teamos.academy.v1.CreateLessonResponse.lesson:type_name -> teamos.academy.v1.Lesson
-	60, // 38: teamos.academy.v1.UpdateLessonRequest.content:type_name -> google.protobuf.Struct
-	2,  // 39: teamos.academy.v1.UpdateLessonRequest.source_mode:type_name -> teamos.academy.v1.LessonSourceMode
-	8,  // 40: teamos.academy.v1.UpdateLessonResponse.lesson:type_name -> teamos.academy.v1.Lesson
-	8,  // 41: teamos.academy.v1.MoveLessonResponse.lesson:type_name -> teamos.academy.v1.Lesson
-	11, // 42: teamos.academy.v1.GetQuizzesResponse.quizzes:type_name -> teamos.academy.v1.Quiz
-	10, // 43: teamos.academy.v1.UpsertQuizRequest.questions:type_name -> teamos.academy.v1.QuizQuestion
-	11, // 44: teamos.academy.v1.UpsertQuizResponse.quiz:type_name -> teamos.academy.v1.Quiz
-	12, // 45: teamos.academy.v1.GetAssignmentsResponse.assignments:type_name -> teamos.academy.v1.CourseAssignment
-	4,  // 46: teamos.academy.v1.AssignCourseRequest.assignee_type:type_name -> teamos.academy.v1.AssigneeType
-	59, // 47: teamos.academy.v1.AssignCourseRequest.due_date:type_name -> google.protobuf.Timestamp
-	12, // 48: teamos.academy.v1.AssignCourseResponse.assignment:type_name -> teamos.academy.v1.CourseAssignment
-	14, // 49: teamos.academy.v1.GetProgressResponse.progress:type_name -> teamos.academy.v1.CourseProgress
-	14, // 50: teamos.academy.v1.MarkLessonCompleteResponse.progress:type_name -> teamos.academy.v1.CourseProgress
-	15, // 51: teamos.academy.v1.AcademyService.GetCourses:input_type -> teamos.academy.v1.GetCoursesRequest
-	17, // 52: teamos.academy.v1.AcademyService.GetCourse:input_type -> teamos.academy.v1.GetCourseRequest
-	19, // 53: teamos.academy.v1.AcademyService.GetPublicCourse:input_type -> teamos.academy.v1.GetPublicCourseRequest
-	21, // 54: teamos.academy.v1.AcademyService.CreateCourse:input_type -> teamos.academy.v1.CreateCourseRequest
-	23, // 55: teamos.academy.v1.AcademyService.CreateCourseFromKb:input_type -> teamos.academy.v1.CreateCourseFromKbRequest
-	25, // 56: teamos.academy.v1.AcademyService.UpdateCourse:input_type -> teamos.academy.v1.UpdateCourseRequest
-	27, // 57: teamos.academy.v1.AcademyService.DeleteCourse:input_type -> teamos.academy.v1.DeleteCourseRequest
-	29, // 58: teamos.academy.v1.AcademyService.GetCourseSections:input_type -> teamos.academy.v1.GetCourseSectionsRequest
-	31, // 59: teamos.academy.v1.AcademyService.CreateCourseSection:input_type -> teamos.academy.v1.CreateCourseSectionRequest
-	33, // 60: teamos.academy.v1.AcademyService.UpdateCourseSection:input_type -> teamos.academy.v1.UpdateCourseSectionRequest
-	35, // 61: teamos.academy.v1.AcademyService.DeleteCourseSection:input_type -> teamos.academy.v1.DeleteCourseSectionRequest
-	37, // 62: teamos.academy.v1.AcademyService.GetLessons:input_type -> teamos.academy.v1.GetLessonsRequest
-	39, // 63: teamos.academy.v1.AcademyService.CreateLesson:input_type -> teamos.academy.v1.CreateLessonRequest
-	41, // 64: teamos.academy.v1.AcademyService.UpdateLesson:input_type -> teamos.academy.v1.UpdateLessonRequest
-	43, // 65: teamos.academy.v1.AcademyService.DeleteLesson:input_type -> teamos.academy.v1.DeleteLessonRequest
-	45, // 66: teamos.academy.v1.AcademyService.MoveLesson:input_type -> teamos.academy.v1.MoveLessonRequest
-	47, // 67: teamos.academy.v1.AcademyService.GetQuizzes:input_type -> teamos.academy.v1.GetQuizzesRequest
-	49, // 68: teamos.academy.v1.AcademyService.UpsertQuiz:input_type -> teamos.academy.v1.UpsertQuizRequest
-	51, // 69: teamos.academy.v1.AcademyService.GetAssignments:input_type -> teamos.academy.v1.GetAssignmentsRequest
-	53, // 70: teamos.academy.v1.AcademyService.AssignCourse:input_type -> teamos.academy.v1.AssignCourseRequest
-	55, // 71: teamos.academy.v1.AcademyService.GetProgress:input_type -> teamos.academy.v1.GetProgressRequest
-	57, // 72: teamos.academy.v1.AcademyService.MarkLessonComplete:input_type -> teamos.academy.v1.MarkLessonCompleteRequest
-	16, // 73: teamos.academy.v1.AcademyService.GetCourses:output_type -> teamos.academy.v1.GetCoursesResponse
-	18, // 74: teamos.academy.v1.AcademyService.GetCourse:output_type -> teamos.academy.v1.GetCourseResponse
-	20, // 75: teamos.academy.v1.AcademyService.GetPublicCourse:output_type -> teamos.academy.v1.GetPublicCourseResponse
-	22, // 76: teamos.academy.v1.AcademyService.CreateCourse:output_type -> teamos.academy.v1.CreateCourseResponse
-	24, // 77: teamos.academy.v1.AcademyService.CreateCourseFromKb:output_type -> teamos.academy.v1.CreateCourseFromKbResponse
-	26, // 78: teamos.academy.v1.AcademyService.UpdateCourse:output_type -> teamos.academy.v1.UpdateCourseResponse
-	28, // 79: teamos.academy.v1.AcademyService.DeleteCourse:output_type -> teamos.academy.v1.DeleteCourseResponse
-	30, // 80: teamos.academy.v1.AcademyService.GetCourseSections:output_type -> teamos.academy.v1.GetCourseSectionsResponse
-	32, // 81: teamos.academy.v1.AcademyService.CreateCourseSection:output_type -> teamos.academy.v1.CreateCourseSectionResponse
-	34, // 82: teamos.academy.v1.AcademyService.UpdateCourseSection:output_type -> teamos.academy.v1.UpdateCourseSectionResponse
-	36, // 83: teamos.academy.v1.AcademyService.DeleteCourseSection:output_type -> teamos.academy.v1.DeleteCourseSectionResponse
-	38, // 84: teamos.academy.v1.AcademyService.GetLessons:output_type -> teamos.academy.v1.GetLessonsResponse
-	40, // 85: teamos.academy.v1.AcademyService.CreateLesson:output_type -> teamos.academy.v1.CreateLessonResponse
-	42, // 86: teamos.academy.v1.AcademyService.UpdateLesson:output_type -> teamos.academy.v1.UpdateLessonResponse
-	44, // 87: teamos.academy.v1.AcademyService.DeleteLesson:output_type -> teamos.academy.v1.DeleteLessonResponse
-	46, // 88: teamos.academy.v1.AcademyService.MoveLesson:output_type -> teamos.academy.v1.MoveLessonResponse
-	48, // 89: teamos.academy.v1.AcademyService.GetQuizzes:output_type -> teamos.academy.v1.GetQuizzesResponse
-	50, // 90: teamos.academy.v1.AcademyService.UpsertQuiz:output_type -> teamos.academy.v1.UpsertQuizResponse
-	52, // 91: teamos.academy.v1.AcademyService.GetAssignments:output_type -> teamos.academy.v1.GetAssignmentsResponse
-	54, // 92: teamos.academy.v1.AcademyService.AssignCourse:output_type -> teamos.academy.v1.AssignCourseResponse
-	56, // 93: teamos.academy.v1.AcademyService.GetProgress:output_type -> teamos.academy.v1.GetProgressResponse
-	58, // 94: teamos.academy.v1.AcademyService.MarkLessonComplete:output_type -> teamos.academy.v1.MarkLessonCompleteResponse
-	73, // [73:95] is the sub-list for method output_type
-	51, // [51:73] is the sub-list for method input_type
-	51, // [51:51] is the sub-list for extension type_name
-	51, // [51:51] is the sub-list for extension extendee
-	0,  // [0:51] is the sub-list for field type_name
+	0,   // 0: teamos.academy.v1.Course.status:type_name -> teamos.academy.v1.CourseStatus
+	291, // 1: teamos.academy.v1.Course.created_at:type_name -> google.protobuf.Timestamp
+	291, // 2: teamos.academy.v1.Course.updated_at:type_name -> google.protobuf.Timestamp
+	1,   // 3: teamos.academy.v1.Course.visibility:type_name -> teamos.academy.v1.CourseVisibility
+	2,   // 4: teamos.academy.v1.Course.owner_type:type_name -> teamos.academy.v1.CourseOwnerType
+	3,   // 5: teamos.academy.v1.Course.lifecycle_status:type_name -> teamos.academy.v1.CourseLifecycleStatus
+	4,   // 6: teamos.academy.v1.Course.distribution_status:type_name -> teamos.academy.v1.CourseDistributionStatus
+	292, // 7: teamos.academy.v1.Lesson.content:type_name -> google.protobuf.Struct
+	8,   // 8: teamos.academy.v1.Lesson.source_mode:type_name -> teamos.academy.v1.LessonSourceMode
+	9,   // 9: teamos.academy.v1.QuizQuestion.type:type_name -> teamos.academy.v1.QuizQuestionType
+	29,  // 10: teamos.academy.v1.QuizQuestion.options:type_name -> teamos.academy.v1.QuizOption
+	30,  // 11: teamos.academy.v1.Quiz.questions:type_name -> teamos.academy.v1.QuizQuestion
+	6,   // 12: teamos.academy.v1.CourseVersion.status:type_name -> teamos.academy.v1.CourseVersionStatus
+	291, // 13: teamos.academy.v1.CourseVersion.created_at:type_name -> google.protobuf.Timestamp
+	291, // 14: teamos.academy.v1.CourseVersion.published_at:type_name -> google.protobuf.Timestamp
+	292, // 15: teamos.academy.v1.CourseVersionLesson.content:type_name -> google.protobuf.Struct
+	7,   // 16: teamos.academy.v1.CourseVersionLesson.source_type:type_name -> teamos.academy.v1.CourseLessonSourceType
+	30,  // 17: teamos.academy.v1.CourseVersionQuiz.questions:type_name -> teamos.academy.v1.QuizQuestion
+	9,   // 18: teamos.academy.v1.LearnerQuizQuestion.type:type_name -> teamos.academy.v1.QuizQuestionType
+	36,  // 19: teamos.academy.v1.LearnerQuizQuestion.options:type_name -> teamos.academy.v1.LearnerQuizOption
+	37,  // 20: teamos.academy.v1.LearnerCourseVersionQuiz.questions:type_name -> teamos.academy.v1.LearnerQuizQuestion
+	292, // 21: teamos.academy.v1.LearnerCourseVersionLesson.content:type_name -> google.protobuf.Struct
+	38,  // 22: teamos.academy.v1.LearnerCourseVersionLesson.quiz:type_name -> teamos.academy.v1.LearnerCourseVersionQuiz
+	39,  // 23: teamos.academy.v1.LearnerCourseVersionSection.lessons:type_name -> teamos.academy.v1.LearnerCourseVersionLesson
+	40,  // 24: teamos.academy.v1.LearnerPublishedCourseVersion.sections:type_name -> teamos.academy.v1.LearnerCourseVersionSection
+	10,  // 25: teamos.academy.v1.CourseAssignment.assignee_type:type_name -> teamos.academy.v1.AssigneeType
+	291, // 26: teamos.academy.v1.CourseAssignment.due_date:type_name -> google.protobuf.Timestamp
+	291, // 27: teamos.academy.v1.CourseAssignment.created_at:type_name -> google.protobuf.Timestamp
+	291, // 28: teamos.academy.v1.QuizAttempt.created_at:type_name -> google.protobuf.Timestamp
+	11,  // 29: teamos.academy.v1.CourseProgress.status:type_name -> teamos.academy.v1.CourseProgressStatus
+	43,  // 30: teamos.academy.v1.CourseProgress.quiz_attempts:type_name -> teamos.academy.v1.QuizAttempt
+	291, // 31: teamos.academy.v1.CourseProgress.started_at:type_name -> google.protobuf.Timestamp
+	291, // 32: teamos.academy.v1.CourseProgress.completed_at:type_name -> google.protobuf.Timestamp
+	12,  // 33: teamos.academy.v1.CourseEnrollment.learner_type:type_name -> teamos.academy.v1.EnrollmentLearnerType
+	13,  // 34: teamos.academy.v1.CourseEnrollment.source_type:type_name -> teamos.academy.v1.EnrollmentSourceType
+	14,  // 35: teamos.academy.v1.CourseEnrollment.progress_status:type_name -> teamos.academy.v1.EnrollmentProgressStatus
+	15,  // 36: teamos.academy.v1.CourseEnrollment.access_status:type_name -> teamos.academy.v1.EnrollmentAccessStatus
+	291, // 37: teamos.academy.v1.CourseEnrollment.activated_at:type_name -> google.protobuf.Timestamp
+	291, // 38: teamos.academy.v1.CourseEnrollment.access_until:type_name -> google.protobuf.Timestamp
+	291, // 39: teamos.academy.v1.CourseEnrollment.started_at:type_name -> google.protobuf.Timestamp
+	291, // 40: teamos.academy.v1.CourseEnrollment.completed_at:type_name -> google.protobuf.Timestamp
+	291, // 41: teamos.academy.v1.CourseEnrollment.last_activity_at:type_name -> google.protobuf.Timestamp
+	291, // 42: teamos.academy.v1.CourseEnrollment.frozen_at:type_name -> google.protobuf.Timestamp
+	291, // 43: teamos.academy.v1.CourseEnrollment.suspended_at:type_name -> google.protobuf.Timestamp
+	291, // 44: teamos.academy.v1.CourseEnrollment.created_at:type_name -> google.protobuf.Timestamp
+	291, // 45: teamos.academy.v1.CourseEnrollment.updated_at:type_name -> google.protobuf.Timestamp
+	291, // 46: teamos.academy.v1.CourseEnrollment.due_date:type_name -> google.protobuf.Timestamp
+	16,  // 47: teamos.academy.v1.EnrollmentLessonProgress.status:type_name -> teamos.academy.v1.EnrollmentLessonStatus
+	291, // 48: teamos.academy.v1.EnrollmentLessonProgress.first_opened_at:type_name -> google.protobuf.Timestamp
+	291, // 49: teamos.academy.v1.EnrollmentLessonProgress.completed_at:type_name -> google.protobuf.Timestamp
+	292, // 50: teamos.academy.v1.EnrollmentLessonProgress.last_position:type_name -> google.protobuf.Struct
+	47,  // 51: teamos.academy.v1.EnrollmentQuizAttempt.answers:type_name -> teamos.academy.v1.EnrollmentQuizAnswer
+	291, // 52: teamos.academy.v1.EnrollmentQuizAttempt.reviewed_at:type_name -> google.protobuf.Timestamp
+	291, // 53: teamos.academy.v1.EnrollmentQuizAttempt.created_at:type_name -> google.protobuf.Timestamp
+	16,  // 54: teamos.academy.v1.EnrollmentOutlineLesson.status:type_name -> teamos.academy.v1.EnrollmentLessonStatus
+	49,  // 55: teamos.academy.v1.EnrollmentOutlineSection.lessons:type_name -> teamos.academy.v1.EnrollmentOutlineLesson
+	45,  // 56: teamos.academy.v1.EnrollmentOutline.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
+	50,  // 57: teamos.academy.v1.EnrollmentOutline.sections:type_name -> teamos.academy.v1.EnrollmentOutlineSection
+	45,  // 58: teamos.academy.v1.EnrollmentLesson.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
+	39,  // 59: teamos.academy.v1.EnrollmentLesson.lesson:type_name -> teamos.academy.v1.LearnerCourseVersionLesson
+	46,  // 60: teamos.academy.v1.EnrollmentLesson.progress:type_name -> teamos.academy.v1.EnrollmentLessonProgress
+	45,  // 61: teamos.academy.v1.EnrollmentProgressSnapshot.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
+	46,  // 62: teamos.academy.v1.EnrollmentProgressSnapshot.lessons:type_name -> teamos.academy.v1.EnrollmentLessonProgress
+	48,  // 63: teamos.academy.v1.EnrollmentProgressSnapshot.quiz_attempts:type_name -> teamos.academy.v1.EnrollmentQuizAttempt
+	45,  // 64: teamos.academy.v1.EnrollmentReport.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
+	32,  // 65: teamos.academy.v1.EnrollmentReport.version:type_name -> teamos.academy.v1.CourseVersion
+	46,  // 66: teamos.academy.v1.EnrollmentReport.lessons:type_name -> teamos.academy.v1.EnrollmentLessonProgress
+	48,  // 67: teamos.academy.v1.EnrollmentReport.quiz_attempts:type_name -> teamos.academy.v1.EnrollmentQuizAttempt
+	17,  // 68: teamos.academy.v1.CourseRestriction.type:type_name -> teamos.academy.v1.CourseRestrictionType
+	291, // 69: teamos.academy.v1.CourseRestriction.created_at:type_name -> google.protobuf.Timestamp
+	291, // 70: teamos.academy.v1.CourseRestriction.resolved_at:type_name -> google.protobuf.Timestamp
+	5,   // 71: teamos.academy.v1.CourseOrigin.type:type_name -> teamos.academy.v1.CourseOriginType
+	291, // 72: teamos.academy.v1.CourseOrigin.instantiated_at:type_name -> google.protobuf.Timestamp
+	26,  // 73: teamos.academy.v1.PartnerCourseCopyResult.course:type_name -> teamos.academy.v1.Course
+	32,  // 74: teamos.academy.v1.PartnerCourseCopyResult.draft:type_name -> teamos.academy.v1.CourseVersion
+	56,  // 75: teamos.academy.v1.PartnerCourseCopyResult.origin:type_name -> teamos.academy.v1.CourseOrigin
+	26,  // 76: teamos.academy.v1.PartnerCourseGroup.courses:type_name -> teamos.academy.v1.Course
+	26,  // 77: teamos.academy.v1.PartnerCourseOperationalReport.course:type_name -> teamos.academy.v1.Course
+	59,  // 78: teamos.academy.v1.PartnerCoursesReport.summary:type_name -> teamos.academy.v1.PartnerCourseReportSummary
+	60,  // 79: teamos.academy.v1.PartnerCoursesReport.operational_courses:type_name -> teamos.academy.v1.PartnerCourseOperationalReport
+	220, // 80: teamos.academy.v1.PartnerCoursesReport.courses:type_name -> teamos.academy.v1.CourseExternalReport
+	26,  // 81: teamos.academy.v1.CourseVersionPreview.course:type_name -> teamos.academy.v1.Course
+	41,  // 82: teamos.academy.v1.CourseVersionPreview.version:type_name -> teamos.academy.v1.LearnerPublishedCourseVersion
+	18,  // 83: teamos.academy.v1.CourseTemplate.type:type_name -> teamos.academy.v1.CourseTemplateType
+	19,  // 84: teamos.academy.v1.CourseTemplate.lifecycle_status:type_name -> teamos.academy.v1.CourseTemplateLifecycleStatus
+	291, // 85: teamos.academy.v1.CourseTemplate.created_at:type_name -> google.protobuf.Timestamp
+	291, // 86: teamos.academy.v1.CourseTemplate.updated_at:type_name -> google.protobuf.Timestamp
+	6,   // 87: teamos.academy.v1.CourseTemplateVersion.status:type_name -> teamos.academy.v1.CourseVersionStatus
+	291, // 88: teamos.academy.v1.CourseTemplateVersion.created_at:type_name -> google.protobuf.Timestamp
+	291, // 89: teamos.academy.v1.CourseTemplateVersion.published_at:type_name -> google.protobuf.Timestamp
+	292, // 90: teamos.academy.v1.CourseTemplateVersionLesson.content:type_name -> google.protobuf.Struct
+	7,   // 91: teamos.academy.v1.CourseTemplateVersionLesson.source_type:type_name -> teamos.academy.v1.CourseLessonSourceType
+	30,  // 92: teamos.academy.v1.CourseTemplateVersionQuiz.questions:type_name -> teamos.academy.v1.QuizQuestion
+	66,  // 93: teamos.academy.v1.CourseTemplateVersionContent.sections:type_name -> teamos.academy.v1.CourseTemplateVersionSection
+	67,  // 94: teamos.academy.v1.CourseTemplateVersionContent.lessons:type_name -> teamos.academy.v1.CourseTemplateVersionLesson
+	68,  // 95: teamos.academy.v1.CourseTemplateVersionContent.quizzes:type_name -> teamos.academy.v1.CourseTemplateVersionQuiz
+	65,  // 96: teamos.academy.v1.CourseTemplateVersionDetails.version:type_name -> teamos.academy.v1.CourseTemplateVersion
+	69,  // 97: teamos.academy.v1.CourseTemplateVersionDetails.content:type_name -> teamos.academy.v1.CourseTemplateVersionContent
+	30,  // 98: teamos.academy.v1.CourseTemplateDraftQuizInput.questions:type_name -> teamos.academy.v1.QuizQuestion
+	292, // 99: teamos.academy.v1.CourseTemplateDraftLessonInput.content:type_name -> google.protobuf.Struct
+	7,   // 100: teamos.academy.v1.CourseTemplateDraftLessonInput.source_type:type_name -> teamos.academy.v1.CourseLessonSourceType
+	71,  // 101: teamos.academy.v1.CourseTemplateDraftLessonInput.quiz:type_name -> teamos.academy.v1.CourseTemplateDraftQuizInput
+	72,  // 102: teamos.academy.v1.CourseTemplateDraftSectionInput.lessons:type_name -> teamos.academy.v1.CourseTemplateDraftLessonInput
+	73,  // 103: teamos.academy.v1.CourseTemplateDraftContentInput.sections:type_name -> teamos.academy.v1.CourseTemplateDraftSectionInput
+	26,  // 104: teamos.academy.v1.CourseTemplateInstantiationResult.course:type_name -> teamos.academy.v1.Course
+	32,  // 105: teamos.academy.v1.CourseTemplateInstantiationResult.draft:type_name -> teamos.academy.v1.CourseVersion
+	56,  // 106: teamos.academy.v1.CourseTemplateInstantiationResult.origin:type_name -> teamos.academy.v1.CourseOrigin
+	2,   // 107: teamos.academy.v1.GetCoursesRequest.owner_type:type_name -> teamos.academy.v1.CourseOwnerType
+	3,   // 108: teamos.academy.v1.GetCoursesRequest.lifecycle:type_name -> teamos.academy.v1.CourseLifecycleStatus
+	4,   // 109: teamos.academy.v1.GetCoursesRequest.distribution:type_name -> teamos.academy.v1.CourseDistributionStatus
+	5,   // 110: teamos.academy.v1.GetCoursesRequest.origin_type:type_name -> teamos.academy.v1.CourseOriginType
+	26,  // 111: teamos.academy.v1.GetCoursesResponse.courses:type_name -> teamos.academy.v1.Course
+	26,  // 112: teamos.academy.v1.GetCourseResponse.course:type_name -> teamos.academy.v1.Course
+	26,  // 113: teamos.academy.v1.GetPublicCourseResponse.course:type_name -> teamos.academy.v1.Course
+	27,  // 114: teamos.academy.v1.GetPublicCourseResponse.sections:type_name -> teamos.academy.v1.CourseSection
+	28,  // 115: teamos.academy.v1.GetPublicCourseResponse.lessons:type_name -> teamos.academy.v1.Lesson
+	0,   // 116: teamos.academy.v1.CreateCourseRequest.status:type_name -> teamos.academy.v1.CourseStatus
+	1,   // 117: teamos.academy.v1.CreateCourseRequest.visibility:type_name -> teamos.academy.v1.CourseVisibility
+	26,  // 118: teamos.academy.v1.CreateCourseResponse.course:type_name -> teamos.academy.v1.Course
+	8,   // 119: teamos.academy.v1.CreateCourseFromKbRequest.mode:type_name -> teamos.academy.v1.LessonSourceMode
+	1,   // 120: teamos.academy.v1.CreateCourseFromKbRequest.visibility:type_name -> teamos.academy.v1.CourseVisibility
+	26,  // 121: teamos.academy.v1.CreateCourseFromKbResponse.course:type_name -> teamos.academy.v1.Course
+	0,   // 122: teamos.academy.v1.UpdateCourseRequest.status:type_name -> teamos.academy.v1.CourseStatus
+	1,   // 123: teamos.academy.v1.UpdateCourseRequest.visibility:type_name -> teamos.academy.v1.CourseVisibility
+	26,  // 124: teamos.academy.v1.UpdateCourseResponse.course:type_name -> teamos.academy.v1.Course
+	26,  // 125: teamos.academy.v1.ArchiveCourseResponse.course:type_name -> teamos.academy.v1.Course
+	26,  // 126: teamos.academy.v1.RestoreCourseResponse.course:type_name -> teamos.academy.v1.Course
+	32,  // 127: teamos.academy.v1.GetCourseVersionsResponse.versions:type_name -> teamos.academy.v1.CourseVersion
+	32,  // 128: teamos.academy.v1.GetCourseVersionResponse.version:type_name -> teamos.academy.v1.CourseVersion
+	33,  // 129: teamos.academy.v1.GetCourseVersionResponse.sections:type_name -> teamos.academy.v1.CourseVersionSection
+	34,  // 130: teamos.academy.v1.GetCourseVersionResponse.lessons:type_name -> teamos.academy.v1.CourseVersionLesson
+	35,  // 131: teamos.academy.v1.GetCourseVersionResponse.quizzes:type_name -> teamos.academy.v1.CourseVersionQuiz
+	32,  // 132: teamos.academy.v1.CreateCourseDraftResponse.version:type_name -> teamos.academy.v1.CourseVersion
+	32,  // 133: teamos.academy.v1.UpdateCourseDraftResponse.version:type_name -> teamos.academy.v1.CourseVersion
+	32,  // 134: teamos.academy.v1.PublishCourseVersionResponse.version:type_name -> teamos.academy.v1.CourseVersion
+	41,  // 135: teamos.academy.v1.GetPublishedCourseVersionResponse.version:type_name -> teamos.academy.v1.LearnerPublishedCourseVersion
+	33,  // 136: teamos.academy.v1.CreateCourseVersionSectionResponse.section:type_name -> teamos.academy.v1.CourseVersionSection
+	33,  // 137: teamos.academy.v1.UpdateCourseVersionSectionResponse.section:type_name -> teamos.academy.v1.CourseVersionSection
+	292, // 138: teamos.academy.v1.CreateCourseVersionLessonRequest.content:type_name -> google.protobuf.Struct
+	7,   // 139: teamos.academy.v1.CreateCourseVersionLessonRequest.source_type:type_name -> teamos.academy.v1.CourseLessonSourceType
+	34,  // 140: teamos.academy.v1.CreateCourseVersionLessonResponse.lesson:type_name -> teamos.academy.v1.CourseVersionLesson
+	292, // 141: teamos.academy.v1.UpdateCourseVersionLessonRequest.content:type_name -> google.protobuf.Struct
+	7,   // 142: teamos.academy.v1.UpdateCourseVersionLessonRequest.source_type:type_name -> teamos.academy.v1.CourseLessonSourceType
+	34,  // 143: teamos.academy.v1.UpdateCourseVersionLessonResponse.lesson:type_name -> teamos.academy.v1.CourseVersionLesson
+	34,  // 144: teamos.academy.v1.MoveCourseVersionLessonResponse.lesson:type_name -> teamos.academy.v1.CourseVersionLesson
+	30,  // 145: teamos.academy.v1.UpsertCourseVersionQuizRequest.questions:type_name -> teamos.academy.v1.QuizQuestion
+	35,  // 146: teamos.academy.v1.UpsertCourseVersionQuizResponse.quiz:type_name -> teamos.academy.v1.CourseVersionQuiz
+	27,  // 147: teamos.academy.v1.GetCourseSectionsResponse.sections:type_name -> teamos.academy.v1.CourseSection
+	27,  // 148: teamos.academy.v1.CreateCourseSectionResponse.section:type_name -> teamos.academy.v1.CourseSection
+	27,  // 149: teamos.academy.v1.UpdateCourseSectionResponse.section:type_name -> teamos.academy.v1.CourseSection
+	28,  // 150: teamos.academy.v1.GetLessonsResponse.lessons:type_name -> teamos.academy.v1.Lesson
+	292, // 151: teamos.academy.v1.CreateLessonRequest.content:type_name -> google.protobuf.Struct
+	8,   // 152: teamos.academy.v1.CreateLessonRequest.source_mode:type_name -> teamos.academy.v1.LessonSourceMode
+	28,  // 153: teamos.academy.v1.CreateLessonResponse.lesson:type_name -> teamos.academy.v1.Lesson
+	292, // 154: teamos.academy.v1.UpdateLessonRequest.content:type_name -> google.protobuf.Struct
+	8,   // 155: teamos.academy.v1.UpdateLessonRequest.source_mode:type_name -> teamos.academy.v1.LessonSourceMode
+	28,  // 156: teamos.academy.v1.UpdateLessonResponse.lesson:type_name -> teamos.academy.v1.Lesson
+	28,  // 157: teamos.academy.v1.MoveLessonResponse.lesson:type_name -> teamos.academy.v1.Lesson
+	31,  // 158: teamos.academy.v1.GetQuizzesResponse.quizzes:type_name -> teamos.academy.v1.Quiz
+	30,  // 159: teamos.academy.v1.UpsertQuizRequest.questions:type_name -> teamos.academy.v1.QuizQuestion
+	31,  // 160: teamos.academy.v1.UpsertQuizResponse.quiz:type_name -> teamos.academy.v1.Quiz
+	42,  // 161: teamos.academy.v1.GetAssignmentsResponse.assignments:type_name -> teamos.academy.v1.CourseAssignment
+	10,  // 162: teamos.academy.v1.AssignCourseRequest.assignee_type:type_name -> teamos.academy.v1.AssigneeType
+	291, // 163: teamos.academy.v1.AssignCourseRequest.due_date:type_name -> google.protobuf.Timestamp
+	42,  // 164: teamos.academy.v1.AssignCourseResponse.assignment:type_name -> teamos.academy.v1.CourseAssignment
+	44,  // 165: teamos.academy.v1.GetProgressResponse.progress:type_name -> teamos.academy.v1.CourseProgress
+	44,  // 166: teamos.academy.v1.MarkLessonCompleteResponse.progress:type_name -> teamos.academy.v1.CourseProgress
+	14,  // 167: teamos.academy.v1.GetEnrollmentsRequest.progress_status:type_name -> teamos.academy.v1.EnrollmentProgressStatus
+	15,  // 168: teamos.academy.v1.GetEnrollmentsRequest.access_status:type_name -> teamos.academy.v1.EnrollmentAccessStatus
+	45,  // 169: teamos.academy.v1.GetEnrollmentsResponse.enrollments:type_name -> teamos.academy.v1.CourseEnrollment
+	45,  // 170: teamos.academy.v1.SelfEnrollCourseResponse.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
+	41,  // 171: teamos.academy.v1.GetCatalogCourseVersionResponse.version:type_name -> teamos.academy.v1.LearnerPublishedCourseVersion
+	45,  // 172: teamos.academy.v1.GetEnrollmentResponse.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
+	51,  // 173: teamos.academy.v1.GetEnrollmentOutlineResponse.outline:type_name -> teamos.academy.v1.EnrollmentOutline
+	52,  // 174: teamos.academy.v1.GetEnrollmentLessonResponse.lesson:type_name -> teamos.academy.v1.EnrollmentLesson
+	45,  // 175: teamos.academy.v1.ResumeEnrollmentResponse.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
+	52,  // 176: teamos.academy.v1.ResumeEnrollmentResponse.current_lesson:type_name -> teamos.academy.v1.EnrollmentLesson
+	292, // 177: teamos.academy.v1.CompleteEnrollmentLessonRequest.last_position:type_name -> google.protobuf.Struct
+	53,  // 178: teamos.academy.v1.CompleteEnrollmentLessonResponse.progress:type_name -> teamos.academy.v1.EnrollmentProgressSnapshot
+	47,  // 179: teamos.academy.v1.SubmitEnrollmentQuizAttemptRequest.answers:type_name -> teamos.academy.v1.EnrollmentQuizAnswer
+	292, // 180: teamos.academy.v1.SubmitEnrollmentQuizAttemptRequest.last_position:type_name -> google.protobuf.Struct
+	48,  // 181: teamos.academy.v1.SubmitEnrollmentQuizAttemptResponse.attempt:type_name -> teamos.academy.v1.EnrollmentQuizAttempt
+	53,  // 182: teamos.academy.v1.SubmitEnrollmentQuizAttemptResponse.progress:type_name -> teamos.academy.v1.EnrollmentProgressSnapshot
+	54,  // 183: teamos.academy.v1.GetEnrollmentReportResponse.report:type_name -> teamos.academy.v1.EnrollmentReport
+	3,   // 184: teamos.academy.v1.GetPartnerCourseGroupsRequest.lifecycle:type_name -> teamos.academy.v1.CourseLifecycleStatus
+	4,   // 185: teamos.academy.v1.GetPartnerCourseGroupsRequest.distribution:type_name -> teamos.academy.v1.CourseDistributionStatus
+	58,  // 186: teamos.academy.v1.GetPartnerCourseGroupsResponse.groups:type_name -> teamos.academy.v1.PartnerCourseGroup
+	61,  // 187: teamos.academy.v1.GetPartnerCoursesReportResponse.report:type_name -> teamos.academy.v1.PartnerCoursesReport
+	62,  // 188: teamos.academy.v1.GetCourseVersionPreviewResponse.preview:type_name -> teamos.academy.v1.CourseVersionPreview
+	47,  // 189: teamos.academy.v1.SubmitCoursePreviewQuizAttemptRequest.answers:type_name -> teamos.academy.v1.EnrollmentQuizAnswer
+	63,  // 190: teamos.academy.v1.SubmitCoursePreviewQuizAttemptResponse.result:type_name -> teamos.academy.v1.CoursePreviewQuizAttemptResult
+	55,  // 191: teamos.academy.v1.PausePartnerCourseDistributionResponse.restriction:type_name -> teamos.academy.v1.CourseRestriction
+	55,  // 192: teamos.academy.v1.BlockPartnerCourseResponse.restriction:type_name -> teamos.academy.v1.CourseRestriction
+	55,  // 193: teamos.academy.v1.ResolvePartnerCourseRestrictionResponse.restriction:type_name -> teamos.academy.v1.CourseRestriction
+	55,  // 194: teamos.academy.v1.GetCourseRestrictionsResponse.restrictions:type_name -> teamos.academy.v1.CourseRestriction
+	57,  // 195: teamos.academy.v1.CopyPartnerCourseVersionToCompanyResponse.result:type_name -> teamos.academy.v1.PartnerCourseCopyResult
+	18,  // 196: teamos.academy.v1.GetCourseTemplatesRequest.type:type_name -> teamos.academy.v1.CourseTemplateType
+	19,  // 197: teamos.academy.v1.GetCourseTemplatesRequest.lifecycle_status:type_name -> teamos.academy.v1.CourseTemplateLifecycleStatus
+	64,  // 198: teamos.academy.v1.GetCourseTemplatesResponse.templates:type_name -> teamos.academy.v1.CourseTemplate
+	64,  // 199: teamos.academy.v1.GetCourseTemplateResponse.template:type_name -> teamos.academy.v1.CourseTemplate
+	65,  // 200: teamos.academy.v1.GetCourseTemplateResponse.versions:type_name -> teamos.academy.v1.CourseTemplateVersion
+	70,  // 201: teamos.academy.v1.GetCourseTemplateResponse.selected_version:type_name -> teamos.academy.v1.CourseTemplateVersionDetails
+	74,  // 202: teamos.academy.v1.CreateCourseTemplateRequest.content:type_name -> teamos.academy.v1.CourseTemplateDraftContentInput
+	64,  // 203: teamos.academy.v1.CreateCourseTemplateResponse.template:type_name -> teamos.academy.v1.CourseTemplate
+	65,  // 204: teamos.academy.v1.CreateCourseTemplateResponse.draft:type_name -> teamos.academy.v1.CourseTemplateVersion
+	74,  // 205: teamos.academy.v1.UpdateCourseTemplateDraftRequest.content:type_name -> teamos.academy.v1.CourseTemplateDraftContentInput
+	70,  // 206: teamos.academy.v1.UpdateCourseTemplateDraftResponse.draft:type_name -> teamos.academy.v1.CourseTemplateVersionDetails
+	70,  // 207: teamos.academy.v1.CreateCourseTemplateDraftResponse.draft:type_name -> teamos.academy.v1.CourseTemplateVersionDetails
+	65,  // 208: teamos.academy.v1.PublishCourseTemplateVersionResponse.version:type_name -> teamos.academy.v1.CourseTemplateVersion
+	64,  // 209: teamos.academy.v1.ArchiveCourseTemplateResponse.template:type_name -> teamos.academy.v1.CourseTemplate
+	75,  // 210: teamos.academy.v1.InstantiateCourseTemplateVersionResponse.result:type_name -> teamos.academy.v1.CourseTemplateInstantiationResult
+	20,  // 211: teamos.academy.v1.ExternalPersonalAccess.status:type_name -> teamos.academy.v1.ExternalPersonalAccessStatus
+	291, // 212: teamos.academy.v1.ExternalPersonalAccess.issued_at:type_name -> google.protobuf.Timestamp
+	291, // 213: teamos.academy.v1.ExternalPersonalAccess.activated_at:type_name -> google.protobuf.Timestamp
+	291, // 214: teamos.academy.v1.ExternalPersonalAccess.revoked_at:type_name -> google.protobuf.Timestamp
+	210, // 215: teamos.academy.v1.ExternalPersonalAccessCreated.access:type_name -> teamos.academy.v1.ExternalPersonalAccess
+	21,  // 216: teamos.academy.v1.ExternalCampaign.owner_type:type_name -> teamos.academy.v1.ExternalCampaignOwnerType
+	22,  // 217: teamos.academy.v1.ExternalCampaign.purpose:type_name -> teamos.academy.v1.ExternalCampaignPurpose
+	23,  // 218: teamos.academy.v1.ExternalCampaign.status:type_name -> teamos.academy.v1.ExternalCampaignStatus
+	291, // 219: teamos.academy.v1.ExternalCampaign.created_at:type_name -> google.protobuf.Timestamp
+	291, // 220: teamos.academy.v1.ExternalCampaign.paused_at:type_name -> google.protobuf.Timestamp
+	291, // 221: teamos.academy.v1.ExternalCampaign.revoked_at:type_name -> google.protobuf.Timestamp
+	212, // 222: teamos.academy.v1.ExternalCampaignCreated.campaign:type_name -> teamos.academy.v1.ExternalCampaign
+	215, // 223: teamos.academy.v1.CampaignAnalytics.lesson_drop_off:type_name -> teamos.academy.v1.CampaignLessonDropOff
+	216, // 224: teamos.academy.v1.CampaignAnalytics.attribution:type_name -> teamos.academy.v1.CampaignAttribution
+	217, // 225: teamos.academy.v1.CampaignAnalytics.versions:type_name -> teamos.academy.v1.CampaignVersionAnalytics
+	212, // 226: teamos.academy.v1.ExternalCampaignReport.campaign:type_name -> teamos.academy.v1.ExternalCampaign
+	214, // 227: teamos.academy.v1.ExternalCampaignReport.funnel:type_name -> teamos.academy.v1.CampaignFunnel
+	45,  // 228: teamos.academy.v1.ExternalCampaignReport.enrollments:type_name -> teamos.academy.v1.CourseEnrollment
+	218, // 229: teamos.academy.v1.ExternalCampaignReport.analytics:type_name -> teamos.academy.v1.CampaignAnalytics
+	45,  // 230: teamos.academy.v1.CourseExternalReport.enrollments:type_name -> teamos.academy.v1.CourseEnrollment
+	24,  // 231: teamos.academy.v1.ExternalLearnerTimelineEvent.type:type_name -> teamos.academy.v1.ExternalLearnerTimelineEventType
+	291, // 232: teamos.academy.v1.ExternalLearnerTimelineEvent.occurred_at:type_name -> google.protobuf.Timestamp
+	13,  // 233: teamos.academy.v1.ExternalLearnerTimelineEvent.source_type:type_name -> teamos.academy.v1.EnrollmentSourceType
+	15,  // 234: teamos.academy.v1.ExternalLearnerTimelineEvent.access_status:type_name -> teamos.academy.v1.EnrollmentAccessStatus
+	223, // 235: teamos.academy.v1.ExternalLearnerTimeline.learner:type_name -> teamos.academy.v1.ExternalLearner
+	221, // 236: teamos.academy.v1.ExternalLearnerTimeline.events:type_name -> teamos.academy.v1.ExternalLearnerTimelineEvent
+	291, // 237: teamos.academy.v1.ExternalLearner.email_verified_at:type_name -> google.protobuf.Timestamp
+	291, // 238: teamos.academy.v1.ExternalLearner.created_at:type_name -> google.protobuf.Timestamp
+	291, // 239: teamos.academy.v1.ExternalLearner.updated_at:type_name -> google.protobuf.Timestamp
+	224, // 240: teamos.academy.v1.PublicAcademyOutlineSection.lessons:type_name -> teamos.academy.v1.PublicAcademyOutlineLesson
+	25,  // 241: teamos.academy.v1.PublicAcademyAccess.kind:type_name -> teamos.academy.v1.PublicAcademyAccessKind
+	2,   // 242: teamos.academy.v1.PublicAcademyAccess.owner_type:type_name -> teamos.academy.v1.CourseOwnerType
+	225, // 243: teamos.academy.v1.PublicAcademyAccess.outline:type_name -> teamos.academy.v1.PublicAcademyOutlineSection
+	291, // 244: teamos.academy.v1.ExternalVerificationChallenge.expires_at:type_name -> google.protobuf.Timestamp
+	291, // 245: teamos.academy.v1.ExternalVerificationConfirmed.verified_at:type_name -> google.protobuf.Timestamp
+	291, // 246: teamos.academy.v1.ExternalVerificationConfirmed.session_expires_at:type_name -> google.protobuf.Timestamp
+	291, // 247: teamos.academy.v1.ExternalQuizAttemptResult.created_at:type_name -> google.protobuf.Timestamp
+	45,  // 248: teamos.academy.v1.ExternalEnrollmentResults.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
+	229, // 249: teamos.academy.v1.ExternalEnrollmentResults.quiz_attempts:type_name -> teamos.academy.v1.ExternalQuizAttemptResult
+	211, // 250: teamos.academy.v1.CreateExternalPersonalAccessResponse.created:type_name -> teamos.academy.v1.ExternalPersonalAccessCreated
+	210, // 251: teamos.academy.v1.GetExternalPersonalAccessesResponse.accesses:type_name -> teamos.academy.v1.ExternalPersonalAccess
+	210, // 252: teamos.academy.v1.GetExternalPersonalAccessResponse.access:type_name -> teamos.academy.v1.ExternalPersonalAccess
+	210, // 253: teamos.academy.v1.ExtendExternalPersonalAccessResponse.access:type_name -> teamos.academy.v1.ExternalPersonalAccess
+	211, // 254: teamos.academy.v1.RotateExternalPersonalAccessTokenResponse.created:type_name -> teamos.academy.v1.ExternalPersonalAccessCreated
+	210, // 255: teamos.academy.v1.RevokeExternalPersonalAccessResponse.access:type_name -> teamos.academy.v1.ExternalPersonalAccess
+	211, // 256: teamos.academy.v1.RepeatExternalPersonalAccessResponse.created:type_name -> teamos.academy.v1.ExternalPersonalAccessCreated
+	22,  // 257: teamos.academy.v1.CreateExternalCampaignRequest.purpose:type_name -> teamos.academy.v1.ExternalCampaignPurpose
+	213, // 258: teamos.academy.v1.CreateExternalCampaignResponse.created:type_name -> teamos.academy.v1.ExternalCampaignCreated
+	212, // 259: teamos.academy.v1.GetExternalCampaignsResponse.campaigns:type_name -> teamos.academy.v1.ExternalCampaign
+	212, // 260: teamos.academy.v1.GetExternalCampaignResponse.campaign:type_name -> teamos.academy.v1.ExternalCampaign
+	212, // 261: teamos.academy.v1.PauseExternalCampaignResponse.campaign:type_name -> teamos.academy.v1.ExternalCampaign
+	212, // 262: teamos.academy.v1.ResumeExternalCampaignResponse.campaign:type_name -> teamos.academy.v1.ExternalCampaign
+	213, // 263: teamos.academy.v1.RotateExternalCampaignTokenResponse.created:type_name -> teamos.academy.v1.ExternalCampaignCreated
+	212, // 264: teamos.academy.v1.RevokeExternalCampaignResponse.campaign:type_name -> teamos.academy.v1.ExternalCampaign
+	219, // 265: teamos.academy.v1.GetExternalCampaignReportResponse.report:type_name -> teamos.academy.v1.ExternalCampaignReport
+	220, // 266: teamos.academy.v1.GetCourseExternalReportResponse.report:type_name -> teamos.academy.v1.CourseExternalReport
+	226, // 267: teamos.academy.v1.GetPublicAcademyAccessResponse.access:type_name -> teamos.academy.v1.PublicAcademyAccess
+	227, // 268: teamos.academy.v1.RequestPublicAcademyVerificationResponse.challenge:type_name -> teamos.academy.v1.ExternalVerificationChallenge
+	228, // 269: teamos.academy.v1.ConfirmPublicAcademyVerificationResponse.confirmed:type_name -> teamos.academy.v1.ExternalVerificationConfirmed
+	45,  // 270: teamos.academy.v1.ActivatePublicAcademyAccessResponse.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
+	45,  // 271: teamos.academy.v1.GetPublicAcademyEnrollmentResponse.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
+	51,  // 272: teamos.academy.v1.GetPublicAcademyEnrollmentOutlineResponse.outline:type_name -> teamos.academy.v1.EnrollmentOutline
+	52,  // 273: teamos.academy.v1.GetPublicAcademyEnrollmentLessonResponse.lesson:type_name -> teamos.academy.v1.EnrollmentLesson
+	45,  // 274: teamos.academy.v1.CompletePublicAcademyEnrollmentLessonResponse.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
+	47,  // 275: teamos.academy.v1.SubmitPublicAcademyQuizAttemptRequest.answers:type_name -> teamos.academy.v1.EnrollmentQuizAnswer
+	229, // 276: teamos.academy.v1.SubmitPublicAcademyQuizAttemptResponse.result:type_name -> teamos.academy.v1.ExternalQuizAttemptResult
+	230, // 277: teamos.academy.v1.GetPublicAcademyEnrollmentResultsResponse.results:type_name -> teamos.academy.v1.ExternalEnrollmentResults
+	223, // 278: teamos.academy.v1.GetExternalLearnersResponse.learners:type_name -> teamos.academy.v1.ExternalLearner
+	223, // 279: teamos.academy.v1.GetExternalLearnerResponse.learner:type_name -> teamos.academy.v1.ExternalLearner
+	45,  // 280: teamos.academy.v1.GetExternalLearnerEnrollmentsResponse.enrollments:type_name -> teamos.academy.v1.CourseEnrollment
+	222, // 281: teamos.academy.v1.GetExternalLearnerTimelineResponse.timeline:type_name -> teamos.academy.v1.ExternalLearnerTimeline
+	76,  // 282: teamos.academy.v1.AcademyService.GetCourses:input_type -> teamos.academy.v1.GetCoursesRequest
+	78,  // 283: teamos.academy.v1.AcademyService.GetCourse:input_type -> teamos.academy.v1.GetCourseRequest
+	80,  // 284: teamos.academy.v1.AcademyService.GetPublicCourse:input_type -> teamos.academy.v1.GetPublicCourseRequest
+	82,  // 285: teamos.academy.v1.AcademyService.CreateCourse:input_type -> teamos.academy.v1.CreateCourseRequest
+	84,  // 286: teamos.academy.v1.AcademyService.CreateCourseFromKb:input_type -> teamos.academy.v1.CreateCourseFromKbRequest
+	86,  // 287: teamos.academy.v1.AcademyService.UpdateCourse:input_type -> teamos.academy.v1.UpdateCourseRequest
+	88,  // 288: teamos.academy.v1.AcademyService.ArchiveCourse:input_type -> teamos.academy.v1.ArchiveCourseRequest
+	90,  // 289: teamos.academy.v1.AcademyService.RestoreCourse:input_type -> teamos.academy.v1.RestoreCourseRequest
+	92,  // 290: teamos.academy.v1.AcademyService.DeleteCourse:input_type -> teamos.academy.v1.DeleteCourseRequest
+	94,  // 291: teamos.academy.v1.AcademyService.GetCourseVersions:input_type -> teamos.academy.v1.GetCourseVersionsRequest
+	96,  // 292: teamos.academy.v1.AcademyService.GetCourseVersion:input_type -> teamos.academy.v1.GetCourseVersionRequest
+	98,  // 293: teamos.academy.v1.AcademyService.CreateCourseDraft:input_type -> teamos.academy.v1.CreateCourseDraftRequest
+	100, // 294: teamos.academy.v1.AcademyService.UpdateCourseDraft:input_type -> teamos.academy.v1.UpdateCourseDraftRequest
+	102, // 295: teamos.academy.v1.AcademyService.PublishCourseVersion:input_type -> teamos.academy.v1.PublishCourseVersionRequest
+	104, // 296: teamos.academy.v1.AcademyService.GetPublishedCourseVersion:input_type -> teamos.academy.v1.GetPublishedCourseVersionRequest
+	106, // 297: teamos.academy.v1.AcademyService.CreateCourseVersionSection:input_type -> teamos.academy.v1.CreateCourseVersionSectionRequest
+	108, // 298: teamos.academy.v1.AcademyService.UpdateCourseVersionSection:input_type -> teamos.academy.v1.UpdateCourseVersionSectionRequest
+	110, // 299: teamos.academy.v1.AcademyService.DeleteCourseVersionSection:input_type -> teamos.academy.v1.DeleteCourseVersionSectionRequest
+	112, // 300: teamos.academy.v1.AcademyService.CreateCourseVersionLesson:input_type -> teamos.academy.v1.CreateCourseVersionLessonRequest
+	114, // 301: teamos.academy.v1.AcademyService.UpdateCourseVersionLesson:input_type -> teamos.academy.v1.UpdateCourseVersionLessonRequest
+	116, // 302: teamos.academy.v1.AcademyService.DeleteCourseVersionLesson:input_type -> teamos.academy.v1.DeleteCourseVersionLessonRequest
+	118, // 303: teamos.academy.v1.AcademyService.MoveCourseVersionLesson:input_type -> teamos.academy.v1.MoveCourseVersionLessonRequest
+	120, // 304: teamos.academy.v1.AcademyService.UpsertCourseVersionQuiz:input_type -> teamos.academy.v1.UpsertCourseVersionQuizRequest
+	122, // 305: teamos.academy.v1.AcademyService.DeleteCourseVersionQuiz:input_type -> teamos.academy.v1.DeleteCourseVersionQuizRequest
+	124, // 306: teamos.academy.v1.AcademyService.GetCourseSections:input_type -> teamos.academy.v1.GetCourseSectionsRequest
+	126, // 307: teamos.academy.v1.AcademyService.CreateCourseSection:input_type -> teamos.academy.v1.CreateCourseSectionRequest
+	128, // 308: teamos.academy.v1.AcademyService.UpdateCourseSection:input_type -> teamos.academy.v1.UpdateCourseSectionRequest
+	130, // 309: teamos.academy.v1.AcademyService.DeleteCourseSection:input_type -> teamos.academy.v1.DeleteCourseSectionRequest
+	132, // 310: teamos.academy.v1.AcademyService.GetLessons:input_type -> teamos.academy.v1.GetLessonsRequest
+	134, // 311: teamos.academy.v1.AcademyService.CreateLesson:input_type -> teamos.academy.v1.CreateLessonRequest
+	136, // 312: teamos.academy.v1.AcademyService.UpdateLesson:input_type -> teamos.academy.v1.UpdateLessonRequest
+	138, // 313: teamos.academy.v1.AcademyService.DeleteLesson:input_type -> teamos.academy.v1.DeleteLessonRequest
+	140, // 314: teamos.academy.v1.AcademyService.MoveLesson:input_type -> teamos.academy.v1.MoveLessonRequest
+	142, // 315: teamos.academy.v1.AcademyService.GetQuizzes:input_type -> teamos.academy.v1.GetQuizzesRequest
+	144, // 316: teamos.academy.v1.AcademyService.UpsertQuiz:input_type -> teamos.academy.v1.UpsertQuizRequest
+	146, // 317: teamos.academy.v1.AcademyService.GetAssignments:input_type -> teamos.academy.v1.GetAssignmentsRequest
+	148, // 318: teamos.academy.v1.AcademyService.AssignCourse:input_type -> teamos.academy.v1.AssignCourseRequest
+	150, // 319: teamos.academy.v1.AcademyService.RevokeAssignment:input_type -> teamos.academy.v1.RevokeAssignmentRequest
+	152, // 320: teamos.academy.v1.AcademyService.GetProgress:input_type -> teamos.academy.v1.GetProgressRequest
+	154, // 321: teamos.academy.v1.AcademyService.MarkLessonComplete:input_type -> teamos.academy.v1.MarkLessonCompleteRequest
+	156, // 322: teamos.academy.v1.AcademyService.GetEnrollments:input_type -> teamos.academy.v1.GetEnrollmentsRequest
+	158, // 323: teamos.academy.v1.AcademyService.SelfEnrollCourse:input_type -> teamos.academy.v1.SelfEnrollCourseRequest
+	160, // 324: teamos.academy.v1.AcademyService.GetCatalogCourseVersion:input_type -> teamos.academy.v1.GetCatalogCourseVersionRequest
+	162, // 325: teamos.academy.v1.AcademyService.GetEnrollment:input_type -> teamos.academy.v1.GetEnrollmentRequest
+	164, // 326: teamos.academy.v1.AcademyService.GetEnrollmentOutline:input_type -> teamos.academy.v1.GetEnrollmentOutlineRequest
+	166, // 327: teamos.academy.v1.AcademyService.GetEnrollmentLesson:input_type -> teamos.academy.v1.GetEnrollmentLessonRequest
+	168, // 328: teamos.academy.v1.AcademyService.ResumeEnrollment:input_type -> teamos.academy.v1.ResumeEnrollmentRequest
+	170, // 329: teamos.academy.v1.AcademyService.CompleteEnrollmentLesson:input_type -> teamos.academy.v1.CompleteEnrollmentLessonRequest
+	172, // 330: teamos.academy.v1.AcademyService.SubmitEnrollmentQuizAttempt:input_type -> teamos.academy.v1.SubmitEnrollmentQuizAttemptRequest
+	174, // 331: teamos.academy.v1.AcademyService.GetEnrollmentReport:input_type -> teamos.academy.v1.GetEnrollmentReportRequest
+	176, // 332: teamos.academy.v1.AcademyService.GetPartnerCourseGroups:input_type -> teamos.academy.v1.GetPartnerCourseGroupsRequest
+	178, // 333: teamos.academy.v1.AcademyService.GetPartnerCoursesReport:input_type -> teamos.academy.v1.GetPartnerCoursesReportRequest
+	180, // 334: teamos.academy.v1.AcademyService.GetCourseVersionPreview:input_type -> teamos.academy.v1.GetCourseVersionPreviewRequest
+	182, // 335: teamos.academy.v1.AcademyService.SubmitCoursePreviewQuizAttempt:input_type -> teamos.academy.v1.SubmitCoursePreviewQuizAttemptRequest
+	184, // 336: teamos.academy.v1.AcademyService.PausePartnerCourseDistribution:input_type -> teamos.academy.v1.PausePartnerCourseDistributionRequest
+	186, // 337: teamos.academy.v1.AcademyService.BlockPartnerCourse:input_type -> teamos.academy.v1.BlockPartnerCourseRequest
+	188, // 338: teamos.academy.v1.AcademyService.ResolvePartnerCourseRestriction:input_type -> teamos.academy.v1.ResolvePartnerCourseRestrictionRequest
+	190, // 339: teamos.academy.v1.AcademyService.GetCourseRestrictions:input_type -> teamos.academy.v1.GetCourseRestrictionsRequest
+	192, // 340: teamos.academy.v1.AcademyService.CopyPartnerCourseVersionToCompany:input_type -> teamos.academy.v1.CopyPartnerCourseVersionToCompanyRequest
+	194, // 341: teamos.academy.v1.AcademyService.GetCourseTemplates:input_type -> teamos.academy.v1.GetCourseTemplatesRequest
+	196, // 342: teamos.academy.v1.AcademyService.GetCourseTemplate:input_type -> teamos.academy.v1.GetCourseTemplateRequest
+	198, // 343: teamos.academy.v1.AcademyService.CreateCourseTemplate:input_type -> teamos.academy.v1.CreateCourseTemplateRequest
+	200, // 344: teamos.academy.v1.AcademyService.UpdateCourseTemplateDraft:input_type -> teamos.academy.v1.UpdateCourseTemplateDraftRequest
+	202, // 345: teamos.academy.v1.AcademyService.CreateCourseTemplateDraft:input_type -> teamos.academy.v1.CreateCourseTemplateDraftRequest
+	204, // 346: teamos.academy.v1.AcademyService.PublishCourseTemplateVersion:input_type -> teamos.academy.v1.PublishCourseTemplateVersionRequest
+	206, // 347: teamos.academy.v1.AcademyService.ArchiveCourseTemplate:input_type -> teamos.academy.v1.ArchiveCourseTemplateRequest
+	208, // 348: teamos.academy.v1.AcademyService.InstantiateCourseTemplateVersion:input_type -> teamos.academy.v1.InstantiateCourseTemplateVersionRequest
+	231, // 349: teamos.academy.v1.AcademyService.CreateExternalPersonalAccess:input_type -> teamos.academy.v1.CreateExternalPersonalAccessRequest
+	233, // 350: teamos.academy.v1.AcademyService.GetExternalPersonalAccesses:input_type -> teamos.academy.v1.GetExternalPersonalAccessesRequest
+	235, // 351: teamos.academy.v1.AcademyService.GetExternalPersonalAccess:input_type -> teamos.academy.v1.GetExternalPersonalAccessRequest
+	237, // 352: teamos.academy.v1.AcademyService.ExtendExternalPersonalAccess:input_type -> teamos.academy.v1.ExtendExternalPersonalAccessRequest
+	239, // 353: teamos.academy.v1.AcademyService.RotateExternalPersonalAccessToken:input_type -> teamos.academy.v1.RotateExternalPersonalAccessTokenRequest
+	241, // 354: teamos.academy.v1.AcademyService.RevokeExternalPersonalAccess:input_type -> teamos.academy.v1.RevokeExternalPersonalAccessRequest
+	243, // 355: teamos.academy.v1.AcademyService.RepeatExternalPersonalAccess:input_type -> teamos.academy.v1.RepeatExternalPersonalAccessRequest
+	245, // 356: teamos.academy.v1.AcademyService.CreateExternalCampaign:input_type -> teamos.academy.v1.CreateExternalCampaignRequest
+	247, // 357: teamos.academy.v1.AcademyService.GetExternalCampaigns:input_type -> teamos.academy.v1.GetExternalCampaignsRequest
+	249, // 358: teamos.academy.v1.AcademyService.GetExternalCampaign:input_type -> teamos.academy.v1.GetExternalCampaignRequest
+	251, // 359: teamos.academy.v1.AcademyService.PauseExternalCampaign:input_type -> teamos.academy.v1.PauseExternalCampaignRequest
+	253, // 360: teamos.academy.v1.AcademyService.ResumeExternalCampaign:input_type -> teamos.academy.v1.ResumeExternalCampaignRequest
+	255, // 361: teamos.academy.v1.AcademyService.RotateExternalCampaignToken:input_type -> teamos.academy.v1.RotateExternalCampaignTokenRequest
+	257, // 362: teamos.academy.v1.AcademyService.RevokeExternalCampaign:input_type -> teamos.academy.v1.RevokeExternalCampaignRequest
+	259, // 363: teamos.academy.v1.AcademyService.GetExternalCampaignReport:input_type -> teamos.academy.v1.GetExternalCampaignReportRequest
+	261, // 364: teamos.academy.v1.AcademyService.GetCourseExternalReport:input_type -> teamos.academy.v1.GetCourseExternalReportRequest
+	263, // 365: teamos.academy.v1.AcademyService.GetPublicAcademyAccess:input_type -> teamos.academy.v1.GetPublicAcademyAccessRequest
+	265, // 366: teamos.academy.v1.AcademyService.RequestPublicAcademyVerification:input_type -> teamos.academy.v1.RequestPublicAcademyVerificationRequest
+	267, // 367: teamos.academy.v1.AcademyService.ConfirmPublicAcademyVerification:input_type -> teamos.academy.v1.ConfirmPublicAcademyVerificationRequest
+	269, // 368: teamos.academy.v1.AcademyService.ActivatePublicAcademyAccess:input_type -> teamos.academy.v1.ActivatePublicAcademyAccessRequest
+	271, // 369: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollment:input_type -> teamos.academy.v1.GetPublicAcademyEnrollmentRequest
+	273, // 370: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollmentOutline:input_type -> teamos.academy.v1.GetPublicAcademyEnrollmentOutlineRequest
+	275, // 371: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollmentLesson:input_type -> teamos.academy.v1.GetPublicAcademyEnrollmentLessonRequest
+	277, // 372: teamos.academy.v1.AcademyService.CompletePublicAcademyEnrollmentLesson:input_type -> teamos.academy.v1.CompletePublicAcademyEnrollmentLessonRequest
+	279, // 373: teamos.academy.v1.AcademyService.SubmitPublicAcademyQuizAttempt:input_type -> teamos.academy.v1.SubmitPublicAcademyQuizAttemptRequest
+	281, // 374: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollmentResults:input_type -> teamos.academy.v1.GetPublicAcademyEnrollmentResultsRequest
+	283, // 375: teamos.academy.v1.AcademyService.GetExternalLearners:input_type -> teamos.academy.v1.GetExternalLearnersRequest
+	285, // 376: teamos.academy.v1.AcademyService.GetExternalLearner:input_type -> teamos.academy.v1.GetExternalLearnerRequest
+	287, // 377: teamos.academy.v1.AcademyService.GetExternalLearnerEnrollments:input_type -> teamos.academy.v1.GetExternalLearnerEnrollmentsRequest
+	289, // 378: teamos.academy.v1.AcademyService.GetExternalLearnerTimeline:input_type -> teamos.academy.v1.GetExternalLearnerTimelineRequest
+	77,  // 379: teamos.academy.v1.AcademyService.GetCourses:output_type -> teamos.academy.v1.GetCoursesResponse
+	79,  // 380: teamos.academy.v1.AcademyService.GetCourse:output_type -> teamos.academy.v1.GetCourseResponse
+	81,  // 381: teamos.academy.v1.AcademyService.GetPublicCourse:output_type -> teamos.academy.v1.GetPublicCourseResponse
+	83,  // 382: teamos.academy.v1.AcademyService.CreateCourse:output_type -> teamos.academy.v1.CreateCourseResponse
+	85,  // 383: teamos.academy.v1.AcademyService.CreateCourseFromKb:output_type -> teamos.academy.v1.CreateCourseFromKbResponse
+	87,  // 384: teamos.academy.v1.AcademyService.UpdateCourse:output_type -> teamos.academy.v1.UpdateCourseResponse
+	89,  // 385: teamos.academy.v1.AcademyService.ArchiveCourse:output_type -> teamos.academy.v1.ArchiveCourseResponse
+	91,  // 386: teamos.academy.v1.AcademyService.RestoreCourse:output_type -> teamos.academy.v1.RestoreCourseResponse
+	93,  // 387: teamos.academy.v1.AcademyService.DeleteCourse:output_type -> teamos.academy.v1.DeleteCourseResponse
+	95,  // 388: teamos.academy.v1.AcademyService.GetCourseVersions:output_type -> teamos.academy.v1.GetCourseVersionsResponse
+	97,  // 389: teamos.academy.v1.AcademyService.GetCourseVersion:output_type -> teamos.academy.v1.GetCourseVersionResponse
+	99,  // 390: teamos.academy.v1.AcademyService.CreateCourseDraft:output_type -> teamos.academy.v1.CreateCourseDraftResponse
+	101, // 391: teamos.academy.v1.AcademyService.UpdateCourseDraft:output_type -> teamos.academy.v1.UpdateCourseDraftResponse
+	103, // 392: teamos.academy.v1.AcademyService.PublishCourseVersion:output_type -> teamos.academy.v1.PublishCourseVersionResponse
+	105, // 393: teamos.academy.v1.AcademyService.GetPublishedCourseVersion:output_type -> teamos.academy.v1.GetPublishedCourseVersionResponse
+	107, // 394: teamos.academy.v1.AcademyService.CreateCourseVersionSection:output_type -> teamos.academy.v1.CreateCourseVersionSectionResponse
+	109, // 395: teamos.academy.v1.AcademyService.UpdateCourseVersionSection:output_type -> teamos.academy.v1.UpdateCourseVersionSectionResponse
+	111, // 396: teamos.academy.v1.AcademyService.DeleteCourseVersionSection:output_type -> teamos.academy.v1.DeleteCourseVersionSectionResponse
+	113, // 397: teamos.academy.v1.AcademyService.CreateCourseVersionLesson:output_type -> teamos.academy.v1.CreateCourseVersionLessonResponse
+	115, // 398: teamos.academy.v1.AcademyService.UpdateCourseVersionLesson:output_type -> teamos.academy.v1.UpdateCourseVersionLessonResponse
+	117, // 399: teamos.academy.v1.AcademyService.DeleteCourseVersionLesson:output_type -> teamos.academy.v1.DeleteCourseVersionLessonResponse
+	119, // 400: teamos.academy.v1.AcademyService.MoveCourseVersionLesson:output_type -> teamos.academy.v1.MoveCourseVersionLessonResponse
+	121, // 401: teamos.academy.v1.AcademyService.UpsertCourseVersionQuiz:output_type -> teamos.academy.v1.UpsertCourseVersionQuizResponse
+	123, // 402: teamos.academy.v1.AcademyService.DeleteCourseVersionQuiz:output_type -> teamos.academy.v1.DeleteCourseVersionQuizResponse
+	125, // 403: teamos.academy.v1.AcademyService.GetCourseSections:output_type -> teamos.academy.v1.GetCourseSectionsResponse
+	127, // 404: teamos.academy.v1.AcademyService.CreateCourseSection:output_type -> teamos.academy.v1.CreateCourseSectionResponse
+	129, // 405: teamos.academy.v1.AcademyService.UpdateCourseSection:output_type -> teamos.academy.v1.UpdateCourseSectionResponse
+	131, // 406: teamos.academy.v1.AcademyService.DeleteCourseSection:output_type -> teamos.academy.v1.DeleteCourseSectionResponse
+	133, // 407: teamos.academy.v1.AcademyService.GetLessons:output_type -> teamos.academy.v1.GetLessonsResponse
+	135, // 408: teamos.academy.v1.AcademyService.CreateLesson:output_type -> teamos.academy.v1.CreateLessonResponse
+	137, // 409: teamos.academy.v1.AcademyService.UpdateLesson:output_type -> teamos.academy.v1.UpdateLessonResponse
+	139, // 410: teamos.academy.v1.AcademyService.DeleteLesson:output_type -> teamos.academy.v1.DeleteLessonResponse
+	141, // 411: teamos.academy.v1.AcademyService.MoveLesson:output_type -> teamos.academy.v1.MoveLessonResponse
+	143, // 412: teamos.academy.v1.AcademyService.GetQuizzes:output_type -> teamos.academy.v1.GetQuizzesResponse
+	145, // 413: teamos.academy.v1.AcademyService.UpsertQuiz:output_type -> teamos.academy.v1.UpsertQuizResponse
+	147, // 414: teamos.academy.v1.AcademyService.GetAssignments:output_type -> teamos.academy.v1.GetAssignmentsResponse
+	149, // 415: teamos.academy.v1.AcademyService.AssignCourse:output_type -> teamos.academy.v1.AssignCourseResponse
+	151, // 416: teamos.academy.v1.AcademyService.RevokeAssignment:output_type -> teamos.academy.v1.RevokeAssignmentResponse
+	153, // 417: teamos.academy.v1.AcademyService.GetProgress:output_type -> teamos.academy.v1.GetProgressResponse
+	155, // 418: teamos.academy.v1.AcademyService.MarkLessonComplete:output_type -> teamos.academy.v1.MarkLessonCompleteResponse
+	157, // 419: teamos.academy.v1.AcademyService.GetEnrollments:output_type -> teamos.academy.v1.GetEnrollmentsResponse
+	159, // 420: teamos.academy.v1.AcademyService.SelfEnrollCourse:output_type -> teamos.academy.v1.SelfEnrollCourseResponse
+	161, // 421: teamos.academy.v1.AcademyService.GetCatalogCourseVersion:output_type -> teamos.academy.v1.GetCatalogCourseVersionResponse
+	163, // 422: teamos.academy.v1.AcademyService.GetEnrollment:output_type -> teamos.academy.v1.GetEnrollmentResponse
+	165, // 423: teamos.academy.v1.AcademyService.GetEnrollmentOutline:output_type -> teamos.academy.v1.GetEnrollmentOutlineResponse
+	167, // 424: teamos.academy.v1.AcademyService.GetEnrollmentLesson:output_type -> teamos.academy.v1.GetEnrollmentLessonResponse
+	169, // 425: teamos.academy.v1.AcademyService.ResumeEnrollment:output_type -> teamos.academy.v1.ResumeEnrollmentResponse
+	171, // 426: teamos.academy.v1.AcademyService.CompleteEnrollmentLesson:output_type -> teamos.academy.v1.CompleteEnrollmentLessonResponse
+	173, // 427: teamos.academy.v1.AcademyService.SubmitEnrollmentQuizAttempt:output_type -> teamos.academy.v1.SubmitEnrollmentQuizAttemptResponse
+	175, // 428: teamos.academy.v1.AcademyService.GetEnrollmentReport:output_type -> teamos.academy.v1.GetEnrollmentReportResponse
+	177, // 429: teamos.academy.v1.AcademyService.GetPartnerCourseGroups:output_type -> teamos.academy.v1.GetPartnerCourseGroupsResponse
+	179, // 430: teamos.academy.v1.AcademyService.GetPartnerCoursesReport:output_type -> teamos.academy.v1.GetPartnerCoursesReportResponse
+	181, // 431: teamos.academy.v1.AcademyService.GetCourseVersionPreview:output_type -> teamos.academy.v1.GetCourseVersionPreviewResponse
+	183, // 432: teamos.academy.v1.AcademyService.SubmitCoursePreviewQuizAttempt:output_type -> teamos.academy.v1.SubmitCoursePreviewQuizAttemptResponse
+	185, // 433: teamos.academy.v1.AcademyService.PausePartnerCourseDistribution:output_type -> teamos.academy.v1.PausePartnerCourseDistributionResponse
+	187, // 434: teamos.academy.v1.AcademyService.BlockPartnerCourse:output_type -> teamos.academy.v1.BlockPartnerCourseResponse
+	189, // 435: teamos.academy.v1.AcademyService.ResolvePartnerCourseRestriction:output_type -> teamos.academy.v1.ResolvePartnerCourseRestrictionResponse
+	191, // 436: teamos.academy.v1.AcademyService.GetCourseRestrictions:output_type -> teamos.academy.v1.GetCourseRestrictionsResponse
+	193, // 437: teamos.academy.v1.AcademyService.CopyPartnerCourseVersionToCompany:output_type -> teamos.academy.v1.CopyPartnerCourseVersionToCompanyResponse
+	195, // 438: teamos.academy.v1.AcademyService.GetCourseTemplates:output_type -> teamos.academy.v1.GetCourseTemplatesResponse
+	197, // 439: teamos.academy.v1.AcademyService.GetCourseTemplate:output_type -> teamos.academy.v1.GetCourseTemplateResponse
+	199, // 440: teamos.academy.v1.AcademyService.CreateCourseTemplate:output_type -> teamos.academy.v1.CreateCourseTemplateResponse
+	201, // 441: teamos.academy.v1.AcademyService.UpdateCourseTemplateDraft:output_type -> teamos.academy.v1.UpdateCourseTemplateDraftResponse
+	203, // 442: teamos.academy.v1.AcademyService.CreateCourseTemplateDraft:output_type -> teamos.academy.v1.CreateCourseTemplateDraftResponse
+	205, // 443: teamos.academy.v1.AcademyService.PublishCourseTemplateVersion:output_type -> teamos.academy.v1.PublishCourseTemplateVersionResponse
+	207, // 444: teamos.academy.v1.AcademyService.ArchiveCourseTemplate:output_type -> teamos.academy.v1.ArchiveCourseTemplateResponse
+	209, // 445: teamos.academy.v1.AcademyService.InstantiateCourseTemplateVersion:output_type -> teamos.academy.v1.InstantiateCourseTemplateVersionResponse
+	232, // 446: teamos.academy.v1.AcademyService.CreateExternalPersonalAccess:output_type -> teamos.academy.v1.CreateExternalPersonalAccessResponse
+	234, // 447: teamos.academy.v1.AcademyService.GetExternalPersonalAccesses:output_type -> teamos.academy.v1.GetExternalPersonalAccessesResponse
+	236, // 448: teamos.academy.v1.AcademyService.GetExternalPersonalAccess:output_type -> teamos.academy.v1.GetExternalPersonalAccessResponse
+	238, // 449: teamos.academy.v1.AcademyService.ExtendExternalPersonalAccess:output_type -> teamos.academy.v1.ExtendExternalPersonalAccessResponse
+	240, // 450: teamos.academy.v1.AcademyService.RotateExternalPersonalAccessToken:output_type -> teamos.academy.v1.RotateExternalPersonalAccessTokenResponse
+	242, // 451: teamos.academy.v1.AcademyService.RevokeExternalPersonalAccess:output_type -> teamos.academy.v1.RevokeExternalPersonalAccessResponse
+	244, // 452: teamos.academy.v1.AcademyService.RepeatExternalPersonalAccess:output_type -> teamos.academy.v1.RepeatExternalPersonalAccessResponse
+	246, // 453: teamos.academy.v1.AcademyService.CreateExternalCampaign:output_type -> teamos.academy.v1.CreateExternalCampaignResponse
+	248, // 454: teamos.academy.v1.AcademyService.GetExternalCampaigns:output_type -> teamos.academy.v1.GetExternalCampaignsResponse
+	250, // 455: teamos.academy.v1.AcademyService.GetExternalCampaign:output_type -> teamos.academy.v1.GetExternalCampaignResponse
+	252, // 456: teamos.academy.v1.AcademyService.PauseExternalCampaign:output_type -> teamos.academy.v1.PauseExternalCampaignResponse
+	254, // 457: teamos.academy.v1.AcademyService.ResumeExternalCampaign:output_type -> teamos.academy.v1.ResumeExternalCampaignResponse
+	256, // 458: teamos.academy.v1.AcademyService.RotateExternalCampaignToken:output_type -> teamos.academy.v1.RotateExternalCampaignTokenResponse
+	258, // 459: teamos.academy.v1.AcademyService.RevokeExternalCampaign:output_type -> teamos.academy.v1.RevokeExternalCampaignResponse
+	260, // 460: teamos.academy.v1.AcademyService.GetExternalCampaignReport:output_type -> teamos.academy.v1.GetExternalCampaignReportResponse
+	262, // 461: teamos.academy.v1.AcademyService.GetCourseExternalReport:output_type -> teamos.academy.v1.GetCourseExternalReportResponse
+	264, // 462: teamos.academy.v1.AcademyService.GetPublicAcademyAccess:output_type -> teamos.academy.v1.GetPublicAcademyAccessResponse
+	266, // 463: teamos.academy.v1.AcademyService.RequestPublicAcademyVerification:output_type -> teamos.academy.v1.RequestPublicAcademyVerificationResponse
+	268, // 464: teamos.academy.v1.AcademyService.ConfirmPublicAcademyVerification:output_type -> teamos.academy.v1.ConfirmPublicAcademyVerificationResponse
+	270, // 465: teamos.academy.v1.AcademyService.ActivatePublicAcademyAccess:output_type -> teamos.academy.v1.ActivatePublicAcademyAccessResponse
+	272, // 466: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollment:output_type -> teamos.academy.v1.GetPublicAcademyEnrollmentResponse
+	274, // 467: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollmentOutline:output_type -> teamos.academy.v1.GetPublicAcademyEnrollmentOutlineResponse
+	276, // 468: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollmentLesson:output_type -> teamos.academy.v1.GetPublicAcademyEnrollmentLessonResponse
+	278, // 469: teamos.academy.v1.AcademyService.CompletePublicAcademyEnrollmentLesson:output_type -> teamos.academy.v1.CompletePublicAcademyEnrollmentLessonResponse
+	280, // 470: teamos.academy.v1.AcademyService.SubmitPublicAcademyQuizAttempt:output_type -> teamos.academy.v1.SubmitPublicAcademyQuizAttemptResponse
+	282, // 471: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollmentResults:output_type -> teamos.academy.v1.GetPublicAcademyEnrollmentResultsResponse
+	284, // 472: teamos.academy.v1.AcademyService.GetExternalLearners:output_type -> teamos.academy.v1.GetExternalLearnersResponse
+	286, // 473: teamos.academy.v1.AcademyService.GetExternalLearner:output_type -> teamos.academy.v1.GetExternalLearnerResponse
+	288, // 474: teamos.academy.v1.AcademyService.GetExternalLearnerEnrollments:output_type -> teamos.academy.v1.GetExternalLearnerEnrollmentsResponse
+	290, // 475: teamos.academy.v1.AcademyService.GetExternalLearnerTimeline:output_type -> teamos.academy.v1.GetExternalLearnerTimelineResponse
+	379, // [379:476] is the sub-list for method output_type
+	282, // [282:379] is the sub-list for method input_type
+	282, // [282:282] is the sub-list for extension type_name
+	282, // [282:282] is the sub-list for extension extendee
+	0,   // [0:282] is the sub-list for field type_name
 }
 
 func init() { file_proto_academy_v1_academy_proto_init() }
@@ -3887,24 +20038,73 @@ func file_proto_academy_v1_academy_proto_init() {
 	file_proto_academy_v1_academy_proto_msgTypes[5].OneofWrappers = []any{}
 	file_proto_academy_v1_academy_proto_msgTypes[6].OneofWrappers = []any{}
 	file_proto_academy_v1_academy_proto_msgTypes[8].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[9].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[12].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[13].OneofWrappers = []any{}
 	file_proto_academy_v1_academy_proto_msgTypes[15].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[16].OneofWrappers = []any{}
 	file_proto_academy_v1_academy_proto_msgTypes[17].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[18].OneofWrappers = []any{}
 	file_proto_academy_v1_academy_proto_msgTypes[19].OneofWrappers = []any{}
-	file_proto_academy_v1_academy_proto_msgTypes[31].OneofWrappers = []any{}
-	file_proto_academy_v1_academy_proto_msgTypes[33].OneofWrappers = []any{}
-	file_proto_academy_v1_academy_proto_msgTypes[35].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[20].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[21].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[22].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[23].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[29].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[30].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[38].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[39].OneofWrappers = []any{}
 	file_proto_academy_v1_academy_proto_msgTypes[41].OneofWrappers = []any{}
-	file_proto_academy_v1_academy_proto_msgTypes[43].OneofWrappers = []any{}
-	file_proto_academy_v1_academy_proto_msgTypes[47].OneofWrappers = []any{}
-	file_proto_academy_v1_academy_proto_msgTypes[49].OneofWrappers = []any{}
-	file_proto_academy_v1_academy_proto_msgTypes[51].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[42].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[45].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[46].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[50].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[56].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[58].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[60].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[74].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[78].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[82].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[86].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[88].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[94].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[106].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[108].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[110].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[116].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[118].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[122].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[126].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[128].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[130].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[143].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[144].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[146].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[150].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[168].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[170].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[171].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[172].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[174].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[184].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[186].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[190].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[192].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[195].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[197].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[198].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[200].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[203].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[205].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[237].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[239].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_academy_v1_academy_proto_rawDesc), len(file_proto_academy_v1_academy_proto_rawDesc)),
-			NumEnums:      6,
-			NumMessages:   53,
+			NumEnums:      26,
+			NumMessages:   265,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

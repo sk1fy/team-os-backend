@@ -2,76 +2,29 @@ package application
 
 import (
 	"context"
-	"slices"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5"
 	"github.com/sk1fy/team-os-backend/services/academy/internal/storage/db"
 )
 
+// GetProgress is the legacy DTO adapter. Enrollment is the only source of
+// truth; no reads are served from the mutable legacy progress table.
 func (s *Service) GetProgress(ctx context.Context, actor Actor, courseID *uuid.UUID) ([]Progress, error) {
-	queries := db.New(s.pool)
-	if !canReadAcademy(actor) {
-		return nil, forbidden("Недостаточно прав для просмотра академии")
-	}
-	if !actor.canManage() && courseID != nil {
-		if err := s.requireCourseAccess(ctx, queries, actor, *courseID); err != nil {
-			return nil, err
-		}
-	}
-	var rows []db.Progress
-	var err error
-	switch {
-	case !actor.canManage():
-		rows, err = queries.GetUserProgressRows(ctx, db.GetUserProgressRowsParams{
-			CompanyID: actor.CompanyID, UserID: actor.UserID,
-		})
-	case courseID != nil:
-		rows, err = queries.GetCourseProgress(ctx, db.GetCourseProgressParams{
-			CompanyID: actor.CompanyID, CourseID: *courseID,
-		})
-	default:
-		rows, err = queries.GetProgress(ctx, actor.CompanyID)
-	}
+	filters := EnrollmentFilters{CourseID: courseID}
+	enrollments, err := s.GetEnrollments(ctx, actor, filters)
 	if err != nil {
-		return nil, internal("Не удалось получить прогресс", err)
+		return nil, err
 	}
-	if !actor.canManage() {
-		visibleCourses, visibleErr := s.GetCourses(ctx, actor)
-		if visibleErr != nil {
-			return nil, visibleErr
+	result := make([]Progress, 0, len(enrollments))
+	for _, enrollment := range enrollments {
+		if enrollment.UserID == nil {
+			continue
 		}
-		visible := make(map[uuid.UUID]struct{}, len(visibleCourses))
-		for _, course := range visibleCourses {
-			visible[course.ID] = struct{}{}
+		snapshot, snapshotErr := s.getEnrollmentProgressSnapshot(ctx, actor, enrollment.ID)
+		if snapshotErr != nil {
+			return nil, snapshotErr
 		}
-		rows = slices.DeleteFunc(rows, func(row db.Progress) bool {
-			_, allowed := visible[row.CourseID]
-			return !allowed
-		})
-	}
-
-	attemptRows, err := queries.GetQuizAttemptsWithCourse(ctx, actor.CompanyID)
-	if err != nil {
-		return nil, internal("Не удалось получить попытки тестов", err)
-	}
-	type progressKey struct {
-		userID   uuid.UUID
-		courseID uuid.UUID
-	}
-	attempts := make(map[progressKey][]QuizAttempt)
-	for _, attempt := range attemptRows {
-		key := progressKey{userID: attempt.UserID, courseID: attempt.CourseID}
-		attempts[key] = append(attempts[key], QuizAttempt{
-			ID: attempt.ID, QuizID: attempt.QuizID, UserID: attempt.UserID,
-			Score: attempt.Score, Passed: attempt.Passed,
-			PendingReview: attempt.PendingReview, CreatedAt: attempt.CreatedAt,
-		})
-	}
-
-	result := make([]Progress, len(rows))
-	for index, row := range rows {
-		result[index] = progressFromRow(row, attempts[progressKey{userID: row.UserID, courseID: row.CourseID}])
+		result = append(result, legacyProgressFromEnrollment(snapshot))
 	}
 	return result, nil
 }
@@ -90,90 +43,55 @@ func (s *Service) MarkLessonComplete(ctx context.Context, actor Actor, input Mar
 		}
 		userID = *input.UserID
 	}
-
-	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{})
-	if err != nil {
-		return Progress{}, internal("Не удалось начать транзакцию", err)
-	}
-	defer func() { _ = tx.Rollback(ctx) }()
-	queries := db.New(tx)
-	if err = s.requireCourseAccess(ctx, queries, actor, input.CourseID); err != nil {
-		return Progress{}, err
-	}
-
-	lesson, err := queries.GetLesson(ctx, db.GetLessonParams{CompanyID: actor.CompanyID, ID: input.LessonID})
+	row, err := db.New(s.pool).GetLatestUserCourseEnrollment(ctx, db.GetLatestUserCourseEnrollmentParams{
+		CompanyID: actor.CompanyID, UserID: nullUUID(&userID), CourseID: input.CourseID,
+	})
 	if err != nil {
 		if isNoRows(err) {
-			return Progress{}, notFound("Урок")
+			return Progress{}, forbidden("Курс не назначен пользователю")
 		}
-		return Progress{}, internal("Не удалось получить урок", err)
+		return Progress{}, internal("Не удалось получить прохождение курса", err)
 	}
-	if lesson.CourseID != input.CourseID {
-		return Progress{}, validation("Урок не принадлежит указанному курсу")
+	if row.AccessStatus == "ready" || row.AccessStatus == "invited" {
+		if _, _, err = s.ResumeEnrollment(ctx, actor, row.ID); err != nil {
+			return Progress{}, err
+		}
 	}
-
-	now := s.now().UTC()
-	row, err := queries.GetUserCourseProgressForUpdate(ctx, db.GetUserCourseProgressForUpdateParams{
-		CompanyID: actor.CompanyID, UserID: userID, CourseID: input.CourseID,
+	snapshot, err := s.CompleteEnrollmentLesson(ctx, actor, CompleteEnrollmentLessonInput{
+		EnrollmentID: row.ID, LessonID: input.LessonID,
+		IdempotencyKey: "legacy-mark:" + row.ID.String() + ":" + input.LessonID.String(),
 	})
 	if err != nil {
-		if !isNoRows(err) {
-			return Progress{}, internal("Не удалось получить прогресс", err)
-		}
-		row, err = queries.InsertProgress(ctx, db.InsertProgressParams{
-			CompanyID: actor.CompanyID, UserID: userID, CourseID: input.CourseID,
-			Status: "in_progress", CompletedLessonIds: []uuid.UUID{},
-			StartedAt: nullTimestamptz(&now),
-		})
-		if err != nil {
-			return Progress{}, internal("Не удалось создать прогресс", err)
-		}
+		return Progress{}, err
 	}
+	return legacyProgressFromEnrollment(snapshot), nil
+}
 
-	completed := row.CompletedLessonIds
-	if !slices.Contains(completed, input.LessonID) {
-		completed = append(completed, input.LessonID)
-	}
-
-	lessonIDs, err := queries.GetCourseLessonIds(ctx, db.GetCourseLessonIdsParams{
-		CompanyID: actor.CompanyID, CourseID: input.CourseID,
-	})
-	if err != nil {
-		return Progress{}, internal("Не удалось получить уроки курса", err)
-	}
-	allDone := true
-	for _, id := range lessonIDs {
-		if !slices.Contains(completed, id) {
-			allDone = false
-			break
+func legacyProgressFromEnrollment(snapshot EnrollmentProgressSnapshot) Progress {
+	completedIDs := make([]uuid.UUID, 0, len(snapshot.Lessons))
+	for _, lesson := range snapshot.Lessons {
+		if lesson.Status == "completed" {
+			completedIDs = append(completedIDs, lesson.LessonVersionID)
 		}
 	}
-
-	status := "in_progress"
-	completedAt := timestamptzPointer(row.CompletedAt)
-	if allDone {
-		status = "completed"
-		if completedAt == nil {
-			completedAt = &now
+	userID := uuid.Nil
+	if snapshot.Enrollment.UserID != nil {
+		userID = *snapshot.Enrollment.UserID
+	}
+	attempts := make([]QuizAttempt, len(snapshot.QuizAttempts))
+	for index, attempt := range snapshot.QuizAttempts {
+		attempts[index] = QuizAttempt{
+			ID: attempt.ID, QuizID: attempt.QuizVersionID, UserID: userID,
+			Score: attempt.Score, Passed: attempt.Passed, PendingReview: attempt.PendingReview,
+			CreatedAt: attempt.CreatedAt,
 		}
-	} else {
-		completedAt = nil
 	}
-	startedAt := timestamptzPointer(row.StartedAt)
-	if startedAt == nil {
-		startedAt = &now
+	return Progress{
+		UserID: userID, CourseID: snapshot.Enrollment.CourseID,
+		EnrollmentID: &snapshot.Enrollment.ID, CourseVersionID: &snapshot.Enrollment.CourseVersionID,
+		Status: snapshot.Enrollment.ProgressStatus, ProgressPercent: &snapshot.Enrollment.ProgressPercent,
+		CurrentLessonVersionID: snapshot.Enrollment.CurrentLessonVersionID,
+		CompletedLessonIDs:     completedIDs, QuizAttempts: attempts,
+		StartedAt: snapshot.Enrollment.StartedAt, CompletedAt: snapshot.Enrollment.CompletedAt,
 	}
-
-	updated, err := queries.UpdateProgressRow(ctx, db.UpdateProgressRowParams{
-		CompanyID: actor.CompanyID, UserID: userID, CourseID: input.CourseID,
-		Status: status, CompletedLessonIds: completed,
-		StartedAt: nullTimestamptz(startedAt), CompletedAt: nullTimestamptz(completedAt),
-	})
-	if err != nil {
-		return Progress{}, internal("Не удалось обновить прогресс", err)
-	}
-	if err = tx.Commit(ctx); err != nil {
-		return Progress{}, internal("Не удалось сохранить прогресс", err)
-	}
-	return progressFromRow(updated, nil), nil
 }

@@ -161,7 +161,7 @@ func run(logger *slog.Logger) error {
 	router.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   configuration.CORSOrigins,
 		AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete, http.MethodOptions},
-		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", httpx.RequestIDHeader, "If-Match"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", httpx.RequestIDHeader, "If-Match", "Idempotency-Key"},
 		ExposedHeaders:   []string{httpx.RequestIDHeader},
 		AllowCredentials: true,
 		MaxAge:           300,

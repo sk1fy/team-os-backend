@@ -4,6 +4,16 @@ sql:
     schema:
       - migrations/000001_init.up.sql
       - migrations/000003_course_visibility_assignment_idempotency.up.sql
+      - migrations/000004_course_ownership_lifecycle_audit.up.sql
+      - migrations/000005_immutable_course_versions.up.sql
+      - migrations/000006_version_pinned_enrollments.up.sql
+      - migrations/000007_partner_courses_and_restrictions.up.sql
+      - migrations/000008_course_templates_and_kb_snapshots.up.sql
+      - migrations/000009_external_learners_and_personal_accesses.up.sql
+      - migrations/000010_external_campaigns_and_analytics.up.sql
+      - migrations/000011_self_enrollment.up.sql
+      - migrations/000012_external_quiz_attempts.up.sql
+      - migrations/000013_enrollment_mutation_idempotency.up.sql
     queries: internal/storage/queries
     gen:
       go:
