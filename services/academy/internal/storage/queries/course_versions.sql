@@ -379,6 +379,19 @@ RETURNING lesson.id, lesson.company_id, lesson.course_version_id,
     lesson.source_template_version_id, lesson.estimated_minutes,
     lesson.quiz_version_id, lesson.kb_snapshot_id, lesson.file_ids;
 
+-- name: ReplicateLinkedArticleInDraftVersions :execrows
+UPDATE course_version_lessons AS lesson
+SET title = sqlc.arg(new_title),
+    content = sqlc.arg(content),
+    source_article_version = sqlc.arg(article_version)
+FROM course_versions AS version
+WHERE lesson.company_id = sqlc.arg(company_id)
+  AND lesson.source_type = 'kb_link'
+  AND lesson.source_article_id = sqlc.arg(article_id)
+  AND version.company_id = lesson.company_id
+  AND version.id = lesson.course_version_id
+  AND version.status = 'draft';
+
 -- name: MoveCourseVersionLesson :one
 UPDATE course_version_lessons AS lesson
 SET section_version_id = target_section.id,

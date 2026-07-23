@@ -1487,6 +1487,42 @@ func (q *Queries) PublishCourseVersion(ctx context.Context, arg PublishCourseVer
 	return i, err
 }
 
+const replicateLinkedArticleInDraftVersions = `-- name: ReplicateLinkedArticleInDraftVersions :execrows
+UPDATE course_version_lessons AS lesson
+SET title = $1,
+    content = $2,
+    source_article_version = $3
+FROM course_versions AS version
+WHERE lesson.company_id = $4
+  AND lesson.source_type = 'kb_link'
+  AND lesson.source_article_id = $5
+  AND version.company_id = lesson.company_id
+  AND version.id = lesson.course_version_id
+  AND version.status = 'draft'
+`
+
+type ReplicateLinkedArticleInDraftVersionsParams struct {
+	NewTitle       string        `json:"new_title"`
+	Content        []byte        `json:"content"`
+	ArticleVersion pgtype.Int4   `json:"article_version"`
+	CompanyID      uuid.UUID     `json:"company_id"`
+	ArticleID      uuid.NullUUID `json:"article_id"`
+}
+
+func (q *Queries) ReplicateLinkedArticleInDraftVersions(ctx context.Context, arg ReplicateLinkedArticleInDraftVersionsParams) (int64, error) {
+	result, err := q.db.Exec(ctx, replicateLinkedArticleInDraftVersions,
+		arg.NewTitle,
+		arg.Content,
+		arg.ArticleVersion,
+		arg.CompanyID,
+		arg.ArticleID,
+	)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
 const retireCourseVersion = `-- name: RetireCourseVersion :one
 UPDATE course_versions
 SET status = 'retired'

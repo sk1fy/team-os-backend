@@ -731,7 +731,7 @@ func (s *Service) emitTemplateVersionPublished(
 		payload.ContentHash = *version.ContentHash
 	}
 	return s.emit(ctx, queries, actor.CompanyID, version.ID, actor.UserID,
-		"teamos.academy.template.version.published.v1", payload)
+		"teamos.academy.template_version.published.v1", payload)
 }
 
 func (s *Service) emitTemplateInstantiated(

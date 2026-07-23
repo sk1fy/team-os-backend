@@ -271,6 +271,7 @@ type Querier interface {
 	RecordExternalVerificationFailure(ctx context.Context, arg RecordExternalVerificationFailureParams) (ExternalVerificationChallenge, error)
 	RefreshPartnerCourseDistributionStatus(ctx context.Context, arg RefreshPartnerCourseDistributionStatusParams) (Course, error)
 	ReplicateLinkedArticle(ctx context.Context, arg ReplicateLinkedArticleParams) (int64, error)
+	ReplicateLinkedArticleInDraftVersions(ctx context.Context, arg ReplicateLinkedArticleInDraftVersionsParams) (int64, error)
 	RequeueStaleFileCloneJobs(ctx context.Context, arg RequeueStaleFileCloneJobsParams) (int64, error)
 	// The conflict branch takes a row lock until the surrounding transaction ends.
 	// This serializes concurrent retries with the same key.

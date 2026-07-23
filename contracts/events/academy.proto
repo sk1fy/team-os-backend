@@ -127,7 +127,7 @@ message AcademyCourseDistributionChangedPayload {
   repeated string recipient_user_ids = 8;
 }
 
-// Published under teamos.academy.course.version.draft_created.v1.
+// Published under teamos.academy.course_version.draft_created.v1.
 message AcademyCourseVersionDraftCreatedEvent {
   EventMetadata metadata = 1;
   AcademyCourseVersionDraftCreatedPayload payload = 2;
@@ -143,7 +143,7 @@ message AcademyCourseVersionDraftCreatedPayload {
   optional string based_on_version_id = 7;
 }
 
-// Published under teamos.academy.course.version.published.v1.
+// Published under teamos.academy.course_version.published.v1.
 message AcademyCourseVersionPublishedEvent {
   EventMetadata metadata = 1;
   AcademyCourseVersionPublishedPayload payload = 2;
@@ -163,7 +163,7 @@ message AcademyCourseVersionPublishedPayload {
   repeated string recipient_user_ids = 11;
 }
 
-// Published under teamos.academy.course.restriction.applied.v1.
+// Published under teamos.academy.course_restriction.applied.v1.
 message AcademyCourseRestrictionAppliedEvent {
   EventMetadata metadata = 1;
   AcademyCourseRestrictionAppliedPayload payload = 2;
@@ -182,7 +182,7 @@ message AcademyCourseRestrictionAppliedPayload {
   repeated string recipient_user_ids = 10;
 }
 
-// Published under teamos.academy.course.restriction.resolved.v1.
+// Published under teamos.academy.course_restriction.resolved.v1.
 message AcademyCourseRestrictionResolvedEvent {
   EventMetadata metadata = 1;
   AcademyCourseRestrictionResolvedPayload payload = 2;
@@ -218,7 +218,7 @@ message AcademyPartnerCourseCopiedPayload {
   optional string target_course_title = 8;
 }
 
-// Published under teamos.academy.template.version.published.v1.
+// Published under teamos.academy.template_version.published.v1.
 message AcademyTemplateVersionPublishedEvent {
   EventMetadata metadata = 1;
   AcademyTemplateVersionPublishedPayload payload = 2;

@@ -1005,7 +1005,7 @@ func (x *AcademyCourseDistributionChangedPayload) GetRecipientUserIds() []string
 	return nil
 }
 
-// Published under teamos.academy.course.version.draft_created.v1.
+// Published under teamos.academy.course_version.draft_created.v1.
 type AcademyCourseVersionDraftCreatedEvent struct {
 	state         protoimpl.MessageState                   `protogen:"open.v1"`
 	Metadata      *EventMetadata                           `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
@@ -1150,7 +1150,7 @@ func (x *AcademyCourseVersionDraftCreatedPayload) GetBasedOnVersionId() string {
 	return ""
 }
 
-// Published under teamos.academy.course.version.published.v1.
+// Published under teamos.academy.course_version.published.v1.
 type AcademyCourseVersionPublishedEvent struct {
 	state         protoimpl.MessageState                `protogen:"open.v1"`
 	Metadata      *EventMetadata                        `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
@@ -1327,7 +1327,7 @@ func (x *AcademyCourseVersionPublishedPayload) GetRecipientUserIds() []string {
 	return nil
 }
 
-// Published under teamos.academy.course.restriction.applied.v1.
+// Published under teamos.academy.course_restriction.applied.v1.
 type AcademyCourseRestrictionAppliedEvent struct {
 	state         protoimpl.MessageState                  `protogen:"open.v1"`
 	Metadata      *EventMetadata                          `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
@@ -1496,7 +1496,7 @@ func (x *AcademyCourseRestrictionAppliedPayload) GetRecipientUserIds() []string 
 	return nil
 }
 
-// Published under teamos.academy.course.restriction.resolved.v1.
+// Published under teamos.academy.course_restriction.resolved.v1.
 type AcademyCourseRestrictionResolvedEvent struct {
 	state         protoimpl.MessageState                   `protogen:"open.v1"`
 	Metadata      *EventMetadata                           `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
@@ -1818,7 +1818,7 @@ func (x *AcademyPartnerCourseCopiedPayload) GetTargetCourseTitle() string {
 	return ""
 }
 
-// Published under teamos.academy.template.version.published.v1.
+// Published under teamos.academy.template_version.published.v1.
 type AcademyTemplateVersionPublishedEvent struct {
 	state         protoimpl.MessageState                  `protogen:"open.v1"`
 	Metadata      *EventMetadata                          `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`

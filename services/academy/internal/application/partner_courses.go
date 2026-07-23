@@ -778,7 +778,7 @@ func (s *Service) emitRestrictionApplied(
 		return internal("У партнёрского курса отсутствует владелец", nil)
 	}
 	return s.emit(ctx, queries, actor.CompanyID, course.ID, actor.UserID,
-		"teamos.academy.course.restriction.applied.v1", &eventsv1.AcademyCourseRestrictionAppliedPayload{
+		"teamos.academy.course_restriction.applied.v1", &eventsv1.AcademyCourseRestrictionAppliedPayload{
 			RestrictionId: restriction.ID.String(), CourseId: course.ID.String(), PartnerUserId: course.OwnerUserID.String(),
 			Type: restrictionTypeToEvent(restriction.Type), Reason: restriction.Reason, AppliedById: actor.UserID.String(),
 			AppliedAt: timestamppb.New(restriction.CreatedAt), CourseTitle: optionalStringValue(course.Title),
@@ -798,7 +798,7 @@ func (s *Service) emitRestrictionResolved(
 		return internal("Некорректные данные снятого ограничения", nil)
 	}
 	return s.emit(ctx, queries, actor.CompanyID, course.ID, actor.UserID,
-		"teamos.academy.course.restriction.resolved.v1", &eventsv1.AcademyCourseRestrictionResolvedPayload{
+		"teamos.academy.course_restriction.resolved.v1", &eventsv1.AcademyCourseRestrictionResolvedPayload{
 			RestrictionId: restriction.ID.String(), CourseId: course.ID.String(), PartnerUserId: course.OwnerUserID.String(),
 			Type: restrictionTypeToEvent(restriction.Type), ResolutionReason: *restriction.ResolutionReason,
 			ResolvedById: actor.UserID.String(), ResolvedAt: timestamppb.New(*restriction.ResolvedAt),
@@ -824,5 +824,5 @@ func (s *Service) emitDistributionChanged(
 		payload.RecipientUserIds = []string{after.OwnerUserID.String()}
 	}
 	return s.emit(ctx, queries, actor.CompanyID, after.ID, actor.UserID,
-		"teamos.academy.course.distribution.changed.v1", payload)
+		"teamos.academy.course_distribution.changed.v1", payload)
 }

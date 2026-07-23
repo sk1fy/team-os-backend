@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgtype"
 	eventsv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/events/v1"
 	"github.com/sk1fy/team-os-backend/pkg/eventbus"
 	"github.com/sk1fy/team-os-backend/pkg/richtext"
@@ -29,6 +30,9 @@ func (s *Service) HandleKbArticleUpdated(ctx context.Context, event eventbus.Eve
 	if payload.GetContent() == nil {
 		return false, fmt.Errorf("kb.article.updated %s: content is empty", payload.GetArticleId())
 	}
+	if payload.GetVersion() < 1 {
+		return false, fmt.Errorf("kb.article.updated %s: invalid version %d", payload.GetArticleId(), payload.GetVersion())
+	}
 	content, err := json.Marshal(payload.GetContent().AsMap())
 	if err != nil || richtext.Validate(content) != nil {
 		return false, fmt.Errorf("kb.article.updated %s: content is not valid TipTap JSON", payload.GetArticleId())
@@ -38,6 +42,18 @@ func (s *Service) HandleKbArticleUpdated(ctx context.Context, event eventbus.Eve
 			CompanyID: companyID, Content: content,
 			NewTitle: payload.GetTitle(), ArticleID: nullUUIDValue(articleID),
 		})
+		if updateErr != nil {
+			return updateErr
+		}
+		_, updateErr = queries.ReplicateLinkedArticleInDraftVersions(
+			ctx,
+			db.ReplicateLinkedArticleInDraftVersionsParams{
+				NewTitle: payload.GetTitle(), Content: content,
+				ArticleVersion: pgtype.Int4{Int32: int32(payload.GetVersion()), Valid: true},
+				CompanyID:      companyID,
+				ArticleID:      nullUUIDValue(articleID),
+			},
+		)
 		return updateErr
 	})
 }

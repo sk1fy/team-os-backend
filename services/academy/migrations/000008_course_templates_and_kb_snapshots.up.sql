@@ -372,15 +372,17 @@ BEGIN
     IF saved_origin_target IS DISTINCT FROM NEW.target_course_id
        OR saved_origin_template IS DISTINCT FROM NEW.source_template_id
        OR saved_origin_version IS DISTINCT FROM NEW.source_template_version_id
-       OR saved_origin_type IS DISTINCT FROM CASE
-            WHEN EXISTS (
-                SELECT 1 FROM course_templates
-                WHERE company_id = NEW.company_id
-                  AND id = NEW.source_template_id
-                  AND template_type = 'system'
-            ) THEN 'system_template'
-            ELSE 'company_template'
-          END THEN
+       OR saved_origin_type IS DISTINCT FROM (
+            CASE
+                WHEN EXISTS (
+                    SELECT 1 FROM course_templates
+                    WHERE company_id = NEW.company_id
+                      AND id = NEW.source_template_id
+                      AND template_type = 'system'
+                ) THEN 'system_template'
+                ELSE 'company_template'
+            END
+          ) THEN
         RAISE EXCEPTION 'Происхождение курса не соответствует шаблону';
     END IF;
     RETURN NEW;
@@ -705,8 +707,12 @@ BEGIN
         WHERE template.company_id = NEW.company_id
           AND template.id = NEW.source_template_id;
         IF NOT FOUND
-           OR source_template_type <> CASE NEW.origin_type
-                WHEN 'system_template' THEN 'system' ELSE 'company' END
+           OR source_template_type <> (
+                CASE NEW.origin_type
+                    WHEN 'system_template' THEN 'system'
+                    ELSE 'company'
+                END
+              )
            OR source_template_lifecycle <> 'active'
            OR source_version_status <> 'published' THEN
             RAISE EXCEPTION 'Источник должен быть активным опубликованным шаблоном';

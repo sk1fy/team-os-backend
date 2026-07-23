@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 )
 
 func TestInternalEnrollmentMutationsAreAtomicAndIdempotent(t *testing.T) {
@@ -31,10 +32,11 @@ func TestInternalEnrollmentMutationsAreAtomicAndIdempotent(t *testing.T) {
 			last_activity_at, created_at, updated_at
 		) VALUES ($1,$2,$3,$4,'user',$5,'legacy',1,'in_progress',
 			'active',$6,$7,$7,$7,$7);
-		INSERT INTO enrollment_lesson_progress (
-			company_id, enrollment_id, lesson_version_id, status,
-			first_opened_at
-		) VALUES ($2,$1,$6,'current',$7)`,
+			INSERT INTO enrollment_lesson_progress (
+				company_id, enrollment_id, lesson_version_id, status,
+				first_opened_at
+			) VALUES ($2,$1,$6,'current',$7)`,
+		pgx.QueryExecModeSimpleProtocol,
 		enrollmentID, fixture.companyID, fixture.courseID, fixture.versionID,
 		userID, fixture.firstLessonID, now); err != nil {
 		t.Fatalf("подготовка прохождения сотрудника: %v", err)

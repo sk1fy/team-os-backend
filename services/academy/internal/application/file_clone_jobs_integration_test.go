@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/sk1fy/team-os-backend/services/academy/internal/storage/db"
 )
@@ -150,9 +151,10 @@ func insertFileCloneJobForTest(
 			target_owner_id, status
 		) VALUES ($1, $2, 'template_instantiate', $3, $4,
 			'template_version', $5, 'course_version', $6, $7);
-		INSERT INTO academy_file_clone_job_items (
-			company_id, job_id, source_file_id, status
-		) VALUES ($2, $1, $8, 'pending')`,
+			INSERT INTO academy_file_clone_job_items (
+				company_id, job_id, source_file_id, status
+			) VALUES ($2, $1, $8, 'pending')`,
+		pgx.QueryExecModeSimpleProtocol,
 		jobID, companyID, aggregateID, idempotencyKey, uuid.New(), targetVersionID, status, sourceFileID); err != nil {
 		t.Fatalf("создание задания копирования: %v", err)
 	}

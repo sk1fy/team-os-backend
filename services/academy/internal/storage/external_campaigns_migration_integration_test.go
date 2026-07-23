@@ -39,7 +39,9 @@ func TestExternalCampaignMigrationIsolationAnalyticsAndRetention(t *testing.T) {
 			filepath.Join(migrationsDir, "000007_partner_courses_and_restrictions.up.sql"),
 			filepath.Join(migrationsDir, "000008_course_templates_and_kb_snapshots.up.sql"),
 			filepath.Join(migrationsDir, "000009_external_learners_and_personal_accesses.up.sql"),
-		))
+		),
+		postgres.BasicWaitStrategies(),
+	)
 	if err != nil {
 		t.Fatalf("запуск Postgres: %v", err)
 	}
@@ -49,7 +51,7 @@ func TestExternalCampaignMigrationIsolationAnalyticsAndRetention(t *testing.T) {
 	if err != nil {
 		t.Fatalf("DSN Postgres: %v", err)
 	}
-	pool, err := pgxpool.New(ctx, dsn)
+	pool, err := newMigrationTestPool(ctx, dsn)
 	if err != nil {
 		t.Fatalf("подключение к Postgres: %v", err)
 	}
@@ -122,8 +124,10 @@ func TestExternalCampaignMigrationIsolationAnalyticsAndRetention(t *testing.T) {
 	learnerID := uuid.New()
 	_, err = pool.Exec(ctx, `
 		INSERT INTO external_learners (
-			id, company_id, email, normalized_email, email_verified_at
-		) VALUES ($1, $2, 'candidate@example.com', 'candidate@example.com', $3)`,
+			id, company_id, email, normalized_email, email_verified_at,
+			created_at, updated_at
+		) VALUES ($1, $2, 'candidate@example.com', 'candidate@example.com',
+			$3, $3, $3)`,
 		learnerID, companyID, createdAt)
 	if err != nil {
 		t.Fatalf("создание внешнего ученика: %v", err)
@@ -140,7 +144,7 @@ func TestExternalCampaignMigrationIsolationAnalyticsAndRetention(t *testing.T) {
 				activated_at, access_until, started_at, last_activity_at
 			) VALUES ($1, $2, $3, $4, 'external', $5,
 				'partner_promo_campaign', $6, 1, 'in_progress', 'active', $7,
-				$8, $8 + interval '72 hours', $8, $8)
+				$8, $8::timestamptz + interval '72 hours', $8, $8)
 			ON CONFLICT (company_id, source_id, external_learner_id)
 				WHERE learner_type = 'external'
 				  AND source_type IN (
@@ -181,7 +185,8 @@ func TestExternalCampaignMigrationIsolationAnalyticsAndRetention(t *testing.T) {
 			external_learner_id, source_type, source_id, attempt_number,
 			progress_status, access_status, activated_at, access_until
 		) VALUES ($1, $2, $3, 'external', $4, 'partner_promo_campaign',
-			$5, 1, 'in_progress', 'active', $6, $6 + interval '3 days')`,
+			$5, 1, 'in_progress', 'active', $6,
+			$6::timestamptz + interval '3 days')`,
 		companyID, partnerCourseID, partnerVersionID, learnerID,
 		otherCampaignID, createdAt); err != nil {
 		t.Fatalf("другая кампания не создала отдельное прохождение: %v", err)

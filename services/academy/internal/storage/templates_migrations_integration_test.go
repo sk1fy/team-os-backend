@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/postgres"
 )
@@ -37,7 +36,9 @@ func TestCourseTemplatesMigrationSeedIsolationAndSagas(t *testing.T) {
 			filepath.Join(migrationsDir, "000005_immutable_course_versions.up.sql"),
 			filepath.Join(migrationsDir, "000006_version_pinned_enrollments.up.sql"),
 			filepath.Join(migrationsDir, "000007_partner_courses_and_restrictions.up.sql"),
-		))
+		),
+		postgres.BasicWaitStrategies(),
+	)
 	if err != nil {
 		t.Fatalf("запуск Postgres: %v", err)
 	}
@@ -47,7 +48,7 @@ func TestCourseTemplatesMigrationSeedIsolationAndSagas(t *testing.T) {
 	if err != nil {
 		t.Fatalf("DSN Postgres: %v", err)
 	}
-	pool, err := pgxpool.New(ctx, dsn)
+	pool, err := newMigrationTestPool(ctx, dsn)
 	if err != nil {
 		t.Fatalf("подключение к Postgres: %v", err)
 	}

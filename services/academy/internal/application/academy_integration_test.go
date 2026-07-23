@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	eventsv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/events/v1"
 	"github.com/sk1fy/team-os-backend/pkg/eventbus"
@@ -161,6 +162,27 @@ func TestAcademyAuthorizationConsumersAndOrdering(t *testing.T) {
 		articleID := uuid.New()
 		courseID, sectionID, lessonID := uuid.New(), uuid.New(), uuid.New()
 		seedAcademyCourse(t, ctx, pool, otherCompanyID, managerID, courseID, sectionID, lessonID, uuid.New())
+		draftCourse, createErr := service.CreateCourse(ctx, manager, CreateCourseInput{Title: "Черновик с KB link"})
+		if createErr != nil || draftCourse.CurrentDraftVersionID == nil {
+			t.Fatalf("создание черновика с KB link: course=%+v err=%v", draftCourse, createErr)
+		}
+		var draftSectionID uuid.UUID
+		if queryErr := pool.QueryRow(ctx, `
+			SELECT id FROM course_version_sections
+			WHERE company_id=$1 AND course_version_id=$2
+			ORDER BY "order", id LIMIT 1`,
+			companyID, *draftCourse.CurrentDraftVersionID).Scan(&draftSectionID); queryErr != nil {
+			t.Fatalf("раздел черновика с KB link: %v", queryErr)
+		}
+		sourceType := "kb_link"
+		draftLesson, createErr := service.CreateCourseVersionLesson(ctx, manager, CreateCourseVersionLessonInput{
+			VersionID: *draftCourse.CurrentDraftVersionID, SectionVersionID: draftSectionID,
+			Title: "Исходное название", Content: defaultLessonContent,
+			SourceType: &sourceType, SourceArticleID: &articleID,
+		})
+		if createErr != nil {
+			t.Fatalf("создание KB link в черновике: %v", createErr)
+		}
 		if _, err = pool.Exec(ctx, `
 			UPDATE lessons SET source_article_id=$1, source_article_title=title, source_mode='link'
 			WHERE id = ANY($2::uuid[])`, articleID, []uuid.UUID{assignedLessonID, lessonID}); err != nil {
@@ -182,6 +204,17 @@ func TestAcademyAuthorizationConsumersAndOrdering(t *testing.T) {
 		}
 		if ownTitle != "Обновлено" || otherTitle == "Обновлено" {
 			t.Fatalf("tenant isolation нарушен: own=%q other=%q", ownTitle, otherTitle)
+		}
+		var draftTitle string
+		var sourceVersion int32
+		if err = pool.QueryRow(ctx, `
+			SELECT title, source_article_version
+			FROM course_version_lessons WHERE id=$1`,
+			draftLesson.ID).Scan(&draftTitle, &sourceVersion); err != nil {
+			t.Fatalf("чтение обновлённого KB link черновика: %v", err)
+		}
+		if draftTitle != "Обновлено" || sourceVersion != 2 {
+			t.Fatalf("KB link черновика не обновлён: title=%q version=%d", draftTitle, sourceVersion)
 		}
 	})
 
@@ -280,6 +313,11 @@ func academyTestPool(t *testing.T, ctx context.Context) *pgxpool.Pool {
 			filepath.Join(migrationsDir, "000006_version_pinned_enrollments.up.sql"),
 			filepath.Join(migrationsDir, "000007_partner_courses_and_restrictions.up.sql"),
 			filepath.Join(migrationsDir, "000008_course_templates_and_kb_snapshots.up.sql"),
+			filepath.Join(migrationsDir, "000009_external_learners_and_personal_accesses.up.sql"),
+			filepath.Join(migrationsDir, "000010_external_campaigns_and_analytics.up.sql"),
+			filepath.Join(migrationsDir, "000011_self_enrollment.up.sql"),
+			filepath.Join(migrationsDir, "000012_external_quiz_attempts.up.sql"),
+			filepath.Join(migrationsDir, "000013_enrollment_mutation_idempotency.up.sql"),
 		),
 		postgres.BasicWaitStrategies(),
 	)
@@ -337,17 +375,19 @@ func seedAcademyCourse(
 		INSERT INTO course_version_sections (
 			id, company_id, course_version_id, stable_key, title, "order"
 		) VALUES ($4,$2,$1,$4,'Раздел',0);
-		INSERT INTO course_version_lessons (
-			id, company_id, course_version_id, section_version_id, stable_key,
-			title, "order", content, quiz_version_id
-		) VALUES ($5,$2,$1,$4,$5,'Урок',0,'{"type":"doc"}',$6);
-		INSERT INTO course_version_quizzes (
-			id, company_id, course_version_id, lesson_version_id, questions, passing_score
-		) VALUES ($6,$2,$1,$5,'[]',50);
-		UPDATE course_versions
-		SET status='published', published_by_id=$3, published_at=now(), content_hash=encode(digest($1::text,'sha256'),'hex')
-		WHERE id=$1;
-		UPDATE courses SET latest_published_version_id=$1 WHERE id=$1`,
+			INSERT INTO course_version_lessons (
+				id, company_id, course_version_id, section_version_id, stable_key,
+				title, "order", content
+			) VALUES ($5,$2,$1,$4,$5,'Урок',0,'{"type":"doc"}');
+			INSERT INTO course_version_quizzes (
+				id, company_id, course_version_id, lesson_version_id, questions, passing_score
+			) VALUES ($6,$2,$1,$5,'[]',50);
+			UPDATE course_version_lessons SET quiz_version_id=$6 WHERE id=$5;
+			UPDATE course_versions
+			SET status='published', published_by_id=$3, published_at=now(), content_hash=encode(digest($1::text,'sha256'),'hex')
+			WHERE id=$1;
+			UPDATE courses SET latest_published_version_id=$1 WHERE id=$1`,
+		pgx.QueryExecModeSimpleProtocol,
 		courseID, companyID, authorID, sectionID, lessonID, quizID); err != nil {
 		t.Fatalf("подготовка опубликованной версии курса: %v", err)
 	}

@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/postgres"
 )
@@ -38,7 +37,9 @@ func TestExternalAccessMigrationIsolationDeadlinesAndHistory(t *testing.T) {
 			filepath.Join(migrationsDir, "000006_version_pinned_enrollments.up.sql"),
 			filepath.Join(migrationsDir, "000007_partner_courses_and_restrictions.up.sql"),
 			filepath.Join(migrationsDir, "000008_course_templates_and_kb_snapshots.up.sql"),
-		))
+		),
+		postgres.BasicWaitStrategies(),
+	)
 	if err != nil {
 		t.Fatalf("запуск Postgres: %v", err)
 	}
@@ -48,7 +49,7 @@ func TestExternalAccessMigrationIsolationDeadlinesAndHistory(t *testing.T) {
 	if err != nil {
 		t.Fatalf("DSN Postgres: %v", err)
 	}
-	pool, err := pgxpool.New(ctx, dsn)
+	pool, err := newMigrationTestPool(ctx, dsn)
 	if err != nil {
 		t.Fatalf("подключение к Postgres: %v", err)
 	}
@@ -102,9 +103,11 @@ func TestExternalAccessMigrationIsolationDeadlinesAndHistory(t *testing.T) {
 	verifiedAt := time.Now().UTC().Truncate(time.Microsecond)
 	_, err = pool.Exec(ctx, `
 		INSERT INTO external_learners (
-			id, company_id, email, normalized_email, email_verified_at
+			id, company_id, email, normalized_email, email_verified_at,
+			created_at, updated_at
 		) VALUES ($1, $2, ' Ivan+Candidate@Example.COM ',
-			'ivan+candidate@example.com', $3)`, learnerID, companyID, verifiedAt)
+			'ivan+candidate@example.com', $3, $3, $3)`,
+		learnerID, companyID, verifiedAt)
 	if err != nil {
 		t.Fatalf("создание внешнего профиля без имени: %v", err)
 	}
@@ -159,7 +162,8 @@ func TestExternalAccessMigrationIsolationDeadlinesAndHistory(t *testing.T) {
 			id, company_id, normalized_email, purpose, source_id,
 			code_hash, expires_at, created_at
 		) VALUES ($1, $2, 'ivan+candidate@example.com', 'personal_access', $3,
-			decode(repeat('33', 32), 'hex'), $4 + interval '10 minutes', $4)`,
+			decode(repeat('33', 32), 'hex'),
+			$4::timestamptz + interval '10 minutes', $4)`,
 		challengeID, companyID, accessID, issuedAt)
 	if err != nil {
 		t.Fatalf("создание verification challenge: %v", err)
@@ -176,7 +180,7 @@ func TestExternalAccessMigrationIsolationDeadlinesAndHistory(t *testing.T) {
 			id, company_id, external_learner_id, token_hash,
 			expires_at, last_used_at, created_at
 		) VALUES ($1, $2, $3, decode(repeat('44', 32), 'hex'),
-			$4 + interval '24 hours', $4, $4)`,
+			$4::timestamptz + interval '24 hours', $4, $4)`,
 		sessionID, companyID, learnerID, issuedAt)
 	if err != nil {
 		t.Fatalf("создание внешней сессии: %v", err)
@@ -203,7 +207,7 @@ func TestExternalAccessMigrationIsolationDeadlinesAndHistory(t *testing.T) {
 			activated_at, access_until, started_at, last_activity_at
 		) VALUES ($1, $2, $3, $4, 'external', $5,
 			'personal_access', $6, 1, 'in_progress', 'active', $7,
-			$8, $8 + interval '72 hours', $8, $8)`,
+			$8, $8::timestamptz + interval '72 hours', $8, $8)`,
 		enrollmentID, companyID, courseID, versionID, learnerID,
 		accessID, lessonID, activatedAt)
 	if err == nil {

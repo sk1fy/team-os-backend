@@ -854,7 +854,7 @@ func (s *Service) emitCourseLifecycleChanged(
 	after Course,
 ) error {
 	return s.emit(ctx, queries, actor.CompanyID, after.ID, actor.UserID,
-		"teamos.academy.course.lifecycle.changed.v1",
+		"teamos.academy.course_lifecycle.changed.v1",
 		&eventsv1.AcademyCourseLifecycleChangedPayload{
 			CourseId: after.ID.String(), PreviousStatus: courseLifecycleToEvent(before.LifecycleStatus),
 			Status: courseLifecycleToEvent(after.LifecycleStatus),

@@ -435,7 +435,7 @@ func (s *Service) emitCourseVersionDraftCreated(
 		BasedOnVersionId: optionalUUIDStringValue(basedOn),
 	}
 	return s.emit(ctx, queries, actor.CompanyID, version.ID, actor.UserID,
-		"teamos.academy.course.version.draft_created.v1", payload)
+		"teamos.academy.course_version.draft_created.v1", payload)
 }
 
 func (s *Service) emitCourseVersionPublished(
@@ -470,7 +470,7 @@ func (s *Service) emitCourseVersionPublished(
 		payload.ContentHash = *version.ContentHash
 	}
 	return s.emit(ctx, queries, actor.CompanyID, version.ID, actor.UserID,
-		"teamos.academy.course.version.published.v1", payload)
+		"teamos.academy.course_version.published.v1", payload)
 }
 
 func (s *Service) createInitialDraftFromLegacy(

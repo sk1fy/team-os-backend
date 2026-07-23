@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/postgres"
 )
@@ -34,7 +33,9 @@ func TestImmutableCourseVersionsMigrationBackfillAndGuards(t *testing.T) {
 			filepath.Join(migrationsDir, "000002_assignment_events_and_outbox.up.sql"),
 			filepath.Join(migrationsDir, "000003_course_visibility_assignment_idempotency.up.sql"),
 			filepath.Join(migrationsDir, "000004_course_ownership_lifecycle_audit.up.sql"),
-		))
+		),
+		postgres.BasicWaitStrategies(),
+	)
 	if err != nil {
 		t.Fatalf("запуск Postgres: %v", err)
 	}
@@ -44,7 +45,7 @@ func TestImmutableCourseVersionsMigrationBackfillAndGuards(t *testing.T) {
 	if err != nil {
 		t.Fatalf("DSN Postgres: %v", err)
 	}
-	pool, err := pgxpool.New(ctx, dsn)
+	pool, err := newMigrationTestPool(ctx, dsn)
 	if err != nil {
 		t.Fatalf("подключение к Postgres: %v", err)
 	}

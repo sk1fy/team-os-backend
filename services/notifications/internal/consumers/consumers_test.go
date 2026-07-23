@@ -3,11 +3,16 @@ package consumers
 import (
 	"strings"
 	"testing"
+
+	"github.com/sk1fy/team-os-backend/pkg/eventbus"
 )
 
 func TestDurableNamesAreValidAndUnique(t *testing.T) {
 	seen := make(map[string]struct{}, len(subjects))
 	for _, subject := range subjects {
+		if err := eventbus.ValidateSubject(subject); err != nil {
+			t.Errorf("subject %q не соответствует схеме TeamOS: %v", subject, err)
+		}
 		name := durableName(subject)
 		if strings.ContainsAny(name, ". \t\r\n") {
 			t.Errorf("durableName(%q) = %q: имя содержит запрещённые символы", subject, name)
