@@ -18,10 +18,32 @@ func courseTemplateToProto(value application.CourseTemplate) *academyv1.CourseTe
 	}
 }
 
-func courseTemplatesToProto(values []application.CourseTemplate) []*academyv1.CourseTemplate {
-	result := make([]*academyv1.CourseTemplate, len(values))
+func academyTemplateSummaryToProto(value application.AcademyTemplateSummary) *academyv1.AcademyTemplateSummary {
+	result := &academyv1.AcademyTemplateSummary{
+		Id: value.ID.String(), OwnerType: value.OwnerType, Title: value.Title,
+		Description: value.Description, CoverUrl: value.CoverURL, Category: value.Category,
+		LessonCount: uint32(max(0, value.LessonCount)), Archived: value.Archived,
+		LatestVersionId:   optionalUUIDString(value.LatestVersionID),
+		DraftVersionId:    optionalUUIDString(value.DraftVersionID),
+		SystemTemplateKey: value.SystemTemplateKey,
+		Capabilities: &academyv1.AcademyTemplateCapabilities{
+			CanInstantiate: value.Capabilities.CanInstantiate,
+			CanEdit:        value.Capabilities.CanEdit,
+			CanArchive:     value.Capabilities.CanArchive,
+			CanPreview:     value.Capabilities.CanPreview,
+		},
+	}
+	if value.LatestVersionNumber != nil {
+		number := uint32(max(0, *value.LatestVersionNumber))
+		result.LatestVersionNumber = &number
+	}
+	return result
+}
+
+func academyTemplateSummariesToProto(values []application.AcademyTemplateSummary) []*academyv1.AcademyTemplateSummary {
+	result := make([]*academyv1.AcademyTemplateSummary, len(values))
 	for index := range values {
-		result[index] = courseTemplateToProto(values[index])
+		result[index] = academyTemplateSummaryToProto(values[index])
 	}
 	return result
 }

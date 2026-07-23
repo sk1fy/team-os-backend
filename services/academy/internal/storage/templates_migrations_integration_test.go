@@ -75,6 +75,15 @@ func TestCourseTemplatesMigrationSeedIsolationAndSagas(t *testing.T) {
 	if _, err = pool.Exec(ctx, string(migration)); err != nil {
 		t.Fatalf("применение template-миграции: %v", err)
 	}
+	normalizationMigration, err := os.ReadFile(filepath.Join(
+		migrationsDir, "000014_normalize_quiz_question_ids.up.sql",
+	))
+	if err != nil {
+		t.Fatalf("чтение миграции нормализации quiz ID: %v", err)
+	}
+	if _, err = pool.Exec(ctx, string(normalizationMigration)); err != nil {
+		t.Fatalf("применение миграции нормализации quiz ID: %v", err)
+	}
 
 	var templates, versions, sections, lessons, quizzes, checkpoints int
 	err = pool.QueryRow(ctx, `
@@ -96,6 +105,27 @@ func TestCourseTemplatesMigrationSeedIsolationAndSagas(t *testing.T) {
 		lessons != 30 || quizzes != 10 || checkpoints != 10 {
 		t.Fatalf("неполный system seed: templates=%d versions=%d sections=%d lessons=%d quizzes=%d checkpoints=%d err=%v",
 			templates, versions, sections, lessons, quizzes, checkpoints, err)
+	}
+	var invalidQuizIDs int
+	err = pool.QueryRow(ctx, `
+		SELECT count(*)
+		FROM course_template_version_quizzes AS quiz
+		CROSS JOIN LATERAL jsonb_array_elements(quiz.questions) AS question(value)
+		LEFT JOIN LATERAL jsonb_array_elements(
+			COALESCE(question.value -> 'options', '[]'::jsonb)
+		) AS option(value) ON true
+		WHERE quiz.company_id = $1
+		  AND (
+			  COALESCE(question.value ->> 'id', '') !~*
+			      '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+			  OR (
+			      option.value IS NOT NULL
+			      AND COALESCE(option.value ->> 'id', '') !~*
+			          '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+			  )
+		  )`, companyID).Scan(&invalidQuizIDs)
+	if err != nil || invalidQuizIDs != 0 {
+		t.Fatalf("quiz IDs не нормализованы: invalid=%d err=%v", invalidQuizIDs, err)
 	}
 
 	var insertedAgain int

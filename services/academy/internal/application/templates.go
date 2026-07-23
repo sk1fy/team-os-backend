@@ -35,6 +35,14 @@ type UpdateCourseTemplateDraftInput struct {
 	Content     *CourseTemplateDraftContentInput
 }
 
+type GetCourseTemplatesInput struct {
+	Query        *string
+	TemplateType *string
+	Lifecycle    *string
+	Page         int32
+	PageSize     int32
+}
+
 func (s *Service) SeedSystemCourseTemplates(ctx context.Context, companyID uuid.UUID) error {
 	if companyID == uuid.Nil {
 		return validation("Некорректный идентификатор компании")
@@ -48,34 +56,99 @@ func (s *Service) SeedSystemCourseTemplates(ctx context.Context, companyID uuid.
 func (s *Service) GetCourseTemplates(
 	ctx context.Context,
 	actor Actor,
-	templateType, lifecycle *string,
-) ([]CourseTemplate, error) {
+	input GetCourseTemplatesInput,
+) (AcademyTemplatePage, error) {
 	if !domainauth.CanInstantiateTemplate(authorizationActor(actor)) && !actor.canManage() {
-		return nil, forbidden("Недостаточно прав для просмотра шаблонов курсов")
+		return AcademyTemplatePage{}, forbidden("Недостаточно прав для просмотра шаблонов курсов")
 	}
-	if templateType != nil && *templateType != "system" && *templateType != "company" {
-		return nil, validation("Некорректный тип шаблона курса")
+	if input.TemplateType != nil && *input.TemplateType != "system" && *input.TemplateType != "company" {
+		return AcademyTemplatePage{}, validation("Некорректный тип шаблона курса")
 	}
-	if lifecycle != nil && *lifecycle != "active" && *lifecycle != "archived" {
-		return nil, validation("Некорректное состояние шаблона курса")
+	if input.Lifecycle != nil && *input.Lifecycle != "active" && *input.Lifecycle != "archived" {
+		return AcademyTemplatePage{}, validation("Некорректное состояние шаблона курса")
+	}
+	page, pageSize := input.Page, input.PageSize
+	if page == 0 {
+		page = 1
+	}
+	if pageSize == 0 {
+		pageSize = 20
+	}
+	if page < 1 {
+		return AcademyTemplatePage{}, validation("Номер страницы должен быть не меньше 1")
+	}
+	if pageSize < 1 || pageSize > 100 {
+		return AcademyTemplatePage{}, validation("Размер страницы должен быть от 1 до 100")
+	}
+	if !actor.canManage() {
+		active := "active"
+		input.Lifecycle = &active
 	}
 	queries := db.New(s.pool)
 	if _, err := queries.SeedSystemCourseTemplates(ctx, actor.CompanyID); err != nil {
-		return nil, internal("Не удалось подготовить системные шаблоны", err)
+		return AcademyTemplatePage{}, internal("Не удалось подготовить системные шаблоны", err)
 	}
-	rows, err := queries.ListCourseTemplates(ctx, db.ListCourseTemplatesParams{
-		CompanyID: actor.CompanyID, TemplateType: nullText(templateType), LifecycleStatus: nullText(lifecycle),
-	})
-	if err != nil {
-		return nil, internal("Не удалось получить шаблоны курсов", err)
-	}
-	result := make([]CourseTemplate, 0, len(rows))
-	for _, row := range rows {
-		if domainauth.CanViewCourseTemplate(authorizationActor(actor), templateSnapshotFromRow(row)) {
-			result = append(result, courseTemplateFromRow(row))
+	query := input.Query
+	if query != nil {
+		trimmed := strings.TrimSpace(*query)
+		if trimmed == "" {
+			query = nil
+		} else {
+			query = &trimmed
 		}
 	}
-	return result, nil
+	rows, err := queries.ListCourseTemplateSummaries(ctx, db.ListCourseTemplateSummariesParams{
+		CompanyID: actor.CompanyID, TemplateType: nullText(input.TemplateType),
+		LifecycleStatus: nullText(input.Lifecycle), Query: nullText(query),
+		RequirePublished: !actor.canManage(), PageSize: pageSize, PageOffset: (page - 1) * pageSize,
+	})
+	if err != nil {
+		return AcademyTemplatePage{}, internal("Не удалось получить шаблоны курсов", err)
+	}
+	total := int64(0)
+	if len(rows) > 0 {
+		total = rows[0].TotalCount
+	}
+	result := make([]AcademyTemplateSummary, 0, len(rows))
+	for _, row := range rows {
+		snapshot := domaintemplate.Snapshot{
+			ID: domaintemplate.ID(row.ID.String()), CompanyID: domaintemplate.ID(row.CompanyID.String()),
+			Type: domaintemplate.Type(row.TemplateType), SystemTemplateKey: textPointer(row.SystemTemplateKey),
+			LifecycleStatus:          domaintemplate.LifecycleStatus(row.LifecycleStatus),
+			CurrentDraftVersionID:    optionalTemplateID(nullUUIDPointer(row.CurrentDraftVersionID)),
+			LatestPublishedVersionID: optionalTemplateID(nullUUIDPointer(row.LatestPublishedVersionID)),
+			CreatedByID:              domaintemplate.ID(row.CreatedByID.String()), CreatedAt: row.CreatedAt,
+		}
+		if !domainauth.CanViewCourseTemplate(authorizationActor(actor), snapshot) {
+			continue
+		}
+		canEdit := domainauth.CanEditCompanyTemplate(authorizationActor(actor), snapshot)
+		title := row.Title.String
+		if title == "" && row.SystemTemplateKey.Valid {
+			title = row.SystemTemplateKey.String
+		}
+		result = append(result, AcademyTemplateSummary{
+			ID: row.ID, OwnerType: row.TemplateType, Title: title,
+			Description: textPointer(row.Description), LessonCount: row.LessonCount,
+			LatestVersionNumber: int4Pointer(row.LatestVersionNumber),
+			LatestVersionID:     nullUUIDPointer(row.LatestPublishedVersionID),
+			DraftVersionID:      nullUUIDPointer(row.CurrentDraftVersionID),
+			Archived:            row.LifecycleStatus == "archived",
+			Capabilities: AcademyTemplateCapabilities{
+				CanInstantiate: row.LatestPublishedVersionID.Valid && row.LifecycleStatus == "active",
+				CanEdit:        canEdit, CanArchive: canEdit,
+				CanPreview: row.LatestPublishedVersionID.Valid,
+			},
+			SystemTemplateKey: textPointer(row.SystemTemplateKey),
+		})
+	}
+	totalPages := int32(0)
+	if total > 0 {
+		totalPages = int32((total + int64(pageSize) - 1) / int64(pageSize))
+	}
+	return AcademyTemplatePage{
+		Items: result, Page: page, PageSize: pageSize, Total: total, TotalPages: totalPages,
+	}, nil
 }
 
 func (s *Service) GetCourseTemplate(

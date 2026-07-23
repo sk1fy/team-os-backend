@@ -212,6 +212,7 @@ type Querier interface {
 	ListCourseEnrollmentAccessHistory(ctx context.Context, arg ListCourseEnrollmentAccessHistoryParams) ([]CourseEnrollmentAccessHistory, error)
 	ListCourseExternalCampaignAnalyticsReports(ctx context.Context, arg ListCourseExternalCampaignAnalyticsReportsParams) ([]ListCourseExternalCampaignAnalyticsReportsRow, error)
 	ListCourseRestrictions(ctx context.Context, arg ListCourseRestrictionsParams) ([]CourseRestriction, error)
+	ListCourseTemplateSummaries(ctx context.Context, arg ListCourseTemplateSummariesParams) ([]ListCourseTemplateSummariesRow, error)
 	ListCourseTemplateVersionFileIDs(ctx context.Context, arg ListCourseTemplateVersionFileIDsParams) ([]uuid.UUID, error)
 	ListCourseTemplateVersionLessons(ctx context.Context, arg ListCourseTemplateVersionLessonsParams) ([]CourseTemplateVersionLesson, error)
 	ListCourseTemplateVersionQuizzes(ctx context.Context, arg ListCourseTemplateVersionQuizzesParams) ([]CourseTemplateVersionQuiz, error)

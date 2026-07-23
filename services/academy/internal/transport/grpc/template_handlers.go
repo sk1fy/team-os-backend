@@ -27,11 +27,18 @@ func (s *Server) GetCourseTemplates(ctx context.Context, request *academyv1.GetC
 		}
 		lifecycle = &value
 	}
-	values, err := s.application.GetCourseTemplates(ctx, actor, templateType, lifecycle)
+	values, err := s.application.GetCourseTemplates(ctx, actor, application.GetCourseTemplatesInput{
+		Query: request.Query, TemplateType: templateType, Lifecycle: lifecycle,
+		Page: int32(request.GetPage()), PageSize: int32(request.GetPageSize()),
+	})
 	if err != nil {
 		return nil, transportError(err)
 	}
-	return &academyv1.GetCourseTemplatesResponse{Templates: courseTemplatesToProto(values)}, nil
+	return &academyv1.GetCourseTemplatesResponse{
+		Items: academyTemplateSummariesToProto(values.Items),
+		Page:  uint32(values.Page), PageSize: uint32(values.PageSize),
+		Total: uint64(values.Total), TotalPages: uint32(values.TotalPages),
+	}, nil
 }
 
 func (s *Server) GetCourseTemplate(ctx context.Context, request *academyv1.GetCourseTemplateRequest) (*academyv1.GetCourseTemplateResponse, error) {

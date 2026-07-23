@@ -47,10 +47,48 @@ func courseTemplateFromProto(value *academyv1.CourseTemplate) (api.CourseTemplat
 	return result, nil
 }
 
-func courseTemplatesFromProto(values []*academyv1.CourseTemplate) ([]api.CourseTemplate, error) {
-	result := make([]api.CourseTemplate, len(values))
+func academyTemplateSummaryFromProto(value *academyv1.AcademyTemplateSummary) (api.AcademyTemplateSummary, error) {
+	if value == nil || value.GetCapabilities() == nil {
+		return api.AcademyTemplateSummary{}, errors.New("academy returned an empty template summary")
+	}
+	id, err := uuid.Parse(value.GetId())
+	if err != nil {
+		return api.AcademyTemplateSummary{}, err
+	}
+	ownerType := api.AcademyTemplateOwnerType(value.GetOwnerType())
+	if ownerType != api.AcademyTemplateOwnerTypeSystem && ownerType != api.AcademyTemplateOwnerTypeCompany {
+		return api.AcademyTemplateSummary{}, fmt.Errorf("unknown academy template owner type %q", value.GetOwnerType())
+	}
+	lessonCount := int(value.GetLessonCount())
+	result := api.AcademyTemplateSummary{
+		Id: id, OwnerType: ownerType, Title: value.GetTitle(),
+		Description: value.Description, CoverUrl: value.CoverUrl, Category: value.Category,
+		LessonCount: &lessonCount, Archived: value.GetArchived(),
+		SystemTemplateKey: value.SystemTemplateKey,
+		Capabilities: api.AcademyTemplateCapabilities{
+			CanInstantiate: value.GetCapabilities().GetCanInstantiate(),
+			CanEdit:        value.GetCapabilities().GetCanEdit(),
+			CanArchive:     value.GetCapabilities().GetCanArchive(),
+			CanPreview:     value.GetCapabilities().GetCanPreview(),
+		},
+	}
+	if value.LatestVersionNumber != nil {
+		number := int(value.GetLatestVersionNumber())
+		result.LatestVersionNumber = &number
+	}
+	if result.LatestVersionId, err = parseOptionalProtoUUID(value.LatestVersionId); err != nil {
+		return api.AcademyTemplateSummary{}, err
+	}
+	if result.DraftVersionId, err = parseOptionalProtoUUID(value.DraftVersionId); err != nil {
+		return api.AcademyTemplateSummary{}, err
+	}
+	return result, nil
+}
+
+func academyTemplateSummariesFromProto(values []*academyv1.AcademyTemplateSummary) ([]api.AcademyTemplateSummary, error) {
+	result := make([]api.AcademyTemplateSummary, len(values))
 	for index := range values {
-		converted, err := courseTemplateFromProto(values[index])
+		converted, err := academyTemplateSummaryFromProto(values[index])
 		if err != nil {
 			return nil, err
 		}

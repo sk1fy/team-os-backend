@@ -754,6 +754,125 @@ func (q *Queries) GetNextCourseTemplateVersionNumber(ctx context.Context, arg Ge
 	return column_1, err
 }
 
+const listCourseTemplateSummaries = `-- name: ListCourseTemplateSummaries :many
+SELECT template.id, template.company_id, template.template_type,
+    template.system_template_key, template.lifecycle_status,
+    template.current_draft_version_id, template.latest_published_version_id,
+    template.created_by_id, template.created_at,
+    template.archived_by_id, template.archived_at,
+    version.title, version.description, version.cover_file_id,
+    version.number AS latest_version_number,
+    COALESCE((
+        SELECT count(*)::integer
+        FROM course_template_version_lessons AS lesson
+        WHERE lesson.company_id = template.company_id
+          AND lesson.template_version_id = version.id
+    ), 0)::integer AS lesson_count,
+    count(*) OVER() AS total_count
+FROM course_templates AS template
+LEFT JOIN course_template_versions AS version
+  ON version.company_id = template.company_id
+ AND version.template_id = template.id
+ AND version.id = COALESCE(
+     template.latest_published_version_id,
+     template.current_draft_version_id
+ )
+WHERE template.company_id = $1
+  AND ($2::text IS NULL
+       OR template.template_type = $2::text)
+  AND ($3::text IS NULL
+       OR template.lifecycle_status = $3::text)
+  AND (
+      NOT $4::boolean
+      OR template.latest_published_version_id IS NOT NULL
+  )
+  AND (
+      $5::text IS NULL
+      OR version.title ILIKE '%' || $5::text || '%'
+      OR version.description ILIKE '%' || $5::text || '%'
+      OR template.system_template_key ILIKE '%' || $5::text || '%'
+  )
+ORDER BY template.template_type, template.created_at DESC, template.id
+LIMIT $7
+OFFSET $6
+`
+
+type ListCourseTemplateSummariesParams struct {
+	CompanyID        uuid.UUID   `json:"company_id"`
+	TemplateType     pgtype.Text `json:"template_type"`
+	LifecycleStatus  pgtype.Text `json:"lifecycle_status"`
+	RequirePublished bool        `json:"require_published"`
+	Query            pgtype.Text `json:"query"`
+	PageOffset       int32       `json:"page_offset"`
+	PageSize         int32       `json:"page_size"`
+}
+
+type ListCourseTemplateSummariesRow struct {
+	ID                       uuid.UUID          `json:"id"`
+	CompanyID                uuid.UUID          `json:"company_id"`
+	TemplateType             string             `json:"template_type"`
+	SystemTemplateKey        pgtype.Text        `json:"system_template_key"`
+	LifecycleStatus          string             `json:"lifecycle_status"`
+	CurrentDraftVersionID    uuid.NullUUID      `json:"current_draft_version_id"`
+	LatestPublishedVersionID uuid.NullUUID      `json:"latest_published_version_id"`
+	CreatedByID              uuid.UUID          `json:"created_by_id"`
+	CreatedAt                time.Time          `json:"created_at"`
+	ArchivedByID             uuid.NullUUID      `json:"archived_by_id"`
+	ArchivedAt               pgtype.Timestamptz `json:"archived_at"`
+	Title                    pgtype.Text        `json:"title"`
+	Description              pgtype.Text        `json:"description"`
+	CoverFileID              uuid.NullUUID      `json:"cover_file_id"`
+	LatestVersionNumber      pgtype.Int4        `json:"latest_version_number"`
+	LessonCount              int32              `json:"lesson_count"`
+	TotalCount               int64              `json:"total_count"`
+}
+
+func (q *Queries) ListCourseTemplateSummaries(ctx context.Context, arg ListCourseTemplateSummariesParams) ([]ListCourseTemplateSummariesRow, error) {
+	rows, err := q.db.Query(ctx, listCourseTemplateSummaries,
+		arg.CompanyID,
+		arg.TemplateType,
+		arg.LifecycleStatus,
+		arg.RequirePublished,
+		arg.Query,
+		arg.PageOffset,
+		arg.PageSize,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListCourseTemplateSummariesRow{}
+	for rows.Next() {
+		var i ListCourseTemplateSummariesRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.CompanyID,
+			&i.TemplateType,
+			&i.SystemTemplateKey,
+			&i.LifecycleStatus,
+			&i.CurrentDraftVersionID,
+			&i.LatestPublishedVersionID,
+			&i.CreatedByID,
+			&i.CreatedAt,
+			&i.ArchivedByID,
+			&i.ArchivedAt,
+			&i.Title,
+			&i.Description,
+			&i.CoverFileID,
+			&i.LatestVersionNumber,
+			&i.LessonCount,
+			&i.TotalCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listCourseTemplateVersions = `-- name: ListCourseTemplateVersions :many
 SELECT id, company_id, template_id, number, status, title, description,
     cover_file_id, sequential, created_by_id, created_at,

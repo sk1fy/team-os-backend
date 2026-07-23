@@ -11,10 +11,40 @@ import (
 
 func (h *Handler) GetCourseTemplates(w http.ResponseWriter, r *http.Request, params api.GetCourseTemplatesParams) {
 	request := &academyv1.GetCourseTemplatesRequest{}
+	if params.Q != nil {
+		request.Query = params.Q
+	}
+	if params.Page != nil {
+		if *params.Page < 1 {
+			apierror.Write(w, apierror.BadRequest("Номер страницы должен быть не меньше 1"))
+			return
+		}
+		request.Page = uint32(*params.Page)
+	}
+	if params.PageSize != nil {
+		if *params.PageSize < 1 || *params.PageSize > 100 {
+			apierror.Write(w, apierror.BadRequest("Размер страницы должен быть от 1 до 100"))
+			return
+		}
+		request.PageSize = uint32(*params.PageSize)
+	}
 	if params.Type != nil {
 		value, err := courseTemplateTypeToProto(*params.Type)
 		if err != nil {
 			apierror.Write(w, apierror.BadRequest("Некорректный тип шаблона курса"))
+			return
+		}
+		request.Type = &value
+	}
+	if params.OwnerType != nil {
+		ownerType := api.CourseTemplateType(*params.OwnerType)
+		if params.Type != nil && *params.Type != ownerType {
+			apierror.Write(w, apierror.BadRequest("Параметры type и ownerType противоречат друг другу"))
+			return
+		}
+		value, err := courseTemplateTypeToProto(ownerType)
+		if err != nil {
+			apierror.Write(w, apierror.BadRequest("Некорректный тип владельца шаблона"))
 			return
 		}
 		request.Type = &value
@@ -32,12 +62,15 @@ func (h *Handler) GetCourseTemplates(w http.ResponseWriter, r *http.Request, par
 		h.writeAcademyRPCError(w, r, err)
 		return
 	}
-	converted, err := courseTemplatesFromProto(response.GetTemplates())
+	converted, err := academyTemplateSummariesFromProto(response.GetItems())
 	if err != nil {
 		h.writeConversionError(w, r, err)
 		return
 	}
-	writeJSON(w, http.StatusOK, converted)
+	writeJSON(w, http.StatusOK, api.AcademyTemplatePage{
+		Items: converted, Page: int(response.GetPage()), PageSize: int(response.GetPageSize()),
+		Total: int(response.GetTotal()), TotalPages: int(response.GetTotalPages()),
+	})
 }
 
 func (h *Handler) GetCourseTemplate(w http.ResponseWriter, r *http.Request, templateID api.TemplateId, params api.GetCourseTemplateParams) {

@@ -20,6 +20,48 @@ WHERE company_id = sqlc.arg(company_id)
        OR lifecycle_status = sqlc.narg(lifecycle_status)::text)
 ORDER BY template_type, created_at DESC, id;
 
+-- name: ListCourseTemplateSummaries :many
+SELECT template.id, template.company_id, template.template_type,
+    template.system_template_key, template.lifecycle_status,
+    template.current_draft_version_id, template.latest_published_version_id,
+    template.created_by_id, template.created_at,
+    template.archived_by_id, template.archived_at,
+    version.title, version.description, version.cover_file_id,
+    version.number AS latest_version_number,
+    COALESCE((
+        SELECT count(*)::integer
+        FROM course_template_version_lessons AS lesson
+        WHERE lesson.company_id = template.company_id
+          AND lesson.template_version_id = version.id
+    ), 0)::integer AS lesson_count,
+    count(*) OVER() AS total_count
+FROM course_templates AS template
+LEFT JOIN course_template_versions AS version
+  ON version.company_id = template.company_id
+ AND version.template_id = template.id
+ AND version.id = COALESCE(
+     template.latest_published_version_id,
+     template.current_draft_version_id
+ )
+WHERE template.company_id = sqlc.arg(company_id)
+  AND (sqlc.narg(template_type)::text IS NULL
+       OR template.template_type = sqlc.narg(template_type)::text)
+  AND (sqlc.narg(lifecycle_status)::text IS NULL
+       OR template.lifecycle_status = sqlc.narg(lifecycle_status)::text)
+  AND (
+      NOT sqlc.arg(require_published)::boolean
+      OR template.latest_published_version_id IS NOT NULL
+  )
+  AND (
+      sqlc.narg(query)::text IS NULL
+      OR version.title ILIKE '%' || sqlc.narg(query)::text || '%'
+      OR version.description ILIKE '%' || sqlc.narg(query)::text || '%'
+      OR template.system_template_key ILIKE '%' || sqlc.narg(query)::text || '%'
+  )
+ORDER BY template.template_type, template.created_at DESC, template.id
+LIMIT sqlc.arg(page_size)
+OFFSET sqlc.arg(page_offset);
+
 -- name: GetCourseTemplate :one
 SELECT id, company_id, template_type, system_template_key, lifecycle_status,
     current_draft_version_id, latest_published_version_id,

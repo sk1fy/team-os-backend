@@ -55,8 +55,57 @@ type stubCompanyServer struct {
 type stubAcademyServer struct {
 	academyv1.UnimplementedAcademyServiceServer
 	getCourseFn                func(context.Context, *academyv1.GetCourseRequest) (*academyv1.GetCourseResponse, error)
+	getCourseTemplatesFn       func(context.Context, *academyv1.GetCourseTemplatesRequest) (*academyv1.GetCourseTemplatesResponse, error)
 	completeEnrollmentLessonFn func(context.Context, *academyv1.CompleteEnrollmentLessonRequest) (*academyv1.CompleteEnrollmentLessonResponse, error)
 	submitEnrollmentQuizFn     func(context.Context, *academyv1.SubmitEnrollmentQuizAttemptRequest) (*academyv1.SubmitEnrollmentQuizAttemptResponse, error)
+}
+
+func (s *stubAcademyServer) GetCourseTemplates(ctx context.Context, request *academyv1.GetCourseTemplatesRequest) (*academyv1.GetCourseTemplatesResponse, error) {
+	if s.getCourseTemplatesFn == nil {
+		return nil, status.Error(codes.Unimplemented, "unexpected GetCourseTemplates call")
+	}
+	return s.getCourseTemplatesFn(ctx, request)
+}
+
+func TestGatewayCourseTemplatesSearchAndPagination(t *testing.T) {
+	academy := &stubAcademyServer{getCourseTemplatesFn: func(_ context.Context, request *academyv1.GetCourseTemplatesRequest) (*academyv1.GetCourseTemplatesResponse, error) {
+		if request.GetQuery() != "CRM" || request.GetPage() != 1 || request.GetPageSize() != 50 {
+			t.Fatalf("GetCourseTemplates request = %#v", request)
+		}
+		versionID := testDepartmentID
+		systemKey := "crm-basics"
+		return &academyv1.GetCourseTemplatesResponse{
+			Items: []*academyv1.AcademyTemplateSummary{{
+				Id: testChildID, OwnerType: "system", Title: "Основы работы в CRM",
+				LatestVersionId: &versionID, SystemTemplateKey: &systemKey,
+				LessonCount: 3, Capabilities: &academyv1.AcademyTemplateCapabilities{
+					CanInstantiate: true, CanPreview: true,
+				},
+			}},
+			Page: 1, PageSize: 50, Total: 1, TotalPages: 1,
+		}, nil
+	}}
+	response := performRequest(
+		newTestGatewayWithAcademy(t, &stubCompanyServer{}, academy),
+		http.MethodGet,
+		"/api/v1/academy/templates?q=CRM&page=1&pageSize=50",
+		"",
+		nil,
+	)
+	if response.Code != http.StatusOK {
+		t.Fatalf("status = %d, body = %s", response.Code, response.Body.String())
+	}
+	var page api.AcademyTemplatePage
+	if err := json.Unmarshal(response.Body.Bytes(), &page); err != nil {
+		t.Fatal(err)
+	}
+	if page.Total != 1 || page.PageSize != 50 || len(page.Items) != 1 {
+		t.Fatalf("page = %#v", page)
+	}
+	if page.Items[0].Title != "Основы работы в CRM" ||
+		page.Items[0].OwnerType != api.AcademyTemplateOwnerTypeSystem {
+		t.Fatalf("item = %#v", page.Items[0])
+	}
 }
 
 func (s *stubAcademyServer) GetCourse(ctx context.Context, request *academyv1.GetCourseRequest) (*academyv1.GetCourseResponse, error) {

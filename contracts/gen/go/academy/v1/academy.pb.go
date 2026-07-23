@@ -11912,6 +11912,9 @@ type GetCourseTemplatesRequest struct {
 	state           protoimpl.MessageState         `protogen:"open.v1"`
 	Type            *CourseTemplateType            `protobuf:"varint,1,opt,name=type,proto3,enum=teamos.academy.v1.CourseTemplateType,oneof" json:"type,omitempty"`
 	LifecycleStatus *CourseTemplateLifecycleStatus `protobuf:"varint,2,opt,name=lifecycle_status,json=lifecycleStatus,proto3,enum=teamos.academy.v1.CourseTemplateLifecycleStatus,oneof" json:"lifecycle_status,omitempty"`
+	Query           *string                        `protobuf:"bytes,3,opt,name=query,proto3,oneof" json:"query,omitempty"`
+	Page            uint32                         `protobuf:"varint,4,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize        uint32                         `protobuf:"varint,5,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -11960,9 +11963,35 @@ func (x *GetCourseTemplatesRequest) GetLifecycleStatus() CourseTemplateLifecycle
 	return CourseTemplateLifecycleStatus_COURSE_TEMPLATE_LIFECYCLE_STATUS_UNSPECIFIED
 }
 
+func (x *GetCourseTemplatesRequest) GetQuery() string {
+	if x != nil && x.Query != nil {
+		return *x.Query
+	}
+	return ""
+}
+
+func (x *GetCourseTemplatesRequest) GetPage() uint32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *GetCourseTemplatesRequest) GetPageSize() uint32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
 type GetCourseTemplatesResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Templates     []*CourseTemplate      `protobuf:"bytes,1,rep,name=templates,proto3" json:"templates,omitempty"`
+	state         protoimpl.MessageState    `protogen:"open.v1"`
+	Templates     []*CourseTemplate         `protobuf:"bytes,1,rep,name=templates,proto3" json:"templates,omitempty"`
+	Items         []*AcademyTemplateSummary `protobuf:"bytes,2,rep,name=items,proto3" json:"items,omitempty"`
+	Page          uint32                    `protobuf:"varint,3,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      uint32                    `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	Total         uint64                    `protobuf:"varint,5,opt,name=total,proto3" json:"total,omitempty"`
+	TotalPages    uint32                    `protobuf:"varint,6,opt,name=total_pages,json=totalPages,proto3" json:"total_pages,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -12002,6 +12031,41 @@ func (x *GetCourseTemplatesResponse) GetTemplates() []*CourseTemplate {
 		return x.Templates
 	}
 	return nil
+}
+
+func (x *GetCourseTemplatesResponse) GetItems() []*AcademyTemplateSummary {
+	if x != nil {
+		return x.Items
+	}
+	return nil
+}
+
+func (x *GetCourseTemplatesResponse) GetPage() uint32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *GetCourseTemplatesResponse) GetPageSize() uint32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *GetCourseTemplatesResponse) GetTotal() uint64 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+func (x *GetCourseTemplatesResponse) GetTotalPages() uint32 {
+	if x != nil {
+		return x.TotalPages
+	}
+	return 0
 }
 
 type GetCourseTemplateRequest struct {
@@ -17479,6 +17543,214 @@ func (x *GetExternalLearnerTimelineResponse) GetTimeline() *ExternalLearnerTimel
 	return nil
 }
 
+type AcademyTemplateCapabilities struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	CanInstantiate bool                   `protobuf:"varint,1,opt,name=can_instantiate,json=canInstantiate,proto3" json:"can_instantiate,omitempty"`
+	CanEdit        bool                   `protobuf:"varint,2,opt,name=can_edit,json=canEdit,proto3" json:"can_edit,omitempty"`
+	CanArchive     bool                   `protobuf:"varint,3,opt,name=can_archive,json=canArchive,proto3" json:"can_archive,omitempty"`
+	CanPreview     bool                   `protobuf:"varint,4,opt,name=can_preview,json=canPreview,proto3" json:"can_preview,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *AcademyTemplateCapabilities) Reset() {
+	*x = AcademyTemplateCapabilities{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[265]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcademyTemplateCapabilities) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcademyTemplateCapabilities) ProtoMessage() {}
+
+func (x *AcademyTemplateCapabilities) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[265]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcademyTemplateCapabilities.ProtoReflect.Descriptor instead.
+func (*AcademyTemplateCapabilities) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{265}
+}
+
+func (x *AcademyTemplateCapabilities) GetCanInstantiate() bool {
+	if x != nil {
+		return x.CanInstantiate
+	}
+	return false
+}
+
+func (x *AcademyTemplateCapabilities) GetCanEdit() bool {
+	if x != nil {
+		return x.CanEdit
+	}
+	return false
+}
+
+func (x *AcademyTemplateCapabilities) GetCanArchive() bool {
+	if x != nil {
+		return x.CanArchive
+	}
+	return false
+}
+
+func (x *AcademyTemplateCapabilities) GetCanPreview() bool {
+	if x != nil {
+		return x.CanPreview
+	}
+	return false
+}
+
+type AcademyTemplateSummary struct {
+	state               protoimpl.MessageState       `protogen:"open.v1"`
+	Id                  string                       `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	OwnerType           string                       `protobuf:"bytes,2,opt,name=owner_type,json=ownerType,proto3" json:"owner_type,omitempty"`
+	Title               string                       `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
+	Description         *string                      `protobuf:"bytes,4,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	CoverUrl            *string                      `protobuf:"bytes,5,opt,name=cover_url,json=coverUrl,proto3,oneof" json:"cover_url,omitempty"`
+	Category            *string                      `protobuf:"bytes,6,opt,name=category,proto3,oneof" json:"category,omitempty"`
+	LessonCount         uint32                       `protobuf:"varint,7,opt,name=lesson_count,json=lessonCount,proto3" json:"lesson_count,omitempty"`
+	LatestVersionNumber *uint32                      `protobuf:"varint,8,opt,name=latest_version_number,json=latestVersionNumber,proto3,oneof" json:"latest_version_number,omitempty"`
+	LatestVersionId     *string                      `protobuf:"bytes,9,opt,name=latest_version_id,json=latestVersionId,proto3,oneof" json:"latest_version_id,omitempty"`
+	DraftVersionId      *string                      `protobuf:"bytes,10,opt,name=draft_version_id,json=draftVersionId,proto3,oneof" json:"draft_version_id,omitempty"`
+	Archived            bool                         `protobuf:"varint,11,opt,name=archived,proto3" json:"archived,omitempty"`
+	Capabilities        *AcademyTemplateCapabilities `protobuf:"bytes,12,opt,name=capabilities,proto3" json:"capabilities,omitempty"`
+	SystemTemplateKey   *string                      `protobuf:"bytes,13,opt,name=system_template_key,json=systemTemplateKey,proto3,oneof" json:"system_template_key,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *AcademyTemplateSummary) Reset() {
+	*x = AcademyTemplateSummary{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[266]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcademyTemplateSummary) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcademyTemplateSummary) ProtoMessage() {}
+
+func (x *AcademyTemplateSummary) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[266]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcademyTemplateSummary.ProtoReflect.Descriptor instead.
+func (*AcademyTemplateSummary) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{266}
+}
+
+func (x *AcademyTemplateSummary) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *AcademyTemplateSummary) GetOwnerType() string {
+	if x != nil {
+		return x.OwnerType
+	}
+	return ""
+}
+
+func (x *AcademyTemplateSummary) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *AcademyTemplateSummary) GetDescription() string {
+	if x != nil && x.Description != nil {
+		return *x.Description
+	}
+	return ""
+}
+
+func (x *AcademyTemplateSummary) GetCoverUrl() string {
+	if x != nil && x.CoverUrl != nil {
+		return *x.CoverUrl
+	}
+	return ""
+}
+
+func (x *AcademyTemplateSummary) GetCategory() string {
+	if x != nil && x.Category != nil {
+		return *x.Category
+	}
+	return ""
+}
+
+func (x *AcademyTemplateSummary) GetLessonCount() uint32 {
+	if x != nil {
+		return x.LessonCount
+	}
+	return 0
+}
+
+func (x *AcademyTemplateSummary) GetLatestVersionNumber() uint32 {
+	if x != nil && x.LatestVersionNumber != nil {
+		return *x.LatestVersionNumber
+	}
+	return 0
+}
+
+func (x *AcademyTemplateSummary) GetLatestVersionId() string {
+	if x != nil && x.LatestVersionId != nil {
+		return *x.LatestVersionId
+	}
+	return ""
+}
+
+func (x *AcademyTemplateSummary) GetDraftVersionId() string {
+	if x != nil && x.DraftVersionId != nil {
+		return *x.DraftVersionId
+	}
+	return ""
+}
+
+func (x *AcademyTemplateSummary) GetArchived() bool {
+	if x != nil {
+		return x.Archived
+	}
+	return false
+}
+
+func (x *AcademyTemplateSummary) GetCapabilities() *AcademyTemplateCapabilities {
+	if x != nil {
+		return x.Capabilities
+	}
+	return nil
+}
+
+func (x *AcademyTemplateSummary) GetSystemTemplateKey() string {
+	if x != nil && x.SystemTemplateKey != nil {
+		return *x.SystemTemplateKey
+	}
+	return ""
+}
+
 var File_proto_academy_v1_academy_proto protoreflect.FileDescriptor
 
 const file_proto_academy_v1_academy_proto_rawDesc = "" +
@@ -18499,14 +18771,24 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"version_id\x18\x02 \x01(\tR\tversionId\x12'\n" +
 	"\x0fidempotency_key\x18\x03 \x01(\tR\x0eidempotencyKey\"o\n" +
 	")CopyPartnerCourseVersionToCompanyResponse\x12B\n" +
-	"\x06result\x18\x01 \x01(\v2*.teamos.academy.v1.PartnerCourseCopyResultR\x06result\"\xdb\x01\n" +
+	"\x06result\x18\x01 \x01(\v2*.teamos.academy.v1.PartnerCourseCopyResultR\x06result\"\xb1\x02\n" +
 	"\x19GetCourseTemplatesRequest\x12>\n" +
 	"\x04type\x18\x01 \x01(\x0e2%.teamos.academy.v1.CourseTemplateTypeH\x00R\x04type\x88\x01\x01\x12`\n" +
-	"\x10lifecycle_status\x18\x02 \x01(\x0e20.teamos.academy.v1.CourseTemplateLifecycleStatusH\x01R\x0flifecycleStatus\x88\x01\x01B\a\n" +
+	"\x10lifecycle_status\x18\x02 \x01(\x0e20.teamos.academy.v1.CourseTemplateLifecycleStatusH\x01R\x0flifecycleStatus\x88\x01\x01\x12\x19\n" +
+	"\x05query\x18\x03 \x01(\tH\x02R\x05query\x88\x01\x01\x12\x12\n" +
+	"\x04page\x18\x04 \x01(\rR\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x05 \x01(\rR\bpageSizeB\a\n" +
 	"\x05_typeB\x13\n" +
-	"\x11_lifecycle_status\"]\n" +
+	"\x11_lifecycle_statusB\b\n" +
+	"\x06_query\"\x86\x02\n" +
 	"\x1aGetCourseTemplatesResponse\x12?\n" +
-	"\ttemplates\x18\x01 \x03(\v2!.teamos.academy.v1.CourseTemplateR\ttemplates\"n\n" +
+	"\ttemplates\x18\x01 \x03(\v2!.teamos.academy.v1.CourseTemplateR\ttemplates\x12?\n" +
+	"\x05items\x18\x02 \x03(\v2).teamos.academy.v1.AcademyTemplateSummaryR\x05items\x12\x12\n" +
+	"\x04page\x18\x03 \x01(\rR\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x04 \x01(\rR\bpageSize\x12\x14\n" +
+	"\x05total\x18\x05 \x01(\x04R\x05total\x12\x1f\n" +
+	"\vtotal_pages\x18\x06 \x01(\rR\n" +
+	"totalPages\"n\n" +
 	"\x18GetCourseTemplateRequest\x12\x1f\n" +
 	"\vtemplate_id\x18\x01 \x01(\tR\n" +
 	"templateId\x12\"\n" +
@@ -18983,7 +19265,38 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"\n" +
 	"learner_id\x18\x01 \x01(\tR\tlearnerId\"l\n" +
 	"\"GetExternalLearnerTimelineResponse\x12F\n" +
-	"\btimeline\x18\x01 \x01(\v2*.teamos.academy.v1.ExternalLearnerTimelineR\btimeline*c\n" +
+	"\btimeline\x18\x01 \x01(\v2*.teamos.academy.v1.ExternalLearnerTimelineR\btimeline\"\xa3\x01\n" +
+	"\x1bAcademyTemplateCapabilities\x12'\n" +
+	"\x0fcan_instantiate\x18\x01 \x01(\bR\x0ecanInstantiate\x12\x19\n" +
+	"\bcan_edit\x18\x02 \x01(\bR\acanEdit\x12\x1f\n" +
+	"\vcan_archive\x18\x03 \x01(\bR\n" +
+	"canArchive\x12\x1f\n" +
+	"\vcan_preview\x18\x04 \x01(\bR\n" +
+	"canPreview\"\xb0\x05\n" +
+	"\x16AcademyTemplateSummary\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1d\n" +
+	"\n" +
+	"owner_type\x18\x02 \x01(\tR\townerType\x12\x14\n" +
+	"\x05title\x18\x03 \x01(\tR\x05title\x12%\n" +
+	"\vdescription\x18\x04 \x01(\tH\x00R\vdescription\x88\x01\x01\x12 \n" +
+	"\tcover_url\x18\x05 \x01(\tH\x01R\bcoverUrl\x88\x01\x01\x12\x1f\n" +
+	"\bcategory\x18\x06 \x01(\tH\x02R\bcategory\x88\x01\x01\x12!\n" +
+	"\flesson_count\x18\a \x01(\rR\vlessonCount\x127\n" +
+	"\x15latest_version_number\x18\b \x01(\rH\x03R\x13latestVersionNumber\x88\x01\x01\x12/\n" +
+	"\x11latest_version_id\x18\t \x01(\tH\x04R\x0flatestVersionId\x88\x01\x01\x12-\n" +
+	"\x10draft_version_id\x18\n" +
+	" \x01(\tH\x05R\x0edraftVersionId\x88\x01\x01\x12\x1a\n" +
+	"\barchived\x18\v \x01(\bR\barchived\x12R\n" +
+	"\fcapabilities\x18\f \x01(\v2..teamos.academy.v1.AcademyTemplateCapabilitiesR\fcapabilities\x123\n" +
+	"\x13system_template_key\x18\r \x01(\tH\x06R\x11systemTemplateKey\x88\x01\x01B\x0e\n" +
+	"\f_descriptionB\f\n" +
+	"\n" +
+	"_cover_urlB\v\n" +
+	"\t_categoryB\x18\n" +
+	"\x16_latest_version_numberB\x14\n" +
+	"\x12_latest_version_idB\x13\n" +
+	"\x11_draft_version_idB\x16\n" +
+	"\x14_system_template_key*c\n" +
 	"\fCourseStatus\x12\x1d\n" +
 	"\x19COURSE_STATUS_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13COURSE_STATUS_DRAFT\x10\x01\x12\x1b\n" +
@@ -19248,7 +19561,7 @@ func file_proto_academy_v1_academy_proto_rawDescGZIP() []byte {
 }
 
 var file_proto_academy_v1_academy_proto_enumTypes = make([]protoimpl.EnumInfo, 26)
-var file_proto_academy_v1_academy_proto_msgTypes = make([]protoimpl.MessageInfo, 265)
+var file_proto_academy_v1_academy_proto_msgTypes = make([]protoimpl.MessageInfo, 267)
 var file_proto_academy_v1_academy_proto_goTypes = []any{
 	(CourseStatus)(0),                                     // 0: teamos.academy.v1.CourseStatus
 	(CourseVisibility)(0),                                 // 1: teamos.academy.v1.CourseVisibility
@@ -19541,64 +19854,66 @@ var file_proto_academy_v1_academy_proto_goTypes = []any{
 	(*GetExternalLearnerEnrollmentsResponse)(nil),         // 288: teamos.academy.v1.GetExternalLearnerEnrollmentsResponse
 	(*GetExternalLearnerTimelineRequest)(nil),             // 289: teamos.academy.v1.GetExternalLearnerTimelineRequest
 	(*GetExternalLearnerTimelineResponse)(nil),            // 290: teamos.academy.v1.GetExternalLearnerTimelineResponse
-	(*timestamppb.Timestamp)(nil),                         // 291: google.protobuf.Timestamp
-	(*structpb.Struct)(nil),                               // 292: google.protobuf.Struct
+	(*AcademyTemplateCapabilities)(nil),                   // 291: teamos.academy.v1.AcademyTemplateCapabilities
+	(*AcademyTemplateSummary)(nil),                        // 292: teamos.academy.v1.AcademyTemplateSummary
+	(*timestamppb.Timestamp)(nil),                         // 293: google.protobuf.Timestamp
+	(*structpb.Struct)(nil),                               // 294: google.protobuf.Struct
 }
 var file_proto_academy_v1_academy_proto_depIdxs = []int32{
 	0,   // 0: teamos.academy.v1.Course.status:type_name -> teamos.academy.v1.CourseStatus
-	291, // 1: teamos.academy.v1.Course.created_at:type_name -> google.protobuf.Timestamp
-	291, // 2: teamos.academy.v1.Course.updated_at:type_name -> google.protobuf.Timestamp
+	293, // 1: teamos.academy.v1.Course.created_at:type_name -> google.protobuf.Timestamp
+	293, // 2: teamos.academy.v1.Course.updated_at:type_name -> google.protobuf.Timestamp
 	1,   // 3: teamos.academy.v1.Course.visibility:type_name -> teamos.academy.v1.CourseVisibility
 	2,   // 4: teamos.academy.v1.Course.owner_type:type_name -> teamos.academy.v1.CourseOwnerType
 	3,   // 5: teamos.academy.v1.Course.lifecycle_status:type_name -> teamos.academy.v1.CourseLifecycleStatus
 	4,   // 6: teamos.academy.v1.Course.distribution_status:type_name -> teamos.academy.v1.CourseDistributionStatus
-	292, // 7: teamos.academy.v1.Lesson.content:type_name -> google.protobuf.Struct
+	294, // 7: teamos.academy.v1.Lesson.content:type_name -> google.protobuf.Struct
 	8,   // 8: teamos.academy.v1.Lesson.source_mode:type_name -> teamos.academy.v1.LessonSourceMode
 	9,   // 9: teamos.academy.v1.QuizQuestion.type:type_name -> teamos.academy.v1.QuizQuestionType
 	29,  // 10: teamos.academy.v1.QuizQuestion.options:type_name -> teamos.academy.v1.QuizOption
 	30,  // 11: teamos.academy.v1.Quiz.questions:type_name -> teamos.academy.v1.QuizQuestion
 	6,   // 12: teamos.academy.v1.CourseVersion.status:type_name -> teamos.academy.v1.CourseVersionStatus
-	291, // 13: teamos.academy.v1.CourseVersion.created_at:type_name -> google.protobuf.Timestamp
-	291, // 14: teamos.academy.v1.CourseVersion.published_at:type_name -> google.protobuf.Timestamp
-	292, // 15: teamos.academy.v1.CourseVersionLesson.content:type_name -> google.protobuf.Struct
+	293, // 13: teamos.academy.v1.CourseVersion.created_at:type_name -> google.protobuf.Timestamp
+	293, // 14: teamos.academy.v1.CourseVersion.published_at:type_name -> google.protobuf.Timestamp
+	294, // 15: teamos.academy.v1.CourseVersionLesson.content:type_name -> google.protobuf.Struct
 	7,   // 16: teamos.academy.v1.CourseVersionLesson.source_type:type_name -> teamos.academy.v1.CourseLessonSourceType
 	30,  // 17: teamos.academy.v1.CourseVersionQuiz.questions:type_name -> teamos.academy.v1.QuizQuestion
 	9,   // 18: teamos.academy.v1.LearnerQuizQuestion.type:type_name -> teamos.academy.v1.QuizQuestionType
 	36,  // 19: teamos.academy.v1.LearnerQuizQuestion.options:type_name -> teamos.academy.v1.LearnerQuizOption
 	37,  // 20: teamos.academy.v1.LearnerCourseVersionQuiz.questions:type_name -> teamos.academy.v1.LearnerQuizQuestion
-	292, // 21: teamos.academy.v1.LearnerCourseVersionLesson.content:type_name -> google.protobuf.Struct
+	294, // 21: teamos.academy.v1.LearnerCourseVersionLesson.content:type_name -> google.protobuf.Struct
 	38,  // 22: teamos.academy.v1.LearnerCourseVersionLesson.quiz:type_name -> teamos.academy.v1.LearnerCourseVersionQuiz
 	39,  // 23: teamos.academy.v1.LearnerCourseVersionSection.lessons:type_name -> teamos.academy.v1.LearnerCourseVersionLesson
 	40,  // 24: teamos.academy.v1.LearnerPublishedCourseVersion.sections:type_name -> teamos.academy.v1.LearnerCourseVersionSection
 	10,  // 25: teamos.academy.v1.CourseAssignment.assignee_type:type_name -> teamos.academy.v1.AssigneeType
-	291, // 26: teamos.academy.v1.CourseAssignment.due_date:type_name -> google.protobuf.Timestamp
-	291, // 27: teamos.academy.v1.CourseAssignment.created_at:type_name -> google.protobuf.Timestamp
-	291, // 28: teamos.academy.v1.QuizAttempt.created_at:type_name -> google.protobuf.Timestamp
+	293, // 26: teamos.academy.v1.CourseAssignment.due_date:type_name -> google.protobuf.Timestamp
+	293, // 27: teamos.academy.v1.CourseAssignment.created_at:type_name -> google.protobuf.Timestamp
+	293, // 28: teamos.academy.v1.QuizAttempt.created_at:type_name -> google.protobuf.Timestamp
 	11,  // 29: teamos.academy.v1.CourseProgress.status:type_name -> teamos.academy.v1.CourseProgressStatus
 	43,  // 30: teamos.academy.v1.CourseProgress.quiz_attempts:type_name -> teamos.academy.v1.QuizAttempt
-	291, // 31: teamos.academy.v1.CourseProgress.started_at:type_name -> google.protobuf.Timestamp
-	291, // 32: teamos.academy.v1.CourseProgress.completed_at:type_name -> google.protobuf.Timestamp
+	293, // 31: teamos.academy.v1.CourseProgress.started_at:type_name -> google.protobuf.Timestamp
+	293, // 32: teamos.academy.v1.CourseProgress.completed_at:type_name -> google.protobuf.Timestamp
 	12,  // 33: teamos.academy.v1.CourseEnrollment.learner_type:type_name -> teamos.academy.v1.EnrollmentLearnerType
 	13,  // 34: teamos.academy.v1.CourseEnrollment.source_type:type_name -> teamos.academy.v1.EnrollmentSourceType
 	14,  // 35: teamos.academy.v1.CourseEnrollment.progress_status:type_name -> teamos.academy.v1.EnrollmentProgressStatus
 	15,  // 36: teamos.academy.v1.CourseEnrollment.access_status:type_name -> teamos.academy.v1.EnrollmentAccessStatus
-	291, // 37: teamos.academy.v1.CourseEnrollment.activated_at:type_name -> google.protobuf.Timestamp
-	291, // 38: teamos.academy.v1.CourseEnrollment.access_until:type_name -> google.protobuf.Timestamp
-	291, // 39: teamos.academy.v1.CourseEnrollment.started_at:type_name -> google.protobuf.Timestamp
-	291, // 40: teamos.academy.v1.CourseEnrollment.completed_at:type_name -> google.protobuf.Timestamp
-	291, // 41: teamos.academy.v1.CourseEnrollment.last_activity_at:type_name -> google.protobuf.Timestamp
-	291, // 42: teamos.academy.v1.CourseEnrollment.frozen_at:type_name -> google.protobuf.Timestamp
-	291, // 43: teamos.academy.v1.CourseEnrollment.suspended_at:type_name -> google.protobuf.Timestamp
-	291, // 44: teamos.academy.v1.CourseEnrollment.created_at:type_name -> google.protobuf.Timestamp
-	291, // 45: teamos.academy.v1.CourseEnrollment.updated_at:type_name -> google.protobuf.Timestamp
-	291, // 46: teamos.academy.v1.CourseEnrollment.due_date:type_name -> google.protobuf.Timestamp
+	293, // 37: teamos.academy.v1.CourseEnrollment.activated_at:type_name -> google.protobuf.Timestamp
+	293, // 38: teamos.academy.v1.CourseEnrollment.access_until:type_name -> google.protobuf.Timestamp
+	293, // 39: teamos.academy.v1.CourseEnrollment.started_at:type_name -> google.protobuf.Timestamp
+	293, // 40: teamos.academy.v1.CourseEnrollment.completed_at:type_name -> google.protobuf.Timestamp
+	293, // 41: teamos.academy.v1.CourseEnrollment.last_activity_at:type_name -> google.protobuf.Timestamp
+	293, // 42: teamos.academy.v1.CourseEnrollment.frozen_at:type_name -> google.protobuf.Timestamp
+	293, // 43: teamos.academy.v1.CourseEnrollment.suspended_at:type_name -> google.protobuf.Timestamp
+	293, // 44: teamos.academy.v1.CourseEnrollment.created_at:type_name -> google.protobuf.Timestamp
+	293, // 45: teamos.academy.v1.CourseEnrollment.updated_at:type_name -> google.protobuf.Timestamp
+	293, // 46: teamos.academy.v1.CourseEnrollment.due_date:type_name -> google.protobuf.Timestamp
 	16,  // 47: teamos.academy.v1.EnrollmentLessonProgress.status:type_name -> teamos.academy.v1.EnrollmentLessonStatus
-	291, // 48: teamos.academy.v1.EnrollmentLessonProgress.first_opened_at:type_name -> google.protobuf.Timestamp
-	291, // 49: teamos.academy.v1.EnrollmentLessonProgress.completed_at:type_name -> google.protobuf.Timestamp
-	292, // 50: teamos.academy.v1.EnrollmentLessonProgress.last_position:type_name -> google.protobuf.Struct
+	293, // 48: teamos.academy.v1.EnrollmentLessonProgress.first_opened_at:type_name -> google.protobuf.Timestamp
+	293, // 49: teamos.academy.v1.EnrollmentLessonProgress.completed_at:type_name -> google.protobuf.Timestamp
+	294, // 50: teamos.academy.v1.EnrollmentLessonProgress.last_position:type_name -> google.protobuf.Struct
 	47,  // 51: teamos.academy.v1.EnrollmentQuizAttempt.answers:type_name -> teamos.academy.v1.EnrollmentQuizAnswer
-	291, // 52: teamos.academy.v1.EnrollmentQuizAttempt.reviewed_at:type_name -> google.protobuf.Timestamp
-	291, // 53: teamos.academy.v1.EnrollmentQuizAttempt.created_at:type_name -> google.protobuf.Timestamp
+	293, // 52: teamos.academy.v1.EnrollmentQuizAttempt.reviewed_at:type_name -> google.protobuf.Timestamp
+	293, // 53: teamos.academy.v1.EnrollmentQuizAttempt.created_at:type_name -> google.protobuf.Timestamp
 	16,  // 54: teamos.academy.v1.EnrollmentOutlineLesson.status:type_name -> teamos.academy.v1.EnrollmentLessonStatus
 	49,  // 55: teamos.academy.v1.EnrollmentOutlineSection.lessons:type_name -> teamos.academy.v1.EnrollmentOutlineLesson
 	45,  // 56: teamos.academy.v1.EnrollmentOutline.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
@@ -19614,10 +19929,10 @@ var file_proto_academy_v1_academy_proto_depIdxs = []int32{
 	46,  // 66: teamos.academy.v1.EnrollmentReport.lessons:type_name -> teamos.academy.v1.EnrollmentLessonProgress
 	48,  // 67: teamos.academy.v1.EnrollmentReport.quiz_attempts:type_name -> teamos.academy.v1.EnrollmentQuizAttempt
 	17,  // 68: teamos.academy.v1.CourseRestriction.type:type_name -> teamos.academy.v1.CourseRestrictionType
-	291, // 69: teamos.academy.v1.CourseRestriction.created_at:type_name -> google.protobuf.Timestamp
-	291, // 70: teamos.academy.v1.CourseRestriction.resolved_at:type_name -> google.protobuf.Timestamp
+	293, // 69: teamos.academy.v1.CourseRestriction.created_at:type_name -> google.protobuf.Timestamp
+	293, // 70: teamos.academy.v1.CourseRestriction.resolved_at:type_name -> google.protobuf.Timestamp
 	5,   // 71: teamos.academy.v1.CourseOrigin.type:type_name -> teamos.academy.v1.CourseOriginType
-	291, // 72: teamos.academy.v1.CourseOrigin.instantiated_at:type_name -> google.protobuf.Timestamp
+	293, // 72: teamos.academy.v1.CourseOrigin.instantiated_at:type_name -> google.protobuf.Timestamp
 	26,  // 73: teamos.academy.v1.PartnerCourseCopyResult.course:type_name -> teamos.academy.v1.Course
 	32,  // 74: teamos.academy.v1.PartnerCourseCopyResult.draft:type_name -> teamos.academy.v1.CourseVersion
 	56,  // 75: teamos.academy.v1.PartnerCourseCopyResult.origin:type_name -> teamos.academy.v1.CourseOrigin
@@ -19630,12 +19945,12 @@ var file_proto_academy_v1_academy_proto_depIdxs = []int32{
 	41,  // 82: teamos.academy.v1.CourseVersionPreview.version:type_name -> teamos.academy.v1.LearnerPublishedCourseVersion
 	18,  // 83: teamos.academy.v1.CourseTemplate.type:type_name -> teamos.academy.v1.CourseTemplateType
 	19,  // 84: teamos.academy.v1.CourseTemplate.lifecycle_status:type_name -> teamos.academy.v1.CourseTemplateLifecycleStatus
-	291, // 85: teamos.academy.v1.CourseTemplate.created_at:type_name -> google.protobuf.Timestamp
-	291, // 86: teamos.academy.v1.CourseTemplate.updated_at:type_name -> google.protobuf.Timestamp
+	293, // 85: teamos.academy.v1.CourseTemplate.created_at:type_name -> google.protobuf.Timestamp
+	293, // 86: teamos.academy.v1.CourseTemplate.updated_at:type_name -> google.protobuf.Timestamp
 	6,   // 87: teamos.academy.v1.CourseTemplateVersion.status:type_name -> teamos.academy.v1.CourseVersionStatus
-	291, // 88: teamos.academy.v1.CourseTemplateVersion.created_at:type_name -> google.protobuf.Timestamp
-	291, // 89: teamos.academy.v1.CourseTemplateVersion.published_at:type_name -> google.protobuf.Timestamp
-	292, // 90: teamos.academy.v1.CourseTemplateVersionLesson.content:type_name -> google.protobuf.Struct
+	293, // 88: teamos.academy.v1.CourseTemplateVersion.created_at:type_name -> google.protobuf.Timestamp
+	293, // 89: teamos.academy.v1.CourseTemplateVersion.published_at:type_name -> google.protobuf.Timestamp
+	294, // 90: teamos.academy.v1.CourseTemplateVersionLesson.content:type_name -> google.protobuf.Struct
 	7,   // 91: teamos.academy.v1.CourseTemplateVersionLesson.source_type:type_name -> teamos.academy.v1.CourseLessonSourceType
 	30,  // 92: teamos.academy.v1.CourseTemplateVersionQuiz.questions:type_name -> teamos.academy.v1.QuizQuestion
 	66,  // 93: teamos.academy.v1.CourseTemplateVersionContent.sections:type_name -> teamos.academy.v1.CourseTemplateVersionSection
@@ -19644,7 +19959,7 @@ var file_proto_academy_v1_academy_proto_depIdxs = []int32{
 	65,  // 96: teamos.academy.v1.CourseTemplateVersionDetails.version:type_name -> teamos.academy.v1.CourseTemplateVersion
 	69,  // 97: teamos.academy.v1.CourseTemplateVersionDetails.content:type_name -> teamos.academy.v1.CourseTemplateVersionContent
 	30,  // 98: teamos.academy.v1.CourseTemplateDraftQuizInput.questions:type_name -> teamos.academy.v1.QuizQuestion
-	292, // 99: teamos.academy.v1.CourseTemplateDraftLessonInput.content:type_name -> google.protobuf.Struct
+	294, // 99: teamos.academy.v1.CourseTemplateDraftLessonInput.content:type_name -> google.protobuf.Struct
 	7,   // 100: teamos.academy.v1.CourseTemplateDraftLessonInput.source_type:type_name -> teamos.academy.v1.CourseLessonSourceType
 	71,  // 101: teamos.academy.v1.CourseTemplateDraftLessonInput.quiz:type_name -> teamos.academy.v1.CourseTemplateDraftQuizInput
 	72,  // 102: teamos.academy.v1.CourseTemplateDraftSectionInput.lessons:type_name -> teamos.academy.v1.CourseTemplateDraftLessonInput
@@ -19683,10 +19998,10 @@ var file_proto_academy_v1_academy_proto_depIdxs = []int32{
 	41,  // 135: teamos.academy.v1.GetPublishedCourseVersionResponse.version:type_name -> teamos.academy.v1.LearnerPublishedCourseVersion
 	33,  // 136: teamos.academy.v1.CreateCourseVersionSectionResponse.section:type_name -> teamos.academy.v1.CourseVersionSection
 	33,  // 137: teamos.academy.v1.UpdateCourseVersionSectionResponse.section:type_name -> teamos.academy.v1.CourseVersionSection
-	292, // 138: teamos.academy.v1.CreateCourseVersionLessonRequest.content:type_name -> google.protobuf.Struct
+	294, // 138: teamos.academy.v1.CreateCourseVersionLessonRequest.content:type_name -> google.protobuf.Struct
 	7,   // 139: teamos.academy.v1.CreateCourseVersionLessonRequest.source_type:type_name -> teamos.academy.v1.CourseLessonSourceType
 	34,  // 140: teamos.academy.v1.CreateCourseVersionLessonResponse.lesson:type_name -> teamos.academy.v1.CourseVersionLesson
-	292, // 141: teamos.academy.v1.UpdateCourseVersionLessonRequest.content:type_name -> google.protobuf.Struct
+	294, // 141: teamos.academy.v1.UpdateCourseVersionLessonRequest.content:type_name -> google.protobuf.Struct
 	7,   // 142: teamos.academy.v1.UpdateCourseVersionLessonRequest.source_type:type_name -> teamos.academy.v1.CourseLessonSourceType
 	34,  // 143: teamos.academy.v1.UpdateCourseVersionLessonResponse.lesson:type_name -> teamos.academy.v1.CourseVersionLesson
 	34,  // 144: teamos.academy.v1.MoveCourseVersionLessonResponse.lesson:type_name -> teamos.academy.v1.CourseVersionLesson
@@ -19696,10 +20011,10 @@ var file_proto_academy_v1_academy_proto_depIdxs = []int32{
 	27,  // 148: teamos.academy.v1.CreateCourseSectionResponse.section:type_name -> teamos.academy.v1.CourseSection
 	27,  // 149: teamos.academy.v1.UpdateCourseSectionResponse.section:type_name -> teamos.academy.v1.CourseSection
 	28,  // 150: teamos.academy.v1.GetLessonsResponse.lessons:type_name -> teamos.academy.v1.Lesson
-	292, // 151: teamos.academy.v1.CreateLessonRequest.content:type_name -> google.protobuf.Struct
+	294, // 151: teamos.academy.v1.CreateLessonRequest.content:type_name -> google.protobuf.Struct
 	8,   // 152: teamos.academy.v1.CreateLessonRequest.source_mode:type_name -> teamos.academy.v1.LessonSourceMode
 	28,  // 153: teamos.academy.v1.CreateLessonResponse.lesson:type_name -> teamos.academy.v1.Lesson
-	292, // 154: teamos.academy.v1.UpdateLessonRequest.content:type_name -> google.protobuf.Struct
+	294, // 154: teamos.academy.v1.UpdateLessonRequest.content:type_name -> google.protobuf.Struct
 	8,   // 155: teamos.academy.v1.UpdateLessonRequest.source_mode:type_name -> teamos.academy.v1.LessonSourceMode
 	28,  // 156: teamos.academy.v1.UpdateLessonResponse.lesson:type_name -> teamos.academy.v1.Lesson
 	28,  // 157: teamos.academy.v1.MoveLessonResponse.lesson:type_name -> teamos.academy.v1.Lesson
@@ -19708,7 +20023,7 @@ var file_proto_academy_v1_academy_proto_depIdxs = []int32{
 	31,  // 160: teamos.academy.v1.UpsertQuizResponse.quiz:type_name -> teamos.academy.v1.Quiz
 	42,  // 161: teamos.academy.v1.GetAssignmentsResponse.assignments:type_name -> teamos.academy.v1.CourseAssignment
 	10,  // 162: teamos.academy.v1.AssignCourseRequest.assignee_type:type_name -> teamos.academy.v1.AssigneeType
-	291, // 163: teamos.academy.v1.AssignCourseRequest.due_date:type_name -> google.protobuf.Timestamp
+	293, // 163: teamos.academy.v1.AssignCourseRequest.due_date:type_name -> google.protobuf.Timestamp
 	42,  // 164: teamos.academy.v1.AssignCourseResponse.assignment:type_name -> teamos.academy.v1.CourseAssignment
 	44,  // 165: teamos.academy.v1.GetProgressResponse.progress:type_name -> teamos.academy.v1.CourseProgress
 	44,  // 166: teamos.academy.v1.MarkLessonCompleteResponse.progress:type_name -> teamos.academy.v1.CourseProgress
@@ -19722,10 +20037,10 @@ var file_proto_academy_v1_academy_proto_depIdxs = []int32{
 	52,  // 174: teamos.academy.v1.GetEnrollmentLessonResponse.lesson:type_name -> teamos.academy.v1.EnrollmentLesson
 	45,  // 175: teamos.academy.v1.ResumeEnrollmentResponse.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
 	52,  // 176: teamos.academy.v1.ResumeEnrollmentResponse.current_lesson:type_name -> teamos.academy.v1.EnrollmentLesson
-	292, // 177: teamos.academy.v1.CompleteEnrollmentLessonRequest.last_position:type_name -> google.protobuf.Struct
+	294, // 177: teamos.academy.v1.CompleteEnrollmentLessonRequest.last_position:type_name -> google.protobuf.Struct
 	53,  // 178: teamos.academy.v1.CompleteEnrollmentLessonResponse.progress:type_name -> teamos.academy.v1.EnrollmentProgressSnapshot
 	47,  // 179: teamos.academy.v1.SubmitEnrollmentQuizAttemptRequest.answers:type_name -> teamos.academy.v1.EnrollmentQuizAnswer
-	292, // 180: teamos.academy.v1.SubmitEnrollmentQuizAttemptRequest.last_position:type_name -> google.protobuf.Struct
+	294, // 180: teamos.academy.v1.SubmitEnrollmentQuizAttemptRequest.last_position:type_name -> google.protobuf.Struct
 	48,  // 181: teamos.academy.v1.SubmitEnrollmentQuizAttemptResponse.attempt:type_name -> teamos.academy.v1.EnrollmentQuizAttempt
 	53,  // 182: teamos.academy.v1.SubmitEnrollmentQuizAttemptResponse.progress:type_name -> teamos.academy.v1.EnrollmentProgressSnapshot
 	54,  // 183: teamos.academy.v1.GetEnrollmentReportResponse.report:type_name -> teamos.academy.v1.EnrollmentReport
@@ -19744,288 +20059,290 @@ var file_proto_academy_v1_academy_proto_depIdxs = []int32{
 	18,  // 196: teamos.academy.v1.GetCourseTemplatesRequest.type:type_name -> teamos.academy.v1.CourseTemplateType
 	19,  // 197: teamos.academy.v1.GetCourseTemplatesRequest.lifecycle_status:type_name -> teamos.academy.v1.CourseTemplateLifecycleStatus
 	64,  // 198: teamos.academy.v1.GetCourseTemplatesResponse.templates:type_name -> teamos.academy.v1.CourseTemplate
-	64,  // 199: teamos.academy.v1.GetCourseTemplateResponse.template:type_name -> teamos.academy.v1.CourseTemplate
-	65,  // 200: teamos.academy.v1.GetCourseTemplateResponse.versions:type_name -> teamos.academy.v1.CourseTemplateVersion
-	70,  // 201: teamos.academy.v1.GetCourseTemplateResponse.selected_version:type_name -> teamos.academy.v1.CourseTemplateVersionDetails
-	74,  // 202: teamos.academy.v1.CreateCourseTemplateRequest.content:type_name -> teamos.academy.v1.CourseTemplateDraftContentInput
-	64,  // 203: teamos.academy.v1.CreateCourseTemplateResponse.template:type_name -> teamos.academy.v1.CourseTemplate
-	65,  // 204: teamos.academy.v1.CreateCourseTemplateResponse.draft:type_name -> teamos.academy.v1.CourseTemplateVersion
-	74,  // 205: teamos.academy.v1.UpdateCourseTemplateDraftRequest.content:type_name -> teamos.academy.v1.CourseTemplateDraftContentInput
-	70,  // 206: teamos.academy.v1.UpdateCourseTemplateDraftResponse.draft:type_name -> teamos.academy.v1.CourseTemplateVersionDetails
-	70,  // 207: teamos.academy.v1.CreateCourseTemplateDraftResponse.draft:type_name -> teamos.academy.v1.CourseTemplateVersionDetails
-	65,  // 208: teamos.academy.v1.PublishCourseTemplateVersionResponse.version:type_name -> teamos.academy.v1.CourseTemplateVersion
-	64,  // 209: teamos.academy.v1.ArchiveCourseTemplateResponse.template:type_name -> teamos.academy.v1.CourseTemplate
-	75,  // 210: teamos.academy.v1.InstantiateCourseTemplateVersionResponse.result:type_name -> teamos.academy.v1.CourseTemplateInstantiationResult
-	20,  // 211: teamos.academy.v1.ExternalPersonalAccess.status:type_name -> teamos.academy.v1.ExternalPersonalAccessStatus
-	291, // 212: teamos.academy.v1.ExternalPersonalAccess.issued_at:type_name -> google.protobuf.Timestamp
-	291, // 213: teamos.academy.v1.ExternalPersonalAccess.activated_at:type_name -> google.protobuf.Timestamp
-	291, // 214: teamos.academy.v1.ExternalPersonalAccess.revoked_at:type_name -> google.protobuf.Timestamp
-	210, // 215: teamos.academy.v1.ExternalPersonalAccessCreated.access:type_name -> teamos.academy.v1.ExternalPersonalAccess
-	21,  // 216: teamos.academy.v1.ExternalCampaign.owner_type:type_name -> teamos.academy.v1.ExternalCampaignOwnerType
-	22,  // 217: teamos.academy.v1.ExternalCampaign.purpose:type_name -> teamos.academy.v1.ExternalCampaignPurpose
-	23,  // 218: teamos.academy.v1.ExternalCampaign.status:type_name -> teamos.academy.v1.ExternalCampaignStatus
-	291, // 219: teamos.academy.v1.ExternalCampaign.created_at:type_name -> google.protobuf.Timestamp
-	291, // 220: teamos.academy.v1.ExternalCampaign.paused_at:type_name -> google.protobuf.Timestamp
-	291, // 221: teamos.academy.v1.ExternalCampaign.revoked_at:type_name -> google.protobuf.Timestamp
-	212, // 222: teamos.academy.v1.ExternalCampaignCreated.campaign:type_name -> teamos.academy.v1.ExternalCampaign
-	215, // 223: teamos.academy.v1.CampaignAnalytics.lesson_drop_off:type_name -> teamos.academy.v1.CampaignLessonDropOff
-	216, // 224: teamos.academy.v1.CampaignAnalytics.attribution:type_name -> teamos.academy.v1.CampaignAttribution
-	217, // 225: teamos.academy.v1.CampaignAnalytics.versions:type_name -> teamos.academy.v1.CampaignVersionAnalytics
-	212, // 226: teamos.academy.v1.ExternalCampaignReport.campaign:type_name -> teamos.academy.v1.ExternalCampaign
-	214, // 227: teamos.academy.v1.ExternalCampaignReport.funnel:type_name -> teamos.academy.v1.CampaignFunnel
-	45,  // 228: teamos.academy.v1.ExternalCampaignReport.enrollments:type_name -> teamos.academy.v1.CourseEnrollment
-	218, // 229: teamos.academy.v1.ExternalCampaignReport.analytics:type_name -> teamos.academy.v1.CampaignAnalytics
-	45,  // 230: teamos.academy.v1.CourseExternalReport.enrollments:type_name -> teamos.academy.v1.CourseEnrollment
-	24,  // 231: teamos.academy.v1.ExternalLearnerTimelineEvent.type:type_name -> teamos.academy.v1.ExternalLearnerTimelineEventType
-	291, // 232: teamos.academy.v1.ExternalLearnerTimelineEvent.occurred_at:type_name -> google.protobuf.Timestamp
-	13,  // 233: teamos.academy.v1.ExternalLearnerTimelineEvent.source_type:type_name -> teamos.academy.v1.EnrollmentSourceType
-	15,  // 234: teamos.academy.v1.ExternalLearnerTimelineEvent.access_status:type_name -> teamos.academy.v1.EnrollmentAccessStatus
-	223, // 235: teamos.academy.v1.ExternalLearnerTimeline.learner:type_name -> teamos.academy.v1.ExternalLearner
-	221, // 236: teamos.academy.v1.ExternalLearnerTimeline.events:type_name -> teamos.academy.v1.ExternalLearnerTimelineEvent
-	291, // 237: teamos.academy.v1.ExternalLearner.email_verified_at:type_name -> google.protobuf.Timestamp
-	291, // 238: teamos.academy.v1.ExternalLearner.created_at:type_name -> google.protobuf.Timestamp
-	291, // 239: teamos.academy.v1.ExternalLearner.updated_at:type_name -> google.protobuf.Timestamp
-	224, // 240: teamos.academy.v1.PublicAcademyOutlineSection.lessons:type_name -> teamos.academy.v1.PublicAcademyOutlineLesson
-	25,  // 241: teamos.academy.v1.PublicAcademyAccess.kind:type_name -> teamos.academy.v1.PublicAcademyAccessKind
-	2,   // 242: teamos.academy.v1.PublicAcademyAccess.owner_type:type_name -> teamos.academy.v1.CourseOwnerType
-	225, // 243: teamos.academy.v1.PublicAcademyAccess.outline:type_name -> teamos.academy.v1.PublicAcademyOutlineSection
-	291, // 244: teamos.academy.v1.ExternalVerificationChallenge.expires_at:type_name -> google.protobuf.Timestamp
-	291, // 245: teamos.academy.v1.ExternalVerificationConfirmed.verified_at:type_name -> google.protobuf.Timestamp
-	291, // 246: teamos.academy.v1.ExternalVerificationConfirmed.session_expires_at:type_name -> google.protobuf.Timestamp
-	291, // 247: teamos.academy.v1.ExternalQuizAttemptResult.created_at:type_name -> google.protobuf.Timestamp
-	45,  // 248: teamos.academy.v1.ExternalEnrollmentResults.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
-	229, // 249: teamos.academy.v1.ExternalEnrollmentResults.quiz_attempts:type_name -> teamos.academy.v1.ExternalQuizAttemptResult
-	211, // 250: teamos.academy.v1.CreateExternalPersonalAccessResponse.created:type_name -> teamos.academy.v1.ExternalPersonalAccessCreated
-	210, // 251: teamos.academy.v1.GetExternalPersonalAccessesResponse.accesses:type_name -> teamos.academy.v1.ExternalPersonalAccess
-	210, // 252: teamos.academy.v1.GetExternalPersonalAccessResponse.access:type_name -> teamos.academy.v1.ExternalPersonalAccess
-	210, // 253: teamos.academy.v1.ExtendExternalPersonalAccessResponse.access:type_name -> teamos.academy.v1.ExternalPersonalAccess
-	211, // 254: teamos.academy.v1.RotateExternalPersonalAccessTokenResponse.created:type_name -> teamos.academy.v1.ExternalPersonalAccessCreated
-	210, // 255: teamos.academy.v1.RevokeExternalPersonalAccessResponse.access:type_name -> teamos.academy.v1.ExternalPersonalAccess
-	211, // 256: teamos.academy.v1.RepeatExternalPersonalAccessResponse.created:type_name -> teamos.academy.v1.ExternalPersonalAccessCreated
-	22,  // 257: teamos.academy.v1.CreateExternalCampaignRequest.purpose:type_name -> teamos.academy.v1.ExternalCampaignPurpose
-	213, // 258: teamos.academy.v1.CreateExternalCampaignResponse.created:type_name -> teamos.academy.v1.ExternalCampaignCreated
-	212, // 259: teamos.academy.v1.GetExternalCampaignsResponse.campaigns:type_name -> teamos.academy.v1.ExternalCampaign
-	212, // 260: teamos.academy.v1.GetExternalCampaignResponse.campaign:type_name -> teamos.academy.v1.ExternalCampaign
-	212, // 261: teamos.academy.v1.PauseExternalCampaignResponse.campaign:type_name -> teamos.academy.v1.ExternalCampaign
-	212, // 262: teamos.academy.v1.ResumeExternalCampaignResponse.campaign:type_name -> teamos.academy.v1.ExternalCampaign
-	213, // 263: teamos.academy.v1.RotateExternalCampaignTokenResponse.created:type_name -> teamos.academy.v1.ExternalCampaignCreated
-	212, // 264: teamos.academy.v1.RevokeExternalCampaignResponse.campaign:type_name -> teamos.academy.v1.ExternalCampaign
-	219, // 265: teamos.academy.v1.GetExternalCampaignReportResponse.report:type_name -> teamos.academy.v1.ExternalCampaignReport
-	220, // 266: teamos.academy.v1.GetCourseExternalReportResponse.report:type_name -> teamos.academy.v1.CourseExternalReport
-	226, // 267: teamos.academy.v1.GetPublicAcademyAccessResponse.access:type_name -> teamos.academy.v1.PublicAcademyAccess
-	227, // 268: teamos.academy.v1.RequestPublicAcademyVerificationResponse.challenge:type_name -> teamos.academy.v1.ExternalVerificationChallenge
-	228, // 269: teamos.academy.v1.ConfirmPublicAcademyVerificationResponse.confirmed:type_name -> teamos.academy.v1.ExternalVerificationConfirmed
-	45,  // 270: teamos.academy.v1.ActivatePublicAcademyAccessResponse.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
-	45,  // 271: teamos.academy.v1.GetPublicAcademyEnrollmentResponse.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
-	51,  // 272: teamos.academy.v1.GetPublicAcademyEnrollmentOutlineResponse.outline:type_name -> teamos.academy.v1.EnrollmentOutline
-	52,  // 273: teamos.academy.v1.GetPublicAcademyEnrollmentLessonResponse.lesson:type_name -> teamos.academy.v1.EnrollmentLesson
-	45,  // 274: teamos.academy.v1.CompletePublicAcademyEnrollmentLessonResponse.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
-	47,  // 275: teamos.academy.v1.SubmitPublicAcademyQuizAttemptRequest.answers:type_name -> teamos.academy.v1.EnrollmentQuizAnswer
-	229, // 276: teamos.academy.v1.SubmitPublicAcademyQuizAttemptResponse.result:type_name -> teamos.academy.v1.ExternalQuizAttemptResult
-	230, // 277: teamos.academy.v1.GetPublicAcademyEnrollmentResultsResponse.results:type_name -> teamos.academy.v1.ExternalEnrollmentResults
-	223, // 278: teamos.academy.v1.GetExternalLearnersResponse.learners:type_name -> teamos.academy.v1.ExternalLearner
-	223, // 279: teamos.academy.v1.GetExternalLearnerResponse.learner:type_name -> teamos.academy.v1.ExternalLearner
-	45,  // 280: teamos.academy.v1.GetExternalLearnerEnrollmentsResponse.enrollments:type_name -> teamos.academy.v1.CourseEnrollment
-	222, // 281: teamos.academy.v1.GetExternalLearnerTimelineResponse.timeline:type_name -> teamos.academy.v1.ExternalLearnerTimeline
-	76,  // 282: teamos.academy.v1.AcademyService.GetCourses:input_type -> teamos.academy.v1.GetCoursesRequest
-	78,  // 283: teamos.academy.v1.AcademyService.GetCourse:input_type -> teamos.academy.v1.GetCourseRequest
-	80,  // 284: teamos.academy.v1.AcademyService.GetPublicCourse:input_type -> teamos.academy.v1.GetPublicCourseRequest
-	82,  // 285: teamos.academy.v1.AcademyService.CreateCourse:input_type -> teamos.academy.v1.CreateCourseRequest
-	84,  // 286: teamos.academy.v1.AcademyService.CreateCourseFromKb:input_type -> teamos.academy.v1.CreateCourseFromKbRequest
-	86,  // 287: teamos.academy.v1.AcademyService.UpdateCourse:input_type -> teamos.academy.v1.UpdateCourseRequest
-	88,  // 288: teamos.academy.v1.AcademyService.ArchiveCourse:input_type -> teamos.academy.v1.ArchiveCourseRequest
-	90,  // 289: teamos.academy.v1.AcademyService.RestoreCourse:input_type -> teamos.academy.v1.RestoreCourseRequest
-	92,  // 290: teamos.academy.v1.AcademyService.DeleteCourse:input_type -> teamos.academy.v1.DeleteCourseRequest
-	94,  // 291: teamos.academy.v1.AcademyService.GetCourseVersions:input_type -> teamos.academy.v1.GetCourseVersionsRequest
-	96,  // 292: teamos.academy.v1.AcademyService.GetCourseVersion:input_type -> teamos.academy.v1.GetCourseVersionRequest
-	98,  // 293: teamos.academy.v1.AcademyService.CreateCourseDraft:input_type -> teamos.academy.v1.CreateCourseDraftRequest
-	100, // 294: teamos.academy.v1.AcademyService.UpdateCourseDraft:input_type -> teamos.academy.v1.UpdateCourseDraftRequest
-	102, // 295: teamos.academy.v1.AcademyService.PublishCourseVersion:input_type -> teamos.academy.v1.PublishCourseVersionRequest
-	104, // 296: teamos.academy.v1.AcademyService.GetPublishedCourseVersion:input_type -> teamos.academy.v1.GetPublishedCourseVersionRequest
-	106, // 297: teamos.academy.v1.AcademyService.CreateCourseVersionSection:input_type -> teamos.academy.v1.CreateCourseVersionSectionRequest
-	108, // 298: teamos.academy.v1.AcademyService.UpdateCourseVersionSection:input_type -> teamos.academy.v1.UpdateCourseVersionSectionRequest
-	110, // 299: teamos.academy.v1.AcademyService.DeleteCourseVersionSection:input_type -> teamos.academy.v1.DeleteCourseVersionSectionRequest
-	112, // 300: teamos.academy.v1.AcademyService.CreateCourseVersionLesson:input_type -> teamos.academy.v1.CreateCourseVersionLessonRequest
-	114, // 301: teamos.academy.v1.AcademyService.UpdateCourseVersionLesson:input_type -> teamos.academy.v1.UpdateCourseVersionLessonRequest
-	116, // 302: teamos.academy.v1.AcademyService.DeleteCourseVersionLesson:input_type -> teamos.academy.v1.DeleteCourseVersionLessonRequest
-	118, // 303: teamos.academy.v1.AcademyService.MoveCourseVersionLesson:input_type -> teamos.academy.v1.MoveCourseVersionLessonRequest
-	120, // 304: teamos.academy.v1.AcademyService.UpsertCourseVersionQuiz:input_type -> teamos.academy.v1.UpsertCourseVersionQuizRequest
-	122, // 305: teamos.academy.v1.AcademyService.DeleteCourseVersionQuiz:input_type -> teamos.academy.v1.DeleteCourseVersionQuizRequest
-	124, // 306: teamos.academy.v1.AcademyService.GetCourseSections:input_type -> teamos.academy.v1.GetCourseSectionsRequest
-	126, // 307: teamos.academy.v1.AcademyService.CreateCourseSection:input_type -> teamos.academy.v1.CreateCourseSectionRequest
-	128, // 308: teamos.academy.v1.AcademyService.UpdateCourseSection:input_type -> teamos.academy.v1.UpdateCourseSectionRequest
-	130, // 309: teamos.academy.v1.AcademyService.DeleteCourseSection:input_type -> teamos.academy.v1.DeleteCourseSectionRequest
-	132, // 310: teamos.academy.v1.AcademyService.GetLessons:input_type -> teamos.academy.v1.GetLessonsRequest
-	134, // 311: teamos.academy.v1.AcademyService.CreateLesson:input_type -> teamos.academy.v1.CreateLessonRequest
-	136, // 312: teamos.academy.v1.AcademyService.UpdateLesson:input_type -> teamos.academy.v1.UpdateLessonRequest
-	138, // 313: teamos.academy.v1.AcademyService.DeleteLesson:input_type -> teamos.academy.v1.DeleteLessonRequest
-	140, // 314: teamos.academy.v1.AcademyService.MoveLesson:input_type -> teamos.academy.v1.MoveLessonRequest
-	142, // 315: teamos.academy.v1.AcademyService.GetQuizzes:input_type -> teamos.academy.v1.GetQuizzesRequest
-	144, // 316: teamos.academy.v1.AcademyService.UpsertQuiz:input_type -> teamos.academy.v1.UpsertQuizRequest
-	146, // 317: teamos.academy.v1.AcademyService.GetAssignments:input_type -> teamos.academy.v1.GetAssignmentsRequest
-	148, // 318: teamos.academy.v1.AcademyService.AssignCourse:input_type -> teamos.academy.v1.AssignCourseRequest
-	150, // 319: teamos.academy.v1.AcademyService.RevokeAssignment:input_type -> teamos.academy.v1.RevokeAssignmentRequest
-	152, // 320: teamos.academy.v1.AcademyService.GetProgress:input_type -> teamos.academy.v1.GetProgressRequest
-	154, // 321: teamos.academy.v1.AcademyService.MarkLessonComplete:input_type -> teamos.academy.v1.MarkLessonCompleteRequest
-	156, // 322: teamos.academy.v1.AcademyService.GetEnrollments:input_type -> teamos.academy.v1.GetEnrollmentsRequest
-	158, // 323: teamos.academy.v1.AcademyService.SelfEnrollCourse:input_type -> teamos.academy.v1.SelfEnrollCourseRequest
-	160, // 324: teamos.academy.v1.AcademyService.GetCatalogCourseVersion:input_type -> teamos.academy.v1.GetCatalogCourseVersionRequest
-	162, // 325: teamos.academy.v1.AcademyService.GetEnrollment:input_type -> teamos.academy.v1.GetEnrollmentRequest
-	164, // 326: teamos.academy.v1.AcademyService.GetEnrollmentOutline:input_type -> teamos.academy.v1.GetEnrollmentOutlineRequest
-	166, // 327: teamos.academy.v1.AcademyService.GetEnrollmentLesson:input_type -> teamos.academy.v1.GetEnrollmentLessonRequest
-	168, // 328: teamos.academy.v1.AcademyService.ResumeEnrollment:input_type -> teamos.academy.v1.ResumeEnrollmentRequest
-	170, // 329: teamos.academy.v1.AcademyService.CompleteEnrollmentLesson:input_type -> teamos.academy.v1.CompleteEnrollmentLessonRequest
-	172, // 330: teamos.academy.v1.AcademyService.SubmitEnrollmentQuizAttempt:input_type -> teamos.academy.v1.SubmitEnrollmentQuizAttemptRequest
-	174, // 331: teamos.academy.v1.AcademyService.GetEnrollmentReport:input_type -> teamos.academy.v1.GetEnrollmentReportRequest
-	176, // 332: teamos.academy.v1.AcademyService.GetPartnerCourseGroups:input_type -> teamos.academy.v1.GetPartnerCourseGroupsRequest
-	178, // 333: teamos.academy.v1.AcademyService.GetPartnerCoursesReport:input_type -> teamos.academy.v1.GetPartnerCoursesReportRequest
-	180, // 334: teamos.academy.v1.AcademyService.GetCourseVersionPreview:input_type -> teamos.academy.v1.GetCourseVersionPreviewRequest
-	182, // 335: teamos.academy.v1.AcademyService.SubmitCoursePreviewQuizAttempt:input_type -> teamos.academy.v1.SubmitCoursePreviewQuizAttemptRequest
-	184, // 336: teamos.academy.v1.AcademyService.PausePartnerCourseDistribution:input_type -> teamos.academy.v1.PausePartnerCourseDistributionRequest
-	186, // 337: teamos.academy.v1.AcademyService.BlockPartnerCourse:input_type -> teamos.academy.v1.BlockPartnerCourseRequest
-	188, // 338: teamos.academy.v1.AcademyService.ResolvePartnerCourseRestriction:input_type -> teamos.academy.v1.ResolvePartnerCourseRestrictionRequest
-	190, // 339: teamos.academy.v1.AcademyService.GetCourseRestrictions:input_type -> teamos.academy.v1.GetCourseRestrictionsRequest
-	192, // 340: teamos.academy.v1.AcademyService.CopyPartnerCourseVersionToCompany:input_type -> teamos.academy.v1.CopyPartnerCourseVersionToCompanyRequest
-	194, // 341: teamos.academy.v1.AcademyService.GetCourseTemplates:input_type -> teamos.academy.v1.GetCourseTemplatesRequest
-	196, // 342: teamos.academy.v1.AcademyService.GetCourseTemplate:input_type -> teamos.academy.v1.GetCourseTemplateRequest
-	198, // 343: teamos.academy.v1.AcademyService.CreateCourseTemplate:input_type -> teamos.academy.v1.CreateCourseTemplateRequest
-	200, // 344: teamos.academy.v1.AcademyService.UpdateCourseTemplateDraft:input_type -> teamos.academy.v1.UpdateCourseTemplateDraftRequest
-	202, // 345: teamos.academy.v1.AcademyService.CreateCourseTemplateDraft:input_type -> teamos.academy.v1.CreateCourseTemplateDraftRequest
-	204, // 346: teamos.academy.v1.AcademyService.PublishCourseTemplateVersion:input_type -> teamos.academy.v1.PublishCourseTemplateVersionRequest
-	206, // 347: teamos.academy.v1.AcademyService.ArchiveCourseTemplate:input_type -> teamos.academy.v1.ArchiveCourseTemplateRequest
-	208, // 348: teamos.academy.v1.AcademyService.InstantiateCourseTemplateVersion:input_type -> teamos.academy.v1.InstantiateCourseTemplateVersionRequest
-	231, // 349: teamos.academy.v1.AcademyService.CreateExternalPersonalAccess:input_type -> teamos.academy.v1.CreateExternalPersonalAccessRequest
-	233, // 350: teamos.academy.v1.AcademyService.GetExternalPersonalAccesses:input_type -> teamos.academy.v1.GetExternalPersonalAccessesRequest
-	235, // 351: teamos.academy.v1.AcademyService.GetExternalPersonalAccess:input_type -> teamos.academy.v1.GetExternalPersonalAccessRequest
-	237, // 352: teamos.academy.v1.AcademyService.ExtendExternalPersonalAccess:input_type -> teamos.academy.v1.ExtendExternalPersonalAccessRequest
-	239, // 353: teamos.academy.v1.AcademyService.RotateExternalPersonalAccessToken:input_type -> teamos.academy.v1.RotateExternalPersonalAccessTokenRequest
-	241, // 354: teamos.academy.v1.AcademyService.RevokeExternalPersonalAccess:input_type -> teamos.academy.v1.RevokeExternalPersonalAccessRequest
-	243, // 355: teamos.academy.v1.AcademyService.RepeatExternalPersonalAccess:input_type -> teamos.academy.v1.RepeatExternalPersonalAccessRequest
-	245, // 356: teamos.academy.v1.AcademyService.CreateExternalCampaign:input_type -> teamos.academy.v1.CreateExternalCampaignRequest
-	247, // 357: teamos.academy.v1.AcademyService.GetExternalCampaigns:input_type -> teamos.academy.v1.GetExternalCampaignsRequest
-	249, // 358: teamos.academy.v1.AcademyService.GetExternalCampaign:input_type -> teamos.academy.v1.GetExternalCampaignRequest
-	251, // 359: teamos.academy.v1.AcademyService.PauseExternalCampaign:input_type -> teamos.academy.v1.PauseExternalCampaignRequest
-	253, // 360: teamos.academy.v1.AcademyService.ResumeExternalCampaign:input_type -> teamos.academy.v1.ResumeExternalCampaignRequest
-	255, // 361: teamos.academy.v1.AcademyService.RotateExternalCampaignToken:input_type -> teamos.academy.v1.RotateExternalCampaignTokenRequest
-	257, // 362: teamos.academy.v1.AcademyService.RevokeExternalCampaign:input_type -> teamos.academy.v1.RevokeExternalCampaignRequest
-	259, // 363: teamos.academy.v1.AcademyService.GetExternalCampaignReport:input_type -> teamos.academy.v1.GetExternalCampaignReportRequest
-	261, // 364: teamos.academy.v1.AcademyService.GetCourseExternalReport:input_type -> teamos.academy.v1.GetCourseExternalReportRequest
-	263, // 365: teamos.academy.v1.AcademyService.GetPublicAcademyAccess:input_type -> teamos.academy.v1.GetPublicAcademyAccessRequest
-	265, // 366: teamos.academy.v1.AcademyService.RequestPublicAcademyVerification:input_type -> teamos.academy.v1.RequestPublicAcademyVerificationRequest
-	267, // 367: teamos.academy.v1.AcademyService.ConfirmPublicAcademyVerification:input_type -> teamos.academy.v1.ConfirmPublicAcademyVerificationRequest
-	269, // 368: teamos.academy.v1.AcademyService.ActivatePublicAcademyAccess:input_type -> teamos.academy.v1.ActivatePublicAcademyAccessRequest
-	271, // 369: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollment:input_type -> teamos.academy.v1.GetPublicAcademyEnrollmentRequest
-	273, // 370: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollmentOutline:input_type -> teamos.academy.v1.GetPublicAcademyEnrollmentOutlineRequest
-	275, // 371: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollmentLesson:input_type -> teamos.academy.v1.GetPublicAcademyEnrollmentLessonRequest
-	277, // 372: teamos.academy.v1.AcademyService.CompletePublicAcademyEnrollmentLesson:input_type -> teamos.academy.v1.CompletePublicAcademyEnrollmentLessonRequest
-	279, // 373: teamos.academy.v1.AcademyService.SubmitPublicAcademyQuizAttempt:input_type -> teamos.academy.v1.SubmitPublicAcademyQuizAttemptRequest
-	281, // 374: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollmentResults:input_type -> teamos.academy.v1.GetPublicAcademyEnrollmentResultsRequest
-	283, // 375: teamos.academy.v1.AcademyService.GetExternalLearners:input_type -> teamos.academy.v1.GetExternalLearnersRequest
-	285, // 376: teamos.academy.v1.AcademyService.GetExternalLearner:input_type -> teamos.academy.v1.GetExternalLearnerRequest
-	287, // 377: teamos.academy.v1.AcademyService.GetExternalLearnerEnrollments:input_type -> teamos.academy.v1.GetExternalLearnerEnrollmentsRequest
-	289, // 378: teamos.academy.v1.AcademyService.GetExternalLearnerTimeline:input_type -> teamos.academy.v1.GetExternalLearnerTimelineRequest
-	77,  // 379: teamos.academy.v1.AcademyService.GetCourses:output_type -> teamos.academy.v1.GetCoursesResponse
-	79,  // 380: teamos.academy.v1.AcademyService.GetCourse:output_type -> teamos.academy.v1.GetCourseResponse
-	81,  // 381: teamos.academy.v1.AcademyService.GetPublicCourse:output_type -> teamos.academy.v1.GetPublicCourseResponse
-	83,  // 382: teamos.academy.v1.AcademyService.CreateCourse:output_type -> teamos.academy.v1.CreateCourseResponse
-	85,  // 383: teamos.academy.v1.AcademyService.CreateCourseFromKb:output_type -> teamos.academy.v1.CreateCourseFromKbResponse
-	87,  // 384: teamos.academy.v1.AcademyService.UpdateCourse:output_type -> teamos.academy.v1.UpdateCourseResponse
-	89,  // 385: teamos.academy.v1.AcademyService.ArchiveCourse:output_type -> teamos.academy.v1.ArchiveCourseResponse
-	91,  // 386: teamos.academy.v1.AcademyService.RestoreCourse:output_type -> teamos.academy.v1.RestoreCourseResponse
-	93,  // 387: teamos.academy.v1.AcademyService.DeleteCourse:output_type -> teamos.academy.v1.DeleteCourseResponse
-	95,  // 388: teamos.academy.v1.AcademyService.GetCourseVersions:output_type -> teamos.academy.v1.GetCourseVersionsResponse
-	97,  // 389: teamos.academy.v1.AcademyService.GetCourseVersion:output_type -> teamos.academy.v1.GetCourseVersionResponse
-	99,  // 390: teamos.academy.v1.AcademyService.CreateCourseDraft:output_type -> teamos.academy.v1.CreateCourseDraftResponse
-	101, // 391: teamos.academy.v1.AcademyService.UpdateCourseDraft:output_type -> teamos.academy.v1.UpdateCourseDraftResponse
-	103, // 392: teamos.academy.v1.AcademyService.PublishCourseVersion:output_type -> teamos.academy.v1.PublishCourseVersionResponse
-	105, // 393: teamos.academy.v1.AcademyService.GetPublishedCourseVersion:output_type -> teamos.academy.v1.GetPublishedCourseVersionResponse
-	107, // 394: teamos.academy.v1.AcademyService.CreateCourseVersionSection:output_type -> teamos.academy.v1.CreateCourseVersionSectionResponse
-	109, // 395: teamos.academy.v1.AcademyService.UpdateCourseVersionSection:output_type -> teamos.academy.v1.UpdateCourseVersionSectionResponse
-	111, // 396: teamos.academy.v1.AcademyService.DeleteCourseVersionSection:output_type -> teamos.academy.v1.DeleteCourseVersionSectionResponse
-	113, // 397: teamos.academy.v1.AcademyService.CreateCourseVersionLesson:output_type -> teamos.academy.v1.CreateCourseVersionLessonResponse
-	115, // 398: teamos.academy.v1.AcademyService.UpdateCourseVersionLesson:output_type -> teamos.academy.v1.UpdateCourseVersionLessonResponse
-	117, // 399: teamos.academy.v1.AcademyService.DeleteCourseVersionLesson:output_type -> teamos.academy.v1.DeleteCourseVersionLessonResponse
-	119, // 400: teamos.academy.v1.AcademyService.MoveCourseVersionLesson:output_type -> teamos.academy.v1.MoveCourseVersionLessonResponse
-	121, // 401: teamos.academy.v1.AcademyService.UpsertCourseVersionQuiz:output_type -> teamos.academy.v1.UpsertCourseVersionQuizResponse
-	123, // 402: teamos.academy.v1.AcademyService.DeleteCourseVersionQuiz:output_type -> teamos.academy.v1.DeleteCourseVersionQuizResponse
-	125, // 403: teamos.academy.v1.AcademyService.GetCourseSections:output_type -> teamos.academy.v1.GetCourseSectionsResponse
-	127, // 404: teamos.academy.v1.AcademyService.CreateCourseSection:output_type -> teamos.academy.v1.CreateCourseSectionResponse
-	129, // 405: teamos.academy.v1.AcademyService.UpdateCourseSection:output_type -> teamos.academy.v1.UpdateCourseSectionResponse
-	131, // 406: teamos.academy.v1.AcademyService.DeleteCourseSection:output_type -> teamos.academy.v1.DeleteCourseSectionResponse
-	133, // 407: teamos.academy.v1.AcademyService.GetLessons:output_type -> teamos.academy.v1.GetLessonsResponse
-	135, // 408: teamos.academy.v1.AcademyService.CreateLesson:output_type -> teamos.academy.v1.CreateLessonResponse
-	137, // 409: teamos.academy.v1.AcademyService.UpdateLesson:output_type -> teamos.academy.v1.UpdateLessonResponse
-	139, // 410: teamos.academy.v1.AcademyService.DeleteLesson:output_type -> teamos.academy.v1.DeleteLessonResponse
-	141, // 411: teamos.academy.v1.AcademyService.MoveLesson:output_type -> teamos.academy.v1.MoveLessonResponse
-	143, // 412: teamos.academy.v1.AcademyService.GetQuizzes:output_type -> teamos.academy.v1.GetQuizzesResponse
-	145, // 413: teamos.academy.v1.AcademyService.UpsertQuiz:output_type -> teamos.academy.v1.UpsertQuizResponse
-	147, // 414: teamos.academy.v1.AcademyService.GetAssignments:output_type -> teamos.academy.v1.GetAssignmentsResponse
-	149, // 415: teamos.academy.v1.AcademyService.AssignCourse:output_type -> teamos.academy.v1.AssignCourseResponse
-	151, // 416: teamos.academy.v1.AcademyService.RevokeAssignment:output_type -> teamos.academy.v1.RevokeAssignmentResponse
-	153, // 417: teamos.academy.v1.AcademyService.GetProgress:output_type -> teamos.academy.v1.GetProgressResponse
-	155, // 418: teamos.academy.v1.AcademyService.MarkLessonComplete:output_type -> teamos.academy.v1.MarkLessonCompleteResponse
-	157, // 419: teamos.academy.v1.AcademyService.GetEnrollments:output_type -> teamos.academy.v1.GetEnrollmentsResponse
-	159, // 420: teamos.academy.v1.AcademyService.SelfEnrollCourse:output_type -> teamos.academy.v1.SelfEnrollCourseResponse
-	161, // 421: teamos.academy.v1.AcademyService.GetCatalogCourseVersion:output_type -> teamos.academy.v1.GetCatalogCourseVersionResponse
-	163, // 422: teamos.academy.v1.AcademyService.GetEnrollment:output_type -> teamos.academy.v1.GetEnrollmentResponse
-	165, // 423: teamos.academy.v1.AcademyService.GetEnrollmentOutline:output_type -> teamos.academy.v1.GetEnrollmentOutlineResponse
-	167, // 424: teamos.academy.v1.AcademyService.GetEnrollmentLesson:output_type -> teamos.academy.v1.GetEnrollmentLessonResponse
-	169, // 425: teamos.academy.v1.AcademyService.ResumeEnrollment:output_type -> teamos.academy.v1.ResumeEnrollmentResponse
-	171, // 426: teamos.academy.v1.AcademyService.CompleteEnrollmentLesson:output_type -> teamos.academy.v1.CompleteEnrollmentLessonResponse
-	173, // 427: teamos.academy.v1.AcademyService.SubmitEnrollmentQuizAttempt:output_type -> teamos.academy.v1.SubmitEnrollmentQuizAttemptResponse
-	175, // 428: teamos.academy.v1.AcademyService.GetEnrollmentReport:output_type -> teamos.academy.v1.GetEnrollmentReportResponse
-	177, // 429: teamos.academy.v1.AcademyService.GetPartnerCourseGroups:output_type -> teamos.academy.v1.GetPartnerCourseGroupsResponse
-	179, // 430: teamos.academy.v1.AcademyService.GetPartnerCoursesReport:output_type -> teamos.academy.v1.GetPartnerCoursesReportResponse
-	181, // 431: teamos.academy.v1.AcademyService.GetCourseVersionPreview:output_type -> teamos.academy.v1.GetCourseVersionPreviewResponse
-	183, // 432: teamos.academy.v1.AcademyService.SubmitCoursePreviewQuizAttempt:output_type -> teamos.academy.v1.SubmitCoursePreviewQuizAttemptResponse
-	185, // 433: teamos.academy.v1.AcademyService.PausePartnerCourseDistribution:output_type -> teamos.academy.v1.PausePartnerCourseDistributionResponse
-	187, // 434: teamos.academy.v1.AcademyService.BlockPartnerCourse:output_type -> teamos.academy.v1.BlockPartnerCourseResponse
-	189, // 435: teamos.academy.v1.AcademyService.ResolvePartnerCourseRestriction:output_type -> teamos.academy.v1.ResolvePartnerCourseRestrictionResponse
-	191, // 436: teamos.academy.v1.AcademyService.GetCourseRestrictions:output_type -> teamos.academy.v1.GetCourseRestrictionsResponse
-	193, // 437: teamos.academy.v1.AcademyService.CopyPartnerCourseVersionToCompany:output_type -> teamos.academy.v1.CopyPartnerCourseVersionToCompanyResponse
-	195, // 438: teamos.academy.v1.AcademyService.GetCourseTemplates:output_type -> teamos.academy.v1.GetCourseTemplatesResponse
-	197, // 439: teamos.academy.v1.AcademyService.GetCourseTemplate:output_type -> teamos.academy.v1.GetCourseTemplateResponse
-	199, // 440: teamos.academy.v1.AcademyService.CreateCourseTemplate:output_type -> teamos.academy.v1.CreateCourseTemplateResponse
-	201, // 441: teamos.academy.v1.AcademyService.UpdateCourseTemplateDraft:output_type -> teamos.academy.v1.UpdateCourseTemplateDraftResponse
-	203, // 442: teamos.academy.v1.AcademyService.CreateCourseTemplateDraft:output_type -> teamos.academy.v1.CreateCourseTemplateDraftResponse
-	205, // 443: teamos.academy.v1.AcademyService.PublishCourseTemplateVersion:output_type -> teamos.academy.v1.PublishCourseTemplateVersionResponse
-	207, // 444: teamos.academy.v1.AcademyService.ArchiveCourseTemplate:output_type -> teamos.academy.v1.ArchiveCourseTemplateResponse
-	209, // 445: teamos.academy.v1.AcademyService.InstantiateCourseTemplateVersion:output_type -> teamos.academy.v1.InstantiateCourseTemplateVersionResponse
-	232, // 446: teamos.academy.v1.AcademyService.CreateExternalPersonalAccess:output_type -> teamos.academy.v1.CreateExternalPersonalAccessResponse
-	234, // 447: teamos.academy.v1.AcademyService.GetExternalPersonalAccesses:output_type -> teamos.academy.v1.GetExternalPersonalAccessesResponse
-	236, // 448: teamos.academy.v1.AcademyService.GetExternalPersonalAccess:output_type -> teamos.academy.v1.GetExternalPersonalAccessResponse
-	238, // 449: teamos.academy.v1.AcademyService.ExtendExternalPersonalAccess:output_type -> teamos.academy.v1.ExtendExternalPersonalAccessResponse
-	240, // 450: teamos.academy.v1.AcademyService.RotateExternalPersonalAccessToken:output_type -> teamos.academy.v1.RotateExternalPersonalAccessTokenResponse
-	242, // 451: teamos.academy.v1.AcademyService.RevokeExternalPersonalAccess:output_type -> teamos.academy.v1.RevokeExternalPersonalAccessResponse
-	244, // 452: teamos.academy.v1.AcademyService.RepeatExternalPersonalAccess:output_type -> teamos.academy.v1.RepeatExternalPersonalAccessResponse
-	246, // 453: teamos.academy.v1.AcademyService.CreateExternalCampaign:output_type -> teamos.academy.v1.CreateExternalCampaignResponse
-	248, // 454: teamos.academy.v1.AcademyService.GetExternalCampaigns:output_type -> teamos.academy.v1.GetExternalCampaignsResponse
-	250, // 455: teamos.academy.v1.AcademyService.GetExternalCampaign:output_type -> teamos.academy.v1.GetExternalCampaignResponse
-	252, // 456: teamos.academy.v1.AcademyService.PauseExternalCampaign:output_type -> teamos.academy.v1.PauseExternalCampaignResponse
-	254, // 457: teamos.academy.v1.AcademyService.ResumeExternalCampaign:output_type -> teamos.academy.v1.ResumeExternalCampaignResponse
-	256, // 458: teamos.academy.v1.AcademyService.RotateExternalCampaignToken:output_type -> teamos.academy.v1.RotateExternalCampaignTokenResponse
-	258, // 459: teamos.academy.v1.AcademyService.RevokeExternalCampaign:output_type -> teamos.academy.v1.RevokeExternalCampaignResponse
-	260, // 460: teamos.academy.v1.AcademyService.GetExternalCampaignReport:output_type -> teamos.academy.v1.GetExternalCampaignReportResponse
-	262, // 461: teamos.academy.v1.AcademyService.GetCourseExternalReport:output_type -> teamos.academy.v1.GetCourseExternalReportResponse
-	264, // 462: teamos.academy.v1.AcademyService.GetPublicAcademyAccess:output_type -> teamos.academy.v1.GetPublicAcademyAccessResponse
-	266, // 463: teamos.academy.v1.AcademyService.RequestPublicAcademyVerification:output_type -> teamos.academy.v1.RequestPublicAcademyVerificationResponse
-	268, // 464: teamos.academy.v1.AcademyService.ConfirmPublicAcademyVerification:output_type -> teamos.academy.v1.ConfirmPublicAcademyVerificationResponse
-	270, // 465: teamos.academy.v1.AcademyService.ActivatePublicAcademyAccess:output_type -> teamos.academy.v1.ActivatePublicAcademyAccessResponse
-	272, // 466: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollment:output_type -> teamos.academy.v1.GetPublicAcademyEnrollmentResponse
-	274, // 467: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollmentOutline:output_type -> teamos.academy.v1.GetPublicAcademyEnrollmentOutlineResponse
-	276, // 468: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollmentLesson:output_type -> teamos.academy.v1.GetPublicAcademyEnrollmentLessonResponse
-	278, // 469: teamos.academy.v1.AcademyService.CompletePublicAcademyEnrollmentLesson:output_type -> teamos.academy.v1.CompletePublicAcademyEnrollmentLessonResponse
-	280, // 470: teamos.academy.v1.AcademyService.SubmitPublicAcademyQuizAttempt:output_type -> teamos.academy.v1.SubmitPublicAcademyQuizAttemptResponse
-	282, // 471: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollmentResults:output_type -> teamos.academy.v1.GetPublicAcademyEnrollmentResultsResponse
-	284, // 472: teamos.academy.v1.AcademyService.GetExternalLearners:output_type -> teamos.academy.v1.GetExternalLearnersResponse
-	286, // 473: teamos.academy.v1.AcademyService.GetExternalLearner:output_type -> teamos.academy.v1.GetExternalLearnerResponse
-	288, // 474: teamos.academy.v1.AcademyService.GetExternalLearnerEnrollments:output_type -> teamos.academy.v1.GetExternalLearnerEnrollmentsResponse
-	290, // 475: teamos.academy.v1.AcademyService.GetExternalLearnerTimeline:output_type -> teamos.academy.v1.GetExternalLearnerTimelineResponse
-	379, // [379:476] is the sub-list for method output_type
-	282, // [282:379] is the sub-list for method input_type
-	282, // [282:282] is the sub-list for extension type_name
-	282, // [282:282] is the sub-list for extension extendee
-	0,   // [0:282] is the sub-list for field type_name
+	292, // 199: teamos.academy.v1.GetCourseTemplatesResponse.items:type_name -> teamos.academy.v1.AcademyTemplateSummary
+	64,  // 200: teamos.academy.v1.GetCourseTemplateResponse.template:type_name -> teamos.academy.v1.CourseTemplate
+	65,  // 201: teamos.academy.v1.GetCourseTemplateResponse.versions:type_name -> teamos.academy.v1.CourseTemplateVersion
+	70,  // 202: teamos.academy.v1.GetCourseTemplateResponse.selected_version:type_name -> teamos.academy.v1.CourseTemplateVersionDetails
+	74,  // 203: teamos.academy.v1.CreateCourseTemplateRequest.content:type_name -> teamos.academy.v1.CourseTemplateDraftContentInput
+	64,  // 204: teamos.academy.v1.CreateCourseTemplateResponse.template:type_name -> teamos.academy.v1.CourseTemplate
+	65,  // 205: teamos.academy.v1.CreateCourseTemplateResponse.draft:type_name -> teamos.academy.v1.CourseTemplateVersion
+	74,  // 206: teamos.academy.v1.UpdateCourseTemplateDraftRequest.content:type_name -> teamos.academy.v1.CourseTemplateDraftContentInput
+	70,  // 207: teamos.academy.v1.UpdateCourseTemplateDraftResponse.draft:type_name -> teamos.academy.v1.CourseTemplateVersionDetails
+	70,  // 208: teamos.academy.v1.CreateCourseTemplateDraftResponse.draft:type_name -> teamos.academy.v1.CourseTemplateVersionDetails
+	65,  // 209: teamos.academy.v1.PublishCourseTemplateVersionResponse.version:type_name -> teamos.academy.v1.CourseTemplateVersion
+	64,  // 210: teamos.academy.v1.ArchiveCourseTemplateResponse.template:type_name -> teamos.academy.v1.CourseTemplate
+	75,  // 211: teamos.academy.v1.InstantiateCourseTemplateVersionResponse.result:type_name -> teamos.academy.v1.CourseTemplateInstantiationResult
+	20,  // 212: teamos.academy.v1.ExternalPersonalAccess.status:type_name -> teamos.academy.v1.ExternalPersonalAccessStatus
+	293, // 213: teamos.academy.v1.ExternalPersonalAccess.issued_at:type_name -> google.protobuf.Timestamp
+	293, // 214: teamos.academy.v1.ExternalPersonalAccess.activated_at:type_name -> google.protobuf.Timestamp
+	293, // 215: teamos.academy.v1.ExternalPersonalAccess.revoked_at:type_name -> google.protobuf.Timestamp
+	210, // 216: teamos.academy.v1.ExternalPersonalAccessCreated.access:type_name -> teamos.academy.v1.ExternalPersonalAccess
+	21,  // 217: teamos.academy.v1.ExternalCampaign.owner_type:type_name -> teamos.academy.v1.ExternalCampaignOwnerType
+	22,  // 218: teamos.academy.v1.ExternalCampaign.purpose:type_name -> teamos.academy.v1.ExternalCampaignPurpose
+	23,  // 219: teamos.academy.v1.ExternalCampaign.status:type_name -> teamos.academy.v1.ExternalCampaignStatus
+	293, // 220: teamos.academy.v1.ExternalCampaign.created_at:type_name -> google.protobuf.Timestamp
+	293, // 221: teamos.academy.v1.ExternalCampaign.paused_at:type_name -> google.protobuf.Timestamp
+	293, // 222: teamos.academy.v1.ExternalCampaign.revoked_at:type_name -> google.protobuf.Timestamp
+	212, // 223: teamos.academy.v1.ExternalCampaignCreated.campaign:type_name -> teamos.academy.v1.ExternalCampaign
+	215, // 224: teamos.academy.v1.CampaignAnalytics.lesson_drop_off:type_name -> teamos.academy.v1.CampaignLessonDropOff
+	216, // 225: teamos.academy.v1.CampaignAnalytics.attribution:type_name -> teamos.academy.v1.CampaignAttribution
+	217, // 226: teamos.academy.v1.CampaignAnalytics.versions:type_name -> teamos.academy.v1.CampaignVersionAnalytics
+	212, // 227: teamos.academy.v1.ExternalCampaignReport.campaign:type_name -> teamos.academy.v1.ExternalCampaign
+	214, // 228: teamos.academy.v1.ExternalCampaignReport.funnel:type_name -> teamos.academy.v1.CampaignFunnel
+	45,  // 229: teamos.academy.v1.ExternalCampaignReport.enrollments:type_name -> teamos.academy.v1.CourseEnrollment
+	218, // 230: teamos.academy.v1.ExternalCampaignReport.analytics:type_name -> teamos.academy.v1.CampaignAnalytics
+	45,  // 231: teamos.academy.v1.CourseExternalReport.enrollments:type_name -> teamos.academy.v1.CourseEnrollment
+	24,  // 232: teamos.academy.v1.ExternalLearnerTimelineEvent.type:type_name -> teamos.academy.v1.ExternalLearnerTimelineEventType
+	293, // 233: teamos.academy.v1.ExternalLearnerTimelineEvent.occurred_at:type_name -> google.protobuf.Timestamp
+	13,  // 234: teamos.academy.v1.ExternalLearnerTimelineEvent.source_type:type_name -> teamos.academy.v1.EnrollmentSourceType
+	15,  // 235: teamos.academy.v1.ExternalLearnerTimelineEvent.access_status:type_name -> teamos.academy.v1.EnrollmentAccessStatus
+	223, // 236: teamos.academy.v1.ExternalLearnerTimeline.learner:type_name -> teamos.academy.v1.ExternalLearner
+	221, // 237: teamos.academy.v1.ExternalLearnerTimeline.events:type_name -> teamos.academy.v1.ExternalLearnerTimelineEvent
+	293, // 238: teamos.academy.v1.ExternalLearner.email_verified_at:type_name -> google.protobuf.Timestamp
+	293, // 239: teamos.academy.v1.ExternalLearner.created_at:type_name -> google.protobuf.Timestamp
+	293, // 240: teamos.academy.v1.ExternalLearner.updated_at:type_name -> google.protobuf.Timestamp
+	224, // 241: teamos.academy.v1.PublicAcademyOutlineSection.lessons:type_name -> teamos.academy.v1.PublicAcademyOutlineLesson
+	25,  // 242: teamos.academy.v1.PublicAcademyAccess.kind:type_name -> teamos.academy.v1.PublicAcademyAccessKind
+	2,   // 243: teamos.academy.v1.PublicAcademyAccess.owner_type:type_name -> teamos.academy.v1.CourseOwnerType
+	225, // 244: teamos.academy.v1.PublicAcademyAccess.outline:type_name -> teamos.academy.v1.PublicAcademyOutlineSection
+	293, // 245: teamos.academy.v1.ExternalVerificationChallenge.expires_at:type_name -> google.protobuf.Timestamp
+	293, // 246: teamos.academy.v1.ExternalVerificationConfirmed.verified_at:type_name -> google.protobuf.Timestamp
+	293, // 247: teamos.academy.v1.ExternalVerificationConfirmed.session_expires_at:type_name -> google.protobuf.Timestamp
+	293, // 248: teamos.academy.v1.ExternalQuizAttemptResult.created_at:type_name -> google.protobuf.Timestamp
+	45,  // 249: teamos.academy.v1.ExternalEnrollmentResults.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
+	229, // 250: teamos.academy.v1.ExternalEnrollmentResults.quiz_attempts:type_name -> teamos.academy.v1.ExternalQuizAttemptResult
+	211, // 251: teamos.academy.v1.CreateExternalPersonalAccessResponse.created:type_name -> teamos.academy.v1.ExternalPersonalAccessCreated
+	210, // 252: teamos.academy.v1.GetExternalPersonalAccessesResponse.accesses:type_name -> teamos.academy.v1.ExternalPersonalAccess
+	210, // 253: teamos.academy.v1.GetExternalPersonalAccessResponse.access:type_name -> teamos.academy.v1.ExternalPersonalAccess
+	210, // 254: teamos.academy.v1.ExtendExternalPersonalAccessResponse.access:type_name -> teamos.academy.v1.ExternalPersonalAccess
+	211, // 255: teamos.academy.v1.RotateExternalPersonalAccessTokenResponse.created:type_name -> teamos.academy.v1.ExternalPersonalAccessCreated
+	210, // 256: teamos.academy.v1.RevokeExternalPersonalAccessResponse.access:type_name -> teamos.academy.v1.ExternalPersonalAccess
+	211, // 257: teamos.academy.v1.RepeatExternalPersonalAccessResponse.created:type_name -> teamos.academy.v1.ExternalPersonalAccessCreated
+	22,  // 258: teamos.academy.v1.CreateExternalCampaignRequest.purpose:type_name -> teamos.academy.v1.ExternalCampaignPurpose
+	213, // 259: teamos.academy.v1.CreateExternalCampaignResponse.created:type_name -> teamos.academy.v1.ExternalCampaignCreated
+	212, // 260: teamos.academy.v1.GetExternalCampaignsResponse.campaigns:type_name -> teamos.academy.v1.ExternalCampaign
+	212, // 261: teamos.academy.v1.GetExternalCampaignResponse.campaign:type_name -> teamos.academy.v1.ExternalCampaign
+	212, // 262: teamos.academy.v1.PauseExternalCampaignResponse.campaign:type_name -> teamos.academy.v1.ExternalCampaign
+	212, // 263: teamos.academy.v1.ResumeExternalCampaignResponse.campaign:type_name -> teamos.academy.v1.ExternalCampaign
+	213, // 264: teamos.academy.v1.RotateExternalCampaignTokenResponse.created:type_name -> teamos.academy.v1.ExternalCampaignCreated
+	212, // 265: teamos.academy.v1.RevokeExternalCampaignResponse.campaign:type_name -> teamos.academy.v1.ExternalCampaign
+	219, // 266: teamos.academy.v1.GetExternalCampaignReportResponse.report:type_name -> teamos.academy.v1.ExternalCampaignReport
+	220, // 267: teamos.academy.v1.GetCourseExternalReportResponse.report:type_name -> teamos.academy.v1.CourseExternalReport
+	226, // 268: teamos.academy.v1.GetPublicAcademyAccessResponse.access:type_name -> teamos.academy.v1.PublicAcademyAccess
+	227, // 269: teamos.academy.v1.RequestPublicAcademyVerificationResponse.challenge:type_name -> teamos.academy.v1.ExternalVerificationChallenge
+	228, // 270: teamos.academy.v1.ConfirmPublicAcademyVerificationResponse.confirmed:type_name -> teamos.academy.v1.ExternalVerificationConfirmed
+	45,  // 271: teamos.academy.v1.ActivatePublicAcademyAccessResponse.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
+	45,  // 272: teamos.academy.v1.GetPublicAcademyEnrollmentResponse.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
+	51,  // 273: teamos.academy.v1.GetPublicAcademyEnrollmentOutlineResponse.outline:type_name -> teamos.academy.v1.EnrollmentOutline
+	52,  // 274: teamos.academy.v1.GetPublicAcademyEnrollmentLessonResponse.lesson:type_name -> teamos.academy.v1.EnrollmentLesson
+	45,  // 275: teamos.academy.v1.CompletePublicAcademyEnrollmentLessonResponse.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
+	47,  // 276: teamos.academy.v1.SubmitPublicAcademyQuizAttemptRequest.answers:type_name -> teamos.academy.v1.EnrollmentQuizAnswer
+	229, // 277: teamos.academy.v1.SubmitPublicAcademyQuizAttemptResponse.result:type_name -> teamos.academy.v1.ExternalQuizAttemptResult
+	230, // 278: teamos.academy.v1.GetPublicAcademyEnrollmentResultsResponse.results:type_name -> teamos.academy.v1.ExternalEnrollmentResults
+	223, // 279: teamos.academy.v1.GetExternalLearnersResponse.learners:type_name -> teamos.academy.v1.ExternalLearner
+	223, // 280: teamos.academy.v1.GetExternalLearnerResponse.learner:type_name -> teamos.academy.v1.ExternalLearner
+	45,  // 281: teamos.academy.v1.GetExternalLearnerEnrollmentsResponse.enrollments:type_name -> teamos.academy.v1.CourseEnrollment
+	222, // 282: teamos.academy.v1.GetExternalLearnerTimelineResponse.timeline:type_name -> teamos.academy.v1.ExternalLearnerTimeline
+	291, // 283: teamos.academy.v1.AcademyTemplateSummary.capabilities:type_name -> teamos.academy.v1.AcademyTemplateCapabilities
+	76,  // 284: teamos.academy.v1.AcademyService.GetCourses:input_type -> teamos.academy.v1.GetCoursesRequest
+	78,  // 285: teamos.academy.v1.AcademyService.GetCourse:input_type -> teamos.academy.v1.GetCourseRequest
+	80,  // 286: teamos.academy.v1.AcademyService.GetPublicCourse:input_type -> teamos.academy.v1.GetPublicCourseRequest
+	82,  // 287: teamos.academy.v1.AcademyService.CreateCourse:input_type -> teamos.academy.v1.CreateCourseRequest
+	84,  // 288: teamos.academy.v1.AcademyService.CreateCourseFromKb:input_type -> teamos.academy.v1.CreateCourseFromKbRequest
+	86,  // 289: teamos.academy.v1.AcademyService.UpdateCourse:input_type -> teamos.academy.v1.UpdateCourseRequest
+	88,  // 290: teamos.academy.v1.AcademyService.ArchiveCourse:input_type -> teamos.academy.v1.ArchiveCourseRequest
+	90,  // 291: teamos.academy.v1.AcademyService.RestoreCourse:input_type -> teamos.academy.v1.RestoreCourseRequest
+	92,  // 292: teamos.academy.v1.AcademyService.DeleteCourse:input_type -> teamos.academy.v1.DeleteCourseRequest
+	94,  // 293: teamos.academy.v1.AcademyService.GetCourseVersions:input_type -> teamos.academy.v1.GetCourseVersionsRequest
+	96,  // 294: teamos.academy.v1.AcademyService.GetCourseVersion:input_type -> teamos.academy.v1.GetCourseVersionRequest
+	98,  // 295: teamos.academy.v1.AcademyService.CreateCourseDraft:input_type -> teamos.academy.v1.CreateCourseDraftRequest
+	100, // 296: teamos.academy.v1.AcademyService.UpdateCourseDraft:input_type -> teamos.academy.v1.UpdateCourseDraftRequest
+	102, // 297: teamos.academy.v1.AcademyService.PublishCourseVersion:input_type -> teamos.academy.v1.PublishCourseVersionRequest
+	104, // 298: teamos.academy.v1.AcademyService.GetPublishedCourseVersion:input_type -> teamos.academy.v1.GetPublishedCourseVersionRequest
+	106, // 299: teamos.academy.v1.AcademyService.CreateCourseVersionSection:input_type -> teamos.academy.v1.CreateCourseVersionSectionRequest
+	108, // 300: teamos.academy.v1.AcademyService.UpdateCourseVersionSection:input_type -> teamos.academy.v1.UpdateCourseVersionSectionRequest
+	110, // 301: teamos.academy.v1.AcademyService.DeleteCourseVersionSection:input_type -> teamos.academy.v1.DeleteCourseVersionSectionRequest
+	112, // 302: teamos.academy.v1.AcademyService.CreateCourseVersionLesson:input_type -> teamos.academy.v1.CreateCourseVersionLessonRequest
+	114, // 303: teamos.academy.v1.AcademyService.UpdateCourseVersionLesson:input_type -> teamos.academy.v1.UpdateCourseVersionLessonRequest
+	116, // 304: teamos.academy.v1.AcademyService.DeleteCourseVersionLesson:input_type -> teamos.academy.v1.DeleteCourseVersionLessonRequest
+	118, // 305: teamos.academy.v1.AcademyService.MoveCourseVersionLesson:input_type -> teamos.academy.v1.MoveCourseVersionLessonRequest
+	120, // 306: teamos.academy.v1.AcademyService.UpsertCourseVersionQuiz:input_type -> teamos.academy.v1.UpsertCourseVersionQuizRequest
+	122, // 307: teamos.academy.v1.AcademyService.DeleteCourseVersionQuiz:input_type -> teamos.academy.v1.DeleteCourseVersionQuizRequest
+	124, // 308: teamos.academy.v1.AcademyService.GetCourseSections:input_type -> teamos.academy.v1.GetCourseSectionsRequest
+	126, // 309: teamos.academy.v1.AcademyService.CreateCourseSection:input_type -> teamos.academy.v1.CreateCourseSectionRequest
+	128, // 310: teamos.academy.v1.AcademyService.UpdateCourseSection:input_type -> teamos.academy.v1.UpdateCourseSectionRequest
+	130, // 311: teamos.academy.v1.AcademyService.DeleteCourseSection:input_type -> teamos.academy.v1.DeleteCourseSectionRequest
+	132, // 312: teamos.academy.v1.AcademyService.GetLessons:input_type -> teamos.academy.v1.GetLessonsRequest
+	134, // 313: teamos.academy.v1.AcademyService.CreateLesson:input_type -> teamos.academy.v1.CreateLessonRequest
+	136, // 314: teamos.academy.v1.AcademyService.UpdateLesson:input_type -> teamos.academy.v1.UpdateLessonRequest
+	138, // 315: teamos.academy.v1.AcademyService.DeleteLesson:input_type -> teamos.academy.v1.DeleteLessonRequest
+	140, // 316: teamos.academy.v1.AcademyService.MoveLesson:input_type -> teamos.academy.v1.MoveLessonRequest
+	142, // 317: teamos.academy.v1.AcademyService.GetQuizzes:input_type -> teamos.academy.v1.GetQuizzesRequest
+	144, // 318: teamos.academy.v1.AcademyService.UpsertQuiz:input_type -> teamos.academy.v1.UpsertQuizRequest
+	146, // 319: teamos.academy.v1.AcademyService.GetAssignments:input_type -> teamos.academy.v1.GetAssignmentsRequest
+	148, // 320: teamos.academy.v1.AcademyService.AssignCourse:input_type -> teamos.academy.v1.AssignCourseRequest
+	150, // 321: teamos.academy.v1.AcademyService.RevokeAssignment:input_type -> teamos.academy.v1.RevokeAssignmentRequest
+	152, // 322: teamos.academy.v1.AcademyService.GetProgress:input_type -> teamos.academy.v1.GetProgressRequest
+	154, // 323: teamos.academy.v1.AcademyService.MarkLessonComplete:input_type -> teamos.academy.v1.MarkLessonCompleteRequest
+	156, // 324: teamos.academy.v1.AcademyService.GetEnrollments:input_type -> teamos.academy.v1.GetEnrollmentsRequest
+	158, // 325: teamos.academy.v1.AcademyService.SelfEnrollCourse:input_type -> teamos.academy.v1.SelfEnrollCourseRequest
+	160, // 326: teamos.academy.v1.AcademyService.GetCatalogCourseVersion:input_type -> teamos.academy.v1.GetCatalogCourseVersionRequest
+	162, // 327: teamos.academy.v1.AcademyService.GetEnrollment:input_type -> teamos.academy.v1.GetEnrollmentRequest
+	164, // 328: teamos.academy.v1.AcademyService.GetEnrollmentOutline:input_type -> teamos.academy.v1.GetEnrollmentOutlineRequest
+	166, // 329: teamos.academy.v1.AcademyService.GetEnrollmentLesson:input_type -> teamos.academy.v1.GetEnrollmentLessonRequest
+	168, // 330: teamos.academy.v1.AcademyService.ResumeEnrollment:input_type -> teamos.academy.v1.ResumeEnrollmentRequest
+	170, // 331: teamos.academy.v1.AcademyService.CompleteEnrollmentLesson:input_type -> teamos.academy.v1.CompleteEnrollmentLessonRequest
+	172, // 332: teamos.academy.v1.AcademyService.SubmitEnrollmentQuizAttempt:input_type -> teamos.academy.v1.SubmitEnrollmentQuizAttemptRequest
+	174, // 333: teamos.academy.v1.AcademyService.GetEnrollmentReport:input_type -> teamos.academy.v1.GetEnrollmentReportRequest
+	176, // 334: teamos.academy.v1.AcademyService.GetPartnerCourseGroups:input_type -> teamos.academy.v1.GetPartnerCourseGroupsRequest
+	178, // 335: teamos.academy.v1.AcademyService.GetPartnerCoursesReport:input_type -> teamos.academy.v1.GetPartnerCoursesReportRequest
+	180, // 336: teamos.academy.v1.AcademyService.GetCourseVersionPreview:input_type -> teamos.academy.v1.GetCourseVersionPreviewRequest
+	182, // 337: teamos.academy.v1.AcademyService.SubmitCoursePreviewQuizAttempt:input_type -> teamos.academy.v1.SubmitCoursePreviewQuizAttemptRequest
+	184, // 338: teamos.academy.v1.AcademyService.PausePartnerCourseDistribution:input_type -> teamos.academy.v1.PausePartnerCourseDistributionRequest
+	186, // 339: teamos.academy.v1.AcademyService.BlockPartnerCourse:input_type -> teamos.academy.v1.BlockPartnerCourseRequest
+	188, // 340: teamos.academy.v1.AcademyService.ResolvePartnerCourseRestriction:input_type -> teamos.academy.v1.ResolvePartnerCourseRestrictionRequest
+	190, // 341: teamos.academy.v1.AcademyService.GetCourseRestrictions:input_type -> teamos.academy.v1.GetCourseRestrictionsRequest
+	192, // 342: teamos.academy.v1.AcademyService.CopyPartnerCourseVersionToCompany:input_type -> teamos.academy.v1.CopyPartnerCourseVersionToCompanyRequest
+	194, // 343: teamos.academy.v1.AcademyService.GetCourseTemplates:input_type -> teamos.academy.v1.GetCourseTemplatesRequest
+	196, // 344: teamos.academy.v1.AcademyService.GetCourseTemplate:input_type -> teamos.academy.v1.GetCourseTemplateRequest
+	198, // 345: teamos.academy.v1.AcademyService.CreateCourseTemplate:input_type -> teamos.academy.v1.CreateCourseTemplateRequest
+	200, // 346: teamos.academy.v1.AcademyService.UpdateCourseTemplateDraft:input_type -> teamos.academy.v1.UpdateCourseTemplateDraftRequest
+	202, // 347: teamos.academy.v1.AcademyService.CreateCourseTemplateDraft:input_type -> teamos.academy.v1.CreateCourseTemplateDraftRequest
+	204, // 348: teamos.academy.v1.AcademyService.PublishCourseTemplateVersion:input_type -> teamos.academy.v1.PublishCourseTemplateVersionRequest
+	206, // 349: teamos.academy.v1.AcademyService.ArchiveCourseTemplate:input_type -> teamos.academy.v1.ArchiveCourseTemplateRequest
+	208, // 350: teamos.academy.v1.AcademyService.InstantiateCourseTemplateVersion:input_type -> teamos.academy.v1.InstantiateCourseTemplateVersionRequest
+	231, // 351: teamos.academy.v1.AcademyService.CreateExternalPersonalAccess:input_type -> teamos.academy.v1.CreateExternalPersonalAccessRequest
+	233, // 352: teamos.academy.v1.AcademyService.GetExternalPersonalAccesses:input_type -> teamos.academy.v1.GetExternalPersonalAccessesRequest
+	235, // 353: teamos.academy.v1.AcademyService.GetExternalPersonalAccess:input_type -> teamos.academy.v1.GetExternalPersonalAccessRequest
+	237, // 354: teamos.academy.v1.AcademyService.ExtendExternalPersonalAccess:input_type -> teamos.academy.v1.ExtendExternalPersonalAccessRequest
+	239, // 355: teamos.academy.v1.AcademyService.RotateExternalPersonalAccessToken:input_type -> teamos.academy.v1.RotateExternalPersonalAccessTokenRequest
+	241, // 356: teamos.academy.v1.AcademyService.RevokeExternalPersonalAccess:input_type -> teamos.academy.v1.RevokeExternalPersonalAccessRequest
+	243, // 357: teamos.academy.v1.AcademyService.RepeatExternalPersonalAccess:input_type -> teamos.academy.v1.RepeatExternalPersonalAccessRequest
+	245, // 358: teamos.academy.v1.AcademyService.CreateExternalCampaign:input_type -> teamos.academy.v1.CreateExternalCampaignRequest
+	247, // 359: teamos.academy.v1.AcademyService.GetExternalCampaigns:input_type -> teamos.academy.v1.GetExternalCampaignsRequest
+	249, // 360: teamos.academy.v1.AcademyService.GetExternalCampaign:input_type -> teamos.academy.v1.GetExternalCampaignRequest
+	251, // 361: teamos.academy.v1.AcademyService.PauseExternalCampaign:input_type -> teamos.academy.v1.PauseExternalCampaignRequest
+	253, // 362: teamos.academy.v1.AcademyService.ResumeExternalCampaign:input_type -> teamos.academy.v1.ResumeExternalCampaignRequest
+	255, // 363: teamos.academy.v1.AcademyService.RotateExternalCampaignToken:input_type -> teamos.academy.v1.RotateExternalCampaignTokenRequest
+	257, // 364: teamos.academy.v1.AcademyService.RevokeExternalCampaign:input_type -> teamos.academy.v1.RevokeExternalCampaignRequest
+	259, // 365: teamos.academy.v1.AcademyService.GetExternalCampaignReport:input_type -> teamos.academy.v1.GetExternalCampaignReportRequest
+	261, // 366: teamos.academy.v1.AcademyService.GetCourseExternalReport:input_type -> teamos.academy.v1.GetCourseExternalReportRequest
+	263, // 367: teamos.academy.v1.AcademyService.GetPublicAcademyAccess:input_type -> teamos.academy.v1.GetPublicAcademyAccessRequest
+	265, // 368: teamos.academy.v1.AcademyService.RequestPublicAcademyVerification:input_type -> teamos.academy.v1.RequestPublicAcademyVerificationRequest
+	267, // 369: teamos.academy.v1.AcademyService.ConfirmPublicAcademyVerification:input_type -> teamos.academy.v1.ConfirmPublicAcademyVerificationRequest
+	269, // 370: teamos.academy.v1.AcademyService.ActivatePublicAcademyAccess:input_type -> teamos.academy.v1.ActivatePublicAcademyAccessRequest
+	271, // 371: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollment:input_type -> teamos.academy.v1.GetPublicAcademyEnrollmentRequest
+	273, // 372: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollmentOutline:input_type -> teamos.academy.v1.GetPublicAcademyEnrollmentOutlineRequest
+	275, // 373: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollmentLesson:input_type -> teamos.academy.v1.GetPublicAcademyEnrollmentLessonRequest
+	277, // 374: teamos.academy.v1.AcademyService.CompletePublicAcademyEnrollmentLesson:input_type -> teamos.academy.v1.CompletePublicAcademyEnrollmentLessonRequest
+	279, // 375: teamos.academy.v1.AcademyService.SubmitPublicAcademyQuizAttempt:input_type -> teamos.academy.v1.SubmitPublicAcademyQuizAttemptRequest
+	281, // 376: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollmentResults:input_type -> teamos.academy.v1.GetPublicAcademyEnrollmentResultsRequest
+	283, // 377: teamos.academy.v1.AcademyService.GetExternalLearners:input_type -> teamos.academy.v1.GetExternalLearnersRequest
+	285, // 378: teamos.academy.v1.AcademyService.GetExternalLearner:input_type -> teamos.academy.v1.GetExternalLearnerRequest
+	287, // 379: teamos.academy.v1.AcademyService.GetExternalLearnerEnrollments:input_type -> teamos.academy.v1.GetExternalLearnerEnrollmentsRequest
+	289, // 380: teamos.academy.v1.AcademyService.GetExternalLearnerTimeline:input_type -> teamos.academy.v1.GetExternalLearnerTimelineRequest
+	77,  // 381: teamos.academy.v1.AcademyService.GetCourses:output_type -> teamos.academy.v1.GetCoursesResponse
+	79,  // 382: teamos.academy.v1.AcademyService.GetCourse:output_type -> teamos.academy.v1.GetCourseResponse
+	81,  // 383: teamos.academy.v1.AcademyService.GetPublicCourse:output_type -> teamos.academy.v1.GetPublicCourseResponse
+	83,  // 384: teamos.academy.v1.AcademyService.CreateCourse:output_type -> teamos.academy.v1.CreateCourseResponse
+	85,  // 385: teamos.academy.v1.AcademyService.CreateCourseFromKb:output_type -> teamos.academy.v1.CreateCourseFromKbResponse
+	87,  // 386: teamos.academy.v1.AcademyService.UpdateCourse:output_type -> teamos.academy.v1.UpdateCourseResponse
+	89,  // 387: teamos.academy.v1.AcademyService.ArchiveCourse:output_type -> teamos.academy.v1.ArchiveCourseResponse
+	91,  // 388: teamos.academy.v1.AcademyService.RestoreCourse:output_type -> teamos.academy.v1.RestoreCourseResponse
+	93,  // 389: teamos.academy.v1.AcademyService.DeleteCourse:output_type -> teamos.academy.v1.DeleteCourseResponse
+	95,  // 390: teamos.academy.v1.AcademyService.GetCourseVersions:output_type -> teamos.academy.v1.GetCourseVersionsResponse
+	97,  // 391: teamos.academy.v1.AcademyService.GetCourseVersion:output_type -> teamos.academy.v1.GetCourseVersionResponse
+	99,  // 392: teamos.academy.v1.AcademyService.CreateCourseDraft:output_type -> teamos.academy.v1.CreateCourseDraftResponse
+	101, // 393: teamos.academy.v1.AcademyService.UpdateCourseDraft:output_type -> teamos.academy.v1.UpdateCourseDraftResponse
+	103, // 394: teamos.academy.v1.AcademyService.PublishCourseVersion:output_type -> teamos.academy.v1.PublishCourseVersionResponse
+	105, // 395: teamos.academy.v1.AcademyService.GetPublishedCourseVersion:output_type -> teamos.academy.v1.GetPublishedCourseVersionResponse
+	107, // 396: teamos.academy.v1.AcademyService.CreateCourseVersionSection:output_type -> teamos.academy.v1.CreateCourseVersionSectionResponse
+	109, // 397: teamos.academy.v1.AcademyService.UpdateCourseVersionSection:output_type -> teamos.academy.v1.UpdateCourseVersionSectionResponse
+	111, // 398: teamos.academy.v1.AcademyService.DeleteCourseVersionSection:output_type -> teamos.academy.v1.DeleteCourseVersionSectionResponse
+	113, // 399: teamos.academy.v1.AcademyService.CreateCourseVersionLesson:output_type -> teamos.academy.v1.CreateCourseVersionLessonResponse
+	115, // 400: teamos.academy.v1.AcademyService.UpdateCourseVersionLesson:output_type -> teamos.academy.v1.UpdateCourseVersionLessonResponse
+	117, // 401: teamos.academy.v1.AcademyService.DeleteCourseVersionLesson:output_type -> teamos.academy.v1.DeleteCourseVersionLessonResponse
+	119, // 402: teamos.academy.v1.AcademyService.MoveCourseVersionLesson:output_type -> teamos.academy.v1.MoveCourseVersionLessonResponse
+	121, // 403: teamos.academy.v1.AcademyService.UpsertCourseVersionQuiz:output_type -> teamos.academy.v1.UpsertCourseVersionQuizResponse
+	123, // 404: teamos.academy.v1.AcademyService.DeleteCourseVersionQuiz:output_type -> teamos.academy.v1.DeleteCourseVersionQuizResponse
+	125, // 405: teamos.academy.v1.AcademyService.GetCourseSections:output_type -> teamos.academy.v1.GetCourseSectionsResponse
+	127, // 406: teamos.academy.v1.AcademyService.CreateCourseSection:output_type -> teamos.academy.v1.CreateCourseSectionResponse
+	129, // 407: teamos.academy.v1.AcademyService.UpdateCourseSection:output_type -> teamos.academy.v1.UpdateCourseSectionResponse
+	131, // 408: teamos.academy.v1.AcademyService.DeleteCourseSection:output_type -> teamos.academy.v1.DeleteCourseSectionResponse
+	133, // 409: teamos.academy.v1.AcademyService.GetLessons:output_type -> teamos.academy.v1.GetLessonsResponse
+	135, // 410: teamos.academy.v1.AcademyService.CreateLesson:output_type -> teamos.academy.v1.CreateLessonResponse
+	137, // 411: teamos.academy.v1.AcademyService.UpdateLesson:output_type -> teamos.academy.v1.UpdateLessonResponse
+	139, // 412: teamos.academy.v1.AcademyService.DeleteLesson:output_type -> teamos.academy.v1.DeleteLessonResponse
+	141, // 413: teamos.academy.v1.AcademyService.MoveLesson:output_type -> teamos.academy.v1.MoveLessonResponse
+	143, // 414: teamos.academy.v1.AcademyService.GetQuizzes:output_type -> teamos.academy.v1.GetQuizzesResponse
+	145, // 415: teamos.academy.v1.AcademyService.UpsertQuiz:output_type -> teamos.academy.v1.UpsertQuizResponse
+	147, // 416: teamos.academy.v1.AcademyService.GetAssignments:output_type -> teamos.academy.v1.GetAssignmentsResponse
+	149, // 417: teamos.academy.v1.AcademyService.AssignCourse:output_type -> teamos.academy.v1.AssignCourseResponse
+	151, // 418: teamos.academy.v1.AcademyService.RevokeAssignment:output_type -> teamos.academy.v1.RevokeAssignmentResponse
+	153, // 419: teamos.academy.v1.AcademyService.GetProgress:output_type -> teamos.academy.v1.GetProgressResponse
+	155, // 420: teamos.academy.v1.AcademyService.MarkLessonComplete:output_type -> teamos.academy.v1.MarkLessonCompleteResponse
+	157, // 421: teamos.academy.v1.AcademyService.GetEnrollments:output_type -> teamos.academy.v1.GetEnrollmentsResponse
+	159, // 422: teamos.academy.v1.AcademyService.SelfEnrollCourse:output_type -> teamos.academy.v1.SelfEnrollCourseResponse
+	161, // 423: teamos.academy.v1.AcademyService.GetCatalogCourseVersion:output_type -> teamos.academy.v1.GetCatalogCourseVersionResponse
+	163, // 424: teamos.academy.v1.AcademyService.GetEnrollment:output_type -> teamos.academy.v1.GetEnrollmentResponse
+	165, // 425: teamos.academy.v1.AcademyService.GetEnrollmentOutline:output_type -> teamos.academy.v1.GetEnrollmentOutlineResponse
+	167, // 426: teamos.academy.v1.AcademyService.GetEnrollmentLesson:output_type -> teamos.academy.v1.GetEnrollmentLessonResponse
+	169, // 427: teamos.academy.v1.AcademyService.ResumeEnrollment:output_type -> teamos.academy.v1.ResumeEnrollmentResponse
+	171, // 428: teamos.academy.v1.AcademyService.CompleteEnrollmentLesson:output_type -> teamos.academy.v1.CompleteEnrollmentLessonResponse
+	173, // 429: teamos.academy.v1.AcademyService.SubmitEnrollmentQuizAttempt:output_type -> teamos.academy.v1.SubmitEnrollmentQuizAttemptResponse
+	175, // 430: teamos.academy.v1.AcademyService.GetEnrollmentReport:output_type -> teamos.academy.v1.GetEnrollmentReportResponse
+	177, // 431: teamos.academy.v1.AcademyService.GetPartnerCourseGroups:output_type -> teamos.academy.v1.GetPartnerCourseGroupsResponse
+	179, // 432: teamos.academy.v1.AcademyService.GetPartnerCoursesReport:output_type -> teamos.academy.v1.GetPartnerCoursesReportResponse
+	181, // 433: teamos.academy.v1.AcademyService.GetCourseVersionPreview:output_type -> teamos.academy.v1.GetCourseVersionPreviewResponse
+	183, // 434: teamos.academy.v1.AcademyService.SubmitCoursePreviewQuizAttempt:output_type -> teamos.academy.v1.SubmitCoursePreviewQuizAttemptResponse
+	185, // 435: teamos.academy.v1.AcademyService.PausePartnerCourseDistribution:output_type -> teamos.academy.v1.PausePartnerCourseDistributionResponse
+	187, // 436: teamos.academy.v1.AcademyService.BlockPartnerCourse:output_type -> teamos.academy.v1.BlockPartnerCourseResponse
+	189, // 437: teamos.academy.v1.AcademyService.ResolvePartnerCourseRestriction:output_type -> teamos.academy.v1.ResolvePartnerCourseRestrictionResponse
+	191, // 438: teamos.academy.v1.AcademyService.GetCourseRestrictions:output_type -> teamos.academy.v1.GetCourseRestrictionsResponse
+	193, // 439: teamos.academy.v1.AcademyService.CopyPartnerCourseVersionToCompany:output_type -> teamos.academy.v1.CopyPartnerCourseVersionToCompanyResponse
+	195, // 440: teamos.academy.v1.AcademyService.GetCourseTemplates:output_type -> teamos.academy.v1.GetCourseTemplatesResponse
+	197, // 441: teamos.academy.v1.AcademyService.GetCourseTemplate:output_type -> teamos.academy.v1.GetCourseTemplateResponse
+	199, // 442: teamos.academy.v1.AcademyService.CreateCourseTemplate:output_type -> teamos.academy.v1.CreateCourseTemplateResponse
+	201, // 443: teamos.academy.v1.AcademyService.UpdateCourseTemplateDraft:output_type -> teamos.academy.v1.UpdateCourseTemplateDraftResponse
+	203, // 444: teamos.academy.v1.AcademyService.CreateCourseTemplateDraft:output_type -> teamos.academy.v1.CreateCourseTemplateDraftResponse
+	205, // 445: teamos.academy.v1.AcademyService.PublishCourseTemplateVersion:output_type -> teamos.academy.v1.PublishCourseTemplateVersionResponse
+	207, // 446: teamos.academy.v1.AcademyService.ArchiveCourseTemplate:output_type -> teamos.academy.v1.ArchiveCourseTemplateResponse
+	209, // 447: teamos.academy.v1.AcademyService.InstantiateCourseTemplateVersion:output_type -> teamos.academy.v1.InstantiateCourseTemplateVersionResponse
+	232, // 448: teamos.academy.v1.AcademyService.CreateExternalPersonalAccess:output_type -> teamos.academy.v1.CreateExternalPersonalAccessResponse
+	234, // 449: teamos.academy.v1.AcademyService.GetExternalPersonalAccesses:output_type -> teamos.academy.v1.GetExternalPersonalAccessesResponse
+	236, // 450: teamos.academy.v1.AcademyService.GetExternalPersonalAccess:output_type -> teamos.academy.v1.GetExternalPersonalAccessResponse
+	238, // 451: teamos.academy.v1.AcademyService.ExtendExternalPersonalAccess:output_type -> teamos.academy.v1.ExtendExternalPersonalAccessResponse
+	240, // 452: teamos.academy.v1.AcademyService.RotateExternalPersonalAccessToken:output_type -> teamos.academy.v1.RotateExternalPersonalAccessTokenResponse
+	242, // 453: teamos.academy.v1.AcademyService.RevokeExternalPersonalAccess:output_type -> teamos.academy.v1.RevokeExternalPersonalAccessResponse
+	244, // 454: teamos.academy.v1.AcademyService.RepeatExternalPersonalAccess:output_type -> teamos.academy.v1.RepeatExternalPersonalAccessResponse
+	246, // 455: teamos.academy.v1.AcademyService.CreateExternalCampaign:output_type -> teamos.academy.v1.CreateExternalCampaignResponse
+	248, // 456: teamos.academy.v1.AcademyService.GetExternalCampaigns:output_type -> teamos.academy.v1.GetExternalCampaignsResponse
+	250, // 457: teamos.academy.v1.AcademyService.GetExternalCampaign:output_type -> teamos.academy.v1.GetExternalCampaignResponse
+	252, // 458: teamos.academy.v1.AcademyService.PauseExternalCampaign:output_type -> teamos.academy.v1.PauseExternalCampaignResponse
+	254, // 459: teamos.academy.v1.AcademyService.ResumeExternalCampaign:output_type -> teamos.academy.v1.ResumeExternalCampaignResponse
+	256, // 460: teamos.academy.v1.AcademyService.RotateExternalCampaignToken:output_type -> teamos.academy.v1.RotateExternalCampaignTokenResponse
+	258, // 461: teamos.academy.v1.AcademyService.RevokeExternalCampaign:output_type -> teamos.academy.v1.RevokeExternalCampaignResponse
+	260, // 462: teamos.academy.v1.AcademyService.GetExternalCampaignReport:output_type -> teamos.academy.v1.GetExternalCampaignReportResponse
+	262, // 463: teamos.academy.v1.AcademyService.GetCourseExternalReport:output_type -> teamos.academy.v1.GetCourseExternalReportResponse
+	264, // 464: teamos.academy.v1.AcademyService.GetPublicAcademyAccess:output_type -> teamos.academy.v1.GetPublicAcademyAccessResponse
+	266, // 465: teamos.academy.v1.AcademyService.RequestPublicAcademyVerification:output_type -> teamos.academy.v1.RequestPublicAcademyVerificationResponse
+	268, // 466: teamos.academy.v1.AcademyService.ConfirmPublicAcademyVerification:output_type -> teamos.academy.v1.ConfirmPublicAcademyVerificationResponse
+	270, // 467: teamos.academy.v1.AcademyService.ActivatePublicAcademyAccess:output_type -> teamos.academy.v1.ActivatePublicAcademyAccessResponse
+	272, // 468: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollment:output_type -> teamos.academy.v1.GetPublicAcademyEnrollmentResponse
+	274, // 469: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollmentOutline:output_type -> teamos.academy.v1.GetPublicAcademyEnrollmentOutlineResponse
+	276, // 470: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollmentLesson:output_type -> teamos.academy.v1.GetPublicAcademyEnrollmentLessonResponse
+	278, // 471: teamos.academy.v1.AcademyService.CompletePublicAcademyEnrollmentLesson:output_type -> teamos.academy.v1.CompletePublicAcademyEnrollmentLessonResponse
+	280, // 472: teamos.academy.v1.AcademyService.SubmitPublicAcademyQuizAttempt:output_type -> teamos.academy.v1.SubmitPublicAcademyQuizAttemptResponse
+	282, // 473: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollmentResults:output_type -> teamos.academy.v1.GetPublicAcademyEnrollmentResultsResponse
+	284, // 474: teamos.academy.v1.AcademyService.GetExternalLearners:output_type -> teamos.academy.v1.GetExternalLearnersResponse
+	286, // 475: teamos.academy.v1.AcademyService.GetExternalLearner:output_type -> teamos.academy.v1.GetExternalLearnerResponse
+	288, // 476: teamos.academy.v1.AcademyService.GetExternalLearnerEnrollments:output_type -> teamos.academy.v1.GetExternalLearnerEnrollmentsResponse
+	290, // 477: teamos.academy.v1.AcademyService.GetExternalLearnerTimeline:output_type -> teamos.academy.v1.GetExternalLearnerTimelineResponse
+	381, // [381:478] is the sub-list for method output_type
+	284, // [284:381] is the sub-list for method input_type
+	284, // [284:284] is the sub-list for extension type_name
+	284, // [284:284] is the sub-list for extension extendee
+	0,   // [0:284] is the sub-list for field type_name
 }
 
 func init() { file_proto_academy_v1_academy_proto_init() }
@@ -20098,13 +20415,14 @@ func file_proto_academy_v1_academy_proto_init() {
 	file_proto_academy_v1_academy_proto_msgTypes[205].OneofWrappers = []any{}
 	file_proto_academy_v1_academy_proto_msgTypes[237].OneofWrappers = []any{}
 	file_proto_academy_v1_academy_proto_msgTypes[239].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[266].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_academy_v1_academy_proto_rawDesc), len(file_proto_academy_v1_academy_proto_rawDesc)),
 			NumEnums:      26,
-			NumMessages:   265,
+			NumMessages:   267,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

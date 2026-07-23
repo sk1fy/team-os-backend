@@ -1411,10 +1411,18 @@ message CopyPartnerCourseVersionToCompanyResponse {
 message GetCourseTemplatesRequest {
   optional CourseTemplateType type = 1;
   optional CourseTemplateLifecycleStatus lifecycle_status = 2;
+  optional string query = 3;
+  uint32 page = 4;
+  uint32 page_size = 5;
 }
 
 message GetCourseTemplatesResponse {
   repeated CourseTemplate templates = 1;
+  repeated AcademyTemplateSummary items = 2;
+  uint32 page = 3;
+  uint32 page_size = 4;
+  uint64 total = 5;
+  uint32 total_pages = 6;
 }
 
 message GetCourseTemplateRequest {
@@ -1962,4 +1970,27 @@ message GetExternalLearnerTimelineRequest {
 
 message GetExternalLearnerTimelineResponse {
   ExternalLearnerTimeline timeline = 1;
+}
+
+message AcademyTemplateCapabilities {
+  bool can_instantiate = 1;
+  bool can_edit = 2;
+  bool can_archive = 3;
+  bool can_preview = 4;
+}
+
+message AcademyTemplateSummary {
+  string id = 1;
+  string owner_type = 2;
+  string title = 3;
+  optional string description = 4;
+  optional string cover_url = 5;
+  optional string category = 6;
+  uint32 lesson_count = 7;
+  optional uint32 latest_version_number = 8;
+  optional string latest_version_id = 9;
+  optional string draft_version_id = 10;
+  bool archived = 11;
+  AcademyTemplateCapabilities capabilities = 12;
+  optional string system_template_key = 13;
 }

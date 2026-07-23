@@ -125,6 +125,37 @@ type CourseTemplate struct {
 	UpdatedAt                time.Time
 }
 
+type AcademyTemplateCapabilities struct {
+	CanInstantiate bool
+	CanEdit        bool
+	CanArchive     bool
+	CanPreview     bool
+}
+
+type AcademyTemplateSummary struct {
+	ID                  uuid.UUID
+	OwnerType           string
+	Title               string
+	Description         *string
+	CoverURL            *string
+	Category            *string
+	LessonCount         int32
+	LatestVersionNumber *int32
+	LatestVersionID     *uuid.UUID
+	DraftVersionID      *uuid.UUID
+	Archived            bool
+	Capabilities        AcademyTemplateCapabilities
+	SystemTemplateKey   *string
+}
+
+type AcademyTemplatePage struct {
+	Items      []AcademyTemplateSummary
+	Page       int32
+	PageSize   int32
+	Total      int64
+	TotalPages int32
+}
+
 type CourseTemplateVersion struct {
 	ID            uuid.UUID
 	CompanyID     uuid.UUID
