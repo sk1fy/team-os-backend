@@ -35,10 +35,11 @@ func sectionFromProto(value *kbv1.ArticleSection) (api.ArticleSection, error) {
 	if err != nil {
 		return api.ArticleSection{}, err
 	}
-	return api.ArticleSection{
+	result := api.ArticleSection{
 		Id: id, Name: value.GetName(), ParentId: parent,
 		Order: int(value.GetOrder()), Access: access, Visibility: visibility,
-	}, nil
+	}
+	return result, nil
 }
 
 func sectionVisibilityFromProto(value kbv1.SectionVisibility) (api.ArticleSectionVisibility, error) {
@@ -107,12 +108,140 @@ func articleFromProto(value *kbv1.Article) (api.Article, error) {
 	if value.GetUpdatedAt() != nil {
 		updatedAt = value.GetUpdatedAt().AsTime()
 	}
-	return api.Article{
+	result := api.Article{
 		Id: id, SectionId: sectionID, Title: value.GetTitle(), Content: content,
 		Status: status, AuthorId: authorID, Version: int(value.GetVersion()),
 		RequiresAcknowledgement: value.GetRequiresAcknowledgement(),
 		CreatedAt:               createdAt, UpdatedAt: updatedAt,
-	}, nil
+	}
+	if value.PartnerAccess != nil {
+		partnerAccess, mapErr := partnerAccessFromProto(value.PartnerAccess)
+		if mapErr != nil {
+			return api.Article{}, mapErr
+		}
+		result.PartnerAccess = &partnerAccess
+	}
+	if value.PartnerReusePolicy != nil {
+		reusePolicy, mapErr := partnerReusePolicyFromProto(value.GetPartnerReusePolicy())
+		if mapErr != nil {
+			return api.Article{}, mapErr
+		}
+		result.PartnerReusePolicy = &reusePolicy
+	}
+	return result, nil
+}
+
+func partnerAccessFromProto(value *kbv1.PartnerAccessSettings) (api.PartnerAccessSettings, error) {
+	if value == nil {
+		return api.PartnerAccessSettings{}, errors.New("kb returned empty partner access settings")
+	}
+	mode := api.PartnerAccessMode("")
+	switch value.GetMode() {
+	case kbv1.PartnerAccessMode_PARTNER_ACCESS_MODE_NONE:
+		mode = api.PartnerAccessMode("none")
+	case kbv1.PartnerAccessMode_PARTNER_ACCESS_MODE_ALL:
+		mode = api.PartnerAccessMode("all")
+	case kbv1.PartnerAccessMode_PARTNER_ACCESS_MODE_SELECTED:
+		mode = api.PartnerAccessMode("selected")
+	default:
+		return api.PartnerAccessSettings{}, fmt.Errorf("unknown partner access mode %d", value.GetMode())
+	}
+	partnerIDs, err := UUIDsFromStrings(value.GetPartnerIds())
+	if err != nil {
+		return api.PartnerAccessSettings{}, err
+	}
+	return api.PartnerAccessSettings{Mode: mode, PartnerIds: partnerIDs}, nil
+}
+
+func partnerAccessToProto(value api.PartnerAccessSettings) (*kbv1.PartnerAccessSettings, error) {
+	var mode kbv1.PartnerAccessMode
+	switch string(value.Mode) {
+	case "none":
+		mode = kbv1.PartnerAccessMode_PARTNER_ACCESS_MODE_NONE
+	case "all":
+		mode = kbv1.PartnerAccessMode_PARTNER_ACCESS_MODE_ALL
+	case "selected":
+		mode = kbv1.PartnerAccessMode_PARTNER_ACCESS_MODE_SELECTED
+	default:
+		return nil, fmt.Errorf("unknown partner access mode %q", value.Mode)
+	}
+	return &kbv1.PartnerAccessSettings{Mode: mode, PartnerIds: idStrings(value.PartnerIds)}, nil
+}
+
+func partnerReusePolicyFromProto(value kbv1.PartnerReusePolicy) (api.PartnerReusePolicy, error) {
+	switch value {
+	case kbv1.PartnerReusePolicy_PARTNER_REUSE_POLICY_NOT_ALLOWED:
+		return api.PartnerReusePolicy("not_allowed"), nil
+	case kbv1.PartnerReusePolicy_PARTNER_REUSE_POLICY_COPY_ALLOWED:
+		return api.PartnerReusePolicy("copy_allowed"), nil
+	default:
+		return "", fmt.Errorf("unknown partner reuse policy %d", value)
+	}
+}
+
+func partnerReusePolicyToProto(value api.PartnerReusePolicy) (kbv1.PartnerReusePolicy, error) {
+	switch string(value) {
+	case "not_allowed":
+		return kbv1.PartnerReusePolicy_PARTNER_REUSE_POLICY_NOT_ALLOWED, nil
+	case "copy_allowed":
+		return kbv1.PartnerReusePolicy_PARTNER_REUSE_POLICY_COPY_ALLOWED, nil
+	default:
+		return kbv1.PartnerReusePolicy_PARTNER_REUSE_POLICY_UNSPECIFIED, fmt.Errorf("unknown partner reuse policy %q", value)
+	}
+}
+
+func articlePartnerPolicyFromProto(value *kbv1.ArticlePartnerPolicy) (api.ArticlePartnerPolicy, error) {
+	if value == nil {
+		return api.ArticlePartnerPolicy{}, errors.New("kb returned empty article partner policy")
+	}
+	articleID, err := uuid.Parse(value.GetArticleId())
+	if err != nil {
+		return api.ArticlePartnerPolicy{}, err
+	}
+	access, err := partnerAccessFromProto(value.GetAccess())
+	if err != nil {
+		return api.ArticlePartnerPolicy{}, err
+	}
+	reusePolicy, err := partnerReusePolicyFromProto(value.GetReusePolicy())
+	if err != nil {
+		return api.ArticlePartnerPolicy{}, err
+	}
+	result := api.ArticlePartnerPolicy{
+		ArticleId: articleID, Access: access, ReusePolicy: reusePolicy,
+	}
+	if value.GetUpdatedAt() != nil {
+		result.UpdatedAt = value.GetUpdatedAt().AsTime()
+	}
+	if value.UpdatedById != nil {
+		updatedByID, parseErr := uuid.Parse(value.GetUpdatedById())
+		if parseErr != nil {
+			return api.ArticlePartnerPolicy{}, parseErr
+		}
+		result.UpdatedById = &updatedByID
+	}
+	return result, nil
+}
+
+func articleCourseCopyPermissionFromProto(value *kbv1.CheckArticleCourseCopyPermissionResponse) (api.ArticleCourseCopyPermission, error) {
+	if value == nil {
+		return api.ArticleCourseCopyPermission{}, errors.New("kb returned empty course copy permission")
+	}
+	reusePolicy, err := partnerReusePolicyFromProto(value.GetReusePolicy())
+	if err != nil {
+		return api.ArticleCourseCopyPermission{}, err
+	}
+	result := api.ArticleCourseCopyPermission{
+		CanRead: value.GetCanRead(), CanCopy: value.GetCanCopy(), ReusePolicy: reusePolicy,
+		DenialReason: value.DenialReason,
+	}
+	if value.ResolvedArticleVersionId != nil {
+		resolvedID, parseErr := uuid.Parse(value.GetResolvedArticleVersionId())
+		if parseErr != nil {
+			return api.ArticleCourseCopyPermission{}, parseErr
+		}
+		result.ResolvedArticleVersionId = &resolvedID
+	}
+	return result, nil
 }
 
 func articlesFromProto(values []*kbv1.Article) ([]api.Article, error) {

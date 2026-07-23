@@ -34,20 +34,24 @@ const (
 	NotificationType_NOTIFICATION_TYPE_COURSE_ASSIGNED      NotificationType = 6
 	NotificationType_NOTIFICATION_TYPE_COURSE_DUE           NotificationType = 7
 	NotificationType_NOTIFICATION_TYPE_MENTION              NotificationType = 8
+	NotificationType_NOTIFICATION_TYPE_COURSE_PUBLISHED     NotificationType = 9
+	NotificationType_NOTIFICATION_TYPE_COURSE_RESTRICTION   NotificationType = 10
 )
 
 // Enum value maps for NotificationType.
 var (
 	NotificationType_name = map[int32]string{
-		0: "NOTIFICATION_TYPE_UNSPECIFIED",
-		1: "NOTIFICATION_TYPE_TASK_ASSIGNED",
-		2: "NOTIFICATION_TYPE_TASK_COMMENT",
-		3: "NOTIFICATION_TYPE_TASK_DUE",
-		4: "NOTIFICATION_TYPE_ARTICLE_PUBLISHED",
-		5: "NOTIFICATION_TYPE_ARTICLE_ACK_REQUIRED",
-		6: "NOTIFICATION_TYPE_COURSE_ASSIGNED",
-		7: "NOTIFICATION_TYPE_COURSE_DUE",
-		8: "NOTIFICATION_TYPE_MENTION",
+		0:  "NOTIFICATION_TYPE_UNSPECIFIED",
+		1:  "NOTIFICATION_TYPE_TASK_ASSIGNED",
+		2:  "NOTIFICATION_TYPE_TASK_COMMENT",
+		3:  "NOTIFICATION_TYPE_TASK_DUE",
+		4:  "NOTIFICATION_TYPE_ARTICLE_PUBLISHED",
+		5:  "NOTIFICATION_TYPE_ARTICLE_ACK_REQUIRED",
+		6:  "NOTIFICATION_TYPE_COURSE_ASSIGNED",
+		7:  "NOTIFICATION_TYPE_COURSE_DUE",
+		8:  "NOTIFICATION_TYPE_MENTION",
+		9:  "NOTIFICATION_TYPE_COURSE_PUBLISHED",
+		10: "NOTIFICATION_TYPE_COURSE_RESTRICTION",
 	}
 	NotificationType_value = map[string]int32{
 		"NOTIFICATION_TYPE_UNSPECIFIED":          0,
@@ -59,6 +63,8 @@ var (
 		"NOTIFICATION_TYPE_COURSE_ASSIGNED":      6,
 		"NOTIFICATION_TYPE_COURSE_DUE":           7,
 		"NOTIFICATION_TYPE_MENTION":              8,
+		"NOTIFICATION_TYPE_COURSE_PUBLISHED":     9,
+		"NOTIFICATION_TYPE_COURSE_RESTRICTION":   10,
 	}
 )
 
@@ -611,7 +617,7 @@ const file_proto_notifications_v1_notifications_proto_rawDesc = "" +
 	"\x13MarkAllReadResponse\"\x1c\n" +
 	"\x1aStreamNotificationsRequest\"F\n" +
 	"\x1bStreamNotificationsResponse\x12'\n" +
-	"\x0fnotification_id\x18\x01 \x01(\tR\x0enotificationId*\xdb\x02\n" +
+	"\x0fnotification_id\x18\x01 \x01(\tR\x0enotificationId*\xad\x03\n" +
 	"\x10NotificationType\x12!\n" +
 	"\x1dNOTIFICATION_TYPE_UNSPECIFIED\x10\x00\x12#\n" +
 	"\x1fNOTIFICATION_TYPE_TASK_ASSIGNED\x10\x01\x12\"\n" +
@@ -621,7 +627,10 @@ const file_proto_notifications_v1_notifications_proto_rawDesc = "" +
 	"&NOTIFICATION_TYPE_ARTICLE_ACK_REQUIRED\x10\x05\x12%\n" +
 	"!NOTIFICATION_TYPE_COURSE_ASSIGNED\x10\x06\x12 \n" +
 	"\x1cNOTIFICATION_TYPE_COURSE_DUE\x10\a\x12\x1d\n" +
-	"\x19NOTIFICATION_TYPE_MENTION\x10\b2\xd2\x04\n" +
+	"\x19NOTIFICATION_TYPE_MENTION\x10\b\x12&\n" +
+	"\"NOTIFICATION_TYPE_COURSE_PUBLISHED\x10\t\x12(\n" +
+	"$NOTIFICATION_TYPE_COURSE_RESTRICTION\x10\n" +
+	"2\xd2\x04\n" +
 	"\x14NotificationsService\x12w\n" +
 	"\x10GetNotifications\x120.teamos.notifications.v1.GetNotificationsRequest\x1a1.teamos.notifications.v1.GetNotificationsResponse\x12q\n" +
 	"\x0eGetUnreadCount\x12..teamos.notifications.v1.GetUnreadCountRequest\x1a/.teamos.notifications.v1.GetUnreadCountResponse\x12_\n" +

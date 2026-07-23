@@ -11,6 +11,64 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type AcademyFileCloneJob struct {
+	ID              uuid.UUID          `json:"id"`
+	CompanyID       uuid.UUID          `json:"company_id"`
+	OperationType   string             `json:"operation_type"`
+	AggregateID     uuid.UUID          `json:"aggregate_id"`
+	IdempotencyKey  string             `json:"idempotency_key"`
+	SourceOwnerType string             `json:"source_owner_type"`
+	SourceOwnerID   uuid.UUID          `json:"source_owner_id"`
+	TargetOwnerType string             `json:"target_owner_type"`
+	TargetOwnerID   uuid.UUID          `json:"target_owner_id"`
+	Status          string             `json:"status"`
+	Attempts        int32              `json:"attempts"`
+	NextAttemptAt   time.Time          `json:"next_attempt_at"`
+	LastError       pgtype.Text        `json:"last_error"`
+	CreatedAt       time.Time          `json:"created_at"`
+	UpdatedAt       time.Time          `json:"updated_at"`
+	CompletedAt     pgtype.Timestamptz `json:"completed_at"`
+}
+
+type AcademyFileCloneJobItem struct {
+	ID           uuid.UUID     `json:"id"`
+	CompanyID    uuid.UUID     `json:"company_id"`
+	JobID        uuid.UUID     `json:"job_id"`
+	SourceFileID uuid.UUID     `json:"source_file_id"`
+	TargetFileID uuid.NullUUID `json:"target_file_id"`
+	Status       string        `json:"status"`
+	Attempts     int32         `json:"attempts"`
+	LastError    pgtype.Text   `json:"last_error"`
+	UpdatedAt    time.Time     `json:"updated_at"`
+}
+
+type AnalyticsEvent struct {
+	ID                  uuid.UUID     `json:"id"`
+	CompanyID           uuid.UUID     `json:"company_id"`
+	CampaignID          uuid.UUID     `json:"campaign_id"`
+	EnrollmentID        uuid.NullUUID `json:"enrollment_id"`
+	ExternalLearnerID   uuid.NullUUID `json:"external_learner_id"`
+	EventType           string        `json:"event_type"`
+	EventIdempotencyKey string        `json:"event_idempotency_key"`
+	RequestHash         string        `json:"request_hash"`
+	VisitorHash         []byte        `json:"visitor_hash"`
+	VisitorHashKeyID    pgtype.Text   `json:"visitor_hash_key_id"`
+	RequestIpHash       []byte        `json:"request_ip_hash"`
+	RequestIpHashKeyID  pgtype.Text   `json:"request_ip_hash_key_id"`
+	UtmSource           pgtype.Text   `json:"utm_source"`
+	UtmMedium           pgtype.Text   `json:"utm_medium"`
+	UtmCampaign         pgtype.Text   `json:"utm_campaign"`
+	UtmTerm             pgtype.Text   `json:"utm_term"`
+	UtmContent          pgtype.Text   `json:"utm_content"`
+	Referrer            pgtype.Text   `json:"referrer"`
+	LessonVersionID     uuid.NullUUID `json:"lesson_version_id"`
+	ProgressPercent     pgtype.Int2   `json:"progress_percent"`
+	CompletionSeconds   pgtype.Int8   `json:"completion_seconds"`
+	Metadata            []byte        `json:"metadata"`
+	OccurredAt          time.Time     `json:"occurred_at"`
+	ReceivedAt          time.Time     `json:"received_at"`
+}
+
 type Assignment struct {
 	ID              uuid.UUID          `json:"id"`
 	CompanyID       uuid.UUID          `json:"company_id"`
@@ -23,21 +81,120 @@ type Assignment struct {
 	DueSoonSentAt   pgtype.Timestamptz `json:"due_soon_sent_at"`
 	AssignedByID    uuid.UUID          `json:"assigned_by_id"`
 	CreatedAt       time.Time          `json:"created_at"`
+	CourseVersionID uuid.UUID          `json:"course_version_id"`
+	RevokedAt       pgtype.Timestamptz `json:"revoked_at"`
+	RevokedByID     uuid.NullUUID      `json:"revoked_by_id"`
+}
+
+type AuditLog struct {
+	ID            uuid.UUID   `json:"id"`
+	CompanyID     uuid.UUID   `json:"company_id"`
+	ActorID       uuid.UUID   `json:"actor_id"`
+	ActorRole     string      `json:"actor_role"`
+	Action        string      `json:"action"`
+	AggregateType string      `json:"aggregate_type"`
+	AggregateID   uuid.UUID   `json:"aggregate_id"`
+	BeforeState   []byte      `json:"before_state"`
+	AfterState    []byte      `json:"after_state"`
+	Reason        pgtype.Text `json:"reason"`
+	RequestID     pgtype.Text `json:"request_id"`
+	IpHash        pgtype.Text `json:"ip_hash"`
+	CreatedAt     time.Time   `json:"created_at"`
 }
 
 type Course struct {
-	ID           uuid.UUID   `json:"id"`
-	CompanyID    uuid.UUID   `json:"company_id"`
-	Title        string      `json:"title"`
-	Description  pgtype.Text `json:"description"`
-	CoverUrl     pgtype.Text `json:"cover_url"`
-	Status       string      `json:"status"`
-	AuthorID     uuid.UUID   `json:"author_id"`
-	Sequential   bool        `json:"sequential"`
-	DeadlineDays pgtype.Int4 `json:"deadline_days"`
-	CreatedAt    time.Time   `json:"created_at"`
-	UpdatedAt    time.Time   `json:"updated_at"`
-	Visibility   string      `json:"visibility"`
+	ID                       uuid.UUID          `json:"id"`
+	CompanyID                uuid.UUID          `json:"company_id"`
+	Title                    string             `json:"title"`
+	Description              pgtype.Text        `json:"description"`
+	CoverUrl                 pgtype.Text        `json:"cover_url"`
+	Status                   string             `json:"status"`
+	AuthorID                 uuid.UUID          `json:"author_id"`
+	Sequential               bool               `json:"sequential"`
+	DeadlineDays             pgtype.Int4        `json:"deadline_days"`
+	CreatedAt                time.Time          `json:"created_at"`
+	UpdatedAt                time.Time          `json:"updated_at"`
+	Visibility               string             `json:"visibility"`
+	OwnerType                string             `json:"owner_type"`
+	OwnerUserID              uuid.NullUUID      `json:"owner_user_id"`
+	CreatedByID              uuid.NullUUID      `json:"created_by_id"`
+	LifecycleStatus          string             `json:"lifecycle_status"`
+	DistributionStatus       string             `json:"distribution_status"`
+	ArchivedAt               pgtype.Timestamptz `json:"archived_at"`
+	ArchivedByID             uuid.NullUUID      `json:"archived_by_id"`
+	DeletedAt                pgtype.Timestamptz `json:"deleted_at"`
+	DeletedByID              uuid.NullUUID      `json:"deleted_by_id"`
+	CurrentDraftVersionID    uuid.NullUUID      `json:"current_draft_version_id"`
+	LatestPublishedVersionID uuid.NullUUID      `json:"latest_published_version_id"`
+}
+
+type CourseEnrollment struct {
+	ID                              uuid.UUID          `json:"id"`
+	CompanyID                       uuid.UUID          `json:"company_id"`
+	CourseID                        uuid.UUID          `json:"course_id"`
+	CourseVersionID                 uuid.UUID          `json:"course_version_id"`
+	LearnerType                     string             `json:"learner_type"`
+	UserID                          uuid.NullUUID      `json:"user_id"`
+	ExternalLearnerID               uuid.NullUUID      `json:"external_learner_id"`
+	SourceType                      string             `json:"source_type"`
+	SourceID                        uuid.NullUUID      `json:"source_id"`
+	AttemptNumber                   int32              `json:"attempt_number"`
+	ProgressStatus                  string             `json:"progress_status"`
+	AccessStatus                    string             `json:"access_status"`
+	CurrentLessonVersionID          uuid.NullUUID      `json:"current_lesson_version_id"`
+	ActivatedAt                     pgtype.Timestamptz `json:"activated_at"`
+	AccessUntil                     pgtype.Timestamptz `json:"access_until"`
+	StartedAt                       pgtype.Timestamptz `json:"started_at"`
+	CompletedAt                     pgtype.Timestamptz `json:"completed_at"`
+	LastActivityAt                  pgtype.Timestamptz `json:"last_activity_at"`
+	FrozenAt                        pgtype.Timestamptz `json:"frozen_at"`
+	SuspendedAt                     pgtype.Timestamptz `json:"suspended_at"`
+	CreatedAt                       time.Time          `json:"created_at"`
+	UpdatedAt                       time.Time          `json:"updated_at"`
+	RestrictionPreviousAccessStatus pgtype.Text        `json:"restriction_previous_access_status"`
+}
+
+type CourseEnrollmentAccessHistory struct {
+	ID                uuid.UUID          `json:"id"`
+	CompanyID         uuid.UUID          `json:"company_id"`
+	EnrollmentID      uuid.UUID          `json:"enrollment_id"`
+	FromAccessStatus  pgtype.Text        `json:"from_access_status"`
+	ToAccessStatus    string             `json:"to_access_status"`
+	ActorType         string             `json:"actor_type"`
+	ActorID           uuid.NullUUID      `json:"actor_id"`
+	Reason            pgtype.Text        `json:"reason"`
+	AccessUntilBefore pgtype.Timestamptz `json:"access_until_before"`
+	AccessUntilAfter  pgtype.Timestamptz `json:"access_until_after"`
+	OccurredAt        time.Time          `json:"occurred_at"`
+}
+
+type CourseOrigin struct {
+	ID                      uuid.UUID     `json:"id"`
+	CompanyID               uuid.UUID     `json:"company_id"`
+	TargetCourseID          uuid.UUID     `json:"target_course_id"`
+	OriginType              string        `json:"origin_type"`
+	SourceCourseID          uuid.NullUUID `json:"source_course_id"`
+	SourceCourseVersionID   uuid.NullUUID `json:"source_course_version_id"`
+	SourcePartnerID         uuid.NullUUID `json:"source_partner_id"`
+	SourceTemplateID        uuid.NullUUID `json:"source_template_id"`
+	SourceTemplateVersionID uuid.NullUUID `json:"source_template_version_id"`
+	InstantiatedByID        uuid.UUID     `json:"instantiated_by_id"`
+	InstantiatedAt          time.Time     `json:"instantiated_at"`
+	AcquisitionType         string        `json:"acquisition_type"`
+	EntitlementID           uuid.NullUUID `json:"entitlement_id"`
+}
+
+type CourseRestriction struct {
+	ID               uuid.UUID          `json:"id"`
+	CompanyID        uuid.UUID          `json:"company_id"`
+	CourseID         uuid.UUID          `json:"course_id"`
+	RestrictionType  string             `json:"restriction_type"`
+	Reason           string             `json:"reason"`
+	CreatedByID      uuid.UUID          `json:"created_by_id"`
+	CreatedAt        time.Time          `json:"created_at"`
+	ResolvedByID     uuid.NullUUID      `json:"resolved_by_id"`
+	ResolvedAt       pgtype.Timestamptz `json:"resolved_at"`
+	ResolutionReason pgtype.Text        `json:"resolution_reason"`
 }
 
 type CourseSection struct {
@@ -46,6 +203,377 @@ type CourseSection struct {
 	CourseID  uuid.UUID `json:"course_id"`
 	Title     string    `json:"title"`
 	Order     int32     `json:"order"`
+}
+
+type CourseTemplate struct {
+	ID                       uuid.UUID          `json:"id"`
+	CompanyID                uuid.UUID          `json:"company_id"`
+	TemplateType             string             `json:"template_type"`
+	SystemTemplateKey        pgtype.Text        `json:"system_template_key"`
+	LifecycleStatus          string             `json:"lifecycle_status"`
+	CurrentDraftVersionID    uuid.NullUUID      `json:"current_draft_version_id"`
+	LatestPublishedVersionID uuid.NullUUID      `json:"latest_published_version_id"`
+	CreatedByID              uuid.UUID          `json:"created_by_id"`
+	CreatedAt                time.Time          `json:"created_at"`
+	ArchivedByID             uuid.NullUUID      `json:"archived_by_id"`
+	ArchivedAt               pgtype.Timestamptz `json:"archived_at"`
+}
+
+type CourseTemplateInstantiationIdempotency struct {
+	ID                      uuid.UUID     `json:"id"`
+	CompanyID               uuid.UUID     `json:"company_id"`
+	SourceTemplateID        uuid.UUID     `json:"source_template_id"`
+	SourceTemplateVersionID uuid.UUID     `json:"source_template_version_id"`
+	TargetOwnerType         string        `json:"target_owner_type"`
+	TargetOwnerUserID       uuid.NullUUID `json:"target_owner_user_id"`
+	IdempotencyKey          string        `json:"idempotency_key"`
+	TargetCourseID          uuid.UUID     `json:"target_course_id"`
+	TargetCourseVersionID   uuid.UUID     `json:"target_course_version_id"`
+	OriginID                uuid.UUID     `json:"origin_id"`
+	InstantiatedByID        uuid.UUID     `json:"instantiated_by_id"`
+	InstantiatedAt          time.Time     `json:"instantiated_at"`
+}
+
+type CourseTemplatePublishIdempotency struct {
+	ID                uuid.UUID `json:"id"`
+	CompanyID         uuid.UUID `json:"company_id"`
+	TemplateID        uuid.UUID `json:"template_id"`
+	IdempotencyKey    string    `json:"idempotency_key"`
+	TemplateVersionID uuid.UUID `json:"template_version_id"`
+	CreatedAt         time.Time `json:"created_at"`
+}
+
+type CourseTemplateVersion struct {
+	ID            uuid.UUID          `json:"id"`
+	CompanyID     uuid.UUID          `json:"company_id"`
+	TemplateID    uuid.UUID          `json:"template_id"`
+	Number        int32              `json:"number"`
+	Status        string             `json:"status"`
+	Title         string             `json:"title"`
+	Description   pgtype.Text        `json:"description"`
+	CoverFileID   uuid.NullUUID      `json:"cover_file_id"`
+	Sequential    bool               `json:"sequential"`
+	CreatedByID   uuid.UUID          `json:"created_by_id"`
+	CreatedAt     time.Time          `json:"created_at"`
+	PublishedByID uuid.NullUUID      `json:"published_by_id"`
+	PublishedAt   pgtype.Timestamptz `json:"published_at"`
+	ContentHash   pgtype.Text        `json:"content_hash"`
+}
+
+type CourseTemplateVersionLesson struct {
+	ID                uuid.UUID     `json:"id"`
+	CompanyID         uuid.UUID     `json:"company_id"`
+	TemplateVersionID uuid.UUID     `json:"template_version_id"`
+	SectionVersionID  uuid.UUID     `json:"section_version_id"`
+	StableKey         uuid.UUID     `json:"stable_key"`
+	Title             string        `json:"title"`
+	Order             int32         `json:"order"`
+	Content           []byte        `json:"content"`
+	SourceType        string        `json:"source_type"`
+	KbSnapshotID      uuid.NullUUID `json:"kb_snapshot_id"`
+	EstimatedMinutes  pgtype.Int4   `json:"estimated_minutes"`
+	FileIds           []uuid.UUID   `json:"file_ids"`
+	QuizVersionID     uuid.NullUUID `json:"quiz_version_id"`
+}
+
+type CourseTemplateVersionQuiz struct {
+	ID                uuid.UUID   `json:"id"`
+	CompanyID         uuid.UUID   `json:"company_id"`
+	TemplateVersionID uuid.UUID   `json:"template_version_id"`
+	LessonVersionID   uuid.UUID   `json:"lesson_version_id"`
+	Questions         []byte      `json:"questions"`
+	PassingScore      int32       `json:"passing_score"`
+	MaxAttempts       pgtype.Int4 `json:"max_attempts"`
+}
+
+type CourseTemplateVersionSection struct {
+	ID                uuid.UUID `json:"id"`
+	CompanyID         uuid.UUID `json:"company_id"`
+	TemplateVersionID uuid.UUID `json:"template_version_id"`
+	StableKey         uuid.UUID `json:"stable_key"`
+	Title             string    `json:"title"`
+	Order             int32     `json:"order"`
+}
+
+type CourseVersion struct {
+	ID                          uuid.UUID          `json:"id"`
+	CompanyID                   uuid.UUID          `json:"company_id"`
+	CourseID                    uuid.UUID          `json:"course_id"`
+	Number                      int32              `json:"number"`
+	Status                      string             `json:"status"`
+	Title                       string             `json:"title"`
+	Description                 pgtype.Text        `json:"description"`
+	CoverFileID                 uuid.NullUUID      `json:"cover_file_id"`
+	CoverUrl                    pgtype.Text        `json:"cover_url"`
+	Sequential                  bool               `json:"sequential"`
+	DefaultInternalDeadlineDays pgtype.Int4        `json:"default_internal_deadline_days"`
+	CreatedByID                 uuid.UUID          `json:"created_by_id"`
+	CreatedAt                   time.Time          `json:"created_at"`
+	PublishedByID               uuid.NullUUID      `json:"published_by_id"`
+	PublishedAt                 pgtype.Timestamptz `json:"published_at"`
+	ContentHash                 pgtype.Text        `json:"content_hash"`
+}
+
+type CourseVersionLesson struct {
+	ID                      uuid.UUID     `json:"id"`
+	CompanyID               uuid.UUID     `json:"company_id"`
+	CourseVersionID         uuid.UUID     `json:"course_version_id"`
+	SectionVersionID        uuid.UUID     `json:"section_version_id"`
+	StableKey               uuid.UUID     `json:"stable_key"`
+	Title                   string        `json:"title"`
+	Order                   int32         `json:"order"`
+	Content                 []byte        `json:"content"`
+	SourceType              string        `json:"source_type"`
+	SourceArticleID         uuid.NullUUID `json:"source_article_id"`
+	SourceArticleVersion    pgtype.Int4   `json:"source_article_version"`
+	SourceTemplateID        uuid.NullUUID `json:"source_template_id"`
+	SourceTemplateVersionID uuid.NullUUID `json:"source_template_version_id"`
+	EstimatedMinutes        pgtype.Int4   `json:"estimated_minutes"`
+	QuizVersionID           uuid.NullUUID `json:"quiz_version_id"`
+	KbSnapshotID            uuid.NullUUID `json:"kb_snapshot_id"`
+	FileIds                 []uuid.UUID   `json:"file_ids"`
+}
+
+type CourseVersionPublishIdempotency struct {
+	ID             uuid.UUID `json:"id"`
+	CompanyID      uuid.UUID `json:"company_id"`
+	CourseID       uuid.UUID `json:"course_id"`
+	IdempotencyKey string    `json:"idempotency_key"`
+	VersionID      uuid.UUID `json:"version_id"`
+	CreatedAt      time.Time `json:"created_at"`
+}
+
+type CourseVersionQuiz struct {
+	ID              uuid.UUID   `json:"id"`
+	CompanyID       uuid.UUID   `json:"company_id"`
+	CourseVersionID uuid.UUID   `json:"course_version_id"`
+	LessonVersionID uuid.UUID   `json:"lesson_version_id"`
+	Questions       []byte      `json:"questions"`
+	PassingScore    int32       `json:"passing_score"`
+	MaxAttempts     pgtype.Int4 `json:"max_attempts"`
+}
+
+type CourseVersionSection struct {
+	ID              uuid.UUID `json:"id"`
+	CompanyID       uuid.UUID `json:"company_id"`
+	CourseVersionID uuid.UUID `json:"course_version_id"`
+	StableKey       uuid.UUID `json:"stable_key"`
+	Title           string    `json:"title"`
+	Order           int32     `json:"order"`
+}
+
+type EnrollmentLessonProgress struct {
+	CompanyID       uuid.UUID          `json:"company_id"`
+	EnrollmentID    uuid.UUID          `json:"enrollment_id"`
+	LessonVersionID uuid.UUID          `json:"lesson_version_id"`
+	Status          string             `json:"status"`
+	FirstOpenedAt   pgtype.Timestamptz `json:"first_opened_at"`
+	CompletedAt     pgtype.Timestamptz `json:"completed_at"`
+	ActiveSeconds   int64              `json:"active_seconds"`
+	LastPosition    pgtype.Text        `json:"last_position"`
+}
+
+type EnrollmentMutationIdempotency struct {
+	ID             uuid.UUID          `json:"id"`
+	CompanyID      uuid.UUID          `json:"company_id"`
+	EnrollmentID   uuid.UUID          `json:"enrollment_id"`
+	ActorUserID    uuid.UUID          `json:"actor_user_id"`
+	Operation      string             `json:"operation"`
+	IdempotencyKey string             `json:"idempotency_key"`
+	RequestHash    string             `json:"request_hash"`
+	ResultID       uuid.NullUUID      `json:"result_id"`
+	CompletedAt    pgtype.Timestamptz `json:"completed_at"`
+	CreatedAt      time.Time          `json:"created_at"`
+}
+
+type ExternalCampaign struct {
+	ID              uuid.UUID          `json:"id"`
+	CompanyID       uuid.UUID          `json:"company_id"`
+	CourseID        uuid.UUID          `json:"course_id"`
+	CourseVersionID uuid.UUID          `json:"course_version_id"`
+	OwnerType       string             `json:"owner_type"`
+	OwnerUserID     uuid.NullUUID      `json:"owner_user_id"`
+	Purpose         string             `json:"purpose"`
+	Name            string             `json:"name"`
+	DeadlineDays    int16              `json:"deadline_days"`
+	Status          string             `json:"status"`
+	TokenHash       []byte             `json:"token_hash"`
+	TokenPrefix     string             `json:"token_prefix"`
+	CreatedByID     uuid.UUID          `json:"created_by_id"`
+	CreatedAt       time.Time          `json:"created_at"`
+	PausedAt        pgtype.Timestamptz `json:"paused_at"`
+	RevokedAt       pgtype.Timestamptz `json:"revoked_at"`
+	ClosedAt        pgtype.Timestamptz `json:"closed_at"`
+	TokenRotatedAt  pgtype.Timestamptz `json:"token_rotated_at"`
+	UpdatedAt       time.Time          `json:"updated_at"`
+}
+
+type ExternalCampaignFunnelDaily struct {
+	CompanyID            uuid.UUID          `json:"company_id"`
+	CampaignID           uuid.UUID          `json:"campaign_id"`
+	BucketDate           pgtype.Date        `json:"bucket_date"`
+	UtmSource            string             `json:"utm_source"`
+	UtmMedium            string             `json:"utm_medium"`
+	UtmCampaign          string             `json:"utm_campaign"`
+	LandingViews         int64              `json:"landing_views"`
+	UniqueVisitors       int64              `json:"unique_visitors"`
+	FormSubmits          int64              `json:"form_submits"`
+	VerificationRequests int64              `json:"verification_requests"`
+	VerifiedEmails       int64              `json:"verified_emails"`
+	Activations          int64              `json:"activations"`
+	FirstLessonStarts    int64              `json:"first_lesson_starts"`
+	LessonCompletions    int64              `json:"lesson_completions"`
+	QuizSubmissions      int64              `json:"quiz_submissions"`
+	CourseCompletions    int64              `json:"course_completions"`
+	DeadlineExpirations  int64              `json:"deadline_expirations"`
+	ReturnVisits         int64              `json:"return_visits"`
+	ProgressSum          int64              `json:"progress_sum"`
+	ProgressSamples      int64              `json:"progress_samples"`
+	CompletionSecondsSum pgtype.Numeric     `json:"completion_seconds_sum"`
+	CompletionSamples    int64              `json:"completion_samples"`
+	SourceEventCount     int64              `json:"source_event_count"`
+	LastEventAt          pgtype.Timestamptz `json:"last_event_at"`
+	AggregatedAt         time.Time          `json:"aggregated_at"`
+}
+
+type ExternalCampaignHistory struct {
+	ID                  uuid.UUID     `json:"id"`
+	CompanyID           uuid.UUID     `json:"company_id"`
+	CampaignID          uuid.UUID     `json:"campaign_id"`
+	EventType           string        `json:"event_type"`
+	ActorType           string        `json:"actor_type"`
+	ActorID             uuid.NullUUID `json:"actor_id"`
+	IdempotencyKey      pgtype.Text   `json:"idempotency_key"`
+	PreviousStatus      pgtype.Text   `json:"previous_status"`
+	CurrentStatus       string        `json:"current_status"`
+	PreviousTokenPrefix pgtype.Text   `json:"previous_token_prefix"`
+	CurrentTokenPrefix  pgtype.Text   `json:"current_token_prefix"`
+	Details             []byte        `json:"details"`
+	OccurredAt          time.Time     `json:"occurred_at"`
+}
+
+type ExternalLearner struct {
+	ID              uuid.UUID          `json:"id"`
+	CompanyID       uuid.UUID          `json:"company_id"`
+	Email           string             `json:"email"`
+	NormalizedEmail string             `json:"normalized_email"`
+	FirstName       pgtype.Text        `json:"first_name"`
+	LastName        pgtype.Text        `json:"last_name"`
+	Phone           pgtype.Text        `json:"phone"`
+	EmailVerifiedAt pgtype.Timestamptz `json:"email_verified_at"`
+	CreatedAt       time.Time          `json:"created_at"`
+	UpdatedAt       time.Time          `json:"updated_at"`
+	DeletedAt       pgtype.Timestamptz `json:"deleted_at"`
+}
+
+type ExternalMutationIdempotency struct {
+	ID                uuid.UUID          `json:"id"`
+	CompanyID         uuid.UUID          `json:"company_id"`
+	ExternalLearnerID uuid.UUID          `json:"external_learner_id"`
+	Operation         string             `json:"operation"`
+	IdempotencyKey    string             `json:"idempotency_key"`
+	RequestHash       string             `json:"request_hash"`
+	AggregateID       uuid.UUID          `json:"aggregate_id"`
+	ResultID          uuid.NullUUID      `json:"result_id"`
+	EnrollmentID      uuid.NullUUID      `json:"enrollment_id"`
+	ResultPayload     []byte             `json:"result_payload"`
+	CompletedAt       pgtype.Timestamptz `json:"completed_at"`
+	CreatedAt         time.Time          `json:"created_at"`
+}
+
+type ExternalPersonalAccess struct {
+	ID                      uuid.UUID          `json:"id"`
+	CompanyID               uuid.UUID          `json:"company_id"`
+	CourseID                uuid.UUID          `json:"course_id"`
+	CourseVersionID         uuid.UUID          `json:"course_version_id"`
+	PartnerOwnerID          uuid.UUID          `json:"partner_owner_id"`
+	ExternalLearnerID       uuid.NullUUID      `json:"external_learner_id"`
+	ExpectedEmail           string             `json:"expected_email"`
+	NormalizedExpectedEmail string             `json:"normalized_expected_email"`
+	RecipientFirstName      pgtype.Text        `json:"recipient_first_name"`
+	RecipientLastName       pgtype.Text        `json:"recipient_last_name"`
+	DeadlineDays            int16              `json:"deadline_days"`
+	Status                  string             `json:"status"`
+	TokenHash               []byte             `json:"token_hash"`
+	TokenPrefix             string             `json:"token_prefix"`
+	EnrollmentID            uuid.NullUUID      `json:"enrollment_id"`
+	RootAccessID            uuid.UUID          `json:"root_access_id"`
+	RepeatOfAccessID        uuid.NullUUID      `json:"repeat_of_access_id"`
+	AttemptNumber           int32              `json:"attempt_number"`
+	IssuanceIdempotencyKey  string             `json:"issuance_idempotency_key"`
+	IssuedByID              uuid.UUID          `json:"issued_by_id"`
+	IssuedAt                time.Time          `json:"issued_at"`
+	ActivatedAt             pgtype.Timestamptz `json:"activated_at"`
+	TokenRotatedAt          pgtype.Timestamptz `json:"token_rotated_at"`
+	RevokedAt               pgtype.Timestamptz `json:"revoked_at"`
+	ClosedAt                pgtype.Timestamptz `json:"closed_at"`
+	UpdatedAt               time.Time          `json:"updated_at"`
+}
+
+type ExternalPersonalAccessHistory struct {
+	ID                  uuid.UUID          `json:"id"`
+	CompanyID           uuid.UUID          `json:"company_id"`
+	PersonalAccessID    uuid.UUID          `json:"personal_access_id"`
+	ExternalLearnerID   uuid.NullUUID      `json:"external_learner_id"`
+	EnrollmentID        uuid.NullUUID      `json:"enrollment_id"`
+	EventType           string             `json:"event_type"`
+	ActorType           string             `json:"actor_type"`
+	ActorID             uuid.NullUUID      `json:"actor_id"`
+	IdempotencyKey      pgtype.Text        `json:"idempotency_key"`
+	PreviousTokenPrefix pgtype.Text        `json:"previous_token_prefix"`
+	CurrentTokenPrefix  pgtype.Text        `json:"current_token_prefix"`
+	AccessUntilBefore   pgtype.Timestamptz `json:"access_until_before"`
+	AccessUntilAfter    pgtype.Timestamptz `json:"access_until_after"`
+	Details             []byte             `json:"details"`
+	OccurredAt          time.Time          `json:"occurred_at"`
+}
+
+type ExternalSession struct {
+	ID                uuid.UUID          `json:"id"`
+	CompanyID         uuid.UUID          `json:"company_id"`
+	ExternalLearnerID uuid.UUID          `json:"external_learner_id"`
+	TokenHash         []byte             `json:"token_hash"`
+	ExpiresAt         time.Time          `json:"expires_at"`
+	LastUsedAt        pgtype.Timestamptz `json:"last_used_at"`
+	RevokedAt         pgtype.Timestamptz `json:"revoked_at"`
+	RevocationReason  pgtype.Text        `json:"revocation_reason"`
+	CreatedAt         time.Time          `json:"created_at"`
+}
+
+type ExternalVerificationChallenge struct {
+	ID                 uuid.UUID          `json:"id"`
+	CompanyID          uuid.UUID          `json:"company_id"`
+	NormalizedEmail    string             `json:"normalized_email"`
+	Purpose            string             `json:"purpose"`
+	SourceID           uuid.NullUUID      `json:"source_id"`
+	ClaimedFirstName   pgtype.Text        `json:"claimed_first_name"`
+	ClaimedLastName    pgtype.Text        `json:"claimed_last_name"`
+	CodeHash           []byte             `json:"code_hash"`
+	RequestIpHash      []byte             `json:"request_ip_hash"`
+	ExpiresAt          time.Time          `json:"expires_at"`
+	Attempts           int16              `json:"attempts"`
+	MaxAttempts        int16              `json:"max_attempts"`
+	ConsumedAt         pgtype.Timestamptz `json:"consumed_at"`
+	InvalidatedAt      pgtype.Timestamptz `json:"invalidated_at"`
+	InvalidationReason pgtype.Text        `json:"invalidation_reason"`
+	CreatedAt          time.Time          `json:"created_at"`
+}
+
+type KbArticleSnapshot struct {
+	ID                         uuid.UUID     `json:"id"`
+	CompanyID                  uuid.UUID     `json:"company_id"`
+	SourceArticleID            uuid.UUID     `json:"source_article_id"`
+	SourceArticleVersionID     uuid.NullUUID `json:"source_article_version_id"`
+	SourceArticleVersionNumber pgtype.Int4   `json:"source_article_version_number"`
+	ReuseGrantID               uuid.NullUUID `json:"reuse_grant_id"`
+	RequestedByID              uuid.UUID     `json:"requested_by_id"`
+	RequestedByPartnerID       uuid.NullUUID `json:"requested_by_partner_id"`
+	RequestKey                 string        `json:"request_key"`
+	Title                      string        `json:"title"`
+	Content                    []byte        `json:"content"`
+	SourceFileIds              []uuid.UUID   `json:"source_file_ids"`
+	ContentHash                string        `json:"content_hash"`
+	CreatedAt                  time.Time     `json:"created_at"`
 }
 
 type Lesson struct {
@@ -77,6 +605,19 @@ type Outbox struct {
 	LastError     pgtype.Text        `json:"last_error"`
 }
 
+type PartnerCourseCopyIdempotency struct {
+	ID                    uuid.UUID `json:"id"`
+	CompanyID             uuid.UUID `json:"company_id"`
+	SourceCourseID        uuid.UUID `json:"source_course_id"`
+	SourceCourseVersionID uuid.UUID `json:"source_course_version_id"`
+	IdempotencyKey        string    `json:"idempotency_key"`
+	TargetCourseID        uuid.UUID `json:"target_course_id"`
+	TargetCourseVersionID uuid.UUID `json:"target_course_version_id"`
+	OriginID              uuid.UUID `json:"origin_id"`
+	CreatedByID           uuid.UUID `json:"created_by_id"`
+	CreatedAt             time.Time `json:"created_at"`
+}
+
 type ProcessedEvent struct {
 	EventID     uuid.UUID `json:"event_id"`
 	CompanyID   uuid.UUID `json:"company_id"`
@@ -103,12 +644,28 @@ type Quiz struct {
 }
 
 type QuizAttempt struct {
-	ID            uuid.UUID `json:"id"`
-	CompanyID     uuid.UUID `json:"company_id"`
-	QuizID        uuid.UUID `json:"quiz_id"`
-	UserID        uuid.UUID `json:"user_id"`
-	Score         int32     `json:"score"`
-	Passed        bool      `json:"passed"`
-	PendingReview bool      `json:"pending_review"`
-	CreatedAt     time.Time `json:"created_at"`
+	ID            uuid.UUID          `json:"id"`
+	CompanyID     uuid.UUID          `json:"company_id"`
+	QuizID        uuid.NullUUID      `json:"quiz_id"`
+	UserID        uuid.NullUUID      `json:"user_id"`
+	Score         int32              `json:"score"`
+	Passed        bool               `json:"passed"`
+	PendingReview bool               `json:"pending_review"`
+	CreatedAt     time.Time          `json:"created_at"`
+	EnrollmentID  uuid.UUID          `json:"enrollment_id"`
+	QuizVersionID uuid.UUID          `json:"quiz_version_id"`
+	Answers       []byte             `json:"answers"`
+	ReviewedByID  uuid.NullUUID      `json:"reviewed_by_id"`
+	ReviewedAt    pgtype.Timestamptz `json:"reviewed_at"`
+	ReviewComment pgtype.Text        `json:"review_comment"`
+}
+
+type SystemTemplateSeedCheckpoint struct {
+	CompanyID         uuid.UUID `json:"company_id"`
+	SystemTemplateKey string    `json:"system_template_key"`
+	SeedVersion       int32     `json:"seed_version"`
+	TemplateID        uuid.UUID `json:"template_id"`
+	TemplateVersionID uuid.UUID `json:"template_version_id"`
+	ContentHash       string    `json:"content_hash"`
+	AppliedAt         time.Time `json:"applied_at"`
 }

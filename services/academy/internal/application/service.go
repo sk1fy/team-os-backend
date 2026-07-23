@@ -18,12 +18,26 @@ import (
 const academyLink = "/academy"
 
 type Service struct {
-	pool    *pgxpool.Pool
-	kb      KbClient
-	company CompanyClient
-	logger  *slog.Logger
-	now     func() time.Time
+	pool               *pgxpool.Pool
+	kb                 KbClient
+	company            CompanyClient
+	files              FilesClient
+	externalSecret     []byte
+	externalEmailKey   []byte
+	externalEmailKeyID string
+	logger             *slog.Logger
+	now                func() time.Time
 }
+
+func (s *Service) SetFilesClient(client FilesClient) { s.files = client }
+
+func (s *Service) SetExternalSecret(secret string) { s.externalSecret = []byte(secret) }
+
+func (s *Service) SetExternalEmailKey(key []byte) {
+	s.externalEmailKey = append(s.externalEmailKey[:0], key...)
+}
+
+func (s *Service) SetExternalEmailKeyID(keyID string) { s.externalEmailKeyID = keyID }
 
 func NewService(pool *pgxpool.Pool, kb KbClient, company CompanyClient, logger *slog.Logger) (*Service, error) {
 	if pool == nil {

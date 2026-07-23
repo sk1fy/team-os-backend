@@ -34,6 +34,9 @@ type payload struct {
 
 func (s *Service) Handle(subject string) eventbus.HandlerFunc {
 	return func(ctx context.Context, event eventbus.Event) (bool, error) {
+		if subject == externalEmailVerificationSubject {
+			return s.handleExternalEmailVerification(ctx, event)
+		}
 		var p payload
 		if err := json.Unmarshal(event.Payload, &p); err != nil {
 			return false, fmt.Errorf("decode %s: %w", subject, err)
@@ -114,6 +117,10 @@ func eventNotification(subject string, p payload) (string, string, *string) {
 		return "course_assigned", "Вам назначен курс: " + title, nil
 	case "teamos.academy.course.due_soon.v1":
 		return "course_due", "Скоро срок курса: " + title, nil
+	case "teamos.academy.course_version.published.v1":
+		return "course_published", "Партнёр опубликовал курс: " + title, nil
+	case "teamos.academy.course_distribution.changed.v1":
+		return "course_restriction", "Изменены ограничения курса: " + title, nil
 	case "teamos.tasks.mention.created.v1", "teamos.kb.mention.created.v1":
 		return "mention", "Вас упомянули: " + title, nil
 	case "teamos.org.user.created.v1":

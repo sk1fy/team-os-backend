@@ -30,16 +30,36 @@ type AccessSettings struct {
 	UserIDs       []uuid.UUID
 }
 
+type PartnerAccessSettings struct {
+	Mode       string
+	PartnerIDs []uuid.UUID
+}
+
+func (s PartnerAccessSettings) allows(partnerID uuid.UUID) bool {
+	switch s.Mode {
+	case "all":
+		return true
+	case "selected":
+		for _, id := range s.PartnerIDs {
+			if id == partnerID {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 type Section struct {
-	ID         uuid.UUID
-	CompanyID  uuid.UUID
-	Name       string
-	ParentID   *uuid.UUID
-	Order      int32
-	Access     AccessSettings
-	Visibility string
-	CreatedAt  time.Time
-	UpdatedAt  time.Time
+	ID            uuid.UUID
+	CompanyID     uuid.UUID
+	Name          string
+	ParentID      *uuid.UUID
+	Order         int32
+	Access        AccessSettings
+	PartnerAccess PartnerAccessSettings
+	Visibility    string
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
 }
 
 func (s Section) domain(byID map[uuid.UUID]Section) domainaccess.Section {
@@ -67,6 +87,39 @@ type Article struct {
 	PlainText               string
 	CreatedAt               time.Time
 	UpdatedAt               time.Time
+	PartnerAccess           PartnerAccessSettings
+	PartnerReusePolicy      string
+}
+
+type ArticlePartnerPolicy struct {
+	ArticleID   uuid.UUID
+	Access      PartnerAccessSettings
+	ReusePolicy string
+	UpdatedAt   time.Time
+	UpdatedByID *uuid.UUID
+}
+
+type ArticleCourseCopyPermission struct {
+	CanRead                  bool
+	CanCopy                  bool
+	ReusePolicy              string
+	DenialReason             string
+	ResolvedArticleVersionID *uuid.UUID
+}
+
+type ArticleSnapshotAttachment struct {
+	FileID uuid.UUID
+}
+
+type ArticleSnapshotForCourseCopy struct {
+	ArticleID        uuid.UUID
+	ArticleVersionID uuid.UUID
+	Version          int32
+	Title            string
+	Content          json.RawMessage
+	Attachments      []ArticleSnapshotAttachment
+	ContentHash      string
+	CapturedAt       time.Time
 }
 
 type ArticleVersion struct {

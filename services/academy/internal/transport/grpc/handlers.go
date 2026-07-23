@@ -8,16 +8,428 @@ import (
 	"github.com/sk1fy/team-os-backend/services/academy/internal/application"
 )
 
-func (s *Server) GetCourses(ctx context.Context, _ *academyv1.GetCoursesRequest) (*academyv1.GetCoursesResponse, error) {
+func (s *Server) GetCourses(ctx context.Context, request *academyv1.GetCoursesRequest) (*academyv1.GetCoursesResponse, error) {
 	actor, err := s.actor(ctx)
 	if err != nil {
 		return nil, err
 	}
-	courses, err := s.application.GetCourses(ctx, actor)
+	filters := application.CourseFilters{HasDraft: request.HasDraft, LatestVersion: request.LatestVersion}
+	if request.OwnerType != nil {
+		value, convertErr := courseOwnerTypeFromProto(request.GetOwnerType())
+		if convertErr != nil {
+			return nil, convertErr
+		}
+		filters.OwnerType = &value
+	}
+	if request.PartnerId != nil {
+		partnerID, parseErr := parseUUID(request.GetPartnerId())
+		if parseErr != nil {
+			return nil, parseErr
+		}
+		filters.PartnerID = &partnerID
+	}
+	if request.Lifecycle != nil {
+		value, convertErr := courseLifecycleFromProto(request.GetLifecycle())
+		if convertErr != nil {
+			return nil, convertErr
+		}
+		filters.LifecycleStatus = &value
+	}
+	if request.Distribution != nil {
+		value, convertErr := courseDistributionFromProto(request.GetDistribution())
+		if convertErr != nil {
+			return nil, convertErr
+		}
+		filters.DistributionStatus = &value
+	}
+	if request.OriginType != nil {
+		value, convertErr := courseOriginTypeFromProto(request.GetOriginType())
+		if convertErr != nil {
+			return nil, convertErr
+		}
+		filters.OriginType = &value
+	}
+	courses, err := s.application.GetCourses(ctx, actor, filters)
 	if err != nil {
 		return nil, transportError(err)
 	}
 	return &academyv1.GetCoursesResponse{Courses: coursesToProto(courses)}, nil
+}
+
+func (s *Server) ArchiveCourse(ctx context.Context, request *academyv1.ArchiveCourseRequest) (*academyv1.ArchiveCourseResponse, error) {
+	actor, err := s.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	id, err := parseUUID(request.GetId())
+	if err != nil {
+		return nil, err
+	}
+	value, err := s.application.ArchiveCourse(ctx, actor, id)
+	if err != nil {
+		return nil, transportError(err)
+	}
+	return &academyv1.ArchiveCourseResponse{Course: courseToProto(value)}, nil
+}
+
+func (s *Server) RestoreCourse(ctx context.Context, request *academyv1.RestoreCourseRequest) (*academyv1.RestoreCourseResponse, error) {
+	actor, err := s.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	id, err := parseUUID(request.GetId())
+	if err != nil {
+		return nil, err
+	}
+	value, err := s.application.RestoreCourse(ctx, actor, id)
+	if err != nil {
+		return nil, transportError(err)
+	}
+	return &academyv1.RestoreCourseResponse{Course: courseToProto(value)}, nil
+}
+
+func (s *Server) GetCourseVersions(ctx context.Context, request *academyv1.GetCourseVersionsRequest) (*academyv1.GetCourseVersionsResponse, error) {
+	actor, err := s.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	courseID, err := parseUUID(request.GetCourseId())
+	if err != nil {
+		return nil, err
+	}
+	versions, err := s.application.GetCourseVersions(ctx, actor, courseID)
+	if err != nil {
+		return nil, transportError(err)
+	}
+	return &academyv1.GetCourseVersionsResponse{Versions: courseVersionsToProto(versions)}, nil
+}
+
+func (s *Server) GetCourseVersion(ctx context.Context, request *academyv1.GetCourseVersionRequest) (*academyv1.GetCourseVersionResponse, error) {
+	actor, err := s.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	courseID, err := parseUUID(request.GetCourseId())
+	if err != nil {
+		return nil, err
+	}
+	versionID, err := parseUUID(request.GetVersionId())
+	if err != nil {
+		return nil, err
+	}
+	content, err := s.application.GetCourseVersion(ctx, actor, courseID, versionID)
+	if err != nil {
+		return nil, transportError(err)
+	}
+	lessons, err := courseVersionLessonsToProto(content.Lessons)
+	if err != nil {
+		return nil, transportError(err)
+	}
+	quizzes, err := courseVersionQuizzesToProto(content.Quizzes)
+	if err != nil {
+		return nil, transportError(err)
+	}
+	return &academyv1.GetCourseVersionResponse{
+		Version: courseVersionToProto(content.Version), Sections: courseVersionSectionsToProto(content.Sections),
+		Lessons: lessons, Quizzes: quizzes,
+	}, nil
+}
+
+func (s *Server) CreateCourseDraft(ctx context.Context, request *academyv1.CreateCourseDraftRequest) (*academyv1.CreateCourseDraftResponse, error) {
+	actor, err := s.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	courseID, err := parseUUID(request.GetCourseId())
+	if err != nil {
+		return nil, err
+	}
+	version, err := s.application.CreateCourseDraft(ctx, actor, courseID)
+	if err != nil {
+		return nil, transportError(err)
+	}
+	return &academyv1.CreateCourseDraftResponse{Version: courseVersionToProto(version)}, nil
+}
+
+func (s *Server) UpdateCourseDraft(ctx context.Context, request *academyv1.UpdateCourseDraftRequest) (*academyv1.UpdateCourseDraftResponse, error) {
+	actor, err := s.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	courseID, err := parseUUID(request.GetCourseId())
+	if err != nil {
+		return nil, err
+	}
+	coverFileID, err := parseOptionalUUID(request.CoverFileId)
+	if err != nil {
+		return nil, err
+	}
+	input := application.UpdateCourseDraftInput{
+		CourseID: courseID, Title: request.Title, Description: request.Description,
+		CoverFileID: coverFileID, Sequential: request.Sequential,
+		DefaultInternalDeadlineDays: uint32Pointer(request.DefaultInternalDeadlineDays),
+	}
+	version, err := s.application.UpdateCourseDraft(ctx, actor, input)
+	if err != nil {
+		return nil, transportError(err)
+	}
+	return &academyv1.UpdateCourseDraftResponse{Version: courseVersionToProto(version)}, nil
+}
+
+func (s *Server) PublishCourseVersion(ctx context.Context, request *academyv1.PublishCourseVersionRequest) (*academyv1.PublishCourseVersionResponse, error) {
+	actor, err := s.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	courseID, err := parseUUID(request.GetCourseId())
+	if err != nil {
+		return nil, err
+	}
+	version, err := s.application.PublishCourseVersion(ctx, actor, courseID, request.GetIdempotencyKey())
+	if err != nil {
+		return nil, transportError(err)
+	}
+	return &academyv1.PublishCourseVersionResponse{Version: courseVersionToProto(version)}, nil
+}
+
+func (s *Server) GetPublishedCourseVersion(ctx context.Context, request *academyv1.GetPublishedCourseVersionRequest) (*academyv1.GetPublishedCourseVersionResponse, error) {
+	actor, err := s.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	courseID, err := parseUUID(request.GetCourseId())
+	if err != nil {
+		return nil, err
+	}
+	versionID, err := parseOptionalUUID(request.VersionId)
+	if err != nil {
+		return nil, err
+	}
+	content, err := s.application.GetPublishedCourseVersion(ctx, actor, courseID, versionID)
+	if err != nil {
+		return nil, transportError(err)
+	}
+	converted, err := learnerPublishedCourseVersionToProto(content)
+	if err != nil {
+		return nil, transportError(err)
+	}
+	return &academyv1.GetPublishedCourseVersionResponse{Version: converted}, nil
+}
+
+func (s *Server) CreateCourseVersionSection(ctx context.Context, request *academyv1.CreateCourseVersionSectionRequest) (*academyv1.CreateCourseVersionSectionResponse, error) {
+	actor, err := s.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	versionID, err := parseUUID(request.GetVersionId())
+	if err != nil {
+		return nil, err
+	}
+	section, err := s.application.CreateCourseVersionSection(ctx, actor, versionID, request.GetTitle())
+	if err != nil {
+		return nil, transportError(err)
+	}
+	return &academyv1.CreateCourseVersionSectionResponse{Section: courseVersionSectionToProto(section)}, nil
+}
+
+func (s *Server) UpdateCourseVersionSection(ctx context.Context, request *academyv1.UpdateCourseVersionSectionRequest) (*academyv1.UpdateCourseVersionSectionResponse, error) {
+	actor, err := s.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	id, err := parseUUID(request.GetId())
+	if err != nil {
+		return nil, err
+	}
+	section, err := s.application.UpdateCourseVersionSection(ctx, actor, application.UpdateCourseVersionSectionInput{
+		ID: id, Title: request.Title, Order: uint32Pointer(request.Order),
+	})
+	if err != nil {
+		return nil, transportError(err)
+	}
+	return &academyv1.UpdateCourseVersionSectionResponse{Section: courseVersionSectionToProto(section)}, nil
+}
+
+func (s *Server) DeleteCourseVersionSection(ctx context.Context, request *academyv1.DeleteCourseVersionSectionRequest) (*academyv1.DeleteCourseVersionSectionResponse, error) {
+	actor, err := s.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	id, err := parseUUID(request.GetId())
+	if err != nil {
+		return nil, err
+	}
+	if err = s.application.DeleteCourseVersionSection(ctx, actor, id); err != nil {
+		return nil, transportError(err)
+	}
+	return &academyv1.DeleteCourseVersionSectionResponse{}, nil
+}
+
+func (s *Server) CreateCourseVersionLesson(ctx context.Context, request *academyv1.CreateCourseVersionLessonRequest) (*academyv1.CreateCourseVersionLessonResponse, error) {
+	actor, err := s.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	versionID, err := parseUUID(request.GetVersionId())
+	if err != nil {
+		return nil, err
+	}
+	sectionID, err := parseUUID(request.GetSectionVersionId())
+	if err != nil {
+		return nil, err
+	}
+	articleID, err := parseOptionalUUID(request.SourceArticleId)
+	if err != nil {
+		return nil, err
+	}
+	content, err := structToContent(request.Content)
+	if err != nil {
+		return nil, invalidArgument("Некорректное содержимое урока")
+	}
+	input := application.CreateCourseVersionLessonInput{
+		VersionID: versionID, SectionVersionID: sectionID, Title: request.GetTitle(), Content: content,
+		SourceArticleID: articleID, SourceArticleVersion: uint32Pointer(request.SourceArticleVersion),
+		EstimatedMinutes: uint32Pointer(request.EstimatedMinutes),
+	}
+	if request.SourceType != nil {
+		sourceType, convertErr := courseLessonSourceTypeFromProto(request.GetSourceType())
+		if convertErr != nil {
+			return nil, convertErr
+		}
+		input.SourceType = &sourceType
+	}
+	lesson, err := s.application.CreateCourseVersionLesson(ctx, actor, input)
+	if err != nil {
+		return nil, transportError(err)
+	}
+	converted, err := courseVersionLessonToProto(lesson)
+	if err != nil {
+		return nil, transportError(err)
+	}
+	return &academyv1.CreateCourseVersionLessonResponse{Lesson: converted}, nil
+}
+
+func (s *Server) UpdateCourseVersionLesson(ctx context.Context, request *academyv1.UpdateCourseVersionLessonRequest) (*academyv1.UpdateCourseVersionLessonResponse, error) {
+	actor, err := s.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	id, err := parseUUID(request.GetId())
+	if err != nil {
+		return nil, err
+	}
+	articleID, err := parseOptionalUUID(request.SourceArticleId)
+	if err != nil {
+		return nil, err
+	}
+	content, err := structToContent(request.Content)
+	if err != nil {
+		return nil, invalidArgument("Некорректное содержимое урока")
+	}
+	input := application.UpdateCourseVersionLessonInput{
+		ID: id, Title: request.Title, Content: content, SetContent: request.Content != nil,
+		SourceArticleID: articleID, SourceArticleVersion: uint32Pointer(request.SourceArticleVersion),
+		EstimatedMinutes: uint32Pointer(request.EstimatedMinutes),
+	}
+	if request.SourceType != nil {
+		sourceType, convertErr := courseLessonSourceTypeFromProto(request.GetSourceType())
+		if convertErr != nil {
+			return nil, convertErr
+		}
+		input.SourceType = &sourceType
+	}
+	lesson, err := s.application.UpdateCourseVersionLesson(ctx, actor, input)
+	if err != nil {
+		return nil, transportError(err)
+	}
+	converted, err := courseVersionLessonToProto(lesson)
+	if err != nil {
+		return nil, transportError(err)
+	}
+	return &academyv1.UpdateCourseVersionLessonResponse{Lesson: converted}, nil
+}
+
+func (s *Server) DeleteCourseVersionLesson(ctx context.Context, request *academyv1.DeleteCourseVersionLessonRequest) (*academyv1.DeleteCourseVersionLessonResponse, error) {
+	actor, err := s.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	id, err := parseUUID(request.GetId())
+	if err != nil {
+		return nil, err
+	}
+	if err = s.application.DeleteCourseVersionLesson(ctx, actor, id); err != nil {
+		return nil, transportError(err)
+	}
+	return &academyv1.DeleteCourseVersionLessonResponse{}, nil
+}
+
+func (s *Server) MoveCourseVersionLesson(ctx context.Context, request *academyv1.MoveCourseVersionLessonRequest) (*academyv1.MoveCourseVersionLessonResponse, error) {
+	actor, err := s.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	id, err := parseUUID(request.GetId())
+	if err != nil {
+		return nil, err
+	}
+	sectionID, err := parseUUID(request.GetSectionVersionId())
+	if err != nil {
+		return nil, err
+	}
+	lesson, err := s.application.MoveCourseVersionLesson(ctx, actor, application.MoveCourseVersionLessonInput{
+		ID: id, SectionVersionID: sectionID, Order: int32(request.GetOrder()),
+	})
+	if err != nil {
+		return nil, transportError(err)
+	}
+	converted, err := courseVersionLessonToProto(lesson)
+	if err != nil {
+		return nil, transportError(err)
+	}
+	return &academyv1.MoveCourseVersionLessonResponse{Lesson: converted}, nil
+}
+
+func (s *Server) UpsertCourseVersionQuiz(ctx context.Context, request *academyv1.UpsertCourseVersionQuizRequest) (*academyv1.UpsertCourseVersionQuizResponse, error) {
+	actor, err := s.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	lessonID, err := parseUUID(request.GetLessonVersionId())
+	if err != nil {
+		return nil, err
+	}
+	questions, err := questionsFromProto(request.GetQuestions())
+	if err != nil {
+		return nil, invalidArgument("Некорректные вопросы теста")
+	}
+	quiz, err := s.application.UpsertCourseVersionQuiz(ctx, actor, application.UpsertCourseVersionQuizInput{
+		LessonVersionID: lessonID, Questions: questions, PassingScore: int32(request.GetPassingScore()),
+		MaxAttempts: uint32Pointer(request.MaxAttempts),
+	})
+	if err != nil {
+		return nil, transportError(err)
+	}
+	converted, err := courseVersionQuizToProto(quiz)
+	if err != nil {
+		return nil, transportError(err)
+	}
+	return &academyv1.UpsertCourseVersionQuizResponse{Quiz: converted}, nil
+}
+
+func (s *Server) DeleteCourseVersionQuiz(ctx context.Context, request *academyv1.DeleteCourseVersionQuizRequest) (*academyv1.DeleteCourseVersionQuizResponse, error) {
+	actor, err := s.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	lessonID, err := parseUUID(request.GetLessonVersionId())
+	if err != nil {
+		return nil, err
+	}
+	if err = s.application.DeleteCourseVersionQuiz(ctx, actor, lessonID); err != nil {
+		return nil, transportError(err)
+	}
+	return &academyv1.DeleteCourseVersionQuizResponse{}, nil
 }
 
 func (s *Server) GetCourse(ctx context.Context, request *academyv1.GetCourseRequest) (*academyv1.GetCourseResponse, error) {
@@ -459,8 +871,12 @@ func (s *Server) AssignCourse(ctx context.Context, request *academyv1.AssignCour
 	if err != nil {
 		return nil, err
 	}
+	versionID, err := parseOptionalUUID(request.CourseVersionId)
+	if err != nil {
+		return nil, err
+	}
 	input := application.AssignCourseInput{
-		CourseID: courseID, AssigneeType: assigneeType, AssigneeID: assigneeID,
+		CourseID: courseID, CourseVersionID: versionID, AssigneeType: assigneeType, AssigneeID: assigneeID,
 	}
 	if request.GetDueDate().IsValid() {
 		dueDate := request.GetDueDate().AsTime()
@@ -471,6 +887,21 @@ func (s *Server) AssignCourse(ctx context.Context, request *academyv1.AssignCour
 		return nil, transportError(err)
 	}
 	return &academyv1.AssignCourseResponse{Assignment: assignmentToProto(assignment)}, nil
+}
+
+func (s *Server) RevokeAssignment(ctx context.Context, request *academyv1.RevokeAssignmentRequest) (*academyv1.RevokeAssignmentResponse, error) {
+	actor, err := s.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	assignmentID, err := parseUUID(request.GetAssignmentId())
+	if err != nil {
+		return nil, err
+	}
+	if err = s.application.RevokeAssignment(ctx, actor, assignmentID); err != nil {
+		return nil, transportError(err)
+	}
+	return &academyv1.RevokeAssignmentResponse{}, nil
 }
 
 func (s *Server) GetProgress(ctx context.Context, request *academyv1.GetProgressRequest) (*academyv1.GetProgressResponse, error) {

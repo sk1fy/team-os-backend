@@ -1,0 +1,169 @@
+-- name: GetAcademyCutoverReconciliation :one
+WITH versioned_courses AS (
+    SELECT DISTINCT company_id, course_id
+    FROM course_versions
+    WHERE number = 1
+),
+progress_enrollments AS (
+    SELECT legacy.company_id,
+           legacy.user_id,
+           legacy.course_id,
+           enrollment.id AS enrollment_id,
+           enrollment.progress_status
+    FROM progress AS legacy
+    LEFT JOIN LATERAL (
+        SELECT candidate.id, candidate.progress_status
+        FROM course_enrollments AS candidate
+        JOIN course_versions AS version
+          ON version.company_id = candidate.company_id
+         AND version.id = candidate.course_version_id
+        WHERE candidate.company_id = legacy.company_id
+          AND candidate.user_id = legacy.user_id
+          AND candidate.course_id = legacy.course_id
+          AND candidate.learner_type = 'user'
+          AND candidate.attempt_number = 1
+          AND version.number = 1
+        ORDER BY candidate.created_at, candidate.id
+        LIMIT 1
+    ) AS enrollment ON true
+),
+progress_status_mismatches AS (
+    SELECT legacy.company_id, legacy.user_id, legacy.course_id
+    FROM progress AS legacy
+    JOIN progress_enrollments AS mapped
+      ON mapped.company_id = legacy.company_id
+     AND mapped.user_id = legacy.user_id
+     AND mapped.course_id = legacy.course_id
+    JOIN course_versions AS version
+      ON version.company_id = legacy.company_id
+     AND version.course_id = legacy.course_id
+     AND version.number = 1
+    CROSS JOIN LATERAL (
+        SELECT count(*)::integer AS lesson_count,
+               count(*) FILTER (
+                   WHERE NOT (lesson.id = ANY(legacy.completed_lesson_ids))
+               )::integer AS incomplete_lesson_count
+        FROM course_version_lessons AS lesson
+        WHERE lesson.company_id = legacy.company_id
+          AND lesson.course_version_id = version.id
+    ) AS lessons
+    WHERE mapped.enrollment_id IS NOT NULL
+      AND mapped.progress_status <> CASE
+          WHEN lessons.lesson_count > 0
+               AND lessons.incomplete_lesson_count = 0
+              THEN 'completed'
+          WHEN legacy.status IN ('in_progress', 'completed')
+               OR legacy.started_at IS NOT NULL
+               OR cardinality(legacy.completed_lesson_ids) > 0
+              THEN 'in_progress'
+          ELSE 'not_started'
+      END
+),
+progress_lesson_mismatches AS (
+    SELECT legacy.company_id, legacy.user_id, legacy.course_id
+    FROM progress AS legacy
+    JOIN progress_enrollments AS mapped
+      ON mapped.company_id = legacy.company_id
+     AND mapped.user_id = legacy.user_id
+     AND mapped.course_id = legacy.course_id
+    WHERE mapped.enrollment_id IS NOT NULL
+      AND (
+          EXISTS (
+              SELECT 1
+              FROM unnest(legacy.completed_lesson_ids) AS completed(lesson_id)
+              WHERE NOT EXISTS (
+                  SELECT 1
+                  FROM enrollment_lesson_progress AS current_progress
+                  WHERE current_progress.company_id = legacy.company_id
+                    AND current_progress.enrollment_id = mapped.enrollment_id
+                    AND current_progress.lesson_version_id = completed.lesson_id
+                    AND current_progress.status = 'completed'
+              )
+          )
+          OR EXISTS (
+              SELECT 1
+              FROM enrollment_lesson_progress AS current_progress
+              WHERE current_progress.company_id = legacy.company_id
+                AND current_progress.enrollment_id = mapped.enrollment_id
+                AND current_progress.status = 'completed'
+                AND NOT (current_progress.lesson_version_id = ANY(legacy.completed_lesson_ids))
+          )
+      )
+),
+quiz_binding_mismatches AS (
+    SELECT attempt.id
+    FROM quiz_attempts AS attempt
+    LEFT JOIN quizzes AS legacy_quiz ON legacy_quiz.id = attempt.quiz_id
+    LEFT JOIN lessons AS legacy_lesson ON legacy_lesson.id = legacy_quiz.lesson_id
+    LEFT JOIN course_enrollments AS enrollment
+      ON enrollment.company_id = attempt.company_id
+     AND enrollment.id = attempt.enrollment_id
+    LEFT JOIN course_version_quizzes AS version_quiz
+      ON version_quiz.company_id = attempt.company_id
+     AND version_quiz.id = attempt.quiz_version_id
+    WHERE attempt.quiz_id IS NOT NULL
+      AND attempt.user_id IS NOT NULL
+      AND (legacy_quiz.id IS NULL
+       OR legacy_lesson.id IS NULL
+       OR enrollment.id IS NULL
+       OR version_quiz.id IS NULL
+       OR enrollment.user_id IS DISTINCT FROM attempt.user_id
+       OR enrollment.course_id IS DISTINCT FROM legacy_lesson.course_id
+       OR version_quiz.id IS DISTINCT FROM legacy_quiz.id
+       OR version_quiz.course_version_id IS DISTINCT FROM enrollment.course_version_id)
+),
+tenant_scope_mismatches AS (
+    SELECT legacy.course_id AS id
+    FROM progress AS legacy
+    JOIN courses AS course ON course.id = legacy.course_id
+    WHERE course.company_id <> legacy.company_id
+    UNION ALL
+    SELECT assignment.id
+    FROM assignments AS assignment
+    JOIN courses AS course ON course.id = assignment.course_id
+    JOIN course_versions AS version ON version.id = assignment.course_version_id
+    WHERE course.company_id <> assignment.company_id
+       OR version.company_id <> assignment.company_id
+       OR version.course_id <> assignment.course_id
+    UNION ALL
+    SELECT attempt.id
+    FROM quiz_attempts AS attempt
+    JOIN quizzes AS quiz ON quiz.id = attempt.quiz_id
+    WHERE quiz.company_id <> attempt.company_id
+)
+SELECT
+    (SELECT count(*)::bigint FROM courses) AS legacy_courses_total,
+    (SELECT count(*)::bigint FROM versioned_courses) AS versioned_courses_total,
+    (SELECT count(*)::bigint
+       FROM courses AS course
+       LEFT JOIN versioned_courses AS versioned
+         ON versioned.company_id = course.company_id
+        AND versioned.course_id = course.id
+      WHERE versioned.course_id IS NULL) AS courses_without_version,
+    (SELECT count(*)::bigint
+       FROM (
+           SELECT company_id, course_id
+           FROM course_versions
+           WHERE status = 'draft'
+           GROUP BY company_id, course_id
+           HAVING count(*) > 1
+       ) AS duplicate_drafts) AS courses_with_multiple_drafts,
+    (SELECT count(*)::bigint FROM assignments) AS assignments_total,
+    (SELECT count(*)::bigint
+       FROM assignments AS assignment
+       LEFT JOIN course_versions AS version
+         ON version.company_id = assignment.company_id
+        AND version.course_id = assignment.course_id
+        AND version.id = assignment.course_version_id
+      WHERE version.id IS NULL) AS assignments_without_version,
+    (SELECT count(*)::bigint FROM progress) AS legacy_progress_total,
+    (SELECT count(*)::bigint
+       FROM progress_enrollments
+      WHERE enrollment_id IS NULL) AS legacy_progress_without_enrollment,
+    (SELECT count(*)::bigint FROM progress_status_mismatches) AS progress_status_mismatches,
+    (SELECT count(*)::bigint FROM progress_lesson_mismatches) AS completed_lesson_mismatches,
+    (SELECT count(*)::bigint FROM quiz_attempts
+      WHERE quiz_id IS NOT NULL AND user_id IS NOT NULL) AS legacy_quiz_attempts_total,
+    (SELECT count(*)::bigint FROM quiz_binding_mismatches) AS quiz_attempt_binding_mismatches,
+    (SELECT count(*)::bigint FROM tenant_scope_mismatches) AS tenant_scope_mismatches,
+    (SELECT count(*)::bigint FROM courses WHERE visibility = 'public') AS deprecated_public_courses_total;

@@ -9,7 +9,89 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
+
+const completeCloneOperation = `-- name: CompleteCloneOperation :one
+UPDATE file_clone_operations
+SET state = 'succeeded', error_message = NULL, updated_at = now()
+WHERE company_id = $1 AND id = $2
+RETURNING id, company_id, idempotency_key, requested_by, target_owner_type, target_owner_id, source_file_ids, state, error_message, created_at, updated_at
+`
+
+type CompleteCloneOperationParams struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	ID        uuid.UUID `json:"id"`
+}
+
+func (q *Queries) CompleteCloneOperation(ctx context.Context, arg CompleteCloneOperationParams) (FileCloneOperation, error) {
+	row := q.db.QueryRow(ctx, completeCloneOperation, arg.CompanyID, arg.ID)
+	var i FileCloneOperation
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.IdempotencyKey,
+		&i.RequestedBy,
+		&i.TargetOwnerType,
+		&i.TargetOwnerID,
+		&i.SourceFileIds,
+		&i.State,
+		&i.ErrorMessage,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const createCloneOperation = `-- name: CreateCloneOperation :one
+INSERT INTO file_clone_operations (
+  id, company_id, idempotency_key, requested_by, target_owner_type,
+  target_owner_id, source_file_ids, state
+) VALUES (
+  $1, $2, $3,
+  $4, $5,
+  $6, $7::uuid[], 'pending'
+)
+ON CONFLICT (company_id, idempotency_key) DO NOTHING
+RETURNING id, company_id, idempotency_key, requested_by, target_owner_type, target_owner_id, source_file_ids, state, error_message, created_at, updated_at
+`
+
+type CreateCloneOperationParams struct {
+	ID              uuid.UUID   `json:"id"`
+	CompanyID       uuid.UUID   `json:"company_id"`
+	IdempotencyKey  string      `json:"idempotency_key"`
+	RequestedBy     uuid.UUID   `json:"requested_by"`
+	TargetOwnerType string      `json:"target_owner_type"`
+	TargetOwnerID   uuid.UUID   `json:"target_owner_id"`
+	SourceFileIds   []uuid.UUID `json:"source_file_ids"`
+}
+
+func (q *Queries) CreateCloneOperation(ctx context.Context, arg CreateCloneOperationParams) (FileCloneOperation, error) {
+	row := q.db.QueryRow(ctx, createCloneOperation,
+		arg.ID,
+		arg.CompanyID,
+		arg.IdempotencyKey,
+		arg.RequestedBy,
+		arg.TargetOwnerType,
+		arg.TargetOwnerID,
+		arg.SourceFileIds,
+	)
+	var i FileCloneOperation
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.IdempotencyKey,
+		&i.RequestedBy,
+		&i.TargetOwnerType,
+		&i.TargetOwnerID,
+		&i.SourceFileIds,
+		&i.State,
+		&i.ErrorMessage,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
 
 const createFile = `-- name: CreateFile :one
 INSERT INTO files (id, company_id, uploaded_by, object_key, name, content_type, size, purpose)
@@ -54,6 +136,29 @@ func (q *Queries) CreateFile(ctx context.Context, arg CreateFileParams) (File, e
 	return i, err
 }
 
+const createFileClone = `-- name: CreateFileClone :exec
+INSERT INTO file_clones (operation_id, ordinal, source_file_id, target_file_id)
+VALUES ($1, $2, $3, $4)
+ON CONFLICT (operation_id, source_file_id) DO NOTHING
+`
+
+type CreateFileCloneParams struct {
+	OperationID  uuid.UUID `json:"operation_id"`
+	Ordinal      int32     `json:"ordinal"`
+	SourceFileID uuid.UUID `json:"source_file_id"`
+	TargetFileID uuid.UUID `json:"target_file_id"`
+}
+
+func (q *Queries) CreateFileClone(ctx context.Context, arg CreateFileCloneParams) error {
+	_, err := q.db.Exec(ctx, createFileClone,
+		arg.OperationID,
+		arg.Ordinal,
+		arg.SourceFileID,
+		arg.TargetFileID,
+	)
+	return err
+}
+
 const deleteFile = `-- name: DeleteFile :one
 DELETE FROM files WHERE id = $1 AND company_id = $2 RETURNING object_key
 `
@@ -68,6 +173,96 @@ func (q *Queries) DeleteFile(ctx context.Context, arg DeleteFileParams) (string,
 	var object_key string
 	err := row.Scan(&object_key)
 	return object_key, err
+}
+
+const failCloneOperation = `-- name: FailCloneOperation :one
+UPDATE file_clone_operations
+SET state = 'failed', error_message = $1, updated_at = now()
+WHERE company_id = $2 AND id = $3
+RETURNING id, company_id, idempotency_key, requested_by, target_owner_type, target_owner_id, source_file_ids, state, error_message, created_at, updated_at
+`
+
+type FailCloneOperationParams struct {
+	ErrorMessage pgtype.Text `json:"error_message"`
+	CompanyID    uuid.UUID   `json:"company_id"`
+	ID           uuid.UUID   `json:"id"`
+}
+
+func (q *Queries) FailCloneOperation(ctx context.Context, arg FailCloneOperationParams) (FileCloneOperation, error) {
+	row := q.db.QueryRow(ctx, failCloneOperation, arg.ErrorMessage, arg.CompanyID, arg.ID)
+	var i FileCloneOperation
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.IdempotencyKey,
+		&i.RequestedBy,
+		&i.TargetOwnerType,
+		&i.TargetOwnerID,
+		&i.SourceFileIds,
+		&i.State,
+		&i.ErrorMessage,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getCloneOperation = `-- name: GetCloneOperation :one
+SELECT id, company_id, idempotency_key, requested_by, target_owner_type, target_owner_id, source_file_ids, state, error_message, created_at, updated_at FROM file_clone_operations
+WHERE company_id = $1 AND id = $2
+`
+
+type GetCloneOperationParams struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	ID        uuid.UUID `json:"id"`
+}
+
+func (q *Queries) GetCloneOperation(ctx context.Context, arg GetCloneOperationParams) (FileCloneOperation, error) {
+	row := q.db.QueryRow(ctx, getCloneOperation, arg.CompanyID, arg.ID)
+	var i FileCloneOperation
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.IdempotencyKey,
+		&i.RequestedBy,
+		&i.TargetOwnerType,
+		&i.TargetOwnerID,
+		&i.SourceFileIds,
+		&i.State,
+		&i.ErrorMessage,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getCloneOperationByKey = `-- name: GetCloneOperationByKey :one
+SELECT id, company_id, idempotency_key, requested_by, target_owner_type, target_owner_id, source_file_ids, state, error_message, created_at, updated_at FROM file_clone_operations
+WHERE company_id = $1 AND idempotency_key = $2
+`
+
+type GetCloneOperationByKeyParams struct {
+	CompanyID      uuid.UUID `json:"company_id"`
+	IdempotencyKey string    `json:"idempotency_key"`
+}
+
+func (q *Queries) GetCloneOperationByKey(ctx context.Context, arg GetCloneOperationByKeyParams) (FileCloneOperation, error) {
+	row := q.db.QueryRow(ctx, getCloneOperationByKey, arg.CompanyID, arg.IdempotencyKey)
+	var i FileCloneOperation
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.IdempotencyKey,
+		&i.RequestedBy,
+		&i.TargetOwnerType,
+		&i.TargetOwnerID,
+		&i.SourceFileIds,
+		&i.State,
+		&i.ErrorMessage,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const getFile = `-- name: GetFile :one
@@ -92,6 +287,97 @@ func (q *Queries) GetFile(ctx context.Context, arg GetFileParams) (File, error) 
 		&i.Size,
 		&i.Purpose,
 		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const listFileClones = `-- name: ListFileClones :many
+SELECT clone.operation_id, clone.ordinal, clone.source_file_id, clone.target_file_id,
+       file.company_id, file.uploaded_by, file.object_key, file.name,
+       file.content_type, file.size, file.purpose, file.created_at
+FROM file_clones AS clone
+JOIN files AS file ON file.id = clone.target_file_id
+WHERE clone.operation_id = $1
+ORDER BY clone.ordinal
+`
+
+type ListFileClonesRow struct {
+	OperationID  uuid.UUID          `json:"operation_id"`
+	Ordinal      int32              `json:"ordinal"`
+	SourceFileID uuid.UUID          `json:"source_file_id"`
+	TargetFileID uuid.UUID          `json:"target_file_id"`
+	CompanyID    uuid.UUID          `json:"company_id"`
+	UploadedBy   uuid.UUID          `json:"uploaded_by"`
+	ObjectKey    string             `json:"object_key"`
+	Name         string             `json:"name"`
+	ContentType  string             `json:"content_type"`
+	Size         int64              `json:"size"`
+	Purpose      string             `json:"purpose"`
+	CreatedAt    pgtype.Timestamptz `json:"created_at"`
+}
+
+func (q *Queries) ListFileClones(ctx context.Context, operationID uuid.UUID) ([]ListFileClonesRow, error) {
+	rows, err := q.db.Query(ctx, listFileClones, operationID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListFileClonesRow
+	for rows.Next() {
+		var i ListFileClonesRow
+		if err := rows.Scan(
+			&i.OperationID,
+			&i.Ordinal,
+			&i.SourceFileID,
+			&i.TargetFileID,
+			&i.CompanyID,
+			&i.UploadedBy,
+			&i.ObjectKey,
+			&i.Name,
+			&i.ContentType,
+			&i.Size,
+			&i.Purpose,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const startCloneOperation = `-- name: StartCloneOperation :one
+UPDATE file_clone_operations
+SET state = 'in_progress', error_message = NULL, updated_at = now()
+WHERE company_id = $1
+  AND id = $2
+  AND state IN ('pending', 'failed')
+RETURNING id, company_id, idempotency_key, requested_by, target_owner_type, target_owner_id, source_file_ids, state, error_message, created_at, updated_at
+`
+
+type StartCloneOperationParams struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	ID        uuid.UUID `json:"id"`
+}
+
+func (q *Queries) StartCloneOperation(ctx context.Context, arg StartCloneOperationParams) (FileCloneOperation, error) {
+	row := q.db.QueryRow(ctx, startCloneOperation, arg.CompanyID, arg.ID)
+	var i FileCloneOperation
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.IdempotencyKey,
+		&i.RequestedBy,
+		&i.TargetOwnerType,
+		&i.TargetOwnerID,
+		&i.SourceFileIds,
+		&i.State,
+		&i.ErrorMessage,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }

@@ -77,6 +77,2077 @@ func (CourseAssigneeType) EnumDescriptor() ([]byte, []int) {
 	return file_events_academy_proto_rawDescGZIP(), []int{0}
 }
 
+type AcademyCourseOwnerType int32
+
+const (
+	AcademyCourseOwnerType_ACADEMY_COURSE_OWNER_TYPE_UNSPECIFIED AcademyCourseOwnerType = 0
+	AcademyCourseOwnerType_ACADEMY_COURSE_OWNER_TYPE_COMPANY     AcademyCourseOwnerType = 1
+	AcademyCourseOwnerType_ACADEMY_COURSE_OWNER_TYPE_PARTNER     AcademyCourseOwnerType = 2
+)
+
+// Enum value maps for AcademyCourseOwnerType.
+var (
+	AcademyCourseOwnerType_name = map[int32]string{
+		0: "ACADEMY_COURSE_OWNER_TYPE_UNSPECIFIED",
+		1: "ACADEMY_COURSE_OWNER_TYPE_COMPANY",
+		2: "ACADEMY_COURSE_OWNER_TYPE_PARTNER",
+	}
+	AcademyCourseOwnerType_value = map[string]int32{
+		"ACADEMY_COURSE_OWNER_TYPE_UNSPECIFIED": 0,
+		"ACADEMY_COURSE_OWNER_TYPE_COMPANY":     1,
+		"ACADEMY_COURSE_OWNER_TYPE_PARTNER":     2,
+	}
+)
+
+func (x AcademyCourseOwnerType) Enum() *AcademyCourseOwnerType {
+	p := new(AcademyCourseOwnerType)
+	*p = x
+	return p
+}
+
+func (x AcademyCourseOwnerType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AcademyCourseOwnerType) Descriptor() protoreflect.EnumDescriptor {
+	return file_events_academy_proto_enumTypes[1].Descriptor()
+}
+
+func (AcademyCourseOwnerType) Type() protoreflect.EnumType {
+	return &file_events_academy_proto_enumTypes[1]
+}
+
+func (x AcademyCourseOwnerType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use AcademyCourseOwnerType.Descriptor instead.
+func (AcademyCourseOwnerType) EnumDescriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{1}
+}
+
+type AcademyCourseLifecycleStatus int32
+
+const (
+	AcademyCourseLifecycleStatus_ACADEMY_COURSE_LIFECYCLE_STATUS_UNSPECIFIED AcademyCourseLifecycleStatus = 0
+	AcademyCourseLifecycleStatus_ACADEMY_COURSE_LIFECYCLE_STATUS_ACTIVE      AcademyCourseLifecycleStatus = 1
+	AcademyCourseLifecycleStatus_ACADEMY_COURSE_LIFECYCLE_STATUS_ARCHIVED    AcademyCourseLifecycleStatus = 2
+	AcademyCourseLifecycleStatus_ACADEMY_COURSE_LIFECYCLE_STATUS_DELETED     AcademyCourseLifecycleStatus = 3
+)
+
+// Enum value maps for AcademyCourseLifecycleStatus.
+var (
+	AcademyCourseLifecycleStatus_name = map[int32]string{
+		0: "ACADEMY_COURSE_LIFECYCLE_STATUS_UNSPECIFIED",
+		1: "ACADEMY_COURSE_LIFECYCLE_STATUS_ACTIVE",
+		2: "ACADEMY_COURSE_LIFECYCLE_STATUS_ARCHIVED",
+		3: "ACADEMY_COURSE_LIFECYCLE_STATUS_DELETED",
+	}
+	AcademyCourseLifecycleStatus_value = map[string]int32{
+		"ACADEMY_COURSE_LIFECYCLE_STATUS_UNSPECIFIED": 0,
+		"ACADEMY_COURSE_LIFECYCLE_STATUS_ACTIVE":      1,
+		"ACADEMY_COURSE_LIFECYCLE_STATUS_ARCHIVED":    2,
+		"ACADEMY_COURSE_LIFECYCLE_STATUS_DELETED":     3,
+	}
+)
+
+func (x AcademyCourseLifecycleStatus) Enum() *AcademyCourseLifecycleStatus {
+	p := new(AcademyCourseLifecycleStatus)
+	*p = x
+	return p
+}
+
+func (x AcademyCourseLifecycleStatus) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AcademyCourseLifecycleStatus) Descriptor() protoreflect.EnumDescriptor {
+	return file_events_academy_proto_enumTypes[2].Descriptor()
+}
+
+func (AcademyCourseLifecycleStatus) Type() protoreflect.EnumType {
+	return &file_events_academy_proto_enumTypes[2]
+}
+
+func (x AcademyCourseLifecycleStatus) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use AcademyCourseLifecycleStatus.Descriptor instead.
+func (AcademyCourseLifecycleStatus) EnumDescriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{2}
+}
+
+type AcademyCourseDistributionStatus int32
+
+const (
+	AcademyCourseDistributionStatus_ACADEMY_COURSE_DISTRIBUTION_STATUS_UNSPECIFIED AcademyCourseDistributionStatus = 0
+	AcademyCourseDistributionStatus_ACADEMY_COURSE_DISTRIBUTION_STATUS_ACTIVE      AcademyCourseDistributionStatus = 1
+	AcademyCourseDistributionStatus_ACADEMY_COURSE_DISTRIBUTION_STATUS_PAUSED      AcademyCourseDistributionStatus = 2
+	AcademyCourseDistributionStatus_ACADEMY_COURSE_DISTRIBUTION_STATUS_BLOCKED     AcademyCourseDistributionStatus = 3
+)
+
+// Enum value maps for AcademyCourseDistributionStatus.
+var (
+	AcademyCourseDistributionStatus_name = map[int32]string{
+		0: "ACADEMY_COURSE_DISTRIBUTION_STATUS_UNSPECIFIED",
+		1: "ACADEMY_COURSE_DISTRIBUTION_STATUS_ACTIVE",
+		2: "ACADEMY_COURSE_DISTRIBUTION_STATUS_PAUSED",
+		3: "ACADEMY_COURSE_DISTRIBUTION_STATUS_BLOCKED",
+	}
+	AcademyCourseDistributionStatus_value = map[string]int32{
+		"ACADEMY_COURSE_DISTRIBUTION_STATUS_UNSPECIFIED": 0,
+		"ACADEMY_COURSE_DISTRIBUTION_STATUS_ACTIVE":      1,
+		"ACADEMY_COURSE_DISTRIBUTION_STATUS_PAUSED":      2,
+		"ACADEMY_COURSE_DISTRIBUTION_STATUS_BLOCKED":     3,
+	}
+)
+
+func (x AcademyCourseDistributionStatus) Enum() *AcademyCourseDistributionStatus {
+	p := new(AcademyCourseDistributionStatus)
+	*p = x
+	return p
+}
+
+func (x AcademyCourseDistributionStatus) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AcademyCourseDistributionStatus) Descriptor() protoreflect.EnumDescriptor {
+	return file_events_academy_proto_enumTypes[3].Descriptor()
+}
+
+func (AcademyCourseDistributionStatus) Type() protoreflect.EnumType {
+	return &file_events_academy_proto_enumTypes[3]
+}
+
+func (x AcademyCourseDistributionStatus) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use AcademyCourseDistributionStatus.Descriptor instead.
+func (AcademyCourseDistributionStatus) EnumDescriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{3}
+}
+
+type AcademyCourseRestrictionType int32
+
+const (
+	AcademyCourseRestrictionType_ACADEMY_COURSE_RESTRICTION_TYPE_UNSPECIFIED AcademyCourseRestrictionType = 0
+	AcademyCourseRestrictionType_ACADEMY_COURSE_RESTRICTION_TYPE_PAUSE       AcademyCourseRestrictionType = 1
+	AcademyCourseRestrictionType_ACADEMY_COURSE_RESTRICTION_TYPE_BLOCK       AcademyCourseRestrictionType = 2
+)
+
+// Enum value maps for AcademyCourseRestrictionType.
+var (
+	AcademyCourseRestrictionType_name = map[int32]string{
+		0: "ACADEMY_COURSE_RESTRICTION_TYPE_UNSPECIFIED",
+		1: "ACADEMY_COURSE_RESTRICTION_TYPE_PAUSE",
+		2: "ACADEMY_COURSE_RESTRICTION_TYPE_BLOCK",
+	}
+	AcademyCourseRestrictionType_value = map[string]int32{
+		"ACADEMY_COURSE_RESTRICTION_TYPE_UNSPECIFIED": 0,
+		"ACADEMY_COURSE_RESTRICTION_TYPE_PAUSE":       1,
+		"ACADEMY_COURSE_RESTRICTION_TYPE_BLOCK":       2,
+	}
+)
+
+func (x AcademyCourseRestrictionType) Enum() *AcademyCourseRestrictionType {
+	p := new(AcademyCourseRestrictionType)
+	*p = x
+	return p
+}
+
+func (x AcademyCourseRestrictionType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AcademyCourseRestrictionType) Descriptor() protoreflect.EnumDescriptor {
+	return file_events_academy_proto_enumTypes[4].Descriptor()
+}
+
+func (AcademyCourseRestrictionType) Type() protoreflect.EnumType {
+	return &file_events_academy_proto_enumTypes[4]
+}
+
+func (x AcademyCourseRestrictionType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use AcademyCourseRestrictionType.Descriptor instead.
+func (AcademyCourseRestrictionType) EnumDescriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{4}
+}
+
+type AcademyCourseTemplateType int32
+
+const (
+	AcademyCourseTemplateType_ACADEMY_COURSE_TEMPLATE_TYPE_UNSPECIFIED AcademyCourseTemplateType = 0
+	AcademyCourseTemplateType_ACADEMY_COURSE_TEMPLATE_TYPE_SYSTEM      AcademyCourseTemplateType = 1
+	AcademyCourseTemplateType_ACADEMY_COURSE_TEMPLATE_TYPE_COMPANY     AcademyCourseTemplateType = 2
+)
+
+// Enum value maps for AcademyCourseTemplateType.
+var (
+	AcademyCourseTemplateType_name = map[int32]string{
+		0: "ACADEMY_COURSE_TEMPLATE_TYPE_UNSPECIFIED",
+		1: "ACADEMY_COURSE_TEMPLATE_TYPE_SYSTEM",
+		2: "ACADEMY_COURSE_TEMPLATE_TYPE_COMPANY",
+	}
+	AcademyCourseTemplateType_value = map[string]int32{
+		"ACADEMY_COURSE_TEMPLATE_TYPE_UNSPECIFIED": 0,
+		"ACADEMY_COURSE_TEMPLATE_TYPE_SYSTEM":      1,
+		"ACADEMY_COURSE_TEMPLATE_TYPE_COMPANY":     2,
+	}
+)
+
+func (x AcademyCourseTemplateType) Enum() *AcademyCourseTemplateType {
+	p := new(AcademyCourseTemplateType)
+	*p = x
+	return p
+}
+
+func (x AcademyCourseTemplateType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AcademyCourseTemplateType) Descriptor() protoreflect.EnumDescriptor {
+	return file_events_academy_proto_enumTypes[5].Descriptor()
+}
+
+func (AcademyCourseTemplateType) Type() protoreflect.EnumType {
+	return &file_events_academy_proto_enumTypes[5]
+}
+
+func (x AcademyCourseTemplateType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use AcademyCourseTemplateType.Descriptor instead.
+func (AcademyCourseTemplateType) EnumDescriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{5}
+}
+
+type AcademyEnrollmentLearnerType int32
+
+const (
+	AcademyEnrollmentLearnerType_ACADEMY_ENROLLMENT_LEARNER_TYPE_UNSPECIFIED AcademyEnrollmentLearnerType = 0
+	AcademyEnrollmentLearnerType_ACADEMY_ENROLLMENT_LEARNER_TYPE_USER        AcademyEnrollmentLearnerType = 1
+	AcademyEnrollmentLearnerType_ACADEMY_ENROLLMENT_LEARNER_TYPE_EXTERNAL    AcademyEnrollmentLearnerType = 2
+)
+
+// Enum value maps for AcademyEnrollmentLearnerType.
+var (
+	AcademyEnrollmentLearnerType_name = map[int32]string{
+		0: "ACADEMY_ENROLLMENT_LEARNER_TYPE_UNSPECIFIED",
+		1: "ACADEMY_ENROLLMENT_LEARNER_TYPE_USER",
+		2: "ACADEMY_ENROLLMENT_LEARNER_TYPE_EXTERNAL",
+	}
+	AcademyEnrollmentLearnerType_value = map[string]int32{
+		"ACADEMY_ENROLLMENT_LEARNER_TYPE_UNSPECIFIED": 0,
+		"ACADEMY_ENROLLMENT_LEARNER_TYPE_USER":        1,
+		"ACADEMY_ENROLLMENT_LEARNER_TYPE_EXTERNAL":    2,
+	}
+)
+
+func (x AcademyEnrollmentLearnerType) Enum() *AcademyEnrollmentLearnerType {
+	p := new(AcademyEnrollmentLearnerType)
+	*p = x
+	return p
+}
+
+func (x AcademyEnrollmentLearnerType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AcademyEnrollmentLearnerType) Descriptor() protoreflect.EnumDescriptor {
+	return file_events_academy_proto_enumTypes[6].Descriptor()
+}
+
+func (AcademyEnrollmentLearnerType) Type() protoreflect.EnumType {
+	return &file_events_academy_proto_enumTypes[6]
+}
+
+func (x AcademyEnrollmentLearnerType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use AcademyEnrollmentLearnerType.Descriptor instead.
+func (AcademyEnrollmentLearnerType) EnumDescriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{6}
+}
+
+type AcademyEnrollmentSourceType int32
+
+const (
+	AcademyEnrollmentSourceType_ACADEMY_ENROLLMENT_SOURCE_TYPE_UNSPECIFIED                AcademyEnrollmentSourceType = 0
+	AcademyEnrollmentSourceType_ACADEMY_ENROLLMENT_SOURCE_TYPE_ASSIGNMENT                 AcademyEnrollmentSourceType = 1
+	AcademyEnrollmentSourceType_ACADEMY_ENROLLMENT_SOURCE_TYPE_PERSONAL_ACCESS            AcademyEnrollmentSourceType = 2
+	AcademyEnrollmentSourceType_ACADEMY_ENROLLMENT_SOURCE_TYPE_PARTNER_PROMO_CAMPAIGN     AcademyEnrollmentSourceType = 3
+	AcademyEnrollmentSourceType_ACADEMY_ENROLLMENT_SOURCE_TYPE_COMPANY_CANDIDATE_CAMPAIGN AcademyEnrollmentSourceType = 4
+	AcademyEnrollmentSourceType_ACADEMY_ENROLLMENT_SOURCE_TYPE_REPEAT_TRAINING            AcademyEnrollmentSourceType = 5
+	AcademyEnrollmentSourceType_ACADEMY_ENROLLMENT_SOURCE_TYPE_LEGACY                     AcademyEnrollmentSourceType = 6
+	AcademyEnrollmentSourceType_ACADEMY_ENROLLMENT_SOURCE_TYPE_SELF_ENROLLMENT            AcademyEnrollmentSourceType = 7
+)
+
+// Enum value maps for AcademyEnrollmentSourceType.
+var (
+	AcademyEnrollmentSourceType_name = map[int32]string{
+		0: "ACADEMY_ENROLLMENT_SOURCE_TYPE_UNSPECIFIED",
+		1: "ACADEMY_ENROLLMENT_SOURCE_TYPE_ASSIGNMENT",
+		2: "ACADEMY_ENROLLMENT_SOURCE_TYPE_PERSONAL_ACCESS",
+		3: "ACADEMY_ENROLLMENT_SOURCE_TYPE_PARTNER_PROMO_CAMPAIGN",
+		4: "ACADEMY_ENROLLMENT_SOURCE_TYPE_COMPANY_CANDIDATE_CAMPAIGN",
+		5: "ACADEMY_ENROLLMENT_SOURCE_TYPE_REPEAT_TRAINING",
+		6: "ACADEMY_ENROLLMENT_SOURCE_TYPE_LEGACY",
+		7: "ACADEMY_ENROLLMENT_SOURCE_TYPE_SELF_ENROLLMENT",
+	}
+	AcademyEnrollmentSourceType_value = map[string]int32{
+		"ACADEMY_ENROLLMENT_SOURCE_TYPE_UNSPECIFIED":                0,
+		"ACADEMY_ENROLLMENT_SOURCE_TYPE_ASSIGNMENT":                 1,
+		"ACADEMY_ENROLLMENT_SOURCE_TYPE_PERSONAL_ACCESS":            2,
+		"ACADEMY_ENROLLMENT_SOURCE_TYPE_PARTNER_PROMO_CAMPAIGN":     3,
+		"ACADEMY_ENROLLMENT_SOURCE_TYPE_COMPANY_CANDIDATE_CAMPAIGN": 4,
+		"ACADEMY_ENROLLMENT_SOURCE_TYPE_REPEAT_TRAINING":            5,
+		"ACADEMY_ENROLLMENT_SOURCE_TYPE_LEGACY":                     6,
+		"ACADEMY_ENROLLMENT_SOURCE_TYPE_SELF_ENROLLMENT":            7,
+	}
+)
+
+func (x AcademyEnrollmentSourceType) Enum() *AcademyEnrollmentSourceType {
+	p := new(AcademyEnrollmentSourceType)
+	*p = x
+	return p
+}
+
+func (x AcademyEnrollmentSourceType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AcademyEnrollmentSourceType) Descriptor() protoreflect.EnumDescriptor {
+	return file_events_academy_proto_enumTypes[7].Descriptor()
+}
+
+func (AcademyEnrollmentSourceType) Type() protoreflect.EnumType {
+	return &file_events_academy_proto_enumTypes[7]
+}
+
+func (x AcademyEnrollmentSourceType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use AcademyEnrollmentSourceType.Descriptor instead.
+func (AcademyEnrollmentSourceType) EnumDescriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{7}
+}
+
+type AcademyEnrollmentProgressStatus int32
+
+const (
+	AcademyEnrollmentProgressStatus_ACADEMY_ENROLLMENT_PROGRESS_STATUS_UNSPECIFIED AcademyEnrollmentProgressStatus = 0
+	AcademyEnrollmentProgressStatus_ACADEMY_ENROLLMENT_PROGRESS_STATUS_NOT_STARTED AcademyEnrollmentProgressStatus = 1
+	AcademyEnrollmentProgressStatus_ACADEMY_ENROLLMENT_PROGRESS_STATUS_IN_PROGRESS AcademyEnrollmentProgressStatus = 2
+	AcademyEnrollmentProgressStatus_ACADEMY_ENROLLMENT_PROGRESS_STATUS_COMPLETED   AcademyEnrollmentProgressStatus = 3
+)
+
+// Enum value maps for AcademyEnrollmentProgressStatus.
+var (
+	AcademyEnrollmentProgressStatus_name = map[int32]string{
+		0: "ACADEMY_ENROLLMENT_PROGRESS_STATUS_UNSPECIFIED",
+		1: "ACADEMY_ENROLLMENT_PROGRESS_STATUS_NOT_STARTED",
+		2: "ACADEMY_ENROLLMENT_PROGRESS_STATUS_IN_PROGRESS",
+		3: "ACADEMY_ENROLLMENT_PROGRESS_STATUS_COMPLETED",
+	}
+	AcademyEnrollmentProgressStatus_value = map[string]int32{
+		"ACADEMY_ENROLLMENT_PROGRESS_STATUS_UNSPECIFIED": 0,
+		"ACADEMY_ENROLLMENT_PROGRESS_STATUS_NOT_STARTED": 1,
+		"ACADEMY_ENROLLMENT_PROGRESS_STATUS_IN_PROGRESS": 2,
+		"ACADEMY_ENROLLMENT_PROGRESS_STATUS_COMPLETED":   3,
+	}
+)
+
+func (x AcademyEnrollmentProgressStatus) Enum() *AcademyEnrollmentProgressStatus {
+	p := new(AcademyEnrollmentProgressStatus)
+	*p = x
+	return p
+}
+
+func (x AcademyEnrollmentProgressStatus) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AcademyEnrollmentProgressStatus) Descriptor() protoreflect.EnumDescriptor {
+	return file_events_academy_proto_enumTypes[8].Descriptor()
+}
+
+func (AcademyEnrollmentProgressStatus) Type() protoreflect.EnumType {
+	return &file_events_academy_proto_enumTypes[8]
+}
+
+func (x AcademyEnrollmentProgressStatus) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use AcademyEnrollmentProgressStatus.Descriptor instead.
+func (AcademyEnrollmentProgressStatus) EnumDescriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{8}
+}
+
+type AcademyExternalCampaignPurpose int32
+
+const (
+	AcademyExternalCampaignPurpose_ACADEMY_EXTERNAL_CAMPAIGN_PURPOSE_UNSPECIFIED       AcademyExternalCampaignPurpose = 0
+	AcademyExternalCampaignPurpose_ACADEMY_EXTERNAL_CAMPAIGN_PURPOSE_COMPANY_CANDIDATE AcademyExternalCampaignPurpose = 1
+	AcademyExternalCampaignPurpose_ACADEMY_EXTERNAL_CAMPAIGN_PURPOSE_PARTNER_PROMO     AcademyExternalCampaignPurpose = 2
+)
+
+// Enum value maps for AcademyExternalCampaignPurpose.
+var (
+	AcademyExternalCampaignPurpose_name = map[int32]string{
+		0: "ACADEMY_EXTERNAL_CAMPAIGN_PURPOSE_UNSPECIFIED",
+		1: "ACADEMY_EXTERNAL_CAMPAIGN_PURPOSE_COMPANY_CANDIDATE",
+		2: "ACADEMY_EXTERNAL_CAMPAIGN_PURPOSE_PARTNER_PROMO",
+	}
+	AcademyExternalCampaignPurpose_value = map[string]int32{
+		"ACADEMY_EXTERNAL_CAMPAIGN_PURPOSE_UNSPECIFIED":       0,
+		"ACADEMY_EXTERNAL_CAMPAIGN_PURPOSE_COMPANY_CANDIDATE": 1,
+		"ACADEMY_EXTERNAL_CAMPAIGN_PURPOSE_PARTNER_PROMO":     2,
+	}
+)
+
+func (x AcademyExternalCampaignPurpose) Enum() *AcademyExternalCampaignPurpose {
+	p := new(AcademyExternalCampaignPurpose)
+	*p = x
+	return p
+}
+
+func (x AcademyExternalCampaignPurpose) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AcademyExternalCampaignPurpose) Descriptor() protoreflect.EnumDescriptor {
+	return file_events_academy_proto_enumTypes[9].Descriptor()
+}
+
+func (AcademyExternalCampaignPurpose) Type() protoreflect.EnumType {
+	return &file_events_academy_proto_enumTypes[9]
+}
+
+func (x AcademyExternalCampaignPurpose) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use AcademyExternalCampaignPurpose.Descriptor instead.
+func (AcademyExternalCampaignPurpose) EnumDescriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{9}
+}
+
+type AcademyExternalCampaignStatus int32
+
+const (
+	AcademyExternalCampaignStatus_ACADEMY_EXTERNAL_CAMPAIGN_STATUS_UNSPECIFIED AcademyExternalCampaignStatus = 0
+	AcademyExternalCampaignStatus_ACADEMY_EXTERNAL_CAMPAIGN_STATUS_ACTIVE      AcademyExternalCampaignStatus = 1
+	AcademyExternalCampaignStatus_ACADEMY_EXTERNAL_CAMPAIGN_STATUS_PAUSED      AcademyExternalCampaignStatus = 2
+	AcademyExternalCampaignStatus_ACADEMY_EXTERNAL_CAMPAIGN_STATUS_REVOKED     AcademyExternalCampaignStatus = 3
+	AcademyExternalCampaignStatus_ACADEMY_EXTERNAL_CAMPAIGN_STATUS_CLOSED      AcademyExternalCampaignStatus = 4
+)
+
+// Enum value maps for AcademyExternalCampaignStatus.
+var (
+	AcademyExternalCampaignStatus_name = map[int32]string{
+		0: "ACADEMY_EXTERNAL_CAMPAIGN_STATUS_UNSPECIFIED",
+		1: "ACADEMY_EXTERNAL_CAMPAIGN_STATUS_ACTIVE",
+		2: "ACADEMY_EXTERNAL_CAMPAIGN_STATUS_PAUSED",
+		3: "ACADEMY_EXTERNAL_CAMPAIGN_STATUS_REVOKED",
+		4: "ACADEMY_EXTERNAL_CAMPAIGN_STATUS_CLOSED",
+	}
+	AcademyExternalCampaignStatus_value = map[string]int32{
+		"ACADEMY_EXTERNAL_CAMPAIGN_STATUS_UNSPECIFIED": 0,
+		"ACADEMY_EXTERNAL_CAMPAIGN_STATUS_ACTIVE":      1,
+		"ACADEMY_EXTERNAL_CAMPAIGN_STATUS_PAUSED":      2,
+		"ACADEMY_EXTERNAL_CAMPAIGN_STATUS_REVOKED":     3,
+		"ACADEMY_EXTERNAL_CAMPAIGN_STATUS_CLOSED":      4,
+	}
+)
+
+func (x AcademyExternalCampaignStatus) Enum() *AcademyExternalCampaignStatus {
+	p := new(AcademyExternalCampaignStatus)
+	*p = x
+	return p
+}
+
+func (x AcademyExternalCampaignStatus) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AcademyExternalCampaignStatus) Descriptor() protoreflect.EnumDescriptor {
+	return file_events_academy_proto_enumTypes[10].Descriptor()
+}
+
+func (AcademyExternalCampaignStatus) Type() protoreflect.EnumType {
+	return &file_events_academy_proto_enumTypes[10]
+}
+
+func (x AcademyExternalCampaignStatus) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use AcademyExternalCampaignStatus.Descriptor instead.
+func (AcademyExternalCampaignStatus) EnumDescriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{10}
+}
+
+type AcademyCourseCreatedEvent struct {
+	state         protoimpl.MessageState       `protogen:"open.v1"`
+	Metadata      *EventMetadata               `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	Payload       *AcademyCourseCreatedPayload `protobuf:"bytes,2,opt,name=payload,proto3" json:"payload,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AcademyCourseCreatedEvent) Reset() {
+	*x = AcademyCourseCreatedEvent{}
+	mi := &file_events_academy_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcademyCourseCreatedEvent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcademyCourseCreatedEvent) ProtoMessage() {}
+
+func (x *AcademyCourseCreatedEvent) ProtoReflect() protoreflect.Message {
+	mi := &file_events_academy_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcademyCourseCreatedEvent.ProtoReflect.Descriptor instead.
+func (*AcademyCourseCreatedEvent) Descriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *AcademyCourseCreatedEvent) GetMetadata() *EventMetadata {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
+func (x *AcademyCourseCreatedEvent) GetPayload() *AcademyCourseCreatedPayload {
+	if x != nil {
+		return x.Payload
+	}
+	return nil
+}
+
+type AcademyCourseCreatedPayload struct {
+	state              protoimpl.MessageState          `protogen:"open.v1"`
+	CourseId           string                          `protobuf:"bytes,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	OwnerType          AcademyCourseOwnerType          `protobuf:"varint,2,opt,name=owner_type,json=ownerType,proto3,enum=teamos.events.v1.AcademyCourseOwnerType" json:"owner_type,omitempty"`
+	OwnerUserId        *string                         `protobuf:"bytes,3,opt,name=owner_user_id,json=ownerUserId,proto3,oneof" json:"owner_user_id,omitempty"`
+	CreatedById        string                          `protobuf:"bytes,4,opt,name=created_by_id,json=createdById,proto3" json:"created_by_id,omitempty"`
+	LifecycleStatus    AcademyCourseLifecycleStatus    `protobuf:"varint,5,opt,name=lifecycle_status,json=lifecycleStatus,proto3,enum=teamos.events.v1.AcademyCourseLifecycleStatus" json:"lifecycle_status,omitempty"`
+	DistributionStatus AcademyCourseDistributionStatus `protobuf:"varint,6,opt,name=distribution_status,json=distributionStatus,proto3,enum=teamos.events.v1.AcademyCourseDistributionStatus" json:"distribution_status,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *AcademyCourseCreatedPayload) Reset() {
+	*x = AcademyCourseCreatedPayload{}
+	mi := &file_events_academy_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcademyCourseCreatedPayload) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcademyCourseCreatedPayload) ProtoMessage() {}
+
+func (x *AcademyCourseCreatedPayload) ProtoReflect() protoreflect.Message {
+	mi := &file_events_academy_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcademyCourseCreatedPayload.ProtoReflect.Descriptor instead.
+func (*AcademyCourseCreatedPayload) Descriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *AcademyCourseCreatedPayload) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+func (x *AcademyCourseCreatedPayload) GetOwnerType() AcademyCourseOwnerType {
+	if x != nil {
+		return x.OwnerType
+	}
+	return AcademyCourseOwnerType_ACADEMY_COURSE_OWNER_TYPE_UNSPECIFIED
+}
+
+func (x *AcademyCourseCreatedPayload) GetOwnerUserId() string {
+	if x != nil && x.OwnerUserId != nil {
+		return *x.OwnerUserId
+	}
+	return ""
+}
+
+func (x *AcademyCourseCreatedPayload) GetCreatedById() string {
+	if x != nil {
+		return x.CreatedById
+	}
+	return ""
+}
+
+func (x *AcademyCourseCreatedPayload) GetLifecycleStatus() AcademyCourseLifecycleStatus {
+	if x != nil {
+		return x.LifecycleStatus
+	}
+	return AcademyCourseLifecycleStatus_ACADEMY_COURSE_LIFECYCLE_STATUS_UNSPECIFIED
+}
+
+func (x *AcademyCourseCreatedPayload) GetDistributionStatus() AcademyCourseDistributionStatus {
+	if x != nil {
+		return x.DistributionStatus
+	}
+	return AcademyCourseDistributionStatus_ACADEMY_COURSE_DISTRIBUTION_STATUS_UNSPECIFIED
+}
+
+type AcademyCourseLifecycleChangedEvent struct {
+	state         protoimpl.MessageState                `protogen:"open.v1"`
+	Metadata      *EventMetadata                        `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	Payload       *AcademyCourseLifecycleChangedPayload `protobuf:"bytes,2,opt,name=payload,proto3" json:"payload,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AcademyCourseLifecycleChangedEvent) Reset() {
+	*x = AcademyCourseLifecycleChangedEvent{}
+	mi := &file_events_academy_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcademyCourseLifecycleChangedEvent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcademyCourseLifecycleChangedEvent) ProtoMessage() {}
+
+func (x *AcademyCourseLifecycleChangedEvent) ProtoReflect() protoreflect.Message {
+	mi := &file_events_academy_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcademyCourseLifecycleChangedEvent.ProtoReflect.Descriptor instead.
+func (*AcademyCourseLifecycleChangedEvent) Descriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *AcademyCourseLifecycleChangedEvent) GetMetadata() *EventMetadata {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
+func (x *AcademyCourseLifecycleChangedEvent) GetPayload() *AcademyCourseLifecycleChangedPayload {
+	if x != nil {
+		return x.Payload
+	}
+	return nil
+}
+
+type AcademyCourseLifecycleChangedPayload struct {
+	state          protoimpl.MessageState       `protogen:"open.v1"`
+	CourseId       string                       `protobuf:"bytes,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	PreviousStatus AcademyCourseLifecycleStatus `protobuf:"varint,2,opt,name=previous_status,json=previousStatus,proto3,enum=teamos.events.v1.AcademyCourseLifecycleStatus" json:"previous_status,omitempty"`
+	Status         AcademyCourseLifecycleStatus `protobuf:"varint,3,opt,name=status,proto3,enum=teamos.events.v1.AcademyCourseLifecycleStatus" json:"status,omitempty"`
+	Reason         *string                      `protobuf:"bytes,4,opt,name=reason,proto3,oneof" json:"reason,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *AcademyCourseLifecycleChangedPayload) Reset() {
+	*x = AcademyCourseLifecycleChangedPayload{}
+	mi := &file_events_academy_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcademyCourseLifecycleChangedPayload) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcademyCourseLifecycleChangedPayload) ProtoMessage() {}
+
+func (x *AcademyCourseLifecycleChangedPayload) ProtoReflect() protoreflect.Message {
+	mi := &file_events_academy_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcademyCourseLifecycleChangedPayload.ProtoReflect.Descriptor instead.
+func (*AcademyCourseLifecycleChangedPayload) Descriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *AcademyCourseLifecycleChangedPayload) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+func (x *AcademyCourseLifecycleChangedPayload) GetPreviousStatus() AcademyCourseLifecycleStatus {
+	if x != nil {
+		return x.PreviousStatus
+	}
+	return AcademyCourseLifecycleStatus_ACADEMY_COURSE_LIFECYCLE_STATUS_UNSPECIFIED
+}
+
+func (x *AcademyCourseLifecycleChangedPayload) GetStatus() AcademyCourseLifecycleStatus {
+	if x != nil {
+		return x.Status
+	}
+	return AcademyCourseLifecycleStatus_ACADEMY_COURSE_LIFECYCLE_STATUS_UNSPECIFIED
+}
+
+func (x *AcademyCourseLifecycleChangedPayload) GetReason() string {
+	if x != nil && x.Reason != nil {
+		return *x.Reason
+	}
+	return ""
+}
+
+type AcademyCourseDistributionChangedEvent struct {
+	state         protoimpl.MessageState                   `protogen:"open.v1"`
+	Metadata      *EventMetadata                           `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	Payload       *AcademyCourseDistributionChangedPayload `protobuf:"bytes,2,opt,name=payload,proto3" json:"payload,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AcademyCourseDistributionChangedEvent) Reset() {
+	*x = AcademyCourseDistributionChangedEvent{}
+	mi := &file_events_academy_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcademyCourseDistributionChangedEvent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcademyCourseDistributionChangedEvent) ProtoMessage() {}
+
+func (x *AcademyCourseDistributionChangedEvent) ProtoReflect() protoreflect.Message {
+	mi := &file_events_academy_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcademyCourseDistributionChangedEvent.ProtoReflect.Descriptor instead.
+func (*AcademyCourseDistributionChangedEvent) Descriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *AcademyCourseDistributionChangedEvent) GetMetadata() *EventMetadata {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
+func (x *AcademyCourseDistributionChangedEvent) GetPayload() *AcademyCourseDistributionChangedPayload {
+	if x != nil {
+		return x.Payload
+	}
+	return nil
+}
+
+type AcademyCourseDistributionChangedPayload struct {
+	state            protoimpl.MessageState          `protogen:"open.v1"`
+	CourseId         string                          `protobuf:"bytes,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	PreviousStatus   AcademyCourseDistributionStatus `protobuf:"varint,2,opt,name=previous_status,json=previousStatus,proto3,enum=teamos.events.v1.AcademyCourseDistributionStatus" json:"previous_status,omitempty"`
+	Status           AcademyCourseDistributionStatus `protobuf:"varint,3,opt,name=status,proto3,enum=teamos.events.v1.AcademyCourseDistributionStatus" json:"status,omitempty"`
+	Reason           *string                         `protobuf:"bytes,4,opt,name=reason,proto3,oneof" json:"reason,omitempty"`
+	PartnerUserId    *string                         `protobuf:"bytes,5,opt,name=partner_user_id,json=partnerUserId,proto3,oneof" json:"partner_user_id,omitempty"`
+	CourseTitle      *string                         `protobuf:"bytes,6,opt,name=course_title,json=courseTitle,proto3,oneof" json:"course_title,omitempty"`
+	Link             *string                         `protobuf:"bytes,7,opt,name=link,proto3,oneof" json:"link,omitempty"`
+	RecipientUserIds []string                        `protobuf:"bytes,8,rep,name=recipient_user_ids,json=recipientUserIds,proto3" json:"recipient_user_ids,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *AcademyCourseDistributionChangedPayload) Reset() {
+	*x = AcademyCourseDistributionChangedPayload{}
+	mi := &file_events_academy_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcademyCourseDistributionChangedPayload) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcademyCourseDistributionChangedPayload) ProtoMessage() {}
+
+func (x *AcademyCourseDistributionChangedPayload) ProtoReflect() protoreflect.Message {
+	mi := &file_events_academy_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcademyCourseDistributionChangedPayload.ProtoReflect.Descriptor instead.
+func (*AcademyCourseDistributionChangedPayload) Descriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *AcademyCourseDistributionChangedPayload) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+func (x *AcademyCourseDistributionChangedPayload) GetPreviousStatus() AcademyCourseDistributionStatus {
+	if x != nil {
+		return x.PreviousStatus
+	}
+	return AcademyCourseDistributionStatus_ACADEMY_COURSE_DISTRIBUTION_STATUS_UNSPECIFIED
+}
+
+func (x *AcademyCourseDistributionChangedPayload) GetStatus() AcademyCourseDistributionStatus {
+	if x != nil {
+		return x.Status
+	}
+	return AcademyCourseDistributionStatus_ACADEMY_COURSE_DISTRIBUTION_STATUS_UNSPECIFIED
+}
+
+func (x *AcademyCourseDistributionChangedPayload) GetReason() string {
+	if x != nil && x.Reason != nil {
+		return *x.Reason
+	}
+	return ""
+}
+
+func (x *AcademyCourseDistributionChangedPayload) GetPartnerUserId() string {
+	if x != nil && x.PartnerUserId != nil {
+		return *x.PartnerUserId
+	}
+	return ""
+}
+
+func (x *AcademyCourseDistributionChangedPayload) GetCourseTitle() string {
+	if x != nil && x.CourseTitle != nil {
+		return *x.CourseTitle
+	}
+	return ""
+}
+
+func (x *AcademyCourseDistributionChangedPayload) GetLink() string {
+	if x != nil && x.Link != nil {
+		return *x.Link
+	}
+	return ""
+}
+
+func (x *AcademyCourseDistributionChangedPayload) GetRecipientUserIds() []string {
+	if x != nil {
+		return x.RecipientUserIds
+	}
+	return nil
+}
+
+// Published under teamos.academy.course_version.draft_created.v1.
+type AcademyCourseVersionDraftCreatedEvent struct {
+	state         protoimpl.MessageState                   `protogen:"open.v1"`
+	Metadata      *EventMetadata                           `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	Payload       *AcademyCourseVersionDraftCreatedPayload `protobuf:"bytes,2,opt,name=payload,proto3" json:"payload,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AcademyCourseVersionDraftCreatedEvent) Reset() {
+	*x = AcademyCourseVersionDraftCreatedEvent{}
+	mi := &file_events_academy_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcademyCourseVersionDraftCreatedEvent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcademyCourseVersionDraftCreatedEvent) ProtoMessage() {}
+
+func (x *AcademyCourseVersionDraftCreatedEvent) ProtoReflect() protoreflect.Message {
+	mi := &file_events_academy_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcademyCourseVersionDraftCreatedEvent.ProtoReflect.Descriptor instead.
+func (*AcademyCourseVersionDraftCreatedEvent) Descriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *AcademyCourseVersionDraftCreatedEvent) GetMetadata() *EventMetadata {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
+func (x *AcademyCourseVersionDraftCreatedEvent) GetPayload() *AcademyCourseVersionDraftCreatedPayload {
+	if x != nil {
+		return x.Payload
+	}
+	return nil
+}
+
+type AcademyCourseVersionDraftCreatedPayload struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	CourseId         string                 `protobuf:"bytes,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	CourseVersionId  string                 `protobuf:"bytes,2,opt,name=course_version_id,json=courseVersionId,proto3" json:"course_version_id,omitempty"`
+	VersionNumber    uint32                 `protobuf:"varint,3,opt,name=version_number,json=versionNumber,proto3" json:"version_number,omitempty"`
+	OwnerType        AcademyCourseOwnerType `protobuf:"varint,4,opt,name=owner_type,json=ownerType,proto3,enum=teamos.events.v1.AcademyCourseOwnerType" json:"owner_type,omitempty"`
+	OwnerUserId      *string                `protobuf:"bytes,5,opt,name=owner_user_id,json=ownerUserId,proto3,oneof" json:"owner_user_id,omitempty"`
+	CreatedById      string                 `protobuf:"bytes,6,opt,name=created_by_id,json=createdById,proto3" json:"created_by_id,omitempty"`
+	BasedOnVersionId *string                `protobuf:"bytes,7,opt,name=based_on_version_id,json=basedOnVersionId,proto3,oneof" json:"based_on_version_id,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *AcademyCourseVersionDraftCreatedPayload) Reset() {
+	*x = AcademyCourseVersionDraftCreatedPayload{}
+	mi := &file_events_academy_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcademyCourseVersionDraftCreatedPayload) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcademyCourseVersionDraftCreatedPayload) ProtoMessage() {}
+
+func (x *AcademyCourseVersionDraftCreatedPayload) ProtoReflect() protoreflect.Message {
+	mi := &file_events_academy_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcademyCourseVersionDraftCreatedPayload.ProtoReflect.Descriptor instead.
+func (*AcademyCourseVersionDraftCreatedPayload) Descriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *AcademyCourseVersionDraftCreatedPayload) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+func (x *AcademyCourseVersionDraftCreatedPayload) GetCourseVersionId() string {
+	if x != nil {
+		return x.CourseVersionId
+	}
+	return ""
+}
+
+func (x *AcademyCourseVersionDraftCreatedPayload) GetVersionNumber() uint32 {
+	if x != nil {
+		return x.VersionNumber
+	}
+	return 0
+}
+
+func (x *AcademyCourseVersionDraftCreatedPayload) GetOwnerType() AcademyCourseOwnerType {
+	if x != nil {
+		return x.OwnerType
+	}
+	return AcademyCourseOwnerType_ACADEMY_COURSE_OWNER_TYPE_UNSPECIFIED
+}
+
+func (x *AcademyCourseVersionDraftCreatedPayload) GetOwnerUserId() string {
+	if x != nil && x.OwnerUserId != nil {
+		return *x.OwnerUserId
+	}
+	return ""
+}
+
+func (x *AcademyCourseVersionDraftCreatedPayload) GetCreatedById() string {
+	if x != nil {
+		return x.CreatedById
+	}
+	return ""
+}
+
+func (x *AcademyCourseVersionDraftCreatedPayload) GetBasedOnVersionId() string {
+	if x != nil && x.BasedOnVersionId != nil {
+		return *x.BasedOnVersionId
+	}
+	return ""
+}
+
+// Published under teamos.academy.course_version.published.v1.
+type AcademyCourseVersionPublishedEvent struct {
+	state         protoimpl.MessageState                `protogen:"open.v1"`
+	Metadata      *EventMetadata                        `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	Payload       *AcademyCourseVersionPublishedPayload `protobuf:"bytes,2,opt,name=payload,proto3" json:"payload,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AcademyCourseVersionPublishedEvent) Reset() {
+	*x = AcademyCourseVersionPublishedEvent{}
+	mi := &file_events_academy_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcademyCourseVersionPublishedEvent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcademyCourseVersionPublishedEvent) ProtoMessage() {}
+
+func (x *AcademyCourseVersionPublishedEvent) ProtoReflect() protoreflect.Message {
+	mi := &file_events_academy_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcademyCourseVersionPublishedEvent.ProtoReflect.Descriptor instead.
+func (*AcademyCourseVersionPublishedEvent) Descriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *AcademyCourseVersionPublishedEvent) GetMetadata() *EventMetadata {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
+func (x *AcademyCourseVersionPublishedEvent) GetPayload() *AcademyCourseVersionPublishedPayload {
+	if x != nil {
+		return x.Payload
+	}
+	return nil
+}
+
+type AcademyCourseVersionPublishedPayload struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	CourseId         string                 `protobuf:"bytes,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	CourseVersionId  string                 `protobuf:"bytes,2,opt,name=course_version_id,json=courseVersionId,proto3" json:"course_version_id,omitempty"`
+	VersionNumber    uint32                 `protobuf:"varint,3,opt,name=version_number,json=versionNumber,proto3" json:"version_number,omitempty"`
+	OwnerType        AcademyCourseOwnerType `protobuf:"varint,4,opt,name=owner_type,json=ownerType,proto3,enum=teamos.events.v1.AcademyCourseOwnerType" json:"owner_type,omitempty"`
+	OwnerUserId      *string                `protobuf:"bytes,5,opt,name=owner_user_id,json=ownerUserId,proto3,oneof" json:"owner_user_id,omitempty"`
+	PublishedById    string                 `protobuf:"bytes,6,opt,name=published_by_id,json=publishedById,proto3" json:"published_by_id,omitempty"`
+	PublishedAt      *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=published_at,json=publishedAt,proto3" json:"published_at,omitempty"`
+	ContentHash      string                 `protobuf:"bytes,8,opt,name=content_hash,json=contentHash,proto3" json:"content_hash,omitempty"`
+	CourseTitle      *string                `protobuf:"bytes,9,opt,name=course_title,json=courseTitle,proto3,oneof" json:"course_title,omitempty"`
+	Link             *string                `protobuf:"bytes,10,opt,name=link,proto3,oneof" json:"link,omitempty"`
+	RecipientUserIds []string               `protobuf:"bytes,11,rep,name=recipient_user_ids,json=recipientUserIds,proto3" json:"recipient_user_ids,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *AcademyCourseVersionPublishedPayload) Reset() {
+	*x = AcademyCourseVersionPublishedPayload{}
+	mi := &file_events_academy_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcademyCourseVersionPublishedPayload) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcademyCourseVersionPublishedPayload) ProtoMessage() {}
+
+func (x *AcademyCourseVersionPublishedPayload) ProtoReflect() protoreflect.Message {
+	mi := &file_events_academy_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcademyCourseVersionPublishedPayload.ProtoReflect.Descriptor instead.
+func (*AcademyCourseVersionPublishedPayload) Descriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *AcademyCourseVersionPublishedPayload) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+func (x *AcademyCourseVersionPublishedPayload) GetCourseVersionId() string {
+	if x != nil {
+		return x.CourseVersionId
+	}
+	return ""
+}
+
+func (x *AcademyCourseVersionPublishedPayload) GetVersionNumber() uint32 {
+	if x != nil {
+		return x.VersionNumber
+	}
+	return 0
+}
+
+func (x *AcademyCourseVersionPublishedPayload) GetOwnerType() AcademyCourseOwnerType {
+	if x != nil {
+		return x.OwnerType
+	}
+	return AcademyCourseOwnerType_ACADEMY_COURSE_OWNER_TYPE_UNSPECIFIED
+}
+
+func (x *AcademyCourseVersionPublishedPayload) GetOwnerUserId() string {
+	if x != nil && x.OwnerUserId != nil {
+		return *x.OwnerUserId
+	}
+	return ""
+}
+
+func (x *AcademyCourseVersionPublishedPayload) GetPublishedById() string {
+	if x != nil {
+		return x.PublishedById
+	}
+	return ""
+}
+
+func (x *AcademyCourseVersionPublishedPayload) GetPublishedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.PublishedAt
+	}
+	return nil
+}
+
+func (x *AcademyCourseVersionPublishedPayload) GetContentHash() string {
+	if x != nil {
+		return x.ContentHash
+	}
+	return ""
+}
+
+func (x *AcademyCourseVersionPublishedPayload) GetCourseTitle() string {
+	if x != nil && x.CourseTitle != nil {
+		return *x.CourseTitle
+	}
+	return ""
+}
+
+func (x *AcademyCourseVersionPublishedPayload) GetLink() string {
+	if x != nil && x.Link != nil {
+		return *x.Link
+	}
+	return ""
+}
+
+func (x *AcademyCourseVersionPublishedPayload) GetRecipientUserIds() []string {
+	if x != nil {
+		return x.RecipientUserIds
+	}
+	return nil
+}
+
+// Published under teamos.academy.course_restriction.applied.v1.
+type AcademyCourseRestrictionAppliedEvent struct {
+	state         protoimpl.MessageState                  `protogen:"open.v1"`
+	Metadata      *EventMetadata                          `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	Payload       *AcademyCourseRestrictionAppliedPayload `protobuf:"bytes,2,opt,name=payload,proto3" json:"payload,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AcademyCourseRestrictionAppliedEvent) Reset() {
+	*x = AcademyCourseRestrictionAppliedEvent{}
+	mi := &file_events_academy_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcademyCourseRestrictionAppliedEvent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcademyCourseRestrictionAppliedEvent) ProtoMessage() {}
+
+func (x *AcademyCourseRestrictionAppliedEvent) ProtoReflect() protoreflect.Message {
+	mi := &file_events_academy_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcademyCourseRestrictionAppliedEvent.ProtoReflect.Descriptor instead.
+func (*AcademyCourseRestrictionAppliedEvent) Descriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *AcademyCourseRestrictionAppliedEvent) GetMetadata() *EventMetadata {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
+func (x *AcademyCourseRestrictionAppliedEvent) GetPayload() *AcademyCourseRestrictionAppliedPayload {
+	if x != nil {
+		return x.Payload
+	}
+	return nil
+}
+
+type AcademyCourseRestrictionAppliedPayload struct {
+	state            protoimpl.MessageState       `protogen:"open.v1"`
+	RestrictionId    string                       `protobuf:"bytes,1,opt,name=restriction_id,json=restrictionId,proto3" json:"restriction_id,omitempty"`
+	CourseId         string                       `protobuf:"bytes,2,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	PartnerUserId    string                       `protobuf:"bytes,3,opt,name=partner_user_id,json=partnerUserId,proto3" json:"partner_user_id,omitempty"`
+	Type             AcademyCourseRestrictionType `protobuf:"varint,4,opt,name=type,proto3,enum=teamos.events.v1.AcademyCourseRestrictionType" json:"type,omitempty"`
+	Reason           string                       `protobuf:"bytes,5,opt,name=reason,proto3" json:"reason,omitempty"`
+	AppliedById      string                       `protobuf:"bytes,6,opt,name=applied_by_id,json=appliedById,proto3" json:"applied_by_id,omitempty"`
+	AppliedAt        *timestamppb.Timestamp       `protobuf:"bytes,7,opt,name=applied_at,json=appliedAt,proto3" json:"applied_at,omitempty"`
+	CourseTitle      *string                      `protobuf:"bytes,8,opt,name=course_title,json=courseTitle,proto3,oneof" json:"course_title,omitempty"`
+	Link             *string                      `protobuf:"bytes,9,opt,name=link,proto3,oneof" json:"link,omitempty"`
+	RecipientUserIds []string                     `protobuf:"bytes,10,rep,name=recipient_user_ids,json=recipientUserIds,proto3" json:"recipient_user_ids,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *AcademyCourseRestrictionAppliedPayload) Reset() {
+	*x = AcademyCourseRestrictionAppliedPayload{}
+	mi := &file_events_academy_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcademyCourseRestrictionAppliedPayload) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcademyCourseRestrictionAppliedPayload) ProtoMessage() {}
+
+func (x *AcademyCourseRestrictionAppliedPayload) ProtoReflect() protoreflect.Message {
+	mi := &file_events_academy_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcademyCourseRestrictionAppliedPayload.ProtoReflect.Descriptor instead.
+func (*AcademyCourseRestrictionAppliedPayload) Descriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *AcademyCourseRestrictionAppliedPayload) GetRestrictionId() string {
+	if x != nil {
+		return x.RestrictionId
+	}
+	return ""
+}
+
+func (x *AcademyCourseRestrictionAppliedPayload) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+func (x *AcademyCourseRestrictionAppliedPayload) GetPartnerUserId() string {
+	if x != nil {
+		return x.PartnerUserId
+	}
+	return ""
+}
+
+func (x *AcademyCourseRestrictionAppliedPayload) GetType() AcademyCourseRestrictionType {
+	if x != nil {
+		return x.Type
+	}
+	return AcademyCourseRestrictionType_ACADEMY_COURSE_RESTRICTION_TYPE_UNSPECIFIED
+}
+
+func (x *AcademyCourseRestrictionAppliedPayload) GetReason() string {
+	if x != nil {
+		return x.Reason
+	}
+	return ""
+}
+
+func (x *AcademyCourseRestrictionAppliedPayload) GetAppliedById() string {
+	if x != nil {
+		return x.AppliedById
+	}
+	return ""
+}
+
+func (x *AcademyCourseRestrictionAppliedPayload) GetAppliedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.AppliedAt
+	}
+	return nil
+}
+
+func (x *AcademyCourseRestrictionAppliedPayload) GetCourseTitle() string {
+	if x != nil && x.CourseTitle != nil {
+		return *x.CourseTitle
+	}
+	return ""
+}
+
+func (x *AcademyCourseRestrictionAppliedPayload) GetLink() string {
+	if x != nil && x.Link != nil {
+		return *x.Link
+	}
+	return ""
+}
+
+func (x *AcademyCourseRestrictionAppliedPayload) GetRecipientUserIds() []string {
+	if x != nil {
+		return x.RecipientUserIds
+	}
+	return nil
+}
+
+// Published under teamos.academy.course_restriction.resolved.v1.
+type AcademyCourseRestrictionResolvedEvent struct {
+	state         protoimpl.MessageState                   `protogen:"open.v1"`
+	Metadata      *EventMetadata                           `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	Payload       *AcademyCourseRestrictionResolvedPayload `protobuf:"bytes,2,opt,name=payload,proto3" json:"payload,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AcademyCourseRestrictionResolvedEvent) Reset() {
+	*x = AcademyCourseRestrictionResolvedEvent{}
+	mi := &file_events_academy_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcademyCourseRestrictionResolvedEvent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcademyCourseRestrictionResolvedEvent) ProtoMessage() {}
+
+func (x *AcademyCourseRestrictionResolvedEvent) ProtoReflect() protoreflect.Message {
+	mi := &file_events_academy_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcademyCourseRestrictionResolvedEvent.ProtoReflect.Descriptor instead.
+func (*AcademyCourseRestrictionResolvedEvent) Descriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *AcademyCourseRestrictionResolvedEvent) GetMetadata() *EventMetadata {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
+func (x *AcademyCourseRestrictionResolvedEvent) GetPayload() *AcademyCourseRestrictionResolvedPayload {
+	if x != nil {
+		return x.Payload
+	}
+	return nil
+}
+
+type AcademyCourseRestrictionResolvedPayload struct {
+	state            protoimpl.MessageState       `protogen:"open.v1"`
+	RestrictionId    string                       `protobuf:"bytes,1,opt,name=restriction_id,json=restrictionId,proto3" json:"restriction_id,omitempty"`
+	CourseId         string                       `protobuf:"bytes,2,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	PartnerUserId    string                       `protobuf:"bytes,3,opt,name=partner_user_id,json=partnerUserId,proto3" json:"partner_user_id,omitempty"`
+	Type             AcademyCourseRestrictionType `protobuf:"varint,4,opt,name=type,proto3,enum=teamos.events.v1.AcademyCourseRestrictionType" json:"type,omitempty"`
+	ResolutionReason string                       `protobuf:"bytes,5,opt,name=resolution_reason,json=resolutionReason,proto3" json:"resolution_reason,omitempty"`
+	ResolvedById     string                       `protobuf:"bytes,6,opt,name=resolved_by_id,json=resolvedById,proto3" json:"resolved_by_id,omitempty"`
+	ResolvedAt       *timestamppb.Timestamp       `protobuf:"bytes,7,opt,name=resolved_at,json=resolvedAt,proto3" json:"resolved_at,omitempty"`
+	CourseTitle      *string                      `protobuf:"bytes,8,opt,name=course_title,json=courseTitle,proto3,oneof" json:"course_title,omitempty"`
+	Link             *string                      `protobuf:"bytes,9,opt,name=link,proto3,oneof" json:"link,omitempty"`
+	RecipientUserIds []string                     `protobuf:"bytes,10,rep,name=recipient_user_ids,json=recipientUserIds,proto3" json:"recipient_user_ids,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *AcademyCourseRestrictionResolvedPayload) Reset() {
+	*x = AcademyCourseRestrictionResolvedPayload{}
+	mi := &file_events_academy_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcademyCourseRestrictionResolvedPayload) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcademyCourseRestrictionResolvedPayload) ProtoMessage() {}
+
+func (x *AcademyCourseRestrictionResolvedPayload) ProtoReflect() protoreflect.Message {
+	mi := &file_events_academy_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcademyCourseRestrictionResolvedPayload.ProtoReflect.Descriptor instead.
+func (*AcademyCourseRestrictionResolvedPayload) Descriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *AcademyCourseRestrictionResolvedPayload) GetRestrictionId() string {
+	if x != nil {
+		return x.RestrictionId
+	}
+	return ""
+}
+
+func (x *AcademyCourseRestrictionResolvedPayload) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+func (x *AcademyCourseRestrictionResolvedPayload) GetPartnerUserId() string {
+	if x != nil {
+		return x.PartnerUserId
+	}
+	return ""
+}
+
+func (x *AcademyCourseRestrictionResolvedPayload) GetType() AcademyCourseRestrictionType {
+	if x != nil {
+		return x.Type
+	}
+	return AcademyCourseRestrictionType_ACADEMY_COURSE_RESTRICTION_TYPE_UNSPECIFIED
+}
+
+func (x *AcademyCourseRestrictionResolvedPayload) GetResolutionReason() string {
+	if x != nil {
+		return x.ResolutionReason
+	}
+	return ""
+}
+
+func (x *AcademyCourseRestrictionResolvedPayload) GetResolvedById() string {
+	if x != nil {
+		return x.ResolvedById
+	}
+	return ""
+}
+
+func (x *AcademyCourseRestrictionResolvedPayload) GetResolvedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ResolvedAt
+	}
+	return nil
+}
+
+func (x *AcademyCourseRestrictionResolvedPayload) GetCourseTitle() string {
+	if x != nil && x.CourseTitle != nil {
+		return *x.CourseTitle
+	}
+	return ""
+}
+
+func (x *AcademyCourseRestrictionResolvedPayload) GetLink() string {
+	if x != nil && x.Link != nil {
+		return *x.Link
+	}
+	return ""
+}
+
+func (x *AcademyCourseRestrictionResolvedPayload) GetRecipientUserIds() []string {
+	if x != nil {
+		return x.RecipientUserIds
+	}
+	return nil
+}
+
+// Published under teamos.academy.course.copied.v1.
+type AcademyPartnerCourseCopiedEvent struct {
+	state         protoimpl.MessageState             `protogen:"open.v1"`
+	Metadata      *EventMetadata                     `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	Payload       *AcademyPartnerCourseCopiedPayload `protobuf:"bytes,2,opt,name=payload,proto3" json:"payload,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AcademyPartnerCourseCopiedEvent) Reset() {
+	*x = AcademyPartnerCourseCopiedEvent{}
+	mi := &file_events_academy_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcademyPartnerCourseCopiedEvent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcademyPartnerCourseCopiedEvent) ProtoMessage() {}
+
+func (x *AcademyPartnerCourseCopiedEvent) ProtoReflect() protoreflect.Message {
+	mi := &file_events_academy_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcademyPartnerCourseCopiedEvent.ProtoReflect.Descriptor instead.
+func (*AcademyPartnerCourseCopiedEvent) Descriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *AcademyPartnerCourseCopiedEvent) GetMetadata() *EventMetadata {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
+func (x *AcademyPartnerCourseCopiedEvent) GetPayload() *AcademyPartnerCourseCopiedPayload {
+	if x != nil {
+		return x.Payload
+	}
+	return nil
+}
+
+type AcademyPartnerCourseCopiedPayload struct {
+	state                 protoimpl.MessageState `protogen:"open.v1"`
+	SourceCourseId        string                 `protobuf:"bytes,1,opt,name=source_course_id,json=sourceCourseId,proto3" json:"source_course_id,omitempty"`
+	SourceCourseVersionId string                 `protobuf:"bytes,2,opt,name=source_course_version_id,json=sourceCourseVersionId,proto3" json:"source_course_version_id,omitempty"`
+	SourcePartnerUserId   string                 `protobuf:"bytes,3,opt,name=source_partner_user_id,json=sourcePartnerUserId,proto3" json:"source_partner_user_id,omitempty"`
+	TargetCourseId        string                 `protobuf:"bytes,4,opt,name=target_course_id,json=targetCourseId,proto3" json:"target_course_id,omitempty"`
+	TargetDraftVersionId  string                 `protobuf:"bytes,5,opt,name=target_draft_version_id,json=targetDraftVersionId,proto3" json:"target_draft_version_id,omitempty"`
+	CopiedById            string                 `protobuf:"bytes,6,opt,name=copied_by_id,json=copiedById,proto3" json:"copied_by_id,omitempty"`
+	CopiedAt              *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=copied_at,json=copiedAt,proto3" json:"copied_at,omitempty"`
+	TargetCourseTitle     *string                `protobuf:"bytes,8,opt,name=target_course_title,json=targetCourseTitle,proto3,oneof" json:"target_course_title,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
+}
+
+func (x *AcademyPartnerCourseCopiedPayload) Reset() {
+	*x = AcademyPartnerCourseCopiedPayload{}
+	mi := &file_events_academy_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcademyPartnerCourseCopiedPayload) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcademyPartnerCourseCopiedPayload) ProtoMessage() {}
+
+func (x *AcademyPartnerCourseCopiedPayload) ProtoReflect() protoreflect.Message {
+	mi := &file_events_academy_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcademyPartnerCourseCopiedPayload.ProtoReflect.Descriptor instead.
+func (*AcademyPartnerCourseCopiedPayload) Descriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *AcademyPartnerCourseCopiedPayload) GetSourceCourseId() string {
+	if x != nil {
+		return x.SourceCourseId
+	}
+	return ""
+}
+
+func (x *AcademyPartnerCourseCopiedPayload) GetSourceCourseVersionId() string {
+	if x != nil {
+		return x.SourceCourseVersionId
+	}
+	return ""
+}
+
+func (x *AcademyPartnerCourseCopiedPayload) GetSourcePartnerUserId() string {
+	if x != nil {
+		return x.SourcePartnerUserId
+	}
+	return ""
+}
+
+func (x *AcademyPartnerCourseCopiedPayload) GetTargetCourseId() string {
+	if x != nil {
+		return x.TargetCourseId
+	}
+	return ""
+}
+
+func (x *AcademyPartnerCourseCopiedPayload) GetTargetDraftVersionId() string {
+	if x != nil {
+		return x.TargetDraftVersionId
+	}
+	return ""
+}
+
+func (x *AcademyPartnerCourseCopiedPayload) GetCopiedById() string {
+	if x != nil {
+		return x.CopiedById
+	}
+	return ""
+}
+
+func (x *AcademyPartnerCourseCopiedPayload) GetCopiedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CopiedAt
+	}
+	return nil
+}
+
+func (x *AcademyPartnerCourseCopiedPayload) GetTargetCourseTitle() string {
+	if x != nil && x.TargetCourseTitle != nil {
+		return *x.TargetCourseTitle
+	}
+	return ""
+}
+
+// Published under teamos.academy.template_version.published.v1.
+type AcademyTemplateVersionPublishedEvent struct {
+	state         protoimpl.MessageState                  `protogen:"open.v1"`
+	Metadata      *EventMetadata                          `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	Payload       *AcademyTemplateVersionPublishedPayload `protobuf:"bytes,2,opt,name=payload,proto3" json:"payload,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AcademyTemplateVersionPublishedEvent) Reset() {
+	*x = AcademyTemplateVersionPublishedEvent{}
+	mi := &file_events_academy_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcademyTemplateVersionPublishedEvent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcademyTemplateVersionPublishedEvent) ProtoMessage() {}
+
+func (x *AcademyTemplateVersionPublishedEvent) ProtoReflect() protoreflect.Message {
+	mi := &file_events_academy_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcademyTemplateVersionPublishedEvent.ProtoReflect.Descriptor instead.
+func (*AcademyTemplateVersionPublishedEvent) Descriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *AcademyTemplateVersionPublishedEvent) GetMetadata() *EventMetadata {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
+func (x *AcademyTemplateVersionPublishedEvent) GetPayload() *AcademyTemplateVersionPublishedPayload {
+	if x != nil {
+		return x.Payload
+	}
+	return nil
+}
+
+type AcademyTemplateVersionPublishedPayload struct {
+	state             protoimpl.MessageState    `protogen:"open.v1"`
+	TemplateId        string                    `protobuf:"bytes,1,opt,name=template_id,json=templateId,proto3" json:"template_id,omitempty"`
+	TemplateVersionId string                    `protobuf:"bytes,2,opt,name=template_version_id,json=templateVersionId,proto3" json:"template_version_id,omitempty"`
+	VersionNumber     uint32                    `protobuf:"varint,3,opt,name=version_number,json=versionNumber,proto3" json:"version_number,omitempty"`
+	TemplateType      AcademyCourseTemplateType `protobuf:"varint,4,opt,name=template_type,json=templateType,proto3,enum=teamos.events.v1.AcademyCourseTemplateType" json:"template_type,omitempty"`
+	SystemTemplateKey *string                   `protobuf:"bytes,5,opt,name=system_template_key,json=systemTemplateKey,proto3,oneof" json:"system_template_key,omitempty"`
+	PublishedById     string                    `protobuf:"bytes,6,opt,name=published_by_id,json=publishedById,proto3" json:"published_by_id,omitempty"`
+	PublishedAt       *timestamppb.Timestamp    `protobuf:"bytes,7,opt,name=published_at,json=publishedAt,proto3" json:"published_at,omitempty"`
+	ContentHash       string                    `protobuf:"bytes,8,opt,name=content_hash,json=contentHash,proto3" json:"content_hash,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *AcademyTemplateVersionPublishedPayload) Reset() {
+	*x = AcademyTemplateVersionPublishedPayload{}
+	mi := &file_events_academy_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcademyTemplateVersionPublishedPayload) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcademyTemplateVersionPublishedPayload) ProtoMessage() {}
+
+func (x *AcademyTemplateVersionPublishedPayload) ProtoReflect() protoreflect.Message {
+	mi := &file_events_academy_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcademyTemplateVersionPublishedPayload.ProtoReflect.Descriptor instead.
+func (*AcademyTemplateVersionPublishedPayload) Descriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *AcademyTemplateVersionPublishedPayload) GetTemplateId() string {
+	if x != nil {
+		return x.TemplateId
+	}
+	return ""
+}
+
+func (x *AcademyTemplateVersionPublishedPayload) GetTemplateVersionId() string {
+	if x != nil {
+		return x.TemplateVersionId
+	}
+	return ""
+}
+
+func (x *AcademyTemplateVersionPublishedPayload) GetVersionNumber() uint32 {
+	if x != nil {
+		return x.VersionNumber
+	}
+	return 0
+}
+
+func (x *AcademyTemplateVersionPublishedPayload) GetTemplateType() AcademyCourseTemplateType {
+	if x != nil {
+		return x.TemplateType
+	}
+	return AcademyCourseTemplateType_ACADEMY_COURSE_TEMPLATE_TYPE_UNSPECIFIED
+}
+
+func (x *AcademyTemplateVersionPublishedPayload) GetSystemTemplateKey() string {
+	if x != nil && x.SystemTemplateKey != nil {
+		return *x.SystemTemplateKey
+	}
+	return ""
+}
+
+func (x *AcademyTemplateVersionPublishedPayload) GetPublishedById() string {
+	if x != nil {
+		return x.PublishedById
+	}
+	return ""
+}
+
+func (x *AcademyTemplateVersionPublishedPayload) GetPublishedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.PublishedAt
+	}
+	return nil
+}
+
+func (x *AcademyTemplateVersionPublishedPayload) GetContentHash() string {
+	if x != nil {
+		return x.ContentHash
+	}
+	return ""
+}
+
+// Published under teamos.academy.template.instantiated.v1.
+type AcademyTemplateInstantiatedEvent struct {
+	state         protoimpl.MessageState              `protogen:"open.v1"`
+	Metadata      *EventMetadata                      `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	Payload       *AcademyTemplateInstantiatedPayload `protobuf:"bytes,2,opt,name=payload,proto3" json:"payload,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AcademyTemplateInstantiatedEvent) Reset() {
+	*x = AcademyTemplateInstantiatedEvent{}
+	mi := &file_events_academy_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcademyTemplateInstantiatedEvent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcademyTemplateInstantiatedEvent) ProtoMessage() {}
+
+func (x *AcademyTemplateInstantiatedEvent) ProtoReflect() protoreflect.Message {
+	mi := &file_events_academy_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcademyTemplateInstantiatedEvent.ProtoReflect.Descriptor instead.
+func (*AcademyTemplateInstantiatedEvent) Descriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *AcademyTemplateInstantiatedEvent) GetMetadata() *EventMetadata {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
+func (x *AcademyTemplateInstantiatedEvent) GetPayload() *AcademyTemplateInstantiatedPayload {
+	if x != nil {
+		return x.Payload
+	}
+	return nil
+}
+
+type AcademyTemplateInstantiatedPayload struct {
+	state                 protoimpl.MessageState    `protogen:"open.v1"`
+	TemplateId            string                    `protobuf:"bytes,1,opt,name=template_id,json=templateId,proto3" json:"template_id,omitempty"`
+	TemplateVersionId     string                    `protobuf:"bytes,2,opt,name=template_version_id,json=templateVersionId,proto3" json:"template_version_id,omitempty"`
+	TemplateVersionNumber uint32                    `protobuf:"varint,3,opt,name=template_version_number,json=templateVersionNumber,proto3" json:"template_version_number,omitempty"`
+	TemplateType          AcademyCourseTemplateType `protobuf:"varint,4,opt,name=template_type,json=templateType,proto3,enum=teamos.events.v1.AcademyCourseTemplateType" json:"template_type,omitempty"`
+	SystemTemplateKey     *string                   `protobuf:"bytes,5,opt,name=system_template_key,json=systemTemplateKey,proto3,oneof" json:"system_template_key,omitempty"`
+	TargetCourseId        string                    `protobuf:"bytes,6,opt,name=target_course_id,json=targetCourseId,proto3" json:"target_course_id,omitempty"`
+	TargetDraftVersionId  string                    `protobuf:"bytes,7,opt,name=target_draft_version_id,json=targetDraftVersionId,proto3" json:"target_draft_version_id,omitempty"`
+	TargetOwnerType       AcademyCourseOwnerType    `protobuf:"varint,8,opt,name=target_owner_type,json=targetOwnerType,proto3,enum=teamos.events.v1.AcademyCourseOwnerType" json:"target_owner_type,omitempty"`
+	TargetOwnerUserId     *string                   `protobuf:"bytes,9,opt,name=target_owner_user_id,json=targetOwnerUserId,proto3,oneof" json:"target_owner_user_id,omitempty"`
+	InstantiatedById      string                    `protobuf:"bytes,10,opt,name=instantiated_by_id,json=instantiatedById,proto3" json:"instantiated_by_id,omitempty"`
+	InstantiatedAt        *timestamppb.Timestamp    `protobuf:"bytes,11,opt,name=instantiated_at,json=instantiatedAt,proto3" json:"instantiated_at,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
+}
+
+func (x *AcademyTemplateInstantiatedPayload) Reset() {
+	*x = AcademyTemplateInstantiatedPayload{}
+	mi := &file_events_academy_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcademyTemplateInstantiatedPayload) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcademyTemplateInstantiatedPayload) ProtoMessage() {}
+
+func (x *AcademyTemplateInstantiatedPayload) ProtoReflect() protoreflect.Message {
+	mi := &file_events_academy_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcademyTemplateInstantiatedPayload.ProtoReflect.Descriptor instead.
+func (*AcademyTemplateInstantiatedPayload) Descriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *AcademyTemplateInstantiatedPayload) GetTemplateId() string {
+	if x != nil {
+		return x.TemplateId
+	}
+	return ""
+}
+
+func (x *AcademyTemplateInstantiatedPayload) GetTemplateVersionId() string {
+	if x != nil {
+		return x.TemplateVersionId
+	}
+	return ""
+}
+
+func (x *AcademyTemplateInstantiatedPayload) GetTemplateVersionNumber() uint32 {
+	if x != nil {
+		return x.TemplateVersionNumber
+	}
+	return 0
+}
+
+func (x *AcademyTemplateInstantiatedPayload) GetTemplateType() AcademyCourseTemplateType {
+	if x != nil {
+		return x.TemplateType
+	}
+	return AcademyCourseTemplateType_ACADEMY_COURSE_TEMPLATE_TYPE_UNSPECIFIED
+}
+
+func (x *AcademyTemplateInstantiatedPayload) GetSystemTemplateKey() string {
+	if x != nil && x.SystemTemplateKey != nil {
+		return *x.SystemTemplateKey
+	}
+	return ""
+}
+
+func (x *AcademyTemplateInstantiatedPayload) GetTargetCourseId() string {
+	if x != nil {
+		return x.TargetCourseId
+	}
+	return ""
+}
+
+func (x *AcademyTemplateInstantiatedPayload) GetTargetDraftVersionId() string {
+	if x != nil {
+		return x.TargetDraftVersionId
+	}
+	return ""
+}
+
+func (x *AcademyTemplateInstantiatedPayload) GetTargetOwnerType() AcademyCourseOwnerType {
+	if x != nil {
+		return x.TargetOwnerType
+	}
+	return AcademyCourseOwnerType_ACADEMY_COURSE_OWNER_TYPE_UNSPECIFIED
+}
+
+func (x *AcademyTemplateInstantiatedPayload) GetTargetOwnerUserId() string {
+	if x != nil && x.TargetOwnerUserId != nil {
+		return *x.TargetOwnerUserId
+	}
+	return ""
+}
+
+func (x *AcademyTemplateInstantiatedPayload) GetInstantiatedById() string {
+	if x != nil {
+		return x.InstantiatedById
+	}
+	return ""
+}
+
+func (x *AcademyTemplateInstantiatedPayload) GetInstantiatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.InstantiatedAt
+	}
+	return nil
+}
+
 type AcademyCourseAssignedEvent struct {
 	state         protoimpl.MessageState        `protogen:"open.v1"`
 	Metadata      *EventMetadata                `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
@@ -87,7 +2158,7 @@ type AcademyCourseAssignedEvent struct {
 
 func (x *AcademyCourseAssignedEvent) Reset() {
 	*x = AcademyCourseAssignedEvent{}
-	mi := &file_events_academy_proto_msgTypes[0]
+	mi := &file_events_academy_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -99,7 +2170,7 @@ func (x *AcademyCourseAssignedEvent) String() string {
 func (*AcademyCourseAssignedEvent) ProtoMessage() {}
 
 func (x *AcademyCourseAssignedEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_events_academy_proto_msgTypes[0]
+	mi := &file_events_academy_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -112,7 +2183,7 @@ func (x *AcademyCourseAssignedEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AcademyCourseAssignedEvent.ProtoReflect.Descriptor instead.
 func (*AcademyCourseAssignedEvent) Descriptor() ([]byte, []int) {
-	return file_events_academy_proto_rawDescGZIP(), []int{0}
+	return file_events_academy_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *AcademyCourseAssignedEvent) GetMetadata() *EventMetadata {
@@ -141,13 +2212,15 @@ type AcademyCourseAssignedPayload struct {
 	AssignedById     string                 `protobuf:"bytes,8,opt,name=assigned_by_id,json=assignedById,proto3" json:"assigned_by_id,omitempty"`
 	Link             string                 `protobuf:"bytes,9,opt,name=link,proto3" json:"link,omitempty"`
 	RecipientUserIds []string               `protobuf:"bytes,10,rep,name=recipient_user_ids,json=recipientUserIds,proto3" json:"recipient_user_ids,omitempty"`
+	CourseVersionId  *string                `protobuf:"bytes,11,opt,name=course_version_id,json=courseVersionId,proto3,oneof" json:"course_version_id,omitempty"`
+	EnrollmentIds    []string               `protobuf:"bytes,12,rep,name=enrollment_ids,json=enrollmentIds,proto3" json:"enrollment_ids,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
 
 func (x *AcademyCourseAssignedPayload) Reset() {
 	*x = AcademyCourseAssignedPayload{}
-	mi := &file_events_academy_proto_msgTypes[1]
+	mi := &file_events_academy_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -159,7 +2232,7 @@ func (x *AcademyCourseAssignedPayload) String() string {
 func (*AcademyCourseAssignedPayload) ProtoMessage() {}
 
 func (x *AcademyCourseAssignedPayload) ProtoReflect() protoreflect.Message {
-	mi := &file_events_academy_proto_msgTypes[1]
+	mi := &file_events_academy_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -172,7 +2245,7 @@ func (x *AcademyCourseAssignedPayload) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AcademyCourseAssignedPayload.ProtoReflect.Descriptor instead.
 func (*AcademyCourseAssignedPayload) Descriptor() ([]byte, []int) {
-	return file_events_academy_proto_rawDescGZIP(), []int{1}
+	return file_events_academy_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *AcademyCourseAssignedPayload) GetAssignmentId() string {
@@ -245,6 +2318,535 @@ func (x *AcademyCourseAssignedPayload) GetRecipientUserIds() []string {
 	return nil
 }
 
+func (x *AcademyCourseAssignedPayload) GetCourseVersionId() string {
+	if x != nil && x.CourseVersionId != nil {
+		return *x.CourseVersionId
+	}
+	return ""
+}
+
+func (x *AcademyCourseAssignedPayload) GetEnrollmentIds() []string {
+	if x != nil {
+		return x.EnrollmentIds
+	}
+	return nil
+}
+
+// Published under teamos.academy.enrollment.activated.v1.
+type AcademyEnrollmentActivatedEvent struct {
+	state         protoimpl.MessageState             `protogen:"open.v1"`
+	Metadata      *EventMetadata                     `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	Payload       *AcademyEnrollmentActivatedPayload `protobuf:"bytes,2,opt,name=payload,proto3" json:"payload,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AcademyEnrollmentActivatedEvent) Reset() {
+	*x = AcademyEnrollmentActivatedEvent{}
+	mi := &file_events_academy_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcademyEnrollmentActivatedEvent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcademyEnrollmentActivatedEvent) ProtoMessage() {}
+
+func (x *AcademyEnrollmentActivatedEvent) ProtoReflect() protoreflect.Message {
+	mi := &file_events_academy_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcademyEnrollmentActivatedEvent.ProtoReflect.Descriptor instead.
+func (*AcademyEnrollmentActivatedEvent) Descriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *AcademyEnrollmentActivatedEvent) GetMetadata() *EventMetadata {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
+func (x *AcademyEnrollmentActivatedEvent) GetPayload() *AcademyEnrollmentActivatedPayload {
+	if x != nil {
+		return x.Payload
+	}
+	return nil
+}
+
+type AcademyEnrollmentActivatedPayload struct {
+	state             protoimpl.MessageState       `protogen:"open.v1"`
+	EnrollmentId      string                       `protobuf:"bytes,1,opt,name=enrollment_id,json=enrollmentId,proto3" json:"enrollment_id,omitempty"`
+	CourseId          string                       `protobuf:"bytes,2,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	CourseVersionId   string                       `protobuf:"bytes,3,opt,name=course_version_id,json=courseVersionId,proto3" json:"course_version_id,omitempty"`
+	LearnerType       AcademyEnrollmentLearnerType `protobuf:"varint,4,opt,name=learner_type,json=learnerType,proto3,enum=teamos.events.v1.AcademyEnrollmentLearnerType" json:"learner_type,omitempty"`
+	UserId            *string                      `protobuf:"bytes,5,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`
+	ExternalLearnerId *string                      `protobuf:"bytes,6,opt,name=external_learner_id,json=externalLearnerId,proto3,oneof" json:"external_learner_id,omitempty"`
+	SourceType        AcademyEnrollmentSourceType  `protobuf:"varint,7,opt,name=source_type,json=sourceType,proto3,enum=teamos.events.v1.AcademyEnrollmentSourceType" json:"source_type,omitempty"`
+	SourceId          *string                      `protobuf:"bytes,8,opt,name=source_id,json=sourceId,proto3,oneof" json:"source_id,omitempty"`
+	AttemptNumber     uint32                       `protobuf:"varint,9,opt,name=attempt_number,json=attemptNumber,proto3" json:"attempt_number,omitempty"`
+	ActivatedAt       *timestamppb.Timestamp       `protobuf:"bytes,10,opt,name=activated_at,json=activatedAt,proto3" json:"activated_at,omitempty"`
+	AccessUntil       *timestamppb.Timestamp       `protobuf:"bytes,11,opt,name=access_until,json=accessUntil,proto3,oneof" json:"access_until,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *AcademyEnrollmentActivatedPayload) Reset() {
+	*x = AcademyEnrollmentActivatedPayload{}
+	mi := &file_events_academy_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcademyEnrollmentActivatedPayload) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcademyEnrollmentActivatedPayload) ProtoMessage() {}
+
+func (x *AcademyEnrollmentActivatedPayload) ProtoReflect() protoreflect.Message {
+	mi := &file_events_academy_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcademyEnrollmentActivatedPayload.ProtoReflect.Descriptor instead.
+func (*AcademyEnrollmentActivatedPayload) Descriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *AcademyEnrollmentActivatedPayload) GetEnrollmentId() string {
+	if x != nil {
+		return x.EnrollmentId
+	}
+	return ""
+}
+
+func (x *AcademyEnrollmentActivatedPayload) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+func (x *AcademyEnrollmentActivatedPayload) GetCourseVersionId() string {
+	if x != nil {
+		return x.CourseVersionId
+	}
+	return ""
+}
+
+func (x *AcademyEnrollmentActivatedPayload) GetLearnerType() AcademyEnrollmentLearnerType {
+	if x != nil {
+		return x.LearnerType
+	}
+	return AcademyEnrollmentLearnerType_ACADEMY_ENROLLMENT_LEARNER_TYPE_UNSPECIFIED
+}
+
+func (x *AcademyEnrollmentActivatedPayload) GetUserId() string {
+	if x != nil && x.UserId != nil {
+		return *x.UserId
+	}
+	return ""
+}
+
+func (x *AcademyEnrollmentActivatedPayload) GetExternalLearnerId() string {
+	if x != nil && x.ExternalLearnerId != nil {
+		return *x.ExternalLearnerId
+	}
+	return ""
+}
+
+func (x *AcademyEnrollmentActivatedPayload) GetSourceType() AcademyEnrollmentSourceType {
+	if x != nil {
+		return x.SourceType
+	}
+	return AcademyEnrollmentSourceType_ACADEMY_ENROLLMENT_SOURCE_TYPE_UNSPECIFIED
+}
+
+func (x *AcademyEnrollmentActivatedPayload) GetSourceId() string {
+	if x != nil && x.SourceId != nil {
+		return *x.SourceId
+	}
+	return ""
+}
+
+func (x *AcademyEnrollmentActivatedPayload) GetAttemptNumber() uint32 {
+	if x != nil {
+		return x.AttemptNumber
+	}
+	return 0
+}
+
+func (x *AcademyEnrollmentActivatedPayload) GetActivatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ActivatedAt
+	}
+	return nil
+}
+
+func (x *AcademyEnrollmentActivatedPayload) GetAccessUntil() *timestamppb.Timestamp {
+	if x != nil {
+		return x.AccessUntil
+	}
+	return nil
+}
+
+// Published under teamos.academy.enrollment.progressed.v1.
+type AcademyEnrollmentProgressedEvent struct {
+	state         protoimpl.MessageState              `protogen:"open.v1"`
+	Metadata      *EventMetadata                      `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	Payload       *AcademyEnrollmentProgressedPayload `protobuf:"bytes,2,opt,name=payload,proto3" json:"payload,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AcademyEnrollmentProgressedEvent) Reset() {
+	*x = AcademyEnrollmentProgressedEvent{}
+	mi := &file_events_academy_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcademyEnrollmentProgressedEvent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcademyEnrollmentProgressedEvent) ProtoMessage() {}
+
+func (x *AcademyEnrollmentProgressedEvent) ProtoReflect() protoreflect.Message {
+	mi := &file_events_academy_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcademyEnrollmentProgressedEvent.ProtoReflect.Descriptor instead.
+func (*AcademyEnrollmentProgressedEvent) Descriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{24}
+}
+
+func (x *AcademyEnrollmentProgressedEvent) GetMetadata() *EventMetadata {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
+func (x *AcademyEnrollmentProgressedEvent) GetPayload() *AcademyEnrollmentProgressedPayload {
+	if x != nil {
+		return x.Payload
+	}
+	return nil
+}
+
+type AcademyEnrollmentProgressedPayload struct {
+	state                    protoimpl.MessageState          `protogen:"open.v1"`
+	EnrollmentId             string                          `protobuf:"bytes,1,opt,name=enrollment_id,json=enrollmentId,proto3" json:"enrollment_id,omitempty"`
+	CourseId                 string                          `protobuf:"bytes,2,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	CourseVersionId          string                          `protobuf:"bytes,3,opt,name=course_version_id,json=courseVersionId,proto3" json:"course_version_id,omitempty"`
+	LearnerType              AcademyEnrollmentLearnerType    `protobuf:"varint,4,opt,name=learner_type,json=learnerType,proto3,enum=teamos.events.v1.AcademyEnrollmentLearnerType" json:"learner_type,omitempty"`
+	UserId                   *string                         `protobuf:"bytes,5,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`
+	ExternalLearnerId        *string                         `protobuf:"bytes,6,opt,name=external_learner_id,json=externalLearnerId,proto3,oneof" json:"external_learner_id,omitempty"`
+	ProgressStatus           AcademyEnrollmentProgressStatus `protobuf:"varint,7,opt,name=progress_status,json=progressStatus,proto3,enum=teamos.events.v1.AcademyEnrollmentProgressStatus" json:"progress_status,omitempty"`
+	ProgressPercent          uint32                          `protobuf:"varint,8,opt,name=progress_percent,json=progressPercent,proto3" json:"progress_percent,omitempty"`
+	CompletedLessonVersionId *string                         `protobuf:"bytes,9,opt,name=completed_lesson_version_id,json=completedLessonVersionId,proto3,oneof" json:"completed_lesson_version_id,omitempty"`
+	CurrentLessonVersionId   *string                         `protobuf:"bytes,10,opt,name=current_lesson_version_id,json=currentLessonVersionId,proto3,oneof" json:"current_lesson_version_id,omitempty"`
+	QuizAttemptId            *string                         `protobuf:"bytes,11,opt,name=quiz_attempt_id,json=quizAttemptId,proto3,oneof" json:"quiz_attempt_id,omitempty"`
+	OccurredAt               *timestamppb.Timestamp          `protobuf:"bytes,12,opt,name=occurred_at,json=occurredAt,proto3" json:"occurred_at,omitempty"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
+}
+
+func (x *AcademyEnrollmentProgressedPayload) Reset() {
+	*x = AcademyEnrollmentProgressedPayload{}
+	mi := &file_events_academy_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcademyEnrollmentProgressedPayload) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcademyEnrollmentProgressedPayload) ProtoMessage() {}
+
+func (x *AcademyEnrollmentProgressedPayload) ProtoReflect() protoreflect.Message {
+	mi := &file_events_academy_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcademyEnrollmentProgressedPayload.ProtoReflect.Descriptor instead.
+func (*AcademyEnrollmentProgressedPayload) Descriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{25}
+}
+
+func (x *AcademyEnrollmentProgressedPayload) GetEnrollmentId() string {
+	if x != nil {
+		return x.EnrollmentId
+	}
+	return ""
+}
+
+func (x *AcademyEnrollmentProgressedPayload) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+func (x *AcademyEnrollmentProgressedPayload) GetCourseVersionId() string {
+	if x != nil {
+		return x.CourseVersionId
+	}
+	return ""
+}
+
+func (x *AcademyEnrollmentProgressedPayload) GetLearnerType() AcademyEnrollmentLearnerType {
+	if x != nil {
+		return x.LearnerType
+	}
+	return AcademyEnrollmentLearnerType_ACADEMY_ENROLLMENT_LEARNER_TYPE_UNSPECIFIED
+}
+
+func (x *AcademyEnrollmentProgressedPayload) GetUserId() string {
+	if x != nil && x.UserId != nil {
+		return *x.UserId
+	}
+	return ""
+}
+
+func (x *AcademyEnrollmentProgressedPayload) GetExternalLearnerId() string {
+	if x != nil && x.ExternalLearnerId != nil {
+		return *x.ExternalLearnerId
+	}
+	return ""
+}
+
+func (x *AcademyEnrollmentProgressedPayload) GetProgressStatus() AcademyEnrollmentProgressStatus {
+	if x != nil {
+		return x.ProgressStatus
+	}
+	return AcademyEnrollmentProgressStatus_ACADEMY_ENROLLMENT_PROGRESS_STATUS_UNSPECIFIED
+}
+
+func (x *AcademyEnrollmentProgressedPayload) GetProgressPercent() uint32 {
+	if x != nil {
+		return x.ProgressPercent
+	}
+	return 0
+}
+
+func (x *AcademyEnrollmentProgressedPayload) GetCompletedLessonVersionId() string {
+	if x != nil && x.CompletedLessonVersionId != nil {
+		return *x.CompletedLessonVersionId
+	}
+	return ""
+}
+
+func (x *AcademyEnrollmentProgressedPayload) GetCurrentLessonVersionId() string {
+	if x != nil && x.CurrentLessonVersionId != nil {
+		return *x.CurrentLessonVersionId
+	}
+	return ""
+}
+
+func (x *AcademyEnrollmentProgressedPayload) GetQuizAttemptId() string {
+	if x != nil && x.QuizAttemptId != nil {
+		return *x.QuizAttemptId
+	}
+	return ""
+}
+
+func (x *AcademyEnrollmentProgressedPayload) GetOccurredAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.OccurredAt
+	}
+	return nil
+}
+
+// Published under teamos.academy.enrollment.completed.v1.
+type AcademyEnrollmentCompletedEvent struct {
+	state         protoimpl.MessageState             `protogen:"open.v1"`
+	Metadata      *EventMetadata                     `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	Payload       *AcademyEnrollmentCompletedPayload `protobuf:"bytes,2,opt,name=payload,proto3" json:"payload,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AcademyEnrollmentCompletedEvent) Reset() {
+	*x = AcademyEnrollmentCompletedEvent{}
+	mi := &file_events_academy_proto_msgTypes[26]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcademyEnrollmentCompletedEvent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcademyEnrollmentCompletedEvent) ProtoMessage() {}
+
+func (x *AcademyEnrollmentCompletedEvent) ProtoReflect() protoreflect.Message {
+	mi := &file_events_academy_proto_msgTypes[26]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcademyEnrollmentCompletedEvent.ProtoReflect.Descriptor instead.
+func (*AcademyEnrollmentCompletedEvent) Descriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{26}
+}
+
+func (x *AcademyEnrollmentCompletedEvent) GetMetadata() *EventMetadata {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
+func (x *AcademyEnrollmentCompletedEvent) GetPayload() *AcademyEnrollmentCompletedPayload {
+	if x != nil {
+		return x.Payload
+	}
+	return nil
+}
+
+type AcademyEnrollmentCompletedPayload struct {
+	state             protoimpl.MessageState       `protogen:"open.v1"`
+	EnrollmentId      string                       `protobuf:"bytes,1,opt,name=enrollment_id,json=enrollmentId,proto3" json:"enrollment_id,omitempty"`
+	CourseId          string                       `protobuf:"bytes,2,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	CourseVersionId   string                       `protobuf:"bytes,3,opt,name=course_version_id,json=courseVersionId,proto3" json:"course_version_id,omitempty"`
+	LearnerType       AcademyEnrollmentLearnerType `protobuf:"varint,4,opt,name=learner_type,json=learnerType,proto3,enum=teamos.events.v1.AcademyEnrollmentLearnerType" json:"learner_type,omitempty"`
+	UserId            *string                      `protobuf:"bytes,5,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`
+	ExternalLearnerId *string                      `protobuf:"bytes,6,opt,name=external_learner_id,json=externalLearnerId,proto3,oneof" json:"external_learner_id,omitempty"`
+	AttemptNumber     uint32                       `protobuf:"varint,7,opt,name=attempt_number,json=attemptNumber,proto3" json:"attempt_number,omitempty"`
+	CompletedAt       *timestamppb.Timestamp       `protobuf:"bytes,8,opt,name=completed_at,json=completedAt,proto3" json:"completed_at,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *AcademyEnrollmentCompletedPayload) Reset() {
+	*x = AcademyEnrollmentCompletedPayload{}
+	mi := &file_events_academy_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcademyEnrollmentCompletedPayload) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcademyEnrollmentCompletedPayload) ProtoMessage() {}
+
+func (x *AcademyEnrollmentCompletedPayload) ProtoReflect() protoreflect.Message {
+	mi := &file_events_academy_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcademyEnrollmentCompletedPayload.ProtoReflect.Descriptor instead.
+func (*AcademyEnrollmentCompletedPayload) Descriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{27}
+}
+
+func (x *AcademyEnrollmentCompletedPayload) GetEnrollmentId() string {
+	if x != nil {
+		return x.EnrollmentId
+	}
+	return ""
+}
+
+func (x *AcademyEnrollmentCompletedPayload) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+func (x *AcademyEnrollmentCompletedPayload) GetCourseVersionId() string {
+	if x != nil {
+		return x.CourseVersionId
+	}
+	return ""
+}
+
+func (x *AcademyEnrollmentCompletedPayload) GetLearnerType() AcademyEnrollmentLearnerType {
+	if x != nil {
+		return x.LearnerType
+	}
+	return AcademyEnrollmentLearnerType_ACADEMY_ENROLLMENT_LEARNER_TYPE_UNSPECIFIED
+}
+
+func (x *AcademyEnrollmentCompletedPayload) GetUserId() string {
+	if x != nil && x.UserId != nil {
+		return *x.UserId
+	}
+	return ""
+}
+
+func (x *AcademyEnrollmentCompletedPayload) GetExternalLearnerId() string {
+	if x != nil && x.ExternalLearnerId != nil {
+		return *x.ExternalLearnerId
+	}
+	return ""
+}
+
+func (x *AcademyEnrollmentCompletedPayload) GetAttemptNumber() uint32 {
+	if x != nil {
+		return x.AttemptNumber
+	}
+	return 0
+}
+
+func (x *AcademyEnrollmentCompletedPayload) GetCompletedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CompletedAt
+	}
+	return nil
+}
+
 type AcademyCourseDueSoonEvent struct {
 	state         protoimpl.MessageState       `protogen:"open.v1"`
 	Metadata      *EventMetadata               `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
@@ -255,7 +2857,7 @@ type AcademyCourseDueSoonEvent struct {
 
 func (x *AcademyCourseDueSoonEvent) Reset() {
 	*x = AcademyCourseDueSoonEvent{}
-	mi := &file_events_academy_proto_msgTypes[2]
+	mi := &file_events_academy_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -267,7 +2869,7 @@ func (x *AcademyCourseDueSoonEvent) String() string {
 func (*AcademyCourseDueSoonEvent) ProtoMessage() {}
 
 func (x *AcademyCourseDueSoonEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_events_academy_proto_msgTypes[2]
+	mi := &file_events_academy_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -280,7 +2882,7 @@ func (x *AcademyCourseDueSoonEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AcademyCourseDueSoonEvent.ProtoReflect.Descriptor instead.
 func (*AcademyCourseDueSoonEvent) Descriptor() ([]byte, []int) {
-	return file_events_academy_proto_rawDescGZIP(), []int{2}
+	return file_events_academy_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *AcademyCourseDueSoonEvent) GetMetadata() *EventMetadata {
@@ -313,7 +2915,7 @@ type AcademyCourseDueSoonPayload struct {
 
 func (x *AcademyCourseDueSoonPayload) Reset() {
 	*x = AcademyCourseDueSoonPayload{}
-	mi := &file_events_academy_proto_msgTypes[3]
+	mi := &file_events_academy_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -325,7 +2927,7 @@ func (x *AcademyCourseDueSoonPayload) String() string {
 func (*AcademyCourseDueSoonPayload) ProtoMessage() {}
 
 func (x *AcademyCourseDueSoonPayload) ProtoReflect() protoreflect.Message {
-	mi := &file_events_academy_proto_msgTypes[3]
+	mi := &file_events_academy_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -338,7 +2940,7 @@ func (x *AcademyCourseDueSoonPayload) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AcademyCourseDueSoonPayload.ProtoReflect.Descriptor instead.
 func (*AcademyCourseDueSoonPayload) Descriptor() ([]byte, []int) {
-	return file_events_academy_proto_rawDescGZIP(), []int{3}
+	return file_events_academy_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *AcademyCourseDueSoonPayload) GetAssignmentId() string {
@@ -407,7 +3009,7 @@ type AcademyCourseDeletedEvent struct {
 
 func (x *AcademyCourseDeletedEvent) Reset() {
 	*x = AcademyCourseDeletedEvent{}
-	mi := &file_events_academy_proto_msgTypes[4]
+	mi := &file_events_academy_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -419,7 +3021,7 @@ func (x *AcademyCourseDeletedEvent) String() string {
 func (*AcademyCourseDeletedEvent) ProtoMessage() {}
 
 func (x *AcademyCourseDeletedEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_events_academy_proto_msgTypes[4]
+	mi := &file_events_academy_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -432,7 +3034,7 @@ func (x *AcademyCourseDeletedEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AcademyCourseDeletedEvent.ProtoReflect.Descriptor instead.
 func (*AcademyCourseDeletedEvent) Descriptor() ([]byte, []int) {
-	return file_events_academy_proto_rawDescGZIP(), []int{4}
+	return file_events_academy_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *AcademyCourseDeletedEvent) GetMetadata() *EventMetadata {
@@ -450,15 +3052,20 @@ func (x *AcademyCourseDeletedEvent) GetPayload() *AcademyCourseDeletedPayload {
 }
 
 type AcademyCourseDeletedPayload struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	CourseId      string                 `protobuf:"bytes,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	state         protoimpl.MessageState  `protogen:"open.v1"`
+	CourseId      string                  `protobuf:"bytes,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	OwnerType     *AcademyCourseOwnerType `protobuf:"varint,2,opt,name=owner_type,json=ownerType,proto3,enum=teamos.events.v1.AcademyCourseOwnerType,oneof" json:"owner_type,omitempty"`
+	OwnerUserId   *string                 `protobuf:"bytes,3,opt,name=owner_user_id,json=ownerUserId,proto3,oneof" json:"owner_user_id,omitempty"`
+	DeletedById   *string                 `protobuf:"bytes,4,opt,name=deleted_by_id,json=deletedById,proto3,oneof" json:"deleted_by_id,omitempty"`
+	DeletedAt     *timestamppb.Timestamp  `protobuf:"bytes,5,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`
+	CourseTitle   *string                 `protobuf:"bytes,6,opt,name=course_title,json=courseTitle,proto3,oneof" json:"course_title,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *AcademyCourseDeletedPayload) Reset() {
 	*x = AcademyCourseDeletedPayload{}
-	mi := &file_events_academy_proto_msgTypes[5]
+	mi := &file_events_academy_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -470,7 +3077,7 @@ func (x *AcademyCourseDeletedPayload) String() string {
 func (*AcademyCourseDeletedPayload) ProtoMessage() {}
 
 func (x *AcademyCourseDeletedPayload) ProtoReflect() protoreflect.Message {
-	mi := &file_events_academy_proto_msgTypes[5]
+	mi := &file_events_academy_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -483,7 +3090,7 @@ func (x *AcademyCourseDeletedPayload) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AcademyCourseDeletedPayload.ProtoReflect.Descriptor instead.
 func (*AcademyCourseDeletedPayload) Descriptor() ([]byte, []int) {
-	return file_events_academy_proto_rawDescGZIP(), []int{5}
+	return file_events_academy_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *AcademyCourseDeletedPayload) GetCourseId() string {
@@ -493,14 +3100,625 @@ func (x *AcademyCourseDeletedPayload) GetCourseId() string {
 	return ""
 }
 
+func (x *AcademyCourseDeletedPayload) GetOwnerType() AcademyCourseOwnerType {
+	if x != nil && x.OwnerType != nil {
+		return *x.OwnerType
+	}
+	return AcademyCourseOwnerType_ACADEMY_COURSE_OWNER_TYPE_UNSPECIFIED
+}
+
+func (x *AcademyCourseDeletedPayload) GetOwnerUserId() string {
+	if x != nil && x.OwnerUserId != nil {
+		return *x.OwnerUserId
+	}
+	return ""
+}
+
+func (x *AcademyCourseDeletedPayload) GetDeletedById() string {
+	if x != nil && x.DeletedById != nil {
+		return *x.DeletedById
+	}
+	return ""
+}
+
+func (x *AcademyCourseDeletedPayload) GetDeletedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.DeletedAt
+	}
+	return nil
+}
+
+func (x *AcademyCourseDeletedPayload) GetCourseTitle() string {
+	if x != nil && x.CourseTitle != nil {
+		return *x.CourseTitle
+	}
+	return ""
+}
+
+// Published under teamos.academy.external_email_verification.requested.v1.
+// encrypted_delivery_payload is nonce || AES-256-GCM ciphertext. Its plaintext
+// is JSON with recipientEmail and verificationCode. AAD is challenge_id.
+type AcademyExternalEmailVerificationRequestedEvent struct {
+	state         protoimpl.MessageState                            `protogen:"open.v1"`
+	Metadata      *EventMetadata                                    `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	Payload       *AcademyExternalEmailVerificationRequestedPayload `protobuf:"bytes,2,opt,name=payload,proto3" json:"payload,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AcademyExternalEmailVerificationRequestedEvent) Reset() {
+	*x = AcademyExternalEmailVerificationRequestedEvent{}
+	mi := &file_events_academy_proto_msgTypes[32]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcademyExternalEmailVerificationRequestedEvent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcademyExternalEmailVerificationRequestedEvent) ProtoMessage() {}
+
+func (x *AcademyExternalEmailVerificationRequestedEvent) ProtoReflect() protoreflect.Message {
+	mi := &file_events_academy_proto_msgTypes[32]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcademyExternalEmailVerificationRequestedEvent.ProtoReflect.Descriptor instead.
+func (*AcademyExternalEmailVerificationRequestedEvent) Descriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{32}
+}
+
+func (x *AcademyExternalEmailVerificationRequestedEvent) GetMetadata() *EventMetadata {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
+func (x *AcademyExternalEmailVerificationRequestedEvent) GetPayload() *AcademyExternalEmailVerificationRequestedPayload {
+	if x != nil {
+		return x.Payload
+	}
+	return nil
+}
+
+type AcademyExternalEmailVerificationRequestedPayload struct {
+	state                    protoimpl.MessageState `protogen:"open.v1"`
+	ChallengeId              string                 `protobuf:"bytes,1,opt,name=challenge_id,json=challengeId,proto3" json:"challenge_id,omitempty"`
+	EncryptedDeliveryPayload []byte                 `protobuf:"bytes,2,opt,name=encrypted_delivery_payload,json=encryptedDeliveryPayload,proto3" json:"encrypted_delivery_payload,omitempty"`
+	ExpiresAt                *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
+	Purpose                  string                 `protobuf:"bytes,4,opt,name=purpose,proto3" json:"purpose,omitempty"`
+	KeyId                    *string                `protobuf:"bytes,5,opt,name=key_id,json=keyId,proto3,oneof" json:"key_id,omitempty"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
+}
+
+func (x *AcademyExternalEmailVerificationRequestedPayload) Reset() {
+	*x = AcademyExternalEmailVerificationRequestedPayload{}
+	mi := &file_events_academy_proto_msgTypes[33]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcademyExternalEmailVerificationRequestedPayload) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcademyExternalEmailVerificationRequestedPayload) ProtoMessage() {}
+
+func (x *AcademyExternalEmailVerificationRequestedPayload) ProtoReflect() protoreflect.Message {
+	mi := &file_events_academy_proto_msgTypes[33]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcademyExternalEmailVerificationRequestedPayload.ProtoReflect.Descriptor instead.
+func (*AcademyExternalEmailVerificationRequestedPayload) Descriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{33}
+}
+
+func (x *AcademyExternalEmailVerificationRequestedPayload) GetChallengeId() string {
+	if x != nil {
+		return x.ChallengeId
+	}
+	return ""
+}
+
+func (x *AcademyExternalEmailVerificationRequestedPayload) GetEncryptedDeliveryPayload() []byte {
+	if x != nil {
+		return x.EncryptedDeliveryPayload
+	}
+	return nil
+}
+
+func (x *AcademyExternalEmailVerificationRequestedPayload) GetExpiresAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ExpiresAt
+	}
+	return nil
+}
+
+func (x *AcademyExternalEmailVerificationRequestedPayload) GetPurpose() string {
+	if x != nil {
+		return x.Purpose
+	}
+	return ""
+}
+
+func (x *AcademyExternalEmailVerificationRequestedPayload) GetKeyId() string {
+	if x != nil && x.KeyId != nil {
+		return *x.KeyId
+	}
+	return ""
+}
+
+// Published under teamos.academy.external_campaign.created.v1. The public
+// token and its hash are intentionally excluded.
+type AcademyExternalCampaignCreatedEvent struct {
+	state         protoimpl.MessageState                 `protogen:"open.v1"`
+	Metadata      *EventMetadata                         `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	Payload       *AcademyExternalCampaignCreatedPayload `protobuf:"bytes,2,opt,name=payload,proto3" json:"payload,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AcademyExternalCampaignCreatedEvent) Reset() {
+	*x = AcademyExternalCampaignCreatedEvent{}
+	mi := &file_events_academy_proto_msgTypes[34]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcademyExternalCampaignCreatedEvent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcademyExternalCampaignCreatedEvent) ProtoMessage() {}
+
+func (x *AcademyExternalCampaignCreatedEvent) ProtoReflect() protoreflect.Message {
+	mi := &file_events_academy_proto_msgTypes[34]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcademyExternalCampaignCreatedEvent.ProtoReflect.Descriptor instead.
+func (*AcademyExternalCampaignCreatedEvent) Descriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{34}
+}
+
+func (x *AcademyExternalCampaignCreatedEvent) GetMetadata() *EventMetadata {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
+func (x *AcademyExternalCampaignCreatedEvent) GetPayload() *AcademyExternalCampaignCreatedPayload {
+	if x != nil {
+		return x.Payload
+	}
+	return nil
+}
+
+type AcademyExternalCampaignCreatedPayload struct {
+	state           protoimpl.MessageState         `protogen:"open.v1"`
+	CampaignId      string                         `protobuf:"bytes,1,opt,name=campaign_id,json=campaignId,proto3" json:"campaign_id,omitempty"`
+	CourseId        string                         `protobuf:"bytes,2,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	CourseVersionId string                         `protobuf:"bytes,3,opt,name=course_version_id,json=courseVersionId,proto3" json:"course_version_id,omitempty"`
+	OwnerType       AcademyCourseOwnerType         `protobuf:"varint,4,opt,name=owner_type,json=ownerType,proto3,enum=teamos.events.v1.AcademyCourseOwnerType" json:"owner_type,omitempty"`
+	OwnerUserId     *string                        `protobuf:"bytes,5,opt,name=owner_user_id,json=ownerUserId,proto3,oneof" json:"owner_user_id,omitempty"`
+	Purpose         AcademyExternalCampaignPurpose `protobuf:"varint,6,opt,name=purpose,proto3,enum=teamos.events.v1.AcademyExternalCampaignPurpose" json:"purpose,omitempty"`
+	CreatedById     string                         `protobuf:"bytes,7,opt,name=created_by_id,json=createdById,proto3" json:"created_by_id,omitempty"`
+	CreatedAt       *timestamppb.Timestamp         `protobuf:"bytes,8,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *AcademyExternalCampaignCreatedPayload) Reset() {
+	*x = AcademyExternalCampaignCreatedPayload{}
+	mi := &file_events_academy_proto_msgTypes[35]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcademyExternalCampaignCreatedPayload) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcademyExternalCampaignCreatedPayload) ProtoMessage() {}
+
+func (x *AcademyExternalCampaignCreatedPayload) ProtoReflect() protoreflect.Message {
+	mi := &file_events_academy_proto_msgTypes[35]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcademyExternalCampaignCreatedPayload.ProtoReflect.Descriptor instead.
+func (*AcademyExternalCampaignCreatedPayload) Descriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{35}
+}
+
+func (x *AcademyExternalCampaignCreatedPayload) GetCampaignId() string {
+	if x != nil {
+		return x.CampaignId
+	}
+	return ""
+}
+
+func (x *AcademyExternalCampaignCreatedPayload) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+func (x *AcademyExternalCampaignCreatedPayload) GetCourseVersionId() string {
+	if x != nil {
+		return x.CourseVersionId
+	}
+	return ""
+}
+
+func (x *AcademyExternalCampaignCreatedPayload) GetOwnerType() AcademyCourseOwnerType {
+	if x != nil {
+		return x.OwnerType
+	}
+	return AcademyCourseOwnerType_ACADEMY_COURSE_OWNER_TYPE_UNSPECIFIED
+}
+
+func (x *AcademyExternalCampaignCreatedPayload) GetOwnerUserId() string {
+	if x != nil && x.OwnerUserId != nil {
+		return *x.OwnerUserId
+	}
+	return ""
+}
+
+func (x *AcademyExternalCampaignCreatedPayload) GetPurpose() AcademyExternalCampaignPurpose {
+	if x != nil {
+		return x.Purpose
+	}
+	return AcademyExternalCampaignPurpose_ACADEMY_EXTERNAL_CAMPAIGN_PURPOSE_UNSPECIFIED
+}
+
+func (x *AcademyExternalCampaignCreatedPayload) GetCreatedById() string {
+	if x != nil {
+		return x.CreatedById
+	}
+	return ""
+}
+
+func (x *AcademyExternalCampaignCreatedPayload) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+// Published under teamos.academy.external_campaign.status_changed.v1.
+type AcademyExternalCampaignStatusChangedEvent struct {
+	state         protoimpl.MessageState                       `protogen:"open.v1"`
+	Metadata      *EventMetadata                               `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	Payload       *AcademyExternalCampaignStatusChangedPayload `protobuf:"bytes,2,opt,name=payload,proto3" json:"payload,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AcademyExternalCampaignStatusChangedEvent) Reset() {
+	*x = AcademyExternalCampaignStatusChangedEvent{}
+	mi := &file_events_academy_proto_msgTypes[36]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcademyExternalCampaignStatusChangedEvent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcademyExternalCampaignStatusChangedEvent) ProtoMessage() {}
+
+func (x *AcademyExternalCampaignStatusChangedEvent) ProtoReflect() protoreflect.Message {
+	mi := &file_events_academy_proto_msgTypes[36]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcademyExternalCampaignStatusChangedEvent.ProtoReflect.Descriptor instead.
+func (*AcademyExternalCampaignStatusChangedEvent) Descriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{36}
+}
+
+func (x *AcademyExternalCampaignStatusChangedEvent) GetMetadata() *EventMetadata {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
+func (x *AcademyExternalCampaignStatusChangedEvent) GetPayload() *AcademyExternalCampaignStatusChangedPayload {
+	if x != nil {
+		return x.Payload
+	}
+	return nil
+}
+
+type AcademyExternalCampaignStatusChangedPayload struct {
+	state          protoimpl.MessageState        `protogen:"open.v1"`
+	CampaignId     string                        `protobuf:"bytes,1,opt,name=campaign_id,json=campaignId,proto3" json:"campaign_id,omitempty"`
+	CourseId       string                        `protobuf:"bytes,2,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	PreviousStatus AcademyExternalCampaignStatus `protobuf:"varint,3,opt,name=previous_status,json=previousStatus,proto3,enum=teamos.events.v1.AcademyExternalCampaignStatus" json:"previous_status,omitempty"`
+	Status         AcademyExternalCampaignStatus `protobuf:"varint,4,opt,name=status,proto3,enum=teamos.events.v1.AcademyExternalCampaignStatus" json:"status,omitempty"`
+	ChangedById    string                        `protobuf:"bytes,5,opt,name=changed_by_id,json=changedById,proto3" json:"changed_by_id,omitempty"`
+	ChangedAt      *timestamppb.Timestamp        `protobuf:"bytes,6,opt,name=changed_at,json=changedAt,proto3" json:"changed_at,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *AcademyExternalCampaignStatusChangedPayload) Reset() {
+	*x = AcademyExternalCampaignStatusChangedPayload{}
+	mi := &file_events_academy_proto_msgTypes[37]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcademyExternalCampaignStatusChangedPayload) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcademyExternalCampaignStatusChangedPayload) ProtoMessage() {}
+
+func (x *AcademyExternalCampaignStatusChangedPayload) ProtoReflect() protoreflect.Message {
+	mi := &file_events_academy_proto_msgTypes[37]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcademyExternalCampaignStatusChangedPayload.ProtoReflect.Descriptor instead.
+func (*AcademyExternalCampaignStatusChangedPayload) Descriptor() ([]byte, []int) {
+	return file_events_academy_proto_rawDescGZIP(), []int{37}
+}
+
+func (x *AcademyExternalCampaignStatusChangedPayload) GetCampaignId() string {
+	if x != nil {
+		return x.CampaignId
+	}
+	return ""
+}
+
+func (x *AcademyExternalCampaignStatusChangedPayload) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+func (x *AcademyExternalCampaignStatusChangedPayload) GetPreviousStatus() AcademyExternalCampaignStatus {
+	if x != nil {
+		return x.PreviousStatus
+	}
+	return AcademyExternalCampaignStatus_ACADEMY_EXTERNAL_CAMPAIGN_STATUS_UNSPECIFIED
+}
+
+func (x *AcademyExternalCampaignStatusChangedPayload) GetStatus() AcademyExternalCampaignStatus {
+	if x != nil {
+		return x.Status
+	}
+	return AcademyExternalCampaignStatus_ACADEMY_EXTERNAL_CAMPAIGN_STATUS_UNSPECIFIED
+}
+
+func (x *AcademyExternalCampaignStatusChangedPayload) GetChangedById() string {
+	if x != nil {
+		return x.ChangedById
+	}
+	return ""
+}
+
+func (x *AcademyExternalCampaignStatusChangedPayload) GetChangedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ChangedAt
+	}
+	return nil
+}
+
 var File_events_academy_proto protoreflect.FileDescriptor
 
 const file_events_academy_proto_rawDesc = "" +
 	"\n" +
-	"\x14events/academy.proto\x12\x10teamos.events.v1\x1a\x13events/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa3\x01\n" +
+	"\x14events/academy.proto\x12\x10teamos.events.v1\x1a\x13events/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa1\x01\n" +
+	"\x19AcademyCourseCreatedEvent\x12;\n" +
+	"\bmetadata\x18\x01 \x01(\v2\x1f.teamos.events.v1.EventMetadataR\bmetadata\x12G\n" +
+	"\apayload\x18\x02 \x01(\v2-.teamos.events.v1.AcademyCourseCreatedPayloadR\apayload\"\xa1\x03\n" +
+	"\x1bAcademyCourseCreatedPayload\x12\x1b\n" +
+	"\tcourse_id\x18\x01 \x01(\tR\bcourseId\x12G\n" +
+	"\n" +
+	"owner_type\x18\x02 \x01(\x0e2(.teamos.events.v1.AcademyCourseOwnerTypeR\townerType\x12'\n" +
+	"\rowner_user_id\x18\x03 \x01(\tH\x00R\vownerUserId\x88\x01\x01\x12\"\n" +
+	"\rcreated_by_id\x18\x04 \x01(\tR\vcreatedById\x12Y\n" +
+	"\x10lifecycle_status\x18\x05 \x01(\x0e2..teamos.events.v1.AcademyCourseLifecycleStatusR\x0flifecycleStatus\x12b\n" +
+	"\x13distribution_status\x18\x06 \x01(\x0e21.teamos.events.v1.AcademyCourseDistributionStatusR\x12distributionStatusB\x10\n" +
+	"\x0e_owner_user_id\"\xb3\x01\n" +
+	"\"AcademyCourseLifecycleChangedEvent\x12;\n" +
+	"\bmetadata\x18\x01 \x01(\v2\x1f.teamos.events.v1.EventMetadataR\bmetadata\x12P\n" +
+	"\apayload\x18\x02 \x01(\v26.teamos.events.v1.AcademyCourseLifecycleChangedPayloadR\apayload\"\x8c\x02\n" +
+	"$AcademyCourseLifecycleChangedPayload\x12\x1b\n" +
+	"\tcourse_id\x18\x01 \x01(\tR\bcourseId\x12W\n" +
+	"\x0fprevious_status\x18\x02 \x01(\x0e2..teamos.events.v1.AcademyCourseLifecycleStatusR\x0epreviousStatus\x12F\n" +
+	"\x06status\x18\x03 \x01(\x0e2..teamos.events.v1.AcademyCourseLifecycleStatusR\x06status\x12\x1b\n" +
+	"\x06reason\x18\x04 \x01(\tH\x00R\x06reason\x88\x01\x01B\t\n" +
+	"\a_reason\"\xb9\x01\n" +
+	"%AcademyCourseDistributionChangedEvent\x12;\n" +
+	"\bmetadata\x18\x01 \x01(\v2\x1f.teamos.events.v1.EventMetadataR\bmetadata\x12S\n" +
+	"\apayload\x18\x02 \x01(\v29.teamos.events.v1.AcademyCourseDistributionChangedPayloadR\apayload\"\xdf\x03\n" +
+	"'AcademyCourseDistributionChangedPayload\x12\x1b\n" +
+	"\tcourse_id\x18\x01 \x01(\tR\bcourseId\x12Z\n" +
+	"\x0fprevious_status\x18\x02 \x01(\x0e21.teamos.events.v1.AcademyCourseDistributionStatusR\x0epreviousStatus\x12I\n" +
+	"\x06status\x18\x03 \x01(\x0e21.teamos.events.v1.AcademyCourseDistributionStatusR\x06status\x12\x1b\n" +
+	"\x06reason\x18\x04 \x01(\tH\x00R\x06reason\x88\x01\x01\x12+\n" +
+	"\x0fpartner_user_id\x18\x05 \x01(\tH\x01R\rpartnerUserId\x88\x01\x01\x12&\n" +
+	"\fcourse_title\x18\x06 \x01(\tH\x02R\vcourseTitle\x88\x01\x01\x12\x17\n" +
+	"\x04link\x18\a \x01(\tH\x03R\x04link\x88\x01\x01\x12,\n" +
+	"\x12recipient_user_ids\x18\b \x03(\tR\x10recipientUserIdsB\t\n" +
+	"\a_reasonB\x12\n" +
+	"\x10_partner_user_idB\x0f\n" +
+	"\r_course_titleB\a\n" +
+	"\x05_link\"\xb9\x01\n" +
+	"%AcademyCourseVersionDraftCreatedEvent\x12;\n" +
+	"\bmetadata\x18\x01 \x01(\v2\x1f.teamos.events.v1.EventMetadataR\bmetadata\x12S\n" +
+	"\apayload\x18\x02 \x01(\v29.teamos.events.v1.AcademyCourseVersionDraftCreatedPayloadR\apayload\"\x8d\x03\n" +
+	"'AcademyCourseVersionDraftCreatedPayload\x12\x1b\n" +
+	"\tcourse_id\x18\x01 \x01(\tR\bcourseId\x12*\n" +
+	"\x11course_version_id\x18\x02 \x01(\tR\x0fcourseVersionId\x12%\n" +
+	"\x0eversion_number\x18\x03 \x01(\rR\rversionNumber\x12G\n" +
+	"\n" +
+	"owner_type\x18\x04 \x01(\x0e2(.teamos.events.v1.AcademyCourseOwnerTypeR\townerType\x12'\n" +
+	"\rowner_user_id\x18\x05 \x01(\tH\x00R\vownerUserId\x88\x01\x01\x12\"\n" +
+	"\rcreated_by_id\x18\x06 \x01(\tR\vcreatedById\x122\n" +
+	"\x13based_on_version_id\x18\a \x01(\tH\x01R\x10basedOnVersionId\x88\x01\x01B\x10\n" +
+	"\x0e_owner_user_idB\x16\n" +
+	"\x14_based_on_version_id\"\xb3\x01\n" +
+	"\"AcademyCourseVersionPublishedEvent\x12;\n" +
+	"\bmetadata\x18\x01 \x01(\v2\x1f.teamos.events.v1.EventMetadataR\bmetadata\x12P\n" +
+	"\apayload\x18\x02 \x01(\v26.teamos.events.v1.AcademyCourseVersionPublishedPayloadR\apayload\"\xad\x04\n" +
+	"$AcademyCourseVersionPublishedPayload\x12\x1b\n" +
+	"\tcourse_id\x18\x01 \x01(\tR\bcourseId\x12*\n" +
+	"\x11course_version_id\x18\x02 \x01(\tR\x0fcourseVersionId\x12%\n" +
+	"\x0eversion_number\x18\x03 \x01(\rR\rversionNumber\x12G\n" +
+	"\n" +
+	"owner_type\x18\x04 \x01(\x0e2(.teamos.events.v1.AcademyCourseOwnerTypeR\townerType\x12'\n" +
+	"\rowner_user_id\x18\x05 \x01(\tH\x00R\vownerUserId\x88\x01\x01\x12&\n" +
+	"\x0fpublished_by_id\x18\x06 \x01(\tR\rpublishedById\x12=\n" +
+	"\fpublished_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\vpublishedAt\x12!\n" +
+	"\fcontent_hash\x18\b \x01(\tR\vcontentHash\x12&\n" +
+	"\fcourse_title\x18\t \x01(\tH\x01R\vcourseTitle\x88\x01\x01\x12\x17\n" +
+	"\x04link\x18\n" +
+	" \x01(\tH\x02R\x04link\x88\x01\x01\x12,\n" +
+	"\x12recipient_user_ids\x18\v \x03(\tR\x10recipientUserIdsB\x10\n" +
+	"\x0e_owner_user_idB\x0f\n" +
+	"\r_course_titleB\a\n" +
+	"\x05_link\"\xb7\x01\n" +
+	"$AcademyCourseRestrictionAppliedEvent\x12;\n" +
+	"\bmetadata\x18\x01 \x01(\v2\x1f.teamos.events.v1.EventMetadataR\bmetadata\x12R\n" +
+	"\apayload\x18\x02 \x01(\v28.teamos.events.v1.AcademyCourseRestrictionAppliedPayloadR\apayload\"\xd8\x03\n" +
+	"&AcademyCourseRestrictionAppliedPayload\x12%\n" +
+	"\x0erestriction_id\x18\x01 \x01(\tR\rrestrictionId\x12\x1b\n" +
+	"\tcourse_id\x18\x02 \x01(\tR\bcourseId\x12&\n" +
+	"\x0fpartner_user_id\x18\x03 \x01(\tR\rpartnerUserId\x12B\n" +
+	"\x04type\x18\x04 \x01(\x0e2..teamos.events.v1.AcademyCourseRestrictionTypeR\x04type\x12\x16\n" +
+	"\x06reason\x18\x05 \x01(\tR\x06reason\x12\"\n" +
+	"\rapplied_by_id\x18\x06 \x01(\tR\vappliedById\x129\n" +
+	"\n" +
+	"applied_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tappliedAt\x12&\n" +
+	"\fcourse_title\x18\b \x01(\tH\x00R\vcourseTitle\x88\x01\x01\x12\x17\n" +
+	"\x04link\x18\t \x01(\tH\x01R\x04link\x88\x01\x01\x12,\n" +
+	"\x12recipient_user_ids\x18\n" +
+	" \x03(\tR\x10recipientUserIdsB\x0f\n" +
+	"\r_course_titleB\a\n" +
+	"\x05_link\"\xb9\x01\n" +
+	"%AcademyCourseRestrictionResolvedEvent\x12;\n" +
+	"\bmetadata\x18\x01 \x01(\v2\x1f.teamos.events.v1.EventMetadataR\bmetadata\x12S\n" +
+	"\apayload\x18\x02 \x01(\v29.teamos.events.v1.AcademyCourseRestrictionResolvedPayloadR\apayload\"\xf2\x03\n" +
+	"'AcademyCourseRestrictionResolvedPayload\x12%\n" +
+	"\x0erestriction_id\x18\x01 \x01(\tR\rrestrictionId\x12\x1b\n" +
+	"\tcourse_id\x18\x02 \x01(\tR\bcourseId\x12&\n" +
+	"\x0fpartner_user_id\x18\x03 \x01(\tR\rpartnerUserId\x12B\n" +
+	"\x04type\x18\x04 \x01(\x0e2..teamos.events.v1.AcademyCourseRestrictionTypeR\x04type\x12+\n" +
+	"\x11resolution_reason\x18\x05 \x01(\tR\x10resolutionReason\x12$\n" +
+	"\x0eresolved_by_id\x18\x06 \x01(\tR\fresolvedById\x12;\n" +
+	"\vresolved_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"resolvedAt\x12&\n" +
+	"\fcourse_title\x18\b \x01(\tH\x00R\vcourseTitle\x88\x01\x01\x12\x17\n" +
+	"\x04link\x18\t \x01(\tH\x01R\x04link\x88\x01\x01\x12,\n" +
+	"\x12recipient_user_ids\x18\n" +
+	" \x03(\tR\x10recipientUserIdsB\x0f\n" +
+	"\r_course_titleB\a\n" +
+	"\x05_link\"\xad\x01\n" +
+	"\x1fAcademyPartnerCourseCopiedEvent\x12;\n" +
+	"\bmetadata\x18\x01 \x01(\v2\x1f.teamos.events.v1.EventMetadataR\bmetadata\x12M\n" +
+	"\apayload\x18\x02 \x01(\v23.teamos.events.v1.AcademyPartnerCourseCopiedPayloadR\apayload\"\xc4\x03\n" +
+	"!AcademyPartnerCourseCopiedPayload\x12(\n" +
+	"\x10source_course_id\x18\x01 \x01(\tR\x0esourceCourseId\x127\n" +
+	"\x18source_course_version_id\x18\x02 \x01(\tR\x15sourceCourseVersionId\x123\n" +
+	"\x16source_partner_user_id\x18\x03 \x01(\tR\x13sourcePartnerUserId\x12(\n" +
+	"\x10target_course_id\x18\x04 \x01(\tR\x0etargetCourseId\x125\n" +
+	"\x17target_draft_version_id\x18\x05 \x01(\tR\x14targetDraftVersionId\x12 \n" +
+	"\fcopied_by_id\x18\x06 \x01(\tR\n" +
+	"copiedById\x127\n" +
+	"\tcopied_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\bcopiedAt\x123\n" +
+	"\x13target_course_title\x18\b \x01(\tH\x00R\x11targetCourseTitle\x88\x01\x01B\x16\n" +
+	"\x14_target_course_title\"\xb7\x01\n" +
+	"$AcademyTemplateVersionPublishedEvent\x12;\n" +
+	"\bmetadata\x18\x01 \x01(\v2\x1f.teamos.events.v1.EventMetadataR\bmetadata\x12R\n" +
+	"\apayload\x18\x02 \x01(\v28.teamos.events.v1.AcademyTemplateVersionPublishedPayloadR\apayload\"\xc9\x03\n" +
+	"&AcademyTemplateVersionPublishedPayload\x12\x1f\n" +
+	"\vtemplate_id\x18\x01 \x01(\tR\n" +
+	"templateId\x12.\n" +
+	"\x13template_version_id\x18\x02 \x01(\tR\x11templateVersionId\x12%\n" +
+	"\x0eversion_number\x18\x03 \x01(\rR\rversionNumber\x12P\n" +
+	"\rtemplate_type\x18\x04 \x01(\x0e2+.teamos.events.v1.AcademyCourseTemplateTypeR\ftemplateType\x123\n" +
+	"\x13system_template_key\x18\x05 \x01(\tH\x00R\x11systemTemplateKey\x88\x01\x01\x12&\n" +
+	"\x0fpublished_by_id\x18\x06 \x01(\tR\rpublishedById\x12=\n" +
+	"\fpublished_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\vpublishedAt\x12!\n" +
+	"\fcontent_hash\x18\b \x01(\tR\vcontentHashB\x16\n" +
+	"\x14_system_template_key\"\xaf\x01\n" +
+	" AcademyTemplateInstantiatedEvent\x12;\n" +
+	"\bmetadata\x18\x01 \x01(\v2\x1f.teamos.events.v1.EventMetadataR\bmetadata\x12N\n" +
+	"\apayload\x18\x02 \x01(\v24.teamos.events.v1.AcademyTemplateInstantiatedPayloadR\apayload\"\xc5\x05\n" +
+	"\"AcademyTemplateInstantiatedPayload\x12\x1f\n" +
+	"\vtemplate_id\x18\x01 \x01(\tR\n" +
+	"templateId\x12.\n" +
+	"\x13template_version_id\x18\x02 \x01(\tR\x11templateVersionId\x126\n" +
+	"\x17template_version_number\x18\x03 \x01(\rR\x15templateVersionNumber\x12P\n" +
+	"\rtemplate_type\x18\x04 \x01(\x0e2+.teamos.events.v1.AcademyCourseTemplateTypeR\ftemplateType\x123\n" +
+	"\x13system_template_key\x18\x05 \x01(\tH\x00R\x11systemTemplateKey\x88\x01\x01\x12(\n" +
+	"\x10target_course_id\x18\x06 \x01(\tR\x0etargetCourseId\x125\n" +
+	"\x17target_draft_version_id\x18\a \x01(\tR\x14targetDraftVersionId\x12T\n" +
+	"\x11target_owner_type\x18\b \x01(\x0e2(.teamos.events.v1.AcademyCourseOwnerTypeR\x0ftargetOwnerType\x124\n" +
+	"\x14target_owner_user_id\x18\t \x01(\tH\x01R\x11targetOwnerUserId\x88\x01\x01\x12,\n" +
+	"\x12instantiated_by_id\x18\n" +
+	" \x01(\tR\x10instantiatedById\x12C\n" +
+	"\x0finstantiated_at\x18\v \x01(\v2\x1a.google.protobuf.TimestampR\x0einstantiatedAtB\x16\n" +
+	"\x14_system_template_keyB\x17\n" +
+	"\x15_target_owner_user_id\"\xa3\x01\n" +
 	"\x1aAcademyCourseAssignedEvent\x12;\n" +
 	"\bmetadata\x18\x01 \x01(\v2\x1f.teamos.events.v1.EventMetadataR\bmetadata\x12H\n" +
-	"\apayload\x18\x02 \x01(\v2..teamos.events.v1.AcademyCourseAssignedPayloadR\apayload\"\xee\x03\n" +
+	"\apayload\x18\x02 \x01(\v2..teamos.events.v1.AcademyCourseAssignedPayloadR\apayload\"\xdc\x04\n" +
 	"\x1cAcademyCourseAssignedPayload\x12#\n" +
 	"\rassignment_id\x18\x01 \x01(\tR\fassignmentId\x12\x1b\n" +
 	"\tcourse_id\x18\x02 \x01(\tR\bcourseId\x12!\n" +
@@ -513,10 +3731,75 @@ const file_events_academy_proto_rawDesc = "" +
 	"\x0eassigned_by_id\x18\b \x01(\tR\fassignedById\x12\x12\n" +
 	"\x04link\x18\t \x01(\tR\x04link\x12,\n" +
 	"\x12recipient_user_ids\x18\n" +
-	" \x03(\tR\x10recipientUserIdsB\x0e\n" +
+	" \x03(\tR\x10recipientUserIds\x12/\n" +
+	"\x11course_version_id\x18\v \x01(\tH\x03R\x0fcourseVersionId\x88\x01\x01\x12%\n" +
+	"\x0eenrollment_ids\x18\f \x03(\tR\renrollmentIdsB\x0e\n" +
 	"\f_assignee_idB\x0f\n" +
 	"\r_invite_tokenB\v\n" +
-	"\t_due_date\"\xa1\x01\n" +
+	"\t_due_dateB\x14\n" +
+	"\x12_course_version_id\"\xad\x01\n" +
+	"\x1fAcademyEnrollmentActivatedEvent\x12;\n" +
+	"\bmetadata\x18\x01 \x01(\v2\x1f.teamos.events.v1.EventMetadataR\bmetadata\x12M\n" +
+	"\apayload\x18\x02 \x01(\v23.teamos.events.v1.AcademyEnrollmentActivatedPayloadR\apayload\"\x96\x05\n" +
+	"!AcademyEnrollmentActivatedPayload\x12#\n" +
+	"\renrollment_id\x18\x01 \x01(\tR\fenrollmentId\x12\x1b\n" +
+	"\tcourse_id\x18\x02 \x01(\tR\bcourseId\x12*\n" +
+	"\x11course_version_id\x18\x03 \x01(\tR\x0fcourseVersionId\x12Q\n" +
+	"\flearner_type\x18\x04 \x01(\x0e2..teamos.events.v1.AcademyEnrollmentLearnerTypeR\vlearnerType\x12\x1c\n" +
+	"\auser_id\x18\x05 \x01(\tH\x00R\x06userId\x88\x01\x01\x123\n" +
+	"\x13external_learner_id\x18\x06 \x01(\tH\x01R\x11externalLearnerId\x88\x01\x01\x12N\n" +
+	"\vsource_type\x18\a \x01(\x0e2-.teamos.events.v1.AcademyEnrollmentSourceTypeR\n" +
+	"sourceType\x12 \n" +
+	"\tsource_id\x18\b \x01(\tH\x02R\bsourceId\x88\x01\x01\x12%\n" +
+	"\x0eattempt_number\x18\t \x01(\rR\rattemptNumber\x12=\n" +
+	"\factivated_at\x18\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampR\vactivatedAt\x12B\n" +
+	"\faccess_until\x18\v \x01(\v2\x1a.google.protobuf.TimestampH\x03R\vaccessUntil\x88\x01\x01B\n" +
+	"\n" +
+	"\b_user_idB\x16\n" +
+	"\x14_external_learner_idB\f\n" +
+	"\n" +
+	"_source_idB\x0f\n" +
+	"\r_access_until\"\xaf\x01\n" +
+	" AcademyEnrollmentProgressedEvent\x12;\n" +
+	"\bmetadata\x18\x01 \x01(\v2\x1f.teamos.events.v1.EventMetadataR\bmetadata\x12N\n" +
+	"\apayload\x18\x02 \x01(\v24.teamos.events.v1.AcademyEnrollmentProgressedPayloadR\apayload\"\xa3\x06\n" +
+	"\"AcademyEnrollmentProgressedPayload\x12#\n" +
+	"\renrollment_id\x18\x01 \x01(\tR\fenrollmentId\x12\x1b\n" +
+	"\tcourse_id\x18\x02 \x01(\tR\bcourseId\x12*\n" +
+	"\x11course_version_id\x18\x03 \x01(\tR\x0fcourseVersionId\x12Q\n" +
+	"\flearner_type\x18\x04 \x01(\x0e2..teamos.events.v1.AcademyEnrollmentLearnerTypeR\vlearnerType\x12\x1c\n" +
+	"\auser_id\x18\x05 \x01(\tH\x00R\x06userId\x88\x01\x01\x123\n" +
+	"\x13external_learner_id\x18\x06 \x01(\tH\x01R\x11externalLearnerId\x88\x01\x01\x12Z\n" +
+	"\x0fprogress_status\x18\a \x01(\x0e21.teamos.events.v1.AcademyEnrollmentProgressStatusR\x0eprogressStatus\x12)\n" +
+	"\x10progress_percent\x18\b \x01(\rR\x0fprogressPercent\x12B\n" +
+	"\x1bcompleted_lesson_version_id\x18\t \x01(\tH\x02R\x18completedLessonVersionId\x88\x01\x01\x12>\n" +
+	"\x19current_lesson_version_id\x18\n" +
+	" \x01(\tH\x03R\x16currentLessonVersionId\x88\x01\x01\x12+\n" +
+	"\x0fquiz_attempt_id\x18\v \x01(\tH\x04R\rquizAttemptId\x88\x01\x01\x12;\n" +
+	"\voccurred_at\x18\f \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"occurredAtB\n" +
+	"\n" +
+	"\b_user_idB\x16\n" +
+	"\x14_external_learner_idB\x1e\n" +
+	"\x1c_completed_lesson_version_idB\x1c\n" +
+	"\x1a_current_lesson_version_idB\x12\n" +
+	"\x10_quiz_attempt_id\"\xad\x01\n" +
+	"\x1fAcademyEnrollmentCompletedEvent\x12;\n" +
+	"\bmetadata\x18\x01 \x01(\v2\x1f.teamos.events.v1.EventMetadataR\bmetadata\x12M\n" +
+	"\apayload\x18\x02 \x01(\v23.teamos.events.v1.AcademyEnrollmentCompletedPayloadR\apayload\"\xc1\x03\n" +
+	"!AcademyEnrollmentCompletedPayload\x12#\n" +
+	"\renrollment_id\x18\x01 \x01(\tR\fenrollmentId\x12\x1b\n" +
+	"\tcourse_id\x18\x02 \x01(\tR\bcourseId\x12*\n" +
+	"\x11course_version_id\x18\x03 \x01(\tR\x0fcourseVersionId\x12Q\n" +
+	"\flearner_type\x18\x04 \x01(\x0e2..teamos.events.v1.AcademyEnrollmentLearnerTypeR\vlearnerType\x12\x1c\n" +
+	"\auser_id\x18\x05 \x01(\tH\x00R\x06userId\x88\x01\x01\x123\n" +
+	"\x13external_learner_id\x18\x06 \x01(\tH\x01R\x11externalLearnerId\x88\x01\x01\x12%\n" +
+	"\x0eattempt_number\x18\a \x01(\rR\rattemptNumber\x12=\n" +
+	"\fcompleted_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\vcompletedAtB\n" +
+	"\n" +
+	"\b_user_idB\x16\n" +
+	"\x14_external_learner_id\"\xa1\x01\n" +
 	"\x19AcademyCourseDueSoonEvent\x12;\n" +
 	"\bmetadata\x18\x01 \x01(\v2\x1f.teamos.events.v1.EventMetadataR\bmetadata\x12G\n" +
 	"\apayload\x18\x02 \x01(\v2-.teamos.events.v1.AcademyCourseDueSoonPayloadR\apayload\"\xfc\x02\n" +
@@ -533,15 +3816,116 @@ const file_events_academy_proto_rawDesc = "" +
 	"\f_assignee_id\"\xa1\x01\n" +
 	"\x19AcademyCourseDeletedEvent\x12;\n" +
 	"\bmetadata\x18\x01 \x01(\v2\x1f.teamos.events.v1.EventMetadataR\bmetadata\x12G\n" +
-	"\apayload\x18\x02 \x01(\v2-.teamos.events.v1.AcademyCourseDeletedPayloadR\apayload\":\n" +
+	"\apayload\x18\x02 \x01(\v2-.teamos.events.v1.AcademyCourseDeletedPayloadR\apayload\"\x95\x03\n" +
 	"\x1bAcademyCourseDeletedPayload\x12\x1b\n" +
-	"\tcourse_id\x18\x01 \x01(\tR\bcourseId*\xc4\x01\n" +
+	"\tcourse_id\x18\x01 \x01(\tR\bcourseId\x12L\n" +
+	"\n" +
+	"owner_type\x18\x02 \x01(\x0e2(.teamos.events.v1.AcademyCourseOwnerTypeH\x00R\townerType\x88\x01\x01\x12'\n" +
+	"\rowner_user_id\x18\x03 \x01(\tH\x01R\vownerUserId\x88\x01\x01\x12'\n" +
+	"\rdeleted_by_id\x18\x04 \x01(\tH\x02R\vdeletedById\x88\x01\x01\x12>\n" +
+	"\n" +
+	"deleted_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampH\x03R\tdeletedAt\x88\x01\x01\x12&\n" +
+	"\fcourse_title\x18\x06 \x01(\tH\x04R\vcourseTitle\x88\x01\x01B\r\n" +
+	"\v_owner_typeB\x10\n" +
+	"\x0e_owner_user_idB\x10\n" +
+	"\x0e_deleted_by_idB\r\n" +
+	"\v_deleted_atB\x0f\n" +
+	"\r_course_title\"\xcb\x01\n" +
+	".AcademyExternalEmailVerificationRequestedEvent\x12;\n" +
+	"\bmetadata\x18\x01 \x01(\v2\x1f.teamos.events.v1.EventMetadataR\bmetadata\x12\\\n" +
+	"\apayload\x18\x02 \x01(\v2B.teamos.events.v1.AcademyExternalEmailVerificationRequestedPayloadR\apayload\"\x8f\x02\n" +
+	"0AcademyExternalEmailVerificationRequestedPayload\x12!\n" +
+	"\fchallenge_id\x18\x01 \x01(\tR\vchallengeId\x12<\n" +
+	"\x1aencrypted_delivery_payload\x18\x02 \x01(\fR\x18encryptedDeliveryPayload\x129\n" +
+	"\n" +
+	"expires_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\texpiresAt\x12\x18\n" +
+	"\apurpose\x18\x04 \x01(\tR\apurpose\x12\x1a\n" +
+	"\x06key_id\x18\x05 \x01(\tH\x00R\x05keyId\x88\x01\x01B\t\n" +
+	"\a_key_id\"\xb5\x01\n" +
+	"#AcademyExternalCampaignCreatedEvent\x12;\n" +
+	"\bmetadata\x18\x01 \x01(\v2\x1f.teamos.events.v1.EventMetadataR\bmetadata\x12Q\n" +
+	"\apayload\x18\x02 \x01(\v27.teamos.events.v1.AcademyExternalCampaignCreatedPayloadR\apayload\"\xc0\x03\n" +
+	"%AcademyExternalCampaignCreatedPayload\x12\x1f\n" +
+	"\vcampaign_id\x18\x01 \x01(\tR\n" +
+	"campaignId\x12\x1b\n" +
+	"\tcourse_id\x18\x02 \x01(\tR\bcourseId\x12*\n" +
+	"\x11course_version_id\x18\x03 \x01(\tR\x0fcourseVersionId\x12G\n" +
+	"\n" +
+	"owner_type\x18\x04 \x01(\x0e2(.teamos.events.v1.AcademyCourseOwnerTypeR\townerType\x12'\n" +
+	"\rowner_user_id\x18\x05 \x01(\tH\x00R\vownerUserId\x88\x01\x01\x12J\n" +
+	"\apurpose\x18\x06 \x01(\x0e20.teamos.events.v1.AcademyExternalCampaignPurposeR\apurpose\x12\"\n" +
+	"\rcreated_by_id\x18\a \x01(\tR\vcreatedById\x129\n" +
+	"\n" +
+	"created_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAtB\x10\n" +
+	"\x0e_owner_user_id\"\xc1\x01\n" +
+	")AcademyExternalCampaignStatusChangedEvent\x12;\n" +
+	"\bmetadata\x18\x01 \x01(\v2\x1f.teamos.events.v1.EventMetadataR\bmetadata\x12W\n" +
+	"\apayload\x18\x02 \x01(\v2=.teamos.events.v1.AcademyExternalCampaignStatusChangedPayloadR\apayload\"\xed\x02\n" +
+	"+AcademyExternalCampaignStatusChangedPayload\x12\x1f\n" +
+	"\vcampaign_id\x18\x01 \x01(\tR\n" +
+	"campaignId\x12\x1b\n" +
+	"\tcourse_id\x18\x02 \x01(\tR\bcourseId\x12X\n" +
+	"\x0fprevious_status\x18\x03 \x01(\x0e2/.teamos.events.v1.AcademyExternalCampaignStatusR\x0epreviousStatus\x12G\n" +
+	"\x06status\x18\x04 \x01(\x0e2/.teamos.events.v1.AcademyExternalCampaignStatusR\x06status\x12\"\n" +
+	"\rchanged_by_id\x18\x05 \x01(\tR\vchangedById\x129\n" +
+	"\n" +
+	"changed_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tchangedAt*\xc4\x01\n" +
 	"\x12CourseAssigneeType\x12$\n" +
 	" COURSE_ASSIGNEE_TYPE_UNSPECIFIED\x10\x00\x12\x1d\n" +
 	"\x19COURSE_ASSIGNEE_TYPE_USER\x10\x01\x12!\n" +
 	"\x1dCOURSE_ASSIGNEE_TYPE_POSITION\x10\x02\x12#\n" +
 	"\x1fCOURSE_ASSIGNEE_TYPE_DEPARTMENT\x10\x03\x12!\n" +
-	"\x1dCOURSE_ASSIGNEE_TYPE_EXTERNAL\x10\x04BFZDgithub.com/sk1fy/team-os-backend/contracts/gen/go/events/v1;eventsv1b\x06proto3"
+	"\x1dCOURSE_ASSIGNEE_TYPE_EXTERNAL\x10\x04*\x91\x01\n" +
+	"\x16AcademyCourseOwnerType\x12)\n" +
+	"%ACADEMY_COURSE_OWNER_TYPE_UNSPECIFIED\x10\x00\x12%\n" +
+	"!ACADEMY_COURSE_OWNER_TYPE_COMPANY\x10\x01\x12%\n" +
+	"!ACADEMY_COURSE_OWNER_TYPE_PARTNER\x10\x02*\xd6\x01\n" +
+	"\x1cAcademyCourseLifecycleStatus\x12/\n" +
+	"+ACADEMY_COURSE_LIFECYCLE_STATUS_UNSPECIFIED\x10\x00\x12*\n" +
+	"&ACADEMY_COURSE_LIFECYCLE_STATUS_ACTIVE\x10\x01\x12,\n" +
+	"(ACADEMY_COURSE_LIFECYCLE_STATUS_ARCHIVED\x10\x02\x12+\n" +
+	"'ACADEMY_COURSE_LIFECYCLE_STATUS_DELETED\x10\x03*\xe3\x01\n" +
+	"\x1fAcademyCourseDistributionStatus\x122\n" +
+	".ACADEMY_COURSE_DISTRIBUTION_STATUS_UNSPECIFIED\x10\x00\x12-\n" +
+	")ACADEMY_COURSE_DISTRIBUTION_STATUS_ACTIVE\x10\x01\x12-\n" +
+	")ACADEMY_COURSE_DISTRIBUTION_STATUS_PAUSED\x10\x02\x12.\n" +
+	"*ACADEMY_COURSE_DISTRIBUTION_STATUS_BLOCKED\x10\x03*\xa5\x01\n" +
+	"\x1cAcademyCourseRestrictionType\x12/\n" +
+	"+ACADEMY_COURSE_RESTRICTION_TYPE_UNSPECIFIED\x10\x00\x12)\n" +
+	"%ACADEMY_COURSE_RESTRICTION_TYPE_PAUSE\x10\x01\x12)\n" +
+	"%ACADEMY_COURSE_RESTRICTION_TYPE_BLOCK\x10\x02*\x9c\x01\n" +
+	"\x19AcademyCourseTemplateType\x12,\n" +
+	"(ACADEMY_COURSE_TEMPLATE_TYPE_UNSPECIFIED\x10\x00\x12'\n" +
+	"#ACADEMY_COURSE_TEMPLATE_TYPE_SYSTEM\x10\x01\x12(\n" +
+	"$ACADEMY_COURSE_TEMPLATE_TYPE_COMPANY\x10\x02*\xa7\x01\n" +
+	"\x1cAcademyEnrollmentLearnerType\x12/\n" +
+	"+ACADEMY_ENROLLMENT_LEARNER_TYPE_UNSPECIFIED\x10\x00\x12(\n" +
+	"$ACADEMY_ENROLLMENT_LEARNER_TYPE_USER\x10\x01\x12,\n" +
+	"(ACADEMY_ENROLLMENT_LEARNER_TYPE_EXTERNAL\x10\x02*\xbd\x03\n" +
+	"\x1bAcademyEnrollmentSourceType\x12.\n" +
+	"*ACADEMY_ENROLLMENT_SOURCE_TYPE_UNSPECIFIED\x10\x00\x12-\n" +
+	")ACADEMY_ENROLLMENT_SOURCE_TYPE_ASSIGNMENT\x10\x01\x122\n" +
+	".ACADEMY_ENROLLMENT_SOURCE_TYPE_PERSONAL_ACCESS\x10\x02\x129\n" +
+	"5ACADEMY_ENROLLMENT_SOURCE_TYPE_PARTNER_PROMO_CAMPAIGN\x10\x03\x12=\n" +
+	"9ACADEMY_ENROLLMENT_SOURCE_TYPE_COMPANY_CANDIDATE_CAMPAIGN\x10\x04\x122\n" +
+	".ACADEMY_ENROLLMENT_SOURCE_TYPE_REPEAT_TRAINING\x10\x05\x12)\n" +
+	"%ACADEMY_ENROLLMENT_SOURCE_TYPE_LEGACY\x10\x06\x122\n" +
+	".ACADEMY_ENROLLMENT_SOURCE_TYPE_SELF_ENROLLMENT\x10\a*\xef\x01\n" +
+	"\x1fAcademyEnrollmentProgressStatus\x122\n" +
+	".ACADEMY_ENROLLMENT_PROGRESS_STATUS_UNSPECIFIED\x10\x00\x122\n" +
+	".ACADEMY_ENROLLMENT_PROGRESS_STATUS_NOT_STARTED\x10\x01\x122\n" +
+	".ACADEMY_ENROLLMENT_PROGRESS_STATUS_IN_PROGRESS\x10\x02\x120\n" +
+	",ACADEMY_ENROLLMENT_PROGRESS_STATUS_COMPLETED\x10\x03*\xc1\x01\n" +
+	"\x1eAcademyExternalCampaignPurpose\x121\n" +
+	"-ACADEMY_EXTERNAL_CAMPAIGN_PURPOSE_UNSPECIFIED\x10\x00\x127\n" +
+	"3ACADEMY_EXTERNAL_CAMPAIGN_PURPOSE_COMPANY_CANDIDATE\x10\x01\x123\n" +
+	"/ACADEMY_EXTERNAL_CAMPAIGN_PURPOSE_PARTNER_PROMO\x10\x02*\x86\x02\n" +
+	"\x1dAcademyExternalCampaignStatus\x120\n" +
+	",ACADEMY_EXTERNAL_CAMPAIGN_STATUS_UNSPECIFIED\x10\x00\x12+\n" +
+	"'ACADEMY_EXTERNAL_CAMPAIGN_STATUS_ACTIVE\x10\x01\x12+\n" +
+	"'ACADEMY_EXTERNAL_CAMPAIGN_STATUS_PAUSED\x10\x02\x12,\n" +
+	"(ACADEMY_EXTERNAL_CAMPAIGN_STATUS_REVOKED\x10\x03\x12+\n" +
+	"'ACADEMY_EXTERNAL_CAMPAIGN_STATUS_CLOSED\x10\x04BFZDgithub.com/sk1fy/team-os-backend/contracts/gen/go/events/v1;eventsv1b\x06proto3"
 
 var (
 	file_events_academy_proto_rawDescOnce sync.Once
@@ -555,35 +3939,147 @@ func file_events_academy_proto_rawDescGZIP() []byte {
 	return file_events_academy_proto_rawDescData
 }
 
-var file_events_academy_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_events_academy_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_events_academy_proto_enumTypes = make([]protoimpl.EnumInfo, 11)
+var file_events_academy_proto_msgTypes = make([]protoimpl.MessageInfo, 38)
 var file_events_academy_proto_goTypes = []any{
-	(CourseAssigneeType)(0),              // 0: teamos.events.v1.CourseAssigneeType
-	(*AcademyCourseAssignedEvent)(nil),   // 1: teamos.events.v1.AcademyCourseAssignedEvent
-	(*AcademyCourseAssignedPayload)(nil), // 2: teamos.events.v1.AcademyCourseAssignedPayload
-	(*AcademyCourseDueSoonEvent)(nil),    // 3: teamos.events.v1.AcademyCourseDueSoonEvent
-	(*AcademyCourseDueSoonPayload)(nil),  // 4: teamos.events.v1.AcademyCourseDueSoonPayload
-	(*AcademyCourseDeletedEvent)(nil),    // 5: teamos.events.v1.AcademyCourseDeletedEvent
-	(*AcademyCourseDeletedPayload)(nil),  // 6: teamos.events.v1.AcademyCourseDeletedPayload
-	(*EventMetadata)(nil),                // 7: teamos.events.v1.EventMetadata
-	(*timestamppb.Timestamp)(nil),        // 8: google.protobuf.Timestamp
+	(CourseAssigneeType)(0),                                  // 0: teamos.events.v1.CourseAssigneeType
+	(AcademyCourseOwnerType)(0),                              // 1: teamos.events.v1.AcademyCourseOwnerType
+	(AcademyCourseLifecycleStatus)(0),                        // 2: teamos.events.v1.AcademyCourseLifecycleStatus
+	(AcademyCourseDistributionStatus)(0),                     // 3: teamos.events.v1.AcademyCourseDistributionStatus
+	(AcademyCourseRestrictionType)(0),                        // 4: teamos.events.v1.AcademyCourseRestrictionType
+	(AcademyCourseTemplateType)(0),                           // 5: teamos.events.v1.AcademyCourseTemplateType
+	(AcademyEnrollmentLearnerType)(0),                        // 6: teamos.events.v1.AcademyEnrollmentLearnerType
+	(AcademyEnrollmentSourceType)(0),                         // 7: teamos.events.v1.AcademyEnrollmentSourceType
+	(AcademyEnrollmentProgressStatus)(0),                     // 8: teamos.events.v1.AcademyEnrollmentProgressStatus
+	(AcademyExternalCampaignPurpose)(0),                      // 9: teamos.events.v1.AcademyExternalCampaignPurpose
+	(AcademyExternalCampaignStatus)(0),                       // 10: teamos.events.v1.AcademyExternalCampaignStatus
+	(*AcademyCourseCreatedEvent)(nil),                        // 11: teamos.events.v1.AcademyCourseCreatedEvent
+	(*AcademyCourseCreatedPayload)(nil),                      // 12: teamos.events.v1.AcademyCourseCreatedPayload
+	(*AcademyCourseLifecycleChangedEvent)(nil),               // 13: teamos.events.v1.AcademyCourseLifecycleChangedEvent
+	(*AcademyCourseLifecycleChangedPayload)(nil),             // 14: teamos.events.v1.AcademyCourseLifecycleChangedPayload
+	(*AcademyCourseDistributionChangedEvent)(nil),            // 15: teamos.events.v1.AcademyCourseDistributionChangedEvent
+	(*AcademyCourseDistributionChangedPayload)(nil),          // 16: teamos.events.v1.AcademyCourseDistributionChangedPayload
+	(*AcademyCourseVersionDraftCreatedEvent)(nil),            // 17: teamos.events.v1.AcademyCourseVersionDraftCreatedEvent
+	(*AcademyCourseVersionDraftCreatedPayload)(nil),          // 18: teamos.events.v1.AcademyCourseVersionDraftCreatedPayload
+	(*AcademyCourseVersionPublishedEvent)(nil),               // 19: teamos.events.v1.AcademyCourseVersionPublishedEvent
+	(*AcademyCourseVersionPublishedPayload)(nil),             // 20: teamos.events.v1.AcademyCourseVersionPublishedPayload
+	(*AcademyCourseRestrictionAppliedEvent)(nil),             // 21: teamos.events.v1.AcademyCourseRestrictionAppliedEvent
+	(*AcademyCourseRestrictionAppliedPayload)(nil),           // 22: teamos.events.v1.AcademyCourseRestrictionAppliedPayload
+	(*AcademyCourseRestrictionResolvedEvent)(nil),            // 23: teamos.events.v1.AcademyCourseRestrictionResolvedEvent
+	(*AcademyCourseRestrictionResolvedPayload)(nil),          // 24: teamos.events.v1.AcademyCourseRestrictionResolvedPayload
+	(*AcademyPartnerCourseCopiedEvent)(nil),                  // 25: teamos.events.v1.AcademyPartnerCourseCopiedEvent
+	(*AcademyPartnerCourseCopiedPayload)(nil),                // 26: teamos.events.v1.AcademyPartnerCourseCopiedPayload
+	(*AcademyTemplateVersionPublishedEvent)(nil),             // 27: teamos.events.v1.AcademyTemplateVersionPublishedEvent
+	(*AcademyTemplateVersionPublishedPayload)(nil),           // 28: teamos.events.v1.AcademyTemplateVersionPublishedPayload
+	(*AcademyTemplateInstantiatedEvent)(nil),                 // 29: teamos.events.v1.AcademyTemplateInstantiatedEvent
+	(*AcademyTemplateInstantiatedPayload)(nil),               // 30: teamos.events.v1.AcademyTemplateInstantiatedPayload
+	(*AcademyCourseAssignedEvent)(nil),                       // 31: teamos.events.v1.AcademyCourseAssignedEvent
+	(*AcademyCourseAssignedPayload)(nil),                     // 32: teamos.events.v1.AcademyCourseAssignedPayload
+	(*AcademyEnrollmentActivatedEvent)(nil),                  // 33: teamos.events.v1.AcademyEnrollmentActivatedEvent
+	(*AcademyEnrollmentActivatedPayload)(nil),                // 34: teamos.events.v1.AcademyEnrollmentActivatedPayload
+	(*AcademyEnrollmentProgressedEvent)(nil),                 // 35: teamos.events.v1.AcademyEnrollmentProgressedEvent
+	(*AcademyEnrollmentProgressedPayload)(nil),               // 36: teamos.events.v1.AcademyEnrollmentProgressedPayload
+	(*AcademyEnrollmentCompletedEvent)(nil),                  // 37: teamos.events.v1.AcademyEnrollmentCompletedEvent
+	(*AcademyEnrollmentCompletedPayload)(nil),                // 38: teamos.events.v1.AcademyEnrollmentCompletedPayload
+	(*AcademyCourseDueSoonEvent)(nil),                        // 39: teamos.events.v1.AcademyCourseDueSoonEvent
+	(*AcademyCourseDueSoonPayload)(nil),                      // 40: teamos.events.v1.AcademyCourseDueSoonPayload
+	(*AcademyCourseDeletedEvent)(nil),                        // 41: teamos.events.v1.AcademyCourseDeletedEvent
+	(*AcademyCourseDeletedPayload)(nil),                      // 42: teamos.events.v1.AcademyCourseDeletedPayload
+	(*AcademyExternalEmailVerificationRequestedEvent)(nil),   // 43: teamos.events.v1.AcademyExternalEmailVerificationRequestedEvent
+	(*AcademyExternalEmailVerificationRequestedPayload)(nil), // 44: teamos.events.v1.AcademyExternalEmailVerificationRequestedPayload
+	(*AcademyExternalCampaignCreatedEvent)(nil),              // 45: teamos.events.v1.AcademyExternalCampaignCreatedEvent
+	(*AcademyExternalCampaignCreatedPayload)(nil),            // 46: teamos.events.v1.AcademyExternalCampaignCreatedPayload
+	(*AcademyExternalCampaignStatusChangedEvent)(nil),        // 47: teamos.events.v1.AcademyExternalCampaignStatusChangedEvent
+	(*AcademyExternalCampaignStatusChangedPayload)(nil),      // 48: teamos.events.v1.AcademyExternalCampaignStatusChangedPayload
+	(*EventMetadata)(nil),                                    // 49: teamos.events.v1.EventMetadata
+	(*timestamppb.Timestamp)(nil),                            // 50: google.protobuf.Timestamp
 }
 var file_events_academy_proto_depIdxs = []int32{
-	7,  // 0: teamos.events.v1.AcademyCourseAssignedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
-	2,  // 1: teamos.events.v1.AcademyCourseAssignedEvent.payload:type_name -> teamos.events.v1.AcademyCourseAssignedPayload
-	0,  // 2: teamos.events.v1.AcademyCourseAssignedPayload.assignee_type:type_name -> teamos.events.v1.CourseAssigneeType
-	8,  // 3: teamos.events.v1.AcademyCourseAssignedPayload.due_date:type_name -> google.protobuf.Timestamp
-	7,  // 4: teamos.events.v1.AcademyCourseDueSoonEvent.metadata:type_name -> teamos.events.v1.EventMetadata
-	4,  // 5: teamos.events.v1.AcademyCourseDueSoonEvent.payload:type_name -> teamos.events.v1.AcademyCourseDueSoonPayload
-	8,  // 6: teamos.events.v1.AcademyCourseDueSoonPayload.due_date:type_name -> google.protobuf.Timestamp
-	0,  // 7: teamos.events.v1.AcademyCourseDueSoonPayload.assignee_type:type_name -> teamos.events.v1.CourseAssigneeType
-	7,  // 8: teamos.events.v1.AcademyCourseDeletedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
-	6,  // 9: teamos.events.v1.AcademyCourseDeletedEvent.payload:type_name -> teamos.events.v1.AcademyCourseDeletedPayload
-	10, // [10:10] is the sub-list for method output_type
-	10, // [10:10] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+	49, // 0: teamos.events.v1.AcademyCourseCreatedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	12, // 1: teamos.events.v1.AcademyCourseCreatedEvent.payload:type_name -> teamos.events.v1.AcademyCourseCreatedPayload
+	1,  // 2: teamos.events.v1.AcademyCourseCreatedPayload.owner_type:type_name -> teamos.events.v1.AcademyCourseOwnerType
+	2,  // 3: teamos.events.v1.AcademyCourseCreatedPayload.lifecycle_status:type_name -> teamos.events.v1.AcademyCourseLifecycleStatus
+	3,  // 4: teamos.events.v1.AcademyCourseCreatedPayload.distribution_status:type_name -> teamos.events.v1.AcademyCourseDistributionStatus
+	49, // 5: teamos.events.v1.AcademyCourseLifecycleChangedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	14, // 6: teamos.events.v1.AcademyCourseLifecycleChangedEvent.payload:type_name -> teamos.events.v1.AcademyCourseLifecycleChangedPayload
+	2,  // 7: teamos.events.v1.AcademyCourseLifecycleChangedPayload.previous_status:type_name -> teamos.events.v1.AcademyCourseLifecycleStatus
+	2,  // 8: teamos.events.v1.AcademyCourseLifecycleChangedPayload.status:type_name -> teamos.events.v1.AcademyCourseLifecycleStatus
+	49, // 9: teamos.events.v1.AcademyCourseDistributionChangedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	16, // 10: teamos.events.v1.AcademyCourseDistributionChangedEvent.payload:type_name -> teamos.events.v1.AcademyCourseDistributionChangedPayload
+	3,  // 11: teamos.events.v1.AcademyCourseDistributionChangedPayload.previous_status:type_name -> teamos.events.v1.AcademyCourseDistributionStatus
+	3,  // 12: teamos.events.v1.AcademyCourseDistributionChangedPayload.status:type_name -> teamos.events.v1.AcademyCourseDistributionStatus
+	49, // 13: teamos.events.v1.AcademyCourseVersionDraftCreatedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	18, // 14: teamos.events.v1.AcademyCourseVersionDraftCreatedEvent.payload:type_name -> teamos.events.v1.AcademyCourseVersionDraftCreatedPayload
+	1,  // 15: teamos.events.v1.AcademyCourseVersionDraftCreatedPayload.owner_type:type_name -> teamos.events.v1.AcademyCourseOwnerType
+	49, // 16: teamos.events.v1.AcademyCourseVersionPublishedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	20, // 17: teamos.events.v1.AcademyCourseVersionPublishedEvent.payload:type_name -> teamos.events.v1.AcademyCourseVersionPublishedPayload
+	1,  // 18: teamos.events.v1.AcademyCourseVersionPublishedPayload.owner_type:type_name -> teamos.events.v1.AcademyCourseOwnerType
+	50, // 19: teamos.events.v1.AcademyCourseVersionPublishedPayload.published_at:type_name -> google.protobuf.Timestamp
+	49, // 20: teamos.events.v1.AcademyCourseRestrictionAppliedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	22, // 21: teamos.events.v1.AcademyCourseRestrictionAppliedEvent.payload:type_name -> teamos.events.v1.AcademyCourseRestrictionAppliedPayload
+	4,  // 22: teamos.events.v1.AcademyCourseRestrictionAppliedPayload.type:type_name -> teamos.events.v1.AcademyCourseRestrictionType
+	50, // 23: teamos.events.v1.AcademyCourseRestrictionAppliedPayload.applied_at:type_name -> google.protobuf.Timestamp
+	49, // 24: teamos.events.v1.AcademyCourseRestrictionResolvedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	24, // 25: teamos.events.v1.AcademyCourseRestrictionResolvedEvent.payload:type_name -> teamos.events.v1.AcademyCourseRestrictionResolvedPayload
+	4,  // 26: teamos.events.v1.AcademyCourseRestrictionResolvedPayload.type:type_name -> teamos.events.v1.AcademyCourseRestrictionType
+	50, // 27: teamos.events.v1.AcademyCourseRestrictionResolvedPayload.resolved_at:type_name -> google.protobuf.Timestamp
+	49, // 28: teamos.events.v1.AcademyPartnerCourseCopiedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	26, // 29: teamos.events.v1.AcademyPartnerCourseCopiedEvent.payload:type_name -> teamos.events.v1.AcademyPartnerCourseCopiedPayload
+	50, // 30: teamos.events.v1.AcademyPartnerCourseCopiedPayload.copied_at:type_name -> google.protobuf.Timestamp
+	49, // 31: teamos.events.v1.AcademyTemplateVersionPublishedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	28, // 32: teamos.events.v1.AcademyTemplateVersionPublishedEvent.payload:type_name -> teamos.events.v1.AcademyTemplateVersionPublishedPayload
+	5,  // 33: teamos.events.v1.AcademyTemplateVersionPublishedPayload.template_type:type_name -> teamos.events.v1.AcademyCourseTemplateType
+	50, // 34: teamos.events.v1.AcademyTemplateVersionPublishedPayload.published_at:type_name -> google.protobuf.Timestamp
+	49, // 35: teamos.events.v1.AcademyTemplateInstantiatedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	30, // 36: teamos.events.v1.AcademyTemplateInstantiatedEvent.payload:type_name -> teamos.events.v1.AcademyTemplateInstantiatedPayload
+	5,  // 37: teamos.events.v1.AcademyTemplateInstantiatedPayload.template_type:type_name -> teamos.events.v1.AcademyCourseTemplateType
+	1,  // 38: teamos.events.v1.AcademyTemplateInstantiatedPayload.target_owner_type:type_name -> teamos.events.v1.AcademyCourseOwnerType
+	50, // 39: teamos.events.v1.AcademyTemplateInstantiatedPayload.instantiated_at:type_name -> google.protobuf.Timestamp
+	49, // 40: teamos.events.v1.AcademyCourseAssignedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	32, // 41: teamos.events.v1.AcademyCourseAssignedEvent.payload:type_name -> teamos.events.v1.AcademyCourseAssignedPayload
+	0,  // 42: teamos.events.v1.AcademyCourseAssignedPayload.assignee_type:type_name -> teamos.events.v1.CourseAssigneeType
+	50, // 43: teamos.events.v1.AcademyCourseAssignedPayload.due_date:type_name -> google.protobuf.Timestamp
+	49, // 44: teamos.events.v1.AcademyEnrollmentActivatedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	34, // 45: teamos.events.v1.AcademyEnrollmentActivatedEvent.payload:type_name -> teamos.events.v1.AcademyEnrollmentActivatedPayload
+	6,  // 46: teamos.events.v1.AcademyEnrollmentActivatedPayload.learner_type:type_name -> teamos.events.v1.AcademyEnrollmentLearnerType
+	7,  // 47: teamos.events.v1.AcademyEnrollmentActivatedPayload.source_type:type_name -> teamos.events.v1.AcademyEnrollmentSourceType
+	50, // 48: teamos.events.v1.AcademyEnrollmentActivatedPayload.activated_at:type_name -> google.protobuf.Timestamp
+	50, // 49: teamos.events.v1.AcademyEnrollmentActivatedPayload.access_until:type_name -> google.protobuf.Timestamp
+	49, // 50: teamos.events.v1.AcademyEnrollmentProgressedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	36, // 51: teamos.events.v1.AcademyEnrollmentProgressedEvent.payload:type_name -> teamos.events.v1.AcademyEnrollmentProgressedPayload
+	6,  // 52: teamos.events.v1.AcademyEnrollmentProgressedPayload.learner_type:type_name -> teamos.events.v1.AcademyEnrollmentLearnerType
+	8,  // 53: teamos.events.v1.AcademyEnrollmentProgressedPayload.progress_status:type_name -> teamos.events.v1.AcademyEnrollmentProgressStatus
+	50, // 54: teamos.events.v1.AcademyEnrollmentProgressedPayload.occurred_at:type_name -> google.protobuf.Timestamp
+	49, // 55: teamos.events.v1.AcademyEnrollmentCompletedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	38, // 56: teamos.events.v1.AcademyEnrollmentCompletedEvent.payload:type_name -> teamos.events.v1.AcademyEnrollmentCompletedPayload
+	6,  // 57: teamos.events.v1.AcademyEnrollmentCompletedPayload.learner_type:type_name -> teamos.events.v1.AcademyEnrollmentLearnerType
+	50, // 58: teamos.events.v1.AcademyEnrollmentCompletedPayload.completed_at:type_name -> google.protobuf.Timestamp
+	49, // 59: teamos.events.v1.AcademyCourseDueSoonEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	40, // 60: teamos.events.v1.AcademyCourseDueSoonEvent.payload:type_name -> teamos.events.v1.AcademyCourseDueSoonPayload
+	50, // 61: teamos.events.v1.AcademyCourseDueSoonPayload.due_date:type_name -> google.protobuf.Timestamp
+	0,  // 62: teamos.events.v1.AcademyCourseDueSoonPayload.assignee_type:type_name -> teamos.events.v1.CourseAssigneeType
+	49, // 63: teamos.events.v1.AcademyCourseDeletedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	42, // 64: teamos.events.v1.AcademyCourseDeletedEvent.payload:type_name -> teamos.events.v1.AcademyCourseDeletedPayload
+	1,  // 65: teamos.events.v1.AcademyCourseDeletedPayload.owner_type:type_name -> teamos.events.v1.AcademyCourseOwnerType
+	50, // 66: teamos.events.v1.AcademyCourseDeletedPayload.deleted_at:type_name -> google.protobuf.Timestamp
+	49, // 67: teamos.events.v1.AcademyExternalEmailVerificationRequestedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	44, // 68: teamos.events.v1.AcademyExternalEmailVerificationRequestedEvent.payload:type_name -> teamos.events.v1.AcademyExternalEmailVerificationRequestedPayload
+	50, // 69: teamos.events.v1.AcademyExternalEmailVerificationRequestedPayload.expires_at:type_name -> google.protobuf.Timestamp
+	49, // 70: teamos.events.v1.AcademyExternalCampaignCreatedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	46, // 71: teamos.events.v1.AcademyExternalCampaignCreatedEvent.payload:type_name -> teamos.events.v1.AcademyExternalCampaignCreatedPayload
+	1,  // 72: teamos.events.v1.AcademyExternalCampaignCreatedPayload.owner_type:type_name -> teamos.events.v1.AcademyCourseOwnerType
+	9,  // 73: teamos.events.v1.AcademyExternalCampaignCreatedPayload.purpose:type_name -> teamos.events.v1.AcademyExternalCampaignPurpose
+	50, // 74: teamos.events.v1.AcademyExternalCampaignCreatedPayload.created_at:type_name -> google.protobuf.Timestamp
+	49, // 75: teamos.events.v1.AcademyExternalCampaignStatusChangedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	48, // 76: teamos.events.v1.AcademyExternalCampaignStatusChangedEvent.payload:type_name -> teamos.events.v1.AcademyExternalCampaignStatusChangedPayload
+	10, // 77: teamos.events.v1.AcademyExternalCampaignStatusChangedPayload.previous_status:type_name -> teamos.events.v1.AcademyExternalCampaignStatus
+	10, // 78: teamos.events.v1.AcademyExternalCampaignStatusChangedPayload.status:type_name -> teamos.events.v1.AcademyExternalCampaignStatus
+	50, // 79: teamos.events.v1.AcademyExternalCampaignStatusChangedPayload.changed_at:type_name -> google.protobuf.Timestamp
+	80, // [80:80] is the sub-list for method output_type
+	80, // [80:80] is the sub-list for method input_type
+	80, // [80:80] is the sub-list for extension type_name
+	80, // [80:80] is the sub-list for extension extendee
+	0,  // [0:80] is the sub-list for field type_name
 }
 
 func init() { file_events_academy_proto_init() }
@@ -594,13 +4090,29 @@ func file_events_academy_proto_init() {
 	file_events_common_proto_init()
 	file_events_academy_proto_msgTypes[1].OneofWrappers = []any{}
 	file_events_academy_proto_msgTypes[3].OneofWrappers = []any{}
+	file_events_academy_proto_msgTypes[5].OneofWrappers = []any{}
+	file_events_academy_proto_msgTypes[7].OneofWrappers = []any{}
+	file_events_academy_proto_msgTypes[9].OneofWrappers = []any{}
+	file_events_academy_proto_msgTypes[11].OneofWrappers = []any{}
+	file_events_academy_proto_msgTypes[13].OneofWrappers = []any{}
+	file_events_academy_proto_msgTypes[15].OneofWrappers = []any{}
+	file_events_academy_proto_msgTypes[17].OneofWrappers = []any{}
+	file_events_academy_proto_msgTypes[19].OneofWrappers = []any{}
+	file_events_academy_proto_msgTypes[21].OneofWrappers = []any{}
+	file_events_academy_proto_msgTypes[23].OneofWrappers = []any{}
+	file_events_academy_proto_msgTypes[25].OneofWrappers = []any{}
+	file_events_academy_proto_msgTypes[27].OneofWrappers = []any{}
+	file_events_academy_proto_msgTypes[29].OneofWrappers = []any{}
+	file_events_academy_proto_msgTypes[31].OneofWrappers = []any{}
+	file_events_academy_proto_msgTypes[33].OneofWrappers = []any{}
+	file_events_academy_proto_msgTypes[35].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_events_academy_proto_rawDesc), len(file_events_academy_proto_rawDesc)),
-			NumEnums:      1,
-			NumMessages:   6,
+			NumEnums:      11,
+			NumMessages:   38,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

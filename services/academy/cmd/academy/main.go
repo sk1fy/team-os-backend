@@ -15,6 +15,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	academyv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/academy/v1"
 	companyv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v1"
+	filesv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/files/v1"
 	kbv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/kb/v1"
 	sharedauth "github.com/sk1fy/team-os-backend/pkg/auth"
 	"github.com/sk1fy/team-os-backend/pkg/eventbus"
@@ -59,6 +60,18 @@ func run(logger *slog.Logger) error {
 	defer func() {
 		if shutdownErr := shutdownTelemetry(); shutdownErr != nil {
 			logger.Error("shutdown telemetry", "error", shutdownErr)
+		}
+	}()
+	filesConnection, err := grpc.NewClient(
+		configuration.FilesGRPCAddr,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		return fmt.Errorf("connect to files: %w", err)
+	}
+	defer func() {
+		if closeErr := filesConnection.Close(); closeErr != nil {
+			logger.Error("close files gRPC connection", "error", closeErr)
 		}
 	}()
 	publicKey, err := sharedauth.ParsePublicKey(configuration.JWTPublicKey)
@@ -128,6 +141,10 @@ func run(logger *slog.Logger) error {
 	if err != nil {
 		return fmt.Errorf("initialize academy application: %w", err)
 	}
+	service.SetFilesClient(clients.NewFiles(filesv1.NewFilesServiceClient(filesConnection)))
+	service.SetExternalSecret(configuration.ExternalSecret)
+	service.SetExternalEmailKey(configuration.ExternalEmailKey)
+	service.SetExternalEmailKeyID(configuration.ExternalEmailKeyID)
 
 	rootContext, cancel := context.WithCancel(context.Background())
 	defer cancel()

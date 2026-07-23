@@ -13,6 +13,8 @@ func TestNormalizePath(t *testing.T) {
 		{"/academy/lessons?courseId=${id(courseId)}", "/academy/lessons"},
 		{"/tasks${boardId ", "/tasks"},
 		{"/kb/articles${sectionId ", "/kb/articles"},
+		{"/academy/reports/internal${buildQuery({\nq, page,\n})}", "/academy/reports/internal"},
+		{"/academy/courses/${encodeId(courseId)}${buildQuery({ page })}", "/academy/courses/{param}"},
 	}
 	for _, test := range tests {
 		if got := normalizePath(test.raw); got != test.want {
@@ -63,6 +65,64 @@ func TestCollectCallsDiscoversNestedRuntimeFiles(t *testing.T) {
 	}
 	if calls[1].File != "src/api/nested/files.ts" || calls[1].Method != "POST" || calls[1].Path != "/files" {
 		t.Errorf("вложенный вызов = %+v", calls[1])
+	}
+}
+
+func TestCollectCallsRecognizesAcademyWrapperSignatures(t *testing.T) {
+	frontendDir := t.TempDir()
+	fixture := "\n" +
+		"academyGet(\n" +
+		"  \"/academy/learning/me\",\n" +
+		"  options,\n" +
+		")\n" +
+		"academyGet(`/academy/courses/${encodeId(courseId)}/versions`, options)\n" +
+		"academyMutate(\n" +
+		"  `/academy/course-version-lessons/${encodeId(lessonId)}`,\n" +
+		"  \"PATCH\",\n" +
+		"  input,\n" +
+		")\n" +
+		"externalGet(`/public/academy/access/${encodeId(token)}`, options)\n" +
+		"externalMutate(\n" +
+		"  `/public/academy/access/${encodeId(token)}/activate`,\n" +
+		"  'POST',\n" +
+		"  {},\n" +
+		")\n" +
+		"academyGet(`/academy/reports/internal${buildQuery({\n" +
+		"  q: filters.q,\n" +
+		"  page: filters.page,\n" +
+		"})}`, options)\n"
+	writeFrontendFile(t, frontendDir, "src/api/academy/calls.ts", fixture)
+
+	calls, err := collectCalls(frontendDir)
+	if err != nil {
+		t.Fatalf("collectCalls() error = %v", err)
+	}
+	want := []call{
+		{Method: "GET", Path: "/academy/learning/me", File: "src/api/academy/calls.ts", Line: 2},
+		{Method: "GET", Path: "/academy/courses/{param}/versions", File: "src/api/academy/calls.ts", Line: 6},
+		{Method: "PATCH", Path: "/academy/course-version-lessons/{param}", File: "src/api/academy/calls.ts", Line: 7},
+		{Method: "GET", Path: "/public/academy/access/{param}", File: "src/api/academy/calls.ts", Line: 12},
+		{Method: "POST", Path: "/public/academy/access/{param}/activate", File: "src/api/academy/calls.ts", Line: 13},
+		{Method: "GET", Path: "/academy/reports/internal", File: "src/api/academy/calls.ts", Line: 18},
+	}
+	if len(calls) != len(want) {
+		t.Fatalf("collectCalls() вернул %d вызовов, ожидалось %d: %+v", len(calls), len(want), calls)
+	}
+	for index := range want {
+		if calls[index] != want[index] {
+			t.Errorf("calls[%d] = %+v, want %+v", index, calls[index], want[index])
+		}
+	}
+}
+
+func TestCollectCallsRejectsDynamicAcademyMutationMethod(t *testing.T) {
+	frontendDir := t.TempDir()
+	writeFrontendFile(t, frontendDir, "src/api/academy/calls.ts", `
+academyMutate('/academy/courses', method, input)
+`)
+
+	if _, err := collectCalls(frontendDir); err == nil {
+		t.Fatal("collectCalls() должен отклонять mutation с неразобранным методом")
 	}
 }
 

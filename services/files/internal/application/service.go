@@ -15,18 +15,148 @@ var (
 	ErrNotFound        = errors.New("Файл не найден")
 	ErrForbidden       = errors.New("Недостаточно прав для удаления файла")
 	ErrUploadForbidden = errors.New("Недостаточно прав для загрузки файла")
+	ErrCloneForbidden  = errors.New("Недостаточно прав для копирования файлов")
+	ErrInvalidClone    = errors.New("Некорректные параметры копирования файлов")
+	ErrIdempotencyKey  = errors.New("Ключ идемпотентности уже использован с другими параметрами")
 )
 
 type Repository interface {
 	Create(context.Context, domain.File) (domain.File, error)
 	Get(context.Context, uuid.UUID, uuid.UUID) (domain.File, error)
 	Delete(context.Context, uuid.UUID, uuid.UUID) (string, error)
+	BeginClone(context.Context, domain.CloneOperation) (domain.CloneOperation, error)
+	StartClone(context.Context, uuid.UUID, uuid.UUID) (domain.CloneOperation, bool, error)
+	CompleteClone(context.Context, domain.CloneOperation, []domain.ClonedFile) (domain.CloneOperation, error)
+	FailClone(context.Context, uuid.UUID, uuid.UUID, string) (domain.CloneOperation, error)
 }
 
 type ObjectStore interface {
 	Put(context.Context, string, io.Reader, int64, string) error
+	Copy(context.Context, string, string) error
 	Remove(context.Context, string) error
 	DownloadURL(context.Context, string, time.Duration) (string, error)
+}
+
+// CloneFilesForOwner creates immutable physical copies for another aggregate.
+// The operation can safely be retried with the same key and exact parameters.
+func (s *Service) CloneFilesForOwner(
+	ctx context.Context,
+	companyID, userID uuid.UUID,
+	role, idempotencyKey string,
+	target domain.FileOwner,
+	sourceIDs []uuid.UUID,
+) (domain.CloneOperation, error) {
+	if role != "owner" && role != "admin" && role != "partner" {
+		return domain.CloneOperation{}, ErrCloneForbidden
+	}
+	if err := validateCloneInput(idempotencyKey, target, sourceIDs); err != nil {
+		return domain.CloneOperation{}, err
+	}
+
+	requested := domain.CloneOperation{
+		ID: uuid.New(), CompanyID: companyID, RequestedBy: userID,
+		IdempotencyKey: idempotencyKey, TargetOwner: target,
+		SourceFileIDs: append([]uuid.UUID(nil), sourceIDs...),
+		State:         domain.ClonePending,
+	}
+	operation, err := s.repo.BeginClone(ctx, requested)
+	if err != nil {
+		return domain.CloneOperation{}, fmt.Errorf("создать операцию копирования: %w", err)
+	}
+	if operation.TargetOwner != target || !equalUUIDs(operation.SourceFileIDs, sourceIDs) {
+		return domain.CloneOperation{}, ErrIdempotencyKey
+	}
+	if operation.State == domain.CloneSucceeded || operation.State == domain.CloneInProgress {
+		return operation, nil
+	}
+	operation, started, err := s.repo.StartClone(ctx, companyID, operation.ID)
+	if err != nil {
+		return domain.CloneOperation{}, fmt.Errorf("запустить операцию копирования: %w", err)
+	}
+	if !started {
+		return operation, nil
+	}
+
+	clones := make([]domain.ClonedFile, 0, len(sourceIDs))
+	copiedKeys := make([]string, 0, len(sourceIDs))
+	for _, sourceID := range sourceIDs {
+		source, getErr := s.repo.Get(ctx, companyID, sourceID)
+		if getErr != nil {
+			return s.failClone(ctx, operation, copiedKeys, "Исходный файл не найден", getErr)
+		}
+		targetID := uuid.NewSHA1(operation.ID, []byte(sourceID.String()))
+		targetKey := fmt.Sprintf("%s/clones/%s/%s", companyID, operation.ID, targetID)
+		if copyErr := s.objects.Copy(ctx, source.ObjectKey, targetKey); copyErr != nil {
+			return s.failClone(ctx, operation, copiedKeys, "Не удалось скопировать файл", copyErr)
+		}
+		copiedKeys = append(copiedKeys, targetKey)
+		clones = append(clones, domain.ClonedFile{
+			SourceFileID: sourceID,
+			File: domain.File{
+				ID: targetID, CompanyID: companyID, UploadedBy: userID,
+				ObjectKey: targetKey, Name: source.Name, ContentType: source.ContentType,
+				Size: source.Size, Purpose: source.Purpose,
+			},
+		})
+	}
+	completed, err := s.repo.CompleteClone(ctx, operation, clones)
+	if err != nil {
+		return s.failClone(ctx, operation, copiedKeys, "Не удалось сохранить копии файлов", err)
+	}
+	return completed, nil
+}
+
+func (s *Service) failClone(
+	ctx context.Context,
+	operation domain.CloneOperation,
+	copiedKeys []string,
+	message string,
+	cause error,
+) (domain.CloneOperation, error) {
+	cleanupContext := context.WithoutCancel(ctx)
+	for _, key := range copiedKeys {
+		_ = s.objects.Remove(cleanupContext, key)
+	}
+	failed, err := s.repo.FailClone(cleanupContext, operation.CompanyID, operation.ID, message)
+	if err != nil {
+		return domain.CloneOperation{}, fmt.Errorf("%s: %w", message,
+			errors.Join(cause, fmt.Errorf("сохранить ошибку: %w", err)))
+	}
+	return failed, nil
+}
+
+func validateCloneInput(key string, target domain.FileOwner, sourceIDs []uuid.UUID) error {
+	if len(key) == 0 || len(key) > 200 || target.ID == uuid.Nil || len(sourceIDs) == 0 || len(sourceIDs) > 100 {
+		return ErrInvalidClone
+	}
+	switch target.Type {
+	case domain.OwnerCourseVersion, domain.OwnerTemplateVersion, domain.OwnerArticleVersion:
+	default:
+		return ErrInvalidClone
+	}
+	seen := make(map[uuid.UUID]struct{}, len(sourceIDs))
+	for _, id := range sourceIDs {
+		if id == uuid.Nil {
+			return ErrInvalidClone
+		}
+		if _, exists := seen[id]; exists {
+			return ErrInvalidClone
+		}
+		seen[id] = struct{}{}
+	}
+	return nil
+}
+
+func equalUUIDs(left, right []uuid.UUID) bool {
+	if len(left) != len(right) {
+		return false
+	}
+	for index := range left {
+		if left[index] != right[index] {
+			return false
+		}
+	}
+	return true
 }
 
 type Service struct {

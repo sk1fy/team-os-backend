@@ -58,3 +58,61 @@ WHERE company_id = sqlc.arg(company_id)
     OR department_ids && sqlc.arg(department_ids)::uuid[]
   )
 ORDER BY user_id;
+
+-- name: InsertEmailDelivery :exec
+INSERT INTO email_deliveries (
+  id, event_id, company_id, challenge_id, purpose, recipient_fingerprint,
+  expires_at
+)
+VALUES ($1, $2, $3, $4, $5, $6, $7)
+ON CONFLICT DO NOTHING;
+
+-- name: ExpireEmailDelivery :exec
+UPDATE email_deliveries
+SET status = 'expired', updated_at = sqlc.arg(now_at)
+WHERE company_id = sqlc.arg(company_id)
+  AND challenge_id = sqlc.arg(challenge_id)
+  AND status <> 'sent'
+  AND expires_at <= sqlc.arg(now_at);
+
+-- name: ClaimEmailDelivery :one
+UPDATE email_deliveries
+SET status = 'sending',
+    attempts = attempts + 1,
+    last_attempt_at = sqlc.arg(now_at),
+    last_error_code = NULL,
+    updated_at = sqlc.arg(now_at)
+WHERE company_id = sqlc.arg(company_id)
+  AND challenge_id = sqlc.arg(challenge_id)
+  AND expires_at > sqlc.arg(now_at)
+  AND attempts < max_attempts
+  AND (
+    status IN ('pending', 'failed')
+    OR (status = 'sending' AND last_attempt_at <= sqlc.arg(stale_before))
+  )
+RETURNING id, event_id, company_id, challenge_id, purpose,
+  recipient_fingerprint, status, attempts, max_attempts, expires_at,
+  last_attempt_at, sent_at, last_error_code, created_at, updated_at;
+
+-- name: GetEmailDelivery :one
+SELECT id, event_id, company_id, challenge_id, purpose,
+  recipient_fingerprint, status, attempts, max_attempts, expires_at,
+  last_attempt_at, sent_at, last_error_code, created_at, updated_at
+FROM email_deliveries
+WHERE company_id = $1 AND challenge_id = $2;
+
+-- name: MarkEmailDeliverySent :exec
+UPDATE email_deliveries
+SET status = 'sent', sent_at = sqlc.arg(sent_at), last_error_code = NULL,
+    updated_at = sqlc.arg(sent_at)
+WHERE company_id = sqlc.arg(company_id)
+  AND challenge_id = sqlc.arg(challenge_id)
+  AND status = 'sending';
+
+-- name: MarkEmailDeliveryFailed :exec
+UPDATE email_deliveries
+SET status = 'failed', last_error_code = sqlc.arg(error_code),
+    updated_at = sqlc.arg(failed_at)
+WHERE company_id = sqlc.arg(company_id)
+  AND challenge_id = sqlc.arg(challenge_id)
+  AND status = 'sending';

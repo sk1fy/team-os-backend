@@ -72,6 +72,11 @@ func isPublic(method, path string) bool {
 	switch {
 	case method == http.MethodGet && strings.HasPrefix(path, "/api/v1/public/"):
 		return true
+	case method == http.MethodPost && isExternalAcademyMutation(path):
+		// External Academy mutations authenticate with the separate opaque
+		// external-session cookie inside the Academy service, never with the
+		// internal TeamOS JWT.
+		return true
 	case method == http.MethodPost && path == "/api/v1/auth/login":
 		return true
 	case method == http.MethodPost && strings.HasPrefix(path, "/api/v1/auth/access-link/"):
@@ -87,4 +92,10 @@ func isPublic(method, path string) bool {
 	default:
 		return false
 	}
+}
+
+func isExternalAcademyMutation(path string) bool {
+	return strings.HasPrefix(path, "/api/v1/public/academy/access/") ||
+		strings.HasPrefix(path, "/api/v1/public/academy/verifications/") ||
+		strings.HasPrefix(path, "/api/v1/public/academy/enrollments/")
 }

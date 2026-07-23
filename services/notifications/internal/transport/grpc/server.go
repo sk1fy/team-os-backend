@@ -126,7 +126,7 @@ func toProto(n application.Notification) *notificationsv1.Notification {
 	return p
 }
 func notificationType(v string) notificationsv1.NotificationType {
-	m := map[string]notificationsv1.NotificationType{"task_assigned": notificationsv1.NotificationType_NOTIFICATION_TYPE_TASK_ASSIGNED, "task_comment": notificationsv1.NotificationType_NOTIFICATION_TYPE_TASK_COMMENT, "task_due": notificationsv1.NotificationType_NOTIFICATION_TYPE_TASK_DUE, "article_published": notificationsv1.NotificationType_NOTIFICATION_TYPE_ARTICLE_PUBLISHED, "article_ack_required": notificationsv1.NotificationType_NOTIFICATION_TYPE_ARTICLE_ACK_REQUIRED, "course_assigned": notificationsv1.NotificationType_NOTIFICATION_TYPE_COURSE_ASSIGNED, "course_due": notificationsv1.NotificationType_NOTIFICATION_TYPE_COURSE_DUE, "mention": notificationsv1.NotificationType_NOTIFICATION_TYPE_MENTION}
+	m := map[string]notificationsv1.NotificationType{"task_assigned": notificationsv1.NotificationType_NOTIFICATION_TYPE_TASK_ASSIGNED, "task_comment": notificationsv1.NotificationType_NOTIFICATION_TYPE_TASK_COMMENT, "task_due": notificationsv1.NotificationType_NOTIFICATION_TYPE_TASK_DUE, "article_published": notificationsv1.NotificationType_NOTIFICATION_TYPE_ARTICLE_PUBLISHED, "article_ack_required": notificationsv1.NotificationType_NOTIFICATION_TYPE_ARTICLE_ACK_REQUIRED, "course_assigned": notificationsv1.NotificationType_NOTIFICATION_TYPE_COURSE_ASSIGNED, "course_due": notificationsv1.NotificationType_NOTIFICATION_TYPE_COURSE_DUE, "mention": notificationsv1.NotificationType_NOTIFICATION_TYPE_MENTION, "course_published": notificationsv1.NotificationType_NOTIFICATION_TYPE_COURSE_PUBLISHED, "course_restriction": notificationsv1.NotificationType_NOTIFICATION_TYPE_COURSE_RESTRICTION}
 	return m[v]
 }
 

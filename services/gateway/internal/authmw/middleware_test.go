@@ -78,3 +78,20 @@ func TestPublicContentResolversArePublic(t *testing.T) {
 		}
 	}
 }
+
+func TestExternalAcademyMutationsDoNotRequireInternalJWT(t *testing.T) {
+	paths := []string{
+		"/api/v1/public/academy/access/token/request-verification",
+		"/api/v1/public/academy/access/token/activate",
+		"/api/v1/public/academy/verifications/00000000-0000-0000-0000-000000000001/confirm",
+		"/api/v1/public/academy/enrollments/00000000-0000-0000-0000-000000000001/lessons/00000000-0000-0000-0000-000000000002/complete",
+	}
+	for _, path := range paths {
+		if !isPublic(http.MethodPost, path) {
+			t.Fatalf("POST %s должен использовать external session, а не internal JWT", path)
+		}
+	}
+	if isPublic(http.MethodPost, "/api/v1/public/kb/articles/id") {
+		t.Fatal("публичные mutation KB не разрешены")
+	}
+}

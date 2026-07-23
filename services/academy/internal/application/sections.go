@@ -13,6 +13,27 @@ func (s *Service) GetCourseSections(ctx context.Context, actor Actor, courseID u
 	if err := s.requireCourseAccess(ctx, queries, actor, courseID); err != nil {
 		return nil, err
 	}
+	courseRow, err := queries.GetCourse(ctx, db.GetCourseParams{CompanyID: actor.CompanyID, ID: courseID})
+	if err != nil {
+		return nil, internal("Не удалось получить курс", err)
+	}
+	version, err := s.displayCourseVersion(ctx, queries, actor, courseFromRow(courseRow))
+	if err != nil {
+		return nil, err
+	}
+	if version != nil {
+		versionRows, versionErr := queries.GetCourseVersionSections(ctx, db.GetCourseVersionSectionsParams{
+			CompanyID: actor.CompanyID, CourseVersionID: version.ID,
+		})
+		if versionErr != nil {
+			return nil, internal("Не удалось получить разделы версии курса", versionErr)
+		}
+		result := make([]CourseSection, len(versionRows))
+		for index := range versionRows {
+			result[index] = versionSectionAsLegacy(versionRows[index], courseID)
+		}
+		return result, nil
+	}
 	rows, err := queries.GetCourseSections(ctx, db.GetCourseSectionsParams{
 		CompanyID: actor.CompanyID, CourseID: courseID,
 	})
@@ -32,12 +53,20 @@ type CreateCourseSectionInput struct {
 }
 
 func (s *Service) CreateCourseSection(ctx context.Context, actor Actor, input CreateCourseSectionInput) (CourseSection, error) {
-	if !actor.canManage() {
-		return CourseSection{}, forbidden("Недостаточно прав для изменения академии")
-	}
 	title, err := requiredText(input.Title, "Укажите название раздела")
 	if err != nil {
 		return CourseSection{}, err
+	}
+	currentCourse, err := s.requireCourseEditAccess(ctx, db.New(s.pool), actor, input.CourseID)
+	if err != nil {
+		return CourseSection{}, err
+	}
+	if currentCourse.CurrentDraftVersionID != nil {
+		section, createErr := s.CreateCourseVersionSection(ctx, actor, *currentCourse.CurrentDraftVersionID, title)
+		if createErr != nil {
+			return CourseSection{}, createErr
+		}
+		return CourseSection{ID: section.ID, CompanyID: section.CompanyID, CourseID: input.CourseID, Title: section.Title, Order: section.Order}, nil
 	}
 	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
@@ -45,18 +74,13 @@ func (s *Service) CreateCourseSection(ctx context.Context, actor Actor, input Cr
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
 	queries := db.New(tx)
+	if _, err = s.requireCourseEditAccess(ctx, queries, actor, input.CourseID); err != nil {
+		return CourseSection{}, err
+	}
 	if err = queries.LockCourseOrder(ctx, input.CourseID); err != nil {
 		return CourseSection{}, internal("Не удалось заблокировать порядок курса", err)
 	}
 
-	if _, err = queries.GetCourse(ctx, db.GetCourseParams{
-		CompanyID: actor.CompanyID, ID: input.CourseID,
-	}); err != nil {
-		if isNoRows(err) {
-			return CourseSection{}, notFound("Курс")
-		}
-		return CourseSection{}, internal("Не удалось проверить курс", err)
-	}
 	siblings, err := queries.CountCourseSections(ctx, db.CountCourseSectionsParams{
 		CompanyID: actor.CompanyID, CourseID: input.CourseID,
 	})
@@ -82,14 +106,37 @@ type UpdateCourseSectionInput struct {
 }
 
 func (s *Service) UpdateCourseSection(ctx context.Context, actor Actor, input UpdateCourseSectionInput) (CourseSection, error) {
-	if !actor.canManage() {
-		return CourseSection{}, forbidden("Недостаточно прав для изменения академии")
-	}
 	title, err := requiredText(input.Title, "Укажите название раздела")
 	if err != nil {
 		return CourseSection{}, err
 	}
-	row, err := db.New(s.pool).UpdateCourseSection(ctx, db.UpdateCourseSectionParams{
+	queries := db.New(s.pool)
+	if versionSection, versionErr := queries.GetCourseVersionSection(ctx, db.GetCourseVersionSectionParams{
+		CompanyID: actor.CompanyID, ID: input.ID,
+	}); versionErr == nil {
+		updated, updateErr := s.UpdateCourseVersionSection(ctx, actor, UpdateCourseVersionSectionInput{ID: input.ID, Title: &title})
+		if updateErr != nil {
+			return CourseSection{}, updateErr
+		}
+		version, getErr := queries.GetCourseVersion(ctx, db.GetCourseVersionParams{CompanyID: actor.CompanyID, ID: versionSection.CourseVersionID})
+		if getErr != nil {
+			return CourseSection{}, internal("Не удалось получить версию курса", getErr)
+		}
+		return CourseSection{ID: updated.ID, CompanyID: updated.CompanyID, CourseID: version.CourseID, Title: updated.Title, Order: updated.Order}, nil
+	} else if !isNoRows(versionErr) {
+		return CourseSection{}, internal("Не удалось проверить раздел версии", versionErr)
+	}
+	current, err := queries.GetCourseSection(ctx, db.GetCourseSectionParams{CompanyID: actor.CompanyID, ID: input.ID})
+	if err != nil {
+		if isNoRows(err) {
+			return CourseSection{}, notFound("Раздел курса")
+		}
+		return CourseSection{}, internal("Не удалось проверить раздел курса", err)
+	}
+	if _, err = s.requireCourseEditAccess(ctx, queries, actor, current.CourseID); err != nil {
+		return CourseSection{}, err
+	}
+	row, err := queries.UpdateCourseSection(ctx, db.UpdateCourseSectionParams{
 		CompanyID: actor.CompanyID, ID: input.ID, Title: title,
 	})
 	if err != nil {
@@ -102,8 +149,13 @@ func (s *Service) UpdateCourseSection(ctx context.Context, actor Actor, input Up
 }
 
 func (s *Service) DeleteCourseSection(ctx context.Context, actor Actor, id uuid.UUID) error {
-	if !actor.canManage() {
-		return forbidden("Недостаточно прав для изменения академии")
+	rootQueries := db.New(s.pool)
+	if _, versionErr := rootQueries.GetCourseVersionSection(ctx, db.GetCourseVersionSectionParams{
+		CompanyID: actor.CompanyID, ID: id,
+	}); versionErr == nil {
+		return s.DeleteCourseVersionSection(ctx, actor, id)
+	} else if !isNoRows(versionErr) {
+		return internal("Не удалось проверить раздел версии", versionErr)
 	}
 	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
@@ -121,30 +173,13 @@ func (s *Service) DeleteCourseSection(ctx context.Context, actor Actor, id uuid.
 		}
 		return internal("Не удалось получить раздел курса", err)
 	}
-	// Lesson rows and quizzes cascade with the section; completed-lesson marks
-	// in progress rows are cleaned explicitly (mirror of removeLessonCascade).
-	lessonIDs, err := queries.GetSectionLessonIds(ctx, db.GetSectionLessonIdsParams{
-		CompanyID: actor.CompanyID, SectionID: id,
-	})
-	if err != nil {
-		return internal("Не удалось получить уроки раздела", err)
-	}
-	if len(lessonIDs) > 0 {
-		if err = queries.RemoveLessonsFromProgress(ctx, db.RemoveLessonsFromProgressParams{
-			CompanyID: actor.CompanyID, CourseID: section.CourseID, LessonIds: lessonIDs,
-		}); err != nil {
-			return internal("Не удалось обновить прогресс", err)
-		}
+	if _, err = s.requireCourseEditAccess(ctx, queries, actor, section.CourseID); err != nil {
+		return err
 	}
 	if _, err = queries.DeleteCourseSection(ctx, db.DeleteCourseSectionParams{
 		CompanyID: actor.CompanyID, ID: id,
 	}); err != nil {
 		return internal("Не удалось удалить раздел курса", err)
-	}
-	if err = queries.RecomputeCourseProgressAfterLessonDelete(ctx, db.RecomputeCourseProgressAfterLessonDeleteParams{
-		CompanyID: actor.CompanyID, CourseID: section.CourseID,
-	}); err != nil {
-		return internal("Не удалось пересчитать прогресс", err)
 	}
 	if err = tx.Commit(ctx); err != nil {
 		return internal("Не удалось удалить раздел курса", err)

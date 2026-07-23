@@ -1,6 +1,7 @@
 -- name: ListArticles :many
 SELECT id, company_id, section_id, title, content, status, author_id, version,
-       requires_acknowledgement, plain_text, created_at, updated_at
+       requires_acknowledgement, plain_text, partner_access_mode,
+       partner_reuse_policy, created_at, updated_at
 FROM articles
 WHERE company_id = $1
   AND (sqlc.narg(section_id)::uuid IS NULL OR section_id = sqlc.narg(section_id))
@@ -8,27 +9,31 @@ ORDER BY updated_at DESC;
 
 -- name: GetArticle :one
 SELECT id, company_id, section_id, title, content, status, author_id, version,
-       requires_acknowledgement, plain_text, created_at, updated_at
+       requires_acknowledgement, plain_text, partner_access_mode,
+       partner_reuse_policy, created_at, updated_at
 FROM articles
 WHERE company_id = $1 AND id = $2;
 
 -- name: GetPublicArticle :one
 SELECT a.id, a.company_id, a.section_id, a.title, a.content, a.status, a.author_id, a.version,
-       a.requires_acknowledgement, a.plain_text, a.created_at, a.updated_at
+       a.requires_acknowledgement, a.plain_text, a.partner_access_mode,
+       a.partner_reuse_policy, a.created_at, a.updated_at
 FROM articles a
 JOIN sections s ON s.id = a.section_id AND s.company_id = a.company_id
 WHERE a.id = $1 AND a.status = 'published' AND s.visibility = 'public';
 
 -- name: GetArticleForUpdate :one
 SELECT id, company_id, section_id, title, content, status, author_id, version,
-       requires_acknowledgement, plain_text, created_at, updated_at
+       requires_acknowledgement, plain_text, partner_access_mode,
+       partner_reuse_policy, created_at, updated_at
 FROM articles
 WHERE company_id = $1 AND id = $2
 FOR UPDATE;
 
 -- name: GetArticlesByIDs :many
 SELECT id, company_id, section_id, title, content, status, author_id, version,
-       requires_acknowledgement, plain_text, created_at, updated_at
+       requires_acknowledgement, plain_text, partner_access_mode,
+       partner_reuse_policy, created_at, updated_at
 FROM articles
 WHERE company_id = $1 AND id = ANY(sqlc.arg(ids)::uuid[])
 ORDER BY updated_at DESC;
@@ -40,7 +45,8 @@ SELECT EXISTS (
 
 -- name: SearchArticles :many
 SELECT id, company_id, section_id, title, content, status, author_id, version,
-       requires_acknowledgement, plain_text, created_at, updated_at
+       requires_acknowledgement, plain_text, partner_access_mode,
+       partner_reuse_policy, created_at, updated_at
 FROM articles
 WHERE company_id = $1
   AND search @@ plainto_tsquery('russian', sqlc.arg(query))
@@ -53,7 +59,8 @@ INSERT INTO articles (
 )
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 RETURNING id, company_id, section_id, title, content, status, author_id, version,
-          requires_acknowledgement, plain_text, created_at, updated_at;
+          requires_acknowledgement, plain_text, partner_access_mode,
+          partner_reuse_policy, created_at, updated_at;
 
 -- name: UpdateArticle :one
 UPDATE articles
@@ -68,4 +75,5 @@ SET
     updated_at = now()
 WHERE company_id = $1 AND id = $2
 RETURNING id, company_id, section_id, title, content, status, author_id, version,
-          requires_acknowledgement, plain_text, created_at, updated_at;
+          requires_acknowledgement, plain_text, partner_access_mode,
+          partner_reuse_policy, created_at, updated_at;

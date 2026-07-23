@@ -1,15 +1,16 @@
 -- name: GetAssignments :many
-SELECT id, company_id, course_id, assignee_type, assignee_id, invite_token,
+SELECT id, company_id, course_id, course_version_id, assignee_type, assignee_id, invite_token,
     due_date, resolved_user_ids, due_soon_sent_at, assigned_by_id, created_at
 FROM assignments
-WHERE company_id = $1
+WHERE company_id = $1 AND revoked_at IS NULL
 ORDER BY created_at, id;
 
 -- name: GetUserAssignments :many
-SELECT id, company_id, course_id, assignee_type, assignee_id, invite_token,
+SELECT id, company_id, course_id, course_version_id, assignee_type, assignee_id, invite_token,
     due_date, resolved_user_ids, due_soon_sent_at, assigned_by_id, created_at
 FROM assignments
-WHERE company_id = $1 AND sqlc.arg(user_id)::uuid = ANY(resolved_user_ids)
+WHERE company_id = $1 AND revoked_at IS NULL
+  AND sqlc.arg(user_id)::uuid = ANY(resolved_user_ids)
 ORDER BY created_at, id;
 
 -- name: RecomputeUserAssignmentMembership :exec
@@ -29,42 +30,46 @@ SET resolved_user_ids = ARRAY(
     ) AS candidate
 )
 WHERE company_id = sqlc.arg(company_id)
+  AND revoked_at IS NULL
   AND assignee_type IN ('user', 'position', 'department');
 
 -- name: ClearDeletedPositionAssignment :exec
 UPDATE assignments
 SET resolved_user_ids = '{}'
-WHERE company_id = $1 AND assignee_type = 'position' AND assignee_id = $2;
+WHERE company_id = $1 AND revoked_at IS NULL
+  AND assignee_type = 'position' AND assignee_id = $2;
 
 -- name: CreateAssignment :one
 INSERT INTO assignments (
-    id, company_id, course_id, assignee_type, assignee_id, invite_token,
+    id, company_id, course_id, course_version_id, assignee_type, assignee_id, invite_token,
     due_date, resolved_user_ids, assigned_by_id, created_at
 )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 ON CONFLICT DO NOTHING
-RETURNING id, company_id, course_id, assignee_type, assignee_id, invite_token,
+RETURNING id, company_id, course_id, course_version_id, assignee_type, assignee_id, invite_token,
     due_date, resolved_user_ids, due_soon_sent_at, assigned_by_id, created_at;
 
 -- name: GetAssignmentByTarget :one
-SELECT id, company_id, course_id, assignee_type, assignee_id, invite_token,
+SELECT id, company_id, course_id, course_version_id, assignee_type, assignee_id, invite_token,
     due_date, resolved_user_ids, due_soon_sent_at, assigned_by_id, created_at
 FROM assignments
 WHERE company_id = $1
   AND course_id = $2
   AND assignee_type = $3
+  AND revoked_at IS NULL
   AND assignee_id IS NOT DISTINCT FROM sqlc.narg(assignee_id)::uuid;
 
 -- name: GetDueSoonAssignments :many
 SELECT a.id, a.company_id, a.course_id, a.assignee_type, a.assignee_id,
-    a.invite_token, a.resolved_user_ids, a.assigned_by_id, a.created_at,
-    c.title AS course_title,
-    coalesce(a.due_date, a.created_at + make_interval(days => c.deadline_days)) AS effective_due_date
+    a.course_version_id, a.invite_token, a.resolved_user_ids, a.assigned_by_id, a.created_at,
+    v.title AS course_title,
+    coalesce(a.due_date, a.created_at + make_interval(days => v.default_internal_deadline_days)) AS effective_due_date
 FROM assignments a
-JOIN courses c ON c.id = a.course_id
+JOIN course_versions v ON v.id = a.course_version_id
 WHERE a.due_soon_sent_at IS NULL
-  AND (a.due_date IS NOT NULL OR c.deadline_days IS NOT NULL)
-  AND coalesce(a.due_date, a.created_at + make_interval(days => c.deadline_days))
+  AND a.revoked_at IS NULL
+  AND (a.due_date IS NOT NULL OR v.default_internal_deadline_days IS NOT NULL)
+  AND coalesce(a.due_date, a.created_at + make_interval(days => v.default_internal_deadline_days))
       <= sqlc.arg(threshold)::timestamptz
 ORDER BY a.created_at, a.id
 FOR UPDATE OF a SKIP LOCKED;
@@ -75,11 +80,57 @@ SET due_soon_sent_at = $2
 WHERE id = $1;
 
 -- name: GetOverdueAssignments :many
-SELECT a.id, a.company_id, a.course_id, a.resolved_user_ids,
-    coalesce(a.due_date, a.created_at + make_interval(days => c.deadline_days)) AS effective_due_date
+SELECT a.id, a.company_id, a.course_id, a.course_version_id, a.resolved_user_ids,
+    coalesce(a.due_date, a.created_at + make_interval(days => v.default_internal_deadline_days)) AS effective_due_date
 FROM assignments a
-JOIN courses c ON c.id = a.course_id
-WHERE (a.due_date IS NOT NULL OR c.deadline_days IS NOT NULL)
-  AND coalesce(a.due_date, a.created_at + make_interval(days => c.deadline_days))
+JOIN course_versions v ON v.id = a.course_version_id
+WHERE (a.due_date IS NOT NULL OR v.default_internal_deadline_days IS NOT NULL)
+  AND a.revoked_at IS NULL
+  AND coalesce(a.due_date, a.created_at + make_interval(days => v.default_internal_deadline_days))
       < sqlc.arg(now)::timestamptz
 ORDER BY a.created_at, a.id;
+
+-- name: GetAssignmentForUpdate :one
+SELECT id, company_id, course_id, course_version_id, assignee_type,
+    assignee_id, invite_token, due_date, resolved_user_ids, due_soon_sent_at,
+    assigned_by_id, created_at
+FROM assignments
+WHERE company_id = sqlc.arg(company_id)
+  AND id = sqlc.arg(id)
+  AND revoked_at IS NULL
+FOR UPDATE;
+
+-- name: RevokeAssignmentEnrollments :execrows
+UPDATE course_enrollments
+SET access_status = 'revoked',
+    updated_at = sqlc.arg(revoked_at)
+WHERE company_id = sqlc.arg(company_id)
+  AND source_type = 'assignment'
+  AND source_id = sqlc.arg(assignment_id)
+  AND progress_status <> 'completed'
+  AND access_status NOT IN ('revoked', 'closed');
+
+-- name: RevokeAssignment :execrows
+UPDATE assignments
+SET revoked_at = sqlc.arg(revoked_at),
+    revoked_by_id = sqlc.arg(revoked_by_id)
+WHERE company_id = sqlc.arg(company_id)
+  AND id = sqlc.arg(id)
+  AND revoked_at IS NULL;
+
+-- name: UpdateAssignmentCourseVersion :one
+UPDATE assignments AS assignment
+SET course_version_id = version.id,
+    due_soon_sent_at = NULL
+FROM course_versions AS version
+WHERE assignment.company_id = sqlc.arg(company_id)
+  AND assignment.id = sqlc.arg(id)
+  AND version.company_id = assignment.company_id
+  AND version.course_id = assignment.course_id
+  AND version.id = sqlc.arg(course_version_id)
+  AND version.status = 'published'
+RETURNING assignment.id, assignment.company_id, assignment.course_id,
+    assignment.course_version_id, assignment.assignee_type,
+    assignment.assignee_id, assignment.invite_token, assignment.due_date,
+    assignment.resolved_user_ids, assignment.due_soon_sent_at,
+    assignment.assigned_by_id, assignment.created_at;

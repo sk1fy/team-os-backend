@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgtype"
 	eventsv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/events/v1"
 	"github.com/sk1fy/team-os-backend/pkg/eventbus"
 	"github.com/sk1fy/team-os-backend/pkg/richtext"
@@ -29,6 +30,9 @@ func (s *Service) HandleKbArticleUpdated(ctx context.Context, event eventbus.Eve
 	if payload.GetContent() == nil {
 		return false, fmt.Errorf("kb.article.updated %s: content is empty", payload.GetArticleId())
 	}
+	if payload.GetVersion() < 1 {
+		return false, fmt.Errorf("kb.article.updated %s: invalid version %d", payload.GetArticleId(), payload.GetVersion())
+	}
 	content, err := json.Marshal(payload.GetContent().AsMap())
 	if err != nil || richtext.Validate(content) != nil {
 		return false, fmt.Errorf("kb.article.updated %s: content is not valid TipTap JSON", payload.GetArticleId())
@@ -38,6 +42,18 @@ func (s *Service) HandleKbArticleUpdated(ctx context.Context, event eventbus.Eve
 			CompanyID: companyID, Content: content,
 			NewTitle: payload.GetTitle(), ArticleID: nullUUIDValue(articleID),
 		})
+		if updateErr != nil {
+			return updateErr
+		}
+		_, updateErr = queries.ReplicateLinkedArticleInDraftVersions(
+			ctx,
+			db.ReplicateLinkedArticleInDraftVersionsParams{
+				NewTitle: payload.GetTitle(), Content: content,
+				ArticleVersion: pgtype.Int4{Int32: int32(payload.GetVersion()), Valid: true},
+				CompanyID:      companyID,
+				ArticleID:      nullUUIDValue(articleID),
+			},
+		)
 		return updateErr
 	})
 }
@@ -58,6 +74,27 @@ func (s *Service) HandleKbArticleDeleted(ctx context.Context, event eventbus.Eve
 			CompanyID: companyID, ArticleID: nullUUIDValue(articleID),
 		})
 		return updateErr
+	})
+}
+
+// HandleCompanyCreated provisions the tenant-local immutable system template
+// catalog. The seed function and the processed-events guard make delivery and
+// replay safe.
+func (s *Service) HandleCompanyCreated(ctx context.Context, event eventbus.Event) (bool, error) {
+	var payload eventsv1.CompanyCreatedPayload
+	if err := (protojson.UnmarshalOptions{DiscardUnknown: true}).Unmarshal(event.Payload, &payload); err != nil {
+		return false, fmt.Errorf("decode company.company.created payload: %w", err)
+	}
+	payloadCompanyID, err := uuid.Parse(payload.GetCompanyId())
+	if err != nil {
+		return false, fmt.Errorf("company.company.created: invalid companyId %q", payload.GetCompanyId())
+	}
+	if payloadCompanyID.String() != event.CompanyID {
+		return false, errors.New("company.company.created: payload companyId differs from envelope")
+	}
+	return s.handleIdempotent(ctx, event, func(queries *db.Queries, companyID uuid.UUID) error {
+		_, seedErr := queries.SeedSystemCourseTemplates(ctx, companyID)
+		return seedErr
 	})
 }
 
@@ -99,10 +136,16 @@ func (s *Service) handleOrgUserSnapshot(
 	}
 	active := user.GetStatus() == eventsv1.OrgUserStatus_ORG_USER_STATUS_ACTIVE
 	return s.handleIdempotent(ctx, event, func(queries *db.Queries, companyID uuid.UUID) error {
-		return queries.RecomputeUserAssignmentMembership(ctx, db.RecomputeUserAssignmentMembershipParams{
+		if err := queries.RecomputeUserAssignmentMembership(ctx, db.RecomputeUserAssignmentMembershipParams{
 			UserID: userID, Active: active, PositionIds: positionIDs,
 			DepartmentIds: departmentIDs, CompanyID: companyID,
-		})
+		}); err != nil {
+			return err
+		}
+		if active {
+			return s.ensureUserAssignmentEnrollments(ctx, queries, companyID, userID)
+		}
+		return nil
 	})
 }
 
@@ -149,9 +192,40 @@ func (s *Service) HandleOrgPositionDeleted(ctx context.Context, event eventbus.E
 			}); err != nil {
 				return err
 			}
+			if err := s.ensureUserAssignmentEnrollments(ctx, queries, companyID, userID); err != nil {
+				return err
+			}
 		}
 		return nil
 	})
+}
+
+func (s *Service) ensureUserAssignmentEnrollments(
+	ctx context.Context,
+	queries *db.Queries,
+	companyID, userID uuid.UUID,
+) error {
+	assignments, err := queries.GetUserAssignments(ctx, db.GetUserAssignmentsParams{
+		CompanyID: companyID, UserID: userID,
+	})
+	if err != nil {
+		return err
+	}
+	for _, assignment := range assignments {
+		attemptNumber, numberErr := queries.GetNextUserCourseAttemptNumber(ctx, db.GetNextUserCourseAttemptNumberParams{
+			CompanyID: companyID, UserID: nullUUID(&userID), CourseID: assignment.CourseID,
+		})
+		if numberErr != nil {
+			return numberErr
+		}
+		if _, createErr := queries.CreateInternalEnrollmentForAssignment(ctx, db.CreateInternalEnrollmentForAssignmentParams{
+			ID: uuid.New(), CompanyID: companyID, AssignmentID: assignment.ID,
+			UserID: nullUUID(&userID), AttemptNumber: attemptNumber, CreatedAt: s.now().UTC(),
+		}); createErr != nil {
+			return createErr
+		}
+	}
+	return nil
 }
 
 func parseEventUUIDs(values []string, field string) ([]uuid.UUID, error) {

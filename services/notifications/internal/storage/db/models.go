@@ -8,7 +8,28 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
+
+// Durable state for outbound email. Verification codes and message bodies are intentionally not persisted.
+type EmailDelivery struct {
+	ID          uuid.UUID `json:"id"`
+	EventID     uuid.UUID `json:"event_id"`
+	CompanyID   uuid.UUID `json:"company_id"`
+	ChallengeID uuid.UUID `json:"challenge_id"`
+	Purpose     string    `json:"purpose"`
+	// SHA-256(company_id || NUL || normalized_email); raw email is intentionally not persisted
+	RecipientFingerprint []byte             `json:"recipient_fingerprint"`
+	Status               string             `json:"status"`
+	Attempts             int32              `json:"attempts"`
+	MaxAttempts          int32              `json:"max_attempts"`
+	ExpiresAt            time.Time          `json:"expires_at"`
+	LastAttemptAt        pgtype.Timestamptz `json:"last_attempt_at"`
+	SentAt               pgtype.Timestamptz `json:"sent_at"`
+	LastErrorCode        *string            `json:"last_error_code"`
+	CreatedAt            time.Time          `json:"created_at"`
+	UpdatedAt            time.Time          `json:"updated_at"`
+}
 
 type Notification struct {
 	ID        uuid.UUID `json:"id"`

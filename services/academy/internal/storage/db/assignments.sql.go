@@ -16,7 +16,8 @@ import (
 const clearDeletedPositionAssignment = `-- name: ClearDeletedPositionAssignment :exec
 UPDATE assignments
 SET resolved_user_ids = '{}'
-WHERE company_id = $1 AND assignee_type = 'position' AND assignee_id = $2
+WHERE company_id = $1 AND revoked_at IS NULL
+  AND assignee_type = 'position' AND assignee_id = $2
 `
 
 type ClearDeletedPositionAssignmentParams struct {
@@ -31,12 +32,12 @@ func (q *Queries) ClearDeletedPositionAssignment(ctx context.Context, arg ClearD
 
 const createAssignment = `-- name: CreateAssignment :one
 INSERT INTO assignments (
-    id, company_id, course_id, assignee_type, assignee_id, invite_token,
+    id, company_id, course_id, course_version_id, assignee_type, assignee_id, invite_token,
     due_date, resolved_user_ids, assigned_by_id, created_at
 )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 ON CONFLICT DO NOTHING
-RETURNING id, company_id, course_id, assignee_type, assignee_id, invite_token,
+RETURNING id, company_id, course_id, course_version_id, assignee_type, assignee_id, invite_token,
     due_date, resolved_user_ids, due_soon_sent_at, assigned_by_id, created_at
 `
 
@@ -44,6 +45,7 @@ type CreateAssignmentParams struct {
 	ID              uuid.UUID          `json:"id"`
 	CompanyID       uuid.UUID          `json:"company_id"`
 	CourseID        uuid.UUID          `json:"course_id"`
+	CourseVersionID uuid.UUID          `json:"course_version_id"`
 	AssigneeType    string             `json:"assignee_type"`
 	AssigneeID      uuid.NullUUID      `json:"assignee_id"`
 	InviteToken     pgtype.Text        `json:"invite_token"`
@@ -53,11 +55,27 @@ type CreateAssignmentParams struct {
 	CreatedAt       time.Time          `json:"created_at"`
 }
 
-func (q *Queries) CreateAssignment(ctx context.Context, arg CreateAssignmentParams) (Assignment, error) {
+type CreateAssignmentRow struct {
+	ID              uuid.UUID          `json:"id"`
+	CompanyID       uuid.UUID          `json:"company_id"`
+	CourseID        uuid.UUID          `json:"course_id"`
+	CourseVersionID uuid.UUID          `json:"course_version_id"`
+	AssigneeType    string             `json:"assignee_type"`
+	AssigneeID      uuid.NullUUID      `json:"assignee_id"`
+	InviteToken     pgtype.Text        `json:"invite_token"`
+	DueDate         pgtype.Timestamptz `json:"due_date"`
+	ResolvedUserIds []uuid.UUID        `json:"resolved_user_ids"`
+	DueSoonSentAt   pgtype.Timestamptz `json:"due_soon_sent_at"`
+	AssignedByID    uuid.UUID          `json:"assigned_by_id"`
+	CreatedAt       time.Time          `json:"created_at"`
+}
+
+func (q *Queries) CreateAssignment(ctx context.Context, arg CreateAssignmentParams) (CreateAssignmentRow, error) {
 	row := q.db.QueryRow(ctx, createAssignment,
 		arg.ID,
 		arg.CompanyID,
 		arg.CourseID,
+		arg.CourseVersionID,
 		arg.AssigneeType,
 		arg.AssigneeID,
 		arg.InviteToken,
@@ -66,11 +84,12 @@ func (q *Queries) CreateAssignment(ctx context.Context, arg CreateAssignmentPara
 		arg.AssignedByID,
 		arg.CreatedAt,
 	)
-	var i Assignment
+	var i CreateAssignmentRow
 	err := row.Scan(
 		&i.ID,
 		&i.CompanyID,
 		&i.CourseID,
+		&i.CourseVersionID,
 		&i.AssigneeType,
 		&i.AssigneeID,
 		&i.InviteToken,
@@ -84,12 +103,13 @@ func (q *Queries) CreateAssignment(ctx context.Context, arg CreateAssignmentPara
 }
 
 const getAssignmentByTarget = `-- name: GetAssignmentByTarget :one
-SELECT id, company_id, course_id, assignee_type, assignee_id, invite_token,
+SELECT id, company_id, course_id, course_version_id, assignee_type, assignee_id, invite_token,
     due_date, resolved_user_ids, due_soon_sent_at, assigned_by_id, created_at
 FROM assignments
 WHERE company_id = $1
   AND course_id = $2
   AND assignee_type = $3
+  AND revoked_at IS NULL
   AND assignee_id IS NOT DISTINCT FROM $4::uuid
 `
 
@@ -100,18 +120,85 @@ type GetAssignmentByTargetParams struct {
 	AssigneeID   uuid.NullUUID `json:"assignee_id"`
 }
 
-func (q *Queries) GetAssignmentByTarget(ctx context.Context, arg GetAssignmentByTargetParams) (Assignment, error) {
+type GetAssignmentByTargetRow struct {
+	ID              uuid.UUID          `json:"id"`
+	CompanyID       uuid.UUID          `json:"company_id"`
+	CourseID        uuid.UUID          `json:"course_id"`
+	CourseVersionID uuid.UUID          `json:"course_version_id"`
+	AssigneeType    string             `json:"assignee_type"`
+	AssigneeID      uuid.NullUUID      `json:"assignee_id"`
+	InviteToken     pgtype.Text        `json:"invite_token"`
+	DueDate         pgtype.Timestamptz `json:"due_date"`
+	ResolvedUserIds []uuid.UUID        `json:"resolved_user_ids"`
+	DueSoonSentAt   pgtype.Timestamptz `json:"due_soon_sent_at"`
+	AssignedByID    uuid.UUID          `json:"assigned_by_id"`
+	CreatedAt       time.Time          `json:"created_at"`
+}
+
+func (q *Queries) GetAssignmentByTarget(ctx context.Context, arg GetAssignmentByTargetParams) (GetAssignmentByTargetRow, error) {
 	row := q.db.QueryRow(ctx, getAssignmentByTarget,
 		arg.CompanyID,
 		arg.CourseID,
 		arg.AssigneeType,
 		arg.AssigneeID,
 	)
-	var i Assignment
+	var i GetAssignmentByTargetRow
 	err := row.Scan(
 		&i.ID,
 		&i.CompanyID,
 		&i.CourseID,
+		&i.CourseVersionID,
+		&i.AssigneeType,
+		&i.AssigneeID,
+		&i.InviteToken,
+		&i.DueDate,
+		&i.ResolvedUserIds,
+		&i.DueSoonSentAt,
+		&i.AssignedByID,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const getAssignmentForUpdate = `-- name: GetAssignmentForUpdate :one
+SELECT id, company_id, course_id, course_version_id, assignee_type,
+    assignee_id, invite_token, due_date, resolved_user_ids, due_soon_sent_at,
+    assigned_by_id, created_at
+FROM assignments
+WHERE company_id = $1
+  AND id = $2
+  AND revoked_at IS NULL
+FOR UPDATE
+`
+
+type GetAssignmentForUpdateParams struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	ID        uuid.UUID `json:"id"`
+}
+
+type GetAssignmentForUpdateRow struct {
+	ID              uuid.UUID          `json:"id"`
+	CompanyID       uuid.UUID          `json:"company_id"`
+	CourseID        uuid.UUID          `json:"course_id"`
+	CourseVersionID uuid.UUID          `json:"course_version_id"`
+	AssigneeType    string             `json:"assignee_type"`
+	AssigneeID      uuid.NullUUID      `json:"assignee_id"`
+	InviteToken     pgtype.Text        `json:"invite_token"`
+	DueDate         pgtype.Timestamptz `json:"due_date"`
+	ResolvedUserIds []uuid.UUID        `json:"resolved_user_ids"`
+	DueSoonSentAt   pgtype.Timestamptz `json:"due_soon_sent_at"`
+	AssignedByID    uuid.UUID          `json:"assigned_by_id"`
+	CreatedAt       time.Time          `json:"created_at"`
+}
+
+func (q *Queries) GetAssignmentForUpdate(ctx context.Context, arg GetAssignmentForUpdateParams) (GetAssignmentForUpdateRow, error) {
+	row := q.db.QueryRow(ctx, getAssignmentForUpdate, arg.CompanyID, arg.ID)
+	var i GetAssignmentForUpdateRow
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.CourseID,
+		&i.CourseVersionID,
 		&i.AssigneeType,
 		&i.AssigneeID,
 		&i.InviteToken,
@@ -125,26 +212,42 @@ func (q *Queries) GetAssignmentByTarget(ctx context.Context, arg GetAssignmentBy
 }
 
 const getAssignments = `-- name: GetAssignments :many
-SELECT id, company_id, course_id, assignee_type, assignee_id, invite_token,
+SELECT id, company_id, course_id, course_version_id, assignee_type, assignee_id, invite_token,
     due_date, resolved_user_ids, due_soon_sent_at, assigned_by_id, created_at
 FROM assignments
-WHERE company_id = $1
+WHERE company_id = $1 AND revoked_at IS NULL
 ORDER BY created_at, id
 `
 
-func (q *Queries) GetAssignments(ctx context.Context, companyID uuid.UUID) ([]Assignment, error) {
+type GetAssignmentsRow struct {
+	ID              uuid.UUID          `json:"id"`
+	CompanyID       uuid.UUID          `json:"company_id"`
+	CourseID        uuid.UUID          `json:"course_id"`
+	CourseVersionID uuid.UUID          `json:"course_version_id"`
+	AssigneeType    string             `json:"assignee_type"`
+	AssigneeID      uuid.NullUUID      `json:"assignee_id"`
+	InviteToken     pgtype.Text        `json:"invite_token"`
+	DueDate         pgtype.Timestamptz `json:"due_date"`
+	ResolvedUserIds []uuid.UUID        `json:"resolved_user_ids"`
+	DueSoonSentAt   pgtype.Timestamptz `json:"due_soon_sent_at"`
+	AssignedByID    uuid.UUID          `json:"assigned_by_id"`
+	CreatedAt       time.Time          `json:"created_at"`
+}
+
+func (q *Queries) GetAssignments(ctx context.Context, companyID uuid.UUID) ([]GetAssignmentsRow, error) {
 	rows, err := q.db.Query(ctx, getAssignments, companyID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []Assignment{}
+	items := []GetAssignmentsRow{}
 	for rows.Next() {
-		var i Assignment
+		var i GetAssignmentsRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.CompanyID,
 			&i.CourseID,
+			&i.CourseVersionID,
 			&i.AssigneeType,
 			&i.AssigneeID,
 			&i.InviteToken,
@@ -166,14 +269,15 @@ func (q *Queries) GetAssignments(ctx context.Context, companyID uuid.UUID) ([]As
 
 const getDueSoonAssignments = `-- name: GetDueSoonAssignments :many
 SELECT a.id, a.company_id, a.course_id, a.assignee_type, a.assignee_id,
-    a.invite_token, a.resolved_user_ids, a.assigned_by_id, a.created_at,
-    c.title AS course_title,
-    coalesce(a.due_date, a.created_at + make_interval(days => c.deadline_days)) AS effective_due_date
+    a.course_version_id, a.invite_token, a.resolved_user_ids, a.assigned_by_id, a.created_at,
+    v.title AS course_title,
+    coalesce(a.due_date, a.created_at + make_interval(days => v.default_internal_deadline_days)) AS effective_due_date
 FROM assignments a
-JOIN courses c ON c.id = a.course_id
+JOIN course_versions v ON v.id = a.course_version_id
 WHERE a.due_soon_sent_at IS NULL
-  AND (a.due_date IS NOT NULL OR c.deadline_days IS NOT NULL)
-  AND coalesce(a.due_date, a.created_at + make_interval(days => c.deadline_days))
+  AND a.revoked_at IS NULL
+  AND (a.due_date IS NOT NULL OR v.default_internal_deadline_days IS NOT NULL)
+  AND coalesce(a.due_date, a.created_at + make_interval(days => v.default_internal_deadline_days))
       <= $1::timestamptz
 ORDER BY a.created_at, a.id
 FOR UPDATE OF a SKIP LOCKED
@@ -185,6 +289,7 @@ type GetDueSoonAssignmentsRow struct {
 	CourseID         uuid.UUID          `json:"course_id"`
 	AssigneeType     string             `json:"assignee_type"`
 	AssigneeID       uuid.NullUUID      `json:"assignee_id"`
+	CourseVersionID  uuid.UUID          `json:"course_version_id"`
 	InviteToken      pgtype.Text        `json:"invite_token"`
 	ResolvedUserIds  []uuid.UUID        `json:"resolved_user_ids"`
 	AssignedByID     uuid.UUID          `json:"assigned_by_id"`
@@ -208,6 +313,7 @@ func (q *Queries) GetDueSoonAssignments(ctx context.Context, threshold time.Time
 			&i.CourseID,
 			&i.AssigneeType,
 			&i.AssigneeID,
+			&i.CourseVersionID,
 			&i.InviteToken,
 			&i.ResolvedUserIds,
 			&i.AssignedByID,
@@ -226,12 +332,13 @@ func (q *Queries) GetDueSoonAssignments(ctx context.Context, threshold time.Time
 }
 
 const getOverdueAssignments = `-- name: GetOverdueAssignments :many
-SELECT a.id, a.company_id, a.course_id, a.resolved_user_ids,
-    coalesce(a.due_date, a.created_at + make_interval(days => c.deadline_days)) AS effective_due_date
+SELECT a.id, a.company_id, a.course_id, a.course_version_id, a.resolved_user_ids,
+    coalesce(a.due_date, a.created_at + make_interval(days => v.default_internal_deadline_days)) AS effective_due_date
 FROM assignments a
-JOIN courses c ON c.id = a.course_id
-WHERE (a.due_date IS NOT NULL OR c.deadline_days IS NOT NULL)
-  AND coalesce(a.due_date, a.created_at + make_interval(days => c.deadline_days))
+JOIN course_versions v ON v.id = a.course_version_id
+WHERE (a.due_date IS NOT NULL OR v.default_internal_deadline_days IS NOT NULL)
+  AND a.revoked_at IS NULL
+  AND coalesce(a.due_date, a.created_at + make_interval(days => v.default_internal_deadline_days))
       < $1::timestamptz
 ORDER BY a.created_at, a.id
 `
@@ -240,6 +347,7 @@ type GetOverdueAssignmentsRow struct {
 	ID               uuid.UUID          `json:"id"`
 	CompanyID        uuid.UUID          `json:"company_id"`
 	CourseID         uuid.UUID          `json:"course_id"`
+	CourseVersionID  uuid.UUID          `json:"course_version_id"`
 	ResolvedUserIds  []uuid.UUID        `json:"resolved_user_ids"`
 	EffectiveDueDate pgtype.Timestamptz `json:"effective_due_date"`
 }
@@ -257,6 +365,7 @@ func (q *Queries) GetOverdueAssignments(ctx context.Context, now time.Time) ([]G
 			&i.ID,
 			&i.CompanyID,
 			&i.CourseID,
+			&i.CourseVersionID,
 			&i.ResolvedUserIds,
 			&i.EffectiveDueDate,
 		); err != nil {
@@ -271,10 +380,11 @@ func (q *Queries) GetOverdueAssignments(ctx context.Context, now time.Time) ([]G
 }
 
 const getUserAssignments = `-- name: GetUserAssignments :many
-SELECT id, company_id, course_id, assignee_type, assignee_id, invite_token,
+SELECT id, company_id, course_id, course_version_id, assignee_type, assignee_id, invite_token,
     due_date, resolved_user_ids, due_soon_sent_at, assigned_by_id, created_at
 FROM assignments
-WHERE company_id = $1 AND $2::uuid = ANY(resolved_user_ids)
+WHERE company_id = $1 AND revoked_at IS NULL
+  AND $2::uuid = ANY(resolved_user_ids)
 ORDER BY created_at, id
 `
 
@@ -283,19 +393,35 @@ type GetUserAssignmentsParams struct {
 	UserID    uuid.UUID `json:"user_id"`
 }
 
-func (q *Queries) GetUserAssignments(ctx context.Context, arg GetUserAssignmentsParams) ([]Assignment, error) {
+type GetUserAssignmentsRow struct {
+	ID              uuid.UUID          `json:"id"`
+	CompanyID       uuid.UUID          `json:"company_id"`
+	CourseID        uuid.UUID          `json:"course_id"`
+	CourseVersionID uuid.UUID          `json:"course_version_id"`
+	AssigneeType    string             `json:"assignee_type"`
+	AssigneeID      uuid.NullUUID      `json:"assignee_id"`
+	InviteToken     pgtype.Text        `json:"invite_token"`
+	DueDate         pgtype.Timestamptz `json:"due_date"`
+	ResolvedUserIds []uuid.UUID        `json:"resolved_user_ids"`
+	DueSoonSentAt   pgtype.Timestamptz `json:"due_soon_sent_at"`
+	AssignedByID    uuid.UUID          `json:"assigned_by_id"`
+	CreatedAt       time.Time          `json:"created_at"`
+}
+
+func (q *Queries) GetUserAssignments(ctx context.Context, arg GetUserAssignmentsParams) ([]GetUserAssignmentsRow, error) {
 	rows, err := q.db.Query(ctx, getUserAssignments, arg.CompanyID, arg.UserID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []Assignment{}
+	items := []GetUserAssignmentsRow{}
 	for rows.Next() {
-		var i Assignment
+		var i GetUserAssignmentsRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.CompanyID,
 			&i.CourseID,
+			&i.CourseVersionID,
 			&i.AssigneeType,
 			&i.AssigneeID,
 			&i.InviteToken,
@@ -348,6 +474,7 @@ SET resolved_user_ids = ARRAY(
     ) AS candidate
 )
 WHERE company_id = $5
+  AND revoked_at IS NULL
   AND assignee_type IN ('user', 'position', 'department')
 `
 
@@ -368,4 +495,117 @@ func (q *Queries) RecomputeUserAssignmentMembership(ctx context.Context, arg Rec
 		arg.CompanyID,
 	)
 	return err
+}
+
+const revokeAssignment = `-- name: RevokeAssignment :execrows
+UPDATE assignments
+SET revoked_at = $1,
+    revoked_by_id = $2
+WHERE company_id = $3
+  AND id = $4
+  AND revoked_at IS NULL
+`
+
+type RevokeAssignmentParams struct {
+	RevokedAt   pgtype.Timestamptz `json:"revoked_at"`
+	RevokedByID uuid.NullUUID      `json:"revoked_by_id"`
+	CompanyID   uuid.UUID          `json:"company_id"`
+	ID          uuid.UUID          `json:"id"`
+}
+
+func (q *Queries) RevokeAssignment(ctx context.Context, arg RevokeAssignmentParams) (int64, error) {
+	result, err := q.db.Exec(ctx, revokeAssignment,
+		arg.RevokedAt,
+		arg.RevokedByID,
+		arg.CompanyID,
+		arg.ID,
+	)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
+const revokeAssignmentEnrollments = `-- name: RevokeAssignmentEnrollments :execrows
+UPDATE course_enrollments
+SET access_status = 'revoked',
+    updated_at = $1
+WHERE company_id = $2
+  AND source_type = 'assignment'
+  AND source_id = $3
+  AND progress_status <> 'completed'
+  AND access_status NOT IN ('revoked', 'closed')
+`
+
+type RevokeAssignmentEnrollmentsParams struct {
+	RevokedAt    time.Time     `json:"revoked_at"`
+	CompanyID    uuid.UUID     `json:"company_id"`
+	AssignmentID uuid.NullUUID `json:"assignment_id"`
+}
+
+func (q *Queries) RevokeAssignmentEnrollments(ctx context.Context, arg RevokeAssignmentEnrollmentsParams) (int64, error) {
+	result, err := q.db.Exec(ctx, revokeAssignmentEnrollments, arg.RevokedAt, arg.CompanyID, arg.AssignmentID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
+const updateAssignmentCourseVersion = `-- name: UpdateAssignmentCourseVersion :one
+UPDATE assignments AS assignment
+SET course_version_id = version.id,
+    due_soon_sent_at = NULL
+FROM course_versions AS version
+WHERE assignment.company_id = $1
+  AND assignment.id = $2
+  AND version.company_id = assignment.company_id
+  AND version.course_id = assignment.course_id
+  AND version.id = $3
+  AND version.status = 'published'
+RETURNING assignment.id, assignment.company_id, assignment.course_id,
+    assignment.course_version_id, assignment.assignee_type,
+    assignment.assignee_id, assignment.invite_token, assignment.due_date,
+    assignment.resolved_user_ids, assignment.due_soon_sent_at,
+    assignment.assigned_by_id, assignment.created_at
+`
+
+type UpdateAssignmentCourseVersionParams struct {
+	CompanyID       uuid.UUID `json:"company_id"`
+	ID              uuid.UUID `json:"id"`
+	CourseVersionID uuid.UUID `json:"course_version_id"`
+}
+
+type UpdateAssignmentCourseVersionRow struct {
+	ID              uuid.UUID          `json:"id"`
+	CompanyID       uuid.UUID          `json:"company_id"`
+	CourseID        uuid.UUID          `json:"course_id"`
+	CourseVersionID uuid.UUID          `json:"course_version_id"`
+	AssigneeType    string             `json:"assignee_type"`
+	AssigneeID      uuid.NullUUID      `json:"assignee_id"`
+	InviteToken     pgtype.Text        `json:"invite_token"`
+	DueDate         pgtype.Timestamptz `json:"due_date"`
+	ResolvedUserIds []uuid.UUID        `json:"resolved_user_ids"`
+	DueSoonSentAt   pgtype.Timestamptz `json:"due_soon_sent_at"`
+	AssignedByID    uuid.UUID          `json:"assigned_by_id"`
+	CreatedAt       time.Time          `json:"created_at"`
+}
+
+func (q *Queries) UpdateAssignmentCourseVersion(ctx context.Context, arg UpdateAssignmentCourseVersionParams) (UpdateAssignmentCourseVersionRow, error) {
+	row := q.db.QueryRow(ctx, updateAssignmentCourseVersion, arg.CompanyID, arg.ID, arg.CourseVersionID)
+	var i UpdateAssignmentCourseVersionRow
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.CourseID,
+		&i.CourseVersionID,
+		&i.AssigneeType,
+		&i.AssigneeID,
+		&i.InviteToken,
+		&i.DueDate,
+		&i.ResolvedUserIds,
+		&i.DueSoonSentAt,
+		&i.AssignedByID,
+		&i.CreatedAt,
+	)
+	return i, err
 }

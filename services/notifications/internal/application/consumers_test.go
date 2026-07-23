@@ -12,6 +12,8 @@ func TestEventNotificationUsesRussianTextAndTypes(t *testing.T) {
 		{"teamos.tasks.task.assigned.v1", "task_assigned", "Вам назначена задача: Отчёт"},
 		{"teamos.tasks.comment.added.v1", "task_comment", "Новый комментарий к задаче: Отчёт"},
 		{"teamos.academy.course.due_soon.v1", "course_due", "Скоро срок курса: Онбординг"},
+		{"teamos.academy.course_version.published.v1", "course_published", "Партнёр опубликовал курс: Онбординг"},
+		{"teamos.academy.course_distribution.changed.v1", "course_restriction", "Изменены ограничения курса: Онбординг"},
 		{"teamos.kb.mention.created.v1", "mention", "Вас упомянули: Правила"},
 	}
 	for _, test := range tests {
@@ -20,7 +22,7 @@ func TestEventNotificationUsesRussianTextAndTypes(t *testing.T) {
 			switch test.subject {
 			case "teamos.tasks.task.assigned.v1", "teamos.tasks.comment.added.v1":
 				p.Title = "Отчёт"
-			case "teamos.academy.course.due_soon.v1":
+			case "teamos.academy.course.due_soon.v1", "teamos.academy.course_version.published.v1", "teamos.academy.course_distribution.changed.v1":
 				p.CourseTitle = "Онбординг"
 			default:
 				p.Title = "Правила"

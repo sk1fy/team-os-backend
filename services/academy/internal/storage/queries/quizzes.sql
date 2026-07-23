@@ -34,9 +34,10 @@ WHERE company_id = $1 AND id = $2
 RETURNING id, company_id, lesson_id, questions, passing_score, max_attempts;
 
 -- name: GetQuizAttempts :many
-SELECT id, company_id, quiz_id, user_id, score, passed, pending_review, created_at
+SELECT id, company_id, quiz_id, user_id,
+    score, passed, pending_review, created_at
 FROM quiz_attempts
-WHERE company_id = $1
+WHERE company_id = $1 AND quiz_id IS NOT NULL AND user_id IS NOT NULL
 ORDER BY created_at, id;
 
 -- name: GetQuizAttemptsWithCourse :many
@@ -45,5 +46,5 @@ SELECT qa.id, qa.company_id, qa.quiz_id, qa.user_id, qa.score, qa.passed,
 FROM quiz_attempts qa
 JOIN quizzes q ON q.id = qa.quiz_id
 JOIN lessons l ON l.id = q.lesson_id
-WHERE qa.company_id = $1
+WHERE qa.company_id = $1 AND qa.user_id IS NOT NULL
 ORDER BY qa.created_at, qa.id;

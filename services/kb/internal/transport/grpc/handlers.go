@@ -179,10 +179,25 @@ func (s *Server) CreateArticle(ctx context.Context, request *kbv1.CreateArticleR
 	if err != nil {
 		return nil, err
 	}
-	article, err := s.application.CreateArticle(ctx, actor, application.CreateArticleInput{
+	input := application.CreateArticleInput{
 		SectionID: sectionID, Title: request.GetTitle(), Content: content,
 		Status: status, RequiresAcknowledgement: request.GetRequiresAcknowledgement(),
-	})
+	}
+	if request.PartnerAccess != nil {
+		partnerAccess, mapErr := partnerAccessFromProto(request.PartnerAccess)
+		if mapErr != nil {
+			return nil, mapErr
+		}
+		input.PartnerAccess = &partnerAccess
+	}
+	if request.PartnerReusePolicy != nil {
+		reusePolicy, mapErr := partnerReusePolicyFromProto(request.GetPartnerReusePolicy())
+		if mapErr != nil {
+			return nil, mapErr
+		}
+		input.PartnerReusePolicy = &reusePolicy
+	}
+	article, err := s.application.CreateArticle(ctx, actor, input)
 	if err != nil {
 		return nil, transportError(err)
 	}
@@ -237,6 +252,20 @@ func (s *Server) UpdateArticle(ctx context.Context, request *kbv1.UpdateArticleR
 		version := int32(request.GetExpectedVersion())
 		input.ExpectedVersion = &version
 	}
+	if request.PartnerAccess != nil {
+		partnerAccess, mapErr := partnerAccessFromProto(request.PartnerAccess)
+		if mapErr != nil {
+			return nil, mapErr
+		}
+		input.PartnerAccess = &partnerAccess
+	}
+	if request.PartnerReusePolicy != nil {
+		reusePolicy, mapErr := partnerReusePolicyFromProto(request.GetPartnerReusePolicy())
+		if mapErr != nil {
+			return nil, mapErr
+		}
+		input.PartnerReusePolicy = &reusePolicy
+	}
 	article, err := s.application.UpdateArticle(ctx, actor, input)
 	if err != nil {
 		return nil, transportError(err)
@@ -246,6 +275,110 @@ func (s *Server) UpdateArticle(ctx context.Context, request *kbv1.UpdateArticleR
 		return nil, transportError(err)
 	}
 	return &kbv1.UpdateArticleResponse{Article: converted}, nil
+}
+
+func (s *Server) GetArticlePartnerPolicy(ctx context.Context, request *kbv1.GetArticlePartnerPolicyRequest) (*kbv1.GetArticlePartnerPolicyResponse, error) {
+	actor, err := s.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	articleID, err := parseUUID(request.GetArticleId())
+	if err != nil {
+		return nil, err
+	}
+	policy, err := s.application.GetArticlePartnerPolicy(ctx, actor, articleID)
+	if err != nil {
+		return nil, transportError(err)
+	}
+	converted, err := articlePartnerPolicyToProto(policy)
+	if err != nil {
+		return nil, err
+	}
+	return &kbv1.GetArticlePartnerPolicyResponse{Policy: converted}, nil
+}
+
+func (s *Server) UpdateArticlePartnerPolicy(ctx context.Context, request *kbv1.UpdateArticlePartnerPolicyRequest) (*kbv1.UpdateArticlePartnerPolicyResponse, error) {
+	actor, err := s.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	articleID, err := parseUUID(request.GetArticleId())
+	if err != nil {
+		return nil, err
+	}
+	access, err := partnerAccessFromProto(request.GetAccess())
+	if err != nil {
+		return nil, err
+	}
+	reusePolicy, err := partnerReusePolicyFromProto(request.GetReusePolicy())
+	if err != nil {
+		return nil, err
+	}
+	policy, err := s.application.UpdateArticlePartnerPolicy(ctx, actor, articleID, access, reusePolicy)
+	if err != nil {
+		return nil, transportError(err)
+	}
+	converted, err := articlePartnerPolicyToProto(policy)
+	if err != nil {
+		return nil, err
+	}
+	return &kbv1.UpdateArticlePartnerPolicyResponse{Policy: converted}, nil
+}
+
+func (s *Server) CheckArticleCourseCopyPermission(ctx context.Context, request *kbv1.CheckArticleCourseCopyPermissionRequest) (*kbv1.CheckArticleCourseCopyPermissionResponse, error) {
+	actor, err := s.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	articleID, err := parseUUID(request.GetArticleId())
+	if err != nil {
+		return nil, err
+	}
+	articleVersionID, err := parseOptionalUUID(request.ArticleVersionId)
+	if err != nil {
+		return nil, err
+	}
+	targetPartnerID, err := parseOptionalUUID(request.TargetPartnerId)
+	if err != nil {
+		return nil, err
+	}
+	permission, err := s.application.CheckArticleCourseCopyPermission(
+		ctx, actor, articleID, articleVersionID, targetPartnerID,
+	)
+	if err != nil {
+		return nil, transportError(err)
+	}
+	return courseCopyPermissionToProto(permission)
+}
+
+func (s *Server) GetArticleSnapshotForCourseCopy(ctx context.Context, request *kbv1.GetArticleSnapshotForCourseCopyRequest) (*kbv1.GetArticleSnapshotForCourseCopyResponse, error) {
+	actor, err := s.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	articleID, err := parseUUID(request.GetArticleId())
+	if err != nil {
+		return nil, err
+	}
+	articleVersionID, err := parseOptionalUUID(request.ArticleVersionId)
+	if err != nil {
+		return nil, err
+	}
+	targetPartnerID, err := parseOptionalUUID(request.TargetPartnerId)
+	if err != nil {
+		return nil, err
+	}
+	snapshot, err := s.application.GetArticleSnapshotForCourseCopy(
+		ctx, actor, articleID, articleVersionID, targetPartnerID,
+	)
+	if err != nil {
+		return nil, transportError(err)
+	}
+	converted, err := articleSnapshotToProto(snapshot)
+	if err != nil {
+		return nil, transportError(err)
+	}
+	return &kbv1.GetArticleSnapshotForCourseCopyResponse{Snapshot: converted}, nil
 }
 
 func (s *Server) RollbackArticle(ctx context.Context, request *kbv1.RollbackArticleRequest) (*kbv1.RollbackArticleResponse, error) {

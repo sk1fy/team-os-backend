@@ -19,22 +19,26 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	KbService_GetSections_FullMethodName         = "/teamos.kb.v1.KbService/GetSections"
-	KbService_CreateSection_FullMethodName       = "/teamos.kb.v1.KbService/CreateSection"
-	KbService_UpdateSection_FullMethodName       = "/teamos.kb.v1.KbService/UpdateSection"
-	KbService_DeleteSection_FullMethodName       = "/teamos.kb.v1.KbService/DeleteSection"
-	KbService_GetArticles_FullMethodName         = "/teamos.kb.v1.KbService/GetArticles"
-	KbService_GetArticle_FullMethodName          = "/teamos.kb.v1.KbService/GetArticle"
-	KbService_GetPublicArticle_FullMethodName    = "/teamos.kb.v1.KbService/GetPublicArticle"
-	KbService_CreateArticle_FullMethodName       = "/teamos.kb.v1.KbService/CreateArticle"
-	KbService_UpdateArticle_FullMethodName       = "/teamos.kb.v1.KbService/UpdateArticle"
-	KbService_RollbackArticle_FullMethodName     = "/teamos.kb.v1.KbService/RollbackArticle"
-	KbService_GetArticleVersions_FullMethodName  = "/teamos.kb.v1.KbService/GetArticleVersions"
-	KbService_GetAcknowledgements_FullMethodName = "/teamos.kb.v1.KbService/GetAcknowledgements"
-	KbService_AcknowledgeArticle_FullMethodName  = "/teamos.kb.v1.KbService/AcknowledgeArticle"
-	KbService_SearchArticles_FullMethodName      = "/teamos.kb.v1.KbService/SearchArticles"
-	KbService_GetArticlesByIds_FullMethodName    = "/teamos.kb.v1.KbService/GetArticlesByIds"
-	KbService_ArticleExists_FullMethodName       = "/teamos.kb.v1.KbService/ArticleExists"
+	KbService_GetSections_FullMethodName                      = "/teamos.kb.v1.KbService/GetSections"
+	KbService_CreateSection_FullMethodName                    = "/teamos.kb.v1.KbService/CreateSection"
+	KbService_UpdateSection_FullMethodName                    = "/teamos.kb.v1.KbService/UpdateSection"
+	KbService_DeleteSection_FullMethodName                    = "/teamos.kb.v1.KbService/DeleteSection"
+	KbService_GetArticles_FullMethodName                      = "/teamos.kb.v1.KbService/GetArticles"
+	KbService_GetArticle_FullMethodName                       = "/teamos.kb.v1.KbService/GetArticle"
+	KbService_GetPublicArticle_FullMethodName                 = "/teamos.kb.v1.KbService/GetPublicArticle"
+	KbService_CreateArticle_FullMethodName                    = "/teamos.kb.v1.KbService/CreateArticle"
+	KbService_UpdateArticle_FullMethodName                    = "/teamos.kb.v1.KbService/UpdateArticle"
+	KbService_RollbackArticle_FullMethodName                  = "/teamos.kb.v1.KbService/RollbackArticle"
+	KbService_GetArticleVersions_FullMethodName               = "/teamos.kb.v1.KbService/GetArticleVersions"
+	KbService_GetAcknowledgements_FullMethodName              = "/teamos.kb.v1.KbService/GetAcknowledgements"
+	KbService_AcknowledgeArticle_FullMethodName               = "/teamos.kb.v1.KbService/AcknowledgeArticle"
+	KbService_SearchArticles_FullMethodName                   = "/teamos.kb.v1.KbService/SearchArticles"
+	KbService_GetArticlesByIds_FullMethodName                 = "/teamos.kb.v1.KbService/GetArticlesByIds"
+	KbService_ArticleExists_FullMethodName                    = "/teamos.kb.v1.KbService/ArticleExists"
+	KbService_GetArticlePartnerPolicy_FullMethodName          = "/teamos.kb.v1.KbService/GetArticlePartnerPolicy"
+	KbService_UpdateArticlePartnerPolicy_FullMethodName       = "/teamos.kb.v1.KbService/UpdateArticlePartnerPolicy"
+	KbService_CheckArticleCourseCopyPermission_FullMethodName = "/teamos.kb.v1.KbService/CheckArticleCourseCopyPermission"
+	KbService_GetArticleSnapshotForCourseCopy_FullMethodName  = "/teamos.kb.v1.KbService/GetArticleSnapshotForCourseCopy"
 )
 
 // KbServiceClient is the client API for KbService service.
@@ -57,6 +61,13 @@ type KbServiceClient interface {
 	SearchArticles(ctx context.Context, in *SearchArticlesRequest, opts ...grpc.CallOption) (*SearchArticlesResponse, error)
 	GetArticlesByIds(ctx context.Context, in *GetArticlesByIdsRequest, opts ...grpc.CallOption) (*GetArticlesByIdsResponse, error)
 	ArticleExists(ctx context.Context, in *ArticleExistsRequest, opts ...grpc.CallOption) (*ArticleExistsResponse, error)
+	// Partner visibility and course reuse default to deny. Snapshot export is
+	// the only supported Academy integration: a partner course must never keep
+	// a live link to company KB content.
+	GetArticlePartnerPolicy(ctx context.Context, in *GetArticlePartnerPolicyRequest, opts ...grpc.CallOption) (*GetArticlePartnerPolicyResponse, error)
+	UpdateArticlePartnerPolicy(ctx context.Context, in *UpdateArticlePartnerPolicyRequest, opts ...grpc.CallOption) (*UpdateArticlePartnerPolicyResponse, error)
+	CheckArticleCourseCopyPermission(ctx context.Context, in *CheckArticleCourseCopyPermissionRequest, opts ...grpc.CallOption) (*CheckArticleCourseCopyPermissionResponse, error)
+	GetArticleSnapshotForCourseCopy(ctx context.Context, in *GetArticleSnapshotForCourseCopyRequest, opts ...grpc.CallOption) (*GetArticleSnapshotForCourseCopyResponse, error)
 }
 
 type kbServiceClient struct {
@@ -227,6 +238,46 @@ func (c *kbServiceClient) ArticleExists(ctx context.Context, in *ArticleExistsRe
 	return out, nil
 }
 
+func (c *kbServiceClient) GetArticlePartnerPolicy(ctx context.Context, in *GetArticlePartnerPolicyRequest, opts ...grpc.CallOption) (*GetArticlePartnerPolicyResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetArticlePartnerPolicyResponse)
+	err := c.cc.Invoke(ctx, KbService_GetArticlePartnerPolicy_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *kbServiceClient) UpdateArticlePartnerPolicy(ctx context.Context, in *UpdateArticlePartnerPolicyRequest, opts ...grpc.CallOption) (*UpdateArticlePartnerPolicyResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateArticlePartnerPolicyResponse)
+	err := c.cc.Invoke(ctx, KbService_UpdateArticlePartnerPolicy_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *kbServiceClient) CheckArticleCourseCopyPermission(ctx context.Context, in *CheckArticleCourseCopyPermissionRequest, opts ...grpc.CallOption) (*CheckArticleCourseCopyPermissionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CheckArticleCourseCopyPermissionResponse)
+	err := c.cc.Invoke(ctx, KbService_CheckArticleCourseCopyPermission_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *kbServiceClient) GetArticleSnapshotForCourseCopy(ctx context.Context, in *GetArticleSnapshotForCourseCopyRequest, opts ...grpc.CallOption) (*GetArticleSnapshotForCourseCopyResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetArticleSnapshotForCourseCopyResponse)
+	err := c.cc.Invoke(ctx, KbService_GetArticleSnapshotForCourseCopy_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // KbServiceServer is the server API for KbService service.
 // All implementations must embed UnimplementedKbServiceServer
 // for forward compatibility.
@@ -247,6 +298,13 @@ type KbServiceServer interface {
 	SearchArticles(context.Context, *SearchArticlesRequest) (*SearchArticlesResponse, error)
 	GetArticlesByIds(context.Context, *GetArticlesByIdsRequest) (*GetArticlesByIdsResponse, error)
 	ArticleExists(context.Context, *ArticleExistsRequest) (*ArticleExistsResponse, error)
+	// Partner visibility and course reuse default to deny. Snapshot export is
+	// the only supported Academy integration: a partner course must never keep
+	// a live link to company KB content.
+	GetArticlePartnerPolicy(context.Context, *GetArticlePartnerPolicyRequest) (*GetArticlePartnerPolicyResponse, error)
+	UpdateArticlePartnerPolicy(context.Context, *UpdateArticlePartnerPolicyRequest) (*UpdateArticlePartnerPolicyResponse, error)
+	CheckArticleCourseCopyPermission(context.Context, *CheckArticleCourseCopyPermissionRequest) (*CheckArticleCourseCopyPermissionResponse, error)
+	GetArticleSnapshotForCourseCopy(context.Context, *GetArticleSnapshotForCourseCopyRequest) (*GetArticleSnapshotForCourseCopyResponse, error)
 	mustEmbedUnimplementedKbServiceServer()
 }
 
@@ -304,6 +362,18 @@ func (UnimplementedKbServiceServer) GetArticlesByIds(context.Context, *GetArticl
 }
 func (UnimplementedKbServiceServer) ArticleExists(context.Context, *ArticleExistsRequest) (*ArticleExistsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArticleExists not implemented")
+}
+func (UnimplementedKbServiceServer) GetArticlePartnerPolicy(context.Context, *GetArticlePartnerPolicyRequest) (*GetArticlePartnerPolicyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetArticlePartnerPolicy not implemented")
+}
+func (UnimplementedKbServiceServer) UpdateArticlePartnerPolicy(context.Context, *UpdateArticlePartnerPolicyRequest) (*UpdateArticlePartnerPolicyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateArticlePartnerPolicy not implemented")
+}
+func (UnimplementedKbServiceServer) CheckArticleCourseCopyPermission(context.Context, *CheckArticleCourseCopyPermissionRequest) (*CheckArticleCourseCopyPermissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckArticleCourseCopyPermission not implemented")
+}
+func (UnimplementedKbServiceServer) GetArticleSnapshotForCourseCopy(context.Context, *GetArticleSnapshotForCourseCopyRequest) (*GetArticleSnapshotForCourseCopyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetArticleSnapshotForCourseCopy not implemented")
 }
 func (UnimplementedKbServiceServer) mustEmbedUnimplementedKbServiceServer() {}
 func (UnimplementedKbServiceServer) testEmbeddedByValue()                   {}
@@ -614,6 +684,78 @@ func _KbService_ArticleExists_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _KbService_GetArticlePartnerPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetArticlePartnerPolicyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(KbServiceServer).GetArticlePartnerPolicy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: KbService_GetArticlePartnerPolicy_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(KbServiceServer).GetArticlePartnerPolicy(ctx, req.(*GetArticlePartnerPolicyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _KbService_UpdateArticlePartnerPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateArticlePartnerPolicyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(KbServiceServer).UpdateArticlePartnerPolicy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: KbService_UpdateArticlePartnerPolicy_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(KbServiceServer).UpdateArticlePartnerPolicy(ctx, req.(*UpdateArticlePartnerPolicyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _KbService_CheckArticleCourseCopyPermission_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckArticleCourseCopyPermissionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(KbServiceServer).CheckArticleCourseCopyPermission(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: KbService_CheckArticleCourseCopyPermission_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(KbServiceServer).CheckArticleCourseCopyPermission(ctx, req.(*CheckArticleCourseCopyPermissionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _KbService_GetArticleSnapshotForCourseCopy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetArticleSnapshotForCourseCopyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(KbServiceServer).GetArticleSnapshotForCourseCopy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: KbService_GetArticleSnapshotForCourseCopy_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(KbServiceServer).GetArticleSnapshotForCourseCopy(ctx, req.(*GetArticleSnapshotForCourseCopyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // KbService_ServiceDesc is the grpc.ServiceDesc for KbService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -684,6 +826,22 @@ var KbService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ArticleExists",
 			Handler:    _KbService_ArticleExists_Handler,
+		},
+		{
+			MethodName: "GetArticlePartnerPolicy",
+			Handler:    _KbService_GetArticlePartnerPolicy_Handler,
+		},
+		{
+			MethodName: "UpdateArticlePartnerPolicy",
+			Handler:    _KbService_UpdateArticlePartnerPolicy_Handler,
+		},
+		{
+			MethodName: "CheckArticleCourseCopyPermission",
+			Handler:    _KbService_CheckArticleCourseCopyPermission_Handler,
+		},
+		{
+			MethodName: "GetArticleSnapshotForCourseCopy",
+			Handler:    _KbService_GetArticleSnapshotForCourseCopy_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

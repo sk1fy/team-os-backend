@@ -22,11 +22,347 @@ func courseToProto(value application.Course) *academyv1.Course {
 		CreatedAt:  timestamppb.New(value.CreatedAt.UTC()),
 		UpdatedAt:  timestamppb.New(value.UpdatedAt.UTC()),
 	}
+	ownerType := courseOwnerTypeToProto(value.OwnerType)
+	if ownerType != academyv1.CourseOwnerType_COURSE_OWNER_TYPE_UNSPECIFIED {
+		course.OwnerType = &ownerType
+	}
+	course.OwnerUserId = optionalUUIDString(value.OwnerUserID)
+	course.CurrentDraftVersionId = optionalUUIDString(value.CurrentDraftVersionID)
+	course.LatestPublishedVersionId = optionalUUIDString(value.LatestPublishedVersionID)
+	if value.CreatedByID != uuid.Nil {
+		createdByID := value.CreatedByID.String()
+		course.CreatedById = &createdByID
+	}
+	lifecycle := courseLifecycleToProto(value.LifecycleStatus)
+	if lifecycle != academyv1.CourseLifecycleStatus_COURSE_LIFECYCLE_STATUS_UNSPECIFIED {
+		course.LifecycleStatus = &lifecycle
+	}
+	distribution := courseDistributionToProto(value.DistributionStatus)
+	if distribution != academyv1.CourseDistributionStatus_COURSE_DISTRIBUTION_STATUS_UNSPECIFIED {
+		course.DistributionStatus = &distribution
+	}
 	if value.DeadlineDays != nil && *value.DeadlineDays > 0 {
 		days := uint32(*value.DeadlineDays)
 		course.DeadlineDays = &days
 	}
 	return course
+}
+
+func courseVersionToProto(value application.CourseVersion) *academyv1.CourseVersion {
+	result := &academyv1.CourseVersion{
+		Id: value.ID.String(), CourseId: value.CourseID.String(), Number: uint32(max(0, value.Number)),
+		Status: courseVersionStatusToProto(value.Status), Title: value.Title, Description: value.Description,
+		CoverFileId: optionalUUIDString(value.CoverFileID), CoverUrl: value.CoverURL,
+		Sequential: value.Sequential, CreatedById: value.CreatedByID.String(),
+		CreatedAt: timestamppb.New(value.CreatedAt.UTC()), PublishedById: optionalUUIDString(value.PublishedByID),
+		ContentHash: value.ContentHash,
+	}
+	if value.DefaultInternalDeadlineDays != nil && *value.DefaultInternalDeadlineDays > 0 {
+		days := uint32(*value.DefaultInternalDeadlineDays)
+		result.DefaultInternalDeadlineDays = &days
+	}
+	if value.PublishedAt != nil {
+		result.PublishedAt = timestamppb.New(value.PublishedAt.UTC())
+	}
+	return result
+}
+
+func courseVersionsToProto(values []application.CourseVersion) []*academyv1.CourseVersion {
+	result := make([]*academyv1.CourseVersion, len(values))
+	for index := range values {
+		result[index] = courseVersionToProto(values[index])
+	}
+	return result
+}
+
+func courseVersionStatusToProto(value string) academyv1.CourseVersionStatus {
+	switch value {
+	case "draft":
+		return academyv1.CourseVersionStatus_COURSE_VERSION_STATUS_DRAFT
+	case "published":
+		return academyv1.CourseVersionStatus_COURSE_VERSION_STATUS_PUBLISHED
+	case "retired":
+		return academyv1.CourseVersionStatus_COURSE_VERSION_STATUS_RETIRED
+	default:
+		return academyv1.CourseVersionStatus_COURSE_VERSION_STATUS_UNSPECIFIED
+	}
+}
+
+func courseVersionSectionToProto(value application.CourseVersionSection) *academyv1.CourseVersionSection {
+	return &academyv1.CourseVersionSection{
+		Id: value.ID.String(), CourseVersionId: value.CourseVersionID.String(),
+		Title: value.Title, Order: uint32(max(0, value.Order)),
+	}
+}
+
+func courseVersionSectionsToProto(values []application.CourseVersionSection) []*academyv1.CourseVersionSection {
+	result := make([]*academyv1.CourseVersionSection, len(values))
+	for index := range values {
+		result[index] = courseVersionSectionToProto(values[index])
+	}
+	return result
+}
+
+func courseLessonSourceTypeToProto(value string) academyv1.CourseLessonSourceType {
+	switch value {
+	case "manual":
+		return academyv1.CourseLessonSourceType_COURSE_LESSON_SOURCE_TYPE_MANUAL
+	case "kb_link":
+		return academyv1.CourseLessonSourceType_COURSE_LESSON_SOURCE_TYPE_KB_LINK
+	case "kb_snapshot":
+		return academyv1.CourseLessonSourceType_COURSE_LESSON_SOURCE_TYPE_KB_SNAPSHOT
+	case "template_snapshot":
+		return academyv1.CourseLessonSourceType_COURSE_LESSON_SOURCE_TYPE_TEMPLATE_SNAPSHOT
+	default:
+		return academyv1.CourseLessonSourceType_COURSE_LESSON_SOURCE_TYPE_UNSPECIFIED
+	}
+}
+
+func courseLessonSourceTypeFromProto(value academyv1.CourseLessonSourceType) (string, error) {
+	switch value {
+	case academyv1.CourseLessonSourceType_COURSE_LESSON_SOURCE_TYPE_MANUAL:
+		return "manual", nil
+	case academyv1.CourseLessonSourceType_COURSE_LESSON_SOURCE_TYPE_KB_LINK:
+		return "kb_link", nil
+	case academyv1.CourseLessonSourceType_COURSE_LESSON_SOURCE_TYPE_KB_SNAPSHOT:
+		return "kb_snapshot", nil
+	case academyv1.CourseLessonSourceType_COURSE_LESSON_SOURCE_TYPE_TEMPLATE_SNAPSHOT:
+		return "template_snapshot", nil
+	default:
+		return "", invalidArgument("Некорректный источник урока")
+	}
+}
+
+func courseVersionLessonToProto(value application.CourseVersionLesson) (*academyv1.CourseVersionLesson, error) {
+	content, err := contentToStruct(value.Content)
+	if err != nil {
+		return nil, err
+	}
+	result := &academyv1.CourseVersionLesson{
+		Id: value.ID.String(), CourseVersionId: value.CourseVersionID.String(),
+		SectionVersionId: value.SectionVersionID.String(), StableKey: value.StableKey,
+		Title: value.Title, Order: uint32(max(0, value.Order)), Content: content,
+		SourceType:              courseLessonSourceTypeToProto(value.SourceType),
+		SourceArticleId:         optionalUUIDString(value.SourceArticleID),
+		SourceTemplateId:        optionalUUIDString(value.SourceTemplateID),
+		SourceTemplateVersionId: optionalUUIDString(value.SourceTemplateVersionID),
+		QuizVersionId:           optionalUUIDString(value.QuizVersionID),
+	}
+	if value.SourceArticleVersion != nil && *value.SourceArticleVersion > 0 {
+		converted := uint32(*value.SourceArticleVersion)
+		result.SourceArticleVersion = &converted
+	}
+	if value.EstimatedMinutes != nil && *value.EstimatedMinutes > 0 {
+		converted := uint32(*value.EstimatedMinutes)
+		result.EstimatedMinutes = &converted
+	}
+	return result, nil
+}
+
+func courseVersionLessonsToProto(values []application.CourseVersionLesson) ([]*academyv1.CourseVersionLesson, error) {
+	result := make([]*academyv1.CourseVersionLesson, len(values))
+	for index := range values {
+		converted, err := courseVersionLessonToProto(values[index])
+		if err != nil {
+			return nil, err
+		}
+		result[index] = converted
+	}
+	return result, nil
+}
+
+func courseVersionQuizToProto(value application.CourseVersionQuiz) (*academyv1.CourseVersionQuiz, error) {
+	questions, err := questionsToProto(value.Questions)
+	if err != nil {
+		return nil, err
+	}
+	result := &academyv1.CourseVersionQuiz{
+		Id: value.ID.String(), CourseVersionId: value.CourseVersionID.String(),
+		LessonVersionId: value.LessonVersionID.String(), Questions: questions,
+		PassingScore: uint32(max(0, value.PassingScore)),
+	}
+	if value.MaxAttempts != nil && *value.MaxAttempts > 0 {
+		converted := uint32(*value.MaxAttempts)
+		result.MaxAttempts = &converted
+	}
+	return result, nil
+}
+
+func courseVersionQuizzesToProto(values []application.CourseVersionQuiz) ([]*academyv1.CourseVersionQuiz, error) {
+	result := make([]*academyv1.CourseVersionQuiz, len(values))
+	for index := range values {
+		converted, err := courseVersionQuizToProto(values[index])
+		if err != nil {
+			return nil, err
+		}
+		result[index] = converted
+	}
+	return result, nil
+}
+
+func learnerPublishedCourseVersionToProto(value application.CourseVersionContent) (*academyv1.LearnerPublishedCourseVersion, error) {
+	result := &academyv1.LearnerPublishedCourseVersion{
+		Id: value.Version.ID.String(), CourseId: value.Version.CourseID.String(),
+		Number: uint32(max(0, value.Version.Number)), Title: value.Version.Title,
+		Description: value.Version.Description, CoverUrl: value.Version.CoverURL,
+		Sequential: value.Version.Sequential,
+	}
+	quizzes := make(map[uuid.UUID]application.CourseVersionQuiz, len(value.Quizzes))
+	for _, quiz := range value.Quizzes {
+		quizzes[quiz.ID] = quiz
+	}
+	sections := make(map[uuid.UUID]*academyv1.LearnerCourseVersionSection, len(value.Sections))
+	for _, section := range value.Sections {
+		converted := &academyv1.LearnerCourseVersionSection{
+			Id: section.ID.String(), Title: section.Title, Order: uint32(max(0, section.Order)),
+		}
+		sections[section.ID] = converted
+		result.Sections = append(result.Sections, converted)
+	}
+	for _, lesson := range value.Lessons {
+		section := sections[lesson.SectionVersionID]
+		if section == nil {
+			return nil, fmt.Errorf("lesson %s references missing section", lesson.ID)
+		}
+		content, err := contentToStruct(lesson.Content)
+		if err != nil {
+			return nil, err
+		}
+		converted := &academyv1.LearnerCourseVersionLesson{
+			Id: lesson.ID.String(), CourseVersionId: lesson.CourseVersionID.String(),
+			SectionVersionId: lesson.SectionVersionID.String(), StableKey: lesson.StableKey,
+			Title: lesson.Title, Order: uint32(max(0, lesson.Order)), Content: content,
+		}
+		if lesson.EstimatedMinutes != nil && *lesson.EstimatedMinutes > 0 {
+			minutes := uint32(*lesson.EstimatedMinutes)
+			converted.EstimatedMinutes = &minutes
+		}
+		if lesson.QuizVersionID != nil {
+			quiz, ok := quizzes[*lesson.QuizVersionID]
+			if ok {
+				learnerQuiz, quizErr := learnerCourseVersionQuizToProto(quiz)
+				if quizErr != nil {
+					return nil, quizErr
+				}
+				converted.Quiz = learnerQuiz
+			}
+		}
+		section.Lessons = append(section.Lessons, converted)
+	}
+	return result, nil
+}
+
+func learnerCourseVersionQuizToProto(value application.CourseVersionQuiz) (*academyv1.LearnerCourseVersionQuiz, error) {
+	questions, err := questionsToProto(value.Questions)
+	if err != nil {
+		return nil, err
+	}
+	result := &academyv1.LearnerCourseVersionQuiz{
+		Id: value.ID.String(), PassingScore: uint32(max(0, value.PassingScore)),
+		Questions: make([]*academyv1.LearnerQuizQuestion, len(questions)),
+	}
+	if value.MaxAttempts != nil && *value.MaxAttempts > 0 {
+		attempts := uint32(*value.MaxAttempts)
+		result.MaxAttempts = &attempts
+	}
+	for index, question := range questions {
+		converted := &academyv1.LearnerQuizQuestion{
+			Id: question.GetId(), Type: question.GetType(), Text: question.GetText(),
+			Options: make([]*academyv1.LearnerQuizOption, len(question.GetOptions())),
+		}
+		for optionIndex, option := range question.GetOptions() {
+			converted.Options[optionIndex] = &academyv1.LearnerQuizOption{Id: option.GetId(), Text: option.GetText()}
+		}
+		result.Questions[index] = converted
+	}
+	return result, nil
+}
+
+func courseOwnerTypeToProto(value string) academyv1.CourseOwnerType {
+	switch value {
+	case "company":
+		return academyv1.CourseOwnerType_COURSE_OWNER_TYPE_COMPANY
+	case "partner":
+		return academyv1.CourseOwnerType_COURSE_OWNER_TYPE_PARTNER
+	default:
+		return academyv1.CourseOwnerType_COURSE_OWNER_TYPE_UNSPECIFIED
+	}
+}
+
+func courseOwnerTypeFromProto(value academyv1.CourseOwnerType) (string, error) {
+	switch value {
+	case academyv1.CourseOwnerType_COURSE_OWNER_TYPE_COMPANY:
+		return "company", nil
+	case academyv1.CourseOwnerType_COURSE_OWNER_TYPE_PARTNER:
+		return "partner", nil
+	default:
+		return "", invalidArgument("Некорректный тип владельца курса")
+	}
+}
+
+func courseLifecycleToProto(value string) academyv1.CourseLifecycleStatus {
+	switch value {
+	case "active":
+		return academyv1.CourseLifecycleStatus_COURSE_LIFECYCLE_STATUS_ACTIVE
+	case "archived":
+		return academyv1.CourseLifecycleStatus_COURSE_LIFECYCLE_STATUS_ARCHIVED
+	case "deleted":
+		return academyv1.CourseLifecycleStatus_COURSE_LIFECYCLE_STATUS_DELETED
+	default:
+		return academyv1.CourseLifecycleStatus_COURSE_LIFECYCLE_STATUS_UNSPECIFIED
+	}
+}
+
+func courseLifecycleFromProto(value academyv1.CourseLifecycleStatus) (string, error) {
+	switch value {
+	case academyv1.CourseLifecycleStatus_COURSE_LIFECYCLE_STATUS_ACTIVE:
+		return "active", nil
+	case academyv1.CourseLifecycleStatus_COURSE_LIFECYCLE_STATUS_ARCHIVED:
+		return "archived", nil
+	case academyv1.CourseLifecycleStatus_COURSE_LIFECYCLE_STATUS_DELETED:
+		return "deleted", nil
+	default:
+		return "", invalidArgument("Некорректное состояние курса")
+	}
+}
+
+func courseDistributionToProto(value string) academyv1.CourseDistributionStatus {
+	switch value {
+	case "active":
+		return academyv1.CourseDistributionStatus_COURSE_DISTRIBUTION_STATUS_ACTIVE
+	case "paused":
+		return academyv1.CourseDistributionStatus_COURSE_DISTRIBUTION_STATUS_PAUSED
+	case "blocked":
+		return academyv1.CourseDistributionStatus_COURSE_DISTRIBUTION_STATUS_BLOCKED
+	default:
+		return academyv1.CourseDistributionStatus_COURSE_DISTRIBUTION_STATUS_UNSPECIFIED
+	}
+}
+
+func courseDistributionFromProto(value academyv1.CourseDistributionStatus) (string, error) {
+	switch value {
+	case academyv1.CourseDistributionStatus_COURSE_DISTRIBUTION_STATUS_ACTIVE:
+		return "active", nil
+	case academyv1.CourseDistributionStatus_COURSE_DISTRIBUTION_STATUS_PAUSED:
+		return "paused", nil
+	case academyv1.CourseDistributionStatus_COURSE_DISTRIBUTION_STATUS_BLOCKED:
+		return "blocked", nil
+	default:
+		return "", invalidArgument("Некорректное состояние распространения курса")
+	}
+}
+
+func courseOriginTypeFromProto(value academyv1.CourseOriginType) (string, error) {
+	switch value {
+	case academyv1.CourseOriginType_COURSE_ORIGIN_TYPE_PARTNER_COURSE:
+		return "partner_course", nil
+	case academyv1.CourseOriginType_COURSE_ORIGIN_TYPE_SYSTEM_TEMPLATE:
+		return "system_template", nil
+	case academyv1.CourseOriginType_COURSE_ORIGIN_TYPE_COMPANY_TEMPLATE:
+		return "company_template", nil
+	default:
+		return "", invalidArgument("Некорректный тип происхождения курса")
+	}
 }
 
 func courseVisibilityToProto(value string) academyv1.CourseVisibility {
@@ -208,11 +544,12 @@ func questionsFromProto(values []*academyv1.QuizQuestion) (json.RawMessage, erro
 func assignmentToProto(value application.Assignment) *academyv1.CourseAssignment {
 	assignment := &academyv1.CourseAssignment{
 		Id: value.ID.String(), CourseId: value.CourseID.String(),
-		AssigneeType: assigneeTypeToProto(value.AssigneeType),
-		AssigneeId:   optionalUUIDString(value.AssigneeID),
-		InviteToken:  value.InviteToken,
-		AssignedById: value.AssignedByID.String(),
-		CreatedAt:    timestamppb.New(value.CreatedAt.UTC()),
+		CourseVersionId: optionalUUIDString(value.CourseVersionID),
+		AssigneeType:    assigneeTypeToProto(value.AssigneeType),
+		AssigneeId:      optionalUUIDString(value.AssigneeID),
+		InviteToken:     value.InviteToken,
+		AssignedById:    value.AssignedByID.String(),
+		CreatedAt:       timestamppb.New(value.CreatedAt.UTC()),
 	}
 	if value.DueDate != nil {
 		assignment.DueDate = timestamppb.New(value.DueDate.UTC())
@@ -243,6 +580,13 @@ func progressToProto(value application.Progress) *academyv1.CourseProgress {
 		Status:             progressStatusToProto(value.Status),
 		CompletedLessonIds: uuidStrings(value.CompletedLessonIDs),
 		QuizAttempts:       attempts,
+	}
+	progress.EnrollmentId = optionalUUIDString(value.EnrollmentID)
+	progress.CourseVersionId = optionalUUIDString(value.CourseVersionID)
+	progress.CurrentLessonVersionId = optionalUUIDString(value.CurrentLessonVersionID)
+	if value.ProgressPercent != nil && *value.ProgressPercent >= 0 {
+		percent := uint32(*value.ProgressPercent)
+		progress.ProgressPercent = &percent
 	}
 	if value.StartedAt != nil {
 		progress.StartedAt = timestamppb.New(value.StartedAt.UTC())

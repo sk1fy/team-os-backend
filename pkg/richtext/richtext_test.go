@@ -2,6 +2,7 @@ package richtext
 
 import (
 	"encoding/json"
+	"reflect"
 	"testing"
 )
 
@@ -18,6 +19,32 @@ func TestPlainText(t *testing.T) {
 	}`)
 	if got := PlainText(raw); got != "Привет мир" {
 		t.Fatalf("PlainText() = %q, want %q", got, "Привет мир")
+	}
+}
+
+func TestFileIDs(t *testing.T) {
+	t.Parallel()
+	raw := json.RawMessage(`{"type":"doc","content":[
+		{"type":"attachment","attrs":{"fileId":"b"}},
+		{"type":"image","attrs":{"file":{"id":"a"}}},
+		{"type":"mention","attrs":{"id":"not-a-file"}},
+		{"type":"attachment","attrs":{"fileId":"b"}}
+	]}`)
+	got := FileIDs(raw)
+	if len(got) != 2 || got[0] != "a" || got[1] != "b" {
+		t.Fatalf("FileIDs() = %v", got)
+	}
+}
+
+func TestReplaceFileIDs(t *testing.T) {
+	t.Parallel()
+	raw := json.RawMessage(`{"type":"doc","content":[{"type":"image","attrs":{"fileId":"old-a","title":"x"}},{"type":"attachment","attrs":{"file":{"id":"old-b","name":"doc"}}}]}`)
+	rewritten, err := ReplaceFileIDs(raw, map[string]string{"old-a": "new-a", "old-b": "new-b"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := FileIDs(rewritten); !reflect.DeepEqual(got, []string{"new-a", "new-b"}) {
+		t.Fatalf("FileIDs() = %#v", got)
 	}
 }
 

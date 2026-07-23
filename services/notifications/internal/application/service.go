@@ -10,6 +10,9 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/sk1fy/team-os-backend/pkg/eventbus"
+	"github.com/sk1fy/team-os-backend/services/notifications/internal/deliverycrypto"
+	"github.com/sk1fy/team-os-backend/services/notifications/internal/mailer"
+	"github.com/sk1fy/team-os-backend/services/notifications/internal/storage"
 	"github.com/sk1fy/team-os-backend/services/notifications/internal/storage/db"
 )
 
@@ -21,17 +24,45 @@ type Notification struct {
 	CreatedAt   time.Time
 }
 type Service struct {
-	pool        *pgxpool.Pool
-	queries     *db.Queries
-	mu          sync.Mutex
-	subscribers map[uuid.UUID]map[chan uuid.UUID]struct{}
+	pool            *pgxpool.Pool
+	queries         *db.Queries
+	mu              sync.Mutex
+	subscribers     map[uuid.UUID]map[chan uuid.UUID]struct{}
+	emailDeliveries verificationEmailDeliveryStore
+	emailSender     mailer.Sender
+	emailDecryptor  deliverycrypto.Decryptor
+	now             func() time.Time
 }
 
 func New(pool *pgxpool.Pool) (*Service, error) {
 	if pool == nil {
 		return nil, fmt.Errorf("pool обязателен")
 	}
-	return &Service{pool: pool, queries: db.New(pool), subscribers: map[uuid.UUID]map[chan uuid.UUID]struct{}{}}, nil
+	queries := db.New(pool)
+	emailDeliveries, err := storage.NewEmailDeliveryRepository(queries)
+	if err != nil {
+		return nil, err
+	}
+	return &Service{
+		pool: pool, queries: queries, subscribers: map[uuid.UUID]map[chan uuid.UUID]struct{}{},
+		emailDeliveries: emailDeliveries, emailSender: mailer.NewLogSender(nil), now: time.Now,
+	}, nil
+}
+
+func (s *Service) SetEmailSender(sender mailer.Sender) error {
+	if sender == nil {
+		return fmt.Errorf("отправитель email обязателен")
+	}
+	s.emailSender = sender
+	return nil
+}
+
+func (s *Service) SetExternalEmailDecryptor(decryptor deliverycrypto.Decryptor) error {
+	if decryptor == nil {
+		return fmt.Errorf("дешифратор внешних email обязателен")
+	}
+	s.emailDecryptor = decryptor
+	return nil
 }
 func (s *Service) List(ctx context.Context, companyID, userID uuid.UUID) ([]Notification, error) {
 	rows, err := s.queries.ListNotifications(ctx, db.ListNotificationsParams{CompanyID: companyID, UserID: userID})

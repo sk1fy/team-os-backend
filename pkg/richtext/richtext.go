@@ -8,6 +8,7 @@ import (
 	"net"
 	"net/url"
 	"path"
+	"sort"
 	"strings"
 )
 
@@ -181,6 +182,69 @@ func Mentions(raw json.RawMessage) []string {
 	return result
 }
 
+// FileIDs returns unique file identifiers referenced by TipTap file-like nodes.
+// Generic attrs.id values are deliberately ignored so mention and application
+// identifiers are never mistaken for attachments.
+func FileIDs(raw json.RawMessage) []string {
+	if len(raw) == 0 {
+		return nil
+	}
+	var document Document
+	if err := json.Unmarshal(raw, &document); err != nil || document.Type != "doc" {
+		return nil
+	}
+	seen := make(map[string]struct{})
+	collectFileIDs(document.Content, seen)
+	result := make([]string, 0, len(seen))
+	for id := range seen {
+		result = append(result, id)
+	}
+	sort.Strings(result)
+	return result
+}
+
+// ReplaceFileIDs rewrites file references in TipTap attrs.fileId and
+// attrs.file.id while preserving all unrelated extensible node attributes.
+func ReplaceFileIDs(raw json.RawMessage, replacements map[string]string) (json.RawMessage, error) {
+	if err := Validate(raw); err != nil {
+		return nil, err
+	}
+	var root map[string]any
+	if err := json.Unmarshal(raw, &root); err != nil {
+		return nil, ErrInvalidDocument
+	}
+	replaceFileIDsInNode(root, replacements)
+	encoded, err := json.Marshal(root)
+	if err != nil {
+		return nil, ErrInvalidDocument
+	}
+	return encoded, nil
+}
+
+func replaceFileIDsInNode(node map[string]any, replacements map[string]string) {
+	if attrs, ok := node["attrs"].(map[string]any); ok {
+		if fileID, ok := attrs["fileId"].(string); ok {
+			if replacement, exists := replacements[fileID]; exists {
+				attrs["fileId"] = replacement
+			}
+		}
+		if file, ok := attrs["file"].(map[string]any); ok {
+			if fileID, ok := file["id"].(string); ok {
+				if replacement, exists := replacements[fileID]; exists {
+					file["id"] = replacement
+				}
+			}
+		}
+	}
+	if content, ok := node["content"].([]any); ok {
+		for _, child := range content {
+			if childNode, ok := child.(map[string]any); ok {
+				replaceFileIDsInNode(childNode, replacements)
+			}
+		}
+	}
+}
+
 func collectText(nodes []json.RawMessage, builder *strings.Builder) {
 	for _, node := range nodes {
 		var generic map[string]json.RawMessage
@@ -229,6 +293,39 @@ func collectMentions(nodes []json.RawMessage, seen map[string]struct{}) {
 			var children []json.RawMessage
 			if err := json.Unmarshal(content, &children); err == nil {
 				collectMentions(children, seen)
+			}
+		}
+	}
+}
+
+func collectFileIDs(nodes []json.RawMessage, seen map[string]struct{}) {
+	for _, node := range nodes {
+		var generic map[string]json.RawMessage
+		if err := json.Unmarshal(node, &generic); err != nil {
+			continue
+		}
+		if attrs, ok := generic["attrs"]; ok {
+			var values struct {
+				FileID string `json:"fileId"`
+				File   *struct {
+					ID string `json:"id"`
+				} `json:"file"`
+			}
+			if err := json.Unmarshal(attrs, &values); err == nil {
+				if id := strings.TrimSpace(values.FileID); id != "" {
+					seen[id] = struct{}{}
+				}
+				if values.File != nil {
+					if id := strings.TrimSpace(values.File.ID); id != "" {
+						seen[id] = struct{}{}
+					}
+				}
+			}
+		}
+		if content, ok := generic["content"]; ok {
+			var children []json.RawMessage
+			if err := json.Unmarshal(content, &children); err == nil {
+				collectFileIDs(children, seen)
 			}
 		}
 	}

@@ -20,7 +20,7 @@ MODULE_DIRS = contracts/gen/go pkg $(sort $(patsubst %/go.mod,%,$(wildcard servi
 
 .DEFAULT_GOAL := help
 
-.PHONY: help up down logs compose-config check-production-compose migrate seed export-fixtures gen test test-integration test-race lint fmt check-contract dev dev-keys ensure-env e2e load-test load-kb load-tasks load-move observability-up observability-down
+.PHONY: help up down logs compose-config check-production-compose migrate seed export-fixtures gen test test-integration test-race lint fmt check-contract dev dev-keys ensure-env e2e academy-security-smoke academy-reconcile load-test load-kb load-tasks load-move academy-load observability-up observability-down
 
 help: ## Show available commands.
 	@awk 'BEGIN {FS = ":.*## "} /^[a-zA-Z0-9_-]+:.*## / {printf "  %-18s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -43,6 +43,9 @@ compose-config: ensure-env ## Validate and render the Compose configuration.
 check-production-compose: ## Verify production ports and security overrides, including legacy .env values.
 	@command -v jq >/dev/null || { echo "jq is required" >&2; exit 1; }
 	@FILES_S3_SECURE=true FILES_S3_PUBLIC_SECURE=false GATEWAY_COOKIE_SECURE=false \
+		ACADEMY_EXTERNAL_TOKEN_SECRET=production-compose-check-token-secret-0001 \
+		ACADEMY_EXTERNAL_EMAIL_KEY=MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlBQkNERUY= \
+		NOTIFICATIONS_SMTP_HOST=smtp.example.invalid NOTIFICATIONS_SMTP_FROM=noreply@example.invalid \
 		$(COMPOSE_BIN) --file deploy/docker-compose.yaml --file deploy/docker-compose.prod.yaml config --format json | \
 		jq -e --from-file deploy/production-compose-check.jq >/dev/null
 
@@ -131,6 +134,13 @@ observability-down: ## Stop the stack including the observability profile.
 e2e: ## Run the backend smoke scenario against a running gateway.
 	bash tests/e2e/smoke.sh
 
+academy-security-smoke: ## Check public Academy headers, cookies, CSRF, CORS, legacy and rate limits.
+	sh tests/e2e/academy-security-smoke.sh
+
+academy-reconcile: ## Compare Academy legacy and enrollment data using ACADEMY_DB_URL.
+	@test -n "$(ACADEMY_DB_URL)" || { echo "ACADEMY_DB_URL is required" >&2; exit 1; }
+	@cd services/academy && GOWORK=off ACADEMY_DB_URL="$(ACADEMY_DB_URL)" $(GO) run ./cmd/reconcile
+
 load-test: load-kb load-tasks load-move ## Run all k6 profiles against a running gateway.
 
 load-kb: ## Run the k6 knowledge-base read profile.
@@ -141,3 +151,6 @@ load-tasks: ## Run the k6 task read profile.
 
 load-move: ## Run the concurrent moveTask k6 profile.
 	k6 run tests/k6/move-task.js
+
+academy-load: ## Run the read-only public Academy campaign k6 profile when configured.
+	sh tests/k6/run-academy-public.sh

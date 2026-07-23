@@ -177,10 +177,26 @@ func (h *Handler) CreateArticle(w http.ResponseWriter, r *http.Request) {
 		h.writeConversionError(w, r, err)
 		return
 	}
-	response, err := h.kb.CreateArticle(outgoingContext(r), &kbv1.CreateArticleRequest{
+	request := &kbv1.CreateArticleRequest{
 		SectionId: input.SectionId.String(), Title: input.Title, Content: content,
 		Status: status, RequiresAcknowledgement: input.RequiresAcknowledgement,
-	})
+	}
+	if input.PartnerAccess != nil {
+		request.PartnerAccess, err = partnerAccessToProto(*input.PartnerAccess)
+		if err != nil {
+			h.writeConversionError(w, r, err)
+			return
+		}
+	}
+	if input.PartnerReusePolicy != nil {
+		policy, mapErr := partnerReusePolicyToProto(*input.PartnerReusePolicy)
+		if mapErr != nil {
+			h.writeConversionError(w, r, mapErr)
+			return
+		}
+		request.PartnerReusePolicy = &policy
+	}
+	response, err := h.kb.CreateArticle(outgoingContext(r), request)
 	if err != nil {
 		h.writeKbRPCError(w, r, err)
 		return
@@ -233,12 +249,93 @@ func (h *Handler) UpdateArticle(w http.ResponseWriter, r *http.Request, id api.I
 		version := uint32(*params.IfMatch)
 		request.ExpectedVersion = &version
 	}
+	if input.PartnerAccess != nil {
+		partnerAccess, err := partnerAccessToProto(*input.PartnerAccess)
+		if err != nil {
+			h.writeConversionError(w, r, err)
+			return
+		}
+		request.PartnerAccess = partnerAccess
+	}
+	if input.PartnerReusePolicy != nil {
+		policy, err := partnerReusePolicyToProto(*input.PartnerReusePolicy)
+		if err != nil {
+			h.writeConversionError(w, r, err)
+			return
+		}
+		request.PartnerReusePolicy = &policy
+	}
 	response, err := h.kb.UpdateArticle(outgoingContext(r), request)
 	if err != nil {
 		h.writeKbRPCError(w, r, err)
 		return
 	}
 	converted, err := articleFromProto(response.GetArticle())
+	if err != nil {
+		h.writeConversionError(w, r, err)
+		return
+	}
+	writeJSON(w, http.StatusOK, converted)
+}
+
+func (h *Handler) GetArticlePartnerPolicy(w http.ResponseWriter, r *http.Request, id api.Id) {
+	response, err := h.kb.GetArticlePartnerPolicy(outgoingContext(r), &kbv1.GetArticlePartnerPolicyRequest{
+		ArticleId: id.String(),
+	})
+	if err != nil {
+		h.writeKbRPCError(w, r, err)
+		return
+	}
+	converted, err := articlePartnerPolicyFromProto(response.GetPolicy())
+	if err != nil {
+		h.writeConversionError(w, r, err)
+		return
+	}
+	writeJSON(w, http.StatusOK, converted)
+}
+
+func (h *Handler) UpdateArticlePartnerPolicy(w http.ResponseWriter, r *http.Request, id api.Id) {
+	var input api.UpdateArticlePartnerPolicyInput
+	if !decode(w, r, &input) {
+		return
+	}
+	access, err := partnerAccessToProto(input.Access)
+	if err != nil {
+		h.writeConversionError(w, r, err)
+		return
+	}
+	reusePolicy, err := partnerReusePolicyToProto(input.ReusePolicy)
+	if err != nil {
+		h.writeConversionError(w, r, err)
+		return
+	}
+	response, err := h.kb.UpdateArticlePartnerPolicy(outgoingContext(r), &kbv1.UpdateArticlePartnerPolicyRequest{
+		ArticleId: id.String(), Access: access, ReusePolicy: reusePolicy,
+	})
+	if err != nil {
+		h.writeKbRPCError(w, r, err)
+		return
+	}
+	converted, err := articlePartnerPolicyFromProto(response.GetPolicy())
+	if err != nil {
+		h.writeConversionError(w, r, err)
+		return
+	}
+	writeJSON(w, http.StatusOK, converted)
+}
+
+func (h *Handler) CheckArticleCourseCopyPermission(w http.ResponseWriter, r *http.Request, id api.Id, params api.CheckArticleCourseCopyPermissionParams) {
+	request := &kbv1.CheckArticleCourseCopyPermissionRequest{ArticleId: id.String()}
+	if params.ArticleVersionId != nil {
+		versionID := params.ArticleVersionId.String()
+		request.ArticleVersionId = &versionID
+	}
+	response, err := h.kb.CheckArticleCourseCopyPermission(outgoingContext(r), request)
+	if err != nil {
+		h.writeKbRPCError(w, r, err)
+		return
+	}
+	converted, err := articleCourseCopyPermissionFromProto(response)
 	if err != nil {
 		h.writeConversionError(w, r, err)
 		return

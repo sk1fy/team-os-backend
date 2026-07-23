@@ -19,9 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	FilesService_UploadFile_FullMethodName = "/teamos.files.v1.FilesService/UploadFile"
-	FilesService_GetFile_FullMethodName    = "/teamos.files.v1.FilesService/GetFile"
-	FilesService_DeleteFile_FullMethodName = "/teamos.files.v1.FilesService/DeleteFile"
+	FilesService_UploadFile_FullMethodName         = "/teamos.files.v1.FilesService/UploadFile"
+	FilesService_GetFile_FullMethodName            = "/teamos.files.v1.FilesService/GetFile"
+	FilesService_DeleteFile_FullMethodName         = "/teamos.files.v1.FilesService/DeleteFile"
+	FilesService_CloneFilesForOwner_FullMethodName = "/teamos.files.v1.FilesService/CloneFilesForOwner"
 )
 
 // FilesServiceClient is the client API for FilesService service.
@@ -31,6 +32,10 @@ type FilesServiceClient interface {
 	UploadFile(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[UploadFileRequest, UploadFileResponse], error)
 	GetFile(ctx context.Context, in *GetFileRequest, opts ...grpc.CallOption) (*GetFileResponse, error)
 	DeleteFile(ctx context.Context, in *DeleteFileRequest, opts ...grpc.CallOption) (*DeleteFileResponse, error)
+	// Creates independent physical objects for another aggregate owner. The
+	// idempotency key covers the ordered source set and target owner so Academy
+	// can safely retry its course/template copy saga.
+	CloneFilesForOwner(ctx context.Context, in *CloneFilesForOwnerRequest, opts ...grpc.CallOption) (*CloneFilesForOwnerResponse, error)
 }
 
 type filesServiceClient struct {
@@ -74,6 +79,16 @@ func (c *filesServiceClient) DeleteFile(ctx context.Context, in *DeleteFileReque
 	return out, nil
 }
 
+func (c *filesServiceClient) CloneFilesForOwner(ctx context.Context, in *CloneFilesForOwnerRequest, opts ...grpc.CallOption) (*CloneFilesForOwnerResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CloneFilesForOwnerResponse)
+	err := c.cc.Invoke(ctx, FilesService_CloneFilesForOwner_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // FilesServiceServer is the server API for FilesService service.
 // All implementations must embed UnimplementedFilesServiceServer
 // for forward compatibility.
@@ -81,6 +96,10 @@ type FilesServiceServer interface {
 	UploadFile(grpc.ClientStreamingServer[UploadFileRequest, UploadFileResponse]) error
 	GetFile(context.Context, *GetFileRequest) (*GetFileResponse, error)
 	DeleteFile(context.Context, *DeleteFileRequest) (*DeleteFileResponse, error)
+	// Creates independent physical objects for another aggregate owner. The
+	// idempotency key covers the ordered source set and target owner so Academy
+	// can safely retry its course/template copy saga.
+	CloneFilesForOwner(context.Context, *CloneFilesForOwnerRequest) (*CloneFilesForOwnerResponse, error)
 	mustEmbedUnimplementedFilesServiceServer()
 }
 
@@ -99,6 +118,9 @@ func (UnimplementedFilesServiceServer) GetFile(context.Context, *GetFileRequest)
 }
 func (UnimplementedFilesServiceServer) DeleteFile(context.Context, *DeleteFileRequest) (*DeleteFileResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteFile not implemented")
+}
+func (UnimplementedFilesServiceServer) CloneFilesForOwner(context.Context, *CloneFilesForOwnerRequest) (*CloneFilesForOwnerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CloneFilesForOwner not implemented")
 }
 func (UnimplementedFilesServiceServer) mustEmbedUnimplementedFilesServiceServer() {}
 func (UnimplementedFilesServiceServer) testEmbeddedByValue()                      {}
@@ -164,6 +186,24 @@ func _FilesService_DeleteFile_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FilesService_CloneFilesForOwner_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CloneFilesForOwnerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FilesServiceServer).CloneFilesForOwner(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FilesService_CloneFilesForOwner_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FilesServiceServer).CloneFilesForOwner(ctx, req.(*CloneFilesForOwnerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // FilesService_ServiceDesc is the grpc.ServiceDesc for FilesService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -178,6 +218,10 @@ var FilesService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteFile",
 			Handler:    _FilesService_DeleteFile_Handler,
+		},
+		{
+			MethodName: "CloneFilesForOwner",
+			Handler:    _FilesService_CloneFilesForOwner_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

@@ -32,6 +32,31 @@ type Article struct {
 	Search                  interface{} `json:"search"`
 	CreatedAt               time.Time   `json:"created_at"`
 	UpdatedAt               time.Time   `json:"updated_at"`
+	PartnerAccessMode       string      `json:"partner_access_mode"`
+	PartnerReusePolicy      string      `json:"partner_reuse_policy"`
+}
+
+type ArticlePartnerAccessGrant struct {
+	ID          uuid.UUID `json:"id"`
+	CompanyID   uuid.UUID `json:"company_id"`
+	ArticleID   uuid.UUID `json:"article_id"`
+	PartnerID   uuid.UUID `json:"partner_id"`
+	GrantedByID uuid.UUID `json:"granted_by_id"`
+	GrantedAt   time.Time `json:"granted_at"`
+}
+
+type ArticleSnapshotReuseGrant struct {
+	ID               uuid.UUID   `json:"id"`
+	CompanyID        uuid.UUID   `json:"company_id"`
+	ArticleID        uuid.UUID   `json:"article_id"`
+	ArticleVersionID uuid.UUID   `json:"article_version_id"`
+	ArticleVersion   int32       `json:"article_version"`
+	PartnerID        uuid.UUID   `json:"partner_id"`
+	RequestedByID    uuid.UUID   `json:"requested_by_id"`
+	IdempotencyKey   string      `json:"idempotency_key"`
+	ContentHash      string      `json:"content_hash"`
+	SourceFileIds    []uuid.UUID `json:"source_file_ids"`
+	GrantedAt        time.Time   `json:"granted_at"`
 }
 
 type ArticleVersion struct {

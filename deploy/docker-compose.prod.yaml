@@ -38,10 +38,22 @@ services:
   academy:
     ports: !override []
     restart: unless-stopped
+    environment:
+      # Production external access must never inherit development HMAC/AES
+      # defaults from the base Compose file.
+      ACADEMY_EXTERNAL_TOKEN_SECRET: ${ACADEMY_EXTERNAL_TOKEN_SECRET:?ACADEMY_EXTERNAL_TOKEN_SECRET is required}
+      ACADEMY_EXTERNAL_EMAIL_KEY: ${ACADEMY_EXTERNAL_EMAIL_KEY:?ACADEMY_EXTERNAL_EMAIL_KEY is required}
 
   notifications:
     ports: !override []
     restart: unless-stopped
+    environment:
+      # The log sink acknowledges mail without delivering it and is suitable
+      # only for development. Missing SMTP settings therefore fail startup.
+      NOTIFICATIONS_EMAIL_PROVIDER: "smtp"
+      NOTIFICATIONS_EXTERNAL_EMAIL_KEY: ${ACADEMY_EXTERNAL_EMAIL_KEY:?ACADEMY_EXTERNAL_EMAIL_KEY is required}
+      NOTIFICATIONS_SMTP_HOST: ${NOTIFICATIONS_SMTP_HOST:?NOTIFICATIONS_SMTP_HOST is required}
+      NOTIFICATIONS_SMTP_FROM: ${NOTIFICATIONS_SMTP_FROM:?NOTIFICATIONS_SMTP_FROM is required}
 
   files:
     ports: !override []

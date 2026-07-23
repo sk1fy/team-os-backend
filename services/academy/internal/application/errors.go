@@ -41,6 +41,10 @@ func notFound(entity string) error {
 	return &Error{Kind: ErrorNotFound, Message: entity + " не найден"}
 }
 
+func conflict(message string) error {
+	return &Error{Kind: ErrorConflict, Message: message}
+}
+
 func unavailable(message string, cause error) error {
 	return &Error{Kind: ErrorUnavailable, Message: message, Cause: cause}
 }

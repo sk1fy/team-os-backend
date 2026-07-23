@@ -6,12 +6,22 @@ package db
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
 
 type Querier interface {
+	CompleteCloneOperation(ctx context.Context, arg CompleteCloneOperationParams) (FileCloneOperation, error)
+	CreateCloneOperation(ctx context.Context, arg CreateCloneOperationParams) (FileCloneOperation, error)
 	CreateFile(ctx context.Context, arg CreateFileParams) (File, error)
+	CreateFileClone(ctx context.Context, arg CreateFileCloneParams) error
 	DeleteFile(ctx context.Context, arg DeleteFileParams) (string, error)
+	FailCloneOperation(ctx context.Context, arg FailCloneOperationParams) (FileCloneOperation, error)
+	GetCloneOperation(ctx context.Context, arg GetCloneOperationParams) (FileCloneOperation, error)
+	GetCloneOperationByKey(ctx context.Context, arg GetCloneOperationByKeyParams) (FileCloneOperation, error)
 	GetFile(ctx context.Context, arg GetFileParams) (File, error)
+	ListFileClones(ctx context.Context, operationID uuid.UUID) ([]ListFileClonesRow, error)
+	StartCloneOperation(ctx context.Context, arg StartCloneOperationParams) (FileCloneOperation, error)
 }
 
 var _ Querier = (*Queries)(nil)

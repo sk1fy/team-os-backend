@@ -38,7 +38,8 @@ INSERT INTO articles (
 )
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 RETURNING id, company_id, section_id, title, content, status, author_id, version,
-          requires_acknowledgement, plain_text, created_at, updated_at
+          requires_acknowledgement, plain_text, partner_access_mode,
+          partner_reuse_policy, created_at, updated_at
 `
 
 type CreateArticleParams struct {
@@ -65,6 +66,8 @@ type CreateArticleRow struct {
 	Version                 int32     `json:"version"`
 	RequiresAcknowledgement bool      `json:"requires_acknowledgement"`
 	PlainText               string    `json:"plain_text"`
+	PartnerAccessMode       string    `json:"partner_access_mode"`
+	PartnerReusePolicy      string    `json:"partner_reuse_policy"`
 	CreatedAt               time.Time `json:"created_at"`
 	UpdatedAt               time.Time `json:"updated_at"`
 }
@@ -94,6 +97,8 @@ func (q *Queries) CreateArticle(ctx context.Context, arg CreateArticleParams) (C
 		&i.Version,
 		&i.RequiresAcknowledgement,
 		&i.PlainText,
+		&i.PartnerAccessMode,
+		&i.PartnerReusePolicy,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -102,7 +107,8 @@ func (q *Queries) CreateArticle(ctx context.Context, arg CreateArticleParams) (C
 
 const getArticle = `-- name: GetArticle :one
 SELECT id, company_id, section_id, title, content, status, author_id, version,
-       requires_acknowledgement, plain_text, created_at, updated_at
+       requires_acknowledgement, plain_text, partner_access_mode,
+       partner_reuse_policy, created_at, updated_at
 FROM articles
 WHERE company_id = $1 AND id = $2
 `
@@ -123,6 +129,8 @@ type GetArticleRow struct {
 	Version                 int32     `json:"version"`
 	RequiresAcknowledgement bool      `json:"requires_acknowledgement"`
 	PlainText               string    `json:"plain_text"`
+	PartnerAccessMode       string    `json:"partner_access_mode"`
+	PartnerReusePolicy      string    `json:"partner_reuse_policy"`
 	CreatedAt               time.Time `json:"created_at"`
 	UpdatedAt               time.Time `json:"updated_at"`
 }
@@ -141,6 +149,8 @@ func (q *Queries) GetArticle(ctx context.Context, arg GetArticleParams) (GetArti
 		&i.Version,
 		&i.RequiresAcknowledgement,
 		&i.PlainText,
+		&i.PartnerAccessMode,
+		&i.PartnerReusePolicy,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -149,7 +159,8 @@ func (q *Queries) GetArticle(ctx context.Context, arg GetArticleParams) (GetArti
 
 const getArticleForUpdate = `-- name: GetArticleForUpdate :one
 SELECT id, company_id, section_id, title, content, status, author_id, version,
-       requires_acknowledgement, plain_text, created_at, updated_at
+       requires_acknowledgement, plain_text, partner_access_mode,
+       partner_reuse_policy, created_at, updated_at
 FROM articles
 WHERE company_id = $1 AND id = $2
 FOR UPDATE
@@ -171,6 +182,8 @@ type GetArticleForUpdateRow struct {
 	Version                 int32     `json:"version"`
 	RequiresAcknowledgement bool      `json:"requires_acknowledgement"`
 	PlainText               string    `json:"plain_text"`
+	PartnerAccessMode       string    `json:"partner_access_mode"`
+	PartnerReusePolicy      string    `json:"partner_reuse_policy"`
 	CreatedAt               time.Time `json:"created_at"`
 	UpdatedAt               time.Time `json:"updated_at"`
 }
@@ -189,6 +202,8 @@ func (q *Queries) GetArticleForUpdate(ctx context.Context, arg GetArticleForUpda
 		&i.Version,
 		&i.RequiresAcknowledgement,
 		&i.PlainText,
+		&i.PartnerAccessMode,
+		&i.PartnerReusePolicy,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -197,7 +212,8 @@ func (q *Queries) GetArticleForUpdate(ctx context.Context, arg GetArticleForUpda
 
 const getArticlesByIDs = `-- name: GetArticlesByIDs :many
 SELECT id, company_id, section_id, title, content, status, author_id, version,
-       requires_acknowledgement, plain_text, created_at, updated_at
+       requires_acknowledgement, plain_text, partner_access_mode,
+       partner_reuse_policy, created_at, updated_at
 FROM articles
 WHERE company_id = $1 AND id = ANY($2::uuid[])
 ORDER BY updated_at DESC
@@ -219,6 +235,8 @@ type GetArticlesByIDsRow struct {
 	Version                 int32     `json:"version"`
 	RequiresAcknowledgement bool      `json:"requires_acknowledgement"`
 	PlainText               string    `json:"plain_text"`
+	PartnerAccessMode       string    `json:"partner_access_mode"`
+	PartnerReusePolicy      string    `json:"partner_reuse_policy"`
 	CreatedAt               time.Time `json:"created_at"`
 	UpdatedAt               time.Time `json:"updated_at"`
 }
@@ -243,6 +261,8 @@ func (q *Queries) GetArticlesByIDs(ctx context.Context, arg GetArticlesByIDsPara
 			&i.Version,
 			&i.RequiresAcknowledgement,
 			&i.PlainText,
+			&i.PartnerAccessMode,
+			&i.PartnerReusePolicy,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -258,7 +278,8 @@ func (q *Queries) GetArticlesByIDs(ctx context.Context, arg GetArticlesByIDsPara
 
 const getPublicArticle = `-- name: GetPublicArticle :one
 SELECT a.id, a.company_id, a.section_id, a.title, a.content, a.status, a.author_id, a.version,
-       a.requires_acknowledgement, a.plain_text, a.created_at, a.updated_at
+       a.requires_acknowledgement, a.plain_text, a.partner_access_mode,
+       a.partner_reuse_policy, a.created_at, a.updated_at
 FROM articles a
 JOIN sections s ON s.id = a.section_id AND s.company_id = a.company_id
 WHERE a.id = $1 AND a.status = 'published' AND s.visibility = 'public'
@@ -275,6 +296,8 @@ type GetPublicArticleRow struct {
 	Version                 int32     `json:"version"`
 	RequiresAcknowledgement bool      `json:"requires_acknowledgement"`
 	PlainText               string    `json:"plain_text"`
+	PartnerAccessMode       string    `json:"partner_access_mode"`
+	PartnerReusePolicy      string    `json:"partner_reuse_policy"`
 	CreatedAt               time.Time `json:"created_at"`
 	UpdatedAt               time.Time `json:"updated_at"`
 }
@@ -293,6 +316,8 @@ func (q *Queries) GetPublicArticle(ctx context.Context, id uuid.UUID) (GetPublic
 		&i.Version,
 		&i.RequiresAcknowledgement,
 		&i.PlainText,
+		&i.PartnerAccessMode,
+		&i.PartnerReusePolicy,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -301,7 +326,8 @@ func (q *Queries) GetPublicArticle(ctx context.Context, id uuid.UUID) (GetPublic
 
 const listArticles = `-- name: ListArticles :many
 SELECT id, company_id, section_id, title, content, status, author_id, version,
-       requires_acknowledgement, plain_text, created_at, updated_at
+       requires_acknowledgement, plain_text, partner_access_mode,
+       partner_reuse_policy, created_at, updated_at
 FROM articles
 WHERE company_id = $1
   AND ($2::uuid IS NULL OR section_id = $2)
@@ -324,6 +350,8 @@ type ListArticlesRow struct {
 	Version                 int32     `json:"version"`
 	RequiresAcknowledgement bool      `json:"requires_acknowledgement"`
 	PlainText               string    `json:"plain_text"`
+	PartnerAccessMode       string    `json:"partner_access_mode"`
+	PartnerReusePolicy      string    `json:"partner_reuse_policy"`
 	CreatedAt               time.Time `json:"created_at"`
 	UpdatedAt               time.Time `json:"updated_at"`
 }
@@ -348,6 +376,8 @@ func (q *Queries) ListArticles(ctx context.Context, arg ListArticlesParams) ([]L
 			&i.Version,
 			&i.RequiresAcknowledgement,
 			&i.PlainText,
+			&i.PartnerAccessMode,
+			&i.PartnerReusePolicy,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -363,7 +393,8 @@ func (q *Queries) ListArticles(ctx context.Context, arg ListArticlesParams) ([]L
 
 const searchArticles = `-- name: SearchArticles :many
 SELECT id, company_id, section_id, title, content, status, author_id, version,
-       requires_acknowledgement, plain_text, created_at, updated_at
+       requires_acknowledgement, plain_text, partner_access_mode,
+       partner_reuse_policy, created_at, updated_at
 FROM articles
 WHERE company_id = $1
   AND search @@ plainto_tsquery('russian', $2)
@@ -386,6 +417,8 @@ type SearchArticlesRow struct {
 	Version                 int32     `json:"version"`
 	RequiresAcknowledgement bool      `json:"requires_acknowledgement"`
 	PlainText               string    `json:"plain_text"`
+	PartnerAccessMode       string    `json:"partner_access_mode"`
+	PartnerReusePolicy      string    `json:"partner_reuse_policy"`
 	CreatedAt               time.Time `json:"created_at"`
 	UpdatedAt               time.Time `json:"updated_at"`
 }
@@ -410,6 +443,8 @@ func (q *Queries) SearchArticles(ctx context.Context, arg SearchArticlesParams) 
 			&i.Version,
 			&i.RequiresAcknowledgement,
 			&i.PlainText,
+			&i.PartnerAccessMode,
+			&i.PartnerReusePolicy,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -436,7 +471,8 @@ SET
     updated_at = now()
 WHERE company_id = $1 AND id = $2
 RETURNING id, company_id, section_id, title, content, status, author_id, version,
-          requires_acknowledgement, plain_text, created_at, updated_at
+          requires_acknowledgement, plain_text, partner_access_mode,
+          partner_reuse_policy, created_at, updated_at
 `
 
 type UpdateArticleParams struct {
@@ -462,6 +498,8 @@ type UpdateArticleRow struct {
 	Version                 int32     `json:"version"`
 	RequiresAcknowledgement bool      `json:"requires_acknowledgement"`
 	PlainText               string    `json:"plain_text"`
+	PartnerAccessMode       string    `json:"partner_access_mode"`
+	PartnerReusePolicy      string    `json:"partner_reuse_policy"`
 	CreatedAt               time.Time `json:"created_at"`
 	UpdatedAt               time.Time `json:"updated_at"`
 }
@@ -490,6 +528,8 @@ func (q *Queries) UpdateArticle(ctx context.Context, arg UpdateArticleParams) (U
 		&i.Version,
 		&i.RequiresAcknowledgement,
 		&i.PlainText,
+		&i.PartnerAccessMode,
+		&i.PartnerReusePolicy,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

@@ -19,28 +19,103 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AcademyService_GetCourses_FullMethodName          = "/teamos.academy.v1.AcademyService/GetCourses"
-	AcademyService_GetCourse_FullMethodName           = "/teamos.academy.v1.AcademyService/GetCourse"
-	AcademyService_GetPublicCourse_FullMethodName     = "/teamos.academy.v1.AcademyService/GetPublicCourse"
-	AcademyService_CreateCourse_FullMethodName        = "/teamos.academy.v1.AcademyService/CreateCourse"
-	AcademyService_CreateCourseFromKb_FullMethodName  = "/teamos.academy.v1.AcademyService/CreateCourseFromKb"
-	AcademyService_UpdateCourse_FullMethodName        = "/teamos.academy.v1.AcademyService/UpdateCourse"
-	AcademyService_DeleteCourse_FullMethodName        = "/teamos.academy.v1.AcademyService/DeleteCourse"
-	AcademyService_GetCourseSections_FullMethodName   = "/teamos.academy.v1.AcademyService/GetCourseSections"
-	AcademyService_CreateCourseSection_FullMethodName = "/teamos.academy.v1.AcademyService/CreateCourseSection"
-	AcademyService_UpdateCourseSection_FullMethodName = "/teamos.academy.v1.AcademyService/UpdateCourseSection"
-	AcademyService_DeleteCourseSection_FullMethodName = "/teamos.academy.v1.AcademyService/DeleteCourseSection"
-	AcademyService_GetLessons_FullMethodName          = "/teamos.academy.v1.AcademyService/GetLessons"
-	AcademyService_CreateLesson_FullMethodName        = "/teamos.academy.v1.AcademyService/CreateLesson"
-	AcademyService_UpdateLesson_FullMethodName        = "/teamos.academy.v1.AcademyService/UpdateLesson"
-	AcademyService_DeleteLesson_FullMethodName        = "/teamos.academy.v1.AcademyService/DeleteLesson"
-	AcademyService_MoveLesson_FullMethodName          = "/teamos.academy.v1.AcademyService/MoveLesson"
-	AcademyService_GetQuizzes_FullMethodName          = "/teamos.academy.v1.AcademyService/GetQuizzes"
-	AcademyService_UpsertQuiz_FullMethodName          = "/teamos.academy.v1.AcademyService/UpsertQuiz"
-	AcademyService_GetAssignments_FullMethodName      = "/teamos.academy.v1.AcademyService/GetAssignments"
-	AcademyService_AssignCourse_FullMethodName        = "/teamos.academy.v1.AcademyService/AssignCourse"
-	AcademyService_GetProgress_FullMethodName         = "/teamos.academy.v1.AcademyService/GetProgress"
-	AcademyService_MarkLessonComplete_FullMethodName  = "/teamos.academy.v1.AcademyService/MarkLessonComplete"
+	AcademyService_GetCourses_FullMethodName                            = "/teamos.academy.v1.AcademyService/GetCourses"
+	AcademyService_GetCourse_FullMethodName                             = "/teamos.academy.v1.AcademyService/GetCourse"
+	AcademyService_GetPublicCourse_FullMethodName                       = "/teamos.academy.v1.AcademyService/GetPublicCourse"
+	AcademyService_CreateCourse_FullMethodName                          = "/teamos.academy.v1.AcademyService/CreateCourse"
+	AcademyService_CreateCourseFromKb_FullMethodName                    = "/teamos.academy.v1.AcademyService/CreateCourseFromKb"
+	AcademyService_UpdateCourse_FullMethodName                          = "/teamos.academy.v1.AcademyService/UpdateCourse"
+	AcademyService_ArchiveCourse_FullMethodName                         = "/teamos.academy.v1.AcademyService/ArchiveCourse"
+	AcademyService_RestoreCourse_FullMethodName                         = "/teamos.academy.v1.AcademyService/RestoreCourse"
+	AcademyService_DeleteCourse_FullMethodName                          = "/teamos.academy.v1.AcademyService/DeleteCourse"
+	AcademyService_GetCourseVersions_FullMethodName                     = "/teamos.academy.v1.AcademyService/GetCourseVersions"
+	AcademyService_GetCourseVersion_FullMethodName                      = "/teamos.academy.v1.AcademyService/GetCourseVersion"
+	AcademyService_CreateCourseDraft_FullMethodName                     = "/teamos.academy.v1.AcademyService/CreateCourseDraft"
+	AcademyService_UpdateCourseDraft_FullMethodName                     = "/teamos.academy.v1.AcademyService/UpdateCourseDraft"
+	AcademyService_PublishCourseVersion_FullMethodName                  = "/teamos.academy.v1.AcademyService/PublishCourseVersion"
+	AcademyService_GetPublishedCourseVersion_FullMethodName             = "/teamos.academy.v1.AcademyService/GetPublishedCourseVersion"
+	AcademyService_CreateCourseVersionSection_FullMethodName            = "/teamos.academy.v1.AcademyService/CreateCourseVersionSection"
+	AcademyService_UpdateCourseVersionSection_FullMethodName            = "/teamos.academy.v1.AcademyService/UpdateCourseVersionSection"
+	AcademyService_DeleteCourseVersionSection_FullMethodName            = "/teamos.academy.v1.AcademyService/DeleteCourseVersionSection"
+	AcademyService_CreateCourseVersionLesson_FullMethodName             = "/teamos.academy.v1.AcademyService/CreateCourseVersionLesson"
+	AcademyService_UpdateCourseVersionLesson_FullMethodName             = "/teamos.academy.v1.AcademyService/UpdateCourseVersionLesson"
+	AcademyService_DeleteCourseVersionLesson_FullMethodName             = "/teamos.academy.v1.AcademyService/DeleteCourseVersionLesson"
+	AcademyService_MoveCourseVersionLesson_FullMethodName               = "/teamos.academy.v1.AcademyService/MoveCourseVersionLesson"
+	AcademyService_UpsertCourseVersionQuiz_FullMethodName               = "/teamos.academy.v1.AcademyService/UpsertCourseVersionQuiz"
+	AcademyService_DeleteCourseVersionQuiz_FullMethodName               = "/teamos.academy.v1.AcademyService/DeleteCourseVersionQuiz"
+	AcademyService_GetCourseSections_FullMethodName                     = "/teamos.academy.v1.AcademyService/GetCourseSections"
+	AcademyService_CreateCourseSection_FullMethodName                   = "/teamos.academy.v1.AcademyService/CreateCourseSection"
+	AcademyService_UpdateCourseSection_FullMethodName                   = "/teamos.academy.v1.AcademyService/UpdateCourseSection"
+	AcademyService_DeleteCourseSection_FullMethodName                   = "/teamos.academy.v1.AcademyService/DeleteCourseSection"
+	AcademyService_GetLessons_FullMethodName                            = "/teamos.academy.v1.AcademyService/GetLessons"
+	AcademyService_CreateLesson_FullMethodName                          = "/teamos.academy.v1.AcademyService/CreateLesson"
+	AcademyService_UpdateLesson_FullMethodName                          = "/teamos.academy.v1.AcademyService/UpdateLesson"
+	AcademyService_DeleteLesson_FullMethodName                          = "/teamos.academy.v1.AcademyService/DeleteLesson"
+	AcademyService_MoveLesson_FullMethodName                            = "/teamos.academy.v1.AcademyService/MoveLesson"
+	AcademyService_GetQuizzes_FullMethodName                            = "/teamos.academy.v1.AcademyService/GetQuizzes"
+	AcademyService_UpsertQuiz_FullMethodName                            = "/teamos.academy.v1.AcademyService/UpsertQuiz"
+	AcademyService_GetAssignments_FullMethodName                        = "/teamos.academy.v1.AcademyService/GetAssignments"
+	AcademyService_AssignCourse_FullMethodName                          = "/teamos.academy.v1.AcademyService/AssignCourse"
+	AcademyService_RevokeAssignment_FullMethodName                      = "/teamos.academy.v1.AcademyService/RevokeAssignment"
+	AcademyService_GetProgress_FullMethodName                           = "/teamos.academy.v1.AcademyService/GetProgress"
+	AcademyService_MarkLessonComplete_FullMethodName                    = "/teamos.academy.v1.AcademyService/MarkLessonComplete"
+	AcademyService_GetEnrollments_FullMethodName                        = "/teamos.academy.v1.AcademyService/GetEnrollments"
+	AcademyService_SelfEnrollCourse_FullMethodName                      = "/teamos.academy.v1.AcademyService/SelfEnrollCourse"
+	AcademyService_GetCatalogCourseVersion_FullMethodName               = "/teamos.academy.v1.AcademyService/GetCatalogCourseVersion"
+	AcademyService_GetEnrollment_FullMethodName                         = "/teamos.academy.v1.AcademyService/GetEnrollment"
+	AcademyService_GetEnrollmentOutline_FullMethodName                  = "/teamos.academy.v1.AcademyService/GetEnrollmentOutline"
+	AcademyService_GetEnrollmentLesson_FullMethodName                   = "/teamos.academy.v1.AcademyService/GetEnrollmentLesson"
+	AcademyService_ResumeEnrollment_FullMethodName                      = "/teamos.academy.v1.AcademyService/ResumeEnrollment"
+	AcademyService_CompleteEnrollmentLesson_FullMethodName              = "/teamos.academy.v1.AcademyService/CompleteEnrollmentLesson"
+	AcademyService_SubmitEnrollmentQuizAttempt_FullMethodName           = "/teamos.academy.v1.AcademyService/SubmitEnrollmentQuizAttempt"
+	AcademyService_GetEnrollmentReport_FullMethodName                   = "/teamos.academy.v1.AcademyService/GetEnrollmentReport"
+	AcademyService_GetPartnerCourseGroups_FullMethodName                = "/teamos.academy.v1.AcademyService/GetPartnerCourseGroups"
+	AcademyService_GetPartnerCoursesReport_FullMethodName               = "/teamos.academy.v1.AcademyService/GetPartnerCoursesReport"
+	AcademyService_GetCourseVersionPreview_FullMethodName               = "/teamos.academy.v1.AcademyService/GetCourseVersionPreview"
+	AcademyService_SubmitCoursePreviewQuizAttempt_FullMethodName        = "/teamos.academy.v1.AcademyService/SubmitCoursePreviewQuizAttempt"
+	AcademyService_PausePartnerCourseDistribution_FullMethodName        = "/teamos.academy.v1.AcademyService/PausePartnerCourseDistribution"
+	AcademyService_BlockPartnerCourse_FullMethodName                    = "/teamos.academy.v1.AcademyService/BlockPartnerCourse"
+	AcademyService_ResolvePartnerCourseRestriction_FullMethodName       = "/teamos.academy.v1.AcademyService/ResolvePartnerCourseRestriction"
+	AcademyService_GetCourseRestrictions_FullMethodName                 = "/teamos.academy.v1.AcademyService/GetCourseRestrictions"
+	AcademyService_CopyPartnerCourseVersionToCompany_FullMethodName     = "/teamos.academy.v1.AcademyService/CopyPartnerCourseVersionToCompany"
+	AcademyService_GetCourseTemplates_FullMethodName                    = "/teamos.academy.v1.AcademyService/GetCourseTemplates"
+	AcademyService_GetCourseTemplate_FullMethodName                     = "/teamos.academy.v1.AcademyService/GetCourseTemplate"
+	AcademyService_CreateCourseTemplate_FullMethodName                  = "/teamos.academy.v1.AcademyService/CreateCourseTemplate"
+	AcademyService_UpdateCourseTemplateDraft_FullMethodName             = "/teamos.academy.v1.AcademyService/UpdateCourseTemplateDraft"
+	AcademyService_CreateCourseTemplateDraft_FullMethodName             = "/teamos.academy.v1.AcademyService/CreateCourseTemplateDraft"
+	AcademyService_PublishCourseTemplateVersion_FullMethodName          = "/teamos.academy.v1.AcademyService/PublishCourseTemplateVersion"
+	AcademyService_ArchiveCourseTemplate_FullMethodName                 = "/teamos.academy.v1.AcademyService/ArchiveCourseTemplate"
+	AcademyService_InstantiateCourseTemplateVersion_FullMethodName      = "/teamos.academy.v1.AcademyService/InstantiateCourseTemplateVersion"
+	AcademyService_CreateExternalPersonalAccess_FullMethodName          = "/teamos.academy.v1.AcademyService/CreateExternalPersonalAccess"
+	AcademyService_GetExternalPersonalAccesses_FullMethodName           = "/teamos.academy.v1.AcademyService/GetExternalPersonalAccesses"
+	AcademyService_GetExternalPersonalAccess_FullMethodName             = "/teamos.academy.v1.AcademyService/GetExternalPersonalAccess"
+	AcademyService_ExtendExternalPersonalAccess_FullMethodName          = "/teamos.academy.v1.AcademyService/ExtendExternalPersonalAccess"
+	AcademyService_RotateExternalPersonalAccessToken_FullMethodName     = "/teamos.academy.v1.AcademyService/RotateExternalPersonalAccessToken"
+	AcademyService_RevokeExternalPersonalAccess_FullMethodName          = "/teamos.academy.v1.AcademyService/RevokeExternalPersonalAccess"
+	AcademyService_RepeatExternalPersonalAccess_FullMethodName          = "/teamos.academy.v1.AcademyService/RepeatExternalPersonalAccess"
+	AcademyService_CreateExternalCampaign_FullMethodName                = "/teamos.academy.v1.AcademyService/CreateExternalCampaign"
+	AcademyService_GetExternalCampaigns_FullMethodName                  = "/teamos.academy.v1.AcademyService/GetExternalCampaigns"
+	AcademyService_GetExternalCampaign_FullMethodName                   = "/teamos.academy.v1.AcademyService/GetExternalCampaign"
+	AcademyService_PauseExternalCampaign_FullMethodName                 = "/teamos.academy.v1.AcademyService/PauseExternalCampaign"
+	AcademyService_ResumeExternalCampaign_FullMethodName                = "/teamos.academy.v1.AcademyService/ResumeExternalCampaign"
+	AcademyService_RotateExternalCampaignToken_FullMethodName           = "/teamos.academy.v1.AcademyService/RotateExternalCampaignToken"
+	AcademyService_RevokeExternalCampaign_FullMethodName                = "/teamos.academy.v1.AcademyService/RevokeExternalCampaign"
+	AcademyService_GetExternalCampaignReport_FullMethodName             = "/teamos.academy.v1.AcademyService/GetExternalCampaignReport"
+	AcademyService_GetCourseExternalReport_FullMethodName               = "/teamos.academy.v1.AcademyService/GetCourseExternalReport"
+	AcademyService_GetPublicAcademyAccess_FullMethodName                = "/teamos.academy.v1.AcademyService/GetPublicAcademyAccess"
+	AcademyService_RequestPublicAcademyVerification_FullMethodName      = "/teamos.academy.v1.AcademyService/RequestPublicAcademyVerification"
+	AcademyService_ConfirmPublicAcademyVerification_FullMethodName      = "/teamos.academy.v1.AcademyService/ConfirmPublicAcademyVerification"
+	AcademyService_ActivatePublicAcademyAccess_FullMethodName           = "/teamos.academy.v1.AcademyService/ActivatePublicAcademyAccess"
+	AcademyService_GetPublicAcademyEnrollment_FullMethodName            = "/teamos.academy.v1.AcademyService/GetPublicAcademyEnrollment"
+	AcademyService_GetPublicAcademyEnrollmentOutline_FullMethodName     = "/teamos.academy.v1.AcademyService/GetPublicAcademyEnrollmentOutline"
+	AcademyService_GetPublicAcademyEnrollmentLesson_FullMethodName      = "/teamos.academy.v1.AcademyService/GetPublicAcademyEnrollmentLesson"
+	AcademyService_CompletePublicAcademyEnrollmentLesson_FullMethodName = "/teamos.academy.v1.AcademyService/CompletePublicAcademyEnrollmentLesson"
+	AcademyService_SubmitPublicAcademyQuizAttempt_FullMethodName        = "/teamos.academy.v1.AcademyService/SubmitPublicAcademyQuizAttempt"
+	AcademyService_GetPublicAcademyEnrollmentResults_FullMethodName     = "/teamos.academy.v1.AcademyService/GetPublicAcademyEnrollmentResults"
+	AcademyService_GetExternalLearners_FullMethodName                   = "/teamos.academy.v1.AcademyService/GetExternalLearners"
+	AcademyService_GetExternalLearner_FullMethodName                    = "/teamos.academy.v1.AcademyService/GetExternalLearner"
+	AcademyService_GetExternalLearnerEnrollments_FullMethodName         = "/teamos.academy.v1.AcademyService/GetExternalLearnerEnrollments"
+	AcademyService_GetExternalLearnerTimeline_FullMethodName            = "/teamos.academy.v1.AcademyService/GetExternalLearnerTimeline"
 )
 
 // AcademyServiceClient is the client API for AcademyService service.
@@ -53,7 +128,24 @@ type AcademyServiceClient interface {
 	CreateCourse(ctx context.Context, in *CreateCourseRequest, opts ...grpc.CallOption) (*CreateCourseResponse, error)
 	CreateCourseFromKb(ctx context.Context, in *CreateCourseFromKbRequest, opts ...grpc.CallOption) (*CreateCourseFromKbResponse, error)
 	UpdateCourse(ctx context.Context, in *UpdateCourseRequest, opts ...grpc.CallOption) (*UpdateCourseResponse, error)
+	ArchiveCourse(ctx context.Context, in *ArchiveCourseRequest, opts ...grpc.CallOption) (*ArchiveCourseResponse, error)
+	RestoreCourse(ctx context.Context, in *RestoreCourseRequest, opts ...grpc.CallOption) (*RestoreCourseResponse, error)
 	DeleteCourse(ctx context.Context, in *DeleteCourseRequest, opts ...grpc.CallOption) (*DeleteCourseResponse, error)
+	GetCourseVersions(ctx context.Context, in *GetCourseVersionsRequest, opts ...grpc.CallOption) (*GetCourseVersionsResponse, error)
+	GetCourseVersion(ctx context.Context, in *GetCourseVersionRequest, opts ...grpc.CallOption) (*GetCourseVersionResponse, error)
+	CreateCourseDraft(ctx context.Context, in *CreateCourseDraftRequest, opts ...grpc.CallOption) (*CreateCourseDraftResponse, error)
+	UpdateCourseDraft(ctx context.Context, in *UpdateCourseDraftRequest, opts ...grpc.CallOption) (*UpdateCourseDraftResponse, error)
+	PublishCourseVersion(ctx context.Context, in *PublishCourseVersionRequest, opts ...grpc.CallOption) (*PublishCourseVersionResponse, error)
+	GetPublishedCourseVersion(ctx context.Context, in *GetPublishedCourseVersionRequest, opts ...grpc.CallOption) (*GetPublishedCourseVersionResponse, error)
+	CreateCourseVersionSection(ctx context.Context, in *CreateCourseVersionSectionRequest, opts ...grpc.CallOption) (*CreateCourseVersionSectionResponse, error)
+	UpdateCourseVersionSection(ctx context.Context, in *UpdateCourseVersionSectionRequest, opts ...grpc.CallOption) (*UpdateCourseVersionSectionResponse, error)
+	DeleteCourseVersionSection(ctx context.Context, in *DeleteCourseVersionSectionRequest, opts ...grpc.CallOption) (*DeleteCourseVersionSectionResponse, error)
+	CreateCourseVersionLesson(ctx context.Context, in *CreateCourseVersionLessonRequest, opts ...grpc.CallOption) (*CreateCourseVersionLessonResponse, error)
+	UpdateCourseVersionLesson(ctx context.Context, in *UpdateCourseVersionLessonRequest, opts ...grpc.CallOption) (*UpdateCourseVersionLessonResponse, error)
+	DeleteCourseVersionLesson(ctx context.Context, in *DeleteCourseVersionLessonRequest, opts ...grpc.CallOption) (*DeleteCourseVersionLessonResponse, error)
+	MoveCourseVersionLesson(ctx context.Context, in *MoveCourseVersionLessonRequest, opts ...grpc.CallOption) (*MoveCourseVersionLessonResponse, error)
+	UpsertCourseVersionQuiz(ctx context.Context, in *UpsertCourseVersionQuizRequest, opts ...grpc.CallOption) (*UpsertCourseVersionQuizResponse, error)
+	DeleteCourseVersionQuiz(ctx context.Context, in *DeleteCourseVersionQuizRequest, opts ...grpc.CallOption) (*DeleteCourseVersionQuizResponse, error)
 	GetCourseSections(ctx context.Context, in *GetCourseSectionsRequest, opts ...grpc.CallOption) (*GetCourseSectionsResponse, error)
 	CreateCourseSection(ctx context.Context, in *CreateCourseSectionRequest, opts ...grpc.CallOption) (*CreateCourseSectionResponse, error)
 	UpdateCourseSection(ctx context.Context, in *UpdateCourseSectionRequest, opts ...grpc.CallOption) (*UpdateCourseSectionResponse, error)
@@ -67,8 +159,84 @@ type AcademyServiceClient interface {
 	UpsertQuiz(ctx context.Context, in *UpsertQuizRequest, opts ...grpc.CallOption) (*UpsertQuizResponse, error)
 	GetAssignments(ctx context.Context, in *GetAssignmentsRequest, opts ...grpc.CallOption) (*GetAssignmentsResponse, error)
 	AssignCourse(ctx context.Context, in *AssignCourseRequest, opts ...grpc.CallOption) (*AssignCourseResponse, error)
+	RevokeAssignment(ctx context.Context, in *RevokeAssignmentRequest, opts ...grpc.CallOption) (*RevokeAssignmentResponse, error)
 	GetProgress(ctx context.Context, in *GetProgressRequest, opts ...grpc.CallOption) (*GetProgressResponse, error)
 	MarkLessonComplete(ctx context.Context, in *MarkLessonCompleteRequest, opts ...grpc.CallOption) (*MarkLessonCompleteResponse, error)
+	// Enrollment is the source of truth for both internal and, in later phases,
+	// external learning progress. Internal caller identity is taken from JWT by
+	// the gateway/application layer and is never trusted from the request body.
+	GetEnrollments(ctx context.Context, in *GetEnrollmentsRequest, opts ...grpc.CallOption) (*GetEnrollmentsResponse, error)
+	SelfEnrollCourse(ctx context.Context, in *SelfEnrollCourseRequest, opts ...grpc.CallOption) (*SelfEnrollCourseResponse, error)
+	GetCatalogCourseVersion(ctx context.Context, in *GetCatalogCourseVersionRequest, opts ...grpc.CallOption) (*GetCatalogCourseVersionResponse, error)
+	GetEnrollment(ctx context.Context, in *GetEnrollmentRequest, opts ...grpc.CallOption) (*GetEnrollmentResponse, error)
+	GetEnrollmentOutline(ctx context.Context, in *GetEnrollmentOutlineRequest, opts ...grpc.CallOption) (*GetEnrollmentOutlineResponse, error)
+	GetEnrollmentLesson(ctx context.Context, in *GetEnrollmentLessonRequest, opts ...grpc.CallOption) (*GetEnrollmentLessonResponse, error)
+	ResumeEnrollment(ctx context.Context, in *ResumeEnrollmentRequest, opts ...grpc.CallOption) (*ResumeEnrollmentResponse, error)
+	CompleteEnrollmentLesson(ctx context.Context, in *CompleteEnrollmentLessonRequest, opts ...grpc.CallOption) (*CompleteEnrollmentLessonResponse, error)
+	SubmitEnrollmentQuizAttempt(ctx context.Context, in *SubmitEnrollmentQuizAttemptRequest, opts ...grpc.CallOption) (*SubmitEnrollmentQuizAttemptResponse, error)
+	GetEnrollmentReport(ctx context.Context, in *GetEnrollmentReportRequest, opts ...grpc.CallOption) (*GetEnrollmentReportResponse, error)
+	// Partner course administration. Authorization is object-scoped: partner
+	// authors can preview only their own courses, while only owner/admin can
+	// apply restrictions, inspect cross-partner groups and copy originals.
+	GetPartnerCourseGroups(ctx context.Context, in *GetPartnerCourseGroupsRequest, opts ...grpc.CallOption) (*GetPartnerCourseGroupsResponse, error)
+	GetPartnerCoursesReport(ctx context.Context, in *GetPartnerCoursesReportRequest, opts ...grpc.CallOption) (*GetPartnerCoursesReportResponse, error)
+	GetCourseVersionPreview(ctx context.Context, in *GetCourseVersionPreviewRequest, opts ...grpc.CallOption) (*GetCourseVersionPreviewResponse, error)
+	SubmitCoursePreviewQuizAttempt(ctx context.Context, in *SubmitCoursePreviewQuizAttemptRequest, opts ...grpc.CallOption) (*SubmitCoursePreviewQuizAttemptResponse, error)
+	PausePartnerCourseDistribution(ctx context.Context, in *PausePartnerCourseDistributionRequest, opts ...grpc.CallOption) (*PausePartnerCourseDistributionResponse, error)
+	BlockPartnerCourse(ctx context.Context, in *BlockPartnerCourseRequest, opts ...grpc.CallOption) (*BlockPartnerCourseResponse, error)
+	ResolvePartnerCourseRestriction(ctx context.Context, in *ResolvePartnerCourseRestrictionRequest, opts ...grpc.CallOption) (*ResolvePartnerCourseRestrictionResponse, error)
+	GetCourseRestrictions(ctx context.Context, in *GetCourseRestrictionsRequest, opts ...grpc.CallOption) (*GetCourseRestrictionsResponse, error)
+	CopyPartnerCourseVersionToCompany(ctx context.Context, in *CopyPartnerCourseVersionToCompanyRequest, opts ...grpc.CallOption) (*CopyPartnerCourseVersionToCompanyResponse, error)
+	// CourseTemplate is a separate versioned aggregate. Templates cannot be
+	// assigned or learned; instantiation always creates an independent course
+	// draft and the server derives its owner from the authenticated actor.
+	GetCourseTemplates(ctx context.Context, in *GetCourseTemplatesRequest, opts ...grpc.CallOption) (*GetCourseTemplatesResponse, error)
+	GetCourseTemplate(ctx context.Context, in *GetCourseTemplateRequest, opts ...grpc.CallOption) (*GetCourseTemplateResponse, error)
+	CreateCourseTemplate(ctx context.Context, in *CreateCourseTemplateRequest, opts ...grpc.CallOption) (*CreateCourseTemplateResponse, error)
+	UpdateCourseTemplateDraft(ctx context.Context, in *UpdateCourseTemplateDraftRequest, opts ...grpc.CallOption) (*UpdateCourseTemplateDraftResponse, error)
+	CreateCourseTemplateDraft(ctx context.Context, in *CreateCourseTemplateDraftRequest, opts ...grpc.CallOption) (*CreateCourseTemplateDraftResponse, error)
+	PublishCourseTemplateVersion(ctx context.Context, in *PublishCourseTemplateVersionRequest, opts ...grpc.CallOption) (*PublishCourseTemplateVersionResponse, error)
+	ArchiveCourseTemplate(ctx context.Context, in *ArchiveCourseTemplateRequest, opts ...grpc.CallOption) (*ArchiveCourseTemplateResponse, error)
+	InstantiateCourseTemplateVersion(ctx context.Context, in *InstantiateCourseTemplateVersionRequest, opts ...grpc.CallOption) (*InstantiateCourseTemplateVersionResponse, error)
+	// Personal external access is created by an authenticated partner for an
+	// exact immutable version of their own course. Tokens are returned only by
+	// create/rotate/repeat responses and are stored by Academy only as hashes.
+	CreateExternalPersonalAccess(ctx context.Context, in *CreateExternalPersonalAccessRequest, opts ...grpc.CallOption) (*CreateExternalPersonalAccessResponse, error)
+	GetExternalPersonalAccesses(ctx context.Context, in *GetExternalPersonalAccessesRequest, opts ...grpc.CallOption) (*GetExternalPersonalAccessesResponse, error)
+	GetExternalPersonalAccess(ctx context.Context, in *GetExternalPersonalAccessRequest, opts ...grpc.CallOption) (*GetExternalPersonalAccessResponse, error)
+	ExtendExternalPersonalAccess(ctx context.Context, in *ExtendExternalPersonalAccessRequest, opts ...grpc.CallOption) (*ExtendExternalPersonalAccessResponse, error)
+	RotateExternalPersonalAccessToken(ctx context.Context, in *RotateExternalPersonalAccessTokenRequest, opts ...grpc.CallOption) (*RotateExternalPersonalAccessTokenResponse, error)
+	RevokeExternalPersonalAccess(ctx context.Context, in *RevokeExternalPersonalAccessRequest, opts ...grpc.CallOption) (*RevokeExternalPersonalAccessResponse, error)
+	RepeatExternalPersonalAccess(ctx context.Context, in *RepeatExternalPersonalAccessRequest, opts ...grpc.CallOption) (*RepeatExternalPersonalAccessResponse, error)
+	// External campaigns are version-pinned distribution aggregates. Partner
+	// campaigns are restricted to the actor's own course; company candidate
+	// campaigns are restricted to owner/admin and company-owned courses.
+	CreateExternalCampaign(ctx context.Context, in *CreateExternalCampaignRequest, opts ...grpc.CallOption) (*CreateExternalCampaignResponse, error)
+	GetExternalCampaigns(ctx context.Context, in *GetExternalCampaignsRequest, opts ...grpc.CallOption) (*GetExternalCampaignsResponse, error)
+	GetExternalCampaign(ctx context.Context, in *GetExternalCampaignRequest, opts ...grpc.CallOption) (*GetExternalCampaignResponse, error)
+	PauseExternalCampaign(ctx context.Context, in *PauseExternalCampaignRequest, opts ...grpc.CallOption) (*PauseExternalCampaignResponse, error)
+	ResumeExternalCampaign(ctx context.Context, in *ResumeExternalCampaignRequest, opts ...grpc.CallOption) (*ResumeExternalCampaignResponse, error)
+	RotateExternalCampaignToken(ctx context.Context, in *RotateExternalCampaignTokenRequest, opts ...grpc.CallOption) (*RotateExternalCampaignTokenResponse, error)
+	RevokeExternalCampaign(ctx context.Context, in *RevokeExternalCampaignRequest, opts ...grpc.CallOption) (*RevokeExternalCampaignResponse, error)
+	GetExternalCampaignReport(ctx context.Context, in *GetExternalCampaignReportRequest, opts ...grpc.CallOption) (*GetExternalCampaignReportResponse, error)
+	GetCourseExternalReport(ctx context.Context, in *GetCourseExternalReportRequest, opts ...grpc.CallOption) (*GetCourseExternalReportResponse, error)
+	// Public calls do not accept the internal TeamOS JWT. Once verification is
+	// complete, the opaque external session is supplied in trusted gRPC
+	// metadata by gateway and is scoped to one Academy company/learner.
+	GetPublicAcademyAccess(ctx context.Context, in *GetPublicAcademyAccessRequest, opts ...grpc.CallOption) (*GetPublicAcademyAccessResponse, error)
+	RequestPublicAcademyVerification(ctx context.Context, in *RequestPublicAcademyVerificationRequest, opts ...grpc.CallOption) (*RequestPublicAcademyVerificationResponse, error)
+	ConfirmPublicAcademyVerification(ctx context.Context, in *ConfirmPublicAcademyVerificationRequest, opts ...grpc.CallOption) (*ConfirmPublicAcademyVerificationResponse, error)
+	ActivatePublicAcademyAccess(ctx context.Context, in *ActivatePublicAcademyAccessRequest, opts ...grpc.CallOption) (*ActivatePublicAcademyAccessResponse, error)
+	GetPublicAcademyEnrollment(ctx context.Context, in *GetPublicAcademyEnrollmentRequest, opts ...grpc.CallOption) (*GetPublicAcademyEnrollmentResponse, error)
+	GetPublicAcademyEnrollmentOutline(ctx context.Context, in *GetPublicAcademyEnrollmentOutlineRequest, opts ...grpc.CallOption) (*GetPublicAcademyEnrollmentOutlineResponse, error)
+	GetPublicAcademyEnrollmentLesson(ctx context.Context, in *GetPublicAcademyEnrollmentLessonRequest, opts ...grpc.CallOption) (*GetPublicAcademyEnrollmentLessonResponse, error)
+	CompletePublicAcademyEnrollmentLesson(ctx context.Context, in *CompletePublicAcademyEnrollmentLessonRequest, opts ...grpc.CallOption) (*CompletePublicAcademyEnrollmentLessonResponse, error)
+	SubmitPublicAcademyQuizAttempt(ctx context.Context, in *SubmitPublicAcademyQuizAttemptRequest, opts ...grpc.CallOption) (*SubmitPublicAcademyQuizAttemptResponse, error)
+	GetPublicAcademyEnrollmentResults(ctx context.Context, in *GetPublicAcademyEnrollmentResultsRequest, opts ...grpc.CallOption) (*GetPublicAcademyEnrollmentResultsResponse, error)
+	GetExternalLearners(ctx context.Context, in *GetExternalLearnersRequest, opts ...grpc.CallOption) (*GetExternalLearnersResponse, error)
+	GetExternalLearner(ctx context.Context, in *GetExternalLearnerRequest, opts ...grpc.CallOption) (*GetExternalLearnerResponse, error)
+	GetExternalLearnerEnrollments(ctx context.Context, in *GetExternalLearnerEnrollmentsRequest, opts ...grpc.CallOption) (*GetExternalLearnerEnrollmentsResponse, error)
+	GetExternalLearnerTimeline(ctx context.Context, in *GetExternalLearnerTimelineRequest, opts ...grpc.CallOption) (*GetExternalLearnerTimelineResponse, error)
 }
 
 type academyServiceClient struct {
@@ -139,10 +307,180 @@ func (c *academyServiceClient) UpdateCourse(ctx context.Context, in *UpdateCours
 	return out, nil
 }
 
+func (c *academyServiceClient) ArchiveCourse(ctx context.Context, in *ArchiveCourseRequest, opts ...grpc.CallOption) (*ArchiveCourseResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ArchiveCourseResponse)
+	err := c.cc.Invoke(ctx, AcademyService_ArchiveCourse_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) RestoreCourse(ctx context.Context, in *RestoreCourseRequest, opts ...grpc.CallOption) (*RestoreCourseResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RestoreCourseResponse)
+	err := c.cc.Invoke(ctx, AcademyService_RestoreCourse_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *academyServiceClient) DeleteCourse(ctx context.Context, in *DeleteCourseRequest, opts ...grpc.CallOption) (*DeleteCourseResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(DeleteCourseResponse)
 	err := c.cc.Invoke(ctx, AcademyService_DeleteCourse_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) GetCourseVersions(ctx context.Context, in *GetCourseVersionsRequest, opts ...grpc.CallOption) (*GetCourseVersionsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetCourseVersionsResponse)
+	err := c.cc.Invoke(ctx, AcademyService_GetCourseVersions_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) GetCourseVersion(ctx context.Context, in *GetCourseVersionRequest, opts ...grpc.CallOption) (*GetCourseVersionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetCourseVersionResponse)
+	err := c.cc.Invoke(ctx, AcademyService_GetCourseVersion_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) CreateCourseDraft(ctx context.Context, in *CreateCourseDraftRequest, opts ...grpc.CallOption) (*CreateCourseDraftResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateCourseDraftResponse)
+	err := c.cc.Invoke(ctx, AcademyService_CreateCourseDraft_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) UpdateCourseDraft(ctx context.Context, in *UpdateCourseDraftRequest, opts ...grpc.CallOption) (*UpdateCourseDraftResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateCourseDraftResponse)
+	err := c.cc.Invoke(ctx, AcademyService_UpdateCourseDraft_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) PublishCourseVersion(ctx context.Context, in *PublishCourseVersionRequest, opts ...grpc.CallOption) (*PublishCourseVersionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PublishCourseVersionResponse)
+	err := c.cc.Invoke(ctx, AcademyService_PublishCourseVersion_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) GetPublishedCourseVersion(ctx context.Context, in *GetPublishedCourseVersionRequest, opts ...grpc.CallOption) (*GetPublishedCourseVersionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetPublishedCourseVersionResponse)
+	err := c.cc.Invoke(ctx, AcademyService_GetPublishedCourseVersion_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) CreateCourseVersionSection(ctx context.Context, in *CreateCourseVersionSectionRequest, opts ...grpc.CallOption) (*CreateCourseVersionSectionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateCourseVersionSectionResponse)
+	err := c.cc.Invoke(ctx, AcademyService_CreateCourseVersionSection_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) UpdateCourseVersionSection(ctx context.Context, in *UpdateCourseVersionSectionRequest, opts ...grpc.CallOption) (*UpdateCourseVersionSectionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateCourseVersionSectionResponse)
+	err := c.cc.Invoke(ctx, AcademyService_UpdateCourseVersionSection_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) DeleteCourseVersionSection(ctx context.Context, in *DeleteCourseVersionSectionRequest, opts ...grpc.CallOption) (*DeleteCourseVersionSectionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteCourseVersionSectionResponse)
+	err := c.cc.Invoke(ctx, AcademyService_DeleteCourseVersionSection_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) CreateCourseVersionLesson(ctx context.Context, in *CreateCourseVersionLessonRequest, opts ...grpc.CallOption) (*CreateCourseVersionLessonResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateCourseVersionLessonResponse)
+	err := c.cc.Invoke(ctx, AcademyService_CreateCourseVersionLesson_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) UpdateCourseVersionLesson(ctx context.Context, in *UpdateCourseVersionLessonRequest, opts ...grpc.CallOption) (*UpdateCourseVersionLessonResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateCourseVersionLessonResponse)
+	err := c.cc.Invoke(ctx, AcademyService_UpdateCourseVersionLesson_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) DeleteCourseVersionLesson(ctx context.Context, in *DeleteCourseVersionLessonRequest, opts ...grpc.CallOption) (*DeleteCourseVersionLessonResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteCourseVersionLessonResponse)
+	err := c.cc.Invoke(ctx, AcademyService_DeleteCourseVersionLesson_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) MoveCourseVersionLesson(ctx context.Context, in *MoveCourseVersionLessonRequest, opts ...grpc.CallOption) (*MoveCourseVersionLessonResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MoveCourseVersionLessonResponse)
+	err := c.cc.Invoke(ctx, AcademyService_MoveCourseVersionLesson_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) UpsertCourseVersionQuiz(ctx context.Context, in *UpsertCourseVersionQuizRequest, opts ...grpc.CallOption) (*UpsertCourseVersionQuizResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpsertCourseVersionQuizResponse)
+	err := c.cc.Invoke(ctx, AcademyService_UpsertCourseVersionQuiz_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) DeleteCourseVersionQuiz(ctx context.Context, in *DeleteCourseVersionQuizRequest, opts ...grpc.CallOption) (*DeleteCourseVersionQuizResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteCourseVersionQuizResponse)
+	err := c.cc.Invoke(ctx, AcademyService_DeleteCourseVersionQuiz_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -279,6 +617,16 @@ func (c *academyServiceClient) AssignCourse(ctx context.Context, in *AssignCours
 	return out, nil
 }
 
+func (c *academyServiceClient) RevokeAssignment(ctx context.Context, in *RevokeAssignmentRequest, opts ...grpc.CallOption) (*RevokeAssignmentResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RevokeAssignmentResponse)
+	err := c.cc.Invoke(ctx, AcademyService_RevokeAssignment_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *academyServiceClient) GetProgress(ctx context.Context, in *GetProgressRequest, opts ...grpc.CallOption) (*GetProgressResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetProgressResponse)
@@ -299,6 +647,576 @@ func (c *academyServiceClient) MarkLessonComplete(ctx context.Context, in *MarkL
 	return out, nil
 }
 
+func (c *academyServiceClient) GetEnrollments(ctx context.Context, in *GetEnrollmentsRequest, opts ...grpc.CallOption) (*GetEnrollmentsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetEnrollmentsResponse)
+	err := c.cc.Invoke(ctx, AcademyService_GetEnrollments_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) SelfEnrollCourse(ctx context.Context, in *SelfEnrollCourseRequest, opts ...grpc.CallOption) (*SelfEnrollCourseResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SelfEnrollCourseResponse)
+	err := c.cc.Invoke(ctx, AcademyService_SelfEnrollCourse_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) GetCatalogCourseVersion(ctx context.Context, in *GetCatalogCourseVersionRequest, opts ...grpc.CallOption) (*GetCatalogCourseVersionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetCatalogCourseVersionResponse)
+	err := c.cc.Invoke(ctx, AcademyService_GetCatalogCourseVersion_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) GetEnrollment(ctx context.Context, in *GetEnrollmentRequest, opts ...grpc.CallOption) (*GetEnrollmentResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetEnrollmentResponse)
+	err := c.cc.Invoke(ctx, AcademyService_GetEnrollment_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) GetEnrollmentOutline(ctx context.Context, in *GetEnrollmentOutlineRequest, opts ...grpc.CallOption) (*GetEnrollmentOutlineResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetEnrollmentOutlineResponse)
+	err := c.cc.Invoke(ctx, AcademyService_GetEnrollmentOutline_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) GetEnrollmentLesson(ctx context.Context, in *GetEnrollmentLessonRequest, opts ...grpc.CallOption) (*GetEnrollmentLessonResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetEnrollmentLessonResponse)
+	err := c.cc.Invoke(ctx, AcademyService_GetEnrollmentLesson_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) ResumeEnrollment(ctx context.Context, in *ResumeEnrollmentRequest, opts ...grpc.CallOption) (*ResumeEnrollmentResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ResumeEnrollmentResponse)
+	err := c.cc.Invoke(ctx, AcademyService_ResumeEnrollment_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) CompleteEnrollmentLesson(ctx context.Context, in *CompleteEnrollmentLessonRequest, opts ...grpc.CallOption) (*CompleteEnrollmentLessonResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CompleteEnrollmentLessonResponse)
+	err := c.cc.Invoke(ctx, AcademyService_CompleteEnrollmentLesson_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) SubmitEnrollmentQuizAttempt(ctx context.Context, in *SubmitEnrollmentQuizAttemptRequest, opts ...grpc.CallOption) (*SubmitEnrollmentQuizAttemptResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SubmitEnrollmentQuizAttemptResponse)
+	err := c.cc.Invoke(ctx, AcademyService_SubmitEnrollmentQuizAttempt_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) GetEnrollmentReport(ctx context.Context, in *GetEnrollmentReportRequest, opts ...grpc.CallOption) (*GetEnrollmentReportResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetEnrollmentReportResponse)
+	err := c.cc.Invoke(ctx, AcademyService_GetEnrollmentReport_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) GetPartnerCourseGroups(ctx context.Context, in *GetPartnerCourseGroupsRequest, opts ...grpc.CallOption) (*GetPartnerCourseGroupsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetPartnerCourseGroupsResponse)
+	err := c.cc.Invoke(ctx, AcademyService_GetPartnerCourseGroups_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) GetPartnerCoursesReport(ctx context.Context, in *GetPartnerCoursesReportRequest, opts ...grpc.CallOption) (*GetPartnerCoursesReportResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetPartnerCoursesReportResponse)
+	err := c.cc.Invoke(ctx, AcademyService_GetPartnerCoursesReport_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) GetCourseVersionPreview(ctx context.Context, in *GetCourseVersionPreviewRequest, opts ...grpc.CallOption) (*GetCourseVersionPreviewResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetCourseVersionPreviewResponse)
+	err := c.cc.Invoke(ctx, AcademyService_GetCourseVersionPreview_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) SubmitCoursePreviewQuizAttempt(ctx context.Context, in *SubmitCoursePreviewQuizAttemptRequest, opts ...grpc.CallOption) (*SubmitCoursePreviewQuizAttemptResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SubmitCoursePreviewQuizAttemptResponse)
+	err := c.cc.Invoke(ctx, AcademyService_SubmitCoursePreviewQuizAttempt_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) PausePartnerCourseDistribution(ctx context.Context, in *PausePartnerCourseDistributionRequest, opts ...grpc.CallOption) (*PausePartnerCourseDistributionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PausePartnerCourseDistributionResponse)
+	err := c.cc.Invoke(ctx, AcademyService_PausePartnerCourseDistribution_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) BlockPartnerCourse(ctx context.Context, in *BlockPartnerCourseRequest, opts ...grpc.CallOption) (*BlockPartnerCourseResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BlockPartnerCourseResponse)
+	err := c.cc.Invoke(ctx, AcademyService_BlockPartnerCourse_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) ResolvePartnerCourseRestriction(ctx context.Context, in *ResolvePartnerCourseRestrictionRequest, opts ...grpc.CallOption) (*ResolvePartnerCourseRestrictionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ResolvePartnerCourseRestrictionResponse)
+	err := c.cc.Invoke(ctx, AcademyService_ResolvePartnerCourseRestriction_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) GetCourseRestrictions(ctx context.Context, in *GetCourseRestrictionsRequest, opts ...grpc.CallOption) (*GetCourseRestrictionsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetCourseRestrictionsResponse)
+	err := c.cc.Invoke(ctx, AcademyService_GetCourseRestrictions_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) CopyPartnerCourseVersionToCompany(ctx context.Context, in *CopyPartnerCourseVersionToCompanyRequest, opts ...grpc.CallOption) (*CopyPartnerCourseVersionToCompanyResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CopyPartnerCourseVersionToCompanyResponse)
+	err := c.cc.Invoke(ctx, AcademyService_CopyPartnerCourseVersionToCompany_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) GetCourseTemplates(ctx context.Context, in *GetCourseTemplatesRequest, opts ...grpc.CallOption) (*GetCourseTemplatesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetCourseTemplatesResponse)
+	err := c.cc.Invoke(ctx, AcademyService_GetCourseTemplates_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) GetCourseTemplate(ctx context.Context, in *GetCourseTemplateRequest, opts ...grpc.CallOption) (*GetCourseTemplateResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetCourseTemplateResponse)
+	err := c.cc.Invoke(ctx, AcademyService_GetCourseTemplate_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) CreateCourseTemplate(ctx context.Context, in *CreateCourseTemplateRequest, opts ...grpc.CallOption) (*CreateCourseTemplateResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateCourseTemplateResponse)
+	err := c.cc.Invoke(ctx, AcademyService_CreateCourseTemplate_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) UpdateCourseTemplateDraft(ctx context.Context, in *UpdateCourseTemplateDraftRequest, opts ...grpc.CallOption) (*UpdateCourseTemplateDraftResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateCourseTemplateDraftResponse)
+	err := c.cc.Invoke(ctx, AcademyService_UpdateCourseTemplateDraft_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) CreateCourseTemplateDraft(ctx context.Context, in *CreateCourseTemplateDraftRequest, opts ...grpc.CallOption) (*CreateCourseTemplateDraftResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateCourseTemplateDraftResponse)
+	err := c.cc.Invoke(ctx, AcademyService_CreateCourseTemplateDraft_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) PublishCourseTemplateVersion(ctx context.Context, in *PublishCourseTemplateVersionRequest, opts ...grpc.CallOption) (*PublishCourseTemplateVersionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PublishCourseTemplateVersionResponse)
+	err := c.cc.Invoke(ctx, AcademyService_PublishCourseTemplateVersion_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) ArchiveCourseTemplate(ctx context.Context, in *ArchiveCourseTemplateRequest, opts ...grpc.CallOption) (*ArchiveCourseTemplateResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ArchiveCourseTemplateResponse)
+	err := c.cc.Invoke(ctx, AcademyService_ArchiveCourseTemplate_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) InstantiateCourseTemplateVersion(ctx context.Context, in *InstantiateCourseTemplateVersionRequest, opts ...grpc.CallOption) (*InstantiateCourseTemplateVersionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(InstantiateCourseTemplateVersionResponse)
+	err := c.cc.Invoke(ctx, AcademyService_InstantiateCourseTemplateVersion_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) CreateExternalPersonalAccess(ctx context.Context, in *CreateExternalPersonalAccessRequest, opts ...grpc.CallOption) (*CreateExternalPersonalAccessResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateExternalPersonalAccessResponse)
+	err := c.cc.Invoke(ctx, AcademyService_CreateExternalPersonalAccess_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) GetExternalPersonalAccesses(ctx context.Context, in *GetExternalPersonalAccessesRequest, opts ...grpc.CallOption) (*GetExternalPersonalAccessesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetExternalPersonalAccessesResponse)
+	err := c.cc.Invoke(ctx, AcademyService_GetExternalPersonalAccesses_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) GetExternalPersonalAccess(ctx context.Context, in *GetExternalPersonalAccessRequest, opts ...grpc.CallOption) (*GetExternalPersonalAccessResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetExternalPersonalAccessResponse)
+	err := c.cc.Invoke(ctx, AcademyService_GetExternalPersonalAccess_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) ExtendExternalPersonalAccess(ctx context.Context, in *ExtendExternalPersonalAccessRequest, opts ...grpc.CallOption) (*ExtendExternalPersonalAccessResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ExtendExternalPersonalAccessResponse)
+	err := c.cc.Invoke(ctx, AcademyService_ExtendExternalPersonalAccess_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) RotateExternalPersonalAccessToken(ctx context.Context, in *RotateExternalPersonalAccessTokenRequest, opts ...grpc.CallOption) (*RotateExternalPersonalAccessTokenResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RotateExternalPersonalAccessTokenResponse)
+	err := c.cc.Invoke(ctx, AcademyService_RotateExternalPersonalAccessToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) RevokeExternalPersonalAccess(ctx context.Context, in *RevokeExternalPersonalAccessRequest, opts ...grpc.CallOption) (*RevokeExternalPersonalAccessResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RevokeExternalPersonalAccessResponse)
+	err := c.cc.Invoke(ctx, AcademyService_RevokeExternalPersonalAccess_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) RepeatExternalPersonalAccess(ctx context.Context, in *RepeatExternalPersonalAccessRequest, opts ...grpc.CallOption) (*RepeatExternalPersonalAccessResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RepeatExternalPersonalAccessResponse)
+	err := c.cc.Invoke(ctx, AcademyService_RepeatExternalPersonalAccess_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) CreateExternalCampaign(ctx context.Context, in *CreateExternalCampaignRequest, opts ...grpc.CallOption) (*CreateExternalCampaignResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateExternalCampaignResponse)
+	err := c.cc.Invoke(ctx, AcademyService_CreateExternalCampaign_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) GetExternalCampaigns(ctx context.Context, in *GetExternalCampaignsRequest, opts ...grpc.CallOption) (*GetExternalCampaignsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetExternalCampaignsResponse)
+	err := c.cc.Invoke(ctx, AcademyService_GetExternalCampaigns_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) GetExternalCampaign(ctx context.Context, in *GetExternalCampaignRequest, opts ...grpc.CallOption) (*GetExternalCampaignResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetExternalCampaignResponse)
+	err := c.cc.Invoke(ctx, AcademyService_GetExternalCampaign_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) PauseExternalCampaign(ctx context.Context, in *PauseExternalCampaignRequest, opts ...grpc.CallOption) (*PauseExternalCampaignResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PauseExternalCampaignResponse)
+	err := c.cc.Invoke(ctx, AcademyService_PauseExternalCampaign_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) ResumeExternalCampaign(ctx context.Context, in *ResumeExternalCampaignRequest, opts ...grpc.CallOption) (*ResumeExternalCampaignResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ResumeExternalCampaignResponse)
+	err := c.cc.Invoke(ctx, AcademyService_ResumeExternalCampaign_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) RotateExternalCampaignToken(ctx context.Context, in *RotateExternalCampaignTokenRequest, opts ...grpc.CallOption) (*RotateExternalCampaignTokenResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RotateExternalCampaignTokenResponse)
+	err := c.cc.Invoke(ctx, AcademyService_RotateExternalCampaignToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) RevokeExternalCampaign(ctx context.Context, in *RevokeExternalCampaignRequest, opts ...grpc.CallOption) (*RevokeExternalCampaignResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RevokeExternalCampaignResponse)
+	err := c.cc.Invoke(ctx, AcademyService_RevokeExternalCampaign_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) GetExternalCampaignReport(ctx context.Context, in *GetExternalCampaignReportRequest, opts ...grpc.CallOption) (*GetExternalCampaignReportResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetExternalCampaignReportResponse)
+	err := c.cc.Invoke(ctx, AcademyService_GetExternalCampaignReport_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) GetCourseExternalReport(ctx context.Context, in *GetCourseExternalReportRequest, opts ...grpc.CallOption) (*GetCourseExternalReportResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetCourseExternalReportResponse)
+	err := c.cc.Invoke(ctx, AcademyService_GetCourseExternalReport_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) GetPublicAcademyAccess(ctx context.Context, in *GetPublicAcademyAccessRequest, opts ...grpc.CallOption) (*GetPublicAcademyAccessResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetPublicAcademyAccessResponse)
+	err := c.cc.Invoke(ctx, AcademyService_GetPublicAcademyAccess_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) RequestPublicAcademyVerification(ctx context.Context, in *RequestPublicAcademyVerificationRequest, opts ...grpc.CallOption) (*RequestPublicAcademyVerificationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RequestPublicAcademyVerificationResponse)
+	err := c.cc.Invoke(ctx, AcademyService_RequestPublicAcademyVerification_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) ConfirmPublicAcademyVerification(ctx context.Context, in *ConfirmPublicAcademyVerificationRequest, opts ...grpc.CallOption) (*ConfirmPublicAcademyVerificationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ConfirmPublicAcademyVerificationResponse)
+	err := c.cc.Invoke(ctx, AcademyService_ConfirmPublicAcademyVerification_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) ActivatePublicAcademyAccess(ctx context.Context, in *ActivatePublicAcademyAccessRequest, opts ...grpc.CallOption) (*ActivatePublicAcademyAccessResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ActivatePublicAcademyAccessResponse)
+	err := c.cc.Invoke(ctx, AcademyService_ActivatePublicAcademyAccess_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) GetPublicAcademyEnrollment(ctx context.Context, in *GetPublicAcademyEnrollmentRequest, opts ...grpc.CallOption) (*GetPublicAcademyEnrollmentResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetPublicAcademyEnrollmentResponse)
+	err := c.cc.Invoke(ctx, AcademyService_GetPublicAcademyEnrollment_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) GetPublicAcademyEnrollmentOutline(ctx context.Context, in *GetPublicAcademyEnrollmentOutlineRequest, opts ...grpc.CallOption) (*GetPublicAcademyEnrollmentOutlineResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetPublicAcademyEnrollmentOutlineResponse)
+	err := c.cc.Invoke(ctx, AcademyService_GetPublicAcademyEnrollmentOutline_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) GetPublicAcademyEnrollmentLesson(ctx context.Context, in *GetPublicAcademyEnrollmentLessonRequest, opts ...grpc.CallOption) (*GetPublicAcademyEnrollmentLessonResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetPublicAcademyEnrollmentLessonResponse)
+	err := c.cc.Invoke(ctx, AcademyService_GetPublicAcademyEnrollmentLesson_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) CompletePublicAcademyEnrollmentLesson(ctx context.Context, in *CompletePublicAcademyEnrollmentLessonRequest, opts ...grpc.CallOption) (*CompletePublicAcademyEnrollmentLessonResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CompletePublicAcademyEnrollmentLessonResponse)
+	err := c.cc.Invoke(ctx, AcademyService_CompletePublicAcademyEnrollmentLesson_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) SubmitPublicAcademyQuizAttempt(ctx context.Context, in *SubmitPublicAcademyQuizAttemptRequest, opts ...grpc.CallOption) (*SubmitPublicAcademyQuizAttemptResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SubmitPublicAcademyQuizAttemptResponse)
+	err := c.cc.Invoke(ctx, AcademyService_SubmitPublicAcademyQuizAttempt_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) GetPublicAcademyEnrollmentResults(ctx context.Context, in *GetPublicAcademyEnrollmentResultsRequest, opts ...grpc.CallOption) (*GetPublicAcademyEnrollmentResultsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetPublicAcademyEnrollmentResultsResponse)
+	err := c.cc.Invoke(ctx, AcademyService_GetPublicAcademyEnrollmentResults_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) GetExternalLearners(ctx context.Context, in *GetExternalLearnersRequest, opts ...grpc.CallOption) (*GetExternalLearnersResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetExternalLearnersResponse)
+	err := c.cc.Invoke(ctx, AcademyService_GetExternalLearners_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) GetExternalLearner(ctx context.Context, in *GetExternalLearnerRequest, opts ...grpc.CallOption) (*GetExternalLearnerResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetExternalLearnerResponse)
+	err := c.cc.Invoke(ctx, AcademyService_GetExternalLearner_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) GetExternalLearnerEnrollments(ctx context.Context, in *GetExternalLearnerEnrollmentsRequest, opts ...grpc.CallOption) (*GetExternalLearnerEnrollmentsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetExternalLearnerEnrollmentsResponse)
+	err := c.cc.Invoke(ctx, AcademyService_GetExternalLearnerEnrollments_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) GetExternalLearnerTimeline(ctx context.Context, in *GetExternalLearnerTimelineRequest, opts ...grpc.CallOption) (*GetExternalLearnerTimelineResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetExternalLearnerTimelineResponse)
+	err := c.cc.Invoke(ctx, AcademyService_GetExternalLearnerTimeline_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AcademyServiceServer is the server API for AcademyService service.
 // All implementations must embed UnimplementedAcademyServiceServer
 // for forward compatibility.
@@ -309,7 +1227,24 @@ type AcademyServiceServer interface {
 	CreateCourse(context.Context, *CreateCourseRequest) (*CreateCourseResponse, error)
 	CreateCourseFromKb(context.Context, *CreateCourseFromKbRequest) (*CreateCourseFromKbResponse, error)
 	UpdateCourse(context.Context, *UpdateCourseRequest) (*UpdateCourseResponse, error)
+	ArchiveCourse(context.Context, *ArchiveCourseRequest) (*ArchiveCourseResponse, error)
+	RestoreCourse(context.Context, *RestoreCourseRequest) (*RestoreCourseResponse, error)
 	DeleteCourse(context.Context, *DeleteCourseRequest) (*DeleteCourseResponse, error)
+	GetCourseVersions(context.Context, *GetCourseVersionsRequest) (*GetCourseVersionsResponse, error)
+	GetCourseVersion(context.Context, *GetCourseVersionRequest) (*GetCourseVersionResponse, error)
+	CreateCourseDraft(context.Context, *CreateCourseDraftRequest) (*CreateCourseDraftResponse, error)
+	UpdateCourseDraft(context.Context, *UpdateCourseDraftRequest) (*UpdateCourseDraftResponse, error)
+	PublishCourseVersion(context.Context, *PublishCourseVersionRequest) (*PublishCourseVersionResponse, error)
+	GetPublishedCourseVersion(context.Context, *GetPublishedCourseVersionRequest) (*GetPublishedCourseVersionResponse, error)
+	CreateCourseVersionSection(context.Context, *CreateCourseVersionSectionRequest) (*CreateCourseVersionSectionResponse, error)
+	UpdateCourseVersionSection(context.Context, *UpdateCourseVersionSectionRequest) (*UpdateCourseVersionSectionResponse, error)
+	DeleteCourseVersionSection(context.Context, *DeleteCourseVersionSectionRequest) (*DeleteCourseVersionSectionResponse, error)
+	CreateCourseVersionLesson(context.Context, *CreateCourseVersionLessonRequest) (*CreateCourseVersionLessonResponse, error)
+	UpdateCourseVersionLesson(context.Context, *UpdateCourseVersionLessonRequest) (*UpdateCourseVersionLessonResponse, error)
+	DeleteCourseVersionLesson(context.Context, *DeleteCourseVersionLessonRequest) (*DeleteCourseVersionLessonResponse, error)
+	MoveCourseVersionLesson(context.Context, *MoveCourseVersionLessonRequest) (*MoveCourseVersionLessonResponse, error)
+	UpsertCourseVersionQuiz(context.Context, *UpsertCourseVersionQuizRequest) (*UpsertCourseVersionQuizResponse, error)
+	DeleteCourseVersionQuiz(context.Context, *DeleteCourseVersionQuizRequest) (*DeleteCourseVersionQuizResponse, error)
 	GetCourseSections(context.Context, *GetCourseSectionsRequest) (*GetCourseSectionsResponse, error)
 	CreateCourseSection(context.Context, *CreateCourseSectionRequest) (*CreateCourseSectionResponse, error)
 	UpdateCourseSection(context.Context, *UpdateCourseSectionRequest) (*UpdateCourseSectionResponse, error)
@@ -323,8 +1258,84 @@ type AcademyServiceServer interface {
 	UpsertQuiz(context.Context, *UpsertQuizRequest) (*UpsertQuizResponse, error)
 	GetAssignments(context.Context, *GetAssignmentsRequest) (*GetAssignmentsResponse, error)
 	AssignCourse(context.Context, *AssignCourseRequest) (*AssignCourseResponse, error)
+	RevokeAssignment(context.Context, *RevokeAssignmentRequest) (*RevokeAssignmentResponse, error)
 	GetProgress(context.Context, *GetProgressRequest) (*GetProgressResponse, error)
 	MarkLessonComplete(context.Context, *MarkLessonCompleteRequest) (*MarkLessonCompleteResponse, error)
+	// Enrollment is the source of truth for both internal and, in later phases,
+	// external learning progress. Internal caller identity is taken from JWT by
+	// the gateway/application layer and is never trusted from the request body.
+	GetEnrollments(context.Context, *GetEnrollmentsRequest) (*GetEnrollmentsResponse, error)
+	SelfEnrollCourse(context.Context, *SelfEnrollCourseRequest) (*SelfEnrollCourseResponse, error)
+	GetCatalogCourseVersion(context.Context, *GetCatalogCourseVersionRequest) (*GetCatalogCourseVersionResponse, error)
+	GetEnrollment(context.Context, *GetEnrollmentRequest) (*GetEnrollmentResponse, error)
+	GetEnrollmentOutline(context.Context, *GetEnrollmentOutlineRequest) (*GetEnrollmentOutlineResponse, error)
+	GetEnrollmentLesson(context.Context, *GetEnrollmentLessonRequest) (*GetEnrollmentLessonResponse, error)
+	ResumeEnrollment(context.Context, *ResumeEnrollmentRequest) (*ResumeEnrollmentResponse, error)
+	CompleteEnrollmentLesson(context.Context, *CompleteEnrollmentLessonRequest) (*CompleteEnrollmentLessonResponse, error)
+	SubmitEnrollmentQuizAttempt(context.Context, *SubmitEnrollmentQuizAttemptRequest) (*SubmitEnrollmentQuizAttemptResponse, error)
+	GetEnrollmentReport(context.Context, *GetEnrollmentReportRequest) (*GetEnrollmentReportResponse, error)
+	// Partner course administration. Authorization is object-scoped: partner
+	// authors can preview only their own courses, while only owner/admin can
+	// apply restrictions, inspect cross-partner groups and copy originals.
+	GetPartnerCourseGroups(context.Context, *GetPartnerCourseGroupsRequest) (*GetPartnerCourseGroupsResponse, error)
+	GetPartnerCoursesReport(context.Context, *GetPartnerCoursesReportRequest) (*GetPartnerCoursesReportResponse, error)
+	GetCourseVersionPreview(context.Context, *GetCourseVersionPreviewRequest) (*GetCourseVersionPreviewResponse, error)
+	SubmitCoursePreviewQuizAttempt(context.Context, *SubmitCoursePreviewQuizAttemptRequest) (*SubmitCoursePreviewQuizAttemptResponse, error)
+	PausePartnerCourseDistribution(context.Context, *PausePartnerCourseDistributionRequest) (*PausePartnerCourseDistributionResponse, error)
+	BlockPartnerCourse(context.Context, *BlockPartnerCourseRequest) (*BlockPartnerCourseResponse, error)
+	ResolvePartnerCourseRestriction(context.Context, *ResolvePartnerCourseRestrictionRequest) (*ResolvePartnerCourseRestrictionResponse, error)
+	GetCourseRestrictions(context.Context, *GetCourseRestrictionsRequest) (*GetCourseRestrictionsResponse, error)
+	CopyPartnerCourseVersionToCompany(context.Context, *CopyPartnerCourseVersionToCompanyRequest) (*CopyPartnerCourseVersionToCompanyResponse, error)
+	// CourseTemplate is a separate versioned aggregate. Templates cannot be
+	// assigned or learned; instantiation always creates an independent course
+	// draft and the server derives its owner from the authenticated actor.
+	GetCourseTemplates(context.Context, *GetCourseTemplatesRequest) (*GetCourseTemplatesResponse, error)
+	GetCourseTemplate(context.Context, *GetCourseTemplateRequest) (*GetCourseTemplateResponse, error)
+	CreateCourseTemplate(context.Context, *CreateCourseTemplateRequest) (*CreateCourseTemplateResponse, error)
+	UpdateCourseTemplateDraft(context.Context, *UpdateCourseTemplateDraftRequest) (*UpdateCourseTemplateDraftResponse, error)
+	CreateCourseTemplateDraft(context.Context, *CreateCourseTemplateDraftRequest) (*CreateCourseTemplateDraftResponse, error)
+	PublishCourseTemplateVersion(context.Context, *PublishCourseTemplateVersionRequest) (*PublishCourseTemplateVersionResponse, error)
+	ArchiveCourseTemplate(context.Context, *ArchiveCourseTemplateRequest) (*ArchiveCourseTemplateResponse, error)
+	InstantiateCourseTemplateVersion(context.Context, *InstantiateCourseTemplateVersionRequest) (*InstantiateCourseTemplateVersionResponse, error)
+	// Personal external access is created by an authenticated partner for an
+	// exact immutable version of their own course. Tokens are returned only by
+	// create/rotate/repeat responses and are stored by Academy only as hashes.
+	CreateExternalPersonalAccess(context.Context, *CreateExternalPersonalAccessRequest) (*CreateExternalPersonalAccessResponse, error)
+	GetExternalPersonalAccesses(context.Context, *GetExternalPersonalAccessesRequest) (*GetExternalPersonalAccessesResponse, error)
+	GetExternalPersonalAccess(context.Context, *GetExternalPersonalAccessRequest) (*GetExternalPersonalAccessResponse, error)
+	ExtendExternalPersonalAccess(context.Context, *ExtendExternalPersonalAccessRequest) (*ExtendExternalPersonalAccessResponse, error)
+	RotateExternalPersonalAccessToken(context.Context, *RotateExternalPersonalAccessTokenRequest) (*RotateExternalPersonalAccessTokenResponse, error)
+	RevokeExternalPersonalAccess(context.Context, *RevokeExternalPersonalAccessRequest) (*RevokeExternalPersonalAccessResponse, error)
+	RepeatExternalPersonalAccess(context.Context, *RepeatExternalPersonalAccessRequest) (*RepeatExternalPersonalAccessResponse, error)
+	// External campaigns are version-pinned distribution aggregates. Partner
+	// campaigns are restricted to the actor's own course; company candidate
+	// campaigns are restricted to owner/admin and company-owned courses.
+	CreateExternalCampaign(context.Context, *CreateExternalCampaignRequest) (*CreateExternalCampaignResponse, error)
+	GetExternalCampaigns(context.Context, *GetExternalCampaignsRequest) (*GetExternalCampaignsResponse, error)
+	GetExternalCampaign(context.Context, *GetExternalCampaignRequest) (*GetExternalCampaignResponse, error)
+	PauseExternalCampaign(context.Context, *PauseExternalCampaignRequest) (*PauseExternalCampaignResponse, error)
+	ResumeExternalCampaign(context.Context, *ResumeExternalCampaignRequest) (*ResumeExternalCampaignResponse, error)
+	RotateExternalCampaignToken(context.Context, *RotateExternalCampaignTokenRequest) (*RotateExternalCampaignTokenResponse, error)
+	RevokeExternalCampaign(context.Context, *RevokeExternalCampaignRequest) (*RevokeExternalCampaignResponse, error)
+	GetExternalCampaignReport(context.Context, *GetExternalCampaignReportRequest) (*GetExternalCampaignReportResponse, error)
+	GetCourseExternalReport(context.Context, *GetCourseExternalReportRequest) (*GetCourseExternalReportResponse, error)
+	// Public calls do not accept the internal TeamOS JWT. Once verification is
+	// complete, the opaque external session is supplied in trusted gRPC
+	// metadata by gateway and is scoped to one Academy company/learner.
+	GetPublicAcademyAccess(context.Context, *GetPublicAcademyAccessRequest) (*GetPublicAcademyAccessResponse, error)
+	RequestPublicAcademyVerification(context.Context, *RequestPublicAcademyVerificationRequest) (*RequestPublicAcademyVerificationResponse, error)
+	ConfirmPublicAcademyVerification(context.Context, *ConfirmPublicAcademyVerificationRequest) (*ConfirmPublicAcademyVerificationResponse, error)
+	ActivatePublicAcademyAccess(context.Context, *ActivatePublicAcademyAccessRequest) (*ActivatePublicAcademyAccessResponse, error)
+	GetPublicAcademyEnrollment(context.Context, *GetPublicAcademyEnrollmentRequest) (*GetPublicAcademyEnrollmentResponse, error)
+	GetPublicAcademyEnrollmentOutline(context.Context, *GetPublicAcademyEnrollmentOutlineRequest) (*GetPublicAcademyEnrollmentOutlineResponse, error)
+	GetPublicAcademyEnrollmentLesson(context.Context, *GetPublicAcademyEnrollmentLessonRequest) (*GetPublicAcademyEnrollmentLessonResponse, error)
+	CompletePublicAcademyEnrollmentLesson(context.Context, *CompletePublicAcademyEnrollmentLessonRequest) (*CompletePublicAcademyEnrollmentLessonResponse, error)
+	SubmitPublicAcademyQuizAttempt(context.Context, *SubmitPublicAcademyQuizAttemptRequest) (*SubmitPublicAcademyQuizAttemptResponse, error)
+	GetPublicAcademyEnrollmentResults(context.Context, *GetPublicAcademyEnrollmentResultsRequest) (*GetPublicAcademyEnrollmentResultsResponse, error)
+	GetExternalLearners(context.Context, *GetExternalLearnersRequest) (*GetExternalLearnersResponse, error)
+	GetExternalLearner(context.Context, *GetExternalLearnerRequest) (*GetExternalLearnerResponse, error)
+	GetExternalLearnerEnrollments(context.Context, *GetExternalLearnerEnrollmentsRequest) (*GetExternalLearnerEnrollmentsResponse, error)
+	GetExternalLearnerTimeline(context.Context, *GetExternalLearnerTimelineRequest) (*GetExternalLearnerTimelineResponse, error)
 	mustEmbedUnimplementedAcademyServiceServer()
 }
 
@@ -353,8 +1364,59 @@ func (UnimplementedAcademyServiceServer) CreateCourseFromKb(context.Context, *Cr
 func (UnimplementedAcademyServiceServer) UpdateCourse(context.Context, *UpdateCourseRequest) (*UpdateCourseResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateCourse not implemented")
 }
+func (UnimplementedAcademyServiceServer) ArchiveCourse(context.Context, *ArchiveCourseRequest) (*ArchiveCourseResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ArchiveCourse not implemented")
+}
+func (UnimplementedAcademyServiceServer) RestoreCourse(context.Context, *RestoreCourseRequest) (*RestoreCourseResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RestoreCourse not implemented")
+}
 func (UnimplementedAcademyServiceServer) DeleteCourse(context.Context, *DeleteCourseRequest) (*DeleteCourseResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteCourse not implemented")
+}
+func (UnimplementedAcademyServiceServer) GetCourseVersions(context.Context, *GetCourseVersionsRequest) (*GetCourseVersionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCourseVersions not implemented")
+}
+func (UnimplementedAcademyServiceServer) GetCourseVersion(context.Context, *GetCourseVersionRequest) (*GetCourseVersionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCourseVersion not implemented")
+}
+func (UnimplementedAcademyServiceServer) CreateCourseDraft(context.Context, *CreateCourseDraftRequest) (*CreateCourseDraftResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateCourseDraft not implemented")
+}
+func (UnimplementedAcademyServiceServer) UpdateCourseDraft(context.Context, *UpdateCourseDraftRequest) (*UpdateCourseDraftResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateCourseDraft not implemented")
+}
+func (UnimplementedAcademyServiceServer) PublishCourseVersion(context.Context, *PublishCourseVersionRequest) (*PublishCourseVersionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PublishCourseVersion not implemented")
+}
+func (UnimplementedAcademyServiceServer) GetPublishedCourseVersion(context.Context, *GetPublishedCourseVersionRequest) (*GetPublishedCourseVersionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPublishedCourseVersion not implemented")
+}
+func (UnimplementedAcademyServiceServer) CreateCourseVersionSection(context.Context, *CreateCourseVersionSectionRequest) (*CreateCourseVersionSectionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateCourseVersionSection not implemented")
+}
+func (UnimplementedAcademyServiceServer) UpdateCourseVersionSection(context.Context, *UpdateCourseVersionSectionRequest) (*UpdateCourseVersionSectionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateCourseVersionSection not implemented")
+}
+func (UnimplementedAcademyServiceServer) DeleteCourseVersionSection(context.Context, *DeleteCourseVersionSectionRequest) (*DeleteCourseVersionSectionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteCourseVersionSection not implemented")
+}
+func (UnimplementedAcademyServiceServer) CreateCourseVersionLesson(context.Context, *CreateCourseVersionLessonRequest) (*CreateCourseVersionLessonResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateCourseVersionLesson not implemented")
+}
+func (UnimplementedAcademyServiceServer) UpdateCourseVersionLesson(context.Context, *UpdateCourseVersionLessonRequest) (*UpdateCourseVersionLessonResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateCourseVersionLesson not implemented")
+}
+func (UnimplementedAcademyServiceServer) DeleteCourseVersionLesson(context.Context, *DeleteCourseVersionLessonRequest) (*DeleteCourseVersionLessonResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteCourseVersionLesson not implemented")
+}
+func (UnimplementedAcademyServiceServer) MoveCourseVersionLesson(context.Context, *MoveCourseVersionLessonRequest) (*MoveCourseVersionLessonResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MoveCourseVersionLesson not implemented")
+}
+func (UnimplementedAcademyServiceServer) UpsertCourseVersionQuiz(context.Context, *UpsertCourseVersionQuizRequest) (*UpsertCourseVersionQuizResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpsertCourseVersionQuiz not implemented")
+}
+func (UnimplementedAcademyServiceServer) DeleteCourseVersionQuiz(context.Context, *DeleteCourseVersionQuizRequest) (*DeleteCourseVersionQuizResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteCourseVersionQuiz not implemented")
 }
 func (UnimplementedAcademyServiceServer) GetCourseSections(context.Context, *GetCourseSectionsRequest) (*GetCourseSectionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCourseSections not implemented")
@@ -395,11 +1457,185 @@ func (UnimplementedAcademyServiceServer) GetAssignments(context.Context, *GetAss
 func (UnimplementedAcademyServiceServer) AssignCourse(context.Context, *AssignCourseRequest) (*AssignCourseResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AssignCourse not implemented")
 }
+func (UnimplementedAcademyServiceServer) RevokeAssignment(context.Context, *RevokeAssignmentRequest) (*RevokeAssignmentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RevokeAssignment not implemented")
+}
 func (UnimplementedAcademyServiceServer) GetProgress(context.Context, *GetProgressRequest) (*GetProgressResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetProgress not implemented")
 }
 func (UnimplementedAcademyServiceServer) MarkLessonComplete(context.Context, *MarkLessonCompleteRequest) (*MarkLessonCompleteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MarkLessonComplete not implemented")
+}
+func (UnimplementedAcademyServiceServer) GetEnrollments(context.Context, *GetEnrollmentsRequest) (*GetEnrollmentsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetEnrollments not implemented")
+}
+func (UnimplementedAcademyServiceServer) SelfEnrollCourse(context.Context, *SelfEnrollCourseRequest) (*SelfEnrollCourseResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SelfEnrollCourse not implemented")
+}
+func (UnimplementedAcademyServiceServer) GetCatalogCourseVersion(context.Context, *GetCatalogCourseVersionRequest) (*GetCatalogCourseVersionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCatalogCourseVersion not implemented")
+}
+func (UnimplementedAcademyServiceServer) GetEnrollment(context.Context, *GetEnrollmentRequest) (*GetEnrollmentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetEnrollment not implemented")
+}
+func (UnimplementedAcademyServiceServer) GetEnrollmentOutline(context.Context, *GetEnrollmentOutlineRequest) (*GetEnrollmentOutlineResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetEnrollmentOutline not implemented")
+}
+func (UnimplementedAcademyServiceServer) GetEnrollmentLesson(context.Context, *GetEnrollmentLessonRequest) (*GetEnrollmentLessonResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetEnrollmentLesson not implemented")
+}
+func (UnimplementedAcademyServiceServer) ResumeEnrollment(context.Context, *ResumeEnrollmentRequest) (*ResumeEnrollmentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ResumeEnrollment not implemented")
+}
+func (UnimplementedAcademyServiceServer) CompleteEnrollmentLesson(context.Context, *CompleteEnrollmentLessonRequest) (*CompleteEnrollmentLessonResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CompleteEnrollmentLesson not implemented")
+}
+func (UnimplementedAcademyServiceServer) SubmitEnrollmentQuizAttempt(context.Context, *SubmitEnrollmentQuizAttemptRequest) (*SubmitEnrollmentQuizAttemptResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SubmitEnrollmentQuizAttempt not implemented")
+}
+func (UnimplementedAcademyServiceServer) GetEnrollmentReport(context.Context, *GetEnrollmentReportRequest) (*GetEnrollmentReportResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetEnrollmentReport not implemented")
+}
+func (UnimplementedAcademyServiceServer) GetPartnerCourseGroups(context.Context, *GetPartnerCourseGroupsRequest) (*GetPartnerCourseGroupsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPartnerCourseGroups not implemented")
+}
+func (UnimplementedAcademyServiceServer) GetPartnerCoursesReport(context.Context, *GetPartnerCoursesReportRequest) (*GetPartnerCoursesReportResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPartnerCoursesReport not implemented")
+}
+func (UnimplementedAcademyServiceServer) GetCourseVersionPreview(context.Context, *GetCourseVersionPreviewRequest) (*GetCourseVersionPreviewResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCourseVersionPreview not implemented")
+}
+func (UnimplementedAcademyServiceServer) SubmitCoursePreviewQuizAttempt(context.Context, *SubmitCoursePreviewQuizAttemptRequest) (*SubmitCoursePreviewQuizAttemptResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SubmitCoursePreviewQuizAttempt not implemented")
+}
+func (UnimplementedAcademyServiceServer) PausePartnerCourseDistribution(context.Context, *PausePartnerCourseDistributionRequest) (*PausePartnerCourseDistributionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PausePartnerCourseDistribution not implemented")
+}
+func (UnimplementedAcademyServiceServer) BlockPartnerCourse(context.Context, *BlockPartnerCourseRequest) (*BlockPartnerCourseResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BlockPartnerCourse not implemented")
+}
+func (UnimplementedAcademyServiceServer) ResolvePartnerCourseRestriction(context.Context, *ResolvePartnerCourseRestrictionRequest) (*ResolvePartnerCourseRestrictionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ResolvePartnerCourseRestriction not implemented")
+}
+func (UnimplementedAcademyServiceServer) GetCourseRestrictions(context.Context, *GetCourseRestrictionsRequest) (*GetCourseRestrictionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCourseRestrictions not implemented")
+}
+func (UnimplementedAcademyServiceServer) CopyPartnerCourseVersionToCompany(context.Context, *CopyPartnerCourseVersionToCompanyRequest) (*CopyPartnerCourseVersionToCompanyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CopyPartnerCourseVersionToCompany not implemented")
+}
+func (UnimplementedAcademyServiceServer) GetCourseTemplates(context.Context, *GetCourseTemplatesRequest) (*GetCourseTemplatesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCourseTemplates not implemented")
+}
+func (UnimplementedAcademyServiceServer) GetCourseTemplate(context.Context, *GetCourseTemplateRequest) (*GetCourseTemplateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCourseTemplate not implemented")
+}
+func (UnimplementedAcademyServiceServer) CreateCourseTemplate(context.Context, *CreateCourseTemplateRequest) (*CreateCourseTemplateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateCourseTemplate not implemented")
+}
+func (UnimplementedAcademyServiceServer) UpdateCourseTemplateDraft(context.Context, *UpdateCourseTemplateDraftRequest) (*UpdateCourseTemplateDraftResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateCourseTemplateDraft not implemented")
+}
+func (UnimplementedAcademyServiceServer) CreateCourseTemplateDraft(context.Context, *CreateCourseTemplateDraftRequest) (*CreateCourseTemplateDraftResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateCourseTemplateDraft not implemented")
+}
+func (UnimplementedAcademyServiceServer) PublishCourseTemplateVersion(context.Context, *PublishCourseTemplateVersionRequest) (*PublishCourseTemplateVersionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PublishCourseTemplateVersion not implemented")
+}
+func (UnimplementedAcademyServiceServer) ArchiveCourseTemplate(context.Context, *ArchiveCourseTemplateRequest) (*ArchiveCourseTemplateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ArchiveCourseTemplate not implemented")
+}
+func (UnimplementedAcademyServiceServer) InstantiateCourseTemplateVersion(context.Context, *InstantiateCourseTemplateVersionRequest) (*InstantiateCourseTemplateVersionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method InstantiateCourseTemplateVersion not implemented")
+}
+func (UnimplementedAcademyServiceServer) CreateExternalPersonalAccess(context.Context, *CreateExternalPersonalAccessRequest) (*CreateExternalPersonalAccessResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateExternalPersonalAccess not implemented")
+}
+func (UnimplementedAcademyServiceServer) GetExternalPersonalAccesses(context.Context, *GetExternalPersonalAccessesRequest) (*GetExternalPersonalAccessesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetExternalPersonalAccesses not implemented")
+}
+func (UnimplementedAcademyServiceServer) GetExternalPersonalAccess(context.Context, *GetExternalPersonalAccessRequest) (*GetExternalPersonalAccessResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetExternalPersonalAccess not implemented")
+}
+func (UnimplementedAcademyServiceServer) ExtendExternalPersonalAccess(context.Context, *ExtendExternalPersonalAccessRequest) (*ExtendExternalPersonalAccessResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExtendExternalPersonalAccess not implemented")
+}
+func (UnimplementedAcademyServiceServer) RotateExternalPersonalAccessToken(context.Context, *RotateExternalPersonalAccessTokenRequest) (*RotateExternalPersonalAccessTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RotateExternalPersonalAccessToken not implemented")
+}
+func (UnimplementedAcademyServiceServer) RevokeExternalPersonalAccess(context.Context, *RevokeExternalPersonalAccessRequest) (*RevokeExternalPersonalAccessResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RevokeExternalPersonalAccess not implemented")
+}
+func (UnimplementedAcademyServiceServer) RepeatExternalPersonalAccess(context.Context, *RepeatExternalPersonalAccessRequest) (*RepeatExternalPersonalAccessResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RepeatExternalPersonalAccess not implemented")
+}
+func (UnimplementedAcademyServiceServer) CreateExternalCampaign(context.Context, *CreateExternalCampaignRequest) (*CreateExternalCampaignResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateExternalCampaign not implemented")
+}
+func (UnimplementedAcademyServiceServer) GetExternalCampaigns(context.Context, *GetExternalCampaignsRequest) (*GetExternalCampaignsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetExternalCampaigns not implemented")
+}
+func (UnimplementedAcademyServiceServer) GetExternalCampaign(context.Context, *GetExternalCampaignRequest) (*GetExternalCampaignResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetExternalCampaign not implemented")
+}
+func (UnimplementedAcademyServiceServer) PauseExternalCampaign(context.Context, *PauseExternalCampaignRequest) (*PauseExternalCampaignResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PauseExternalCampaign not implemented")
+}
+func (UnimplementedAcademyServiceServer) ResumeExternalCampaign(context.Context, *ResumeExternalCampaignRequest) (*ResumeExternalCampaignResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ResumeExternalCampaign not implemented")
+}
+func (UnimplementedAcademyServiceServer) RotateExternalCampaignToken(context.Context, *RotateExternalCampaignTokenRequest) (*RotateExternalCampaignTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RotateExternalCampaignToken not implemented")
+}
+func (UnimplementedAcademyServiceServer) RevokeExternalCampaign(context.Context, *RevokeExternalCampaignRequest) (*RevokeExternalCampaignResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RevokeExternalCampaign not implemented")
+}
+func (UnimplementedAcademyServiceServer) GetExternalCampaignReport(context.Context, *GetExternalCampaignReportRequest) (*GetExternalCampaignReportResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetExternalCampaignReport not implemented")
+}
+func (UnimplementedAcademyServiceServer) GetCourseExternalReport(context.Context, *GetCourseExternalReportRequest) (*GetCourseExternalReportResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCourseExternalReport not implemented")
+}
+func (UnimplementedAcademyServiceServer) GetPublicAcademyAccess(context.Context, *GetPublicAcademyAccessRequest) (*GetPublicAcademyAccessResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPublicAcademyAccess not implemented")
+}
+func (UnimplementedAcademyServiceServer) RequestPublicAcademyVerification(context.Context, *RequestPublicAcademyVerificationRequest) (*RequestPublicAcademyVerificationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RequestPublicAcademyVerification not implemented")
+}
+func (UnimplementedAcademyServiceServer) ConfirmPublicAcademyVerification(context.Context, *ConfirmPublicAcademyVerificationRequest) (*ConfirmPublicAcademyVerificationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ConfirmPublicAcademyVerification not implemented")
+}
+func (UnimplementedAcademyServiceServer) ActivatePublicAcademyAccess(context.Context, *ActivatePublicAcademyAccessRequest) (*ActivatePublicAcademyAccessResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ActivatePublicAcademyAccess not implemented")
+}
+func (UnimplementedAcademyServiceServer) GetPublicAcademyEnrollment(context.Context, *GetPublicAcademyEnrollmentRequest) (*GetPublicAcademyEnrollmentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPublicAcademyEnrollment not implemented")
+}
+func (UnimplementedAcademyServiceServer) GetPublicAcademyEnrollmentOutline(context.Context, *GetPublicAcademyEnrollmentOutlineRequest) (*GetPublicAcademyEnrollmentOutlineResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPublicAcademyEnrollmentOutline not implemented")
+}
+func (UnimplementedAcademyServiceServer) GetPublicAcademyEnrollmentLesson(context.Context, *GetPublicAcademyEnrollmentLessonRequest) (*GetPublicAcademyEnrollmentLessonResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPublicAcademyEnrollmentLesson not implemented")
+}
+func (UnimplementedAcademyServiceServer) CompletePublicAcademyEnrollmentLesson(context.Context, *CompletePublicAcademyEnrollmentLessonRequest) (*CompletePublicAcademyEnrollmentLessonResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CompletePublicAcademyEnrollmentLesson not implemented")
+}
+func (UnimplementedAcademyServiceServer) SubmitPublicAcademyQuizAttempt(context.Context, *SubmitPublicAcademyQuizAttemptRequest) (*SubmitPublicAcademyQuizAttemptResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SubmitPublicAcademyQuizAttempt not implemented")
+}
+func (UnimplementedAcademyServiceServer) GetPublicAcademyEnrollmentResults(context.Context, *GetPublicAcademyEnrollmentResultsRequest) (*GetPublicAcademyEnrollmentResultsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPublicAcademyEnrollmentResults not implemented")
+}
+func (UnimplementedAcademyServiceServer) GetExternalLearners(context.Context, *GetExternalLearnersRequest) (*GetExternalLearnersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetExternalLearners not implemented")
+}
+func (UnimplementedAcademyServiceServer) GetExternalLearner(context.Context, *GetExternalLearnerRequest) (*GetExternalLearnerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetExternalLearner not implemented")
+}
+func (UnimplementedAcademyServiceServer) GetExternalLearnerEnrollments(context.Context, *GetExternalLearnerEnrollmentsRequest) (*GetExternalLearnerEnrollmentsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetExternalLearnerEnrollments not implemented")
+}
+func (UnimplementedAcademyServiceServer) GetExternalLearnerTimeline(context.Context, *GetExternalLearnerTimelineRequest) (*GetExternalLearnerTimelineResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetExternalLearnerTimeline not implemented")
 }
 func (UnimplementedAcademyServiceServer) mustEmbedUnimplementedAcademyServiceServer() {}
 func (UnimplementedAcademyServiceServer) testEmbeddedByValue()                        {}
@@ -530,6 +1766,42 @@ func _AcademyService_UpdateCourse_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AcademyService_ArchiveCourse_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ArchiveCourseRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).ArchiveCourse(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_ArchiveCourse_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).ArchiveCourse(ctx, req.(*ArchiveCourseRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_RestoreCourse_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RestoreCourseRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).RestoreCourse(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_RestoreCourse_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).RestoreCourse(ctx, req.(*RestoreCourseRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AcademyService_DeleteCourse_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteCourseRequest)
 	if err := dec(in); err != nil {
@@ -544,6 +1816,276 @@ func _AcademyService_DeleteCourse_Handler(srv interface{}, ctx context.Context, 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AcademyServiceServer).DeleteCourse(ctx, req.(*DeleteCourseRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_GetCourseVersions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCourseVersionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).GetCourseVersions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_GetCourseVersions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).GetCourseVersions(ctx, req.(*GetCourseVersionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_GetCourseVersion_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCourseVersionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).GetCourseVersion(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_GetCourseVersion_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).GetCourseVersion(ctx, req.(*GetCourseVersionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_CreateCourseDraft_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateCourseDraftRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).CreateCourseDraft(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_CreateCourseDraft_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).CreateCourseDraft(ctx, req.(*CreateCourseDraftRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_UpdateCourseDraft_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateCourseDraftRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).UpdateCourseDraft(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_UpdateCourseDraft_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).UpdateCourseDraft(ctx, req.(*UpdateCourseDraftRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_PublishCourseVersion_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PublishCourseVersionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).PublishCourseVersion(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_PublishCourseVersion_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).PublishCourseVersion(ctx, req.(*PublishCourseVersionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_GetPublishedCourseVersion_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPublishedCourseVersionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).GetPublishedCourseVersion(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_GetPublishedCourseVersion_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).GetPublishedCourseVersion(ctx, req.(*GetPublishedCourseVersionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_CreateCourseVersionSection_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateCourseVersionSectionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).CreateCourseVersionSection(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_CreateCourseVersionSection_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).CreateCourseVersionSection(ctx, req.(*CreateCourseVersionSectionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_UpdateCourseVersionSection_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateCourseVersionSectionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).UpdateCourseVersionSection(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_UpdateCourseVersionSection_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).UpdateCourseVersionSection(ctx, req.(*UpdateCourseVersionSectionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_DeleteCourseVersionSection_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteCourseVersionSectionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).DeleteCourseVersionSection(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_DeleteCourseVersionSection_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).DeleteCourseVersionSection(ctx, req.(*DeleteCourseVersionSectionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_CreateCourseVersionLesson_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateCourseVersionLessonRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).CreateCourseVersionLesson(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_CreateCourseVersionLesson_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).CreateCourseVersionLesson(ctx, req.(*CreateCourseVersionLessonRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_UpdateCourseVersionLesson_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateCourseVersionLessonRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).UpdateCourseVersionLesson(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_UpdateCourseVersionLesson_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).UpdateCourseVersionLesson(ctx, req.(*UpdateCourseVersionLessonRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_DeleteCourseVersionLesson_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteCourseVersionLessonRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).DeleteCourseVersionLesson(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_DeleteCourseVersionLesson_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).DeleteCourseVersionLesson(ctx, req.(*DeleteCourseVersionLessonRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_MoveCourseVersionLesson_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MoveCourseVersionLessonRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).MoveCourseVersionLesson(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_MoveCourseVersionLesson_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).MoveCourseVersionLesson(ctx, req.(*MoveCourseVersionLessonRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_UpsertCourseVersionQuiz_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpsertCourseVersionQuizRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).UpsertCourseVersionQuiz(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_UpsertCourseVersionQuiz_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).UpsertCourseVersionQuiz(ctx, req.(*UpsertCourseVersionQuizRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_DeleteCourseVersionQuiz_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteCourseVersionQuizRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).DeleteCourseVersionQuiz(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_DeleteCourseVersionQuiz_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).DeleteCourseVersionQuiz(ctx, req.(*DeleteCourseVersionQuizRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -782,6 +2324,24 @@ func _AcademyService_AssignCourse_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AcademyService_RevokeAssignment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RevokeAssignmentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).RevokeAssignment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_RevokeAssignment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).RevokeAssignment(ctx, req.(*RevokeAssignmentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AcademyService_GetProgress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetProgressRequest)
 	if err := dec(in); err != nil {
@@ -818,6 +2378,1032 @@ func _AcademyService_MarkLessonComplete_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AcademyService_GetEnrollments_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetEnrollmentsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).GetEnrollments(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_GetEnrollments_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).GetEnrollments(ctx, req.(*GetEnrollmentsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_SelfEnrollCourse_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SelfEnrollCourseRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).SelfEnrollCourse(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_SelfEnrollCourse_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).SelfEnrollCourse(ctx, req.(*SelfEnrollCourseRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_GetCatalogCourseVersion_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCatalogCourseVersionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).GetCatalogCourseVersion(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_GetCatalogCourseVersion_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).GetCatalogCourseVersion(ctx, req.(*GetCatalogCourseVersionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_GetEnrollment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetEnrollmentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).GetEnrollment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_GetEnrollment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).GetEnrollment(ctx, req.(*GetEnrollmentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_GetEnrollmentOutline_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetEnrollmentOutlineRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).GetEnrollmentOutline(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_GetEnrollmentOutline_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).GetEnrollmentOutline(ctx, req.(*GetEnrollmentOutlineRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_GetEnrollmentLesson_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetEnrollmentLessonRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).GetEnrollmentLesson(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_GetEnrollmentLesson_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).GetEnrollmentLesson(ctx, req.(*GetEnrollmentLessonRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_ResumeEnrollment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ResumeEnrollmentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).ResumeEnrollment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_ResumeEnrollment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).ResumeEnrollment(ctx, req.(*ResumeEnrollmentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_CompleteEnrollmentLesson_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CompleteEnrollmentLessonRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).CompleteEnrollmentLesson(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_CompleteEnrollmentLesson_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).CompleteEnrollmentLesson(ctx, req.(*CompleteEnrollmentLessonRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_SubmitEnrollmentQuizAttempt_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SubmitEnrollmentQuizAttemptRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).SubmitEnrollmentQuizAttempt(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_SubmitEnrollmentQuizAttempt_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).SubmitEnrollmentQuizAttempt(ctx, req.(*SubmitEnrollmentQuizAttemptRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_GetEnrollmentReport_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetEnrollmentReportRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).GetEnrollmentReport(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_GetEnrollmentReport_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).GetEnrollmentReport(ctx, req.(*GetEnrollmentReportRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_GetPartnerCourseGroups_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPartnerCourseGroupsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).GetPartnerCourseGroups(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_GetPartnerCourseGroups_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).GetPartnerCourseGroups(ctx, req.(*GetPartnerCourseGroupsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_GetPartnerCoursesReport_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPartnerCoursesReportRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).GetPartnerCoursesReport(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_GetPartnerCoursesReport_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).GetPartnerCoursesReport(ctx, req.(*GetPartnerCoursesReportRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_GetCourseVersionPreview_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCourseVersionPreviewRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).GetCourseVersionPreview(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_GetCourseVersionPreview_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).GetCourseVersionPreview(ctx, req.(*GetCourseVersionPreviewRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_SubmitCoursePreviewQuizAttempt_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SubmitCoursePreviewQuizAttemptRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).SubmitCoursePreviewQuizAttempt(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_SubmitCoursePreviewQuizAttempt_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).SubmitCoursePreviewQuizAttempt(ctx, req.(*SubmitCoursePreviewQuizAttemptRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_PausePartnerCourseDistribution_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PausePartnerCourseDistributionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).PausePartnerCourseDistribution(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_PausePartnerCourseDistribution_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).PausePartnerCourseDistribution(ctx, req.(*PausePartnerCourseDistributionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_BlockPartnerCourse_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BlockPartnerCourseRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).BlockPartnerCourse(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_BlockPartnerCourse_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).BlockPartnerCourse(ctx, req.(*BlockPartnerCourseRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_ResolvePartnerCourseRestriction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ResolvePartnerCourseRestrictionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).ResolvePartnerCourseRestriction(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_ResolvePartnerCourseRestriction_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).ResolvePartnerCourseRestriction(ctx, req.(*ResolvePartnerCourseRestrictionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_GetCourseRestrictions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCourseRestrictionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).GetCourseRestrictions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_GetCourseRestrictions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).GetCourseRestrictions(ctx, req.(*GetCourseRestrictionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_CopyPartnerCourseVersionToCompany_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CopyPartnerCourseVersionToCompanyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).CopyPartnerCourseVersionToCompany(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_CopyPartnerCourseVersionToCompany_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).CopyPartnerCourseVersionToCompany(ctx, req.(*CopyPartnerCourseVersionToCompanyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_GetCourseTemplates_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCourseTemplatesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).GetCourseTemplates(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_GetCourseTemplates_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).GetCourseTemplates(ctx, req.(*GetCourseTemplatesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_GetCourseTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCourseTemplateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).GetCourseTemplate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_GetCourseTemplate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).GetCourseTemplate(ctx, req.(*GetCourseTemplateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_CreateCourseTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateCourseTemplateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).CreateCourseTemplate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_CreateCourseTemplate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).CreateCourseTemplate(ctx, req.(*CreateCourseTemplateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_UpdateCourseTemplateDraft_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateCourseTemplateDraftRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).UpdateCourseTemplateDraft(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_UpdateCourseTemplateDraft_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).UpdateCourseTemplateDraft(ctx, req.(*UpdateCourseTemplateDraftRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_CreateCourseTemplateDraft_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateCourseTemplateDraftRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).CreateCourseTemplateDraft(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_CreateCourseTemplateDraft_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).CreateCourseTemplateDraft(ctx, req.(*CreateCourseTemplateDraftRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_PublishCourseTemplateVersion_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PublishCourseTemplateVersionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).PublishCourseTemplateVersion(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_PublishCourseTemplateVersion_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).PublishCourseTemplateVersion(ctx, req.(*PublishCourseTemplateVersionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_ArchiveCourseTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ArchiveCourseTemplateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).ArchiveCourseTemplate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_ArchiveCourseTemplate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).ArchiveCourseTemplate(ctx, req.(*ArchiveCourseTemplateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_InstantiateCourseTemplateVersion_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(InstantiateCourseTemplateVersionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).InstantiateCourseTemplateVersion(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_InstantiateCourseTemplateVersion_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).InstantiateCourseTemplateVersion(ctx, req.(*InstantiateCourseTemplateVersionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_CreateExternalPersonalAccess_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateExternalPersonalAccessRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).CreateExternalPersonalAccess(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_CreateExternalPersonalAccess_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).CreateExternalPersonalAccess(ctx, req.(*CreateExternalPersonalAccessRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_GetExternalPersonalAccesses_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetExternalPersonalAccessesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).GetExternalPersonalAccesses(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_GetExternalPersonalAccesses_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).GetExternalPersonalAccesses(ctx, req.(*GetExternalPersonalAccessesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_GetExternalPersonalAccess_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetExternalPersonalAccessRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).GetExternalPersonalAccess(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_GetExternalPersonalAccess_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).GetExternalPersonalAccess(ctx, req.(*GetExternalPersonalAccessRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_ExtendExternalPersonalAccess_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExtendExternalPersonalAccessRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).ExtendExternalPersonalAccess(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_ExtendExternalPersonalAccess_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).ExtendExternalPersonalAccess(ctx, req.(*ExtendExternalPersonalAccessRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_RotateExternalPersonalAccessToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RotateExternalPersonalAccessTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).RotateExternalPersonalAccessToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_RotateExternalPersonalAccessToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).RotateExternalPersonalAccessToken(ctx, req.(*RotateExternalPersonalAccessTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_RevokeExternalPersonalAccess_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RevokeExternalPersonalAccessRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).RevokeExternalPersonalAccess(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_RevokeExternalPersonalAccess_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).RevokeExternalPersonalAccess(ctx, req.(*RevokeExternalPersonalAccessRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_RepeatExternalPersonalAccess_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RepeatExternalPersonalAccessRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).RepeatExternalPersonalAccess(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_RepeatExternalPersonalAccess_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).RepeatExternalPersonalAccess(ctx, req.(*RepeatExternalPersonalAccessRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_CreateExternalCampaign_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateExternalCampaignRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).CreateExternalCampaign(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_CreateExternalCampaign_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).CreateExternalCampaign(ctx, req.(*CreateExternalCampaignRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_GetExternalCampaigns_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetExternalCampaignsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).GetExternalCampaigns(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_GetExternalCampaigns_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).GetExternalCampaigns(ctx, req.(*GetExternalCampaignsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_GetExternalCampaign_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetExternalCampaignRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).GetExternalCampaign(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_GetExternalCampaign_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).GetExternalCampaign(ctx, req.(*GetExternalCampaignRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_PauseExternalCampaign_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PauseExternalCampaignRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).PauseExternalCampaign(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_PauseExternalCampaign_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).PauseExternalCampaign(ctx, req.(*PauseExternalCampaignRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_ResumeExternalCampaign_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ResumeExternalCampaignRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).ResumeExternalCampaign(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_ResumeExternalCampaign_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).ResumeExternalCampaign(ctx, req.(*ResumeExternalCampaignRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_RotateExternalCampaignToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RotateExternalCampaignTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).RotateExternalCampaignToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_RotateExternalCampaignToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).RotateExternalCampaignToken(ctx, req.(*RotateExternalCampaignTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_RevokeExternalCampaign_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RevokeExternalCampaignRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).RevokeExternalCampaign(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_RevokeExternalCampaign_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).RevokeExternalCampaign(ctx, req.(*RevokeExternalCampaignRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_GetExternalCampaignReport_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetExternalCampaignReportRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).GetExternalCampaignReport(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_GetExternalCampaignReport_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).GetExternalCampaignReport(ctx, req.(*GetExternalCampaignReportRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_GetCourseExternalReport_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCourseExternalReportRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).GetCourseExternalReport(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_GetCourseExternalReport_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).GetCourseExternalReport(ctx, req.(*GetCourseExternalReportRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_GetPublicAcademyAccess_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPublicAcademyAccessRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).GetPublicAcademyAccess(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_GetPublicAcademyAccess_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).GetPublicAcademyAccess(ctx, req.(*GetPublicAcademyAccessRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_RequestPublicAcademyVerification_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RequestPublicAcademyVerificationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).RequestPublicAcademyVerification(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_RequestPublicAcademyVerification_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).RequestPublicAcademyVerification(ctx, req.(*RequestPublicAcademyVerificationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_ConfirmPublicAcademyVerification_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ConfirmPublicAcademyVerificationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).ConfirmPublicAcademyVerification(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_ConfirmPublicAcademyVerification_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).ConfirmPublicAcademyVerification(ctx, req.(*ConfirmPublicAcademyVerificationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_ActivatePublicAcademyAccess_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ActivatePublicAcademyAccessRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).ActivatePublicAcademyAccess(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_ActivatePublicAcademyAccess_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).ActivatePublicAcademyAccess(ctx, req.(*ActivatePublicAcademyAccessRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_GetPublicAcademyEnrollment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPublicAcademyEnrollmentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).GetPublicAcademyEnrollment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_GetPublicAcademyEnrollment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).GetPublicAcademyEnrollment(ctx, req.(*GetPublicAcademyEnrollmentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_GetPublicAcademyEnrollmentOutline_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPublicAcademyEnrollmentOutlineRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).GetPublicAcademyEnrollmentOutline(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_GetPublicAcademyEnrollmentOutline_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).GetPublicAcademyEnrollmentOutline(ctx, req.(*GetPublicAcademyEnrollmentOutlineRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_GetPublicAcademyEnrollmentLesson_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPublicAcademyEnrollmentLessonRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).GetPublicAcademyEnrollmentLesson(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_GetPublicAcademyEnrollmentLesson_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).GetPublicAcademyEnrollmentLesson(ctx, req.(*GetPublicAcademyEnrollmentLessonRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_CompletePublicAcademyEnrollmentLesson_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CompletePublicAcademyEnrollmentLessonRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).CompletePublicAcademyEnrollmentLesson(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_CompletePublicAcademyEnrollmentLesson_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).CompletePublicAcademyEnrollmentLesson(ctx, req.(*CompletePublicAcademyEnrollmentLessonRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_SubmitPublicAcademyQuizAttempt_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SubmitPublicAcademyQuizAttemptRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).SubmitPublicAcademyQuizAttempt(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_SubmitPublicAcademyQuizAttempt_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).SubmitPublicAcademyQuizAttempt(ctx, req.(*SubmitPublicAcademyQuizAttemptRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_GetPublicAcademyEnrollmentResults_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPublicAcademyEnrollmentResultsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).GetPublicAcademyEnrollmentResults(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_GetPublicAcademyEnrollmentResults_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).GetPublicAcademyEnrollmentResults(ctx, req.(*GetPublicAcademyEnrollmentResultsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_GetExternalLearners_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetExternalLearnersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).GetExternalLearners(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_GetExternalLearners_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).GetExternalLearners(ctx, req.(*GetExternalLearnersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_GetExternalLearner_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetExternalLearnerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).GetExternalLearner(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_GetExternalLearner_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).GetExternalLearner(ctx, req.(*GetExternalLearnerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_GetExternalLearnerEnrollments_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetExternalLearnerEnrollmentsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).GetExternalLearnerEnrollments(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_GetExternalLearnerEnrollments_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).GetExternalLearnerEnrollments(ctx, req.(*GetExternalLearnerEnrollmentsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_GetExternalLearnerTimeline_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetExternalLearnerTimelineRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).GetExternalLearnerTimeline(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_GetExternalLearnerTimeline_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).GetExternalLearnerTimeline(ctx, req.(*GetExternalLearnerTimelineRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AcademyService_ServiceDesc is the grpc.ServiceDesc for AcademyService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -850,8 +3436,76 @@ var AcademyService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AcademyService_UpdateCourse_Handler,
 		},
 		{
+			MethodName: "ArchiveCourse",
+			Handler:    _AcademyService_ArchiveCourse_Handler,
+		},
+		{
+			MethodName: "RestoreCourse",
+			Handler:    _AcademyService_RestoreCourse_Handler,
+		},
+		{
 			MethodName: "DeleteCourse",
 			Handler:    _AcademyService_DeleteCourse_Handler,
+		},
+		{
+			MethodName: "GetCourseVersions",
+			Handler:    _AcademyService_GetCourseVersions_Handler,
+		},
+		{
+			MethodName: "GetCourseVersion",
+			Handler:    _AcademyService_GetCourseVersion_Handler,
+		},
+		{
+			MethodName: "CreateCourseDraft",
+			Handler:    _AcademyService_CreateCourseDraft_Handler,
+		},
+		{
+			MethodName: "UpdateCourseDraft",
+			Handler:    _AcademyService_UpdateCourseDraft_Handler,
+		},
+		{
+			MethodName: "PublishCourseVersion",
+			Handler:    _AcademyService_PublishCourseVersion_Handler,
+		},
+		{
+			MethodName: "GetPublishedCourseVersion",
+			Handler:    _AcademyService_GetPublishedCourseVersion_Handler,
+		},
+		{
+			MethodName: "CreateCourseVersionSection",
+			Handler:    _AcademyService_CreateCourseVersionSection_Handler,
+		},
+		{
+			MethodName: "UpdateCourseVersionSection",
+			Handler:    _AcademyService_UpdateCourseVersionSection_Handler,
+		},
+		{
+			MethodName: "DeleteCourseVersionSection",
+			Handler:    _AcademyService_DeleteCourseVersionSection_Handler,
+		},
+		{
+			MethodName: "CreateCourseVersionLesson",
+			Handler:    _AcademyService_CreateCourseVersionLesson_Handler,
+		},
+		{
+			MethodName: "UpdateCourseVersionLesson",
+			Handler:    _AcademyService_UpdateCourseVersionLesson_Handler,
+		},
+		{
+			MethodName: "DeleteCourseVersionLesson",
+			Handler:    _AcademyService_DeleteCourseVersionLesson_Handler,
+		},
+		{
+			MethodName: "MoveCourseVersionLesson",
+			Handler:    _AcademyService_MoveCourseVersionLesson_Handler,
+		},
+		{
+			MethodName: "UpsertCourseVersionQuiz",
+			Handler:    _AcademyService_UpsertCourseVersionQuiz_Handler,
+		},
+		{
+			MethodName: "DeleteCourseVersionQuiz",
+			Handler:    _AcademyService_DeleteCourseVersionQuiz_Handler,
 		},
 		{
 			MethodName: "GetCourseSections",
@@ -906,12 +3560,244 @@ var AcademyService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AcademyService_AssignCourse_Handler,
 		},
 		{
+			MethodName: "RevokeAssignment",
+			Handler:    _AcademyService_RevokeAssignment_Handler,
+		},
+		{
 			MethodName: "GetProgress",
 			Handler:    _AcademyService_GetProgress_Handler,
 		},
 		{
 			MethodName: "MarkLessonComplete",
 			Handler:    _AcademyService_MarkLessonComplete_Handler,
+		},
+		{
+			MethodName: "GetEnrollments",
+			Handler:    _AcademyService_GetEnrollments_Handler,
+		},
+		{
+			MethodName: "SelfEnrollCourse",
+			Handler:    _AcademyService_SelfEnrollCourse_Handler,
+		},
+		{
+			MethodName: "GetCatalogCourseVersion",
+			Handler:    _AcademyService_GetCatalogCourseVersion_Handler,
+		},
+		{
+			MethodName: "GetEnrollment",
+			Handler:    _AcademyService_GetEnrollment_Handler,
+		},
+		{
+			MethodName: "GetEnrollmentOutline",
+			Handler:    _AcademyService_GetEnrollmentOutline_Handler,
+		},
+		{
+			MethodName: "GetEnrollmentLesson",
+			Handler:    _AcademyService_GetEnrollmentLesson_Handler,
+		},
+		{
+			MethodName: "ResumeEnrollment",
+			Handler:    _AcademyService_ResumeEnrollment_Handler,
+		},
+		{
+			MethodName: "CompleteEnrollmentLesson",
+			Handler:    _AcademyService_CompleteEnrollmentLesson_Handler,
+		},
+		{
+			MethodName: "SubmitEnrollmentQuizAttempt",
+			Handler:    _AcademyService_SubmitEnrollmentQuizAttempt_Handler,
+		},
+		{
+			MethodName: "GetEnrollmentReport",
+			Handler:    _AcademyService_GetEnrollmentReport_Handler,
+		},
+		{
+			MethodName: "GetPartnerCourseGroups",
+			Handler:    _AcademyService_GetPartnerCourseGroups_Handler,
+		},
+		{
+			MethodName: "GetPartnerCoursesReport",
+			Handler:    _AcademyService_GetPartnerCoursesReport_Handler,
+		},
+		{
+			MethodName: "GetCourseVersionPreview",
+			Handler:    _AcademyService_GetCourseVersionPreview_Handler,
+		},
+		{
+			MethodName: "SubmitCoursePreviewQuizAttempt",
+			Handler:    _AcademyService_SubmitCoursePreviewQuizAttempt_Handler,
+		},
+		{
+			MethodName: "PausePartnerCourseDistribution",
+			Handler:    _AcademyService_PausePartnerCourseDistribution_Handler,
+		},
+		{
+			MethodName: "BlockPartnerCourse",
+			Handler:    _AcademyService_BlockPartnerCourse_Handler,
+		},
+		{
+			MethodName: "ResolvePartnerCourseRestriction",
+			Handler:    _AcademyService_ResolvePartnerCourseRestriction_Handler,
+		},
+		{
+			MethodName: "GetCourseRestrictions",
+			Handler:    _AcademyService_GetCourseRestrictions_Handler,
+		},
+		{
+			MethodName: "CopyPartnerCourseVersionToCompany",
+			Handler:    _AcademyService_CopyPartnerCourseVersionToCompany_Handler,
+		},
+		{
+			MethodName: "GetCourseTemplates",
+			Handler:    _AcademyService_GetCourseTemplates_Handler,
+		},
+		{
+			MethodName: "GetCourseTemplate",
+			Handler:    _AcademyService_GetCourseTemplate_Handler,
+		},
+		{
+			MethodName: "CreateCourseTemplate",
+			Handler:    _AcademyService_CreateCourseTemplate_Handler,
+		},
+		{
+			MethodName: "UpdateCourseTemplateDraft",
+			Handler:    _AcademyService_UpdateCourseTemplateDraft_Handler,
+		},
+		{
+			MethodName: "CreateCourseTemplateDraft",
+			Handler:    _AcademyService_CreateCourseTemplateDraft_Handler,
+		},
+		{
+			MethodName: "PublishCourseTemplateVersion",
+			Handler:    _AcademyService_PublishCourseTemplateVersion_Handler,
+		},
+		{
+			MethodName: "ArchiveCourseTemplate",
+			Handler:    _AcademyService_ArchiveCourseTemplate_Handler,
+		},
+		{
+			MethodName: "InstantiateCourseTemplateVersion",
+			Handler:    _AcademyService_InstantiateCourseTemplateVersion_Handler,
+		},
+		{
+			MethodName: "CreateExternalPersonalAccess",
+			Handler:    _AcademyService_CreateExternalPersonalAccess_Handler,
+		},
+		{
+			MethodName: "GetExternalPersonalAccesses",
+			Handler:    _AcademyService_GetExternalPersonalAccesses_Handler,
+		},
+		{
+			MethodName: "GetExternalPersonalAccess",
+			Handler:    _AcademyService_GetExternalPersonalAccess_Handler,
+		},
+		{
+			MethodName: "ExtendExternalPersonalAccess",
+			Handler:    _AcademyService_ExtendExternalPersonalAccess_Handler,
+		},
+		{
+			MethodName: "RotateExternalPersonalAccessToken",
+			Handler:    _AcademyService_RotateExternalPersonalAccessToken_Handler,
+		},
+		{
+			MethodName: "RevokeExternalPersonalAccess",
+			Handler:    _AcademyService_RevokeExternalPersonalAccess_Handler,
+		},
+		{
+			MethodName: "RepeatExternalPersonalAccess",
+			Handler:    _AcademyService_RepeatExternalPersonalAccess_Handler,
+		},
+		{
+			MethodName: "CreateExternalCampaign",
+			Handler:    _AcademyService_CreateExternalCampaign_Handler,
+		},
+		{
+			MethodName: "GetExternalCampaigns",
+			Handler:    _AcademyService_GetExternalCampaigns_Handler,
+		},
+		{
+			MethodName: "GetExternalCampaign",
+			Handler:    _AcademyService_GetExternalCampaign_Handler,
+		},
+		{
+			MethodName: "PauseExternalCampaign",
+			Handler:    _AcademyService_PauseExternalCampaign_Handler,
+		},
+		{
+			MethodName: "ResumeExternalCampaign",
+			Handler:    _AcademyService_ResumeExternalCampaign_Handler,
+		},
+		{
+			MethodName: "RotateExternalCampaignToken",
+			Handler:    _AcademyService_RotateExternalCampaignToken_Handler,
+		},
+		{
+			MethodName: "RevokeExternalCampaign",
+			Handler:    _AcademyService_RevokeExternalCampaign_Handler,
+		},
+		{
+			MethodName: "GetExternalCampaignReport",
+			Handler:    _AcademyService_GetExternalCampaignReport_Handler,
+		},
+		{
+			MethodName: "GetCourseExternalReport",
+			Handler:    _AcademyService_GetCourseExternalReport_Handler,
+		},
+		{
+			MethodName: "GetPublicAcademyAccess",
+			Handler:    _AcademyService_GetPublicAcademyAccess_Handler,
+		},
+		{
+			MethodName: "RequestPublicAcademyVerification",
+			Handler:    _AcademyService_RequestPublicAcademyVerification_Handler,
+		},
+		{
+			MethodName: "ConfirmPublicAcademyVerification",
+			Handler:    _AcademyService_ConfirmPublicAcademyVerification_Handler,
+		},
+		{
+			MethodName: "ActivatePublicAcademyAccess",
+			Handler:    _AcademyService_ActivatePublicAcademyAccess_Handler,
+		},
+		{
+			MethodName: "GetPublicAcademyEnrollment",
+			Handler:    _AcademyService_GetPublicAcademyEnrollment_Handler,
+		},
+		{
+			MethodName: "GetPublicAcademyEnrollmentOutline",
+			Handler:    _AcademyService_GetPublicAcademyEnrollmentOutline_Handler,
+		},
+		{
+			MethodName: "GetPublicAcademyEnrollmentLesson",
+			Handler:    _AcademyService_GetPublicAcademyEnrollmentLesson_Handler,
+		},
+		{
+			MethodName: "CompletePublicAcademyEnrollmentLesson",
+			Handler:    _AcademyService_CompletePublicAcademyEnrollmentLesson_Handler,
+		},
+		{
+			MethodName: "SubmitPublicAcademyQuizAttempt",
+			Handler:    _AcademyService_SubmitPublicAcademyQuizAttempt_Handler,
+		},
+		{
+			MethodName: "GetPublicAcademyEnrollmentResults",
+			Handler:    _AcademyService_GetPublicAcademyEnrollmentResults_Handler,
+		},
+		{
+			MethodName: "GetExternalLearners",
+			Handler:    _AcademyService_GetExternalLearners_Handler,
+		},
+		{
+			MethodName: "GetExternalLearner",
+			Handler:    _AcademyService_GetExternalLearner_Handler,
+		},
+		{
+			MethodName: "GetExternalLearnerEnrollments",
+			Handler:    _AcademyService_GetExternalLearnerEnrollments_Handler,
+		},
+		{
+			MethodName: "GetExternalLearnerTimeline",
+			Handler:    _AcademyService_GetExternalLearnerTimeline_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

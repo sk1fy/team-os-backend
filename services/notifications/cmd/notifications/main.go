@@ -20,6 +20,8 @@ import (
 	"github.com/sk1fy/team-os-backend/services/notifications/internal/application"
 	"github.com/sk1fy/team-os-backend/services/notifications/internal/config"
 	"github.com/sk1fy/team-os-backend/services/notifications/internal/consumers"
+	"github.com/sk1fy/team-os-backend/services/notifications/internal/deliverycrypto"
+	"github.com/sk1fy/team-os-backend/services/notifications/internal/mailer"
 	transport "github.com/sk1fy/team-os-backend/services/notifications/internal/transport/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
@@ -68,6 +70,21 @@ func run(logger *slog.Logger) error {
 	if err != nil {
 		return err
 	}
+	emailSender, err := buildEmailSender(c, logger)
+	if err != nil {
+		return err
+	}
+	if err = service.SetEmailSender(emailSender); err != nil {
+		return err
+	}
+	emailDecryptor, err := deliverycrypto.New(c.ExternalEmailKey, c.ExternalEmailKeyID)
+	clear(c.ExternalEmailKey)
+	if err != nil {
+		return err
+	}
+	if err = service.SetExternalEmailDecryptor(emailDecryptor); err != nil {
+		return err
+	}
 	root, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	if err = consumers.Start(root, bus, service, logger); err != nil {
@@ -106,6 +123,16 @@ func run(logger *slog.Logger) error {
 	_ = httpServer.Shutdown(ctx)
 	g.GracefulStop()
 	return err
+}
+
+func buildEmailSender(c config.Config, logger *slog.Logger) (mailer.Sender, error) {
+	if c.EmailProvider == "smtp" {
+		return mailer.NewSMTPSender(mailer.SMTPConfig{
+			Host: c.SMTPHost, Port: c.SMTPPort, Username: c.SMTPUsername, Password: c.SMTPPassword,
+			FromAddress: c.SMTPFrom, FromName: c.SMTPFromName, RequireTLS: c.SMTPRequireTLS,
+		})
+	}
+	return mailer.NewLogSender(logger), nil
 }
 
 var _ = fmt.Errorf

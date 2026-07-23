@@ -81,3 +81,20 @@ func TestLimiterIgnoresNonAuthRoutes(t *testing.T) {
 		}
 	}
 }
+
+func TestLimiterProtectsExternalAcademyMutations(t *testing.T) {
+	limiter := New(1, time.Minute)
+	handler := limiter.Middleware(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	}))
+	for index, want := range []int{http.StatusNoContent, http.StatusTooManyRequests} {
+		request := httptest.NewRequestWithContext(context.Background(), http.MethodPost,
+			"/api/v1/public/academy/access/token/request-verification", nil)
+		request.RemoteAddr = "192.0.2.44:1234"
+		response := httptest.NewRecorder()
+		handler.ServeHTTP(response, request)
+		if response.Code != want {
+			t.Fatalf("request %d status=%d want=%d", index, response.Code, want)
+		}
+	}
+}

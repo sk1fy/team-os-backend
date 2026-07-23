@@ -114,21 +114,33 @@ func (q *Queries) GetQuiz(ctx context.Context, arg GetQuizParams) (Quiz, error) 
 }
 
 const getQuizAttempts = `-- name: GetQuizAttempts :many
-SELECT id, company_id, quiz_id, user_id, score, passed, pending_review, created_at
+SELECT id, company_id, quiz_id, user_id,
+    score, passed, pending_review, created_at
 FROM quiz_attempts
-WHERE company_id = $1
+WHERE company_id = $1 AND quiz_id IS NOT NULL AND user_id IS NOT NULL
 ORDER BY created_at, id
 `
 
-func (q *Queries) GetQuizAttempts(ctx context.Context, companyID uuid.UUID) ([]QuizAttempt, error) {
+type GetQuizAttemptsRow struct {
+	ID            uuid.UUID     `json:"id"`
+	CompanyID     uuid.UUID     `json:"company_id"`
+	QuizID        uuid.NullUUID `json:"quiz_id"`
+	UserID        uuid.NullUUID `json:"user_id"`
+	Score         int32         `json:"score"`
+	Passed        bool          `json:"passed"`
+	PendingReview bool          `json:"pending_review"`
+	CreatedAt     time.Time     `json:"created_at"`
+}
+
+func (q *Queries) GetQuizAttempts(ctx context.Context, companyID uuid.UUID) ([]GetQuizAttemptsRow, error) {
 	rows, err := q.db.Query(ctx, getQuizAttempts, companyID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []QuizAttempt{}
+	items := []GetQuizAttemptsRow{}
 	for rows.Next() {
-		var i QuizAttempt
+		var i GetQuizAttemptsRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.CompanyID,
@@ -155,20 +167,20 @@ SELECT qa.id, qa.company_id, qa.quiz_id, qa.user_id, qa.score, qa.passed,
 FROM quiz_attempts qa
 JOIN quizzes q ON q.id = qa.quiz_id
 JOIN lessons l ON l.id = q.lesson_id
-WHERE qa.company_id = $1
+WHERE qa.company_id = $1 AND qa.user_id IS NOT NULL
 ORDER BY qa.created_at, qa.id
 `
 
 type GetQuizAttemptsWithCourseRow struct {
-	ID            uuid.UUID `json:"id"`
-	CompanyID     uuid.UUID `json:"company_id"`
-	QuizID        uuid.UUID `json:"quiz_id"`
-	UserID        uuid.UUID `json:"user_id"`
-	Score         int32     `json:"score"`
-	Passed        bool      `json:"passed"`
-	PendingReview bool      `json:"pending_review"`
-	CreatedAt     time.Time `json:"created_at"`
-	CourseID      uuid.UUID `json:"course_id"`
+	ID            uuid.UUID     `json:"id"`
+	CompanyID     uuid.UUID     `json:"company_id"`
+	QuizID        uuid.NullUUID `json:"quiz_id"`
+	UserID        uuid.NullUUID `json:"user_id"`
+	Score         int32         `json:"score"`
+	Passed        bool          `json:"passed"`
+	PendingReview bool          `json:"pending_review"`
+	CreatedAt     time.Time     `json:"created_at"`
+	CourseID      uuid.UUID     `json:"course_id"`
 }
 
 func (q *Queries) GetQuizAttemptsWithCourse(ctx context.Context, companyID uuid.UUID) ([]GetQuizAttemptsWithCourseRow, error) {
