@@ -195,7 +195,7 @@ func (s *Service) CreateCourseVersionLesson(
 	if input.SourceType != nil {
 		sourceType = *input.SourceType
 	}
-	if err = validateVersionLessonFields(content, sourceType, input.SourceArticleID, input.SourceArticleVersion, input.EstimatedMinutes); err != nil {
+	if err = validateVersionLessonFields(content, sourceType, input.SourceArticleID, input.SourceArticleVersion, input.EstimatedMinutes, false); err != nil {
 		return CourseVersionLesson{}, err
 	}
 	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{})
@@ -303,7 +303,7 @@ func (s *Service) UpdateCourseVersionLesson(
 	if input.EstimatedMinutes != nil {
 		current.EstimatedMinutes = input.EstimatedMinutes
 	}
-	if err = validateVersionLessonFields(current.Content, current.SourceType, current.SourceArticleID, current.SourceArticleVersion, current.EstimatedMinutes); err != nil {
+	if err = validateVersionLessonFields(current.Content, current.SourceType, current.SourceArticleID, current.SourceArticleVersion, current.EstimatedMinutes, true); err != nil {
 		return CourseVersionLesson{}, err
 	}
 	updatedRow, err := queries.UpdateCourseVersionLesson(ctx, db.UpdateCourseVersionLessonParams{
@@ -555,6 +555,7 @@ func validateVersionLessonFields(
 	sourceType string,
 	sourceArticleID *uuid.UUID,
 	sourceArticleVersion, estimatedMinutes *int32,
+	allowTemplateSnapshot bool,
 ) error {
 	if err := richtext.Validate(content); err != nil {
 		return validation("Некорректный TipTap-документ урока")
@@ -575,7 +576,9 @@ func validateVersionLessonFields(
 			return validation("Для урока из базы знаний требуется статья")
 		}
 	case "template_snapshot":
-		return validation("Урок шаблона создаётся только при инстанцировании шаблона")
+		if !allowTemplateSnapshot {
+			return validation("Урок шаблона создаётся только при инстанцировании шаблона")
+		}
 	default:
 		return validation("Некорректный источник урока")
 	}
