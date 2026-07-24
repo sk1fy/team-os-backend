@@ -527,6 +527,68 @@ func (s *Server) GetUsersByIds(ctx context.Context, request *companyv1.GetUsersB
 	return &companyv1.GetUsersByIdsResponse{Users: usersToProto(users)}, nil
 }
 
+func (s *Server) ResolveReportUserScope(
+	ctx context.Context,
+	request *companyv1.ResolveReportUserScopeRequest,
+) (*companyv1.ResolveReportUserScopeResponse, error) {
+	actor, err := s.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if request == nil {
+		return nil, invalidRequest()
+	}
+	positionID, err := parseOptionalUUID(request.PositionId, "должности")
+	if err != nil {
+		return nil, err
+	}
+	departmentID, err := parseOptionalUUID(request.DepartmentId, "отдела")
+	if err != nil {
+		return nil, err
+	}
+	scope, err := s.application.ResolveReportUserScope(ctx, actor, application.ResolveReportUserScopeInput{
+		Search: request.Search, PositionID: positionID, DepartmentID: departmentID,
+	})
+	if err != nil {
+		return nil, transportError(err)
+	}
+	return &companyv1.ResolveReportUserScopeResponse{
+		UserIds: uuidStrings(scope.UserIDs), SearchUserIds: uuidStrings(scope.SearchUserIDs),
+	}, nil
+}
+
+func (s *Server) GetReportUserProfiles(
+	ctx context.Context,
+	request *companyv1.GetReportUserProfilesRequest,
+) (*companyv1.GetReportUserProfilesResponse, error) {
+	actor, err := s.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if request == nil {
+		return nil, invalidRequest()
+	}
+	userIDs, err := parseUUIDs(request.GetUserIds(), "сотрудников")
+	if err != nil {
+		return nil, err
+	}
+	positionID, err := parseOptionalUUID(request.PreferredPositionId, "должности")
+	if err != nil {
+		return nil, err
+	}
+	departmentID, err := parseOptionalUUID(request.PreferredDepartmentId, "отдела")
+	if err != nil {
+		return nil, err
+	}
+	profiles, err := s.application.GetReportUserProfiles(ctx, actor, application.GetReportUserProfilesInput{
+		UserIDs: userIDs, PreferredPositionID: positionID, PreferredDepartmentID: departmentID,
+	})
+	if err != nil {
+		return nil, transportError(err)
+	}
+	return &companyv1.GetReportUserProfilesResponse{Profiles: reportUserProfilesToProto(profiles)}, nil
+}
+
 func (s *Server) ResolvePositionUsers(ctx context.Context, request *companyv1.ResolvePositionUsersRequest) (*companyv1.ResolvePositionUsersResponse, error) {
 	actor, err := s.actor(ctx)
 	if err != nil {

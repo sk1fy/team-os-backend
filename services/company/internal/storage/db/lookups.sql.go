@@ -13,6 +13,83 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const getReportUserProfiles = `-- name: GetReportUserProfiles :many
+SELECT u.id AS user_id, u.email, u.first_name, u.last_name,
+       COALESCE(selected_org.position_name, '')::text AS position_name,
+       selected_org.department_name
+FROM users AS u
+LEFT JOIN LATERAL (
+    SELECT position.name AS position_name,
+           department.name AS department_name
+    FROM user_positions AS up
+    JOIN positions AS position
+      ON position.company_id = up.company_id
+     AND position.id = up.position_id
+    LEFT JOIN departments AS department
+      ON department.company_id = position.company_id
+     AND department.id = position.department_id
+    WHERE up.company_id = u.company_id
+      AND up.user_id = u.id
+      AND ($1::uuid IS NULL
+           OR position.id = $1::uuid)
+      AND ($2::uuid IS NULL
+           OR position.department_id = $2::uuid)
+    ORDER BY position.id
+    LIMIT 1
+) AS selected_org ON true
+WHERE u.company_id = $3
+  AND u.id = ANY($4::uuid[])
+ORDER BY array_position($4::uuid[], u.id)
+`
+
+type GetReportUserProfilesParams struct {
+	PreferredPositionID   uuid.NullUUID `json:"preferred_position_id"`
+	PreferredDepartmentID uuid.NullUUID `json:"preferred_department_id"`
+	CompanyID             uuid.UUID     `json:"company_id"`
+	UserIds               []uuid.UUID   `json:"user_ids"`
+}
+
+type GetReportUserProfilesRow struct {
+	UserID         uuid.UUID   `json:"user_id"`
+	Email          string      `json:"email"`
+	FirstName      string      `json:"first_name"`
+	LastName       pgtype.Text `json:"last_name"`
+	PositionName   string      `json:"position_name"`
+	DepartmentName pgtype.Text `json:"department_name"`
+}
+
+func (q *Queries) GetReportUserProfiles(ctx context.Context, arg GetReportUserProfilesParams) ([]GetReportUserProfilesRow, error) {
+	rows, err := q.db.Query(ctx, getReportUserProfiles,
+		arg.PreferredPositionID,
+		arg.PreferredDepartmentID,
+		arg.CompanyID,
+		arg.UserIds,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetReportUserProfilesRow{}
+	for rows.Next() {
+		var i GetReportUserProfilesRow
+		if err := rows.Scan(
+			&i.UserID,
+			&i.Email,
+			&i.FirstName,
+			&i.LastName,
+			&i.PositionName,
+			&i.DepartmentName,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getUsersByIDs = `-- name: GetUsersByIDs :many
 SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name, u.avatar_source,
        COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids,
@@ -187,6 +264,73 @@ func (q *Queries) ResolvePositionUserIDs(ctx context.Context, arg ResolvePositio
 			return nil, err
 		}
 		items = append(items, id)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const resolveReportUserScope = `-- name: ResolveReportUserScope :many
+SELECT u.id,
+       CASE
+           WHEN $1::text IS NULL THEN false
+           ELSE u.email ILIKE '%' || $1::text || '%'
+             OR u.first_name ILIKE '%' || $1::text || '%'
+             OR COALESCE(u.last_name, '') ILIKE '%' || $1::text || '%'
+       END AS matches_search
+FROM users AS u
+WHERE u.company_id = $2
+  AND (
+      ($3::uuid IS NULL
+       AND $4::uuid IS NULL)
+      OR EXISTS (
+          SELECT 1
+          FROM user_positions AS up
+          JOIN positions AS position
+            ON position.company_id = up.company_id
+           AND position.id = up.position_id
+          WHERE up.company_id = u.company_id
+            AND up.user_id = u.id
+            AND ($3::uuid IS NULL
+                 OR position.id = $3::uuid)
+            AND ($4::uuid IS NULL
+                 OR position.department_id = $4::uuid)
+      )
+  )
+ORDER BY u.id
+`
+
+type ResolveReportUserScopeParams struct {
+	Search       pgtype.Text   `json:"search"`
+	CompanyID    uuid.UUID     `json:"company_id"`
+	PositionID   uuid.NullUUID `json:"position_id"`
+	DepartmentID uuid.NullUUID `json:"department_id"`
+}
+
+type ResolveReportUserScopeRow struct {
+	ID            uuid.UUID   `json:"id"`
+	MatchesSearch interface{} `json:"matches_search"`
+}
+
+func (q *Queries) ResolveReportUserScope(ctx context.Context, arg ResolveReportUserScopeParams) ([]ResolveReportUserScopeRow, error) {
+	rows, err := q.db.Query(ctx, resolveReportUserScope,
+		arg.Search,
+		arg.CompanyID,
+		arg.PositionID,
+		arg.DepartmentID,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ResolveReportUserScopeRow{}
+	for rows.Next() {
+		var i ResolveReportUserScopeRow
+		if err := rows.Scan(&i.ID, &i.MatchesSearch); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err

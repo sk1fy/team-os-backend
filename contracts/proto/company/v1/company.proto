@@ -52,6 +52,8 @@ service CompanyService {
   rpc RevokeInvite(RevokeInviteRequest) returns (RevokeInviteResponse);
 
   rpc GetUsersByIds(GetUsersByIdsRequest) returns (GetUsersByIdsResponse);
+  rpc ResolveReportUserScope(ResolveReportUserScopeRequest) returns (ResolveReportUserScopeResponse);
+  rpc GetReportUserProfiles(GetReportUserProfilesRequest) returns (GetReportUserProfilesResponse);
   rpc ResolvePositionUsers(ResolvePositionUsersRequest) returns (ResolvePositionUsersResponse);
   rpc ResolveDepartmentUsers(ResolveDepartmentUsersRequest) returns (ResolveDepartmentUsersResponse);
 
@@ -504,6 +506,36 @@ message GetUsersByIdsRequest {
 
 message GetUsersByIdsResponse {
   repeated User users = 1;
+}
+
+message ResolveReportUserScopeRequest {
+  optional string search = 1;
+  optional string position_id = 2;
+  optional string department_id = 3;
+}
+
+message ResolveReportUserScopeResponse {
+  repeated string user_ids = 1;
+  repeated string search_user_ids = 2;
+}
+
+message ReportUserProfile {
+  string user_id = 1;
+  string email = 2;
+  string first_name = 3;
+  string last_name = 4;
+  optional string position_name = 5;
+  optional string department_name = 6;
+}
+
+message GetReportUserProfilesRequest {
+  repeated string user_ids = 1;
+  optional string preferred_position_id = 2;
+  optional string preferred_department_id = 3;
+}
+
+message GetReportUserProfilesResponse {
+  repeated ReportUserProfile profiles = 1;
 }
 
 message ResolvePositionUsersRequest {

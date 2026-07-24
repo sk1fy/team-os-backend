@@ -246,7 +246,10 @@ func (s *Server) SubmitPublicAcademyQuizAttempt(ctx context.Context, request *ac
 	if err != nil {
 		return nil, transportError(err)
 	}
-	return &academyv1.SubmitPublicAcademyQuizAttemptResponse{Result: externalQuizAttemptResultToProto(value)}, nil
+	return &academyv1.SubmitPublicAcademyQuizAttemptResponse{
+		Result:     externalQuizAttemptResultToProto(value.Attempt),
+		Enrollment: enrollmentToProto(value.Enrollment),
+	}, nil
 }
 
 func (s *Server) GetPublicAcademyEnrollmentResults(ctx context.Context, request *academyv1.GetPublicAcademyEnrollmentResultsRequest) (*academyv1.GetPublicAcademyEnrollmentResultsResponse, error) {
@@ -271,6 +274,28 @@ func (s *Server) GetExternalLearners(ctx context.Context, _ *academyv1.GetExtern
 		return nil, transportError(err)
 	}
 	return &academyv1.GetExternalLearnersResponse{Learners: externalLearnersToProto(values)}, nil
+}
+
+func (s *Server) GetPartnerExternalReportPage(ctx context.Context, request *academyv1.GetPartnerExternalReportPageRequest) (*academyv1.GetPartnerExternalReportPageResponse, error) {
+	actor, err := s.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	var courseID *uuid.UUID
+	if request.CourseId != nil {
+		parsed, parseErr := parseUUID(request.GetCourseId())
+		if parseErr != nil {
+			return nil, parseErr
+		}
+		courseID = &parsed
+	}
+	page, err := s.application.GetPartnerExternalReportPage(ctx, actor, application.PartnerExternalReportQuery{
+		Search: request.Search, CourseID: courseID, Page: int32(request.GetPage()), PageSize: int32(request.GetPageSize()),
+	})
+	if err != nil {
+		return nil, transportError(err)
+	}
+	return partnerExternalReportPageToProto(page), nil
 }
 
 func (s *Server) GetExternalLearner(ctx context.Context, request *academyv1.GetExternalLearnerRequest) (*academyv1.GetExternalLearnerResponse, error) {

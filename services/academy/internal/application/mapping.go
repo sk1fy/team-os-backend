@@ -256,7 +256,7 @@ func enrollmentFromResumeRow(row db.GetEnrollmentResumeRow) Enrollment {
 }
 
 func enrollmentFromListRow(row db.ListInternalEnrollmentsRow) Enrollment {
-	return Enrollment{
+	result := Enrollment{
 		ID: row.ID, CompanyID: row.CompanyID, CourseID: row.CourseID, CourseVersionID: row.CourseVersionID,
 		VersionNumber: row.VersionNumber, LearnerType: row.LearnerType, UserID: nullUUIDPointer(row.UserID),
 		ExternalLearnerID: nullUUIDPointer(row.ExternalLearnerID), SourceType: row.SourceType,
@@ -268,6 +268,44 @@ func enrollmentFromListRow(row db.ListInternalEnrollmentsRow) Enrollment {
 		LastActivityAt: timestamptzPointer(row.LastActivityAt), FrozenAt: timestamptzPointer(row.FrozenAt),
 		SuspendedAt: timestamptzPointer(row.SuspendedAt), CreatedAt: row.CreatedAt, UpdatedAt: row.UpdatedAt,
 	}
+	result.CourseTitle = &row.CourseTitle
+	result.CourseCoverURL = textPointer(row.CourseCoverUrl)
+	completedLessons, totalLessons := row.CompletedLessonCount, row.TotalLessonCount
+	result.CompletedLessonCount = &completedLessons
+	result.TotalLessonCount = &totalLessons
+	result.DueDate = timestamptzPointer(row.DueDate)
+	result.Overdue, _ = row.Overdue.(bool)
+	return result
+}
+
+func enrollmentFromInternalReportRow(row db.ListInternalEnrollmentReportRowsRow) Enrollment {
+	result := Enrollment{
+		ID: row.ID, CompanyID: row.CompanyID, CourseID: row.CourseID,
+		CourseVersionID: row.CourseVersionID, VersionNumber: row.VersionNumber,
+		LearnerType: row.LearnerType, UserID: nullUUIDPointer(row.UserID),
+		ExternalLearnerID: nullUUIDPointer(row.ExternalLearnerID),
+		SourceType:        row.SourceType, SourceID: nullUUIDPointer(row.SourceID),
+		AttemptNumber: row.AttemptNumber, ProgressStatus: row.ProgressStatus,
+		AccessStatus:           row.AccessStatus,
+		CurrentLessonVersionID: nullUUIDPointer(row.CurrentLessonVersionID),
+		ProgressPercent:        row.ProgressPercent,
+		ActivatedAt:            timestamptzPointer(row.ActivatedAt),
+		AccessUntil:            timestamptzPointer(row.AccessUntil),
+		StartedAt:              timestamptzPointer(row.StartedAt),
+		CompletedAt:            timestamptzPointer(row.CompletedAt),
+		LastActivityAt:         timestamptzPointer(row.LastActivityAt),
+		FrozenAt:               timestamptzPointer(row.FrozenAt),
+		SuspendedAt:            timestamptzPointer(row.SuspendedAt),
+		CreatedAt:              row.CreatedAt, UpdatedAt: row.UpdatedAt,
+	}
+	result.CourseTitle = &row.CourseTitle
+	result.CourseCoverURL = textPointer(row.CourseCoverUrl)
+	completedLessons, totalLessons := row.CompletedLessonCount, row.TotalLessonCount
+	result.CompletedLessonCount = &completedLessons
+	result.TotalLessonCount = &totalLessons
+	result.DueDate = timestamptzPointer(row.DueDate)
+	result.Overdue, _ = row.Overdue.(bool)
+	return result
 }
 
 func enrollmentLessonProgressFromRow(row db.EnrollmentLessonProgress) EnrollmentLessonProgress {
@@ -288,6 +326,15 @@ func enrollmentQuizAttemptFromListRow(row db.ListEnrollmentQuizAttemptsRow) Enro
 }
 
 func enrollmentQuizAttemptFromCreateRow(row db.CreateEnrollmentQuizAttemptRow) EnrollmentQuizAttempt {
+	return EnrollmentQuizAttempt{
+		ID: row.ID, CompanyID: row.CompanyID, EnrollmentID: row.EnrollmentID, QuizVersionID: row.QuizVersionID,
+		Answers: append(json.RawMessage(nil), row.Answers...), Score: row.Score, Passed: row.Passed,
+		PendingReview: row.PendingReview, ReviewedByID: nullUUIDPointer(row.ReviewedByID),
+		ReviewedAt: timestamptzPointer(row.ReviewedAt), ReviewComment: textPointer(row.ReviewComment), CreatedAt: row.CreatedAt,
+	}
+}
+
+func enrollmentQuizAttemptFromReviewRow(row db.ReviewEnrollmentQuizAttemptRow) EnrollmentQuizAttempt {
 	return EnrollmentQuizAttempt{
 		ID: row.ID, CompanyID: row.CompanyID, EnrollmentID: row.EnrollmentID, QuizVersionID: row.QuizVersionID,
 		Answers: append(json.RawMessage(nil), row.Answers...), Score: row.Score, Passed: row.Passed,

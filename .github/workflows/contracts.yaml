@@ -52,7 +52,7 @@ jobs:
 
           if git cat-file -e "$BASE_SHA:contracts/openapi/teamos.yaml" 2>/dev/null; then
             git show "$BASE_SHA:contracts/openapi/teamos.yaml" > /tmp/teamos-base.yaml
-            oasdiff breaking /tmp/teamos-base.yaml contracts/openapi/teamos.yaml
+            oasdiff breaking --fail-on ERR /tmp/teamos-base.yaml contracts/openapi/teamos.yaml
           else
             echo "No OpenAPI baseline; breaking check skipped"
           fi

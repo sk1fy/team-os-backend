@@ -47,6 +47,7 @@ type Querier interface {
 	GetInviteByTokenForUpdate(ctx context.Context, token string) (Invite, error)
 	GetPosition(ctx context.Context, arg GetPositionParams) (Position, error)
 	GetPositionUserIDs(ctx context.Context, arg GetPositionUserIDsParams) ([]uuid.UUID, error)
+	GetReportUserProfiles(ctx context.Context, arg GetReportUserProfilesParams) ([]GetReportUserProfilesRow, error)
 	GetSessionByHashForUpdate(ctx context.Context, refreshHash []byte) (Session, error)
 	GetUser(ctx context.Context, arg GetUserParams) (User, error)
 	GetUserAccessMode(ctx context.Context, arg GetUserAccessModeParams) (string, error)
@@ -73,6 +74,7 @@ type Querier interface {
 	ResetDistributionEvents(ctx context.Context, arg ResetDistributionEventsParams) (int64, error)
 	ResolveDepartmentUserIDs(ctx context.Context, arg ResolveDepartmentUserIDsParams) ([]uuid.UUID, error)
 	ResolvePositionUserIDs(ctx context.Context, arg ResolvePositionUserIDsParams) ([]uuid.UUID, error)
+	ResolveReportUserScope(ctx context.Context, arg ResolveReportUserScopeParams) ([]ResolveReportUserScopeRow, error)
 	RevokeAllUserSessions(ctx context.Context, arg RevokeAllUserSessionsParams) error
 	RevokeInvite(ctx context.Context, arg RevokeInviteParams) (Invite, error)
 	RevokeSessionByHash(ctx context.Context, arg RevokeSessionByHashParams) (int64, error)

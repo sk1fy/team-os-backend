@@ -80,7 +80,19 @@ func (s *Service) requireCourseAccess(
 	if converted.Status != "published" {
 		return forbidden("Черновик курса доступен только управляющим ролям")
 	}
-	if actor.Role != "partner" && (converted.Visibility == "public" || converted.Visibility == "company") {
+	// Public/company courses are available to employees for learning. Partners
+	// reach them only when the course audience explicitly grants access.
+	// Restricted courses still require an explicit assignment.
+	if converted.Visibility == "public" || converted.Visibility == "company" {
+		if actor.Role == "partner" {
+			allowed, audienceErr := s.partnerAudienceAllows(ctx, queries, actor, converted)
+			if audienceErr != nil {
+				return audienceErr
+			}
+			if !allowed {
+				return notFound("Курс")
+			}
+		}
 		return nil
 	}
 	courseIDs, err := s.assignedCourseIDs(ctx, queries, actor)
@@ -95,7 +107,7 @@ func (s *Service) requireCourseAccess(
 	return forbidden("Курс не назначен пользователю")
 }
 
-func visibleCourse(actor Actor, course Course, assigned map[uuid.UUID]struct{}) bool {
+func visibleCourse(actor Actor, course Course, assigned map[uuid.UUID]struct{}, partnerAudience map[uuid.UUID]struct{}) bool {
 	if actor.canManage() {
 		return true
 	}
@@ -108,7 +120,13 @@ func visibleCourse(actor Actor, course Course, assigned map[uuid.UUID]struct{}) 
 	if course.Status != "published" {
 		return false
 	}
-	if actor.Role != "partner" && (course.Visibility == "public" || course.Visibility == "company") {
+	if course.Visibility == "public" || course.Visibility == "company" {
+		// Partners see company courses only when the audience grants access;
+		// employees keep the broad catalog visibility.
+		if actor.Role == "partner" {
+			_, ok := partnerAudience[course.ID]
+			return ok
+		}
 		return true
 	}
 	_, ok := assigned[course.ID]

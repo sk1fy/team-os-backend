@@ -132,7 +132,7 @@ func (h *Handler) CompleteAcademyEnrollmentLesson(
 	params api.CompleteAcademyEnrollmentLessonParams,
 ) {
 	var input api.CompleteEnrollmentLessonInput
-	if !decode(w, r, &input) {
+	if !decodeOptional(w, r, &input) {
 		return
 	}
 	request := &academyv1.CompleteEnrollmentLessonRequest{
@@ -166,6 +166,36 @@ func (h *Handler) CompleteAcademyEnrollmentLesson(
 		return
 	}
 	writeJSON(w, http.StatusOK, converted)
+}
+
+func (h *Handler) ReviewAcademyEnrollmentQuizAttempt(
+	w http.ResponseWriter,
+	r *http.Request,
+	enrollmentID api.EnrollmentId,
+	attemptID api.AttemptId,
+) {
+	var input api.ReviewEnrollmentQuizAttemptInput
+	if !decode(w, r, &input) {
+		return
+	}
+	response, err := h.academy.ReviewEnrollmentQuizAttempt(outgoingContext(r), &academyv1.ReviewEnrollmentQuizAttemptRequest{
+		EnrollmentId: enrollmentID.String(), AttemptId: attemptID.String(), Passed: input.Passed, Comment: input.Comment,
+	})
+	if err != nil {
+		h.writeAcademyRPCError(w, r, err)
+		return
+	}
+	attempt, err := enrollmentQuizAttemptFromProto(response.GetAttempt())
+	if err != nil {
+		h.writeConversionError(w, r, err)
+		return
+	}
+	progress, err := enrollmentProgressSnapshotFromProto(response.GetProgress())
+	if err != nil {
+		h.writeConversionError(w, r, err)
+		return
+	}
+	writeJSON(w, http.StatusOK, api.EnrollmentQuizAttemptSubmitted{Attempt: attempt, Progress: progress})
 }
 
 func (h *Handler) SubmitAcademyEnrollmentQuizAttempt(

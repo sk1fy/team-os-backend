@@ -15,6 +15,7 @@ sql:
       - migrations/000012_external_quiz_attempts.up.sql
       - migrations/000013_enrollment_mutation_idempotency.up.sql
       - migrations/000014_normalize_quiz_question_ids.up.sql
+      - migrations/000015_course_partner_audience.up.sql
     queries: internal/storage/queries
     gen:
       go:

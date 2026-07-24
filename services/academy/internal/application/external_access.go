@@ -599,6 +599,64 @@ func (s *Service) GetExternalLearners(ctx context.Context, actor Actor) ([]Exter
 	return result, nil
 }
 
+func (s *Service) GetPartnerExternalReportPage(
+	ctx context.Context,
+	actor Actor,
+	query PartnerExternalReportQuery,
+) (PartnerExternalReportPage, error) {
+	if actor.Role != "partner" {
+		return PartnerExternalReportPage{}, forbidden("Отчёт доступен только партнёру")
+	}
+	page := query.Page
+	if page < 1 {
+		page = 1
+	}
+	pageSize := query.PageSize
+	if pageSize < 1 {
+		pageSize = catalogDefaultPageSize
+	}
+	if pageSize > catalogMaxPageSize {
+		pageSize = catalogMaxPageSize
+	}
+	var search pgtype.Text
+	if query.Search != nil {
+		if trimmed := strings.TrimSpace(*query.Search); trimmed != "" {
+			search = pgtype.Text{String: trimmed, Valid: true}
+		}
+	}
+	queries := db.New(s.pool)
+	total, err := queries.CountPartnerExternalReportRows(ctx, db.CountPartnerExternalReportRowsParams{
+		CompanyID: actor.CompanyID, PartnerOwnerID: nullUUID(&actor.UserID),
+		CourseID: nullUUID(query.CourseID), Search: search,
+	})
+	if err != nil {
+		return PartnerExternalReportPage{}, internal("Не удалось получить внешний отчёт", err)
+	}
+	rows, err := queries.ListPartnerExternalReportRows(ctx, db.ListPartnerExternalReportRowsParams{
+		CompanyID: actor.CompanyID, PartnerOwnerID: nullUUID(&actor.UserID),
+		CourseID: nullUUID(query.CourseID), Search: search,
+		PageLimit: pageSize, PageOffset: (page - 1) * pageSize,
+	})
+	if err != nil {
+		return PartnerExternalReportPage{}, internal("Не удалось получить внешний отчёт", err)
+	}
+	items := make([]PartnerExternalReportRow, len(rows))
+	for index, row := range rows {
+		var learnerName *string
+		if trimmed := strings.TrimSpace(row.LearnerName); trimmed != "" {
+			learnerName = &trimmed
+		}
+		items[index] = PartnerExternalReportRow{
+			EnrollmentID: row.EnrollmentID, CourseID: row.CourseID, CourseTitle: row.CourseTitle,
+			LearnerEmail: row.LearnerEmail, LearnerName: learnerName,
+			ProgressStatus: row.ProgressStatus, AccessStatus: row.AccessStatus,
+			ProgressPercent: row.ProgressPercent, ActivatedAt: timestamptzPointer(row.ActivatedAt),
+			CompletedAt: timestamptzPointer(row.CompletedAt),
+		}
+	}
+	return PartnerExternalReportPage{Items: items, Page: page, PageSize: pageSize, Total: total}, nil
+}
+
 func (s *Service) GetExternalLearner(ctx context.Context, actor Actor, learnerID uuid.UUID) (ExternalLearner, error) {
 	partnerID, err := externalReportPartnerFilter(actor)
 	if err != nil {

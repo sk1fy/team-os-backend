@@ -1423,6 +1423,177 @@ func (PublicAcademyAccessKind) EnumDescriptor() ([]byte, []int) {
 	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{25}
 }
 
+type InternalEnrollmentReportStatus int32
+
+const (
+	InternalEnrollmentReportStatus_INTERNAL_ENROLLMENT_REPORT_STATUS_UNSPECIFIED InternalEnrollmentReportStatus = 0
+	InternalEnrollmentReportStatus_INTERNAL_ENROLLMENT_REPORT_STATUS_NOT_STARTED InternalEnrollmentReportStatus = 1
+	InternalEnrollmentReportStatus_INTERNAL_ENROLLMENT_REPORT_STATUS_IN_PROGRESS InternalEnrollmentReportStatus = 2
+	InternalEnrollmentReportStatus_INTERNAL_ENROLLMENT_REPORT_STATUS_COMPLETED   InternalEnrollmentReportStatus = 3
+	InternalEnrollmentReportStatus_INTERNAL_ENROLLMENT_REPORT_STATUS_OVERDUE     InternalEnrollmentReportStatus = 4
+	InternalEnrollmentReportStatus_INTERNAL_ENROLLMENT_REPORT_STATUS_FROZEN      InternalEnrollmentReportStatus = 5
+)
+
+// Enum value maps for InternalEnrollmentReportStatus.
+var (
+	InternalEnrollmentReportStatus_name = map[int32]string{
+		0: "INTERNAL_ENROLLMENT_REPORT_STATUS_UNSPECIFIED",
+		1: "INTERNAL_ENROLLMENT_REPORT_STATUS_NOT_STARTED",
+		2: "INTERNAL_ENROLLMENT_REPORT_STATUS_IN_PROGRESS",
+		3: "INTERNAL_ENROLLMENT_REPORT_STATUS_COMPLETED",
+		4: "INTERNAL_ENROLLMENT_REPORT_STATUS_OVERDUE",
+		5: "INTERNAL_ENROLLMENT_REPORT_STATUS_FROZEN",
+	}
+	InternalEnrollmentReportStatus_value = map[string]int32{
+		"INTERNAL_ENROLLMENT_REPORT_STATUS_UNSPECIFIED": 0,
+		"INTERNAL_ENROLLMENT_REPORT_STATUS_NOT_STARTED": 1,
+		"INTERNAL_ENROLLMENT_REPORT_STATUS_IN_PROGRESS": 2,
+		"INTERNAL_ENROLLMENT_REPORT_STATUS_COMPLETED":   3,
+		"INTERNAL_ENROLLMENT_REPORT_STATUS_OVERDUE":     4,
+		"INTERNAL_ENROLLMENT_REPORT_STATUS_FROZEN":      5,
+	}
+)
+
+func (x InternalEnrollmentReportStatus) Enum() *InternalEnrollmentReportStatus {
+	p := new(InternalEnrollmentReportStatus)
+	*p = x
+	return p
+}
+
+func (x InternalEnrollmentReportStatus) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (InternalEnrollmentReportStatus) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_academy_v1_academy_proto_enumTypes[26].Descriptor()
+}
+
+func (InternalEnrollmentReportStatus) Type() protoreflect.EnumType {
+	return &file_proto_academy_v1_academy_proto_enumTypes[26]
+}
+
+func (x InternalEnrollmentReportStatus) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use InternalEnrollmentReportStatus.Descriptor instead.
+func (InternalEnrollmentReportStatus) EnumDescriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{26}
+}
+
+type InternalEnrollmentReportSort int32
+
+const (
+	InternalEnrollmentReportSort_INTERNAL_ENROLLMENT_REPORT_SORT_UNSPECIFIED  InternalEnrollmentReportSort = 0
+	InternalEnrollmentReportSort_INTERNAL_ENROLLMENT_REPORT_SORT_UPDATED_DESC InternalEnrollmentReportSort = 1
+	InternalEnrollmentReportSort_INTERNAL_ENROLLMENT_REPORT_SORT_UPDATED_ASC  InternalEnrollmentReportSort = 2
+	InternalEnrollmentReportSort_INTERNAL_ENROLLMENT_REPORT_SORT_TITLE_ASC    InternalEnrollmentReportSort = 3
+	InternalEnrollmentReportSort_INTERNAL_ENROLLMENT_REPORT_SORT_TITLE_DESC   InternalEnrollmentReportSort = 4
+	InternalEnrollmentReportSort_INTERNAL_ENROLLMENT_REPORT_SORT_DEADLINE_ASC InternalEnrollmentReportSort = 5
+	InternalEnrollmentReportSort_INTERNAL_ENROLLMENT_REPORT_SORT_STATUS       InternalEnrollmentReportSort = 6
+)
+
+// Enum value maps for InternalEnrollmentReportSort.
+var (
+	InternalEnrollmentReportSort_name = map[int32]string{
+		0: "INTERNAL_ENROLLMENT_REPORT_SORT_UNSPECIFIED",
+		1: "INTERNAL_ENROLLMENT_REPORT_SORT_UPDATED_DESC",
+		2: "INTERNAL_ENROLLMENT_REPORT_SORT_UPDATED_ASC",
+		3: "INTERNAL_ENROLLMENT_REPORT_SORT_TITLE_ASC",
+		4: "INTERNAL_ENROLLMENT_REPORT_SORT_TITLE_DESC",
+		5: "INTERNAL_ENROLLMENT_REPORT_SORT_DEADLINE_ASC",
+		6: "INTERNAL_ENROLLMENT_REPORT_SORT_STATUS",
+	}
+	InternalEnrollmentReportSort_value = map[string]int32{
+		"INTERNAL_ENROLLMENT_REPORT_SORT_UNSPECIFIED":  0,
+		"INTERNAL_ENROLLMENT_REPORT_SORT_UPDATED_DESC": 1,
+		"INTERNAL_ENROLLMENT_REPORT_SORT_UPDATED_ASC":  2,
+		"INTERNAL_ENROLLMENT_REPORT_SORT_TITLE_ASC":    3,
+		"INTERNAL_ENROLLMENT_REPORT_SORT_TITLE_DESC":   4,
+		"INTERNAL_ENROLLMENT_REPORT_SORT_DEADLINE_ASC": 5,
+		"INTERNAL_ENROLLMENT_REPORT_SORT_STATUS":       6,
+	}
+)
+
+func (x InternalEnrollmentReportSort) Enum() *InternalEnrollmentReportSort {
+	p := new(InternalEnrollmentReportSort)
+	*p = x
+	return p
+}
+
+func (x InternalEnrollmentReportSort) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (InternalEnrollmentReportSort) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_academy_v1_academy_proto_enumTypes[27].Descriptor()
+}
+
+func (InternalEnrollmentReportSort) Type() protoreflect.EnumType {
+	return &file_proto_academy_v1_academy_proto_enumTypes[27]
+}
+
+func (x InternalEnrollmentReportSort) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use InternalEnrollmentReportSort.Descriptor instead.
+func (InternalEnrollmentReportSort) EnumDescriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{27}
+}
+
+type CoursePartnerAudience int32
+
+const (
+	CoursePartnerAudience_COURSE_PARTNER_AUDIENCE_UNSPECIFIED       CoursePartnerAudience = 0
+	CoursePartnerAudience_COURSE_PARTNER_AUDIENCE_NONE              CoursePartnerAudience = 1
+	CoursePartnerAudience_COURSE_PARTNER_AUDIENCE_ALL_PARTNERS      CoursePartnerAudience = 2
+	CoursePartnerAudience_COURSE_PARTNER_AUDIENCE_SELECTED_PARTNERS CoursePartnerAudience = 3
+)
+
+// Enum value maps for CoursePartnerAudience.
+var (
+	CoursePartnerAudience_name = map[int32]string{
+		0: "COURSE_PARTNER_AUDIENCE_UNSPECIFIED",
+		1: "COURSE_PARTNER_AUDIENCE_NONE",
+		2: "COURSE_PARTNER_AUDIENCE_ALL_PARTNERS",
+		3: "COURSE_PARTNER_AUDIENCE_SELECTED_PARTNERS",
+	}
+	CoursePartnerAudience_value = map[string]int32{
+		"COURSE_PARTNER_AUDIENCE_UNSPECIFIED":       0,
+		"COURSE_PARTNER_AUDIENCE_NONE":              1,
+		"COURSE_PARTNER_AUDIENCE_ALL_PARTNERS":      2,
+		"COURSE_PARTNER_AUDIENCE_SELECTED_PARTNERS": 3,
+	}
+)
+
+func (x CoursePartnerAudience) Enum() *CoursePartnerAudience {
+	p := new(CoursePartnerAudience)
+	*p = x
+	return p
+}
+
+func (x CoursePartnerAudience) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (CoursePartnerAudience) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_academy_v1_academy_proto_enumTypes[28].Descriptor()
+}
+
+func (CoursePartnerAudience) Type() protoreflect.EnumType {
+	return &file_proto_academy_v1_academy_proto_enumTypes[28]
+}
+
+func (x CoursePartnerAudience) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use CoursePartnerAudience.Descriptor instead.
+func (CoursePartnerAudience) EnumDescriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{28}
+}
+
 type Course struct {
 	state                    protoimpl.MessageState    `protogen:"open.v1"`
 	Id                       string                    `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -3288,8 +3459,13 @@ type CourseEnrollment struct {
 	Overdue       bool                   `protobuf:"varint,24,opt,name=overdue,proto3" json:"overdue,omitempty"`
 	CompanyId     string                 `protobuf:"bytes,25,opt,name=company_id,json=companyId,proto3" json:"company_id,omitempty"`
 	VersionNumber uint32                 `protobuf:"varint,26,opt,name=version_number,json=versionNumber,proto3" json:"version_number,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	// Denormalized read-model fields populated by list/self-enrollment queries.
+	CourseTitle          *string `protobuf:"bytes,27,opt,name=course_title,json=courseTitle,proto3,oneof" json:"course_title,omitempty"`
+	CourseCoverUrl       *string `protobuf:"bytes,28,opt,name=course_cover_url,json=courseCoverUrl,proto3,oneof" json:"course_cover_url,omitempty"`
+	CompletedLessonCount *uint32 `protobuf:"varint,29,opt,name=completed_lesson_count,json=completedLessonCount,proto3,oneof" json:"completed_lesson_count,omitempty"`
+	TotalLessonCount     *uint32 `protobuf:"varint,30,opt,name=total_lesson_count,json=totalLessonCount,proto3,oneof" json:"total_lesson_count,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
 }
 
 func (x *CourseEnrollment) Reset() {
@@ -3500,6 +3676,34 @@ func (x *CourseEnrollment) GetCompanyId() string {
 func (x *CourseEnrollment) GetVersionNumber() uint32 {
 	if x != nil {
 		return x.VersionNumber
+	}
+	return 0
+}
+
+func (x *CourseEnrollment) GetCourseTitle() string {
+	if x != nil && x.CourseTitle != nil {
+		return *x.CourseTitle
+	}
+	return ""
+}
+
+func (x *CourseEnrollment) GetCourseCoverUrl() string {
+	if x != nil && x.CourseCoverUrl != nil {
+		return *x.CourseCoverUrl
+	}
+	return ""
+}
+
+func (x *CourseEnrollment) GetCompletedLessonCount() uint32 {
+	if x != nil && x.CompletedLessonCount != nil {
+		return *x.CompletedLessonCount
+	}
+	return 0
+}
+
+func (x *CourseEnrollment) GetTotalLessonCount() uint32 {
+	if x != nil && x.TotalLessonCount != nil {
+		return *x.TotalLessonCount
 	}
 	return 0
 }
@@ -10148,6 +10352,628 @@ func (x *GetEnrollmentsResponse) GetEnrollments() []*CourseEnrollment {
 	return nil
 }
 
+type GetInternalEnrollmentReportPageRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Company owns employee/org data, so gateway resolves the allowed scope and
+	// user-name matches before Academy filters and paginates its training data.
+	UserIds       []string                       `protobuf:"bytes,1,rep,name=user_ids,json=userIds,proto3" json:"user_ids,omitempty"`
+	SearchUserIds []string                       `protobuf:"bytes,2,rep,name=search_user_ids,json=searchUserIds,proto3" json:"search_user_ids,omitempty"`
+	Search        *string                        `protobuf:"bytes,3,opt,name=search,proto3,oneof" json:"search,omitempty"`
+	CourseId      *string                        `protobuf:"bytes,4,opt,name=course_id,json=courseId,proto3,oneof" json:"course_id,omitempty"`
+	Status        InternalEnrollmentReportStatus `protobuf:"varint,5,opt,name=status,proto3,enum=teamos.academy.v1.InternalEnrollmentReportStatus" json:"status,omitempty"`
+	Sort          InternalEnrollmentReportSort   `protobuf:"varint,6,opt,name=sort,proto3,enum=teamos.academy.v1.InternalEnrollmentReportSort" json:"sort,omitempty"`
+	Page          uint32                         `protobuf:"varint,7,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      uint32                         `protobuf:"varint,8,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetInternalEnrollmentReportPageRequest) Reset() {
+	*x = GetInternalEnrollmentReportPageRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[132]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetInternalEnrollmentReportPageRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetInternalEnrollmentReportPageRequest) ProtoMessage() {}
+
+func (x *GetInternalEnrollmentReportPageRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[132]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetInternalEnrollmentReportPageRequest.ProtoReflect.Descriptor instead.
+func (*GetInternalEnrollmentReportPageRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{132}
+}
+
+func (x *GetInternalEnrollmentReportPageRequest) GetUserIds() []string {
+	if x != nil {
+		return x.UserIds
+	}
+	return nil
+}
+
+func (x *GetInternalEnrollmentReportPageRequest) GetSearchUserIds() []string {
+	if x != nil {
+		return x.SearchUserIds
+	}
+	return nil
+}
+
+func (x *GetInternalEnrollmentReportPageRequest) GetSearch() string {
+	if x != nil && x.Search != nil {
+		return *x.Search
+	}
+	return ""
+}
+
+func (x *GetInternalEnrollmentReportPageRequest) GetCourseId() string {
+	if x != nil && x.CourseId != nil {
+		return *x.CourseId
+	}
+	return ""
+}
+
+func (x *GetInternalEnrollmentReportPageRequest) GetStatus() InternalEnrollmentReportStatus {
+	if x != nil {
+		return x.Status
+	}
+	return InternalEnrollmentReportStatus_INTERNAL_ENROLLMENT_REPORT_STATUS_UNSPECIFIED
+}
+
+func (x *GetInternalEnrollmentReportPageRequest) GetSort() InternalEnrollmentReportSort {
+	if x != nil {
+		return x.Sort
+	}
+	return InternalEnrollmentReportSort_INTERNAL_ENROLLMENT_REPORT_SORT_UNSPECIFIED
+}
+
+func (x *GetInternalEnrollmentReportPageRequest) GetPage() uint32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *GetInternalEnrollmentReportPageRequest) GetPageSize() uint32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+type GetInternalEnrollmentReportPageResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Items         []*CourseEnrollment    `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
+	Page          uint32                 `protobuf:"varint,2,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      uint32                 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	Total         uint32                 `protobuf:"varint,4,opt,name=total,proto3" json:"total,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetInternalEnrollmentReportPageResponse) Reset() {
+	*x = GetInternalEnrollmentReportPageResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[133]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetInternalEnrollmentReportPageResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetInternalEnrollmentReportPageResponse) ProtoMessage() {}
+
+func (x *GetInternalEnrollmentReportPageResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[133]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetInternalEnrollmentReportPageResponse.ProtoReflect.Descriptor instead.
+func (*GetInternalEnrollmentReportPageResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{133}
+}
+
+func (x *GetInternalEnrollmentReportPageResponse) GetItems() []*CourseEnrollment {
+	if x != nil {
+		return x.Items
+	}
+	return nil
+}
+
+func (x *GetInternalEnrollmentReportPageResponse) GetPage() uint32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *GetInternalEnrollmentReportPageResponse) GetPageSize() uint32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *GetInternalEnrollmentReportPageResponse) GetTotal() uint32 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+type CatalogCourseCard struct {
+	state               protoimpl.MessageState `protogen:"open.v1"`
+	Id                  string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Title               string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	Description         *string                `protobuf:"bytes,3,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	CoverUrl            *string                `protobuf:"bytes,4,opt,name=cover_url,json=coverUrl,proto3,oneof" json:"cover_url,omitempty"`
+	LessonCount         int32                  `protobuf:"varint,5,opt,name=lesson_count,json=lessonCount,proto3" json:"lesson_count,omitempty"`
+	EstimatedMinutes    int32                  `protobuf:"varint,6,opt,name=estimated_minutes,json=estimatedMinutes,proto3" json:"estimated_minutes,omitempty"`
+	LatestVersionNumber int32                  `protobuf:"varint,7,opt,name=latest_version_number,json=latestVersionNumber,proto3" json:"latest_version_number,omitempty"`
+	Enrolled            bool                   `protobuf:"varint,8,opt,name=enrolled,proto3" json:"enrolled,omitempty"`
+	EnrollmentId        *string                `protobuf:"bytes,9,opt,name=enrollment_id,json=enrollmentId,proto3,oneof" json:"enrollment_id,omitempty"`
+	ProgressPercent     *int32                 `protobuf:"varint,10,opt,name=progress_percent,json=progressPercent,proto3,oneof" json:"progress_percent,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *CatalogCourseCard) Reset() {
+	*x = CatalogCourseCard{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[134]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CatalogCourseCard) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CatalogCourseCard) ProtoMessage() {}
+
+func (x *CatalogCourseCard) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[134]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CatalogCourseCard.ProtoReflect.Descriptor instead.
+func (*CatalogCourseCard) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{134}
+}
+
+func (x *CatalogCourseCard) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *CatalogCourseCard) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *CatalogCourseCard) GetDescription() string {
+	if x != nil && x.Description != nil {
+		return *x.Description
+	}
+	return ""
+}
+
+func (x *CatalogCourseCard) GetCoverUrl() string {
+	if x != nil && x.CoverUrl != nil {
+		return *x.CoverUrl
+	}
+	return ""
+}
+
+func (x *CatalogCourseCard) GetLessonCount() int32 {
+	if x != nil {
+		return x.LessonCount
+	}
+	return 0
+}
+
+func (x *CatalogCourseCard) GetEstimatedMinutes() int32 {
+	if x != nil {
+		return x.EstimatedMinutes
+	}
+	return 0
+}
+
+func (x *CatalogCourseCard) GetLatestVersionNumber() int32 {
+	if x != nil {
+		return x.LatestVersionNumber
+	}
+	return 0
+}
+
+func (x *CatalogCourseCard) GetEnrolled() bool {
+	if x != nil {
+		return x.Enrolled
+	}
+	return false
+}
+
+func (x *CatalogCourseCard) GetEnrollmentId() string {
+	if x != nil && x.EnrollmentId != nil {
+		return *x.EnrollmentId
+	}
+	return ""
+}
+
+func (x *CatalogCourseCard) GetProgressPercent() int32 {
+	if x != nil && x.ProgressPercent != nil {
+		return *x.ProgressPercent
+	}
+	return 0
+}
+
+type GetAcademyCatalogRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Search        *string                `protobuf:"bytes,1,opt,name=search,proto3,oneof" json:"search,omitempty"`
+	Page          uint32                 `protobuf:"varint,2,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      uint32                 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAcademyCatalogRequest) Reset() {
+	*x = GetAcademyCatalogRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[135]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAcademyCatalogRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAcademyCatalogRequest) ProtoMessage() {}
+
+func (x *GetAcademyCatalogRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[135]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAcademyCatalogRequest.ProtoReflect.Descriptor instead.
+func (*GetAcademyCatalogRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{135}
+}
+
+func (x *GetAcademyCatalogRequest) GetSearch() string {
+	if x != nil && x.Search != nil {
+		return *x.Search
+	}
+	return ""
+}
+
+func (x *GetAcademyCatalogRequest) GetPage() uint32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *GetAcademyCatalogRequest) GetPageSize() uint32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+type GetAcademyCatalogResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Items         []*CatalogCourseCard   `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
+	Page          uint32                 `protobuf:"varint,2,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      uint32                 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	Total         uint32                 `protobuf:"varint,4,opt,name=total,proto3" json:"total,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAcademyCatalogResponse) Reset() {
+	*x = GetAcademyCatalogResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[136]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAcademyCatalogResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAcademyCatalogResponse) ProtoMessage() {}
+
+func (x *GetAcademyCatalogResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[136]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAcademyCatalogResponse.ProtoReflect.Descriptor instead.
+func (*GetAcademyCatalogResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{136}
+}
+
+func (x *GetAcademyCatalogResponse) GetItems() []*CatalogCourseCard {
+	if x != nil {
+		return x.Items
+	}
+	return nil
+}
+
+func (x *GetAcademyCatalogResponse) GetPage() uint32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *GetAcademyCatalogResponse) GetPageSize() uint32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *GetAcademyCatalogResponse) GetTotal() uint32 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+type GetCoursePartnerAudienceRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CourseId      string                 `protobuf:"bytes,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetCoursePartnerAudienceRequest) Reset() {
+	*x = GetCoursePartnerAudienceRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[137]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCoursePartnerAudienceRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCoursePartnerAudienceRequest) ProtoMessage() {}
+
+func (x *GetCoursePartnerAudienceRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[137]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCoursePartnerAudienceRequest.ProtoReflect.Descriptor instead.
+func (*GetCoursePartnerAudienceRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{137}
+}
+
+func (x *GetCoursePartnerAudienceRequest) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+type GetCoursePartnerAudienceResponse struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Audience       CoursePartnerAudience  `protobuf:"varint,1,opt,name=audience,proto3,enum=teamos.academy.v1.CoursePartnerAudience" json:"audience,omitempty"`
+	PartnerUserIds []string               `protobuf:"bytes,2,rep,name=partner_user_ids,json=partnerUserIds,proto3" json:"partner_user_ids,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *GetCoursePartnerAudienceResponse) Reset() {
+	*x = GetCoursePartnerAudienceResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[138]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCoursePartnerAudienceResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCoursePartnerAudienceResponse) ProtoMessage() {}
+
+func (x *GetCoursePartnerAudienceResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[138]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCoursePartnerAudienceResponse.ProtoReflect.Descriptor instead.
+func (*GetCoursePartnerAudienceResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{138}
+}
+
+func (x *GetCoursePartnerAudienceResponse) GetAudience() CoursePartnerAudience {
+	if x != nil {
+		return x.Audience
+	}
+	return CoursePartnerAudience_COURSE_PARTNER_AUDIENCE_UNSPECIFIED
+}
+
+func (x *GetCoursePartnerAudienceResponse) GetPartnerUserIds() []string {
+	if x != nil {
+		return x.PartnerUserIds
+	}
+	return nil
+}
+
+type SetCoursePartnerAudienceRequest struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	CourseId       string                 `protobuf:"bytes,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	Audience       CoursePartnerAudience  `protobuf:"varint,2,opt,name=audience,proto3,enum=teamos.academy.v1.CoursePartnerAudience" json:"audience,omitempty"`
+	PartnerUserIds []string               `protobuf:"bytes,3,rep,name=partner_user_ids,json=partnerUserIds,proto3" json:"partner_user_ids,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *SetCoursePartnerAudienceRequest) Reset() {
+	*x = SetCoursePartnerAudienceRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[139]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SetCoursePartnerAudienceRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetCoursePartnerAudienceRequest) ProtoMessage() {}
+
+func (x *SetCoursePartnerAudienceRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[139]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetCoursePartnerAudienceRequest.ProtoReflect.Descriptor instead.
+func (*SetCoursePartnerAudienceRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{139}
+}
+
+func (x *SetCoursePartnerAudienceRequest) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+func (x *SetCoursePartnerAudienceRequest) GetAudience() CoursePartnerAudience {
+	if x != nil {
+		return x.Audience
+	}
+	return CoursePartnerAudience_COURSE_PARTNER_AUDIENCE_UNSPECIFIED
+}
+
+func (x *SetCoursePartnerAudienceRequest) GetPartnerUserIds() []string {
+	if x != nil {
+		return x.PartnerUserIds
+	}
+	return nil
+}
+
+type SetCoursePartnerAudienceResponse struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Audience       CoursePartnerAudience  `protobuf:"varint,1,opt,name=audience,proto3,enum=teamos.academy.v1.CoursePartnerAudience" json:"audience,omitempty"`
+	PartnerUserIds []string               `protobuf:"bytes,2,rep,name=partner_user_ids,json=partnerUserIds,proto3" json:"partner_user_ids,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *SetCoursePartnerAudienceResponse) Reset() {
+	*x = SetCoursePartnerAudienceResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[140]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SetCoursePartnerAudienceResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetCoursePartnerAudienceResponse) ProtoMessage() {}
+
+func (x *SetCoursePartnerAudienceResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[140]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetCoursePartnerAudienceResponse.ProtoReflect.Descriptor instead.
+func (*SetCoursePartnerAudienceResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{140}
+}
+
+func (x *SetCoursePartnerAudienceResponse) GetAudience() CoursePartnerAudience {
+	if x != nil {
+		return x.Audience
+	}
+	return CoursePartnerAudience_COURSE_PARTNER_AUDIENCE_UNSPECIFIED
+}
+
+func (x *SetCoursePartnerAudienceResponse) GetPartnerUserIds() []string {
+	if x != nil {
+		return x.PartnerUserIds
+	}
+	return nil
+}
+
 type SelfEnrollCourseRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	CourseId      string                 `protobuf:"bytes,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
@@ -10157,7 +10983,7 @@ type SelfEnrollCourseRequest struct {
 
 func (x *SelfEnrollCourseRequest) Reset() {
 	*x = SelfEnrollCourseRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[132]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[141]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10169,7 +10995,7 @@ func (x *SelfEnrollCourseRequest) String() string {
 func (*SelfEnrollCourseRequest) ProtoMessage() {}
 
 func (x *SelfEnrollCourseRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[132]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[141]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10182,7 +11008,7 @@ func (x *SelfEnrollCourseRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SelfEnrollCourseRequest.ProtoReflect.Descriptor instead.
 func (*SelfEnrollCourseRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{132}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{141}
 }
 
 func (x *SelfEnrollCourseRequest) GetCourseId() string {
@@ -10201,7 +11027,7 @@ type SelfEnrollCourseResponse struct {
 
 func (x *SelfEnrollCourseResponse) Reset() {
 	*x = SelfEnrollCourseResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[133]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[142]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10213,7 +11039,7 @@ func (x *SelfEnrollCourseResponse) String() string {
 func (*SelfEnrollCourseResponse) ProtoMessage() {}
 
 func (x *SelfEnrollCourseResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[133]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[142]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10226,7 +11052,7 @@ func (x *SelfEnrollCourseResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SelfEnrollCourseResponse.ProtoReflect.Descriptor instead.
 func (*SelfEnrollCourseResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{133}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{142}
 }
 
 func (x *SelfEnrollCourseResponse) GetEnrollment() *CourseEnrollment {
@@ -10245,7 +11071,7 @@ type GetCatalogCourseVersionRequest struct {
 
 func (x *GetCatalogCourseVersionRequest) Reset() {
 	*x = GetCatalogCourseVersionRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[134]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[143]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10257,7 +11083,7 @@ func (x *GetCatalogCourseVersionRequest) String() string {
 func (*GetCatalogCourseVersionRequest) ProtoMessage() {}
 
 func (x *GetCatalogCourseVersionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[134]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[143]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10270,7 +11096,7 @@ func (x *GetCatalogCourseVersionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCatalogCourseVersionRequest.ProtoReflect.Descriptor instead.
 func (*GetCatalogCourseVersionRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{134}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{143}
 }
 
 func (x *GetCatalogCourseVersionRequest) GetCourseId() string {
@@ -10289,7 +11115,7 @@ type GetCatalogCourseVersionResponse struct {
 
 func (x *GetCatalogCourseVersionResponse) Reset() {
 	*x = GetCatalogCourseVersionResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[135]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[144]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10301,7 +11127,7 @@ func (x *GetCatalogCourseVersionResponse) String() string {
 func (*GetCatalogCourseVersionResponse) ProtoMessage() {}
 
 func (x *GetCatalogCourseVersionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[135]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[144]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10314,7 +11140,7 @@ func (x *GetCatalogCourseVersionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCatalogCourseVersionResponse.ProtoReflect.Descriptor instead.
 func (*GetCatalogCourseVersionResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{135}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{144}
 }
 
 func (x *GetCatalogCourseVersionResponse) GetVersion() *LearnerPublishedCourseVersion {
@@ -10333,7 +11159,7 @@ type GetEnrollmentRequest struct {
 
 func (x *GetEnrollmentRequest) Reset() {
 	*x = GetEnrollmentRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[136]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[145]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10345,7 +11171,7 @@ func (x *GetEnrollmentRequest) String() string {
 func (*GetEnrollmentRequest) ProtoMessage() {}
 
 func (x *GetEnrollmentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[136]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[145]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10358,7 +11184,7 @@ func (x *GetEnrollmentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetEnrollmentRequest.ProtoReflect.Descriptor instead.
 func (*GetEnrollmentRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{136}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{145}
 }
 
 func (x *GetEnrollmentRequest) GetEnrollmentId() string {
@@ -10377,7 +11203,7 @@ type GetEnrollmentResponse struct {
 
 func (x *GetEnrollmentResponse) Reset() {
 	*x = GetEnrollmentResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[137]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[146]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10389,7 +11215,7 @@ func (x *GetEnrollmentResponse) String() string {
 func (*GetEnrollmentResponse) ProtoMessage() {}
 
 func (x *GetEnrollmentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[137]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[146]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10402,7 +11228,7 @@ func (x *GetEnrollmentResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetEnrollmentResponse.ProtoReflect.Descriptor instead.
 func (*GetEnrollmentResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{137}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{146}
 }
 
 func (x *GetEnrollmentResponse) GetEnrollment() *CourseEnrollment {
@@ -10421,7 +11247,7 @@ type GetEnrollmentOutlineRequest struct {
 
 func (x *GetEnrollmentOutlineRequest) Reset() {
 	*x = GetEnrollmentOutlineRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[138]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[147]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10433,7 +11259,7 @@ func (x *GetEnrollmentOutlineRequest) String() string {
 func (*GetEnrollmentOutlineRequest) ProtoMessage() {}
 
 func (x *GetEnrollmentOutlineRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[138]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[147]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10446,7 +11272,7 @@ func (x *GetEnrollmentOutlineRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetEnrollmentOutlineRequest.ProtoReflect.Descriptor instead.
 func (*GetEnrollmentOutlineRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{138}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{147}
 }
 
 func (x *GetEnrollmentOutlineRequest) GetEnrollmentId() string {
@@ -10465,7 +11291,7 @@ type GetEnrollmentOutlineResponse struct {
 
 func (x *GetEnrollmentOutlineResponse) Reset() {
 	*x = GetEnrollmentOutlineResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[139]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[148]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10477,7 +11303,7 @@ func (x *GetEnrollmentOutlineResponse) String() string {
 func (*GetEnrollmentOutlineResponse) ProtoMessage() {}
 
 func (x *GetEnrollmentOutlineResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[139]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[148]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10490,7 +11316,7 @@ func (x *GetEnrollmentOutlineResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetEnrollmentOutlineResponse.ProtoReflect.Descriptor instead.
 func (*GetEnrollmentOutlineResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{139}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{148}
 }
 
 func (x *GetEnrollmentOutlineResponse) GetOutline() *EnrollmentOutline {
@@ -10510,7 +11336,7 @@ type GetEnrollmentLessonRequest struct {
 
 func (x *GetEnrollmentLessonRequest) Reset() {
 	*x = GetEnrollmentLessonRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[140]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[149]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10522,7 +11348,7 @@ func (x *GetEnrollmentLessonRequest) String() string {
 func (*GetEnrollmentLessonRequest) ProtoMessage() {}
 
 func (x *GetEnrollmentLessonRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[140]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[149]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10535,7 +11361,7 @@ func (x *GetEnrollmentLessonRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetEnrollmentLessonRequest.ProtoReflect.Descriptor instead.
 func (*GetEnrollmentLessonRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{140}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{149}
 }
 
 func (x *GetEnrollmentLessonRequest) GetEnrollmentId() string {
@@ -10561,7 +11387,7 @@ type GetEnrollmentLessonResponse struct {
 
 func (x *GetEnrollmentLessonResponse) Reset() {
 	*x = GetEnrollmentLessonResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[141]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[150]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10573,7 +11399,7 @@ func (x *GetEnrollmentLessonResponse) String() string {
 func (*GetEnrollmentLessonResponse) ProtoMessage() {}
 
 func (x *GetEnrollmentLessonResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[141]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[150]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10586,7 +11412,7 @@ func (x *GetEnrollmentLessonResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetEnrollmentLessonResponse.ProtoReflect.Descriptor instead.
 func (*GetEnrollmentLessonResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{141}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{150}
 }
 
 func (x *GetEnrollmentLessonResponse) GetLesson() *EnrollmentLesson {
@@ -10605,7 +11431,7 @@ type ResumeEnrollmentRequest struct {
 
 func (x *ResumeEnrollmentRequest) Reset() {
 	*x = ResumeEnrollmentRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[142]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[151]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10617,7 +11443,7 @@ func (x *ResumeEnrollmentRequest) String() string {
 func (*ResumeEnrollmentRequest) ProtoMessage() {}
 
 func (x *ResumeEnrollmentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[142]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[151]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10630,7 +11456,7 @@ func (x *ResumeEnrollmentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResumeEnrollmentRequest.ProtoReflect.Descriptor instead.
 func (*ResumeEnrollmentRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{142}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{151}
 }
 
 func (x *ResumeEnrollmentRequest) GetEnrollmentId() string {
@@ -10650,7 +11476,7 @@ type ResumeEnrollmentResponse struct {
 
 func (x *ResumeEnrollmentResponse) Reset() {
 	*x = ResumeEnrollmentResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[143]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[152]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10662,7 +11488,7 @@ func (x *ResumeEnrollmentResponse) String() string {
 func (*ResumeEnrollmentResponse) ProtoMessage() {}
 
 func (x *ResumeEnrollmentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[143]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[152]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10675,7 +11501,7 @@ func (x *ResumeEnrollmentResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResumeEnrollmentResponse.ProtoReflect.Descriptor instead.
 func (*ResumeEnrollmentResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{143}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{152}
 }
 
 func (x *ResumeEnrollmentResponse) GetEnrollment() *CourseEnrollment {
@@ -10705,7 +11531,7 @@ type CompleteEnrollmentLessonRequest struct {
 
 func (x *CompleteEnrollmentLessonRequest) Reset() {
 	*x = CompleteEnrollmentLessonRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[144]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[153]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10717,7 +11543,7 @@ func (x *CompleteEnrollmentLessonRequest) String() string {
 func (*CompleteEnrollmentLessonRequest) ProtoMessage() {}
 
 func (x *CompleteEnrollmentLessonRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[144]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[153]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10730,7 +11556,7 @@ func (x *CompleteEnrollmentLessonRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CompleteEnrollmentLessonRequest.ProtoReflect.Descriptor instead.
 func (*CompleteEnrollmentLessonRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{144}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{153}
 }
 
 func (x *CompleteEnrollmentLessonRequest) GetEnrollmentId() string {
@@ -10777,7 +11603,7 @@ type CompleteEnrollmentLessonResponse struct {
 
 func (x *CompleteEnrollmentLessonResponse) Reset() {
 	*x = CompleteEnrollmentLessonResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[145]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[154]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10789,7 +11615,7 @@ func (x *CompleteEnrollmentLessonResponse) String() string {
 func (*CompleteEnrollmentLessonResponse) ProtoMessage() {}
 
 func (x *CompleteEnrollmentLessonResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[145]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[154]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10802,7 +11628,7 @@ func (x *CompleteEnrollmentLessonResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CompleteEnrollmentLessonResponse.ProtoReflect.Descriptor instead.
 func (*CompleteEnrollmentLessonResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{145}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{154}
 }
 
 func (x *CompleteEnrollmentLessonResponse) GetProgress() *EnrollmentProgressSnapshot {
@@ -10826,7 +11652,7 @@ type SubmitEnrollmentQuizAttemptRequest struct {
 
 func (x *SubmitEnrollmentQuizAttemptRequest) Reset() {
 	*x = SubmitEnrollmentQuizAttemptRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[146]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[155]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10838,7 +11664,7 @@ func (x *SubmitEnrollmentQuizAttemptRequest) String() string {
 func (*SubmitEnrollmentQuizAttemptRequest) ProtoMessage() {}
 
 func (x *SubmitEnrollmentQuizAttemptRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[146]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[155]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10851,7 +11677,7 @@ func (x *SubmitEnrollmentQuizAttemptRequest) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use SubmitEnrollmentQuizAttemptRequest.ProtoReflect.Descriptor instead.
 func (*SubmitEnrollmentQuizAttemptRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{146}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{155}
 }
 
 func (x *SubmitEnrollmentQuizAttemptRequest) GetEnrollmentId() string {
@@ -10906,7 +11732,7 @@ type SubmitEnrollmentQuizAttemptResponse struct {
 
 func (x *SubmitEnrollmentQuizAttemptResponse) Reset() {
 	*x = SubmitEnrollmentQuizAttemptResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[147]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[156]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10918,7 +11744,7 @@ func (x *SubmitEnrollmentQuizAttemptResponse) String() string {
 func (*SubmitEnrollmentQuizAttemptResponse) ProtoMessage() {}
 
 func (x *SubmitEnrollmentQuizAttemptResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[147]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[156]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10931,7 +11757,7 @@ func (x *SubmitEnrollmentQuizAttemptResponse) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use SubmitEnrollmentQuizAttemptResponse.ProtoReflect.Descriptor instead.
 func (*SubmitEnrollmentQuizAttemptResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{147}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{156}
 }
 
 func (x *SubmitEnrollmentQuizAttemptResponse) GetAttempt() *EnrollmentQuizAttempt {
@@ -10948,6 +11774,126 @@ func (x *SubmitEnrollmentQuizAttemptResponse) GetProgress() *EnrollmentProgressS
 	return nil
 }
 
+type ReviewEnrollmentQuizAttemptRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	EnrollmentId  string                 `protobuf:"bytes,1,opt,name=enrollment_id,json=enrollmentId,proto3" json:"enrollment_id,omitempty"`
+	AttemptId     string                 `protobuf:"bytes,2,opt,name=attempt_id,json=attemptId,proto3" json:"attempt_id,omitempty"`
+	Passed        bool                   `protobuf:"varint,3,opt,name=passed,proto3" json:"passed,omitempty"`
+	Comment       *string                `protobuf:"bytes,4,opt,name=comment,proto3,oneof" json:"comment,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReviewEnrollmentQuizAttemptRequest) Reset() {
+	*x = ReviewEnrollmentQuizAttemptRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[157]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReviewEnrollmentQuizAttemptRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReviewEnrollmentQuizAttemptRequest) ProtoMessage() {}
+
+func (x *ReviewEnrollmentQuizAttemptRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[157]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReviewEnrollmentQuizAttemptRequest.ProtoReflect.Descriptor instead.
+func (*ReviewEnrollmentQuizAttemptRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{157}
+}
+
+func (x *ReviewEnrollmentQuizAttemptRequest) GetEnrollmentId() string {
+	if x != nil {
+		return x.EnrollmentId
+	}
+	return ""
+}
+
+func (x *ReviewEnrollmentQuizAttemptRequest) GetAttemptId() string {
+	if x != nil {
+		return x.AttemptId
+	}
+	return ""
+}
+
+func (x *ReviewEnrollmentQuizAttemptRequest) GetPassed() bool {
+	if x != nil {
+		return x.Passed
+	}
+	return false
+}
+
+func (x *ReviewEnrollmentQuizAttemptRequest) GetComment() string {
+	if x != nil && x.Comment != nil {
+		return *x.Comment
+	}
+	return ""
+}
+
+type ReviewEnrollmentQuizAttemptResponse struct {
+	state         protoimpl.MessageState      `protogen:"open.v1"`
+	Attempt       *EnrollmentQuizAttempt      `protobuf:"bytes,1,opt,name=attempt,proto3" json:"attempt,omitempty"`
+	Progress      *EnrollmentProgressSnapshot `protobuf:"bytes,2,opt,name=progress,proto3" json:"progress,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReviewEnrollmentQuizAttemptResponse) Reset() {
+	*x = ReviewEnrollmentQuizAttemptResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[158]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReviewEnrollmentQuizAttemptResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReviewEnrollmentQuizAttemptResponse) ProtoMessage() {}
+
+func (x *ReviewEnrollmentQuizAttemptResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[158]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReviewEnrollmentQuizAttemptResponse.ProtoReflect.Descriptor instead.
+func (*ReviewEnrollmentQuizAttemptResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{158}
+}
+
+func (x *ReviewEnrollmentQuizAttemptResponse) GetAttempt() *EnrollmentQuizAttempt {
+	if x != nil {
+		return x.Attempt
+	}
+	return nil
+}
+
+func (x *ReviewEnrollmentQuizAttemptResponse) GetProgress() *EnrollmentProgressSnapshot {
+	if x != nil {
+		return x.Progress
+	}
+	return nil
+}
+
 type GetEnrollmentReportRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	EnrollmentId  string                 `protobuf:"bytes,1,opt,name=enrollment_id,json=enrollmentId,proto3" json:"enrollment_id,omitempty"`
@@ -10957,7 +11903,7 @@ type GetEnrollmentReportRequest struct {
 
 func (x *GetEnrollmentReportRequest) Reset() {
 	*x = GetEnrollmentReportRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[148]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[159]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10969,7 +11915,7 @@ func (x *GetEnrollmentReportRequest) String() string {
 func (*GetEnrollmentReportRequest) ProtoMessage() {}
 
 func (x *GetEnrollmentReportRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[148]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[159]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10982,7 +11928,7 @@ func (x *GetEnrollmentReportRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetEnrollmentReportRequest.ProtoReflect.Descriptor instead.
 func (*GetEnrollmentReportRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{148}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{159}
 }
 
 func (x *GetEnrollmentReportRequest) GetEnrollmentId() string {
@@ -11001,7 +11947,7 @@ type GetEnrollmentReportResponse struct {
 
 func (x *GetEnrollmentReportResponse) Reset() {
 	*x = GetEnrollmentReportResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[149]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[160]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11013,7 +11959,7 @@ func (x *GetEnrollmentReportResponse) String() string {
 func (*GetEnrollmentReportResponse) ProtoMessage() {}
 
 func (x *GetEnrollmentReportResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[149]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[160]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11026,7 +11972,7 @@ func (x *GetEnrollmentReportResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetEnrollmentReportResponse.ProtoReflect.Descriptor instead.
 func (*GetEnrollmentReportResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{149}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{160}
 }
 
 func (x *GetEnrollmentReportResponse) GetReport() *EnrollmentReport {
@@ -11046,7 +11992,7 @@ type GetPartnerCourseGroupsRequest struct {
 
 func (x *GetPartnerCourseGroupsRequest) Reset() {
 	*x = GetPartnerCourseGroupsRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[150]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[161]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11058,7 +12004,7 @@ func (x *GetPartnerCourseGroupsRequest) String() string {
 func (*GetPartnerCourseGroupsRequest) ProtoMessage() {}
 
 func (x *GetPartnerCourseGroupsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[150]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[161]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11071,7 +12017,7 @@ func (x *GetPartnerCourseGroupsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPartnerCourseGroupsRequest.ProtoReflect.Descriptor instead.
 func (*GetPartnerCourseGroupsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{150}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{161}
 }
 
 func (x *GetPartnerCourseGroupsRequest) GetLifecycle() CourseLifecycleStatus {
@@ -11097,7 +12043,7 @@ type GetPartnerCourseGroupsResponse struct {
 
 func (x *GetPartnerCourseGroupsResponse) Reset() {
 	*x = GetPartnerCourseGroupsResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[151]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[162]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11109,7 +12055,7 @@ func (x *GetPartnerCourseGroupsResponse) String() string {
 func (*GetPartnerCourseGroupsResponse) ProtoMessage() {}
 
 func (x *GetPartnerCourseGroupsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[151]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[162]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11122,7 +12068,7 @@ func (x *GetPartnerCourseGroupsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPartnerCourseGroupsResponse.ProtoReflect.Descriptor instead.
 func (*GetPartnerCourseGroupsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{151}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{162}
 }
 
 func (x *GetPartnerCourseGroupsResponse) GetGroups() []*PartnerCourseGroup {
@@ -11141,7 +12087,7 @@ type GetPartnerCoursesReportRequest struct {
 
 func (x *GetPartnerCoursesReportRequest) Reset() {
 	*x = GetPartnerCoursesReportRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[152]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[163]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11153,7 +12099,7 @@ func (x *GetPartnerCoursesReportRequest) String() string {
 func (*GetPartnerCoursesReportRequest) ProtoMessage() {}
 
 func (x *GetPartnerCoursesReportRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[152]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[163]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11166,7 +12112,7 @@ func (x *GetPartnerCoursesReportRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPartnerCoursesReportRequest.ProtoReflect.Descriptor instead.
 func (*GetPartnerCoursesReportRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{152}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{163}
 }
 
 func (x *GetPartnerCoursesReportRequest) GetPartnerId() string {
@@ -11185,7 +12131,7 @@ type GetPartnerCoursesReportResponse struct {
 
 func (x *GetPartnerCoursesReportResponse) Reset() {
 	*x = GetPartnerCoursesReportResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[153]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[164]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11197,7 +12143,7 @@ func (x *GetPartnerCoursesReportResponse) String() string {
 func (*GetPartnerCoursesReportResponse) ProtoMessage() {}
 
 func (x *GetPartnerCoursesReportResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[153]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[164]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11210,7 +12156,7 @@ func (x *GetPartnerCoursesReportResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPartnerCoursesReportResponse.ProtoReflect.Descriptor instead.
 func (*GetPartnerCoursesReportResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{153}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{164}
 }
 
 func (x *GetPartnerCoursesReportResponse) GetReport() *PartnerCoursesReport {
@@ -11230,7 +12176,7 @@ type GetCourseVersionPreviewRequest struct {
 
 func (x *GetCourseVersionPreviewRequest) Reset() {
 	*x = GetCourseVersionPreviewRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[154]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[165]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11242,7 +12188,7 @@ func (x *GetCourseVersionPreviewRequest) String() string {
 func (*GetCourseVersionPreviewRequest) ProtoMessage() {}
 
 func (x *GetCourseVersionPreviewRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[154]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[165]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11255,7 +12201,7 @@ func (x *GetCourseVersionPreviewRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCourseVersionPreviewRequest.ProtoReflect.Descriptor instead.
 func (*GetCourseVersionPreviewRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{154}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{165}
 }
 
 func (x *GetCourseVersionPreviewRequest) GetCourseId() string {
@@ -11281,7 +12227,7 @@ type GetCourseVersionPreviewResponse struct {
 
 func (x *GetCourseVersionPreviewResponse) Reset() {
 	*x = GetCourseVersionPreviewResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[155]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[166]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11293,7 +12239,7 @@ func (x *GetCourseVersionPreviewResponse) String() string {
 func (*GetCourseVersionPreviewResponse) ProtoMessage() {}
 
 func (x *GetCourseVersionPreviewResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[155]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[166]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11306,7 +12252,7 @@ func (x *GetCourseVersionPreviewResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCourseVersionPreviewResponse.ProtoReflect.Descriptor instead.
 func (*GetCourseVersionPreviewResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{155}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{166}
 }
 
 func (x *GetCourseVersionPreviewResponse) GetPreview() *CourseVersionPreview {
@@ -11328,7 +12274,7 @@ type SubmitCoursePreviewQuizAttemptRequest struct {
 
 func (x *SubmitCoursePreviewQuizAttemptRequest) Reset() {
 	*x = SubmitCoursePreviewQuizAttemptRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[156]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[167]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11340,7 +12286,7 @@ func (x *SubmitCoursePreviewQuizAttemptRequest) String() string {
 func (*SubmitCoursePreviewQuizAttemptRequest) ProtoMessage() {}
 
 func (x *SubmitCoursePreviewQuizAttemptRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[156]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[167]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11353,7 +12299,7 @@ func (x *SubmitCoursePreviewQuizAttemptRequest) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use SubmitCoursePreviewQuizAttemptRequest.ProtoReflect.Descriptor instead.
 func (*SubmitCoursePreviewQuizAttemptRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{156}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{167}
 }
 
 func (x *SubmitCoursePreviewQuizAttemptRequest) GetCourseId() string {
@@ -11393,7 +12339,7 @@ type SubmitCoursePreviewQuizAttemptResponse struct {
 
 func (x *SubmitCoursePreviewQuizAttemptResponse) Reset() {
 	*x = SubmitCoursePreviewQuizAttemptResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[157]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[168]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11405,7 +12351,7 @@ func (x *SubmitCoursePreviewQuizAttemptResponse) String() string {
 func (*SubmitCoursePreviewQuizAttemptResponse) ProtoMessage() {}
 
 func (x *SubmitCoursePreviewQuizAttemptResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[157]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[168]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11418,7 +12364,7 @@ func (x *SubmitCoursePreviewQuizAttemptResponse) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use SubmitCoursePreviewQuizAttemptResponse.ProtoReflect.Descriptor instead.
 func (*SubmitCoursePreviewQuizAttemptResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{157}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{168}
 }
 
 func (x *SubmitCoursePreviewQuizAttemptResponse) GetResult() *CoursePreviewQuizAttemptResult {
@@ -11438,7 +12384,7 @@ type PausePartnerCourseDistributionRequest struct {
 
 func (x *PausePartnerCourseDistributionRequest) Reset() {
 	*x = PausePartnerCourseDistributionRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[158]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[169]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11450,7 +12396,7 @@ func (x *PausePartnerCourseDistributionRequest) String() string {
 func (*PausePartnerCourseDistributionRequest) ProtoMessage() {}
 
 func (x *PausePartnerCourseDistributionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[158]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[169]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11463,7 +12409,7 @@ func (x *PausePartnerCourseDistributionRequest) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use PausePartnerCourseDistributionRequest.ProtoReflect.Descriptor instead.
 func (*PausePartnerCourseDistributionRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{158}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{169}
 }
 
 func (x *PausePartnerCourseDistributionRequest) GetCourseId() string {
@@ -11489,7 +12435,7 @@ type PausePartnerCourseDistributionResponse struct {
 
 func (x *PausePartnerCourseDistributionResponse) Reset() {
 	*x = PausePartnerCourseDistributionResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[159]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[170]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11501,7 +12447,7 @@ func (x *PausePartnerCourseDistributionResponse) String() string {
 func (*PausePartnerCourseDistributionResponse) ProtoMessage() {}
 
 func (x *PausePartnerCourseDistributionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[159]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[170]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11514,7 +12460,7 @@ func (x *PausePartnerCourseDistributionResponse) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use PausePartnerCourseDistributionResponse.ProtoReflect.Descriptor instead.
 func (*PausePartnerCourseDistributionResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{159}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{170}
 }
 
 func (x *PausePartnerCourseDistributionResponse) GetRestriction() *CourseRestriction {
@@ -11534,7 +12480,7 @@ type BlockPartnerCourseRequest struct {
 
 func (x *BlockPartnerCourseRequest) Reset() {
 	*x = BlockPartnerCourseRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[160]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[171]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11546,7 +12492,7 @@ func (x *BlockPartnerCourseRequest) String() string {
 func (*BlockPartnerCourseRequest) ProtoMessage() {}
 
 func (x *BlockPartnerCourseRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[160]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[171]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11559,7 +12505,7 @@ func (x *BlockPartnerCourseRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BlockPartnerCourseRequest.ProtoReflect.Descriptor instead.
 func (*BlockPartnerCourseRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{160}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{171}
 }
 
 func (x *BlockPartnerCourseRequest) GetCourseId() string {
@@ -11585,7 +12531,7 @@ type BlockPartnerCourseResponse struct {
 
 func (x *BlockPartnerCourseResponse) Reset() {
 	*x = BlockPartnerCourseResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[161]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[172]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11597,7 +12543,7 @@ func (x *BlockPartnerCourseResponse) String() string {
 func (*BlockPartnerCourseResponse) ProtoMessage() {}
 
 func (x *BlockPartnerCourseResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[161]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[172]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11610,7 +12556,7 @@ func (x *BlockPartnerCourseResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BlockPartnerCourseResponse.ProtoReflect.Descriptor instead.
 func (*BlockPartnerCourseResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{161}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{172}
 }
 
 func (x *BlockPartnerCourseResponse) GetRestriction() *CourseRestriction {
@@ -11630,7 +12576,7 @@ type ResolvePartnerCourseRestrictionRequest struct {
 
 func (x *ResolvePartnerCourseRestrictionRequest) Reset() {
 	*x = ResolvePartnerCourseRestrictionRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[162]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[173]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11642,7 +12588,7 @@ func (x *ResolvePartnerCourseRestrictionRequest) String() string {
 func (*ResolvePartnerCourseRestrictionRequest) ProtoMessage() {}
 
 func (x *ResolvePartnerCourseRestrictionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[162]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[173]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11655,7 +12601,7 @@ func (x *ResolvePartnerCourseRestrictionRequest) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use ResolvePartnerCourseRestrictionRequest.ProtoReflect.Descriptor instead.
 func (*ResolvePartnerCourseRestrictionRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{162}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{173}
 }
 
 func (x *ResolvePartnerCourseRestrictionRequest) GetCourseId() string {
@@ -11681,7 +12627,7 @@ type ResolvePartnerCourseRestrictionResponse struct {
 
 func (x *ResolvePartnerCourseRestrictionResponse) Reset() {
 	*x = ResolvePartnerCourseRestrictionResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[163]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[174]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11693,7 +12639,7 @@ func (x *ResolvePartnerCourseRestrictionResponse) String() string {
 func (*ResolvePartnerCourseRestrictionResponse) ProtoMessage() {}
 
 func (x *ResolvePartnerCourseRestrictionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[163]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[174]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11706,7 +12652,7 @@ func (x *ResolvePartnerCourseRestrictionResponse) ProtoReflect() protoreflect.Me
 
 // Deprecated: Use ResolvePartnerCourseRestrictionResponse.ProtoReflect.Descriptor instead.
 func (*ResolvePartnerCourseRestrictionResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{163}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{174}
 }
 
 func (x *ResolvePartnerCourseRestrictionResponse) GetRestriction() *CourseRestriction {
@@ -11725,7 +12671,7 @@ type GetCourseRestrictionsRequest struct {
 
 func (x *GetCourseRestrictionsRequest) Reset() {
 	*x = GetCourseRestrictionsRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[164]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[175]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11737,7 +12683,7 @@ func (x *GetCourseRestrictionsRequest) String() string {
 func (*GetCourseRestrictionsRequest) ProtoMessage() {}
 
 func (x *GetCourseRestrictionsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[164]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[175]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11750,7 +12696,7 @@ func (x *GetCourseRestrictionsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCourseRestrictionsRequest.ProtoReflect.Descriptor instead.
 func (*GetCourseRestrictionsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{164}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{175}
 }
 
 func (x *GetCourseRestrictionsRequest) GetCourseId() string {
@@ -11769,7 +12715,7 @@ type GetCourseRestrictionsResponse struct {
 
 func (x *GetCourseRestrictionsResponse) Reset() {
 	*x = GetCourseRestrictionsResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[165]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[176]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11781,7 +12727,7 @@ func (x *GetCourseRestrictionsResponse) String() string {
 func (*GetCourseRestrictionsResponse) ProtoMessage() {}
 
 func (x *GetCourseRestrictionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[165]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[176]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11794,7 +12740,7 @@ func (x *GetCourseRestrictionsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCourseRestrictionsResponse.ProtoReflect.Descriptor instead.
 func (*GetCourseRestrictionsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{165}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{176}
 }
 
 func (x *GetCourseRestrictionsResponse) GetRestrictions() []*CourseRestriction {
@@ -11815,7 +12761,7 @@ type CopyPartnerCourseVersionToCompanyRequest struct {
 
 func (x *CopyPartnerCourseVersionToCompanyRequest) Reset() {
 	*x = CopyPartnerCourseVersionToCompanyRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[166]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[177]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11827,7 +12773,7 @@ func (x *CopyPartnerCourseVersionToCompanyRequest) String() string {
 func (*CopyPartnerCourseVersionToCompanyRequest) ProtoMessage() {}
 
 func (x *CopyPartnerCourseVersionToCompanyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[166]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[177]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11840,7 +12786,7 @@ func (x *CopyPartnerCourseVersionToCompanyRequest) ProtoReflect() protoreflect.M
 
 // Deprecated: Use CopyPartnerCourseVersionToCompanyRequest.ProtoReflect.Descriptor instead.
 func (*CopyPartnerCourseVersionToCompanyRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{166}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{177}
 }
 
 func (x *CopyPartnerCourseVersionToCompanyRequest) GetCourseId() string {
@@ -11873,7 +12819,7 @@ type CopyPartnerCourseVersionToCompanyResponse struct {
 
 func (x *CopyPartnerCourseVersionToCompanyResponse) Reset() {
 	*x = CopyPartnerCourseVersionToCompanyResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[167]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[178]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11885,7 +12831,7 @@ func (x *CopyPartnerCourseVersionToCompanyResponse) String() string {
 func (*CopyPartnerCourseVersionToCompanyResponse) ProtoMessage() {}
 
 func (x *CopyPartnerCourseVersionToCompanyResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[167]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[178]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11898,7 +12844,7 @@ func (x *CopyPartnerCourseVersionToCompanyResponse) ProtoReflect() protoreflect.
 
 // Deprecated: Use CopyPartnerCourseVersionToCompanyResponse.ProtoReflect.Descriptor instead.
 func (*CopyPartnerCourseVersionToCompanyResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{167}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{178}
 }
 
 func (x *CopyPartnerCourseVersionToCompanyResponse) GetResult() *PartnerCourseCopyResult {
@@ -11921,7 +12867,7 @@ type GetCourseTemplatesRequest struct {
 
 func (x *GetCourseTemplatesRequest) Reset() {
 	*x = GetCourseTemplatesRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[168]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[179]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11933,7 +12879,7 @@ func (x *GetCourseTemplatesRequest) String() string {
 func (*GetCourseTemplatesRequest) ProtoMessage() {}
 
 func (x *GetCourseTemplatesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[168]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[179]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11946,7 +12892,7 @@ func (x *GetCourseTemplatesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCourseTemplatesRequest.ProtoReflect.Descriptor instead.
 func (*GetCourseTemplatesRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{168}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{179}
 }
 
 func (x *GetCourseTemplatesRequest) GetType() CourseTemplateType {
@@ -11998,7 +12944,7 @@ type GetCourseTemplatesResponse struct {
 
 func (x *GetCourseTemplatesResponse) Reset() {
 	*x = GetCourseTemplatesResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[169]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[180]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12010,7 +12956,7 @@ func (x *GetCourseTemplatesResponse) String() string {
 func (*GetCourseTemplatesResponse) ProtoMessage() {}
 
 func (x *GetCourseTemplatesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[169]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[180]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12023,7 +12969,7 @@ func (x *GetCourseTemplatesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCourseTemplatesResponse.ProtoReflect.Descriptor instead.
 func (*GetCourseTemplatesResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{169}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{180}
 }
 
 func (x *GetCourseTemplatesResponse) GetTemplates() []*CourseTemplate {
@@ -12079,7 +13025,7 @@ type GetCourseTemplateRequest struct {
 
 func (x *GetCourseTemplateRequest) Reset() {
 	*x = GetCourseTemplateRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[170]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[181]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12091,7 +13037,7 @@ func (x *GetCourseTemplateRequest) String() string {
 func (*GetCourseTemplateRequest) ProtoMessage() {}
 
 func (x *GetCourseTemplateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[170]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[181]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12104,7 +13050,7 @@ func (x *GetCourseTemplateRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCourseTemplateRequest.ProtoReflect.Descriptor instead.
 func (*GetCourseTemplateRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{170}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{181}
 }
 
 func (x *GetCourseTemplateRequest) GetTemplateId() string {
@@ -12132,7 +13078,7 @@ type GetCourseTemplateResponse struct {
 
 func (x *GetCourseTemplateResponse) Reset() {
 	*x = GetCourseTemplateResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[171]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[182]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12144,7 +13090,7 @@ func (x *GetCourseTemplateResponse) String() string {
 func (*GetCourseTemplateResponse) ProtoMessage() {}
 
 func (x *GetCourseTemplateResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[171]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[182]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12157,7 +13103,7 @@ func (x *GetCourseTemplateResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCourseTemplateResponse.ProtoReflect.Descriptor instead.
 func (*GetCourseTemplateResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{171}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{182}
 }
 
 func (x *GetCourseTemplateResponse) GetTemplate() *CourseTemplate {
@@ -12194,7 +13140,7 @@ type CreateCourseTemplateRequest struct {
 
 func (x *CreateCourseTemplateRequest) Reset() {
 	*x = CreateCourseTemplateRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[172]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[183]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12206,7 +13152,7 @@ func (x *CreateCourseTemplateRequest) String() string {
 func (*CreateCourseTemplateRequest) ProtoMessage() {}
 
 func (x *CreateCourseTemplateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[172]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[183]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12219,7 +13165,7 @@ func (x *CreateCourseTemplateRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateCourseTemplateRequest.ProtoReflect.Descriptor instead.
 func (*CreateCourseTemplateRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{172}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{183}
 }
 
 func (x *CreateCourseTemplateRequest) GetTitle() string {
@@ -12267,7 +13213,7 @@ type CreateCourseTemplateResponse struct {
 
 func (x *CreateCourseTemplateResponse) Reset() {
 	*x = CreateCourseTemplateResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[173]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[184]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12279,7 +13225,7 @@ func (x *CreateCourseTemplateResponse) String() string {
 func (*CreateCourseTemplateResponse) ProtoMessage() {}
 
 func (x *CreateCourseTemplateResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[173]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[184]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12292,7 +13238,7 @@ func (x *CreateCourseTemplateResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateCourseTemplateResponse.ProtoReflect.Descriptor instead.
 func (*CreateCourseTemplateResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{173}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{184}
 }
 
 func (x *CreateCourseTemplateResponse) GetTemplate() *CourseTemplate {
@@ -12325,7 +13271,7 @@ type UpdateCourseTemplateDraftRequest struct {
 
 func (x *UpdateCourseTemplateDraftRequest) Reset() {
 	*x = UpdateCourseTemplateDraftRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[174]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[185]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12337,7 +13283,7 @@ func (x *UpdateCourseTemplateDraftRequest) String() string {
 func (*UpdateCourseTemplateDraftRequest) ProtoMessage() {}
 
 func (x *UpdateCourseTemplateDraftRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[174]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[185]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12350,7 +13296,7 @@ func (x *UpdateCourseTemplateDraftRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateCourseTemplateDraftRequest.ProtoReflect.Descriptor instead.
 func (*UpdateCourseTemplateDraftRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{174}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{185}
 }
 
 func (x *UpdateCourseTemplateDraftRequest) GetTemplateId() string {
@@ -12404,7 +13350,7 @@ type UpdateCourseTemplateDraftResponse struct {
 
 func (x *UpdateCourseTemplateDraftResponse) Reset() {
 	*x = UpdateCourseTemplateDraftResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[175]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[186]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12416,7 +13362,7 @@ func (x *UpdateCourseTemplateDraftResponse) String() string {
 func (*UpdateCourseTemplateDraftResponse) ProtoMessage() {}
 
 func (x *UpdateCourseTemplateDraftResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[175]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[186]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12429,7 +13375,7 @@ func (x *UpdateCourseTemplateDraftResponse) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use UpdateCourseTemplateDraftResponse.ProtoReflect.Descriptor instead.
 func (*UpdateCourseTemplateDraftResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{175}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{186}
 }
 
 func (x *UpdateCourseTemplateDraftResponse) GetDraft() *CourseTemplateVersionDetails {
@@ -12448,7 +13394,7 @@ type CreateCourseTemplateDraftRequest struct {
 
 func (x *CreateCourseTemplateDraftRequest) Reset() {
 	*x = CreateCourseTemplateDraftRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[176]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[187]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12460,7 +13406,7 @@ func (x *CreateCourseTemplateDraftRequest) String() string {
 func (*CreateCourseTemplateDraftRequest) ProtoMessage() {}
 
 func (x *CreateCourseTemplateDraftRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[176]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[187]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12473,7 +13419,7 @@ func (x *CreateCourseTemplateDraftRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateCourseTemplateDraftRequest.ProtoReflect.Descriptor instead.
 func (*CreateCourseTemplateDraftRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{176}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{187}
 }
 
 func (x *CreateCourseTemplateDraftRequest) GetTemplateId() string {
@@ -12492,7 +13438,7 @@ type CreateCourseTemplateDraftResponse struct {
 
 func (x *CreateCourseTemplateDraftResponse) Reset() {
 	*x = CreateCourseTemplateDraftResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[177]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[188]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12504,7 +13450,7 @@ func (x *CreateCourseTemplateDraftResponse) String() string {
 func (*CreateCourseTemplateDraftResponse) ProtoMessage() {}
 
 func (x *CreateCourseTemplateDraftResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[177]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[188]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12517,7 +13463,7 @@ func (x *CreateCourseTemplateDraftResponse) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use CreateCourseTemplateDraftResponse.ProtoReflect.Descriptor instead.
 func (*CreateCourseTemplateDraftResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{177}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{188}
 }
 
 func (x *CreateCourseTemplateDraftResponse) GetDraft() *CourseTemplateVersionDetails {
@@ -12537,7 +13483,7 @@ type PublishCourseTemplateVersionRequest struct {
 
 func (x *PublishCourseTemplateVersionRequest) Reset() {
 	*x = PublishCourseTemplateVersionRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[178]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[189]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12549,7 +13495,7 @@ func (x *PublishCourseTemplateVersionRequest) String() string {
 func (*PublishCourseTemplateVersionRequest) ProtoMessage() {}
 
 func (x *PublishCourseTemplateVersionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[178]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[189]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12562,7 +13508,7 @@ func (x *PublishCourseTemplateVersionRequest) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use PublishCourseTemplateVersionRequest.ProtoReflect.Descriptor instead.
 func (*PublishCourseTemplateVersionRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{178}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{189}
 }
 
 func (x *PublishCourseTemplateVersionRequest) GetTemplateId() string {
@@ -12588,7 +13534,7 @@ type PublishCourseTemplateVersionResponse struct {
 
 func (x *PublishCourseTemplateVersionResponse) Reset() {
 	*x = PublishCourseTemplateVersionResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[179]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[190]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12600,7 +13546,7 @@ func (x *PublishCourseTemplateVersionResponse) String() string {
 func (*PublishCourseTemplateVersionResponse) ProtoMessage() {}
 
 func (x *PublishCourseTemplateVersionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[179]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[190]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12613,7 +13559,7 @@ func (x *PublishCourseTemplateVersionResponse) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use PublishCourseTemplateVersionResponse.ProtoReflect.Descriptor instead.
 func (*PublishCourseTemplateVersionResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{179}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{190}
 }
 
 func (x *PublishCourseTemplateVersionResponse) GetVersion() *CourseTemplateVersion {
@@ -12632,7 +13578,7 @@ type ArchiveCourseTemplateRequest struct {
 
 func (x *ArchiveCourseTemplateRequest) Reset() {
 	*x = ArchiveCourseTemplateRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[180]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[191]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12644,7 +13590,7 @@ func (x *ArchiveCourseTemplateRequest) String() string {
 func (*ArchiveCourseTemplateRequest) ProtoMessage() {}
 
 func (x *ArchiveCourseTemplateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[180]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[191]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12657,7 +13603,7 @@ func (x *ArchiveCourseTemplateRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ArchiveCourseTemplateRequest.ProtoReflect.Descriptor instead.
 func (*ArchiveCourseTemplateRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{180}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{191}
 }
 
 func (x *ArchiveCourseTemplateRequest) GetTemplateId() string {
@@ -12676,7 +13622,7 @@ type ArchiveCourseTemplateResponse struct {
 
 func (x *ArchiveCourseTemplateResponse) Reset() {
 	*x = ArchiveCourseTemplateResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[181]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[192]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12688,7 +13634,7 @@ func (x *ArchiveCourseTemplateResponse) String() string {
 func (*ArchiveCourseTemplateResponse) ProtoMessage() {}
 
 func (x *ArchiveCourseTemplateResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[181]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[192]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12701,7 +13647,7 @@ func (x *ArchiveCourseTemplateResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ArchiveCourseTemplateResponse.ProtoReflect.Descriptor instead.
 func (*ArchiveCourseTemplateResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{181}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{192}
 }
 
 func (x *ArchiveCourseTemplateResponse) GetTemplate() *CourseTemplate {
@@ -12721,7 +13667,7 @@ type InstantiateCourseTemplateVersionRequest struct {
 
 func (x *InstantiateCourseTemplateVersionRequest) Reset() {
 	*x = InstantiateCourseTemplateVersionRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[182]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[193]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12733,7 +13679,7 @@ func (x *InstantiateCourseTemplateVersionRequest) String() string {
 func (*InstantiateCourseTemplateVersionRequest) ProtoMessage() {}
 
 func (x *InstantiateCourseTemplateVersionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[182]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[193]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12746,7 +13692,7 @@ func (x *InstantiateCourseTemplateVersionRequest) ProtoReflect() protoreflect.Me
 
 // Deprecated: Use InstantiateCourseTemplateVersionRequest.ProtoReflect.Descriptor instead.
 func (*InstantiateCourseTemplateVersionRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{182}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{193}
 }
 
 func (x *InstantiateCourseTemplateVersionRequest) GetVersionId() string {
@@ -12772,7 +13718,7 @@ type InstantiateCourseTemplateVersionResponse struct {
 
 func (x *InstantiateCourseTemplateVersionResponse) Reset() {
 	*x = InstantiateCourseTemplateVersionResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[183]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[194]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12784,7 +13730,7 @@ func (x *InstantiateCourseTemplateVersionResponse) String() string {
 func (*InstantiateCourseTemplateVersionResponse) ProtoMessage() {}
 
 func (x *InstantiateCourseTemplateVersionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[183]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[194]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12797,7 +13743,7 @@ func (x *InstantiateCourseTemplateVersionResponse) ProtoReflect() protoreflect.M
 
 // Deprecated: Use InstantiateCourseTemplateVersionResponse.ProtoReflect.Descriptor instead.
 func (*InstantiateCourseTemplateVersionResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{183}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{194}
 }
 
 func (x *InstantiateCourseTemplateVersionResponse) GetResult() *CourseTemplateInstantiationResult {
@@ -12832,7 +13778,7 @@ type ExternalPersonalAccess struct {
 
 func (x *ExternalPersonalAccess) Reset() {
 	*x = ExternalPersonalAccess{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[184]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[195]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12844,7 +13790,7 @@ func (x *ExternalPersonalAccess) String() string {
 func (*ExternalPersonalAccess) ProtoMessage() {}
 
 func (x *ExternalPersonalAccess) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[184]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[195]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12857,7 +13803,7 @@ func (x *ExternalPersonalAccess) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExternalPersonalAccess.ProtoReflect.Descriptor instead.
 func (*ExternalPersonalAccess) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{184}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{195}
 }
 
 func (x *ExternalPersonalAccess) GetId() string {
@@ -12989,7 +13935,7 @@ type ExternalPersonalAccessCreated struct {
 
 func (x *ExternalPersonalAccessCreated) Reset() {
 	*x = ExternalPersonalAccessCreated{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[185]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[196]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13001,7 +13947,7 @@ func (x *ExternalPersonalAccessCreated) String() string {
 func (*ExternalPersonalAccessCreated) ProtoMessage() {}
 
 func (x *ExternalPersonalAccessCreated) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[185]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[196]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13014,7 +13960,7 @@ func (x *ExternalPersonalAccessCreated) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExternalPersonalAccessCreated.ProtoReflect.Descriptor instead.
 func (*ExternalPersonalAccessCreated) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{185}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{196}
 }
 
 func (x *ExternalPersonalAccessCreated) GetAccess() *ExternalPersonalAccess {
@@ -13054,7 +14000,7 @@ type ExternalCampaign struct {
 
 func (x *ExternalCampaign) Reset() {
 	*x = ExternalCampaign{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[186]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[197]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13066,7 +14012,7 @@ func (x *ExternalCampaign) String() string {
 func (*ExternalCampaign) ProtoMessage() {}
 
 func (x *ExternalCampaign) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[186]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[197]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13079,7 +14025,7 @@ func (x *ExternalCampaign) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExternalCampaign.ProtoReflect.Descriptor instead.
 func (*ExternalCampaign) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{186}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{197}
 }
 
 func (x *ExternalCampaign) GetId() string {
@@ -13199,7 +14145,7 @@ type ExternalCampaignCreated struct {
 
 func (x *ExternalCampaignCreated) Reset() {
 	*x = ExternalCampaignCreated{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[187]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[198]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13211,7 +14157,7 @@ func (x *ExternalCampaignCreated) String() string {
 func (*ExternalCampaignCreated) ProtoMessage() {}
 
 func (x *ExternalCampaignCreated) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[187]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[198]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13224,7 +14170,7 @@ func (x *ExternalCampaignCreated) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExternalCampaignCreated.ProtoReflect.Descriptor instead.
 func (*ExternalCampaignCreated) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{187}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{198}
 }
 
 func (x *ExternalCampaignCreated) GetCampaign() *ExternalCampaign {
@@ -13255,7 +14201,7 @@ type CampaignFunnel struct {
 
 func (x *CampaignFunnel) Reset() {
 	*x = CampaignFunnel{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[188]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[199]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13267,7 +14213,7 @@ func (x *CampaignFunnel) String() string {
 func (*CampaignFunnel) ProtoMessage() {}
 
 func (x *CampaignFunnel) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[188]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[199]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13280,7 +14226,7 @@ func (x *CampaignFunnel) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CampaignFunnel.ProtoReflect.Descriptor instead.
 func (*CampaignFunnel) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{188}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{199}
 }
 
 func (x *CampaignFunnel) GetViews() uint64 {
@@ -13336,7 +14282,7 @@ type CampaignLessonDropOff struct {
 
 func (x *CampaignLessonDropOff) Reset() {
 	*x = CampaignLessonDropOff{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[189]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[200]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13348,7 +14294,7 @@ func (x *CampaignLessonDropOff) String() string {
 func (*CampaignLessonDropOff) ProtoMessage() {}
 
 func (x *CampaignLessonDropOff) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[189]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[200]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13361,7 +14307,7 @@ func (x *CampaignLessonDropOff) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CampaignLessonDropOff.ProtoReflect.Descriptor instead.
 func (*CampaignLessonDropOff) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{189}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{200}
 }
 
 func (x *CampaignLessonDropOff) GetLessonVersionId() string {
@@ -13402,7 +14348,7 @@ type CampaignAttribution struct {
 
 func (x *CampaignAttribution) Reset() {
 	*x = CampaignAttribution{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[190]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[201]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13414,7 +14360,7 @@ func (x *CampaignAttribution) String() string {
 func (*CampaignAttribution) ProtoMessage() {}
 
 func (x *CampaignAttribution) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[190]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[201]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13427,7 +14373,7 @@ func (x *CampaignAttribution) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CampaignAttribution.ProtoReflect.Descriptor instead.
 func (*CampaignAttribution) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{190}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{201}
 }
 
 func (x *CampaignAttribution) GetUtmSource() string {
@@ -13506,7 +14452,7 @@ type CampaignVersionAnalytics struct {
 
 func (x *CampaignVersionAnalytics) Reset() {
 	*x = CampaignVersionAnalytics{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[191]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[202]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13518,7 +14464,7 @@ func (x *CampaignVersionAnalytics) String() string {
 func (*CampaignVersionAnalytics) ProtoMessage() {}
 
 func (x *CampaignVersionAnalytics) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[191]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[202]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13531,7 +14477,7 @@ func (x *CampaignVersionAnalytics) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CampaignVersionAnalytics.ProtoReflect.Descriptor instead.
 func (*CampaignVersionAnalytics) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{191}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{202}
 }
 
 func (x *CampaignVersionAnalytics) GetCourseVersionId() string {
@@ -13589,7 +14535,7 @@ type CampaignAnalytics struct {
 
 func (x *CampaignAnalytics) Reset() {
 	*x = CampaignAnalytics{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[192]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[203]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13601,7 +14547,7 @@ func (x *CampaignAnalytics) String() string {
 func (*CampaignAnalytics) ProtoMessage() {}
 
 func (x *CampaignAnalytics) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[192]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[203]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13614,7 +14560,7 @@ func (x *CampaignAnalytics) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CampaignAnalytics.ProtoReflect.Descriptor instead.
 func (*CampaignAnalytics) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{192}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{203}
 }
 
 func (x *CampaignAnalytics) GetFirstLessonStarts() uint64 {
@@ -13713,7 +14659,7 @@ type ExternalCampaignReport struct {
 
 func (x *ExternalCampaignReport) Reset() {
 	*x = ExternalCampaignReport{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[193]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[204]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13725,7 +14671,7 @@ func (x *ExternalCampaignReport) String() string {
 func (*ExternalCampaignReport) ProtoMessage() {}
 
 func (x *ExternalCampaignReport) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[193]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[204]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13738,7 +14684,7 @@ func (x *ExternalCampaignReport) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExternalCampaignReport.ProtoReflect.Descriptor instead.
 func (*ExternalCampaignReport) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{193}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{204}
 }
 
 func (x *ExternalCampaignReport) GetCampaign() *ExternalCampaign {
@@ -13779,7 +14725,7 @@ type CourseExternalReport struct {
 
 func (x *CourseExternalReport) Reset() {
 	*x = CourseExternalReport{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[194]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[205]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13791,7 +14737,7 @@ func (x *CourseExternalReport) String() string {
 func (*CourseExternalReport) ProtoMessage() {}
 
 func (x *CourseExternalReport) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[194]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[205]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13804,7 +14750,7 @@ func (x *CourseExternalReport) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CourseExternalReport.ProtoReflect.Descriptor instead.
 func (*CourseExternalReport) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{194}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{205}
 }
 
 func (x *CourseExternalReport) GetCourseId() string {
@@ -13842,7 +14788,7 @@ type ExternalLearnerTimelineEvent struct {
 
 func (x *ExternalLearnerTimelineEvent) Reset() {
 	*x = ExternalLearnerTimelineEvent{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[195]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[206]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13854,7 +14800,7 @@ func (x *ExternalLearnerTimelineEvent) String() string {
 func (*ExternalLearnerTimelineEvent) ProtoMessage() {}
 
 func (x *ExternalLearnerTimelineEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[195]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[206]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13867,7 +14813,7 @@ func (x *ExternalLearnerTimelineEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExternalLearnerTimelineEvent.ProtoReflect.Descriptor instead.
 func (*ExternalLearnerTimelineEvent) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{195}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{206}
 }
 
 func (x *ExternalLearnerTimelineEvent) GetId() string {
@@ -13971,7 +14917,7 @@ type ExternalLearnerTimeline struct {
 
 func (x *ExternalLearnerTimeline) Reset() {
 	*x = ExternalLearnerTimeline{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[196]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[207]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13983,7 +14929,7 @@ func (x *ExternalLearnerTimeline) String() string {
 func (*ExternalLearnerTimeline) ProtoMessage() {}
 
 func (x *ExternalLearnerTimeline) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[196]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[207]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13996,7 +14942,7 @@ func (x *ExternalLearnerTimeline) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExternalLearnerTimeline.ProtoReflect.Descriptor instead.
 func (*ExternalLearnerTimeline) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{196}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{207}
 }
 
 func (x *ExternalLearnerTimeline) GetLearner() *ExternalLearner {
@@ -14031,7 +14977,7 @@ type ExternalLearner struct {
 
 func (x *ExternalLearner) Reset() {
 	*x = ExternalLearner{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[197]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[208]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14043,7 +14989,7 @@ func (x *ExternalLearner) String() string {
 func (*ExternalLearner) ProtoMessage() {}
 
 func (x *ExternalLearner) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[197]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[208]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14056,7 +15002,7 @@ func (x *ExternalLearner) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExternalLearner.ProtoReflect.Descriptor instead.
 func (*ExternalLearner) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{197}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{208}
 }
 
 func (x *ExternalLearner) GetId() string {
@@ -14129,6 +15075,258 @@ func (x *ExternalLearner) GetUpdatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+type PartnerExternalReportRow struct {
+	state           protoimpl.MessageState   `protogen:"open.v1"`
+	EnrollmentId    string                   `protobuf:"bytes,1,opt,name=enrollment_id,json=enrollmentId,proto3" json:"enrollment_id,omitempty"`
+	CourseId        string                   `protobuf:"bytes,2,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	CourseTitle     string                   `protobuf:"bytes,3,opt,name=course_title,json=courseTitle,proto3" json:"course_title,omitempty"`
+	LearnerEmail    string                   `protobuf:"bytes,4,opt,name=learner_email,json=learnerEmail,proto3" json:"learner_email,omitempty"`
+	LearnerName     *string                  `protobuf:"bytes,5,opt,name=learner_name,json=learnerName,proto3,oneof" json:"learner_name,omitempty"`
+	ProgressStatus  EnrollmentProgressStatus `protobuf:"varint,6,opt,name=progress_status,json=progressStatus,proto3,enum=teamos.academy.v1.EnrollmentProgressStatus" json:"progress_status,omitempty"`
+	AccessStatus    EnrollmentAccessStatus   `protobuf:"varint,7,opt,name=access_status,json=accessStatus,proto3,enum=teamos.academy.v1.EnrollmentAccessStatus" json:"access_status,omitempty"`
+	ProgressPercent uint32                   `protobuf:"varint,8,opt,name=progress_percent,json=progressPercent,proto3" json:"progress_percent,omitempty"`
+	ActivatedAt     *timestamppb.Timestamp   `protobuf:"bytes,9,opt,name=activated_at,json=activatedAt,proto3,oneof" json:"activated_at,omitempty"`
+	CompletedAt     *timestamppb.Timestamp   `protobuf:"bytes,10,opt,name=completed_at,json=completedAt,proto3,oneof" json:"completed_at,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *PartnerExternalReportRow) Reset() {
+	*x = PartnerExternalReportRow{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[209]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PartnerExternalReportRow) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PartnerExternalReportRow) ProtoMessage() {}
+
+func (x *PartnerExternalReportRow) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[209]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PartnerExternalReportRow.ProtoReflect.Descriptor instead.
+func (*PartnerExternalReportRow) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{209}
+}
+
+func (x *PartnerExternalReportRow) GetEnrollmentId() string {
+	if x != nil {
+		return x.EnrollmentId
+	}
+	return ""
+}
+
+func (x *PartnerExternalReportRow) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+func (x *PartnerExternalReportRow) GetCourseTitle() string {
+	if x != nil {
+		return x.CourseTitle
+	}
+	return ""
+}
+
+func (x *PartnerExternalReportRow) GetLearnerEmail() string {
+	if x != nil {
+		return x.LearnerEmail
+	}
+	return ""
+}
+
+func (x *PartnerExternalReportRow) GetLearnerName() string {
+	if x != nil && x.LearnerName != nil {
+		return *x.LearnerName
+	}
+	return ""
+}
+
+func (x *PartnerExternalReportRow) GetProgressStatus() EnrollmentProgressStatus {
+	if x != nil {
+		return x.ProgressStatus
+	}
+	return EnrollmentProgressStatus_ENROLLMENT_PROGRESS_STATUS_UNSPECIFIED
+}
+
+func (x *PartnerExternalReportRow) GetAccessStatus() EnrollmentAccessStatus {
+	if x != nil {
+		return x.AccessStatus
+	}
+	return EnrollmentAccessStatus_ENROLLMENT_ACCESS_STATUS_UNSPECIFIED
+}
+
+func (x *PartnerExternalReportRow) GetProgressPercent() uint32 {
+	if x != nil {
+		return x.ProgressPercent
+	}
+	return 0
+}
+
+func (x *PartnerExternalReportRow) GetActivatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ActivatedAt
+	}
+	return nil
+}
+
+func (x *PartnerExternalReportRow) GetCompletedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CompletedAt
+	}
+	return nil
+}
+
+type GetPartnerExternalReportPageRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Search        *string                `protobuf:"bytes,1,opt,name=search,proto3,oneof" json:"search,omitempty"`
+	CourseId      *string                `protobuf:"bytes,2,opt,name=course_id,json=courseId,proto3,oneof" json:"course_id,omitempty"`
+	Page          uint32                 `protobuf:"varint,3,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      uint32                 `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetPartnerExternalReportPageRequest) Reset() {
+	*x = GetPartnerExternalReportPageRequest{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[210]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPartnerExternalReportPageRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPartnerExternalReportPageRequest) ProtoMessage() {}
+
+func (x *GetPartnerExternalReportPageRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[210]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPartnerExternalReportPageRequest.ProtoReflect.Descriptor instead.
+func (*GetPartnerExternalReportPageRequest) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{210}
+}
+
+func (x *GetPartnerExternalReportPageRequest) GetSearch() string {
+	if x != nil && x.Search != nil {
+		return *x.Search
+	}
+	return ""
+}
+
+func (x *GetPartnerExternalReportPageRequest) GetCourseId() string {
+	if x != nil && x.CourseId != nil {
+		return *x.CourseId
+	}
+	return ""
+}
+
+func (x *GetPartnerExternalReportPageRequest) GetPage() uint32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *GetPartnerExternalReportPageRequest) GetPageSize() uint32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+type GetPartnerExternalReportPageResponse struct {
+	state         protoimpl.MessageState      `protogen:"open.v1"`
+	Items         []*PartnerExternalReportRow `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
+	Page          uint32                      `protobuf:"varint,2,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      uint32                      `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	Total         uint32                      `protobuf:"varint,4,opt,name=total,proto3" json:"total,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetPartnerExternalReportPageResponse) Reset() {
+	*x = GetPartnerExternalReportPageResponse{}
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[211]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPartnerExternalReportPageResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPartnerExternalReportPageResponse) ProtoMessage() {}
+
+func (x *GetPartnerExternalReportPageResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[211]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPartnerExternalReportPageResponse.ProtoReflect.Descriptor instead.
+func (*GetPartnerExternalReportPageResponse) Descriptor() ([]byte, []int) {
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{211}
+}
+
+func (x *GetPartnerExternalReportPageResponse) GetItems() []*PartnerExternalReportRow {
+	if x != nil {
+		return x.Items
+	}
+	return nil
+}
+
+func (x *GetPartnerExternalReportPageResponse) GetPage() uint32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *GetPartnerExternalReportPageResponse) GetPageSize() uint32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *GetPartnerExternalReportPageResponse) GetTotal() uint32 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
 type PublicAcademyOutlineLesson struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
 	Id               string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -14141,7 +15339,7 @@ type PublicAcademyOutlineLesson struct {
 
 func (x *PublicAcademyOutlineLesson) Reset() {
 	*x = PublicAcademyOutlineLesson{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[198]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[212]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14153,7 +15351,7 @@ func (x *PublicAcademyOutlineLesson) String() string {
 func (*PublicAcademyOutlineLesson) ProtoMessage() {}
 
 func (x *PublicAcademyOutlineLesson) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[198]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[212]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14166,7 +15364,7 @@ func (x *PublicAcademyOutlineLesson) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublicAcademyOutlineLesson.ProtoReflect.Descriptor instead.
 func (*PublicAcademyOutlineLesson) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{198}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{212}
 }
 
 func (x *PublicAcademyOutlineLesson) GetId() string {
@@ -14209,7 +15407,7 @@ type PublicAcademyOutlineSection struct {
 
 func (x *PublicAcademyOutlineSection) Reset() {
 	*x = PublicAcademyOutlineSection{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[199]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[213]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14221,7 +15419,7 @@ func (x *PublicAcademyOutlineSection) String() string {
 func (*PublicAcademyOutlineSection) ProtoMessage() {}
 
 func (x *PublicAcademyOutlineSection) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[199]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[213]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14234,7 +15432,7 @@ func (x *PublicAcademyOutlineSection) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublicAcademyOutlineSection.ProtoReflect.Descriptor instead.
 func (*PublicAcademyOutlineSection) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{199}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{213}
 }
 
 func (x *PublicAcademyOutlineSection) GetId() string {
@@ -14286,7 +15484,7 @@ type PublicAcademyAccess struct {
 
 func (x *PublicAcademyAccess) Reset() {
 	*x = PublicAcademyAccess{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[200]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[214]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14298,7 +15496,7 @@ func (x *PublicAcademyAccess) String() string {
 func (*PublicAcademyAccess) ProtoMessage() {}
 
 func (x *PublicAcademyAccess) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[200]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[214]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14311,7 +15509,7 @@ func (x *PublicAcademyAccess) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublicAcademyAccess.ProtoReflect.Descriptor instead.
 func (*PublicAcademyAccess) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{200}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{214}
 }
 
 func (x *PublicAcademyAccess) GetKind() PublicAcademyAccessKind {
@@ -14415,7 +15613,7 @@ type ExternalVerificationChallenge struct {
 
 func (x *ExternalVerificationChallenge) Reset() {
 	*x = ExternalVerificationChallenge{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[201]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[215]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14427,7 +15625,7 @@ func (x *ExternalVerificationChallenge) String() string {
 func (*ExternalVerificationChallenge) ProtoMessage() {}
 
 func (x *ExternalVerificationChallenge) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[201]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[215]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14440,7 +15638,7 @@ func (x *ExternalVerificationChallenge) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExternalVerificationChallenge.ProtoReflect.Descriptor instead.
 func (*ExternalVerificationChallenge) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{201}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{215}
 }
 
 func (x *ExternalVerificationChallenge) GetChallengeId() string {
@@ -14471,7 +15669,7 @@ type ExternalVerificationConfirmed struct {
 
 func (x *ExternalVerificationConfirmed) Reset() {
 	*x = ExternalVerificationConfirmed{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[202]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[216]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14483,7 +15681,7 @@ func (x *ExternalVerificationConfirmed) String() string {
 func (*ExternalVerificationConfirmed) ProtoMessage() {}
 
 func (x *ExternalVerificationConfirmed) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[202]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[216]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14496,7 +15694,7 @@ func (x *ExternalVerificationConfirmed) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExternalVerificationConfirmed.ProtoReflect.Descriptor instead.
 func (*ExternalVerificationConfirmed) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{202}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{216}
 }
 
 func (x *ExternalVerificationConfirmed) GetLearnerId() string {
@@ -14541,7 +15739,7 @@ type ExternalQuizAttemptResult struct {
 
 func (x *ExternalQuizAttemptResult) Reset() {
 	*x = ExternalQuizAttemptResult{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[203]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[217]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14553,7 +15751,7 @@ func (x *ExternalQuizAttemptResult) String() string {
 func (*ExternalQuizAttemptResult) ProtoMessage() {}
 
 func (x *ExternalQuizAttemptResult) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[203]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[217]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14566,7 +15764,7 @@ func (x *ExternalQuizAttemptResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExternalQuizAttemptResult.ProtoReflect.Descriptor instead.
 func (*ExternalQuizAttemptResult) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{203}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{217}
 }
 
 func (x *ExternalQuizAttemptResult) GetId() string {
@@ -14622,7 +15820,7 @@ type ExternalEnrollmentResults struct {
 
 func (x *ExternalEnrollmentResults) Reset() {
 	*x = ExternalEnrollmentResults{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[204]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[218]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14634,7 +15832,7 @@ func (x *ExternalEnrollmentResults) String() string {
 func (*ExternalEnrollmentResults) ProtoMessage() {}
 
 func (x *ExternalEnrollmentResults) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[204]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[218]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14647,7 +15845,7 @@ func (x *ExternalEnrollmentResults) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExternalEnrollmentResults.ProtoReflect.Descriptor instead.
 func (*ExternalEnrollmentResults) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{204}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{218}
 }
 
 func (x *ExternalEnrollmentResults) GetEnrollment() *CourseEnrollment {
@@ -14685,7 +15883,7 @@ type CreateExternalPersonalAccessRequest struct {
 
 func (x *CreateExternalPersonalAccessRequest) Reset() {
 	*x = CreateExternalPersonalAccessRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[205]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[219]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14697,7 +15895,7 @@ func (x *CreateExternalPersonalAccessRequest) String() string {
 func (*CreateExternalPersonalAccessRequest) ProtoMessage() {}
 
 func (x *CreateExternalPersonalAccessRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[205]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[219]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14710,7 +15908,7 @@ func (x *CreateExternalPersonalAccessRequest) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use CreateExternalPersonalAccessRequest.ProtoReflect.Descriptor instead.
 func (*CreateExternalPersonalAccessRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{205}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{219}
 }
 
 func (x *CreateExternalPersonalAccessRequest) GetCourseId() string {
@@ -14764,7 +15962,7 @@ type CreateExternalPersonalAccessResponse struct {
 
 func (x *CreateExternalPersonalAccessResponse) Reset() {
 	*x = CreateExternalPersonalAccessResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[206]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[220]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14776,7 +15974,7 @@ func (x *CreateExternalPersonalAccessResponse) String() string {
 func (*CreateExternalPersonalAccessResponse) ProtoMessage() {}
 
 func (x *CreateExternalPersonalAccessResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[206]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[220]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14789,7 +15987,7 @@ func (x *CreateExternalPersonalAccessResponse) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use CreateExternalPersonalAccessResponse.ProtoReflect.Descriptor instead.
 func (*CreateExternalPersonalAccessResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{206}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{220}
 }
 
 func (x *CreateExternalPersonalAccessResponse) GetCreated() *ExternalPersonalAccessCreated {
@@ -14808,7 +16006,7 @@ type GetExternalPersonalAccessesRequest struct {
 
 func (x *GetExternalPersonalAccessesRequest) Reset() {
 	*x = GetExternalPersonalAccessesRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[207]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[221]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14820,7 +16018,7 @@ func (x *GetExternalPersonalAccessesRequest) String() string {
 func (*GetExternalPersonalAccessesRequest) ProtoMessage() {}
 
 func (x *GetExternalPersonalAccessesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[207]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[221]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14833,7 +16031,7 @@ func (x *GetExternalPersonalAccessesRequest) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use GetExternalPersonalAccessesRequest.ProtoReflect.Descriptor instead.
 func (*GetExternalPersonalAccessesRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{207}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{221}
 }
 
 func (x *GetExternalPersonalAccessesRequest) GetCourseId() string {
@@ -14852,7 +16050,7 @@ type GetExternalPersonalAccessesResponse struct {
 
 func (x *GetExternalPersonalAccessesResponse) Reset() {
 	*x = GetExternalPersonalAccessesResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[208]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[222]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14864,7 +16062,7 @@ func (x *GetExternalPersonalAccessesResponse) String() string {
 func (*GetExternalPersonalAccessesResponse) ProtoMessage() {}
 
 func (x *GetExternalPersonalAccessesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[208]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[222]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14877,7 +16075,7 @@ func (x *GetExternalPersonalAccessesResponse) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use GetExternalPersonalAccessesResponse.ProtoReflect.Descriptor instead.
 func (*GetExternalPersonalAccessesResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{208}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{222}
 }
 
 func (x *GetExternalPersonalAccessesResponse) GetAccesses() []*ExternalPersonalAccess {
@@ -14896,7 +16094,7 @@ type GetExternalPersonalAccessRequest struct {
 
 func (x *GetExternalPersonalAccessRequest) Reset() {
 	*x = GetExternalPersonalAccessRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[209]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[223]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14908,7 +16106,7 @@ func (x *GetExternalPersonalAccessRequest) String() string {
 func (*GetExternalPersonalAccessRequest) ProtoMessage() {}
 
 func (x *GetExternalPersonalAccessRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[209]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[223]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14921,7 +16119,7 @@ func (x *GetExternalPersonalAccessRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetExternalPersonalAccessRequest.ProtoReflect.Descriptor instead.
 func (*GetExternalPersonalAccessRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{209}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{223}
 }
 
 func (x *GetExternalPersonalAccessRequest) GetAccessId() string {
@@ -14940,7 +16138,7 @@ type GetExternalPersonalAccessResponse struct {
 
 func (x *GetExternalPersonalAccessResponse) Reset() {
 	*x = GetExternalPersonalAccessResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[210]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[224]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14952,7 +16150,7 @@ func (x *GetExternalPersonalAccessResponse) String() string {
 func (*GetExternalPersonalAccessResponse) ProtoMessage() {}
 
 func (x *GetExternalPersonalAccessResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[210]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[224]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14965,7 +16163,7 @@ func (x *GetExternalPersonalAccessResponse) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use GetExternalPersonalAccessResponse.ProtoReflect.Descriptor instead.
 func (*GetExternalPersonalAccessResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{210}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{224}
 }
 
 func (x *GetExternalPersonalAccessResponse) GetAccess() *ExternalPersonalAccess {
@@ -14985,7 +16183,7 @@ type ExtendExternalPersonalAccessRequest struct {
 
 func (x *ExtendExternalPersonalAccessRequest) Reset() {
 	*x = ExtendExternalPersonalAccessRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[211]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[225]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14997,7 +16195,7 @@ func (x *ExtendExternalPersonalAccessRequest) String() string {
 func (*ExtendExternalPersonalAccessRequest) ProtoMessage() {}
 
 func (x *ExtendExternalPersonalAccessRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[211]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[225]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15010,7 +16208,7 @@ func (x *ExtendExternalPersonalAccessRequest) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use ExtendExternalPersonalAccessRequest.ProtoReflect.Descriptor instead.
 func (*ExtendExternalPersonalAccessRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{211}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{225}
 }
 
 func (x *ExtendExternalPersonalAccessRequest) GetAccessId() string {
@@ -15036,7 +16234,7 @@ type ExtendExternalPersonalAccessResponse struct {
 
 func (x *ExtendExternalPersonalAccessResponse) Reset() {
 	*x = ExtendExternalPersonalAccessResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[212]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[226]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15048,7 +16246,7 @@ func (x *ExtendExternalPersonalAccessResponse) String() string {
 func (*ExtendExternalPersonalAccessResponse) ProtoMessage() {}
 
 func (x *ExtendExternalPersonalAccessResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[212]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[226]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15061,7 +16259,7 @@ func (x *ExtendExternalPersonalAccessResponse) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use ExtendExternalPersonalAccessResponse.ProtoReflect.Descriptor instead.
 func (*ExtendExternalPersonalAccessResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{212}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{226}
 }
 
 func (x *ExtendExternalPersonalAccessResponse) GetAccess() *ExternalPersonalAccess {
@@ -15080,7 +16278,7 @@ type RotateExternalPersonalAccessTokenRequest struct {
 
 func (x *RotateExternalPersonalAccessTokenRequest) Reset() {
 	*x = RotateExternalPersonalAccessTokenRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[213]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[227]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15092,7 +16290,7 @@ func (x *RotateExternalPersonalAccessTokenRequest) String() string {
 func (*RotateExternalPersonalAccessTokenRequest) ProtoMessage() {}
 
 func (x *RotateExternalPersonalAccessTokenRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[213]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[227]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15105,7 +16303,7 @@ func (x *RotateExternalPersonalAccessTokenRequest) ProtoReflect() protoreflect.M
 
 // Deprecated: Use RotateExternalPersonalAccessTokenRequest.ProtoReflect.Descriptor instead.
 func (*RotateExternalPersonalAccessTokenRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{213}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{227}
 }
 
 func (x *RotateExternalPersonalAccessTokenRequest) GetAccessId() string {
@@ -15124,7 +16322,7 @@ type RotateExternalPersonalAccessTokenResponse struct {
 
 func (x *RotateExternalPersonalAccessTokenResponse) Reset() {
 	*x = RotateExternalPersonalAccessTokenResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[214]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[228]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15136,7 +16334,7 @@ func (x *RotateExternalPersonalAccessTokenResponse) String() string {
 func (*RotateExternalPersonalAccessTokenResponse) ProtoMessage() {}
 
 func (x *RotateExternalPersonalAccessTokenResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[214]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[228]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15149,7 +16347,7 @@ func (x *RotateExternalPersonalAccessTokenResponse) ProtoReflect() protoreflect.
 
 // Deprecated: Use RotateExternalPersonalAccessTokenResponse.ProtoReflect.Descriptor instead.
 func (*RotateExternalPersonalAccessTokenResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{214}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{228}
 }
 
 func (x *RotateExternalPersonalAccessTokenResponse) GetCreated() *ExternalPersonalAccessCreated {
@@ -15168,7 +16366,7 @@ type RevokeExternalPersonalAccessRequest struct {
 
 func (x *RevokeExternalPersonalAccessRequest) Reset() {
 	*x = RevokeExternalPersonalAccessRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[215]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[229]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15180,7 +16378,7 @@ func (x *RevokeExternalPersonalAccessRequest) String() string {
 func (*RevokeExternalPersonalAccessRequest) ProtoMessage() {}
 
 func (x *RevokeExternalPersonalAccessRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[215]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[229]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15193,7 +16391,7 @@ func (x *RevokeExternalPersonalAccessRequest) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use RevokeExternalPersonalAccessRequest.ProtoReflect.Descriptor instead.
 func (*RevokeExternalPersonalAccessRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{215}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{229}
 }
 
 func (x *RevokeExternalPersonalAccessRequest) GetAccessId() string {
@@ -15212,7 +16410,7 @@ type RevokeExternalPersonalAccessResponse struct {
 
 func (x *RevokeExternalPersonalAccessResponse) Reset() {
 	*x = RevokeExternalPersonalAccessResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[216]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[230]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15224,7 +16422,7 @@ func (x *RevokeExternalPersonalAccessResponse) String() string {
 func (*RevokeExternalPersonalAccessResponse) ProtoMessage() {}
 
 func (x *RevokeExternalPersonalAccessResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[216]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[230]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15237,7 +16435,7 @@ func (x *RevokeExternalPersonalAccessResponse) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use RevokeExternalPersonalAccessResponse.ProtoReflect.Descriptor instead.
 func (*RevokeExternalPersonalAccessResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{216}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{230}
 }
 
 func (x *RevokeExternalPersonalAccessResponse) GetAccess() *ExternalPersonalAccess {
@@ -15256,7 +16454,7 @@ type RepeatExternalPersonalAccessRequest struct {
 
 func (x *RepeatExternalPersonalAccessRequest) Reset() {
 	*x = RepeatExternalPersonalAccessRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[217]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[231]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15268,7 +16466,7 @@ func (x *RepeatExternalPersonalAccessRequest) String() string {
 func (*RepeatExternalPersonalAccessRequest) ProtoMessage() {}
 
 func (x *RepeatExternalPersonalAccessRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[217]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[231]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15281,7 +16479,7 @@ func (x *RepeatExternalPersonalAccessRequest) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use RepeatExternalPersonalAccessRequest.ProtoReflect.Descriptor instead.
 func (*RepeatExternalPersonalAccessRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{217}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{231}
 }
 
 func (x *RepeatExternalPersonalAccessRequest) GetAccessId() string {
@@ -15300,7 +16498,7 @@ type RepeatExternalPersonalAccessResponse struct {
 
 func (x *RepeatExternalPersonalAccessResponse) Reset() {
 	*x = RepeatExternalPersonalAccessResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[218]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[232]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15312,7 +16510,7 @@ func (x *RepeatExternalPersonalAccessResponse) String() string {
 func (*RepeatExternalPersonalAccessResponse) ProtoMessage() {}
 
 func (x *RepeatExternalPersonalAccessResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[218]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[232]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15325,7 +16523,7 @@ func (x *RepeatExternalPersonalAccessResponse) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use RepeatExternalPersonalAccessResponse.ProtoReflect.Descriptor instead.
 func (*RepeatExternalPersonalAccessResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{218}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{232}
 }
 
 func (x *RepeatExternalPersonalAccessResponse) GetCreated() *ExternalPersonalAccessCreated {
@@ -15348,7 +16546,7 @@ type CreateExternalCampaignRequest struct {
 
 func (x *CreateExternalCampaignRequest) Reset() {
 	*x = CreateExternalCampaignRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[219]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[233]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15360,7 +16558,7 @@ func (x *CreateExternalCampaignRequest) String() string {
 func (*CreateExternalCampaignRequest) ProtoMessage() {}
 
 func (x *CreateExternalCampaignRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[219]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[233]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15373,7 +16571,7 @@ func (x *CreateExternalCampaignRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateExternalCampaignRequest.ProtoReflect.Descriptor instead.
 func (*CreateExternalCampaignRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{219}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{233}
 }
 
 func (x *CreateExternalCampaignRequest) GetCourseId() string {
@@ -15420,7 +16618,7 @@ type CreateExternalCampaignResponse struct {
 
 func (x *CreateExternalCampaignResponse) Reset() {
 	*x = CreateExternalCampaignResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[220]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[234]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15432,7 +16630,7 @@ func (x *CreateExternalCampaignResponse) String() string {
 func (*CreateExternalCampaignResponse) ProtoMessage() {}
 
 func (x *CreateExternalCampaignResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[220]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[234]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15445,7 +16643,7 @@ func (x *CreateExternalCampaignResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateExternalCampaignResponse.ProtoReflect.Descriptor instead.
 func (*CreateExternalCampaignResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{220}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{234}
 }
 
 func (x *CreateExternalCampaignResponse) GetCreated() *ExternalCampaignCreated {
@@ -15464,7 +16662,7 @@ type GetExternalCampaignsRequest struct {
 
 func (x *GetExternalCampaignsRequest) Reset() {
 	*x = GetExternalCampaignsRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[221]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[235]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15476,7 +16674,7 @@ func (x *GetExternalCampaignsRequest) String() string {
 func (*GetExternalCampaignsRequest) ProtoMessage() {}
 
 func (x *GetExternalCampaignsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[221]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[235]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15489,7 +16687,7 @@ func (x *GetExternalCampaignsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetExternalCampaignsRequest.ProtoReflect.Descriptor instead.
 func (*GetExternalCampaignsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{221}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{235}
 }
 
 func (x *GetExternalCampaignsRequest) GetCourseId() string {
@@ -15508,7 +16706,7 @@ type GetExternalCampaignsResponse struct {
 
 func (x *GetExternalCampaignsResponse) Reset() {
 	*x = GetExternalCampaignsResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[222]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[236]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15520,7 +16718,7 @@ func (x *GetExternalCampaignsResponse) String() string {
 func (*GetExternalCampaignsResponse) ProtoMessage() {}
 
 func (x *GetExternalCampaignsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[222]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[236]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15533,7 +16731,7 @@ func (x *GetExternalCampaignsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetExternalCampaignsResponse.ProtoReflect.Descriptor instead.
 func (*GetExternalCampaignsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{222}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{236}
 }
 
 func (x *GetExternalCampaignsResponse) GetCampaigns() []*ExternalCampaign {
@@ -15552,7 +16750,7 @@ type GetExternalCampaignRequest struct {
 
 func (x *GetExternalCampaignRequest) Reset() {
 	*x = GetExternalCampaignRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[223]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[237]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15564,7 +16762,7 @@ func (x *GetExternalCampaignRequest) String() string {
 func (*GetExternalCampaignRequest) ProtoMessage() {}
 
 func (x *GetExternalCampaignRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[223]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[237]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15577,7 +16775,7 @@ func (x *GetExternalCampaignRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetExternalCampaignRequest.ProtoReflect.Descriptor instead.
 func (*GetExternalCampaignRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{223}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{237}
 }
 
 func (x *GetExternalCampaignRequest) GetCampaignId() string {
@@ -15596,7 +16794,7 @@ type GetExternalCampaignResponse struct {
 
 func (x *GetExternalCampaignResponse) Reset() {
 	*x = GetExternalCampaignResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[224]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[238]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15608,7 +16806,7 @@ func (x *GetExternalCampaignResponse) String() string {
 func (*GetExternalCampaignResponse) ProtoMessage() {}
 
 func (x *GetExternalCampaignResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[224]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[238]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15621,7 +16819,7 @@ func (x *GetExternalCampaignResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetExternalCampaignResponse.ProtoReflect.Descriptor instead.
 func (*GetExternalCampaignResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{224}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{238}
 }
 
 func (x *GetExternalCampaignResponse) GetCampaign() *ExternalCampaign {
@@ -15640,7 +16838,7 @@ type PauseExternalCampaignRequest struct {
 
 func (x *PauseExternalCampaignRequest) Reset() {
 	*x = PauseExternalCampaignRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[225]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[239]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15652,7 +16850,7 @@ func (x *PauseExternalCampaignRequest) String() string {
 func (*PauseExternalCampaignRequest) ProtoMessage() {}
 
 func (x *PauseExternalCampaignRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[225]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[239]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15665,7 +16863,7 @@ func (x *PauseExternalCampaignRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PauseExternalCampaignRequest.ProtoReflect.Descriptor instead.
 func (*PauseExternalCampaignRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{225}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{239}
 }
 
 func (x *PauseExternalCampaignRequest) GetCampaignId() string {
@@ -15684,7 +16882,7 @@ type PauseExternalCampaignResponse struct {
 
 func (x *PauseExternalCampaignResponse) Reset() {
 	*x = PauseExternalCampaignResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[226]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[240]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15696,7 +16894,7 @@ func (x *PauseExternalCampaignResponse) String() string {
 func (*PauseExternalCampaignResponse) ProtoMessage() {}
 
 func (x *PauseExternalCampaignResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[226]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[240]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15709,7 +16907,7 @@ func (x *PauseExternalCampaignResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PauseExternalCampaignResponse.ProtoReflect.Descriptor instead.
 func (*PauseExternalCampaignResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{226}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{240}
 }
 
 func (x *PauseExternalCampaignResponse) GetCampaign() *ExternalCampaign {
@@ -15728,7 +16926,7 @@ type ResumeExternalCampaignRequest struct {
 
 func (x *ResumeExternalCampaignRequest) Reset() {
 	*x = ResumeExternalCampaignRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[227]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[241]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15740,7 +16938,7 @@ func (x *ResumeExternalCampaignRequest) String() string {
 func (*ResumeExternalCampaignRequest) ProtoMessage() {}
 
 func (x *ResumeExternalCampaignRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[227]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[241]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15753,7 +16951,7 @@ func (x *ResumeExternalCampaignRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResumeExternalCampaignRequest.ProtoReflect.Descriptor instead.
 func (*ResumeExternalCampaignRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{227}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{241}
 }
 
 func (x *ResumeExternalCampaignRequest) GetCampaignId() string {
@@ -15772,7 +16970,7 @@ type ResumeExternalCampaignResponse struct {
 
 func (x *ResumeExternalCampaignResponse) Reset() {
 	*x = ResumeExternalCampaignResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[228]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[242]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15784,7 +16982,7 @@ func (x *ResumeExternalCampaignResponse) String() string {
 func (*ResumeExternalCampaignResponse) ProtoMessage() {}
 
 func (x *ResumeExternalCampaignResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[228]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[242]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15797,7 +16995,7 @@ func (x *ResumeExternalCampaignResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResumeExternalCampaignResponse.ProtoReflect.Descriptor instead.
 func (*ResumeExternalCampaignResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{228}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{242}
 }
 
 func (x *ResumeExternalCampaignResponse) GetCampaign() *ExternalCampaign {
@@ -15816,7 +17014,7 @@ type RotateExternalCampaignTokenRequest struct {
 
 func (x *RotateExternalCampaignTokenRequest) Reset() {
 	*x = RotateExternalCampaignTokenRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[229]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[243]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15828,7 +17026,7 @@ func (x *RotateExternalCampaignTokenRequest) String() string {
 func (*RotateExternalCampaignTokenRequest) ProtoMessage() {}
 
 func (x *RotateExternalCampaignTokenRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[229]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[243]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15841,7 +17039,7 @@ func (x *RotateExternalCampaignTokenRequest) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use RotateExternalCampaignTokenRequest.ProtoReflect.Descriptor instead.
 func (*RotateExternalCampaignTokenRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{229}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{243}
 }
 
 func (x *RotateExternalCampaignTokenRequest) GetCampaignId() string {
@@ -15860,7 +17058,7 @@ type RotateExternalCampaignTokenResponse struct {
 
 func (x *RotateExternalCampaignTokenResponse) Reset() {
 	*x = RotateExternalCampaignTokenResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[230]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[244]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15872,7 +17070,7 @@ func (x *RotateExternalCampaignTokenResponse) String() string {
 func (*RotateExternalCampaignTokenResponse) ProtoMessage() {}
 
 func (x *RotateExternalCampaignTokenResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[230]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[244]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15885,7 +17083,7 @@ func (x *RotateExternalCampaignTokenResponse) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use RotateExternalCampaignTokenResponse.ProtoReflect.Descriptor instead.
 func (*RotateExternalCampaignTokenResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{230}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{244}
 }
 
 func (x *RotateExternalCampaignTokenResponse) GetCreated() *ExternalCampaignCreated {
@@ -15904,7 +17102,7 @@ type RevokeExternalCampaignRequest struct {
 
 func (x *RevokeExternalCampaignRequest) Reset() {
 	*x = RevokeExternalCampaignRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[231]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[245]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15916,7 +17114,7 @@ func (x *RevokeExternalCampaignRequest) String() string {
 func (*RevokeExternalCampaignRequest) ProtoMessage() {}
 
 func (x *RevokeExternalCampaignRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[231]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[245]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15929,7 +17127,7 @@ func (x *RevokeExternalCampaignRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RevokeExternalCampaignRequest.ProtoReflect.Descriptor instead.
 func (*RevokeExternalCampaignRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{231}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{245}
 }
 
 func (x *RevokeExternalCampaignRequest) GetCampaignId() string {
@@ -15948,7 +17146,7 @@ type RevokeExternalCampaignResponse struct {
 
 func (x *RevokeExternalCampaignResponse) Reset() {
 	*x = RevokeExternalCampaignResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[232]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[246]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15960,7 +17158,7 @@ func (x *RevokeExternalCampaignResponse) String() string {
 func (*RevokeExternalCampaignResponse) ProtoMessage() {}
 
 func (x *RevokeExternalCampaignResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[232]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[246]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15973,7 +17171,7 @@ func (x *RevokeExternalCampaignResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RevokeExternalCampaignResponse.ProtoReflect.Descriptor instead.
 func (*RevokeExternalCampaignResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{232}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{246}
 }
 
 func (x *RevokeExternalCampaignResponse) GetCampaign() *ExternalCampaign {
@@ -15992,7 +17190,7 @@ type GetExternalCampaignReportRequest struct {
 
 func (x *GetExternalCampaignReportRequest) Reset() {
 	*x = GetExternalCampaignReportRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[233]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[247]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16004,7 +17202,7 @@ func (x *GetExternalCampaignReportRequest) String() string {
 func (*GetExternalCampaignReportRequest) ProtoMessage() {}
 
 func (x *GetExternalCampaignReportRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[233]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[247]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16017,7 +17215,7 @@ func (x *GetExternalCampaignReportRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetExternalCampaignReportRequest.ProtoReflect.Descriptor instead.
 func (*GetExternalCampaignReportRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{233}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{247}
 }
 
 func (x *GetExternalCampaignReportRequest) GetCampaignId() string {
@@ -16036,7 +17234,7 @@ type GetExternalCampaignReportResponse struct {
 
 func (x *GetExternalCampaignReportResponse) Reset() {
 	*x = GetExternalCampaignReportResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[234]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[248]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16048,7 +17246,7 @@ func (x *GetExternalCampaignReportResponse) String() string {
 func (*GetExternalCampaignReportResponse) ProtoMessage() {}
 
 func (x *GetExternalCampaignReportResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[234]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[248]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16061,7 +17259,7 @@ func (x *GetExternalCampaignReportResponse) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use GetExternalCampaignReportResponse.ProtoReflect.Descriptor instead.
 func (*GetExternalCampaignReportResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{234}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{248}
 }
 
 func (x *GetExternalCampaignReportResponse) GetReport() *ExternalCampaignReport {
@@ -16080,7 +17278,7 @@ type GetCourseExternalReportRequest struct {
 
 func (x *GetCourseExternalReportRequest) Reset() {
 	*x = GetCourseExternalReportRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[235]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[249]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16092,7 +17290,7 @@ func (x *GetCourseExternalReportRequest) String() string {
 func (*GetCourseExternalReportRequest) ProtoMessage() {}
 
 func (x *GetCourseExternalReportRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[235]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[249]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16105,7 +17303,7 @@ func (x *GetCourseExternalReportRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCourseExternalReportRequest.ProtoReflect.Descriptor instead.
 func (*GetCourseExternalReportRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{235}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{249}
 }
 
 func (x *GetCourseExternalReportRequest) GetCourseId() string {
@@ -16124,7 +17322,7 @@ type GetCourseExternalReportResponse struct {
 
 func (x *GetCourseExternalReportResponse) Reset() {
 	*x = GetCourseExternalReportResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[236]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[250]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16136,7 +17334,7 @@ func (x *GetCourseExternalReportResponse) String() string {
 func (*GetCourseExternalReportResponse) ProtoMessage() {}
 
 func (x *GetCourseExternalReportResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[236]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[250]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16149,7 +17347,7 @@ func (x *GetCourseExternalReportResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCourseExternalReportResponse.ProtoReflect.Descriptor instead.
 func (*GetCourseExternalReportResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{236}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{250}
 }
 
 func (x *GetCourseExternalReportResponse) GetReport() *CourseExternalReport {
@@ -16175,7 +17373,7 @@ type GetPublicAcademyAccessRequest struct {
 
 func (x *GetPublicAcademyAccessRequest) Reset() {
 	*x = GetPublicAcademyAccessRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[237]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[251]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16187,7 +17385,7 @@ func (x *GetPublicAcademyAccessRequest) String() string {
 func (*GetPublicAcademyAccessRequest) ProtoMessage() {}
 
 func (x *GetPublicAcademyAccessRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[237]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[251]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16200,7 +17398,7 @@ func (x *GetPublicAcademyAccessRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPublicAcademyAccessRequest.ProtoReflect.Descriptor instead.
 func (*GetPublicAcademyAccessRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{237}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{251}
 }
 
 func (x *GetPublicAcademyAccessRequest) GetToken() string {
@@ -16268,7 +17466,7 @@ type GetPublicAcademyAccessResponse struct {
 
 func (x *GetPublicAcademyAccessResponse) Reset() {
 	*x = GetPublicAcademyAccessResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[238]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[252]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16280,7 +17478,7 @@ func (x *GetPublicAcademyAccessResponse) String() string {
 func (*GetPublicAcademyAccessResponse) ProtoMessage() {}
 
 func (x *GetPublicAcademyAccessResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[238]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[252]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16293,7 +17491,7 @@ func (x *GetPublicAcademyAccessResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPublicAcademyAccessResponse.ProtoReflect.Descriptor instead.
 func (*GetPublicAcademyAccessResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{238}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{252}
 }
 
 func (x *GetPublicAcademyAccessResponse) GetAccess() *PublicAcademyAccess {
@@ -16316,7 +17514,7 @@ type RequestPublicAcademyVerificationRequest struct {
 
 func (x *RequestPublicAcademyVerificationRequest) Reset() {
 	*x = RequestPublicAcademyVerificationRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[239]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[253]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16328,7 +17526,7 @@ func (x *RequestPublicAcademyVerificationRequest) String() string {
 func (*RequestPublicAcademyVerificationRequest) ProtoMessage() {}
 
 func (x *RequestPublicAcademyVerificationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[239]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[253]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16341,7 +17539,7 @@ func (x *RequestPublicAcademyVerificationRequest) ProtoReflect() protoreflect.Me
 
 // Deprecated: Use RequestPublicAcademyVerificationRequest.ProtoReflect.Descriptor instead.
 func (*RequestPublicAcademyVerificationRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{239}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{253}
 }
 
 func (x *RequestPublicAcademyVerificationRequest) GetAccessToken() string {
@@ -16388,7 +17586,7 @@ type RequestPublicAcademyVerificationResponse struct {
 
 func (x *RequestPublicAcademyVerificationResponse) Reset() {
 	*x = RequestPublicAcademyVerificationResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[240]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[254]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16400,7 +17598,7 @@ func (x *RequestPublicAcademyVerificationResponse) String() string {
 func (*RequestPublicAcademyVerificationResponse) ProtoMessage() {}
 
 func (x *RequestPublicAcademyVerificationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[240]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[254]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16413,7 +17611,7 @@ func (x *RequestPublicAcademyVerificationResponse) ProtoReflect() protoreflect.M
 
 // Deprecated: Use RequestPublicAcademyVerificationResponse.ProtoReflect.Descriptor instead.
 func (*RequestPublicAcademyVerificationResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{240}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{254}
 }
 
 func (x *RequestPublicAcademyVerificationResponse) GetChallenge() *ExternalVerificationChallenge {
@@ -16433,7 +17631,7 @@ type ConfirmPublicAcademyVerificationRequest struct {
 
 func (x *ConfirmPublicAcademyVerificationRequest) Reset() {
 	*x = ConfirmPublicAcademyVerificationRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[241]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[255]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16445,7 +17643,7 @@ func (x *ConfirmPublicAcademyVerificationRequest) String() string {
 func (*ConfirmPublicAcademyVerificationRequest) ProtoMessage() {}
 
 func (x *ConfirmPublicAcademyVerificationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[241]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[255]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16458,7 +17656,7 @@ func (x *ConfirmPublicAcademyVerificationRequest) ProtoReflect() protoreflect.Me
 
 // Deprecated: Use ConfirmPublicAcademyVerificationRequest.ProtoReflect.Descriptor instead.
 func (*ConfirmPublicAcademyVerificationRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{241}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{255}
 }
 
 func (x *ConfirmPublicAcademyVerificationRequest) GetChallengeId() string {
@@ -16484,7 +17682,7 @@ type ConfirmPublicAcademyVerificationResponse struct {
 
 func (x *ConfirmPublicAcademyVerificationResponse) Reset() {
 	*x = ConfirmPublicAcademyVerificationResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[242]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[256]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16496,7 +17694,7 @@ func (x *ConfirmPublicAcademyVerificationResponse) String() string {
 func (*ConfirmPublicAcademyVerificationResponse) ProtoMessage() {}
 
 func (x *ConfirmPublicAcademyVerificationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[242]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[256]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16509,7 +17707,7 @@ func (x *ConfirmPublicAcademyVerificationResponse) ProtoReflect() protoreflect.M
 
 // Deprecated: Use ConfirmPublicAcademyVerificationResponse.ProtoReflect.Descriptor instead.
 func (*ConfirmPublicAcademyVerificationResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{242}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{256}
 }
 
 func (x *ConfirmPublicAcademyVerificationResponse) GetConfirmed() *ExternalVerificationConfirmed {
@@ -16530,7 +17728,7 @@ type ActivatePublicAcademyAccessRequest struct {
 
 func (x *ActivatePublicAcademyAccessRequest) Reset() {
 	*x = ActivatePublicAcademyAccessRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[243]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[257]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16542,7 +17740,7 @@ func (x *ActivatePublicAcademyAccessRequest) String() string {
 func (*ActivatePublicAcademyAccessRequest) ProtoMessage() {}
 
 func (x *ActivatePublicAcademyAccessRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[243]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[257]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16555,7 +17753,7 @@ func (x *ActivatePublicAcademyAccessRequest) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use ActivatePublicAcademyAccessRequest.ProtoReflect.Descriptor instead.
 func (*ActivatePublicAcademyAccessRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{243}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{257}
 }
 
 func (x *ActivatePublicAcademyAccessRequest) GetAccessToken() string {
@@ -16588,7 +17786,7 @@ type ActivatePublicAcademyAccessResponse struct {
 
 func (x *ActivatePublicAcademyAccessResponse) Reset() {
 	*x = ActivatePublicAcademyAccessResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[244]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[258]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16600,7 +17798,7 @@ func (x *ActivatePublicAcademyAccessResponse) String() string {
 func (*ActivatePublicAcademyAccessResponse) ProtoMessage() {}
 
 func (x *ActivatePublicAcademyAccessResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[244]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[258]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16613,7 +17811,7 @@ func (x *ActivatePublicAcademyAccessResponse) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use ActivatePublicAcademyAccessResponse.ProtoReflect.Descriptor instead.
 func (*ActivatePublicAcademyAccessResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{244}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{258}
 }
 
 func (x *ActivatePublicAcademyAccessResponse) GetEnrollment() *CourseEnrollment {
@@ -16632,7 +17830,7 @@ type GetPublicAcademyEnrollmentRequest struct {
 
 func (x *GetPublicAcademyEnrollmentRequest) Reset() {
 	*x = GetPublicAcademyEnrollmentRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[245]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[259]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16644,7 +17842,7 @@ func (x *GetPublicAcademyEnrollmentRequest) String() string {
 func (*GetPublicAcademyEnrollmentRequest) ProtoMessage() {}
 
 func (x *GetPublicAcademyEnrollmentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[245]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[259]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16657,7 +17855,7 @@ func (x *GetPublicAcademyEnrollmentRequest) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use GetPublicAcademyEnrollmentRequest.ProtoReflect.Descriptor instead.
 func (*GetPublicAcademyEnrollmentRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{245}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{259}
 }
 
 func (x *GetPublicAcademyEnrollmentRequest) GetEnrollmentId() string {
@@ -16676,7 +17874,7 @@ type GetPublicAcademyEnrollmentResponse struct {
 
 func (x *GetPublicAcademyEnrollmentResponse) Reset() {
 	*x = GetPublicAcademyEnrollmentResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[246]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[260]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16688,7 +17886,7 @@ func (x *GetPublicAcademyEnrollmentResponse) String() string {
 func (*GetPublicAcademyEnrollmentResponse) ProtoMessage() {}
 
 func (x *GetPublicAcademyEnrollmentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[246]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[260]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16701,7 +17899,7 @@ func (x *GetPublicAcademyEnrollmentResponse) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use GetPublicAcademyEnrollmentResponse.ProtoReflect.Descriptor instead.
 func (*GetPublicAcademyEnrollmentResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{246}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{260}
 }
 
 func (x *GetPublicAcademyEnrollmentResponse) GetEnrollment() *CourseEnrollment {
@@ -16720,7 +17918,7 @@ type GetPublicAcademyEnrollmentOutlineRequest struct {
 
 func (x *GetPublicAcademyEnrollmentOutlineRequest) Reset() {
 	*x = GetPublicAcademyEnrollmentOutlineRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[247]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[261]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16732,7 +17930,7 @@ func (x *GetPublicAcademyEnrollmentOutlineRequest) String() string {
 func (*GetPublicAcademyEnrollmentOutlineRequest) ProtoMessage() {}
 
 func (x *GetPublicAcademyEnrollmentOutlineRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[247]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[261]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16745,7 +17943,7 @@ func (x *GetPublicAcademyEnrollmentOutlineRequest) ProtoReflect() protoreflect.M
 
 // Deprecated: Use GetPublicAcademyEnrollmentOutlineRequest.ProtoReflect.Descriptor instead.
 func (*GetPublicAcademyEnrollmentOutlineRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{247}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{261}
 }
 
 func (x *GetPublicAcademyEnrollmentOutlineRequest) GetEnrollmentId() string {
@@ -16764,7 +17962,7 @@ type GetPublicAcademyEnrollmentOutlineResponse struct {
 
 func (x *GetPublicAcademyEnrollmentOutlineResponse) Reset() {
 	*x = GetPublicAcademyEnrollmentOutlineResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[248]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[262]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16776,7 +17974,7 @@ func (x *GetPublicAcademyEnrollmentOutlineResponse) String() string {
 func (*GetPublicAcademyEnrollmentOutlineResponse) ProtoMessage() {}
 
 func (x *GetPublicAcademyEnrollmentOutlineResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[248]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[262]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16789,7 +17987,7 @@ func (x *GetPublicAcademyEnrollmentOutlineResponse) ProtoReflect() protoreflect.
 
 // Deprecated: Use GetPublicAcademyEnrollmentOutlineResponse.ProtoReflect.Descriptor instead.
 func (*GetPublicAcademyEnrollmentOutlineResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{248}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{262}
 }
 
 func (x *GetPublicAcademyEnrollmentOutlineResponse) GetOutline() *EnrollmentOutline {
@@ -16809,7 +18007,7 @@ type GetPublicAcademyEnrollmentLessonRequest struct {
 
 func (x *GetPublicAcademyEnrollmentLessonRequest) Reset() {
 	*x = GetPublicAcademyEnrollmentLessonRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[249]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[263]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16821,7 +18019,7 @@ func (x *GetPublicAcademyEnrollmentLessonRequest) String() string {
 func (*GetPublicAcademyEnrollmentLessonRequest) ProtoMessage() {}
 
 func (x *GetPublicAcademyEnrollmentLessonRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[249]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[263]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16834,7 +18032,7 @@ func (x *GetPublicAcademyEnrollmentLessonRequest) ProtoReflect() protoreflect.Me
 
 // Deprecated: Use GetPublicAcademyEnrollmentLessonRequest.ProtoReflect.Descriptor instead.
 func (*GetPublicAcademyEnrollmentLessonRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{249}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{263}
 }
 
 func (x *GetPublicAcademyEnrollmentLessonRequest) GetEnrollmentId() string {
@@ -16860,7 +18058,7 @@ type GetPublicAcademyEnrollmentLessonResponse struct {
 
 func (x *GetPublicAcademyEnrollmentLessonResponse) Reset() {
 	*x = GetPublicAcademyEnrollmentLessonResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[250]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[264]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16872,7 +18070,7 @@ func (x *GetPublicAcademyEnrollmentLessonResponse) String() string {
 func (*GetPublicAcademyEnrollmentLessonResponse) ProtoMessage() {}
 
 func (x *GetPublicAcademyEnrollmentLessonResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[250]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[264]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16885,7 +18083,7 @@ func (x *GetPublicAcademyEnrollmentLessonResponse) ProtoReflect() protoreflect.M
 
 // Deprecated: Use GetPublicAcademyEnrollmentLessonResponse.ProtoReflect.Descriptor instead.
 func (*GetPublicAcademyEnrollmentLessonResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{250}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{264}
 }
 
 func (x *GetPublicAcademyEnrollmentLessonResponse) GetLesson() *EnrollmentLesson {
@@ -16906,7 +18104,7 @@ type CompletePublicAcademyEnrollmentLessonRequest struct {
 
 func (x *CompletePublicAcademyEnrollmentLessonRequest) Reset() {
 	*x = CompletePublicAcademyEnrollmentLessonRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[251]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[265]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16918,7 +18116,7 @@ func (x *CompletePublicAcademyEnrollmentLessonRequest) String() string {
 func (*CompletePublicAcademyEnrollmentLessonRequest) ProtoMessage() {}
 
 func (x *CompletePublicAcademyEnrollmentLessonRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[251]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[265]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16931,7 +18129,7 @@ func (x *CompletePublicAcademyEnrollmentLessonRequest) ProtoReflect() protorefle
 
 // Deprecated: Use CompletePublicAcademyEnrollmentLessonRequest.ProtoReflect.Descriptor instead.
 func (*CompletePublicAcademyEnrollmentLessonRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{251}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{265}
 }
 
 func (x *CompletePublicAcademyEnrollmentLessonRequest) GetEnrollmentId() string {
@@ -16964,7 +18162,7 @@ type CompletePublicAcademyEnrollmentLessonResponse struct {
 
 func (x *CompletePublicAcademyEnrollmentLessonResponse) Reset() {
 	*x = CompletePublicAcademyEnrollmentLessonResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[252]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[266]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16976,7 +18174,7 @@ func (x *CompletePublicAcademyEnrollmentLessonResponse) String() string {
 func (*CompletePublicAcademyEnrollmentLessonResponse) ProtoMessage() {}
 
 func (x *CompletePublicAcademyEnrollmentLessonResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[252]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[266]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16989,7 +18187,7 @@ func (x *CompletePublicAcademyEnrollmentLessonResponse) ProtoReflect() protorefl
 
 // Deprecated: Use CompletePublicAcademyEnrollmentLessonResponse.ProtoReflect.Descriptor instead.
 func (*CompletePublicAcademyEnrollmentLessonResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{252}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{266}
 }
 
 func (x *CompletePublicAcademyEnrollmentLessonResponse) GetEnrollment() *CourseEnrollment {
@@ -17011,7 +18209,7 @@ type SubmitPublicAcademyQuizAttemptRequest struct {
 
 func (x *SubmitPublicAcademyQuizAttemptRequest) Reset() {
 	*x = SubmitPublicAcademyQuizAttemptRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[253]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[267]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17023,7 +18221,7 @@ func (x *SubmitPublicAcademyQuizAttemptRequest) String() string {
 func (*SubmitPublicAcademyQuizAttemptRequest) ProtoMessage() {}
 
 func (x *SubmitPublicAcademyQuizAttemptRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[253]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[267]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17036,7 +18234,7 @@ func (x *SubmitPublicAcademyQuizAttemptRequest) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use SubmitPublicAcademyQuizAttemptRequest.ProtoReflect.Descriptor instead.
 func (*SubmitPublicAcademyQuizAttemptRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{253}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{267}
 }
 
 func (x *SubmitPublicAcademyQuizAttemptRequest) GetEnrollmentId() string {
@@ -17070,13 +18268,14 @@ func (x *SubmitPublicAcademyQuizAttemptRequest) GetAnswers() []*EnrollmentQuizAn
 type SubmitPublicAcademyQuizAttemptResponse struct {
 	state         protoimpl.MessageState     `protogen:"open.v1"`
 	Result        *ExternalQuizAttemptResult `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+	Enrollment    *CourseEnrollment          `protobuf:"bytes,2,opt,name=enrollment,proto3" json:"enrollment,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SubmitPublicAcademyQuizAttemptResponse) Reset() {
 	*x = SubmitPublicAcademyQuizAttemptResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[254]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[268]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17088,7 +18287,7 @@ func (x *SubmitPublicAcademyQuizAttemptResponse) String() string {
 func (*SubmitPublicAcademyQuizAttemptResponse) ProtoMessage() {}
 
 func (x *SubmitPublicAcademyQuizAttemptResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[254]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[268]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17101,12 +18300,19 @@ func (x *SubmitPublicAcademyQuizAttemptResponse) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use SubmitPublicAcademyQuizAttemptResponse.ProtoReflect.Descriptor instead.
 func (*SubmitPublicAcademyQuizAttemptResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{254}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{268}
 }
 
 func (x *SubmitPublicAcademyQuizAttemptResponse) GetResult() *ExternalQuizAttemptResult {
 	if x != nil {
 		return x.Result
+	}
+	return nil
+}
+
+func (x *SubmitPublicAcademyQuizAttemptResponse) GetEnrollment() *CourseEnrollment {
+	if x != nil {
+		return x.Enrollment
 	}
 	return nil
 }
@@ -17120,7 +18326,7 @@ type GetPublicAcademyEnrollmentResultsRequest struct {
 
 func (x *GetPublicAcademyEnrollmentResultsRequest) Reset() {
 	*x = GetPublicAcademyEnrollmentResultsRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[255]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[269]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17132,7 +18338,7 @@ func (x *GetPublicAcademyEnrollmentResultsRequest) String() string {
 func (*GetPublicAcademyEnrollmentResultsRequest) ProtoMessage() {}
 
 func (x *GetPublicAcademyEnrollmentResultsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[255]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[269]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17145,7 +18351,7 @@ func (x *GetPublicAcademyEnrollmentResultsRequest) ProtoReflect() protoreflect.M
 
 // Deprecated: Use GetPublicAcademyEnrollmentResultsRequest.ProtoReflect.Descriptor instead.
 func (*GetPublicAcademyEnrollmentResultsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{255}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{269}
 }
 
 func (x *GetPublicAcademyEnrollmentResultsRequest) GetEnrollmentId() string {
@@ -17164,7 +18370,7 @@ type GetPublicAcademyEnrollmentResultsResponse struct {
 
 func (x *GetPublicAcademyEnrollmentResultsResponse) Reset() {
 	*x = GetPublicAcademyEnrollmentResultsResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[256]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[270]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17176,7 +18382,7 @@ func (x *GetPublicAcademyEnrollmentResultsResponse) String() string {
 func (*GetPublicAcademyEnrollmentResultsResponse) ProtoMessage() {}
 
 func (x *GetPublicAcademyEnrollmentResultsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[256]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[270]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17189,7 +18395,7 @@ func (x *GetPublicAcademyEnrollmentResultsResponse) ProtoReflect() protoreflect.
 
 // Deprecated: Use GetPublicAcademyEnrollmentResultsResponse.ProtoReflect.Descriptor instead.
 func (*GetPublicAcademyEnrollmentResultsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{256}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{270}
 }
 
 func (x *GetPublicAcademyEnrollmentResultsResponse) GetResults() *ExternalEnrollmentResults {
@@ -17207,7 +18413,7 @@ type GetExternalLearnersRequest struct {
 
 func (x *GetExternalLearnersRequest) Reset() {
 	*x = GetExternalLearnersRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[257]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[271]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17219,7 +18425,7 @@ func (x *GetExternalLearnersRequest) String() string {
 func (*GetExternalLearnersRequest) ProtoMessage() {}
 
 func (x *GetExternalLearnersRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[257]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[271]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17232,7 +18438,7 @@ func (x *GetExternalLearnersRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetExternalLearnersRequest.ProtoReflect.Descriptor instead.
 func (*GetExternalLearnersRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{257}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{271}
 }
 
 type GetExternalLearnersResponse struct {
@@ -17244,7 +18450,7 @@ type GetExternalLearnersResponse struct {
 
 func (x *GetExternalLearnersResponse) Reset() {
 	*x = GetExternalLearnersResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[258]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[272]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17256,7 +18462,7 @@ func (x *GetExternalLearnersResponse) String() string {
 func (*GetExternalLearnersResponse) ProtoMessage() {}
 
 func (x *GetExternalLearnersResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[258]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[272]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17269,7 +18475,7 @@ func (x *GetExternalLearnersResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetExternalLearnersResponse.ProtoReflect.Descriptor instead.
 func (*GetExternalLearnersResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{258}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{272}
 }
 
 func (x *GetExternalLearnersResponse) GetLearners() []*ExternalLearner {
@@ -17288,7 +18494,7 @@ type GetExternalLearnerRequest struct {
 
 func (x *GetExternalLearnerRequest) Reset() {
 	*x = GetExternalLearnerRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[259]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[273]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17300,7 +18506,7 @@ func (x *GetExternalLearnerRequest) String() string {
 func (*GetExternalLearnerRequest) ProtoMessage() {}
 
 func (x *GetExternalLearnerRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[259]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[273]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17313,7 +18519,7 @@ func (x *GetExternalLearnerRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetExternalLearnerRequest.ProtoReflect.Descriptor instead.
 func (*GetExternalLearnerRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{259}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{273}
 }
 
 func (x *GetExternalLearnerRequest) GetLearnerId() string {
@@ -17332,7 +18538,7 @@ type GetExternalLearnerResponse struct {
 
 func (x *GetExternalLearnerResponse) Reset() {
 	*x = GetExternalLearnerResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[260]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[274]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17344,7 +18550,7 @@ func (x *GetExternalLearnerResponse) String() string {
 func (*GetExternalLearnerResponse) ProtoMessage() {}
 
 func (x *GetExternalLearnerResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[260]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[274]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17357,7 +18563,7 @@ func (x *GetExternalLearnerResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetExternalLearnerResponse.ProtoReflect.Descriptor instead.
 func (*GetExternalLearnerResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{260}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{274}
 }
 
 func (x *GetExternalLearnerResponse) GetLearner() *ExternalLearner {
@@ -17376,7 +18582,7 @@ type GetExternalLearnerEnrollmentsRequest struct {
 
 func (x *GetExternalLearnerEnrollmentsRequest) Reset() {
 	*x = GetExternalLearnerEnrollmentsRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[261]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[275]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17388,7 +18594,7 @@ func (x *GetExternalLearnerEnrollmentsRequest) String() string {
 func (*GetExternalLearnerEnrollmentsRequest) ProtoMessage() {}
 
 func (x *GetExternalLearnerEnrollmentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[261]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[275]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17401,7 +18607,7 @@ func (x *GetExternalLearnerEnrollmentsRequest) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use GetExternalLearnerEnrollmentsRequest.ProtoReflect.Descriptor instead.
 func (*GetExternalLearnerEnrollmentsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{261}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{275}
 }
 
 func (x *GetExternalLearnerEnrollmentsRequest) GetLearnerId() string {
@@ -17420,7 +18626,7 @@ type GetExternalLearnerEnrollmentsResponse struct {
 
 func (x *GetExternalLearnerEnrollmentsResponse) Reset() {
 	*x = GetExternalLearnerEnrollmentsResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[262]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[276]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17432,7 +18638,7 @@ func (x *GetExternalLearnerEnrollmentsResponse) String() string {
 func (*GetExternalLearnerEnrollmentsResponse) ProtoMessage() {}
 
 func (x *GetExternalLearnerEnrollmentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[262]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[276]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17445,7 +18651,7 @@ func (x *GetExternalLearnerEnrollmentsResponse) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use GetExternalLearnerEnrollmentsResponse.ProtoReflect.Descriptor instead.
 func (*GetExternalLearnerEnrollmentsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{262}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{276}
 }
 
 func (x *GetExternalLearnerEnrollmentsResponse) GetEnrollments() []*CourseEnrollment {
@@ -17464,7 +18670,7 @@ type GetExternalLearnerTimelineRequest struct {
 
 func (x *GetExternalLearnerTimelineRequest) Reset() {
 	*x = GetExternalLearnerTimelineRequest{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[263]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[277]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17476,7 +18682,7 @@ func (x *GetExternalLearnerTimelineRequest) String() string {
 func (*GetExternalLearnerTimelineRequest) ProtoMessage() {}
 
 func (x *GetExternalLearnerTimelineRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[263]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[277]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17489,7 +18695,7 @@ func (x *GetExternalLearnerTimelineRequest) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use GetExternalLearnerTimelineRequest.ProtoReflect.Descriptor instead.
 func (*GetExternalLearnerTimelineRequest) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{263}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{277}
 }
 
 func (x *GetExternalLearnerTimelineRequest) GetLearnerId() string {
@@ -17508,7 +18714,7 @@ type GetExternalLearnerTimelineResponse struct {
 
 func (x *GetExternalLearnerTimelineResponse) Reset() {
 	*x = GetExternalLearnerTimelineResponse{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[264]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[278]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17520,7 +18726,7 @@ func (x *GetExternalLearnerTimelineResponse) String() string {
 func (*GetExternalLearnerTimelineResponse) ProtoMessage() {}
 
 func (x *GetExternalLearnerTimelineResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[264]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[278]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17533,7 +18739,7 @@ func (x *GetExternalLearnerTimelineResponse) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use GetExternalLearnerTimelineResponse.ProtoReflect.Descriptor instead.
 func (*GetExternalLearnerTimelineResponse) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{264}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{278}
 }
 
 func (x *GetExternalLearnerTimelineResponse) GetTimeline() *ExternalLearnerTimeline {
@@ -17555,7 +18761,7 @@ type AcademyTemplateCapabilities struct {
 
 func (x *AcademyTemplateCapabilities) Reset() {
 	*x = AcademyTemplateCapabilities{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[265]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[279]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17567,7 +18773,7 @@ func (x *AcademyTemplateCapabilities) String() string {
 func (*AcademyTemplateCapabilities) ProtoMessage() {}
 
 func (x *AcademyTemplateCapabilities) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[265]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[279]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17580,7 +18786,7 @@ func (x *AcademyTemplateCapabilities) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AcademyTemplateCapabilities.ProtoReflect.Descriptor instead.
 func (*AcademyTemplateCapabilities) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{265}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{279}
 }
 
 func (x *AcademyTemplateCapabilities) GetCanInstantiate() bool {
@@ -17632,7 +18838,7 @@ type AcademyTemplateSummary struct {
 
 func (x *AcademyTemplateSummary) Reset() {
 	*x = AcademyTemplateSummary{}
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[266]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[280]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17644,7 +18850,7 @@ func (x *AcademyTemplateSummary) String() string {
 func (*AcademyTemplateSummary) ProtoMessage() {}
 
 func (x *AcademyTemplateSummary) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_academy_v1_academy_proto_msgTypes[266]
+	mi := &file_proto_academy_v1_academy_proto_msgTypes[280]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17657,7 +18863,7 @@ func (x *AcademyTemplateSummary) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AcademyTemplateSummary.ProtoReflect.Descriptor instead.
 func (*AcademyTemplateSummary) Descriptor() ([]byte, []int) {
-	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{266}
+	return file_proto_academy_v1_academy_proto_rawDescGZIP(), []int{280}
 }
 
 func (x *AcademyTemplateSummary) GetId() string {
@@ -17994,7 +19200,7 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"\x0e_enrollment_idB\x14\n" +
 	"\x12_course_version_idB\x13\n" +
 	"\x11_progress_percentB\x1c\n" +
-	"\x1a_current_lesson_version_id\"\xed\f\n" +
+	"\x1a_current_lesson_version_id\"\x8a\x0f\n" +
 	"\x10CourseEnrollment\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1b\n" +
 	"\tcourse_id\x18\x02 \x01(\tR\bcourseId\x12*\n" +
@@ -18028,7 +19234,11 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"\aoverdue\x18\x18 \x01(\bR\aoverdue\x12\x1d\n" +
 	"\n" +
 	"company_id\x18\x19 \x01(\tR\tcompanyId\x12%\n" +
-	"\x0eversion_number\x18\x1a \x01(\rR\rversionNumberB\n" +
+	"\x0eversion_number\x18\x1a \x01(\rR\rversionNumber\x12&\n" +
+	"\fcourse_title\x18\x1b \x01(\tH\fR\vcourseTitle\x88\x01\x01\x12-\n" +
+	"\x10course_cover_url\x18\x1c \x01(\tH\rR\x0ecourseCoverUrl\x88\x01\x01\x129\n" +
+	"\x16completed_lesson_count\x18\x1d \x01(\rH\x0eR\x14completedLessonCount\x88\x01\x01\x121\n" +
+	"\x12total_lesson_count\x18\x1e \x01(\rH\x0fR\x10totalLessonCount\x88\x01\x01B\n" +
 	"\n" +
 	"\b_user_idB\x16\n" +
 	"\x14_external_learner_idB\f\n" +
@@ -18043,7 +19253,11 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"\n" +
 	"_frozen_atB\x0f\n" +
 	"\r_suspended_atB\v\n" +
-	"\t_due_date\"\xdc\x03\n" +
+	"\t_due_dateB\x0f\n" +
+	"\r_course_titleB\x13\n" +
+	"\x11_course_cover_urlB\x19\n" +
+	"\x17_completed_lesson_countB\x15\n" +
+	"\x13_total_lesson_count\"\xdc\x03\n" +
 	"\x18EnrollmentLessonProgress\x12#\n" +
 	"\renrollment_id\x18\x01 \x01(\tR\fenrollmentId\x12*\n" +
 	"\x11lesson_version_id\x18\x02 \x01(\tR\x0flessonVersionId\x12A\n" +
@@ -18659,7 +19873,63 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"\x10_progress_statusB\x10\n" +
 	"\x0e_access_status\"_\n" +
 	"\x16GetEnrollmentsResponse\x12E\n" +
-	"\venrollments\x18\x01 \x03(\v2#.teamos.academy.v1.CourseEnrollmentR\venrollments\"6\n" +
+	"\venrollments\x18\x01 \x03(\v2#.teamos.academy.v1.CourseEnrollmentR\venrollments\"\x84\x03\n" +
+	"&GetInternalEnrollmentReportPageRequest\x12\x19\n" +
+	"\buser_ids\x18\x01 \x03(\tR\auserIds\x12&\n" +
+	"\x0fsearch_user_ids\x18\x02 \x03(\tR\rsearchUserIds\x12\x1b\n" +
+	"\x06search\x18\x03 \x01(\tH\x00R\x06search\x88\x01\x01\x12 \n" +
+	"\tcourse_id\x18\x04 \x01(\tH\x01R\bcourseId\x88\x01\x01\x12I\n" +
+	"\x06status\x18\x05 \x01(\x0e21.teamos.academy.v1.InternalEnrollmentReportStatusR\x06status\x12C\n" +
+	"\x04sort\x18\x06 \x01(\x0e2/.teamos.academy.v1.InternalEnrollmentReportSortR\x04sort\x12\x12\n" +
+	"\x04page\x18\a \x01(\rR\x04page\x12\x1b\n" +
+	"\tpage_size\x18\b \x01(\rR\bpageSizeB\t\n" +
+	"\a_searchB\f\n" +
+	"\n" +
+	"_course_id\"\xab\x01\n" +
+	"'GetInternalEnrollmentReportPageResponse\x129\n" +
+	"\x05items\x18\x01 \x03(\v2#.teamos.academy.v1.CourseEnrollmentR\x05items\x12\x12\n" +
+	"\x04page\x18\x02 \x01(\rR\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x03 \x01(\rR\bpageSize\x12\x14\n" +
+	"\x05total\x18\x04 \x01(\rR\x05total\"\xc1\x03\n" +
+	"\x11CatalogCourseCard\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
+	"\x05title\x18\x02 \x01(\tR\x05title\x12%\n" +
+	"\vdescription\x18\x03 \x01(\tH\x00R\vdescription\x88\x01\x01\x12 \n" +
+	"\tcover_url\x18\x04 \x01(\tH\x01R\bcoverUrl\x88\x01\x01\x12!\n" +
+	"\flesson_count\x18\x05 \x01(\x05R\vlessonCount\x12+\n" +
+	"\x11estimated_minutes\x18\x06 \x01(\x05R\x10estimatedMinutes\x122\n" +
+	"\x15latest_version_number\x18\a \x01(\x05R\x13latestVersionNumber\x12\x1a\n" +
+	"\benrolled\x18\b \x01(\bR\benrolled\x12(\n" +
+	"\renrollment_id\x18\t \x01(\tH\x02R\fenrollmentId\x88\x01\x01\x12.\n" +
+	"\x10progress_percent\x18\n" +
+	" \x01(\x05H\x03R\x0fprogressPercent\x88\x01\x01B\x0e\n" +
+	"\f_descriptionB\f\n" +
+	"\n" +
+	"_cover_urlB\x10\n" +
+	"\x0e_enrollment_idB\x13\n" +
+	"\x11_progress_percent\"s\n" +
+	"\x18GetAcademyCatalogRequest\x12\x1b\n" +
+	"\x06search\x18\x01 \x01(\tH\x00R\x06search\x88\x01\x01\x12\x12\n" +
+	"\x04page\x18\x02 \x01(\rR\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x03 \x01(\rR\bpageSizeB\t\n" +
+	"\a_search\"\x9e\x01\n" +
+	"\x19GetAcademyCatalogResponse\x12:\n" +
+	"\x05items\x18\x01 \x03(\v2$.teamos.academy.v1.CatalogCourseCardR\x05items\x12\x12\n" +
+	"\x04page\x18\x02 \x01(\rR\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x03 \x01(\rR\bpageSize\x12\x14\n" +
+	"\x05total\x18\x04 \x01(\rR\x05total\">\n" +
+	"\x1fGetCoursePartnerAudienceRequest\x12\x1b\n" +
+	"\tcourse_id\x18\x01 \x01(\tR\bcourseId\"\x92\x01\n" +
+	" GetCoursePartnerAudienceResponse\x12D\n" +
+	"\baudience\x18\x01 \x01(\x0e2(.teamos.academy.v1.CoursePartnerAudienceR\baudience\x12(\n" +
+	"\x10partner_user_ids\x18\x02 \x03(\tR\x0epartnerUserIds\"\xae\x01\n" +
+	"\x1fSetCoursePartnerAudienceRequest\x12\x1b\n" +
+	"\tcourse_id\x18\x01 \x01(\tR\bcourseId\x12D\n" +
+	"\baudience\x18\x02 \x01(\x0e2(.teamos.academy.v1.CoursePartnerAudienceR\baudience\x12(\n" +
+	"\x10partner_user_ids\x18\x03 \x03(\tR\x0epartnerUserIds\"\x92\x01\n" +
+	" SetCoursePartnerAudienceResponse\x12D\n" +
+	"\baudience\x18\x01 \x01(\x0e2(.teamos.academy.v1.CoursePartnerAudienceR\baudience\x12(\n" +
+	"\x10partner_user_ids\x18\x02 \x03(\tR\x0epartnerUserIds\"6\n" +
 	"\x17SelfEnrollCourseRequest\x12\x1b\n" +
 	"\tcourse_id\x18\x01 \x01(\tR\bcourseId\"_\n" +
 	"\x18SelfEnrollCourseResponse\x12C\n" +
@@ -18713,6 +19983,17 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"\x0f_active_secondsB\x10\n" +
 	"\x0e_last_position\"\xb4\x01\n" +
 	"#SubmitEnrollmentQuizAttemptResponse\x12B\n" +
+	"\aattempt\x18\x01 \x01(\v2(.teamos.academy.v1.EnrollmentQuizAttemptR\aattempt\x12I\n" +
+	"\bprogress\x18\x02 \x01(\v2-.teamos.academy.v1.EnrollmentProgressSnapshotR\bprogress\"\xab\x01\n" +
+	"\"ReviewEnrollmentQuizAttemptRequest\x12#\n" +
+	"\renrollment_id\x18\x01 \x01(\tR\fenrollmentId\x12\x1d\n" +
+	"\n" +
+	"attempt_id\x18\x02 \x01(\tR\tattemptId\x12\x16\n" +
+	"\x06passed\x18\x03 \x01(\bR\x06passed\x12\x1d\n" +
+	"\acomment\x18\x04 \x01(\tH\x00R\acomment\x88\x01\x01B\n" +
+	"\n" +
+	"\b_comment\"\xb4\x01\n" +
+	"#ReviewEnrollmentQuizAttemptResponse\x12B\n" +
 	"\aattempt\x18\x01 \x01(\v2(.teamos.academy.v1.EnrollmentQuizAttemptR\aattempt\x12I\n" +
 	"\bprogress\x18\x02 \x01(\v2-.teamos.academy.v1.EnrollmentProgressSnapshotR\bprogress\"A\n" +
 	"\x1aGetEnrollmentReportRequest\x12#\n" +
@@ -19026,7 +20307,35 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"\n" +
 	"_last_nameB\b\n" +
 	"\x06_phoneB\x14\n" +
-	"\x12_email_verified_at\"\xa0\x01\n" +
+	"\x12_email_verified_at\"\xd8\x04\n" +
+	"\x18PartnerExternalReportRow\x12#\n" +
+	"\renrollment_id\x18\x01 \x01(\tR\fenrollmentId\x12\x1b\n" +
+	"\tcourse_id\x18\x02 \x01(\tR\bcourseId\x12!\n" +
+	"\fcourse_title\x18\x03 \x01(\tR\vcourseTitle\x12#\n" +
+	"\rlearner_email\x18\x04 \x01(\tR\flearnerEmail\x12&\n" +
+	"\flearner_name\x18\x05 \x01(\tH\x00R\vlearnerName\x88\x01\x01\x12T\n" +
+	"\x0fprogress_status\x18\x06 \x01(\x0e2+.teamos.academy.v1.EnrollmentProgressStatusR\x0eprogressStatus\x12N\n" +
+	"\raccess_status\x18\a \x01(\x0e2).teamos.academy.v1.EnrollmentAccessStatusR\faccessStatus\x12)\n" +
+	"\x10progress_percent\x18\b \x01(\rR\x0fprogressPercent\x12B\n" +
+	"\factivated_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampH\x01R\vactivatedAt\x88\x01\x01\x12B\n" +
+	"\fcompleted_at\x18\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampH\x02R\vcompletedAt\x88\x01\x01B\x0f\n" +
+	"\r_learner_nameB\x0f\n" +
+	"\r_activated_atB\x0f\n" +
+	"\r_completed_at\"\xae\x01\n" +
+	"#GetPartnerExternalReportPageRequest\x12\x1b\n" +
+	"\x06search\x18\x01 \x01(\tH\x00R\x06search\x88\x01\x01\x12 \n" +
+	"\tcourse_id\x18\x02 \x01(\tH\x01R\bcourseId\x88\x01\x01\x12\x12\n" +
+	"\x04page\x18\x03 \x01(\rR\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x04 \x01(\rR\bpageSizeB\t\n" +
+	"\a_searchB\f\n" +
+	"\n" +
+	"_course_id\"\xb0\x01\n" +
+	"$GetPartnerExternalReportPageResponse\x12A\n" +
+	"\x05items\x18\x01 \x03(\v2+.teamos.academy.v1.PartnerExternalReportRowR\x05items\x12\x12\n" +
+	"\x04page\x18\x02 \x01(\rR\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x03 \x01(\rR\bpageSize\x12\x14\n" +
+	"\x05total\x18\x04 \x01(\rR\x05total\"\xa0\x01\n" +
 	"\x1aPublicAcademyOutlineLesson\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x14\n" +
@@ -19241,9 +20550,12 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"\renrollment_id\x18\x01 \x01(\tR\fenrollmentId\x12&\n" +
 	"\x0fquiz_version_id\x18\x02 \x01(\tR\rquizVersionId\x12'\n" +
 	"\x0fidempotency_key\x18\x03 \x01(\tR\x0eidempotencyKey\x12A\n" +
-	"\aanswers\x18\x04 \x03(\v2'.teamos.academy.v1.EnrollmentQuizAnswerR\aanswers\"n\n" +
+	"\aanswers\x18\x04 \x03(\v2'.teamos.academy.v1.EnrollmentQuizAnswerR\aanswers\"\xb3\x01\n" +
 	"&SubmitPublicAcademyQuizAttemptResponse\x12D\n" +
-	"\x06result\x18\x01 \x01(\v2,.teamos.academy.v1.ExternalQuizAttemptResultR\x06result\"O\n" +
+	"\x06result\x18\x01 \x01(\v2,.teamos.academy.v1.ExternalQuizAttemptResultR\x06result\x12C\n" +
+	"\n" +
+	"enrollment\x18\x02 \x01(\v2#.teamos.academy.v1.CourseEnrollmentR\n" +
+	"enrollment\"O\n" +
 	"(GetPublicAcademyEnrollmentResultsRequest\x12#\n" +
 	"\renrollment_id\x18\x01 \x01(\tR\fenrollmentId\"s\n" +
 	")GetPublicAcademyEnrollmentResultsResponse\x12F\n" +
@@ -19443,7 +20755,27 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"&PUBLIC_ACADEMY_ACCESS_KIND_UNSPECIFIED\x10\x00\x12.\n" +
 	"*PUBLIC_ACADEMY_ACCESS_KIND_PERSONAL_ACCESS\x10\x01\x125\n" +
 	"1PUBLIC_ACADEMY_ACCESS_KIND_PARTNER_PROMO_CAMPAIGN\x10\x02\x129\n" +
-	"5PUBLIC_ACADEMY_ACCESS_KIND_COMPANY_CANDIDATE_CAMPAIGN\x10\x032\x9e_\n" +
+	"5PUBLIC_ACADEMY_ACCESS_KIND_COMPANY_CANDIDATE_CAMPAIGN\x10\x03*\xc7\x02\n" +
+	"\x1eInternalEnrollmentReportStatus\x121\n" +
+	"-INTERNAL_ENROLLMENT_REPORT_STATUS_UNSPECIFIED\x10\x00\x121\n" +
+	"-INTERNAL_ENROLLMENT_REPORT_STATUS_NOT_STARTED\x10\x01\x121\n" +
+	"-INTERNAL_ENROLLMENT_REPORT_STATUS_IN_PROGRESS\x10\x02\x12/\n" +
+	"+INTERNAL_ENROLLMENT_REPORT_STATUS_COMPLETED\x10\x03\x12-\n" +
+	")INTERNAL_ENROLLMENT_REPORT_STATUS_OVERDUE\x10\x04\x12,\n" +
+	"(INTERNAL_ENROLLMENT_REPORT_STATUS_FROZEN\x10\x05*\xef\x02\n" +
+	"\x1cInternalEnrollmentReportSort\x12/\n" +
+	"+INTERNAL_ENROLLMENT_REPORT_SORT_UNSPECIFIED\x10\x00\x120\n" +
+	",INTERNAL_ENROLLMENT_REPORT_SORT_UPDATED_DESC\x10\x01\x12/\n" +
+	"+INTERNAL_ENROLLMENT_REPORT_SORT_UPDATED_ASC\x10\x02\x12-\n" +
+	")INTERNAL_ENROLLMENT_REPORT_SORT_TITLE_ASC\x10\x03\x12.\n" +
+	"*INTERNAL_ENROLLMENT_REPORT_SORT_TITLE_DESC\x10\x04\x120\n" +
+	",INTERNAL_ENROLLMENT_REPORT_SORT_DEADLINE_ASC\x10\x05\x12*\n" +
+	"&INTERNAL_ENROLLMENT_REPORT_SORT_STATUS\x10\x06*\xbb\x01\n" +
+	"\x15CoursePartnerAudience\x12'\n" +
+	"#COURSE_PARTNER_AUDIENCE_UNSPECIFIED\x10\x00\x12 \n" +
+	"\x1cCOURSE_PARTNER_AUDIENCE_NONE\x10\x01\x12(\n" +
+	"$COURSE_PARTNER_AUDIENCE_ALL_PARTNERS\x10\x02\x12-\n" +
+	")COURSE_PARTNER_AUDIENCE_SELECTED_PARTNERS\x10\x032\xd6e\n" +
 	"\x0eAcademyService\x12Y\n" +
 	"\n" +
 	"GetCourses\x12$.teamos.academy.v1.GetCoursesRequest\x1a%.teamos.academy.v1.GetCoursesResponse\x12V\n" +
@@ -19490,7 +20822,9 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"\x10RevokeAssignment\x12*.teamos.academy.v1.RevokeAssignmentRequest\x1a+.teamos.academy.v1.RevokeAssignmentResponse\x12\\\n" +
 	"\vGetProgress\x12%.teamos.academy.v1.GetProgressRequest\x1a&.teamos.academy.v1.GetProgressResponse\x12q\n" +
 	"\x12MarkLessonComplete\x12,.teamos.academy.v1.MarkLessonCompleteRequest\x1a-.teamos.academy.v1.MarkLessonCompleteResponse\x12e\n" +
-	"\x0eGetEnrollments\x12(.teamos.academy.v1.GetEnrollmentsRequest\x1a).teamos.academy.v1.GetEnrollmentsResponse\x12k\n" +
+	"\x0eGetEnrollments\x12(.teamos.academy.v1.GetEnrollmentsRequest\x1a).teamos.academy.v1.GetEnrollmentsResponse\x12\x98\x01\n" +
+	"\x1fGetInternalEnrollmentReportPage\x129.teamos.academy.v1.GetInternalEnrollmentReportPageRequest\x1a:.teamos.academy.v1.GetInternalEnrollmentReportPageResponse\x12n\n" +
+	"\x11GetAcademyCatalog\x12+.teamos.academy.v1.GetAcademyCatalogRequest\x1a,.teamos.academy.v1.GetAcademyCatalogResponse\x12k\n" +
 	"\x10SelfEnrollCourse\x12*.teamos.academy.v1.SelfEnrollCourseRequest\x1a+.teamos.academy.v1.SelfEnrollCourseResponse\x12\x80\x01\n" +
 	"\x17GetCatalogCourseVersion\x121.teamos.academy.v1.GetCatalogCourseVersionRequest\x1a2.teamos.academy.v1.GetCatalogCourseVersionResponse\x12b\n" +
 	"\rGetEnrollment\x12'.teamos.academy.v1.GetEnrollmentRequest\x1a(.teamos.academy.v1.GetEnrollmentResponse\x12w\n" +
@@ -19498,7 +20832,8 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"\x13GetEnrollmentLesson\x12-.teamos.academy.v1.GetEnrollmentLessonRequest\x1a..teamos.academy.v1.GetEnrollmentLessonResponse\x12k\n" +
 	"\x10ResumeEnrollment\x12*.teamos.academy.v1.ResumeEnrollmentRequest\x1a+.teamos.academy.v1.ResumeEnrollmentResponse\x12\x83\x01\n" +
 	"\x18CompleteEnrollmentLesson\x122.teamos.academy.v1.CompleteEnrollmentLessonRequest\x1a3.teamos.academy.v1.CompleteEnrollmentLessonResponse\x12\x8c\x01\n" +
-	"\x1bSubmitEnrollmentQuizAttempt\x125.teamos.academy.v1.SubmitEnrollmentQuizAttemptRequest\x1a6.teamos.academy.v1.SubmitEnrollmentQuizAttemptResponse\x12t\n" +
+	"\x1bSubmitEnrollmentQuizAttempt\x125.teamos.academy.v1.SubmitEnrollmentQuizAttemptRequest\x1a6.teamos.academy.v1.SubmitEnrollmentQuizAttemptResponse\x12\x8c\x01\n" +
+	"\x1bReviewEnrollmentQuizAttempt\x125.teamos.academy.v1.ReviewEnrollmentQuizAttemptRequest\x1a6.teamos.academy.v1.ReviewEnrollmentQuizAttemptResponse\x12t\n" +
 	"\x13GetEnrollmentReport\x12-.teamos.academy.v1.GetEnrollmentReportRequest\x1a..teamos.academy.v1.GetEnrollmentReportResponse\x12}\n" +
 	"\x16GetPartnerCourseGroups\x120.teamos.academy.v1.GetPartnerCourseGroupsRequest\x1a1.teamos.academy.v1.GetPartnerCourseGroupsResponse\x12\x80\x01\n" +
 	"\x17GetPartnerCoursesReport\x121.teamos.academy.v1.GetPartnerCoursesReportRequest\x1a2.teamos.academy.v1.GetPartnerCoursesReportResponse\x12\x80\x01\n" +
@@ -19508,7 +20843,9 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"\x12BlockPartnerCourse\x12,.teamos.academy.v1.BlockPartnerCourseRequest\x1a-.teamos.academy.v1.BlockPartnerCourseResponse\x12\x98\x01\n" +
 	"\x1fResolvePartnerCourseRestriction\x129.teamos.academy.v1.ResolvePartnerCourseRestrictionRequest\x1a:.teamos.academy.v1.ResolvePartnerCourseRestrictionResponse\x12z\n" +
 	"\x15GetCourseRestrictions\x12/.teamos.academy.v1.GetCourseRestrictionsRequest\x1a0.teamos.academy.v1.GetCourseRestrictionsResponse\x12\x9e\x01\n" +
-	"!CopyPartnerCourseVersionToCompany\x12;.teamos.academy.v1.CopyPartnerCourseVersionToCompanyRequest\x1a<.teamos.academy.v1.CopyPartnerCourseVersionToCompanyResponse\x12q\n" +
+	"!CopyPartnerCourseVersionToCompany\x12;.teamos.academy.v1.CopyPartnerCourseVersionToCompanyRequest\x1a<.teamos.academy.v1.CopyPartnerCourseVersionToCompanyResponse\x12\x83\x01\n" +
+	"\x18GetCoursePartnerAudience\x122.teamos.academy.v1.GetCoursePartnerAudienceRequest\x1a3.teamos.academy.v1.GetCoursePartnerAudienceResponse\x12\x83\x01\n" +
+	"\x18SetCoursePartnerAudience\x122.teamos.academy.v1.SetCoursePartnerAudienceRequest\x1a3.teamos.academy.v1.SetCoursePartnerAudienceResponse\x12q\n" +
 	"\x12GetCourseTemplates\x12,.teamos.academy.v1.GetCourseTemplatesRequest\x1a-.teamos.academy.v1.GetCourseTemplatesResponse\x12n\n" +
 	"\x11GetCourseTemplate\x12+.teamos.academy.v1.GetCourseTemplateRequest\x1a,.teamos.academy.v1.GetCourseTemplateResponse\x12w\n" +
 	"\x14CreateCourseTemplate\x12..teamos.academy.v1.CreateCourseTemplateRequest\x1a/.teamos.academy.v1.CreateCourseTemplateResponse\x12\x86\x01\n" +
@@ -19546,7 +20883,8 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"\x13GetExternalLearners\x12-.teamos.academy.v1.GetExternalLearnersRequest\x1a..teamos.academy.v1.GetExternalLearnersResponse\x12q\n" +
 	"\x12GetExternalLearner\x12,.teamos.academy.v1.GetExternalLearnerRequest\x1a-.teamos.academy.v1.GetExternalLearnerResponse\x12\x92\x01\n" +
 	"\x1dGetExternalLearnerEnrollments\x127.teamos.academy.v1.GetExternalLearnerEnrollmentsRequest\x1a8.teamos.academy.v1.GetExternalLearnerEnrollmentsResponse\x12\x89\x01\n" +
-	"\x1aGetExternalLearnerTimeline\x124.teamos.academy.v1.GetExternalLearnerTimelineRequest\x1a5.teamos.academy.v1.GetExternalLearnerTimelineResponseBHZFgithub.com/sk1fy/team-os-backend/contracts/gen/go/academy/v1;academyv1b\x06proto3"
+	"\x1aGetExternalLearnerTimeline\x124.teamos.academy.v1.GetExternalLearnerTimelineRequest\x1a5.teamos.academy.v1.GetExternalLearnerTimelineResponse\x12\x8f\x01\n" +
+	"\x1cGetPartnerExternalReportPage\x126.teamos.academy.v1.GetPartnerExternalReportPageRequest\x1a7.teamos.academy.v1.GetPartnerExternalReportPageResponseBHZFgithub.com/sk1fy/team-os-backend/contracts/gen/go/academy/v1;academyv1b\x06proto3"
 
 var (
 	file_proto_academy_v1_academy_proto_rawDescOnce sync.Once
@@ -19560,8 +20898,8 @@ func file_proto_academy_v1_academy_proto_rawDescGZIP() []byte {
 	return file_proto_academy_v1_academy_proto_rawDescData
 }
 
-var file_proto_academy_v1_academy_proto_enumTypes = make([]protoimpl.EnumInfo, 26)
-var file_proto_academy_v1_academy_proto_msgTypes = make([]protoimpl.MessageInfo, 267)
+var file_proto_academy_v1_academy_proto_enumTypes = make([]protoimpl.EnumInfo, 29)
+var file_proto_academy_v1_academy_proto_msgTypes = make([]protoimpl.MessageInfo, 281)
 var file_proto_academy_v1_academy_proto_goTypes = []any{
 	(CourseStatus)(0),                                     // 0: teamos.academy.v1.CourseStatus
 	(CourseVisibility)(0),                                 // 1: teamos.academy.v1.CourseVisibility
@@ -19589,760 +20927,804 @@ var file_proto_academy_v1_academy_proto_goTypes = []any{
 	(ExternalCampaignStatus)(0),                           // 23: teamos.academy.v1.ExternalCampaignStatus
 	(ExternalLearnerTimelineEventType)(0),                 // 24: teamos.academy.v1.ExternalLearnerTimelineEventType
 	(PublicAcademyAccessKind)(0),                          // 25: teamos.academy.v1.PublicAcademyAccessKind
-	(*Course)(nil),                                        // 26: teamos.academy.v1.Course
-	(*CourseSection)(nil),                                 // 27: teamos.academy.v1.CourseSection
-	(*Lesson)(nil),                                        // 28: teamos.academy.v1.Lesson
-	(*QuizOption)(nil),                                    // 29: teamos.academy.v1.QuizOption
-	(*QuizQuestion)(nil),                                  // 30: teamos.academy.v1.QuizQuestion
-	(*Quiz)(nil),                                          // 31: teamos.academy.v1.Quiz
-	(*CourseVersion)(nil),                                 // 32: teamos.academy.v1.CourseVersion
-	(*CourseVersionSection)(nil),                          // 33: teamos.academy.v1.CourseVersionSection
-	(*CourseVersionLesson)(nil),                           // 34: teamos.academy.v1.CourseVersionLesson
-	(*CourseVersionQuiz)(nil),                             // 35: teamos.academy.v1.CourseVersionQuiz
-	(*LearnerQuizOption)(nil),                             // 36: teamos.academy.v1.LearnerQuizOption
-	(*LearnerQuizQuestion)(nil),                           // 37: teamos.academy.v1.LearnerQuizQuestion
-	(*LearnerCourseVersionQuiz)(nil),                      // 38: teamos.academy.v1.LearnerCourseVersionQuiz
-	(*LearnerCourseVersionLesson)(nil),                    // 39: teamos.academy.v1.LearnerCourseVersionLesson
-	(*LearnerCourseVersionSection)(nil),                   // 40: teamos.academy.v1.LearnerCourseVersionSection
-	(*LearnerPublishedCourseVersion)(nil),                 // 41: teamos.academy.v1.LearnerPublishedCourseVersion
-	(*CourseAssignment)(nil),                              // 42: teamos.academy.v1.CourseAssignment
-	(*QuizAttempt)(nil),                                   // 43: teamos.academy.v1.QuizAttempt
-	(*CourseProgress)(nil),                                // 44: teamos.academy.v1.CourseProgress
-	(*CourseEnrollment)(nil),                              // 45: teamos.academy.v1.CourseEnrollment
-	(*EnrollmentLessonProgress)(nil),                      // 46: teamos.academy.v1.EnrollmentLessonProgress
-	(*EnrollmentQuizAnswer)(nil),                          // 47: teamos.academy.v1.EnrollmentQuizAnswer
-	(*EnrollmentQuizAttempt)(nil),                         // 48: teamos.academy.v1.EnrollmentQuizAttempt
-	(*EnrollmentOutlineLesson)(nil),                       // 49: teamos.academy.v1.EnrollmentOutlineLesson
-	(*EnrollmentOutlineSection)(nil),                      // 50: teamos.academy.v1.EnrollmentOutlineSection
-	(*EnrollmentOutline)(nil),                             // 51: teamos.academy.v1.EnrollmentOutline
-	(*EnrollmentLesson)(nil),                              // 52: teamos.academy.v1.EnrollmentLesson
-	(*EnrollmentProgressSnapshot)(nil),                    // 53: teamos.academy.v1.EnrollmentProgressSnapshot
-	(*EnrollmentReport)(nil),                              // 54: teamos.academy.v1.EnrollmentReport
-	(*CourseRestriction)(nil),                             // 55: teamos.academy.v1.CourseRestriction
-	(*CourseOrigin)(nil),                                  // 56: teamos.academy.v1.CourseOrigin
-	(*PartnerCourseCopyResult)(nil),                       // 57: teamos.academy.v1.PartnerCourseCopyResult
-	(*PartnerCourseGroup)(nil),                            // 58: teamos.academy.v1.PartnerCourseGroup
-	(*PartnerCourseReportSummary)(nil),                    // 59: teamos.academy.v1.PartnerCourseReportSummary
-	(*PartnerCourseOperationalReport)(nil),                // 60: teamos.academy.v1.PartnerCourseOperationalReport
-	(*PartnerCoursesReport)(nil),                          // 61: teamos.academy.v1.PartnerCoursesReport
-	(*CourseVersionPreview)(nil),                          // 62: teamos.academy.v1.CourseVersionPreview
-	(*CoursePreviewQuizAttemptResult)(nil),                // 63: teamos.academy.v1.CoursePreviewQuizAttemptResult
-	(*CourseTemplate)(nil),                                // 64: teamos.academy.v1.CourseTemplate
-	(*CourseTemplateVersion)(nil),                         // 65: teamos.academy.v1.CourseTemplateVersion
-	(*CourseTemplateVersionSection)(nil),                  // 66: teamos.academy.v1.CourseTemplateVersionSection
-	(*CourseTemplateVersionLesson)(nil),                   // 67: teamos.academy.v1.CourseTemplateVersionLesson
-	(*CourseTemplateVersionQuiz)(nil),                     // 68: teamos.academy.v1.CourseTemplateVersionQuiz
-	(*CourseTemplateVersionContent)(nil),                  // 69: teamos.academy.v1.CourseTemplateVersionContent
-	(*CourseTemplateVersionDetails)(nil),                  // 70: teamos.academy.v1.CourseTemplateVersionDetails
-	(*CourseTemplateDraftQuizInput)(nil),                  // 71: teamos.academy.v1.CourseTemplateDraftQuizInput
-	(*CourseTemplateDraftLessonInput)(nil),                // 72: teamos.academy.v1.CourseTemplateDraftLessonInput
-	(*CourseTemplateDraftSectionInput)(nil),               // 73: teamos.academy.v1.CourseTemplateDraftSectionInput
-	(*CourseTemplateDraftContentInput)(nil),               // 74: teamos.academy.v1.CourseTemplateDraftContentInput
-	(*CourseTemplateInstantiationResult)(nil),             // 75: teamos.academy.v1.CourseTemplateInstantiationResult
-	(*GetCoursesRequest)(nil),                             // 76: teamos.academy.v1.GetCoursesRequest
-	(*GetCoursesResponse)(nil),                            // 77: teamos.academy.v1.GetCoursesResponse
-	(*GetCourseRequest)(nil),                              // 78: teamos.academy.v1.GetCourseRequest
-	(*GetCourseResponse)(nil),                             // 79: teamos.academy.v1.GetCourseResponse
-	(*GetPublicCourseRequest)(nil),                        // 80: teamos.academy.v1.GetPublicCourseRequest
-	(*GetPublicCourseResponse)(nil),                       // 81: teamos.academy.v1.GetPublicCourseResponse
-	(*CreateCourseRequest)(nil),                           // 82: teamos.academy.v1.CreateCourseRequest
-	(*CreateCourseResponse)(nil),                          // 83: teamos.academy.v1.CreateCourseResponse
-	(*CreateCourseFromKbRequest)(nil),                     // 84: teamos.academy.v1.CreateCourseFromKbRequest
-	(*CreateCourseFromKbResponse)(nil),                    // 85: teamos.academy.v1.CreateCourseFromKbResponse
-	(*UpdateCourseRequest)(nil),                           // 86: teamos.academy.v1.UpdateCourseRequest
-	(*UpdateCourseResponse)(nil),                          // 87: teamos.academy.v1.UpdateCourseResponse
-	(*ArchiveCourseRequest)(nil),                          // 88: teamos.academy.v1.ArchiveCourseRequest
-	(*ArchiveCourseResponse)(nil),                         // 89: teamos.academy.v1.ArchiveCourseResponse
-	(*RestoreCourseRequest)(nil),                          // 90: teamos.academy.v1.RestoreCourseRequest
-	(*RestoreCourseResponse)(nil),                         // 91: teamos.academy.v1.RestoreCourseResponse
-	(*DeleteCourseRequest)(nil),                           // 92: teamos.academy.v1.DeleteCourseRequest
-	(*DeleteCourseResponse)(nil),                          // 93: teamos.academy.v1.DeleteCourseResponse
-	(*GetCourseVersionsRequest)(nil),                      // 94: teamos.academy.v1.GetCourseVersionsRequest
-	(*GetCourseVersionsResponse)(nil),                     // 95: teamos.academy.v1.GetCourseVersionsResponse
-	(*GetCourseVersionRequest)(nil),                       // 96: teamos.academy.v1.GetCourseVersionRequest
-	(*GetCourseVersionResponse)(nil),                      // 97: teamos.academy.v1.GetCourseVersionResponse
-	(*CreateCourseDraftRequest)(nil),                      // 98: teamos.academy.v1.CreateCourseDraftRequest
-	(*CreateCourseDraftResponse)(nil),                     // 99: teamos.academy.v1.CreateCourseDraftResponse
-	(*UpdateCourseDraftRequest)(nil),                      // 100: teamos.academy.v1.UpdateCourseDraftRequest
-	(*UpdateCourseDraftResponse)(nil),                     // 101: teamos.academy.v1.UpdateCourseDraftResponse
-	(*PublishCourseVersionRequest)(nil),                   // 102: teamos.academy.v1.PublishCourseVersionRequest
-	(*PublishCourseVersionResponse)(nil),                  // 103: teamos.academy.v1.PublishCourseVersionResponse
-	(*GetPublishedCourseVersionRequest)(nil),              // 104: teamos.academy.v1.GetPublishedCourseVersionRequest
-	(*GetPublishedCourseVersionResponse)(nil),             // 105: teamos.academy.v1.GetPublishedCourseVersionResponse
-	(*CreateCourseVersionSectionRequest)(nil),             // 106: teamos.academy.v1.CreateCourseVersionSectionRequest
-	(*CreateCourseVersionSectionResponse)(nil),            // 107: teamos.academy.v1.CreateCourseVersionSectionResponse
-	(*UpdateCourseVersionSectionRequest)(nil),             // 108: teamos.academy.v1.UpdateCourseVersionSectionRequest
-	(*UpdateCourseVersionSectionResponse)(nil),            // 109: teamos.academy.v1.UpdateCourseVersionSectionResponse
-	(*DeleteCourseVersionSectionRequest)(nil),             // 110: teamos.academy.v1.DeleteCourseVersionSectionRequest
-	(*DeleteCourseVersionSectionResponse)(nil),            // 111: teamos.academy.v1.DeleteCourseVersionSectionResponse
-	(*CreateCourseVersionLessonRequest)(nil),              // 112: teamos.academy.v1.CreateCourseVersionLessonRequest
-	(*CreateCourseVersionLessonResponse)(nil),             // 113: teamos.academy.v1.CreateCourseVersionLessonResponse
-	(*UpdateCourseVersionLessonRequest)(nil),              // 114: teamos.academy.v1.UpdateCourseVersionLessonRequest
-	(*UpdateCourseVersionLessonResponse)(nil),             // 115: teamos.academy.v1.UpdateCourseVersionLessonResponse
-	(*DeleteCourseVersionLessonRequest)(nil),              // 116: teamos.academy.v1.DeleteCourseVersionLessonRequest
-	(*DeleteCourseVersionLessonResponse)(nil),             // 117: teamos.academy.v1.DeleteCourseVersionLessonResponse
-	(*MoveCourseVersionLessonRequest)(nil),                // 118: teamos.academy.v1.MoveCourseVersionLessonRequest
-	(*MoveCourseVersionLessonResponse)(nil),               // 119: teamos.academy.v1.MoveCourseVersionLessonResponse
-	(*UpsertCourseVersionQuizRequest)(nil),                // 120: teamos.academy.v1.UpsertCourseVersionQuizRequest
-	(*UpsertCourseVersionQuizResponse)(nil),               // 121: teamos.academy.v1.UpsertCourseVersionQuizResponse
-	(*DeleteCourseVersionQuizRequest)(nil),                // 122: teamos.academy.v1.DeleteCourseVersionQuizRequest
-	(*DeleteCourseVersionQuizResponse)(nil),               // 123: teamos.academy.v1.DeleteCourseVersionQuizResponse
-	(*GetCourseSectionsRequest)(nil),                      // 124: teamos.academy.v1.GetCourseSectionsRequest
-	(*GetCourseSectionsResponse)(nil),                     // 125: teamos.academy.v1.GetCourseSectionsResponse
-	(*CreateCourseSectionRequest)(nil),                    // 126: teamos.academy.v1.CreateCourseSectionRequest
-	(*CreateCourseSectionResponse)(nil),                   // 127: teamos.academy.v1.CreateCourseSectionResponse
-	(*UpdateCourseSectionRequest)(nil),                    // 128: teamos.academy.v1.UpdateCourseSectionRequest
-	(*UpdateCourseSectionResponse)(nil),                   // 129: teamos.academy.v1.UpdateCourseSectionResponse
-	(*DeleteCourseSectionRequest)(nil),                    // 130: teamos.academy.v1.DeleteCourseSectionRequest
-	(*DeleteCourseSectionResponse)(nil),                   // 131: teamos.academy.v1.DeleteCourseSectionResponse
-	(*GetLessonsRequest)(nil),                             // 132: teamos.academy.v1.GetLessonsRequest
-	(*GetLessonsResponse)(nil),                            // 133: teamos.academy.v1.GetLessonsResponse
-	(*CreateLessonRequest)(nil),                           // 134: teamos.academy.v1.CreateLessonRequest
-	(*CreateLessonResponse)(nil),                          // 135: teamos.academy.v1.CreateLessonResponse
-	(*UpdateLessonRequest)(nil),                           // 136: teamos.academy.v1.UpdateLessonRequest
-	(*UpdateLessonResponse)(nil),                          // 137: teamos.academy.v1.UpdateLessonResponse
-	(*DeleteLessonRequest)(nil),                           // 138: teamos.academy.v1.DeleteLessonRequest
-	(*DeleteLessonResponse)(nil),                          // 139: teamos.academy.v1.DeleteLessonResponse
-	(*MoveLessonRequest)(nil),                             // 140: teamos.academy.v1.MoveLessonRequest
-	(*MoveLessonResponse)(nil),                            // 141: teamos.academy.v1.MoveLessonResponse
-	(*GetQuizzesRequest)(nil),                             // 142: teamos.academy.v1.GetQuizzesRequest
-	(*GetQuizzesResponse)(nil),                            // 143: teamos.academy.v1.GetQuizzesResponse
-	(*UpsertQuizRequest)(nil),                             // 144: teamos.academy.v1.UpsertQuizRequest
-	(*UpsertQuizResponse)(nil),                            // 145: teamos.academy.v1.UpsertQuizResponse
-	(*GetAssignmentsRequest)(nil),                         // 146: teamos.academy.v1.GetAssignmentsRequest
-	(*GetAssignmentsResponse)(nil),                        // 147: teamos.academy.v1.GetAssignmentsResponse
-	(*AssignCourseRequest)(nil),                           // 148: teamos.academy.v1.AssignCourseRequest
-	(*AssignCourseResponse)(nil),                          // 149: teamos.academy.v1.AssignCourseResponse
-	(*RevokeAssignmentRequest)(nil),                       // 150: teamos.academy.v1.RevokeAssignmentRequest
-	(*RevokeAssignmentResponse)(nil),                      // 151: teamos.academy.v1.RevokeAssignmentResponse
-	(*GetProgressRequest)(nil),                            // 152: teamos.academy.v1.GetProgressRequest
-	(*GetProgressResponse)(nil),                           // 153: teamos.academy.v1.GetProgressResponse
-	(*MarkLessonCompleteRequest)(nil),                     // 154: teamos.academy.v1.MarkLessonCompleteRequest
-	(*MarkLessonCompleteResponse)(nil),                    // 155: teamos.academy.v1.MarkLessonCompleteResponse
-	(*GetEnrollmentsRequest)(nil),                         // 156: teamos.academy.v1.GetEnrollmentsRequest
-	(*GetEnrollmentsResponse)(nil),                        // 157: teamos.academy.v1.GetEnrollmentsResponse
-	(*SelfEnrollCourseRequest)(nil),                       // 158: teamos.academy.v1.SelfEnrollCourseRequest
-	(*SelfEnrollCourseResponse)(nil),                      // 159: teamos.academy.v1.SelfEnrollCourseResponse
-	(*GetCatalogCourseVersionRequest)(nil),                // 160: teamos.academy.v1.GetCatalogCourseVersionRequest
-	(*GetCatalogCourseVersionResponse)(nil),               // 161: teamos.academy.v1.GetCatalogCourseVersionResponse
-	(*GetEnrollmentRequest)(nil),                          // 162: teamos.academy.v1.GetEnrollmentRequest
-	(*GetEnrollmentResponse)(nil),                         // 163: teamos.academy.v1.GetEnrollmentResponse
-	(*GetEnrollmentOutlineRequest)(nil),                   // 164: teamos.academy.v1.GetEnrollmentOutlineRequest
-	(*GetEnrollmentOutlineResponse)(nil),                  // 165: teamos.academy.v1.GetEnrollmentOutlineResponse
-	(*GetEnrollmentLessonRequest)(nil),                    // 166: teamos.academy.v1.GetEnrollmentLessonRequest
-	(*GetEnrollmentLessonResponse)(nil),                   // 167: teamos.academy.v1.GetEnrollmentLessonResponse
-	(*ResumeEnrollmentRequest)(nil),                       // 168: teamos.academy.v1.ResumeEnrollmentRequest
-	(*ResumeEnrollmentResponse)(nil),                      // 169: teamos.academy.v1.ResumeEnrollmentResponse
-	(*CompleteEnrollmentLessonRequest)(nil),               // 170: teamos.academy.v1.CompleteEnrollmentLessonRequest
-	(*CompleteEnrollmentLessonResponse)(nil),              // 171: teamos.academy.v1.CompleteEnrollmentLessonResponse
-	(*SubmitEnrollmentQuizAttemptRequest)(nil),            // 172: teamos.academy.v1.SubmitEnrollmentQuizAttemptRequest
-	(*SubmitEnrollmentQuizAttemptResponse)(nil),           // 173: teamos.academy.v1.SubmitEnrollmentQuizAttemptResponse
-	(*GetEnrollmentReportRequest)(nil),                    // 174: teamos.academy.v1.GetEnrollmentReportRequest
-	(*GetEnrollmentReportResponse)(nil),                   // 175: teamos.academy.v1.GetEnrollmentReportResponse
-	(*GetPartnerCourseGroupsRequest)(nil),                 // 176: teamos.academy.v1.GetPartnerCourseGroupsRequest
-	(*GetPartnerCourseGroupsResponse)(nil),                // 177: teamos.academy.v1.GetPartnerCourseGroupsResponse
-	(*GetPartnerCoursesReportRequest)(nil),                // 178: teamos.academy.v1.GetPartnerCoursesReportRequest
-	(*GetPartnerCoursesReportResponse)(nil),               // 179: teamos.academy.v1.GetPartnerCoursesReportResponse
-	(*GetCourseVersionPreviewRequest)(nil),                // 180: teamos.academy.v1.GetCourseVersionPreviewRequest
-	(*GetCourseVersionPreviewResponse)(nil),               // 181: teamos.academy.v1.GetCourseVersionPreviewResponse
-	(*SubmitCoursePreviewQuizAttemptRequest)(nil),         // 182: teamos.academy.v1.SubmitCoursePreviewQuizAttemptRequest
-	(*SubmitCoursePreviewQuizAttemptResponse)(nil),        // 183: teamos.academy.v1.SubmitCoursePreviewQuizAttemptResponse
-	(*PausePartnerCourseDistributionRequest)(nil),         // 184: teamos.academy.v1.PausePartnerCourseDistributionRequest
-	(*PausePartnerCourseDistributionResponse)(nil),        // 185: teamos.academy.v1.PausePartnerCourseDistributionResponse
-	(*BlockPartnerCourseRequest)(nil),                     // 186: teamos.academy.v1.BlockPartnerCourseRequest
-	(*BlockPartnerCourseResponse)(nil),                    // 187: teamos.academy.v1.BlockPartnerCourseResponse
-	(*ResolvePartnerCourseRestrictionRequest)(nil),        // 188: teamos.academy.v1.ResolvePartnerCourseRestrictionRequest
-	(*ResolvePartnerCourseRestrictionResponse)(nil),       // 189: teamos.academy.v1.ResolvePartnerCourseRestrictionResponse
-	(*GetCourseRestrictionsRequest)(nil),                  // 190: teamos.academy.v1.GetCourseRestrictionsRequest
-	(*GetCourseRestrictionsResponse)(nil),                 // 191: teamos.academy.v1.GetCourseRestrictionsResponse
-	(*CopyPartnerCourseVersionToCompanyRequest)(nil),      // 192: teamos.academy.v1.CopyPartnerCourseVersionToCompanyRequest
-	(*CopyPartnerCourseVersionToCompanyResponse)(nil),     // 193: teamos.academy.v1.CopyPartnerCourseVersionToCompanyResponse
-	(*GetCourseTemplatesRequest)(nil),                     // 194: teamos.academy.v1.GetCourseTemplatesRequest
-	(*GetCourseTemplatesResponse)(nil),                    // 195: teamos.academy.v1.GetCourseTemplatesResponse
-	(*GetCourseTemplateRequest)(nil),                      // 196: teamos.academy.v1.GetCourseTemplateRequest
-	(*GetCourseTemplateResponse)(nil),                     // 197: teamos.academy.v1.GetCourseTemplateResponse
-	(*CreateCourseTemplateRequest)(nil),                   // 198: teamos.academy.v1.CreateCourseTemplateRequest
-	(*CreateCourseTemplateResponse)(nil),                  // 199: teamos.academy.v1.CreateCourseTemplateResponse
-	(*UpdateCourseTemplateDraftRequest)(nil),              // 200: teamos.academy.v1.UpdateCourseTemplateDraftRequest
-	(*UpdateCourseTemplateDraftResponse)(nil),             // 201: teamos.academy.v1.UpdateCourseTemplateDraftResponse
-	(*CreateCourseTemplateDraftRequest)(nil),              // 202: teamos.academy.v1.CreateCourseTemplateDraftRequest
-	(*CreateCourseTemplateDraftResponse)(nil),             // 203: teamos.academy.v1.CreateCourseTemplateDraftResponse
-	(*PublishCourseTemplateVersionRequest)(nil),           // 204: teamos.academy.v1.PublishCourseTemplateVersionRequest
-	(*PublishCourseTemplateVersionResponse)(nil),          // 205: teamos.academy.v1.PublishCourseTemplateVersionResponse
-	(*ArchiveCourseTemplateRequest)(nil),                  // 206: teamos.academy.v1.ArchiveCourseTemplateRequest
-	(*ArchiveCourseTemplateResponse)(nil),                 // 207: teamos.academy.v1.ArchiveCourseTemplateResponse
-	(*InstantiateCourseTemplateVersionRequest)(nil),       // 208: teamos.academy.v1.InstantiateCourseTemplateVersionRequest
-	(*InstantiateCourseTemplateVersionResponse)(nil),      // 209: teamos.academy.v1.InstantiateCourseTemplateVersionResponse
-	(*ExternalPersonalAccess)(nil),                        // 210: teamos.academy.v1.ExternalPersonalAccess
-	(*ExternalPersonalAccessCreated)(nil),                 // 211: teamos.academy.v1.ExternalPersonalAccessCreated
-	(*ExternalCampaign)(nil),                              // 212: teamos.academy.v1.ExternalCampaign
-	(*ExternalCampaignCreated)(nil),                       // 213: teamos.academy.v1.ExternalCampaignCreated
-	(*CampaignFunnel)(nil),                                // 214: teamos.academy.v1.CampaignFunnel
-	(*CampaignLessonDropOff)(nil),                         // 215: teamos.academy.v1.CampaignLessonDropOff
-	(*CampaignAttribution)(nil),                           // 216: teamos.academy.v1.CampaignAttribution
-	(*CampaignVersionAnalytics)(nil),                      // 217: teamos.academy.v1.CampaignVersionAnalytics
-	(*CampaignAnalytics)(nil),                             // 218: teamos.academy.v1.CampaignAnalytics
-	(*ExternalCampaignReport)(nil),                        // 219: teamos.academy.v1.ExternalCampaignReport
-	(*CourseExternalReport)(nil),                          // 220: teamos.academy.v1.CourseExternalReport
-	(*ExternalLearnerTimelineEvent)(nil),                  // 221: teamos.academy.v1.ExternalLearnerTimelineEvent
-	(*ExternalLearnerTimeline)(nil),                       // 222: teamos.academy.v1.ExternalLearnerTimeline
-	(*ExternalLearner)(nil),                               // 223: teamos.academy.v1.ExternalLearner
-	(*PublicAcademyOutlineLesson)(nil),                    // 224: teamos.academy.v1.PublicAcademyOutlineLesson
-	(*PublicAcademyOutlineSection)(nil),                   // 225: teamos.academy.v1.PublicAcademyOutlineSection
-	(*PublicAcademyAccess)(nil),                           // 226: teamos.academy.v1.PublicAcademyAccess
-	(*ExternalVerificationChallenge)(nil),                 // 227: teamos.academy.v1.ExternalVerificationChallenge
-	(*ExternalVerificationConfirmed)(nil),                 // 228: teamos.academy.v1.ExternalVerificationConfirmed
-	(*ExternalQuizAttemptResult)(nil),                     // 229: teamos.academy.v1.ExternalQuizAttemptResult
-	(*ExternalEnrollmentResults)(nil),                     // 230: teamos.academy.v1.ExternalEnrollmentResults
-	(*CreateExternalPersonalAccessRequest)(nil),           // 231: teamos.academy.v1.CreateExternalPersonalAccessRequest
-	(*CreateExternalPersonalAccessResponse)(nil),          // 232: teamos.academy.v1.CreateExternalPersonalAccessResponse
-	(*GetExternalPersonalAccessesRequest)(nil),            // 233: teamos.academy.v1.GetExternalPersonalAccessesRequest
-	(*GetExternalPersonalAccessesResponse)(nil),           // 234: teamos.academy.v1.GetExternalPersonalAccessesResponse
-	(*GetExternalPersonalAccessRequest)(nil),              // 235: teamos.academy.v1.GetExternalPersonalAccessRequest
-	(*GetExternalPersonalAccessResponse)(nil),             // 236: teamos.academy.v1.GetExternalPersonalAccessResponse
-	(*ExtendExternalPersonalAccessRequest)(nil),           // 237: teamos.academy.v1.ExtendExternalPersonalAccessRequest
-	(*ExtendExternalPersonalAccessResponse)(nil),          // 238: teamos.academy.v1.ExtendExternalPersonalAccessResponse
-	(*RotateExternalPersonalAccessTokenRequest)(nil),      // 239: teamos.academy.v1.RotateExternalPersonalAccessTokenRequest
-	(*RotateExternalPersonalAccessTokenResponse)(nil),     // 240: teamos.academy.v1.RotateExternalPersonalAccessTokenResponse
-	(*RevokeExternalPersonalAccessRequest)(nil),           // 241: teamos.academy.v1.RevokeExternalPersonalAccessRequest
-	(*RevokeExternalPersonalAccessResponse)(nil),          // 242: teamos.academy.v1.RevokeExternalPersonalAccessResponse
-	(*RepeatExternalPersonalAccessRequest)(nil),           // 243: teamos.academy.v1.RepeatExternalPersonalAccessRequest
-	(*RepeatExternalPersonalAccessResponse)(nil),          // 244: teamos.academy.v1.RepeatExternalPersonalAccessResponse
-	(*CreateExternalCampaignRequest)(nil),                 // 245: teamos.academy.v1.CreateExternalCampaignRequest
-	(*CreateExternalCampaignResponse)(nil),                // 246: teamos.academy.v1.CreateExternalCampaignResponse
-	(*GetExternalCampaignsRequest)(nil),                   // 247: teamos.academy.v1.GetExternalCampaignsRequest
-	(*GetExternalCampaignsResponse)(nil),                  // 248: teamos.academy.v1.GetExternalCampaignsResponse
-	(*GetExternalCampaignRequest)(nil),                    // 249: teamos.academy.v1.GetExternalCampaignRequest
-	(*GetExternalCampaignResponse)(nil),                   // 250: teamos.academy.v1.GetExternalCampaignResponse
-	(*PauseExternalCampaignRequest)(nil),                  // 251: teamos.academy.v1.PauseExternalCampaignRequest
-	(*PauseExternalCampaignResponse)(nil),                 // 252: teamos.academy.v1.PauseExternalCampaignResponse
-	(*ResumeExternalCampaignRequest)(nil),                 // 253: teamos.academy.v1.ResumeExternalCampaignRequest
-	(*ResumeExternalCampaignResponse)(nil),                // 254: teamos.academy.v1.ResumeExternalCampaignResponse
-	(*RotateExternalCampaignTokenRequest)(nil),            // 255: teamos.academy.v1.RotateExternalCampaignTokenRequest
-	(*RotateExternalCampaignTokenResponse)(nil),           // 256: teamos.academy.v1.RotateExternalCampaignTokenResponse
-	(*RevokeExternalCampaignRequest)(nil),                 // 257: teamos.academy.v1.RevokeExternalCampaignRequest
-	(*RevokeExternalCampaignResponse)(nil),                // 258: teamos.academy.v1.RevokeExternalCampaignResponse
-	(*GetExternalCampaignReportRequest)(nil),              // 259: teamos.academy.v1.GetExternalCampaignReportRequest
-	(*GetExternalCampaignReportResponse)(nil),             // 260: teamos.academy.v1.GetExternalCampaignReportResponse
-	(*GetCourseExternalReportRequest)(nil),                // 261: teamos.academy.v1.GetCourseExternalReportRequest
-	(*GetCourseExternalReportResponse)(nil),               // 262: teamos.academy.v1.GetCourseExternalReportResponse
-	(*GetPublicAcademyAccessRequest)(nil),                 // 263: teamos.academy.v1.GetPublicAcademyAccessRequest
-	(*GetPublicAcademyAccessResponse)(nil),                // 264: teamos.academy.v1.GetPublicAcademyAccessResponse
-	(*RequestPublicAcademyVerificationRequest)(nil),       // 265: teamos.academy.v1.RequestPublicAcademyVerificationRequest
-	(*RequestPublicAcademyVerificationResponse)(nil),      // 266: teamos.academy.v1.RequestPublicAcademyVerificationResponse
-	(*ConfirmPublicAcademyVerificationRequest)(nil),       // 267: teamos.academy.v1.ConfirmPublicAcademyVerificationRequest
-	(*ConfirmPublicAcademyVerificationResponse)(nil),      // 268: teamos.academy.v1.ConfirmPublicAcademyVerificationResponse
-	(*ActivatePublicAcademyAccessRequest)(nil),            // 269: teamos.academy.v1.ActivatePublicAcademyAccessRequest
-	(*ActivatePublicAcademyAccessResponse)(nil),           // 270: teamos.academy.v1.ActivatePublicAcademyAccessResponse
-	(*GetPublicAcademyEnrollmentRequest)(nil),             // 271: teamos.academy.v1.GetPublicAcademyEnrollmentRequest
-	(*GetPublicAcademyEnrollmentResponse)(nil),            // 272: teamos.academy.v1.GetPublicAcademyEnrollmentResponse
-	(*GetPublicAcademyEnrollmentOutlineRequest)(nil),      // 273: teamos.academy.v1.GetPublicAcademyEnrollmentOutlineRequest
-	(*GetPublicAcademyEnrollmentOutlineResponse)(nil),     // 274: teamos.academy.v1.GetPublicAcademyEnrollmentOutlineResponse
-	(*GetPublicAcademyEnrollmentLessonRequest)(nil),       // 275: teamos.academy.v1.GetPublicAcademyEnrollmentLessonRequest
-	(*GetPublicAcademyEnrollmentLessonResponse)(nil),      // 276: teamos.academy.v1.GetPublicAcademyEnrollmentLessonResponse
-	(*CompletePublicAcademyEnrollmentLessonRequest)(nil),  // 277: teamos.academy.v1.CompletePublicAcademyEnrollmentLessonRequest
-	(*CompletePublicAcademyEnrollmentLessonResponse)(nil), // 278: teamos.academy.v1.CompletePublicAcademyEnrollmentLessonResponse
-	(*SubmitPublicAcademyQuizAttemptRequest)(nil),         // 279: teamos.academy.v1.SubmitPublicAcademyQuizAttemptRequest
-	(*SubmitPublicAcademyQuizAttemptResponse)(nil),        // 280: teamos.academy.v1.SubmitPublicAcademyQuizAttemptResponse
-	(*GetPublicAcademyEnrollmentResultsRequest)(nil),      // 281: teamos.academy.v1.GetPublicAcademyEnrollmentResultsRequest
-	(*GetPublicAcademyEnrollmentResultsResponse)(nil),     // 282: teamos.academy.v1.GetPublicAcademyEnrollmentResultsResponse
-	(*GetExternalLearnersRequest)(nil),                    // 283: teamos.academy.v1.GetExternalLearnersRequest
-	(*GetExternalLearnersResponse)(nil),                   // 284: teamos.academy.v1.GetExternalLearnersResponse
-	(*GetExternalLearnerRequest)(nil),                     // 285: teamos.academy.v1.GetExternalLearnerRequest
-	(*GetExternalLearnerResponse)(nil),                    // 286: teamos.academy.v1.GetExternalLearnerResponse
-	(*GetExternalLearnerEnrollmentsRequest)(nil),          // 287: teamos.academy.v1.GetExternalLearnerEnrollmentsRequest
-	(*GetExternalLearnerEnrollmentsResponse)(nil),         // 288: teamos.academy.v1.GetExternalLearnerEnrollmentsResponse
-	(*GetExternalLearnerTimelineRequest)(nil),             // 289: teamos.academy.v1.GetExternalLearnerTimelineRequest
-	(*GetExternalLearnerTimelineResponse)(nil),            // 290: teamos.academy.v1.GetExternalLearnerTimelineResponse
-	(*AcademyTemplateCapabilities)(nil),                   // 291: teamos.academy.v1.AcademyTemplateCapabilities
-	(*AcademyTemplateSummary)(nil),                        // 292: teamos.academy.v1.AcademyTemplateSummary
-	(*timestamppb.Timestamp)(nil),                         // 293: google.protobuf.Timestamp
-	(*structpb.Struct)(nil),                               // 294: google.protobuf.Struct
+	(InternalEnrollmentReportStatus)(0),                   // 26: teamos.academy.v1.InternalEnrollmentReportStatus
+	(InternalEnrollmentReportSort)(0),                     // 27: teamos.academy.v1.InternalEnrollmentReportSort
+	(CoursePartnerAudience)(0),                            // 28: teamos.academy.v1.CoursePartnerAudience
+	(*Course)(nil),                                        // 29: teamos.academy.v1.Course
+	(*CourseSection)(nil),                                 // 30: teamos.academy.v1.CourseSection
+	(*Lesson)(nil),                                        // 31: teamos.academy.v1.Lesson
+	(*QuizOption)(nil),                                    // 32: teamos.academy.v1.QuizOption
+	(*QuizQuestion)(nil),                                  // 33: teamos.academy.v1.QuizQuestion
+	(*Quiz)(nil),                                          // 34: teamos.academy.v1.Quiz
+	(*CourseVersion)(nil),                                 // 35: teamos.academy.v1.CourseVersion
+	(*CourseVersionSection)(nil),                          // 36: teamos.academy.v1.CourseVersionSection
+	(*CourseVersionLesson)(nil),                           // 37: teamos.academy.v1.CourseVersionLesson
+	(*CourseVersionQuiz)(nil),                             // 38: teamos.academy.v1.CourseVersionQuiz
+	(*LearnerQuizOption)(nil),                             // 39: teamos.academy.v1.LearnerQuizOption
+	(*LearnerQuizQuestion)(nil),                           // 40: teamos.academy.v1.LearnerQuizQuestion
+	(*LearnerCourseVersionQuiz)(nil),                      // 41: teamos.academy.v1.LearnerCourseVersionQuiz
+	(*LearnerCourseVersionLesson)(nil),                    // 42: teamos.academy.v1.LearnerCourseVersionLesson
+	(*LearnerCourseVersionSection)(nil),                   // 43: teamos.academy.v1.LearnerCourseVersionSection
+	(*LearnerPublishedCourseVersion)(nil),                 // 44: teamos.academy.v1.LearnerPublishedCourseVersion
+	(*CourseAssignment)(nil),                              // 45: teamos.academy.v1.CourseAssignment
+	(*QuizAttempt)(nil),                                   // 46: teamos.academy.v1.QuizAttempt
+	(*CourseProgress)(nil),                                // 47: teamos.academy.v1.CourseProgress
+	(*CourseEnrollment)(nil),                              // 48: teamos.academy.v1.CourseEnrollment
+	(*EnrollmentLessonProgress)(nil),                      // 49: teamos.academy.v1.EnrollmentLessonProgress
+	(*EnrollmentQuizAnswer)(nil),                          // 50: teamos.academy.v1.EnrollmentQuizAnswer
+	(*EnrollmentQuizAttempt)(nil),                         // 51: teamos.academy.v1.EnrollmentQuizAttempt
+	(*EnrollmentOutlineLesson)(nil),                       // 52: teamos.academy.v1.EnrollmentOutlineLesson
+	(*EnrollmentOutlineSection)(nil),                      // 53: teamos.academy.v1.EnrollmentOutlineSection
+	(*EnrollmentOutline)(nil),                             // 54: teamos.academy.v1.EnrollmentOutline
+	(*EnrollmentLesson)(nil),                              // 55: teamos.academy.v1.EnrollmentLesson
+	(*EnrollmentProgressSnapshot)(nil),                    // 56: teamos.academy.v1.EnrollmentProgressSnapshot
+	(*EnrollmentReport)(nil),                              // 57: teamos.academy.v1.EnrollmentReport
+	(*CourseRestriction)(nil),                             // 58: teamos.academy.v1.CourseRestriction
+	(*CourseOrigin)(nil),                                  // 59: teamos.academy.v1.CourseOrigin
+	(*PartnerCourseCopyResult)(nil),                       // 60: teamos.academy.v1.PartnerCourseCopyResult
+	(*PartnerCourseGroup)(nil),                            // 61: teamos.academy.v1.PartnerCourseGroup
+	(*PartnerCourseReportSummary)(nil),                    // 62: teamos.academy.v1.PartnerCourseReportSummary
+	(*PartnerCourseOperationalReport)(nil),                // 63: teamos.academy.v1.PartnerCourseOperationalReport
+	(*PartnerCoursesReport)(nil),                          // 64: teamos.academy.v1.PartnerCoursesReport
+	(*CourseVersionPreview)(nil),                          // 65: teamos.academy.v1.CourseVersionPreview
+	(*CoursePreviewQuizAttemptResult)(nil),                // 66: teamos.academy.v1.CoursePreviewQuizAttemptResult
+	(*CourseTemplate)(nil),                                // 67: teamos.academy.v1.CourseTemplate
+	(*CourseTemplateVersion)(nil),                         // 68: teamos.academy.v1.CourseTemplateVersion
+	(*CourseTemplateVersionSection)(nil),                  // 69: teamos.academy.v1.CourseTemplateVersionSection
+	(*CourseTemplateVersionLesson)(nil),                   // 70: teamos.academy.v1.CourseTemplateVersionLesson
+	(*CourseTemplateVersionQuiz)(nil),                     // 71: teamos.academy.v1.CourseTemplateVersionQuiz
+	(*CourseTemplateVersionContent)(nil),                  // 72: teamos.academy.v1.CourseTemplateVersionContent
+	(*CourseTemplateVersionDetails)(nil),                  // 73: teamos.academy.v1.CourseTemplateVersionDetails
+	(*CourseTemplateDraftQuizInput)(nil),                  // 74: teamos.academy.v1.CourseTemplateDraftQuizInput
+	(*CourseTemplateDraftLessonInput)(nil),                // 75: teamos.academy.v1.CourseTemplateDraftLessonInput
+	(*CourseTemplateDraftSectionInput)(nil),               // 76: teamos.academy.v1.CourseTemplateDraftSectionInput
+	(*CourseTemplateDraftContentInput)(nil),               // 77: teamos.academy.v1.CourseTemplateDraftContentInput
+	(*CourseTemplateInstantiationResult)(nil),             // 78: teamos.academy.v1.CourseTemplateInstantiationResult
+	(*GetCoursesRequest)(nil),                             // 79: teamos.academy.v1.GetCoursesRequest
+	(*GetCoursesResponse)(nil),                            // 80: teamos.academy.v1.GetCoursesResponse
+	(*GetCourseRequest)(nil),                              // 81: teamos.academy.v1.GetCourseRequest
+	(*GetCourseResponse)(nil),                             // 82: teamos.academy.v1.GetCourseResponse
+	(*GetPublicCourseRequest)(nil),                        // 83: teamos.academy.v1.GetPublicCourseRequest
+	(*GetPublicCourseResponse)(nil),                       // 84: teamos.academy.v1.GetPublicCourseResponse
+	(*CreateCourseRequest)(nil),                           // 85: teamos.academy.v1.CreateCourseRequest
+	(*CreateCourseResponse)(nil),                          // 86: teamos.academy.v1.CreateCourseResponse
+	(*CreateCourseFromKbRequest)(nil),                     // 87: teamos.academy.v1.CreateCourseFromKbRequest
+	(*CreateCourseFromKbResponse)(nil),                    // 88: teamos.academy.v1.CreateCourseFromKbResponse
+	(*UpdateCourseRequest)(nil),                           // 89: teamos.academy.v1.UpdateCourseRequest
+	(*UpdateCourseResponse)(nil),                          // 90: teamos.academy.v1.UpdateCourseResponse
+	(*ArchiveCourseRequest)(nil),                          // 91: teamos.academy.v1.ArchiveCourseRequest
+	(*ArchiveCourseResponse)(nil),                         // 92: teamos.academy.v1.ArchiveCourseResponse
+	(*RestoreCourseRequest)(nil),                          // 93: teamos.academy.v1.RestoreCourseRequest
+	(*RestoreCourseResponse)(nil),                         // 94: teamos.academy.v1.RestoreCourseResponse
+	(*DeleteCourseRequest)(nil),                           // 95: teamos.academy.v1.DeleteCourseRequest
+	(*DeleteCourseResponse)(nil),                          // 96: teamos.academy.v1.DeleteCourseResponse
+	(*GetCourseVersionsRequest)(nil),                      // 97: teamos.academy.v1.GetCourseVersionsRequest
+	(*GetCourseVersionsResponse)(nil),                     // 98: teamos.academy.v1.GetCourseVersionsResponse
+	(*GetCourseVersionRequest)(nil),                       // 99: teamos.academy.v1.GetCourseVersionRequest
+	(*GetCourseVersionResponse)(nil),                      // 100: teamos.academy.v1.GetCourseVersionResponse
+	(*CreateCourseDraftRequest)(nil),                      // 101: teamos.academy.v1.CreateCourseDraftRequest
+	(*CreateCourseDraftResponse)(nil),                     // 102: teamos.academy.v1.CreateCourseDraftResponse
+	(*UpdateCourseDraftRequest)(nil),                      // 103: teamos.academy.v1.UpdateCourseDraftRequest
+	(*UpdateCourseDraftResponse)(nil),                     // 104: teamos.academy.v1.UpdateCourseDraftResponse
+	(*PublishCourseVersionRequest)(nil),                   // 105: teamos.academy.v1.PublishCourseVersionRequest
+	(*PublishCourseVersionResponse)(nil),                  // 106: teamos.academy.v1.PublishCourseVersionResponse
+	(*GetPublishedCourseVersionRequest)(nil),              // 107: teamos.academy.v1.GetPublishedCourseVersionRequest
+	(*GetPublishedCourseVersionResponse)(nil),             // 108: teamos.academy.v1.GetPublishedCourseVersionResponse
+	(*CreateCourseVersionSectionRequest)(nil),             // 109: teamos.academy.v1.CreateCourseVersionSectionRequest
+	(*CreateCourseVersionSectionResponse)(nil),            // 110: teamos.academy.v1.CreateCourseVersionSectionResponse
+	(*UpdateCourseVersionSectionRequest)(nil),             // 111: teamos.academy.v1.UpdateCourseVersionSectionRequest
+	(*UpdateCourseVersionSectionResponse)(nil),            // 112: teamos.academy.v1.UpdateCourseVersionSectionResponse
+	(*DeleteCourseVersionSectionRequest)(nil),             // 113: teamos.academy.v1.DeleteCourseVersionSectionRequest
+	(*DeleteCourseVersionSectionResponse)(nil),            // 114: teamos.academy.v1.DeleteCourseVersionSectionResponse
+	(*CreateCourseVersionLessonRequest)(nil),              // 115: teamos.academy.v1.CreateCourseVersionLessonRequest
+	(*CreateCourseVersionLessonResponse)(nil),             // 116: teamos.academy.v1.CreateCourseVersionLessonResponse
+	(*UpdateCourseVersionLessonRequest)(nil),              // 117: teamos.academy.v1.UpdateCourseVersionLessonRequest
+	(*UpdateCourseVersionLessonResponse)(nil),             // 118: teamos.academy.v1.UpdateCourseVersionLessonResponse
+	(*DeleteCourseVersionLessonRequest)(nil),              // 119: teamos.academy.v1.DeleteCourseVersionLessonRequest
+	(*DeleteCourseVersionLessonResponse)(nil),             // 120: teamos.academy.v1.DeleteCourseVersionLessonResponse
+	(*MoveCourseVersionLessonRequest)(nil),                // 121: teamos.academy.v1.MoveCourseVersionLessonRequest
+	(*MoveCourseVersionLessonResponse)(nil),               // 122: teamos.academy.v1.MoveCourseVersionLessonResponse
+	(*UpsertCourseVersionQuizRequest)(nil),                // 123: teamos.academy.v1.UpsertCourseVersionQuizRequest
+	(*UpsertCourseVersionQuizResponse)(nil),               // 124: teamos.academy.v1.UpsertCourseVersionQuizResponse
+	(*DeleteCourseVersionQuizRequest)(nil),                // 125: teamos.academy.v1.DeleteCourseVersionQuizRequest
+	(*DeleteCourseVersionQuizResponse)(nil),               // 126: teamos.academy.v1.DeleteCourseVersionQuizResponse
+	(*GetCourseSectionsRequest)(nil),                      // 127: teamos.academy.v1.GetCourseSectionsRequest
+	(*GetCourseSectionsResponse)(nil),                     // 128: teamos.academy.v1.GetCourseSectionsResponse
+	(*CreateCourseSectionRequest)(nil),                    // 129: teamos.academy.v1.CreateCourseSectionRequest
+	(*CreateCourseSectionResponse)(nil),                   // 130: teamos.academy.v1.CreateCourseSectionResponse
+	(*UpdateCourseSectionRequest)(nil),                    // 131: teamos.academy.v1.UpdateCourseSectionRequest
+	(*UpdateCourseSectionResponse)(nil),                   // 132: teamos.academy.v1.UpdateCourseSectionResponse
+	(*DeleteCourseSectionRequest)(nil),                    // 133: teamos.academy.v1.DeleteCourseSectionRequest
+	(*DeleteCourseSectionResponse)(nil),                   // 134: teamos.academy.v1.DeleteCourseSectionResponse
+	(*GetLessonsRequest)(nil),                             // 135: teamos.academy.v1.GetLessonsRequest
+	(*GetLessonsResponse)(nil),                            // 136: teamos.academy.v1.GetLessonsResponse
+	(*CreateLessonRequest)(nil),                           // 137: teamos.academy.v1.CreateLessonRequest
+	(*CreateLessonResponse)(nil),                          // 138: teamos.academy.v1.CreateLessonResponse
+	(*UpdateLessonRequest)(nil),                           // 139: teamos.academy.v1.UpdateLessonRequest
+	(*UpdateLessonResponse)(nil),                          // 140: teamos.academy.v1.UpdateLessonResponse
+	(*DeleteLessonRequest)(nil),                           // 141: teamos.academy.v1.DeleteLessonRequest
+	(*DeleteLessonResponse)(nil),                          // 142: teamos.academy.v1.DeleteLessonResponse
+	(*MoveLessonRequest)(nil),                             // 143: teamos.academy.v1.MoveLessonRequest
+	(*MoveLessonResponse)(nil),                            // 144: teamos.academy.v1.MoveLessonResponse
+	(*GetQuizzesRequest)(nil),                             // 145: teamos.academy.v1.GetQuizzesRequest
+	(*GetQuizzesResponse)(nil),                            // 146: teamos.academy.v1.GetQuizzesResponse
+	(*UpsertQuizRequest)(nil),                             // 147: teamos.academy.v1.UpsertQuizRequest
+	(*UpsertQuizResponse)(nil),                            // 148: teamos.academy.v1.UpsertQuizResponse
+	(*GetAssignmentsRequest)(nil),                         // 149: teamos.academy.v1.GetAssignmentsRequest
+	(*GetAssignmentsResponse)(nil),                        // 150: teamos.academy.v1.GetAssignmentsResponse
+	(*AssignCourseRequest)(nil),                           // 151: teamos.academy.v1.AssignCourseRequest
+	(*AssignCourseResponse)(nil),                          // 152: teamos.academy.v1.AssignCourseResponse
+	(*RevokeAssignmentRequest)(nil),                       // 153: teamos.academy.v1.RevokeAssignmentRequest
+	(*RevokeAssignmentResponse)(nil),                      // 154: teamos.academy.v1.RevokeAssignmentResponse
+	(*GetProgressRequest)(nil),                            // 155: teamos.academy.v1.GetProgressRequest
+	(*GetProgressResponse)(nil),                           // 156: teamos.academy.v1.GetProgressResponse
+	(*MarkLessonCompleteRequest)(nil),                     // 157: teamos.academy.v1.MarkLessonCompleteRequest
+	(*MarkLessonCompleteResponse)(nil),                    // 158: teamos.academy.v1.MarkLessonCompleteResponse
+	(*GetEnrollmentsRequest)(nil),                         // 159: teamos.academy.v1.GetEnrollmentsRequest
+	(*GetEnrollmentsResponse)(nil),                        // 160: teamos.academy.v1.GetEnrollmentsResponse
+	(*GetInternalEnrollmentReportPageRequest)(nil),        // 161: teamos.academy.v1.GetInternalEnrollmentReportPageRequest
+	(*GetInternalEnrollmentReportPageResponse)(nil),       // 162: teamos.academy.v1.GetInternalEnrollmentReportPageResponse
+	(*CatalogCourseCard)(nil),                             // 163: teamos.academy.v1.CatalogCourseCard
+	(*GetAcademyCatalogRequest)(nil),                      // 164: teamos.academy.v1.GetAcademyCatalogRequest
+	(*GetAcademyCatalogResponse)(nil),                     // 165: teamos.academy.v1.GetAcademyCatalogResponse
+	(*GetCoursePartnerAudienceRequest)(nil),               // 166: teamos.academy.v1.GetCoursePartnerAudienceRequest
+	(*GetCoursePartnerAudienceResponse)(nil),              // 167: teamos.academy.v1.GetCoursePartnerAudienceResponse
+	(*SetCoursePartnerAudienceRequest)(nil),               // 168: teamos.academy.v1.SetCoursePartnerAudienceRequest
+	(*SetCoursePartnerAudienceResponse)(nil),              // 169: teamos.academy.v1.SetCoursePartnerAudienceResponse
+	(*SelfEnrollCourseRequest)(nil),                       // 170: teamos.academy.v1.SelfEnrollCourseRequest
+	(*SelfEnrollCourseResponse)(nil),                      // 171: teamos.academy.v1.SelfEnrollCourseResponse
+	(*GetCatalogCourseVersionRequest)(nil),                // 172: teamos.academy.v1.GetCatalogCourseVersionRequest
+	(*GetCatalogCourseVersionResponse)(nil),               // 173: teamos.academy.v1.GetCatalogCourseVersionResponse
+	(*GetEnrollmentRequest)(nil),                          // 174: teamos.academy.v1.GetEnrollmentRequest
+	(*GetEnrollmentResponse)(nil),                         // 175: teamos.academy.v1.GetEnrollmentResponse
+	(*GetEnrollmentOutlineRequest)(nil),                   // 176: teamos.academy.v1.GetEnrollmentOutlineRequest
+	(*GetEnrollmentOutlineResponse)(nil),                  // 177: teamos.academy.v1.GetEnrollmentOutlineResponse
+	(*GetEnrollmentLessonRequest)(nil),                    // 178: teamos.academy.v1.GetEnrollmentLessonRequest
+	(*GetEnrollmentLessonResponse)(nil),                   // 179: teamos.academy.v1.GetEnrollmentLessonResponse
+	(*ResumeEnrollmentRequest)(nil),                       // 180: teamos.academy.v1.ResumeEnrollmentRequest
+	(*ResumeEnrollmentResponse)(nil),                      // 181: teamos.academy.v1.ResumeEnrollmentResponse
+	(*CompleteEnrollmentLessonRequest)(nil),               // 182: teamos.academy.v1.CompleteEnrollmentLessonRequest
+	(*CompleteEnrollmentLessonResponse)(nil),              // 183: teamos.academy.v1.CompleteEnrollmentLessonResponse
+	(*SubmitEnrollmentQuizAttemptRequest)(nil),            // 184: teamos.academy.v1.SubmitEnrollmentQuizAttemptRequest
+	(*SubmitEnrollmentQuizAttemptResponse)(nil),           // 185: teamos.academy.v1.SubmitEnrollmentQuizAttemptResponse
+	(*ReviewEnrollmentQuizAttemptRequest)(nil),            // 186: teamos.academy.v1.ReviewEnrollmentQuizAttemptRequest
+	(*ReviewEnrollmentQuizAttemptResponse)(nil),           // 187: teamos.academy.v1.ReviewEnrollmentQuizAttemptResponse
+	(*GetEnrollmentReportRequest)(nil),                    // 188: teamos.academy.v1.GetEnrollmentReportRequest
+	(*GetEnrollmentReportResponse)(nil),                   // 189: teamos.academy.v1.GetEnrollmentReportResponse
+	(*GetPartnerCourseGroupsRequest)(nil),                 // 190: teamos.academy.v1.GetPartnerCourseGroupsRequest
+	(*GetPartnerCourseGroupsResponse)(nil),                // 191: teamos.academy.v1.GetPartnerCourseGroupsResponse
+	(*GetPartnerCoursesReportRequest)(nil),                // 192: teamos.academy.v1.GetPartnerCoursesReportRequest
+	(*GetPartnerCoursesReportResponse)(nil),               // 193: teamos.academy.v1.GetPartnerCoursesReportResponse
+	(*GetCourseVersionPreviewRequest)(nil),                // 194: teamos.academy.v1.GetCourseVersionPreviewRequest
+	(*GetCourseVersionPreviewResponse)(nil),               // 195: teamos.academy.v1.GetCourseVersionPreviewResponse
+	(*SubmitCoursePreviewQuizAttemptRequest)(nil),         // 196: teamos.academy.v1.SubmitCoursePreviewQuizAttemptRequest
+	(*SubmitCoursePreviewQuizAttemptResponse)(nil),        // 197: teamos.academy.v1.SubmitCoursePreviewQuizAttemptResponse
+	(*PausePartnerCourseDistributionRequest)(nil),         // 198: teamos.academy.v1.PausePartnerCourseDistributionRequest
+	(*PausePartnerCourseDistributionResponse)(nil),        // 199: teamos.academy.v1.PausePartnerCourseDistributionResponse
+	(*BlockPartnerCourseRequest)(nil),                     // 200: teamos.academy.v1.BlockPartnerCourseRequest
+	(*BlockPartnerCourseResponse)(nil),                    // 201: teamos.academy.v1.BlockPartnerCourseResponse
+	(*ResolvePartnerCourseRestrictionRequest)(nil),        // 202: teamos.academy.v1.ResolvePartnerCourseRestrictionRequest
+	(*ResolvePartnerCourseRestrictionResponse)(nil),       // 203: teamos.academy.v1.ResolvePartnerCourseRestrictionResponse
+	(*GetCourseRestrictionsRequest)(nil),                  // 204: teamos.academy.v1.GetCourseRestrictionsRequest
+	(*GetCourseRestrictionsResponse)(nil),                 // 205: teamos.academy.v1.GetCourseRestrictionsResponse
+	(*CopyPartnerCourseVersionToCompanyRequest)(nil),      // 206: teamos.academy.v1.CopyPartnerCourseVersionToCompanyRequest
+	(*CopyPartnerCourseVersionToCompanyResponse)(nil),     // 207: teamos.academy.v1.CopyPartnerCourseVersionToCompanyResponse
+	(*GetCourseTemplatesRequest)(nil),                     // 208: teamos.academy.v1.GetCourseTemplatesRequest
+	(*GetCourseTemplatesResponse)(nil),                    // 209: teamos.academy.v1.GetCourseTemplatesResponse
+	(*GetCourseTemplateRequest)(nil),                      // 210: teamos.academy.v1.GetCourseTemplateRequest
+	(*GetCourseTemplateResponse)(nil),                     // 211: teamos.academy.v1.GetCourseTemplateResponse
+	(*CreateCourseTemplateRequest)(nil),                   // 212: teamos.academy.v1.CreateCourseTemplateRequest
+	(*CreateCourseTemplateResponse)(nil),                  // 213: teamos.academy.v1.CreateCourseTemplateResponse
+	(*UpdateCourseTemplateDraftRequest)(nil),              // 214: teamos.academy.v1.UpdateCourseTemplateDraftRequest
+	(*UpdateCourseTemplateDraftResponse)(nil),             // 215: teamos.academy.v1.UpdateCourseTemplateDraftResponse
+	(*CreateCourseTemplateDraftRequest)(nil),              // 216: teamos.academy.v1.CreateCourseTemplateDraftRequest
+	(*CreateCourseTemplateDraftResponse)(nil),             // 217: teamos.academy.v1.CreateCourseTemplateDraftResponse
+	(*PublishCourseTemplateVersionRequest)(nil),           // 218: teamos.academy.v1.PublishCourseTemplateVersionRequest
+	(*PublishCourseTemplateVersionResponse)(nil),          // 219: teamos.academy.v1.PublishCourseTemplateVersionResponse
+	(*ArchiveCourseTemplateRequest)(nil),                  // 220: teamos.academy.v1.ArchiveCourseTemplateRequest
+	(*ArchiveCourseTemplateResponse)(nil),                 // 221: teamos.academy.v1.ArchiveCourseTemplateResponse
+	(*InstantiateCourseTemplateVersionRequest)(nil),       // 222: teamos.academy.v1.InstantiateCourseTemplateVersionRequest
+	(*InstantiateCourseTemplateVersionResponse)(nil),      // 223: teamos.academy.v1.InstantiateCourseTemplateVersionResponse
+	(*ExternalPersonalAccess)(nil),                        // 224: teamos.academy.v1.ExternalPersonalAccess
+	(*ExternalPersonalAccessCreated)(nil),                 // 225: teamos.academy.v1.ExternalPersonalAccessCreated
+	(*ExternalCampaign)(nil),                              // 226: teamos.academy.v1.ExternalCampaign
+	(*ExternalCampaignCreated)(nil),                       // 227: teamos.academy.v1.ExternalCampaignCreated
+	(*CampaignFunnel)(nil),                                // 228: teamos.academy.v1.CampaignFunnel
+	(*CampaignLessonDropOff)(nil),                         // 229: teamos.academy.v1.CampaignLessonDropOff
+	(*CampaignAttribution)(nil),                           // 230: teamos.academy.v1.CampaignAttribution
+	(*CampaignVersionAnalytics)(nil),                      // 231: teamos.academy.v1.CampaignVersionAnalytics
+	(*CampaignAnalytics)(nil),                             // 232: teamos.academy.v1.CampaignAnalytics
+	(*ExternalCampaignReport)(nil),                        // 233: teamos.academy.v1.ExternalCampaignReport
+	(*CourseExternalReport)(nil),                          // 234: teamos.academy.v1.CourseExternalReport
+	(*ExternalLearnerTimelineEvent)(nil),                  // 235: teamos.academy.v1.ExternalLearnerTimelineEvent
+	(*ExternalLearnerTimeline)(nil),                       // 236: teamos.academy.v1.ExternalLearnerTimeline
+	(*ExternalLearner)(nil),                               // 237: teamos.academy.v1.ExternalLearner
+	(*PartnerExternalReportRow)(nil),                      // 238: teamos.academy.v1.PartnerExternalReportRow
+	(*GetPartnerExternalReportPageRequest)(nil),           // 239: teamos.academy.v1.GetPartnerExternalReportPageRequest
+	(*GetPartnerExternalReportPageResponse)(nil),          // 240: teamos.academy.v1.GetPartnerExternalReportPageResponse
+	(*PublicAcademyOutlineLesson)(nil),                    // 241: teamos.academy.v1.PublicAcademyOutlineLesson
+	(*PublicAcademyOutlineSection)(nil),                   // 242: teamos.academy.v1.PublicAcademyOutlineSection
+	(*PublicAcademyAccess)(nil),                           // 243: teamos.academy.v1.PublicAcademyAccess
+	(*ExternalVerificationChallenge)(nil),                 // 244: teamos.academy.v1.ExternalVerificationChallenge
+	(*ExternalVerificationConfirmed)(nil),                 // 245: teamos.academy.v1.ExternalVerificationConfirmed
+	(*ExternalQuizAttemptResult)(nil),                     // 246: teamos.academy.v1.ExternalQuizAttemptResult
+	(*ExternalEnrollmentResults)(nil),                     // 247: teamos.academy.v1.ExternalEnrollmentResults
+	(*CreateExternalPersonalAccessRequest)(nil),           // 248: teamos.academy.v1.CreateExternalPersonalAccessRequest
+	(*CreateExternalPersonalAccessResponse)(nil),          // 249: teamos.academy.v1.CreateExternalPersonalAccessResponse
+	(*GetExternalPersonalAccessesRequest)(nil),            // 250: teamos.academy.v1.GetExternalPersonalAccessesRequest
+	(*GetExternalPersonalAccessesResponse)(nil),           // 251: teamos.academy.v1.GetExternalPersonalAccessesResponse
+	(*GetExternalPersonalAccessRequest)(nil),              // 252: teamos.academy.v1.GetExternalPersonalAccessRequest
+	(*GetExternalPersonalAccessResponse)(nil),             // 253: teamos.academy.v1.GetExternalPersonalAccessResponse
+	(*ExtendExternalPersonalAccessRequest)(nil),           // 254: teamos.academy.v1.ExtendExternalPersonalAccessRequest
+	(*ExtendExternalPersonalAccessResponse)(nil),          // 255: teamos.academy.v1.ExtendExternalPersonalAccessResponse
+	(*RotateExternalPersonalAccessTokenRequest)(nil),      // 256: teamos.academy.v1.RotateExternalPersonalAccessTokenRequest
+	(*RotateExternalPersonalAccessTokenResponse)(nil),     // 257: teamos.academy.v1.RotateExternalPersonalAccessTokenResponse
+	(*RevokeExternalPersonalAccessRequest)(nil),           // 258: teamos.academy.v1.RevokeExternalPersonalAccessRequest
+	(*RevokeExternalPersonalAccessResponse)(nil),          // 259: teamos.academy.v1.RevokeExternalPersonalAccessResponse
+	(*RepeatExternalPersonalAccessRequest)(nil),           // 260: teamos.academy.v1.RepeatExternalPersonalAccessRequest
+	(*RepeatExternalPersonalAccessResponse)(nil),          // 261: teamos.academy.v1.RepeatExternalPersonalAccessResponse
+	(*CreateExternalCampaignRequest)(nil),                 // 262: teamos.academy.v1.CreateExternalCampaignRequest
+	(*CreateExternalCampaignResponse)(nil),                // 263: teamos.academy.v1.CreateExternalCampaignResponse
+	(*GetExternalCampaignsRequest)(nil),                   // 264: teamos.academy.v1.GetExternalCampaignsRequest
+	(*GetExternalCampaignsResponse)(nil),                  // 265: teamos.academy.v1.GetExternalCampaignsResponse
+	(*GetExternalCampaignRequest)(nil),                    // 266: teamos.academy.v1.GetExternalCampaignRequest
+	(*GetExternalCampaignResponse)(nil),                   // 267: teamos.academy.v1.GetExternalCampaignResponse
+	(*PauseExternalCampaignRequest)(nil),                  // 268: teamos.academy.v1.PauseExternalCampaignRequest
+	(*PauseExternalCampaignResponse)(nil),                 // 269: teamos.academy.v1.PauseExternalCampaignResponse
+	(*ResumeExternalCampaignRequest)(nil),                 // 270: teamos.academy.v1.ResumeExternalCampaignRequest
+	(*ResumeExternalCampaignResponse)(nil),                // 271: teamos.academy.v1.ResumeExternalCampaignResponse
+	(*RotateExternalCampaignTokenRequest)(nil),            // 272: teamos.academy.v1.RotateExternalCampaignTokenRequest
+	(*RotateExternalCampaignTokenResponse)(nil),           // 273: teamos.academy.v1.RotateExternalCampaignTokenResponse
+	(*RevokeExternalCampaignRequest)(nil),                 // 274: teamos.academy.v1.RevokeExternalCampaignRequest
+	(*RevokeExternalCampaignResponse)(nil),                // 275: teamos.academy.v1.RevokeExternalCampaignResponse
+	(*GetExternalCampaignReportRequest)(nil),              // 276: teamos.academy.v1.GetExternalCampaignReportRequest
+	(*GetExternalCampaignReportResponse)(nil),             // 277: teamos.academy.v1.GetExternalCampaignReportResponse
+	(*GetCourseExternalReportRequest)(nil),                // 278: teamos.academy.v1.GetCourseExternalReportRequest
+	(*GetCourseExternalReportResponse)(nil),               // 279: teamos.academy.v1.GetCourseExternalReportResponse
+	(*GetPublicAcademyAccessRequest)(nil),                 // 280: teamos.academy.v1.GetPublicAcademyAccessRequest
+	(*GetPublicAcademyAccessResponse)(nil),                // 281: teamos.academy.v1.GetPublicAcademyAccessResponse
+	(*RequestPublicAcademyVerificationRequest)(nil),       // 282: teamos.academy.v1.RequestPublicAcademyVerificationRequest
+	(*RequestPublicAcademyVerificationResponse)(nil),      // 283: teamos.academy.v1.RequestPublicAcademyVerificationResponse
+	(*ConfirmPublicAcademyVerificationRequest)(nil),       // 284: teamos.academy.v1.ConfirmPublicAcademyVerificationRequest
+	(*ConfirmPublicAcademyVerificationResponse)(nil),      // 285: teamos.academy.v1.ConfirmPublicAcademyVerificationResponse
+	(*ActivatePublicAcademyAccessRequest)(nil),            // 286: teamos.academy.v1.ActivatePublicAcademyAccessRequest
+	(*ActivatePublicAcademyAccessResponse)(nil),           // 287: teamos.academy.v1.ActivatePublicAcademyAccessResponse
+	(*GetPublicAcademyEnrollmentRequest)(nil),             // 288: teamos.academy.v1.GetPublicAcademyEnrollmentRequest
+	(*GetPublicAcademyEnrollmentResponse)(nil),            // 289: teamos.academy.v1.GetPublicAcademyEnrollmentResponse
+	(*GetPublicAcademyEnrollmentOutlineRequest)(nil),      // 290: teamos.academy.v1.GetPublicAcademyEnrollmentOutlineRequest
+	(*GetPublicAcademyEnrollmentOutlineResponse)(nil),     // 291: teamos.academy.v1.GetPublicAcademyEnrollmentOutlineResponse
+	(*GetPublicAcademyEnrollmentLessonRequest)(nil),       // 292: teamos.academy.v1.GetPublicAcademyEnrollmentLessonRequest
+	(*GetPublicAcademyEnrollmentLessonResponse)(nil),      // 293: teamos.academy.v1.GetPublicAcademyEnrollmentLessonResponse
+	(*CompletePublicAcademyEnrollmentLessonRequest)(nil),  // 294: teamos.academy.v1.CompletePublicAcademyEnrollmentLessonRequest
+	(*CompletePublicAcademyEnrollmentLessonResponse)(nil), // 295: teamos.academy.v1.CompletePublicAcademyEnrollmentLessonResponse
+	(*SubmitPublicAcademyQuizAttemptRequest)(nil),         // 296: teamos.academy.v1.SubmitPublicAcademyQuizAttemptRequest
+	(*SubmitPublicAcademyQuizAttemptResponse)(nil),        // 297: teamos.academy.v1.SubmitPublicAcademyQuizAttemptResponse
+	(*GetPublicAcademyEnrollmentResultsRequest)(nil),      // 298: teamos.academy.v1.GetPublicAcademyEnrollmentResultsRequest
+	(*GetPublicAcademyEnrollmentResultsResponse)(nil),     // 299: teamos.academy.v1.GetPublicAcademyEnrollmentResultsResponse
+	(*GetExternalLearnersRequest)(nil),                    // 300: teamos.academy.v1.GetExternalLearnersRequest
+	(*GetExternalLearnersResponse)(nil),                   // 301: teamos.academy.v1.GetExternalLearnersResponse
+	(*GetExternalLearnerRequest)(nil),                     // 302: teamos.academy.v1.GetExternalLearnerRequest
+	(*GetExternalLearnerResponse)(nil),                    // 303: teamos.academy.v1.GetExternalLearnerResponse
+	(*GetExternalLearnerEnrollmentsRequest)(nil),          // 304: teamos.academy.v1.GetExternalLearnerEnrollmentsRequest
+	(*GetExternalLearnerEnrollmentsResponse)(nil),         // 305: teamos.academy.v1.GetExternalLearnerEnrollmentsResponse
+	(*GetExternalLearnerTimelineRequest)(nil),             // 306: teamos.academy.v1.GetExternalLearnerTimelineRequest
+	(*GetExternalLearnerTimelineResponse)(nil),            // 307: teamos.academy.v1.GetExternalLearnerTimelineResponse
+	(*AcademyTemplateCapabilities)(nil),                   // 308: teamos.academy.v1.AcademyTemplateCapabilities
+	(*AcademyTemplateSummary)(nil),                        // 309: teamos.academy.v1.AcademyTemplateSummary
+	(*timestamppb.Timestamp)(nil),                         // 310: google.protobuf.Timestamp
+	(*structpb.Struct)(nil),                               // 311: google.protobuf.Struct
 }
 var file_proto_academy_v1_academy_proto_depIdxs = []int32{
 	0,   // 0: teamos.academy.v1.Course.status:type_name -> teamos.academy.v1.CourseStatus
-	293, // 1: teamos.academy.v1.Course.created_at:type_name -> google.protobuf.Timestamp
-	293, // 2: teamos.academy.v1.Course.updated_at:type_name -> google.protobuf.Timestamp
+	310, // 1: teamos.academy.v1.Course.created_at:type_name -> google.protobuf.Timestamp
+	310, // 2: teamos.academy.v1.Course.updated_at:type_name -> google.protobuf.Timestamp
 	1,   // 3: teamos.academy.v1.Course.visibility:type_name -> teamos.academy.v1.CourseVisibility
 	2,   // 4: teamos.academy.v1.Course.owner_type:type_name -> teamos.academy.v1.CourseOwnerType
 	3,   // 5: teamos.academy.v1.Course.lifecycle_status:type_name -> teamos.academy.v1.CourseLifecycleStatus
 	4,   // 6: teamos.academy.v1.Course.distribution_status:type_name -> teamos.academy.v1.CourseDistributionStatus
-	294, // 7: teamos.academy.v1.Lesson.content:type_name -> google.protobuf.Struct
+	311, // 7: teamos.academy.v1.Lesson.content:type_name -> google.protobuf.Struct
 	8,   // 8: teamos.academy.v1.Lesson.source_mode:type_name -> teamos.academy.v1.LessonSourceMode
 	9,   // 9: teamos.academy.v1.QuizQuestion.type:type_name -> teamos.academy.v1.QuizQuestionType
-	29,  // 10: teamos.academy.v1.QuizQuestion.options:type_name -> teamos.academy.v1.QuizOption
-	30,  // 11: teamos.academy.v1.Quiz.questions:type_name -> teamos.academy.v1.QuizQuestion
+	32,  // 10: teamos.academy.v1.QuizQuestion.options:type_name -> teamos.academy.v1.QuizOption
+	33,  // 11: teamos.academy.v1.Quiz.questions:type_name -> teamos.academy.v1.QuizQuestion
 	6,   // 12: teamos.academy.v1.CourseVersion.status:type_name -> teamos.academy.v1.CourseVersionStatus
-	293, // 13: teamos.academy.v1.CourseVersion.created_at:type_name -> google.protobuf.Timestamp
-	293, // 14: teamos.academy.v1.CourseVersion.published_at:type_name -> google.protobuf.Timestamp
-	294, // 15: teamos.academy.v1.CourseVersionLesson.content:type_name -> google.protobuf.Struct
+	310, // 13: teamos.academy.v1.CourseVersion.created_at:type_name -> google.protobuf.Timestamp
+	310, // 14: teamos.academy.v1.CourseVersion.published_at:type_name -> google.protobuf.Timestamp
+	311, // 15: teamos.academy.v1.CourseVersionLesson.content:type_name -> google.protobuf.Struct
 	7,   // 16: teamos.academy.v1.CourseVersionLesson.source_type:type_name -> teamos.academy.v1.CourseLessonSourceType
-	30,  // 17: teamos.academy.v1.CourseVersionQuiz.questions:type_name -> teamos.academy.v1.QuizQuestion
+	33,  // 17: teamos.academy.v1.CourseVersionQuiz.questions:type_name -> teamos.academy.v1.QuizQuestion
 	9,   // 18: teamos.academy.v1.LearnerQuizQuestion.type:type_name -> teamos.academy.v1.QuizQuestionType
-	36,  // 19: teamos.academy.v1.LearnerQuizQuestion.options:type_name -> teamos.academy.v1.LearnerQuizOption
-	37,  // 20: teamos.academy.v1.LearnerCourseVersionQuiz.questions:type_name -> teamos.academy.v1.LearnerQuizQuestion
-	294, // 21: teamos.academy.v1.LearnerCourseVersionLesson.content:type_name -> google.protobuf.Struct
-	38,  // 22: teamos.academy.v1.LearnerCourseVersionLesson.quiz:type_name -> teamos.academy.v1.LearnerCourseVersionQuiz
-	39,  // 23: teamos.academy.v1.LearnerCourseVersionSection.lessons:type_name -> teamos.academy.v1.LearnerCourseVersionLesson
-	40,  // 24: teamos.academy.v1.LearnerPublishedCourseVersion.sections:type_name -> teamos.academy.v1.LearnerCourseVersionSection
+	39,  // 19: teamos.academy.v1.LearnerQuizQuestion.options:type_name -> teamos.academy.v1.LearnerQuizOption
+	40,  // 20: teamos.academy.v1.LearnerCourseVersionQuiz.questions:type_name -> teamos.academy.v1.LearnerQuizQuestion
+	311, // 21: teamos.academy.v1.LearnerCourseVersionLesson.content:type_name -> google.protobuf.Struct
+	41,  // 22: teamos.academy.v1.LearnerCourseVersionLesson.quiz:type_name -> teamos.academy.v1.LearnerCourseVersionQuiz
+	42,  // 23: teamos.academy.v1.LearnerCourseVersionSection.lessons:type_name -> teamos.academy.v1.LearnerCourseVersionLesson
+	43,  // 24: teamos.academy.v1.LearnerPublishedCourseVersion.sections:type_name -> teamos.academy.v1.LearnerCourseVersionSection
 	10,  // 25: teamos.academy.v1.CourseAssignment.assignee_type:type_name -> teamos.academy.v1.AssigneeType
-	293, // 26: teamos.academy.v1.CourseAssignment.due_date:type_name -> google.protobuf.Timestamp
-	293, // 27: teamos.academy.v1.CourseAssignment.created_at:type_name -> google.protobuf.Timestamp
-	293, // 28: teamos.academy.v1.QuizAttempt.created_at:type_name -> google.protobuf.Timestamp
+	310, // 26: teamos.academy.v1.CourseAssignment.due_date:type_name -> google.protobuf.Timestamp
+	310, // 27: teamos.academy.v1.CourseAssignment.created_at:type_name -> google.protobuf.Timestamp
+	310, // 28: teamos.academy.v1.QuizAttempt.created_at:type_name -> google.protobuf.Timestamp
 	11,  // 29: teamos.academy.v1.CourseProgress.status:type_name -> teamos.academy.v1.CourseProgressStatus
-	43,  // 30: teamos.academy.v1.CourseProgress.quiz_attempts:type_name -> teamos.academy.v1.QuizAttempt
-	293, // 31: teamos.academy.v1.CourseProgress.started_at:type_name -> google.protobuf.Timestamp
-	293, // 32: teamos.academy.v1.CourseProgress.completed_at:type_name -> google.protobuf.Timestamp
+	46,  // 30: teamos.academy.v1.CourseProgress.quiz_attempts:type_name -> teamos.academy.v1.QuizAttempt
+	310, // 31: teamos.academy.v1.CourseProgress.started_at:type_name -> google.protobuf.Timestamp
+	310, // 32: teamos.academy.v1.CourseProgress.completed_at:type_name -> google.protobuf.Timestamp
 	12,  // 33: teamos.academy.v1.CourseEnrollment.learner_type:type_name -> teamos.academy.v1.EnrollmentLearnerType
 	13,  // 34: teamos.academy.v1.CourseEnrollment.source_type:type_name -> teamos.academy.v1.EnrollmentSourceType
 	14,  // 35: teamos.academy.v1.CourseEnrollment.progress_status:type_name -> teamos.academy.v1.EnrollmentProgressStatus
 	15,  // 36: teamos.academy.v1.CourseEnrollment.access_status:type_name -> teamos.academy.v1.EnrollmentAccessStatus
-	293, // 37: teamos.academy.v1.CourseEnrollment.activated_at:type_name -> google.protobuf.Timestamp
-	293, // 38: teamos.academy.v1.CourseEnrollment.access_until:type_name -> google.protobuf.Timestamp
-	293, // 39: teamos.academy.v1.CourseEnrollment.started_at:type_name -> google.protobuf.Timestamp
-	293, // 40: teamos.academy.v1.CourseEnrollment.completed_at:type_name -> google.protobuf.Timestamp
-	293, // 41: teamos.academy.v1.CourseEnrollment.last_activity_at:type_name -> google.protobuf.Timestamp
-	293, // 42: teamos.academy.v1.CourseEnrollment.frozen_at:type_name -> google.protobuf.Timestamp
-	293, // 43: teamos.academy.v1.CourseEnrollment.suspended_at:type_name -> google.protobuf.Timestamp
-	293, // 44: teamos.academy.v1.CourseEnrollment.created_at:type_name -> google.protobuf.Timestamp
-	293, // 45: teamos.academy.v1.CourseEnrollment.updated_at:type_name -> google.protobuf.Timestamp
-	293, // 46: teamos.academy.v1.CourseEnrollment.due_date:type_name -> google.protobuf.Timestamp
+	310, // 37: teamos.academy.v1.CourseEnrollment.activated_at:type_name -> google.protobuf.Timestamp
+	310, // 38: teamos.academy.v1.CourseEnrollment.access_until:type_name -> google.protobuf.Timestamp
+	310, // 39: teamos.academy.v1.CourseEnrollment.started_at:type_name -> google.protobuf.Timestamp
+	310, // 40: teamos.academy.v1.CourseEnrollment.completed_at:type_name -> google.protobuf.Timestamp
+	310, // 41: teamos.academy.v1.CourseEnrollment.last_activity_at:type_name -> google.protobuf.Timestamp
+	310, // 42: teamos.academy.v1.CourseEnrollment.frozen_at:type_name -> google.protobuf.Timestamp
+	310, // 43: teamos.academy.v1.CourseEnrollment.suspended_at:type_name -> google.protobuf.Timestamp
+	310, // 44: teamos.academy.v1.CourseEnrollment.created_at:type_name -> google.protobuf.Timestamp
+	310, // 45: teamos.academy.v1.CourseEnrollment.updated_at:type_name -> google.protobuf.Timestamp
+	310, // 46: teamos.academy.v1.CourseEnrollment.due_date:type_name -> google.protobuf.Timestamp
 	16,  // 47: teamos.academy.v1.EnrollmentLessonProgress.status:type_name -> teamos.academy.v1.EnrollmentLessonStatus
-	293, // 48: teamos.academy.v1.EnrollmentLessonProgress.first_opened_at:type_name -> google.protobuf.Timestamp
-	293, // 49: teamos.academy.v1.EnrollmentLessonProgress.completed_at:type_name -> google.protobuf.Timestamp
-	294, // 50: teamos.academy.v1.EnrollmentLessonProgress.last_position:type_name -> google.protobuf.Struct
-	47,  // 51: teamos.academy.v1.EnrollmentQuizAttempt.answers:type_name -> teamos.academy.v1.EnrollmentQuizAnswer
-	293, // 52: teamos.academy.v1.EnrollmentQuizAttempt.reviewed_at:type_name -> google.protobuf.Timestamp
-	293, // 53: teamos.academy.v1.EnrollmentQuizAttempt.created_at:type_name -> google.protobuf.Timestamp
+	310, // 48: teamos.academy.v1.EnrollmentLessonProgress.first_opened_at:type_name -> google.protobuf.Timestamp
+	310, // 49: teamos.academy.v1.EnrollmentLessonProgress.completed_at:type_name -> google.protobuf.Timestamp
+	311, // 50: teamos.academy.v1.EnrollmentLessonProgress.last_position:type_name -> google.protobuf.Struct
+	50,  // 51: teamos.academy.v1.EnrollmentQuizAttempt.answers:type_name -> teamos.academy.v1.EnrollmentQuizAnswer
+	310, // 52: teamos.academy.v1.EnrollmentQuizAttempt.reviewed_at:type_name -> google.protobuf.Timestamp
+	310, // 53: teamos.academy.v1.EnrollmentQuizAttempt.created_at:type_name -> google.protobuf.Timestamp
 	16,  // 54: teamos.academy.v1.EnrollmentOutlineLesson.status:type_name -> teamos.academy.v1.EnrollmentLessonStatus
-	49,  // 55: teamos.academy.v1.EnrollmentOutlineSection.lessons:type_name -> teamos.academy.v1.EnrollmentOutlineLesson
-	45,  // 56: teamos.academy.v1.EnrollmentOutline.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
-	50,  // 57: teamos.academy.v1.EnrollmentOutline.sections:type_name -> teamos.academy.v1.EnrollmentOutlineSection
-	45,  // 58: teamos.academy.v1.EnrollmentLesson.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
-	39,  // 59: teamos.academy.v1.EnrollmentLesson.lesson:type_name -> teamos.academy.v1.LearnerCourseVersionLesson
-	46,  // 60: teamos.academy.v1.EnrollmentLesson.progress:type_name -> teamos.academy.v1.EnrollmentLessonProgress
-	45,  // 61: teamos.academy.v1.EnrollmentProgressSnapshot.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
-	46,  // 62: teamos.academy.v1.EnrollmentProgressSnapshot.lessons:type_name -> teamos.academy.v1.EnrollmentLessonProgress
-	48,  // 63: teamos.academy.v1.EnrollmentProgressSnapshot.quiz_attempts:type_name -> teamos.academy.v1.EnrollmentQuizAttempt
-	45,  // 64: teamos.academy.v1.EnrollmentReport.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
-	32,  // 65: teamos.academy.v1.EnrollmentReport.version:type_name -> teamos.academy.v1.CourseVersion
-	46,  // 66: teamos.academy.v1.EnrollmentReport.lessons:type_name -> teamos.academy.v1.EnrollmentLessonProgress
-	48,  // 67: teamos.academy.v1.EnrollmentReport.quiz_attempts:type_name -> teamos.academy.v1.EnrollmentQuizAttempt
+	52,  // 55: teamos.academy.v1.EnrollmentOutlineSection.lessons:type_name -> teamos.academy.v1.EnrollmentOutlineLesson
+	48,  // 56: teamos.academy.v1.EnrollmentOutline.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
+	53,  // 57: teamos.academy.v1.EnrollmentOutline.sections:type_name -> teamos.academy.v1.EnrollmentOutlineSection
+	48,  // 58: teamos.academy.v1.EnrollmentLesson.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
+	42,  // 59: teamos.academy.v1.EnrollmentLesson.lesson:type_name -> teamos.academy.v1.LearnerCourseVersionLesson
+	49,  // 60: teamos.academy.v1.EnrollmentLesson.progress:type_name -> teamos.academy.v1.EnrollmentLessonProgress
+	48,  // 61: teamos.academy.v1.EnrollmentProgressSnapshot.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
+	49,  // 62: teamos.academy.v1.EnrollmentProgressSnapshot.lessons:type_name -> teamos.academy.v1.EnrollmentLessonProgress
+	51,  // 63: teamos.academy.v1.EnrollmentProgressSnapshot.quiz_attempts:type_name -> teamos.academy.v1.EnrollmentQuizAttempt
+	48,  // 64: teamos.academy.v1.EnrollmentReport.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
+	35,  // 65: teamos.academy.v1.EnrollmentReport.version:type_name -> teamos.academy.v1.CourseVersion
+	49,  // 66: teamos.academy.v1.EnrollmentReport.lessons:type_name -> teamos.academy.v1.EnrollmentLessonProgress
+	51,  // 67: teamos.academy.v1.EnrollmentReport.quiz_attempts:type_name -> teamos.academy.v1.EnrollmentQuizAttempt
 	17,  // 68: teamos.academy.v1.CourseRestriction.type:type_name -> teamos.academy.v1.CourseRestrictionType
-	293, // 69: teamos.academy.v1.CourseRestriction.created_at:type_name -> google.protobuf.Timestamp
-	293, // 70: teamos.academy.v1.CourseRestriction.resolved_at:type_name -> google.protobuf.Timestamp
+	310, // 69: teamos.academy.v1.CourseRestriction.created_at:type_name -> google.protobuf.Timestamp
+	310, // 70: teamos.academy.v1.CourseRestriction.resolved_at:type_name -> google.protobuf.Timestamp
 	5,   // 71: teamos.academy.v1.CourseOrigin.type:type_name -> teamos.academy.v1.CourseOriginType
-	293, // 72: teamos.academy.v1.CourseOrigin.instantiated_at:type_name -> google.protobuf.Timestamp
-	26,  // 73: teamos.academy.v1.PartnerCourseCopyResult.course:type_name -> teamos.academy.v1.Course
-	32,  // 74: teamos.academy.v1.PartnerCourseCopyResult.draft:type_name -> teamos.academy.v1.CourseVersion
-	56,  // 75: teamos.academy.v1.PartnerCourseCopyResult.origin:type_name -> teamos.academy.v1.CourseOrigin
-	26,  // 76: teamos.academy.v1.PartnerCourseGroup.courses:type_name -> teamos.academy.v1.Course
-	26,  // 77: teamos.academy.v1.PartnerCourseOperationalReport.course:type_name -> teamos.academy.v1.Course
-	59,  // 78: teamos.academy.v1.PartnerCoursesReport.summary:type_name -> teamos.academy.v1.PartnerCourseReportSummary
-	60,  // 79: teamos.academy.v1.PartnerCoursesReport.operational_courses:type_name -> teamos.academy.v1.PartnerCourseOperationalReport
-	220, // 80: teamos.academy.v1.PartnerCoursesReport.courses:type_name -> teamos.academy.v1.CourseExternalReport
-	26,  // 81: teamos.academy.v1.CourseVersionPreview.course:type_name -> teamos.academy.v1.Course
-	41,  // 82: teamos.academy.v1.CourseVersionPreview.version:type_name -> teamos.academy.v1.LearnerPublishedCourseVersion
+	310, // 72: teamos.academy.v1.CourseOrigin.instantiated_at:type_name -> google.protobuf.Timestamp
+	29,  // 73: teamos.academy.v1.PartnerCourseCopyResult.course:type_name -> teamos.academy.v1.Course
+	35,  // 74: teamos.academy.v1.PartnerCourseCopyResult.draft:type_name -> teamos.academy.v1.CourseVersion
+	59,  // 75: teamos.academy.v1.PartnerCourseCopyResult.origin:type_name -> teamos.academy.v1.CourseOrigin
+	29,  // 76: teamos.academy.v1.PartnerCourseGroup.courses:type_name -> teamos.academy.v1.Course
+	29,  // 77: teamos.academy.v1.PartnerCourseOperationalReport.course:type_name -> teamos.academy.v1.Course
+	62,  // 78: teamos.academy.v1.PartnerCoursesReport.summary:type_name -> teamos.academy.v1.PartnerCourseReportSummary
+	63,  // 79: teamos.academy.v1.PartnerCoursesReport.operational_courses:type_name -> teamos.academy.v1.PartnerCourseOperationalReport
+	234, // 80: teamos.academy.v1.PartnerCoursesReport.courses:type_name -> teamos.academy.v1.CourseExternalReport
+	29,  // 81: teamos.academy.v1.CourseVersionPreview.course:type_name -> teamos.academy.v1.Course
+	44,  // 82: teamos.academy.v1.CourseVersionPreview.version:type_name -> teamos.academy.v1.LearnerPublishedCourseVersion
 	18,  // 83: teamos.academy.v1.CourseTemplate.type:type_name -> teamos.academy.v1.CourseTemplateType
 	19,  // 84: teamos.academy.v1.CourseTemplate.lifecycle_status:type_name -> teamos.academy.v1.CourseTemplateLifecycleStatus
-	293, // 85: teamos.academy.v1.CourseTemplate.created_at:type_name -> google.protobuf.Timestamp
-	293, // 86: teamos.academy.v1.CourseTemplate.updated_at:type_name -> google.protobuf.Timestamp
+	310, // 85: teamos.academy.v1.CourseTemplate.created_at:type_name -> google.protobuf.Timestamp
+	310, // 86: teamos.academy.v1.CourseTemplate.updated_at:type_name -> google.protobuf.Timestamp
 	6,   // 87: teamos.academy.v1.CourseTemplateVersion.status:type_name -> teamos.academy.v1.CourseVersionStatus
-	293, // 88: teamos.academy.v1.CourseTemplateVersion.created_at:type_name -> google.protobuf.Timestamp
-	293, // 89: teamos.academy.v1.CourseTemplateVersion.published_at:type_name -> google.protobuf.Timestamp
-	294, // 90: teamos.academy.v1.CourseTemplateVersionLesson.content:type_name -> google.protobuf.Struct
+	310, // 88: teamos.academy.v1.CourseTemplateVersion.created_at:type_name -> google.protobuf.Timestamp
+	310, // 89: teamos.academy.v1.CourseTemplateVersion.published_at:type_name -> google.protobuf.Timestamp
+	311, // 90: teamos.academy.v1.CourseTemplateVersionLesson.content:type_name -> google.protobuf.Struct
 	7,   // 91: teamos.academy.v1.CourseTemplateVersionLesson.source_type:type_name -> teamos.academy.v1.CourseLessonSourceType
-	30,  // 92: teamos.academy.v1.CourseTemplateVersionQuiz.questions:type_name -> teamos.academy.v1.QuizQuestion
-	66,  // 93: teamos.academy.v1.CourseTemplateVersionContent.sections:type_name -> teamos.academy.v1.CourseTemplateVersionSection
-	67,  // 94: teamos.academy.v1.CourseTemplateVersionContent.lessons:type_name -> teamos.academy.v1.CourseTemplateVersionLesson
-	68,  // 95: teamos.academy.v1.CourseTemplateVersionContent.quizzes:type_name -> teamos.academy.v1.CourseTemplateVersionQuiz
-	65,  // 96: teamos.academy.v1.CourseTemplateVersionDetails.version:type_name -> teamos.academy.v1.CourseTemplateVersion
-	69,  // 97: teamos.academy.v1.CourseTemplateVersionDetails.content:type_name -> teamos.academy.v1.CourseTemplateVersionContent
-	30,  // 98: teamos.academy.v1.CourseTemplateDraftQuizInput.questions:type_name -> teamos.academy.v1.QuizQuestion
-	294, // 99: teamos.academy.v1.CourseTemplateDraftLessonInput.content:type_name -> google.protobuf.Struct
+	33,  // 92: teamos.academy.v1.CourseTemplateVersionQuiz.questions:type_name -> teamos.academy.v1.QuizQuestion
+	69,  // 93: teamos.academy.v1.CourseTemplateVersionContent.sections:type_name -> teamos.academy.v1.CourseTemplateVersionSection
+	70,  // 94: teamos.academy.v1.CourseTemplateVersionContent.lessons:type_name -> teamos.academy.v1.CourseTemplateVersionLesson
+	71,  // 95: teamos.academy.v1.CourseTemplateVersionContent.quizzes:type_name -> teamos.academy.v1.CourseTemplateVersionQuiz
+	68,  // 96: teamos.academy.v1.CourseTemplateVersionDetails.version:type_name -> teamos.academy.v1.CourseTemplateVersion
+	72,  // 97: teamos.academy.v1.CourseTemplateVersionDetails.content:type_name -> teamos.academy.v1.CourseTemplateVersionContent
+	33,  // 98: teamos.academy.v1.CourseTemplateDraftQuizInput.questions:type_name -> teamos.academy.v1.QuizQuestion
+	311, // 99: teamos.academy.v1.CourseTemplateDraftLessonInput.content:type_name -> google.protobuf.Struct
 	7,   // 100: teamos.academy.v1.CourseTemplateDraftLessonInput.source_type:type_name -> teamos.academy.v1.CourseLessonSourceType
-	71,  // 101: teamos.academy.v1.CourseTemplateDraftLessonInput.quiz:type_name -> teamos.academy.v1.CourseTemplateDraftQuizInput
-	72,  // 102: teamos.academy.v1.CourseTemplateDraftSectionInput.lessons:type_name -> teamos.academy.v1.CourseTemplateDraftLessonInput
-	73,  // 103: teamos.academy.v1.CourseTemplateDraftContentInput.sections:type_name -> teamos.academy.v1.CourseTemplateDraftSectionInput
-	26,  // 104: teamos.academy.v1.CourseTemplateInstantiationResult.course:type_name -> teamos.academy.v1.Course
-	32,  // 105: teamos.academy.v1.CourseTemplateInstantiationResult.draft:type_name -> teamos.academy.v1.CourseVersion
-	56,  // 106: teamos.academy.v1.CourseTemplateInstantiationResult.origin:type_name -> teamos.academy.v1.CourseOrigin
+	74,  // 101: teamos.academy.v1.CourseTemplateDraftLessonInput.quiz:type_name -> teamos.academy.v1.CourseTemplateDraftQuizInput
+	75,  // 102: teamos.academy.v1.CourseTemplateDraftSectionInput.lessons:type_name -> teamos.academy.v1.CourseTemplateDraftLessonInput
+	76,  // 103: teamos.academy.v1.CourseTemplateDraftContentInput.sections:type_name -> teamos.academy.v1.CourseTemplateDraftSectionInput
+	29,  // 104: teamos.academy.v1.CourseTemplateInstantiationResult.course:type_name -> teamos.academy.v1.Course
+	35,  // 105: teamos.academy.v1.CourseTemplateInstantiationResult.draft:type_name -> teamos.academy.v1.CourseVersion
+	59,  // 106: teamos.academy.v1.CourseTemplateInstantiationResult.origin:type_name -> teamos.academy.v1.CourseOrigin
 	2,   // 107: teamos.academy.v1.GetCoursesRequest.owner_type:type_name -> teamos.academy.v1.CourseOwnerType
 	3,   // 108: teamos.academy.v1.GetCoursesRequest.lifecycle:type_name -> teamos.academy.v1.CourseLifecycleStatus
 	4,   // 109: teamos.academy.v1.GetCoursesRequest.distribution:type_name -> teamos.academy.v1.CourseDistributionStatus
 	5,   // 110: teamos.academy.v1.GetCoursesRequest.origin_type:type_name -> teamos.academy.v1.CourseOriginType
-	26,  // 111: teamos.academy.v1.GetCoursesResponse.courses:type_name -> teamos.academy.v1.Course
-	26,  // 112: teamos.academy.v1.GetCourseResponse.course:type_name -> teamos.academy.v1.Course
-	26,  // 113: teamos.academy.v1.GetPublicCourseResponse.course:type_name -> teamos.academy.v1.Course
-	27,  // 114: teamos.academy.v1.GetPublicCourseResponse.sections:type_name -> teamos.academy.v1.CourseSection
-	28,  // 115: teamos.academy.v1.GetPublicCourseResponse.lessons:type_name -> teamos.academy.v1.Lesson
+	29,  // 111: teamos.academy.v1.GetCoursesResponse.courses:type_name -> teamos.academy.v1.Course
+	29,  // 112: teamos.academy.v1.GetCourseResponse.course:type_name -> teamos.academy.v1.Course
+	29,  // 113: teamos.academy.v1.GetPublicCourseResponse.course:type_name -> teamos.academy.v1.Course
+	30,  // 114: teamos.academy.v1.GetPublicCourseResponse.sections:type_name -> teamos.academy.v1.CourseSection
+	31,  // 115: teamos.academy.v1.GetPublicCourseResponse.lessons:type_name -> teamos.academy.v1.Lesson
 	0,   // 116: teamos.academy.v1.CreateCourseRequest.status:type_name -> teamos.academy.v1.CourseStatus
 	1,   // 117: teamos.academy.v1.CreateCourseRequest.visibility:type_name -> teamos.academy.v1.CourseVisibility
-	26,  // 118: teamos.academy.v1.CreateCourseResponse.course:type_name -> teamos.academy.v1.Course
+	29,  // 118: teamos.academy.v1.CreateCourseResponse.course:type_name -> teamos.academy.v1.Course
 	8,   // 119: teamos.academy.v1.CreateCourseFromKbRequest.mode:type_name -> teamos.academy.v1.LessonSourceMode
 	1,   // 120: teamos.academy.v1.CreateCourseFromKbRequest.visibility:type_name -> teamos.academy.v1.CourseVisibility
-	26,  // 121: teamos.academy.v1.CreateCourseFromKbResponse.course:type_name -> teamos.academy.v1.Course
+	29,  // 121: teamos.academy.v1.CreateCourseFromKbResponse.course:type_name -> teamos.academy.v1.Course
 	0,   // 122: teamos.academy.v1.UpdateCourseRequest.status:type_name -> teamos.academy.v1.CourseStatus
 	1,   // 123: teamos.academy.v1.UpdateCourseRequest.visibility:type_name -> teamos.academy.v1.CourseVisibility
-	26,  // 124: teamos.academy.v1.UpdateCourseResponse.course:type_name -> teamos.academy.v1.Course
-	26,  // 125: teamos.academy.v1.ArchiveCourseResponse.course:type_name -> teamos.academy.v1.Course
-	26,  // 126: teamos.academy.v1.RestoreCourseResponse.course:type_name -> teamos.academy.v1.Course
-	32,  // 127: teamos.academy.v1.GetCourseVersionsResponse.versions:type_name -> teamos.academy.v1.CourseVersion
-	32,  // 128: teamos.academy.v1.GetCourseVersionResponse.version:type_name -> teamos.academy.v1.CourseVersion
-	33,  // 129: teamos.academy.v1.GetCourseVersionResponse.sections:type_name -> teamos.academy.v1.CourseVersionSection
-	34,  // 130: teamos.academy.v1.GetCourseVersionResponse.lessons:type_name -> teamos.academy.v1.CourseVersionLesson
-	35,  // 131: teamos.academy.v1.GetCourseVersionResponse.quizzes:type_name -> teamos.academy.v1.CourseVersionQuiz
-	32,  // 132: teamos.academy.v1.CreateCourseDraftResponse.version:type_name -> teamos.academy.v1.CourseVersion
-	32,  // 133: teamos.academy.v1.UpdateCourseDraftResponse.version:type_name -> teamos.academy.v1.CourseVersion
-	32,  // 134: teamos.academy.v1.PublishCourseVersionResponse.version:type_name -> teamos.academy.v1.CourseVersion
-	41,  // 135: teamos.academy.v1.GetPublishedCourseVersionResponse.version:type_name -> teamos.academy.v1.LearnerPublishedCourseVersion
-	33,  // 136: teamos.academy.v1.CreateCourseVersionSectionResponse.section:type_name -> teamos.academy.v1.CourseVersionSection
-	33,  // 137: teamos.academy.v1.UpdateCourseVersionSectionResponse.section:type_name -> teamos.academy.v1.CourseVersionSection
-	294, // 138: teamos.academy.v1.CreateCourseVersionLessonRequest.content:type_name -> google.protobuf.Struct
+	29,  // 124: teamos.academy.v1.UpdateCourseResponse.course:type_name -> teamos.academy.v1.Course
+	29,  // 125: teamos.academy.v1.ArchiveCourseResponse.course:type_name -> teamos.academy.v1.Course
+	29,  // 126: teamos.academy.v1.RestoreCourseResponse.course:type_name -> teamos.academy.v1.Course
+	35,  // 127: teamos.academy.v1.GetCourseVersionsResponse.versions:type_name -> teamos.academy.v1.CourseVersion
+	35,  // 128: teamos.academy.v1.GetCourseVersionResponse.version:type_name -> teamos.academy.v1.CourseVersion
+	36,  // 129: teamos.academy.v1.GetCourseVersionResponse.sections:type_name -> teamos.academy.v1.CourseVersionSection
+	37,  // 130: teamos.academy.v1.GetCourseVersionResponse.lessons:type_name -> teamos.academy.v1.CourseVersionLesson
+	38,  // 131: teamos.academy.v1.GetCourseVersionResponse.quizzes:type_name -> teamos.academy.v1.CourseVersionQuiz
+	35,  // 132: teamos.academy.v1.CreateCourseDraftResponse.version:type_name -> teamos.academy.v1.CourseVersion
+	35,  // 133: teamos.academy.v1.UpdateCourseDraftResponse.version:type_name -> teamos.academy.v1.CourseVersion
+	35,  // 134: teamos.academy.v1.PublishCourseVersionResponse.version:type_name -> teamos.academy.v1.CourseVersion
+	44,  // 135: teamos.academy.v1.GetPublishedCourseVersionResponse.version:type_name -> teamos.academy.v1.LearnerPublishedCourseVersion
+	36,  // 136: teamos.academy.v1.CreateCourseVersionSectionResponse.section:type_name -> teamos.academy.v1.CourseVersionSection
+	36,  // 137: teamos.academy.v1.UpdateCourseVersionSectionResponse.section:type_name -> teamos.academy.v1.CourseVersionSection
+	311, // 138: teamos.academy.v1.CreateCourseVersionLessonRequest.content:type_name -> google.protobuf.Struct
 	7,   // 139: teamos.academy.v1.CreateCourseVersionLessonRequest.source_type:type_name -> teamos.academy.v1.CourseLessonSourceType
-	34,  // 140: teamos.academy.v1.CreateCourseVersionLessonResponse.lesson:type_name -> teamos.academy.v1.CourseVersionLesson
-	294, // 141: teamos.academy.v1.UpdateCourseVersionLessonRequest.content:type_name -> google.protobuf.Struct
+	37,  // 140: teamos.academy.v1.CreateCourseVersionLessonResponse.lesson:type_name -> teamos.academy.v1.CourseVersionLesson
+	311, // 141: teamos.academy.v1.UpdateCourseVersionLessonRequest.content:type_name -> google.protobuf.Struct
 	7,   // 142: teamos.academy.v1.UpdateCourseVersionLessonRequest.source_type:type_name -> teamos.academy.v1.CourseLessonSourceType
-	34,  // 143: teamos.academy.v1.UpdateCourseVersionLessonResponse.lesson:type_name -> teamos.academy.v1.CourseVersionLesson
-	34,  // 144: teamos.academy.v1.MoveCourseVersionLessonResponse.lesson:type_name -> teamos.academy.v1.CourseVersionLesson
-	30,  // 145: teamos.academy.v1.UpsertCourseVersionQuizRequest.questions:type_name -> teamos.academy.v1.QuizQuestion
-	35,  // 146: teamos.academy.v1.UpsertCourseVersionQuizResponse.quiz:type_name -> teamos.academy.v1.CourseVersionQuiz
-	27,  // 147: teamos.academy.v1.GetCourseSectionsResponse.sections:type_name -> teamos.academy.v1.CourseSection
-	27,  // 148: teamos.academy.v1.CreateCourseSectionResponse.section:type_name -> teamos.academy.v1.CourseSection
-	27,  // 149: teamos.academy.v1.UpdateCourseSectionResponse.section:type_name -> teamos.academy.v1.CourseSection
-	28,  // 150: teamos.academy.v1.GetLessonsResponse.lessons:type_name -> teamos.academy.v1.Lesson
-	294, // 151: teamos.academy.v1.CreateLessonRequest.content:type_name -> google.protobuf.Struct
+	37,  // 143: teamos.academy.v1.UpdateCourseVersionLessonResponse.lesson:type_name -> teamos.academy.v1.CourseVersionLesson
+	37,  // 144: teamos.academy.v1.MoveCourseVersionLessonResponse.lesson:type_name -> teamos.academy.v1.CourseVersionLesson
+	33,  // 145: teamos.academy.v1.UpsertCourseVersionQuizRequest.questions:type_name -> teamos.academy.v1.QuizQuestion
+	38,  // 146: teamos.academy.v1.UpsertCourseVersionQuizResponse.quiz:type_name -> teamos.academy.v1.CourseVersionQuiz
+	30,  // 147: teamos.academy.v1.GetCourseSectionsResponse.sections:type_name -> teamos.academy.v1.CourseSection
+	30,  // 148: teamos.academy.v1.CreateCourseSectionResponse.section:type_name -> teamos.academy.v1.CourseSection
+	30,  // 149: teamos.academy.v1.UpdateCourseSectionResponse.section:type_name -> teamos.academy.v1.CourseSection
+	31,  // 150: teamos.academy.v1.GetLessonsResponse.lessons:type_name -> teamos.academy.v1.Lesson
+	311, // 151: teamos.academy.v1.CreateLessonRequest.content:type_name -> google.protobuf.Struct
 	8,   // 152: teamos.academy.v1.CreateLessonRequest.source_mode:type_name -> teamos.academy.v1.LessonSourceMode
-	28,  // 153: teamos.academy.v1.CreateLessonResponse.lesson:type_name -> teamos.academy.v1.Lesson
-	294, // 154: teamos.academy.v1.UpdateLessonRequest.content:type_name -> google.protobuf.Struct
+	31,  // 153: teamos.academy.v1.CreateLessonResponse.lesson:type_name -> teamos.academy.v1.Lesson
+	311, // 154: teamos.academy.v1.UpdateLessonRequest.content:type_name -> google.protobuf.Struct
 	8,   // 155: teamos.academy.v1.UpdateLessonRequest.source_mode:type_name -> teamos.academy.v1.LessonSourceMode
-	28,  // 156: teamos.academy.v1.UpdateLessonResponse.lesson:type_name -> teamos.academy.v1.Lesson
-	28,  // 157: teamos.academy.v1.MoveLessonResponse.lesson:type_name -> teamos.academy.v1.Lesson
-	31,  // 158: teamos.academy.v1.GetQuizzesResponse.quizzes:type_name -> teamos.academy.v1.Quiz
-	30,  // 159: teamos.academy.v1.UpsertQuizRequest.questions:type_name -> teamos.academy.v1.QuizQuestion
-	31,  // 160: teamos.academy.v1.UpsertQuizResponse.quiz:type_name -> teamos.academy.v1.Quiz
-	42,  // 161: teamos.academy.v1.GetAssignmentsResponse.assignments:type_name -> teamos.academy.v1.CourseAssignment
+	31,  // 156: teamos.academy.v1.UpdateLessonResponse.lesson:type_name -> teamos.academy.v1.Lesson
+	31,  // 157: teamos.academy.v1.MoveLessonResponse.lesson:type_name -> teamos.academy.v1.Lesson
+	34,  // 158: teamos.academy.v1.GetQuizzesResponse.quizzes:type_name -> teamos.academy.v1.Quiz
+	33,  // 159: teamos.academy.v1.UpsertQuizRequest.questions:type_name -> teamos.academy.v1.QuizQuestion
+	34,  // 160: teamos.academy.v1.UpsertQuizResponse.quiz:type_name -> teamos.academy.v1.Quiz
+	45,  // 161: teamos.academy.v1.GetAssignmentsResponse.assignments:type_name -> teamos.academy.v1.CourseAssignment
 	10,  // 162: teamos.academy.v1.AssignCourseRequest.assignee_type:type_name -> teamos.academy.v1.AssigneeType
-	293, // 163: teamos.academy.v1.AssignCourseRequest.due_date:type_name -> google.protobuf.Timestamp
-	42,  // 164: teamos.academy.v1.AssignCourseResponse.assignment:type_name -> teamos.academy.v1.CourseAssignment
-	44,  // 165: teamos.academy.v1.GetProgressResponse.progress:type_name -> teamos.academy.v1.CourseProgress
-	44,  // 166: teamos.academy.v1.MarkLessonCompleteResponse.progress:type_name -> teamos.academy.v1.CourseProgress
+	310, // 163: teamos.academy.v1.AssignCourseRequest.due_date:type_name -> google.protobuf.Timestamp
+	45,  // 164: teamos.academy.v1.AssignCourseResponse.assignment:type_name -> teamos.academy.v1.CourseAssignment
+	47,  // 165: teamos.academy.v1.GetProgressResponse.progress:type_name -> teamos.academy.v1.CourseProgress
+	47,  // 166: teamos.academy.v1.MarkLessonCompleteResponse.progress:type_name -> teamos.academy.v1.CourseProgress
 	14,  // 167: teamos.academy.v1.GetEnrollmentsRequest.progress_status:type_name -> teamos.academy.v1.EnrollmentProgressStatus
 	15,  // 168: teamos.academy.v1.GetEnrollmentsRequest.access_status:type_name -> teamos.academy.v1.EnrollmentAccessStatus
-	45,  // 169: teamos.academy.v1.GetEnrollmentsResponse.enrollments:type_name -> teamos.academy.v1.CourseEnrollment
-	45,  // 170: teamos.academy.v1.SelfEnrollCourseResponse.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
-	41,  // 171: teamos.academy.v1.GetCatalogCourseVersionResponse.version:type_name -> teamos.academy.v1.LearnerPublishedCourseVersion
-	45,  // 172: teamos.academy.v1.GetEnrollmentResponse.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
-	51,  // 173: teamos.academy.v1.GetEnrollmentOutlineResponse.outline:type_name -> teamos.academy.v1.EnrollmentOutline
-	52,  // 174: teamos.academy.v1.GetEnrollmentLessonResponse.lesson:type_name -> teamos.academy.v1.EnrollmentLesson
-	45,  // 175: teamos.academy.v1.ResumeEnrollmentResponse.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
-	52,  // 176: teamos.academy.v1.ResumeEnrollmentResponse.current_lesson:type_name -> teamos.academy.v1.EnrollmentLesson
-	294, // 177: teamos.academy.v1.CompleteEnrollmentLessonRequest.last_position:type_name -> google.protobuf.Struct
-	53,  // 178: teamos.academy.v1.CompleteEnrollmentLessonResponse.progress:type_name -> teamos.academy.v1.EnrollmentProgressSnapshot
-	47,  // 179: teamos.academy.v1.SubmitEnrollmentQuizAttemptRequest.answers:type_name -> teamos.academy.v1.EnrollmentQuizAnswer
-	294, // 180: teamos.academy.v1.SubmitEnrollmentQuizAttemptRequest.last_position:type_name -> google.protobuf.Struct
-	48,  // 181: teamos.academy.v1.SubmitEnrollmentQuizAttemptResponse.attempt:type_name -> teamos.academy.v1.EnrollmentQuizAttempt
-	53,  // 182: teamos.academy.v1.SubmitEnrollmentQuizAttemptResponse.progress:type_name -> teamos.academy.v1.EnrollmentProgressSnapshot
-	54,  // 183: teamos.academy.v1.GetEnrollmentReportResponse.report:type_name -> teamos.academy.v1.EnrollmentReport
-	3,   // 184: teamos.academy.v1.GetPartnerCourseGroupsRequest.lifecycle:type_name -> teamos.academy.v1.CourseLifecycleStatus
-	4,   // 185: teamos.academy.v1.GetPartnerCourseGroupsRequest.distribution:type_name -> teamos.academy.v1.CourseDistributionStatus
-	58,  // 186: teamos.academy.v1.GetPartnerCourseGroupsResponse.groups:type_name -> teamos.academy.v1.PartnerCourseGroup
-	61,  // 187: teamos.academy.v1.GetPartnerCoursesReportResponse.report:type_name -> teamos.academy.v1.PartnerCoursesReport
-	62,  // 188: teamos.academy.v1.GetCourseVersionPreviewResponse.preview:type_name -> teamos.academy.v1.CourseVersionPreview
-	47,  // 189: teamos.academy.v1.SubmitCoursePreviewQuizAttemptRequest.answers:type_name -> teamos.academy.v1.EnrollmentQuizAnswer
-	63,  // 190: teamos.academy.v1.SubmitCoursePreviewQuizAttemptResponse.result:type_name -> teamos.academy.v1.CoursePreviewQuizAttemptResult
-	55,  // 191: teamos.academy.v1.PausePartnerCourseDistributionResponse.restriction:type_name -> teamos.academy.v1.CourseRestriction
-	55,  // 192: teamos.academy.v1.BlockPartnerCourseResponse.restriction:type_name -> teamos.academy.v1.CourseRestriction
-	55,  // 193: teamos.academy.v1.ResolvePartnerCourseRestrictionResponse.restriction:type_name -> teamos.academy.v1.CourseRestriction
-	55,  // 194: teamos.academy.v1.GetCourseRestrictionsResponse.restrictions:type_name -> teamos.academy.v1.CourseRestriction
-	57,  // 195: teamos.academy.v1.CopyPartnerCourseVersionToCompanyResponse.result:type_name -> teamos.academy.v1.PartnerCourseCopyResult
-	18,  // 196: teamos.academy.v1.GetCourseTemplatesRequest.type:type_name -> teamos.academy.v1.CourseTemplateType
-	19,  // 197: teamos.academy.v1.GetCourseTemplatesRequest.lifecycle_status:type_name -> teamos.academy.v1.CourseTemplateLifecycleStatus
-	64,  // 198: teamos.academy.v1.GetCourseTemplatesResponse.templates:type_name -> teamos.academy.v1.CourseTemplate
-	292, // 199: teamos.academy.v1.GetCourseTemplatesResponse.items:type_name -> teamos.academy.v1.AcademyTemplateSummary
-	64,  // 200: teamos.academy.v1.GetCourseTemplateResponse.template:type_name -> teamos.academy.v1.CourseTemplate
-	65,  // 201: teamos.academy.v1.GetCourseTemplateResponse.versions:type_name -> teamos.academy.v1.CourseTemplateVersion
-	70,  // 202: teamos.academy.v1.GetCourseTemplateResponse.selected_version:type_name -> teamos.academy.v1.CourseTemplateVersionDetails
-	74,  // 203: teamos.academy.v1.CreateCourseTemplateRequest.content:type_name -> teamos.academy.v1.CourseTemplateDraftContentInput
-	64,  // 204: teamos.academy.v1.CreateCourseTemplateResponse.template:type_name -> teamos.academy.v1.CourseTemplate
-	65,  // 205: teamos.academy.v1.CreateCourseTemplateResponse.draft:type_name -> teamos.academy.v1.CourseTemplateVersion
-	74,  // 206: teamos.academy.v1.UpdateCourseTemplateDraftRequest.content:type_name -> teamos.academy.v1.CourseTemplateDraftContentInput
-	70,  // 207: teamos.academy.v1.UpdateCourseTemplateDraftResponse.draft:type_name -> teamos.academy.v1.CourseTemplateVersionDetails
-	70,  // 208: teamos.academy.v1.CreateCourseTemplateDraftResponse.draft:type_name -> teamos.academy.v1.CourseTemplateVersionDetails
-	65,  // 209: teamos.academy.v1.PublishCourseTemplateVersionResponse.version:type_name -> teamos.academy.v1.CourseTemplateVersion
-	64,  // 210: teamos.academy.v1.ArchiveCourseTemplateResponse.template:type_name -> teamos.academy.v1.CourseTemplate
-	75,  // 211: teamos.academy.v1.InstantiateCourseTemplateVersionResponse.result:type_name -> teamos.academy.v1.CourseTemplateInstantiationResult
-	20,  // 212: teamos.academy.v1.ExternalPersonalAccess.status:type_name -> teamos.academy.v1.ExternalPersonalAccessStatus
-	293, // 213: teamos.academy.v1.ExternalPersonalAccess.issued_at:type_name -> google.protobuf.Timestamp
-	293, // 214: teamos.academy.v1.ExternalPersonalAccess.activated_at:type_name -> google.protobuf.Timestamp
-	293, // 215: teamos.academy.v1.ExternalPersonalAccess.revoked_at:type_name -> google.protobuf.Timestamp
-	210, // 216: teamos.academy.v1.ExternalPersonalAccessCreated.access:type_name -> teamos.academy.v1.ExternalPersonalAccess
-	21,  // 217: teamos.academy.v1.ExternalCampaign.owner_type:type_name -> teamos.academy.v1.ExternalCampaignOwnerType
-	22,  // 218: teamos.academy.v1.ExternalCampaign.purpose:type_name -> teamos.academy.v1.ExternalCampaignPurpose
-	23,  // 219: teamos.academy.v1.ExternalCampaign.status:type_name -> teamos.academy.v1.ExternalCampaignStatus
-	293, // 220: teamos.academy.v1.ExternalCampaign.created_at:type_name -> google.protobuf.Timestamp
-	293, // 221: teamos.academy.v1.ExternalCampaign.paused_at:type_name -> google.protobuf.Timestamp
-	293, // 222: teamos.academy.v1.ExternalCampaign.revoked_at:type_name -> google.protobuf.Timestamp
-	212, // 223: teamos.academy.v1.ExternalCampaignCreated.campaign:type_name -> teamos.academy.v1.ExternalCampaign
-	215, // 224: teamos.academy.v1.CampaignAnalytics.lesson_drop_off:type_name -> teamos.academy.v1.CampaignLessonDropOff
-	216, // 225: teamos.academy.v1.CampaignAnalytics.attribution:type_name -> teamos.academy.v1.CampaignAttribution
-	217, // 226: teamos.academy.v1.CampaignAnalytics.versions:type_name -> teamos.academy.v1.CampaignVersionAnalytics
-	212, // 227: teamos.academy.v1.ExternalCampaignReport.campaign:type_name -> teamos.academy.v1.ExternalCampaign
-	214, // 228: teamos.academy.v1.ExternalCampaignReport.funnel:type_name -> teamos.academy.v1.CampaignFunnel
-	45,  // 229: teamos.academy.v1.ExternalCampaignReport.enrollments:type_name -> teamos.academy.v1.CourseEnrollment
-	218, // 230: teamos.academy.v1.ExternalCampaignReport.analytics:type_name -> teamos.academy.v1.CampaignAnalytics
-	45,  // 231: teamos.academy.v1.CourseExternalReport.enrollments:type_name -> teamos.academy.v1.CourseEnrollment
-	24,  // 232: teamos.academy.v1.ExternalLearnerTimelineEvent.type:type_name -> teamos.academy.v1.ExternalLearnerTimelineEventType
-	293, // 233: teamos.academy.v1.ExternalLearnerTimelineEvent.occurred_at:type_name -> google.protobuf.Timestamp
-	13,  // 234: teamos.academy.v1.ExternalLearnerTimelineEvent.source_type:type_name -> teamos.academy.v1.EnrollmentSourceType
-	15,  // 235: teamos.academy.v1.ExternalLearnerTimelineEvent.access_status:type_name -> teamos.academy.v1.EnrollmentAccessStatus
-	223, // 236: teamos.academy.v1.ExternalLearnerTimeline.learner:type_name -> teamos.academy.v1.ExternalLearner
-	221, // 237: teamos.academy.v1.ExternalLearnerTimeline.events:type_name -> teamos.academy.v1.ExternalLearnerTimelineEvent
-	293, // 238: teamos.academy.v1.ExternalLearner.email_verified_at:type_name -> google.protobuf.Timestamp
-	293, // 239: teamos.academy.v1.ExternalLearner.created_at:type_name -> google.protobuf.Timestamp
-	293, // 240: teamos.academy.v1.ExternalLearner.updated_at:type_name -> google.protobuf.Timestamp
-	224, // 241: teamos.academy.v1.PublicAcademyOutlineSection.lessons:type_name -> teamos.academy.v1.PublicAcademyOutlineLesson
-	25,  // 242: teamos.academy.v1.PublicAcademyAccess.kind:type_name -> teamos.academy.v1.PublicAcademyAccessKind
-	2,   // 243: teamos.academy.v1.PublicAcademyAccess.owner_type:type_name -> teamos.academy.v1.CourseOwnerType
-	225, // 244: teamos.academy.v1.PublicAcademyAccess.outline:type_name -> teamos.academy.v1.PublicAcademyOutlineSection
-	293, // 245: teamos.academy.v1.ExternalVerificationChallenge.expires_at:type_name -> google.protobuf.Timestamp
-	293, // 246: teamos.academy.v1.ExternalVerificationConfirmed.verified_at:type_name -> google.protobuf.Timestamp
-	293, // 247: teamos.academy.v1.ExternalVerificationConfirmed.session_expires_at:type_name -> google.protobuf.Timestamp
-	293, // 248: teamos.academy.v1.ExternalQuizAttemptResult.created_at:type_name -> google.protobuf.Timestamp
-	45,  // 249: teamos.academy.v1.ExternalEnrollmentResults.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
-	229, // 250: teamos.academy.v1.ExternalEnrollmentResults.quiz_attempts:type_name -> teamos.academy.v1.ExternalQuizAttemptResult
-	211, // 251: teamos.academy.v1.CreateExternalPersonalAccessResponse.created:type_name -> teamos.academy.v1.ExternalPersonalAccessCreated
-	210, // 252: teamos.academy.v1.GetExternalPersonalAccessesResponse.accesses:type_name -> teamos.academy.v1.ExternalPersonalAccess
-	210, // 253: teamos.academy.v1.GetExternalPersonalAccessResponse.access:type_name -> teamos.academy.v1.ExternalPersonalAccess
-	210, // 254: teamos.academy.v1.ExtendExternalPersonalAccessResponse.access:type_name -> teamos.academy.v1.ExternalPersonalAccess
-	211, // 255: teamos.academy.v1.RotateExternalPersonalAccessTokenResponse.created:type_name -> teamos.academy.v1.ExternalPersonalAccessCreated
-	210, // 256: teamos.academy.v1.RevokeExternalPersonalAccessResponse.access:type_name -> teamos.academy.v1.ExternalPersonalAccess
-	211, // 257: teamos.academy.v1.RepeatExternalPersonalAccessResponse.created:type_name -> teamos.academy.v1.ExternalPersonalAccessCreated
-	22,  // 258: teamos.academy.v1.CreateExternalCampaignRequest.purpose:type_name -> teamos.academy.v1.ExternalCampaignPurpose
-	213, // 259: teamos.academy.v1.CreateExternalCampaignResponse.created:type_name -> teamos.academy.v1.ExternalCampaignCreated
-	212, // 260: teamos.academy.v1.GetExternalCampaignsResponse.campaigns:type_name -> teamos.academy.v1.ExternalCampaign
-	212, // 261: teamos.academy.v1.GetExternalCampaignResponse.campaign:type_name -> teamos.academy.v1.ExternalCampaign
-	212, // 262: teamos.academy.v1.PauseExternalCampaignResponse.campaign:type_name -> teamos.academy.v1.ExternalCampaign
-	212, // 263: teamos.academy.v1.ResumeExternalCampaignResponse.campaign:type_name -> teamos.academy.v1.ExternalCampaign
-	213, // 264: teamos.academy.v1.RotateExternalCampaignTokenResponse.created:type_name -> teamos.academy.v1.ExternalCampaignCreated
-	212, // 265: teamos.academy.v1.RevokeExternalCampaignResponse.campaign:type_name -> teamos.academy.v1.ExternalCampaign
-	219, // 266: teamos.academy.v1.GetExternalCampaignReportResponse.report:type_name -> teamos.academy.v1.ExternalCampaignReport
-	220, // 267: teamos.academy.v1.GetCourseExternalReportResponse.report:type_name -> teamos.academy.v1.CourseExternalReport
-	226, // 268: teamos.academy.v1.GetPublicAcademyAccessResponse.access:type_name -> teamos.academy.v1.PublicAcademyAccess
-	227, // 269: teamos.academy.v1.RequestPublicAcademyVerificationResponse.challenge:type_name -> teamos.academy.v1.ExternalVerificationChallenge
-	228, // 270: teamos.academy.v1.ConfirmPublicAcademyVerificationResponse.confirmed:type_name -> teamos.academy.v1.ExternalVerificationConfirmed
-	45,  // 271: teamos.academy.v1.ActivatePublicAcademyAccessResponse.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
-	45,  // 272: teamos.academy.v1.GetPublicAcademyEnrollmentResponse.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
-	51,  // 273: teamos.academy.v1.GetPublicAcademyEnrollmentOutlineResponse.outline:type_name -> teamos.academy.v1.EnrollmentOutline
-	52,  // 274: teamos.academy.v1.GetPublicAcademyEnrollmentLessonResponse.lesson:type_name -> teamos.academy.v1.EnrollmentLesson
-	45,  // 275: teamos.academy.v1.CompletePublicAcademyEnrollmentLessonResponse.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
-	47,  // 276: teamos.academy.v1.SubmitPublicAcademyQuizAttemptRequest.answers:type_name -> teamos.academy.v1.EnrollmentQuizAnswer
-	229, // 277: teamos.academy.v1.SubmitPublicAcademyQuizAttemptResponse.result:type_name -> teamos.academy.v1.ExternalQuizAttemptResult
-	230, // 278: teamos.academy.v1.GetPublicAcademyEnrollmentResultsResponse.results:type_name -> teamos.academy.v1.ExternalEnrollmentResults
-	223, // 279: teamos.academy.v1.GetExternalLearnersResponse.learners:type_name -> teamos.academy.v1.ExternalLearner
-	223, // 280: teamos.academy.v1.GetExternalLearnerResponse.learner:type_name -> teamos.academy.v1.ExternalLearner
-	45,  // 281: teamos.academy.v1.GetExternalLearnerEnrollmentsResponse.enrollments:type_name -> teamos.academy.v1.CourseEnrollment
-	222, // 282: teamos.academy.v1.GetExternalLearnerTimelineResponse.timeline:type_name -> teamos.academy.v1.ExternalLearnerTimeline
-	291, // 283: teamos.academy.v1.AcademyTemplateSummary.capabilities:type_name -> teamos.academy.v1.AcademyTemplateCapabilities
-	76,  // 284: teamos.academy.v1.AcademyService.GetCourses:input_type -> teamos.academy.v1.GetCoursesRequest
-	78,  // 285: teamos.academy.v1.AcademyService.GetCourse:input_type -> teamos.academy.v1.GetCourseRequest
-	80,  // 286: teamos.academy.v1.AcademyService.GetPublicCourse:input_type -> teamos.academy.v1.GetPublicCourseRequest
-	82,  // 287: teamos.academy.v1.AcademyService.CreateCourse:input_type -> teamos.academy.v1.CreateCourseRequest
-	84,  // 288: teamos.academy.v1.AcademyService.CreateCourseFromKb:input_type -> teamos.academy.v1.CreateCourseFromKbRequest
-	86,  // 289: teamos.academy.v1.AcademyService.UpdateCourse:input_type -> teamos.academy.v1.UpdateCourseRequest
-	88,  // 290: teamos.academy.v1.AcademyService.ArchiveCourse:input_type -> teamos.academy.v1.ArchiveCourseRequest
-	90,  // 291: teamos.academy.v1.AcademyService.RestoreCourse:input_type -> teamos.academy.v1.RestoreCourseRequest
-	92,  // 292: teamos.academy.v1.AcademyService.DeleteCourse:input_type -> teamos.academy.v1.DeleteCourseRequest
-	94,  // 293: teamos.academy.v1.AcademyService.GetCourseVersions:input_type -> teamos.academy.v1.GetCourseVersionsRequest
-	96,  // 294: teamos.academy.v1.AcademyService.GetCourseVersion:input_type -> teamos.academy.v1.GetCourseVersionRequest
-	98,  // 295: teamos.academy.v1.AcademyService.CreateCourseDraft:input_type -> teamos.academy.v1.CreateCourseDraftRequest
-	100, // 296: teamos.academy.v1.AcademyService.UpdateCourseDraft:input_type -> teamos.academy.v1.UpdateCourseDraftRequest
-	102, // 297: teamos.academy.v1.AcademyService.PublishCourseVersion:input_type -> teamos.academy.v1.PublishCourseVersionRequest
-	104, // 298: teamos.academy.v1.AcademyService.GetPublishedCourseVersion:input_type -> teamos.academy.v1.GetPublishedCourseVersionRequest
-	106, // 299: teamos.academy.v1.AcademyService.CreateCourseVersionSection:input_type -> teamos.academy.v1.CreateCourseVersionSectionRequest
-	108, // 300: teamos.academy.v1.AcademyService.UpdateCourseVersionSection:input_type -> teamos.academy.v1.UpdateCourseVersionSectionRequest
-	110, // 301: teamos.academy.v1.AcademyService.DeleteCourseVersionSection:input_type -> teamos.academy.v1.DeleteCourseVersionSectionRequest
-	112, // 302: teamos.academy.v1.AcademyService.CreateCourseVersionLesson:input_type -> teamos.academy.v1.CreateCourseVersionLessonRequest
-	114, // 303: teamos.academy.v1.AcademyService.UpdateCourseVersionLesson:input_type -> teamos.academy.v1.UpdateCourseVersionLessonRequest
-	116, // 304: teamos.academy.v1.AcademyService.DeleteCourseVersionLesson:input_type -> teamos.academy.v1.DeleteCourseVersionLessonRequest
-	118, // 305: teamos.academy.v1.AcademyService.MoveCourseVersionLesson:input_type -> teamos.academy.v1.MoveCourseVersionLessonRequest
-	120, // 306: teamos.academy.v1.AcademyService.UpsertCourseVersionQuiz:input_type -> teamos.academy.v1.UpsertCourseVersionQuizRequest
-	122, // 307: teamos.academy.v1.AcademyService.DeleteCourseVersionQuiz:input_type -> teamos.academy.v1.DeleteCourseVersionQuizRequest
-	124, // 308: teamos.academy.v1.AcademyService.GetCourseSections:input_type -> teamos.academy.v1.GetCourseSectionsRequest
-	126, // 309: teamos.academy.v1.AcademyService.CreateCourseSection:input_type -> teamos.academy.v1.CreateCourseSectionRequest
-	128, // 310: teamos.academy.v1.AcademyService.UpdateCourseSection:input_type -> teamos.academy.v1.UpdateCourseSectionRequest
-	130, // 311: teamos.academy.v1.AcademyService.DeleteCourseSection:input_type -> teamos.academy.v1.DeleteCourseSectionRequest
-	132, // 312: teamos.academy.v1.AcademyService.GetLessons:input_type -> teamos.academy.v1.GetLessonsRequest
-	134, // 313: teamos.academy.v1.AcademyService.CreateLesson:input_type -> teamos.academy.v1.CreateLessonRequest
-	136, // 314: teamos.academy.v1.AcademyService.UpdateLesson:input_type -> teamos.academy.v1.UpdateLessonRequest
-	138, // 315: teamos.academy.v1.AcademyService.DeleteLesson:input_type -> teamos.academy.v1.DeleteLessonRequest
-	140, // 316: teamos.academy.v1.AcademyService.MoveLesson:input_type -> teamos.academy.v1.MoveLessonRequest
-	142, // 317: teamos.academy.v1.AcademyService.GetQuizzes:input_type -> teamos.academy.v1.GetQuizzesRequest
-	144, // 318: teamos.academy.v1.AcademyService.UpsertQuiz:input_type -> teamos.academy.v1.UpsertQuizRequest
-	146, // 319: teamos.academy.v1.AcademyService.GetAssignments:input_type -> teamos.academy.v1.GetAssignmentsRequest
-	148, // 320: teamos.academy.v1.AcademyService.AssignCourse:input_type -> teamos.academy.v1.AssignCourseRequest
-	150, // 321: teamos.academy.v1.AcademyService.RevokeAssignment:input_type -> teamos.academy.v1.RevokeAssignmentRequest
-	152, // 322: teamos.academy.v1.AcademyService.GetProgress:input_type -> teamos.academy.v1.GetProgressRequest
-	154, // 323: teamos.academy.v1.AcademyService.MarkLessonComplete:input_type -> teamos.academy.v1.MarkLessonCompleteRequest
-	156, // 324: teamos.academy.v1.AcademyService.GetEnrollments:input_type -> teamos.academy.v1.GetEnrollmentsRequest
-	158, // 325: teamos.academy.v1.AcademyService.SelfEnrollCourse:input_type -> teamos.academy.v1.SelfEnrollCourseRequest
-	160, // 326: teamos.academy.v1.AcademyService.GetCatalogCourseVersion:input_type -> teamos.academy.v1.GetCatalogCourseVersionRequest
-	162, // 327: teamos.academy.v1.AcademyService.GetEnrollment:input_type -> teamos.academy.v1.GetEnrollmentRequest
-	164, // 328: teamos.academy.v1.AcademyService.GetEnrollmentOutline:input_type -> teamos.academy.v1.GetEnrollmentOutlineRequest
-	166, // 329: teamos.academy.v1.AcademyService.GetEnrollmentLesson:input_type -> teamos.academy.v1.GetEnrollmentLessonRequest
-	168, // 330: teamos.academy.v1.AcademyService.ResumeEnrollment:input_type -> teamos.academy.v1.ResumeEnrollmentRequest
-	170, // 331: teamos.academy.v1.AcademyService.CompleteEnrollmentLesson:input_type -> teamos.academy.v1.CompleteEnrollmentLessonRequest
-	172, // 332: teamos.academy.v1.AcademyService.SubmitEnrollmentQuizAttempt:input_type -> teamos.academy.v1.SubmitEnrollmentQuizAttemptRequest
-	174, // 333: teamos.academy.v1.AcademyService.GetEnrollmentReport:input_type -> teamos.academy.v1.GetEnrollmentReportRequest
-	176, // 334: teamos.academy.v1.AcademyService.GetPartnerCourseGroups:input_type -> teamos.academy.v1.GetPartnerCourseGroupsRequest
-	178, // 335: teamos.academy.v1.AcademyService.GetPartnerCoursesReport:input_type -> teamos.academy.v1.GetPartnerCoursesReportRequest
-	180, // 336: teamos.academy.v1.AcademyService.GetCourseVersionPreview:input_type -> teamos.academy.v1.GetCourseVersionPreviewRequest
-	182, // 337: teamos.academy.v1.AcademyService.SubmitCoursePreviewQuizAttempt:input_type -> teamos.academy.v1.SubmitCoursePreviewQuizAttemptRequest
-	184, // 338: teamos.academy.v1.AcademyService.PausePartnerCourseDistribution:input_type -> teamos.academy.v1.PausePartnerCourseDistributionRequest
-	186, // 339: teamos.academy.v1.AcademyService.BlockPartnerCourse:input_type -> teamos.academy.v1.BlockPartnerCourseRequest
-	188, // 340: teamos.academy.v1.AcademyService.ResolvePartnerCourseRestriction:input_type -> teamos.academy.v1.ResolvePartnerCourseRestrictionRequest
-	190, // 341: teamos.academy.v1.AcademyService.GetCourseRestrictions:input_type -> teamos.academy.v1.GetCourseRestrictionsRequest
-	192, // 342: teamos.academy.v1.AcademyService.CopyPartnerCourseVersionToCompany:input_type -> teamos.academy.v1.CopyPartnerCourseVersionToCompanyRequest
-	194, // 343: teamos.academy.v1.AcademyService.GetCourseTemplates:input_type -> teamos.academy.v1.GetCourseTemplatesRequest
-	196, // 344: teamos.academy.v1.AcademyService.GetCourseTemplate:input_type -> teamos.academy.v1.GetCourseTemplateRequest
-	198, // 345: teamos.academy.v1.AcademyService.CreateCourseTemplate:input_type -> teamos.academy.v1.CreateCourseTemplateRequest
-	200, // 346: teamos.academy.v1.AcademyService.UpdateCourseTemplateDraft:input_type -> teamos.academy.v1.UpdateCourseTemplateDraftRequest
-	202, // 347: teamos.academy.v1.AcademyService.CreateCourseTemplateDraft:input_type -> teamos.academy.v1.CreateCourseTemplateDraftRequest
-	204, // 348: teamos.academy.v1.AcademyService.PublishCourseTemplateVersion:input_type -> teamos.academy.v1.PublishCourseTemplateVersionRequest
-	206, // 349: teamos.academy.v1.AcademyService.ArchiveCourseTemplate:input_type -> teamos.academy.v1.ArchiveCourseTemplateRequest
-	208, // 350: teamos.academy.v1.AcademyService.InstantiateCourseTemplateVersion:input_type -> teamos.academy.v1.InstantiateCourseTemplateVersionRequest
-	231, // 351: teamos.academy.v1.AcademyService.CreateExternalPersonalAccess:input_type -> teamos.academy.v1.CreateExternalPersonalAccessRequest
-	233, // 352: teamos.academy.v1.AcademyService.GetExternalPersonalAccesses:input_type -> teamos.academy.v1.GetExternalPersonalAccessesRequest
-	235, // 353: teamos.academy.v1.AcademyService.GetExternalPersonalAccess:input_type -> teamos.academy.v1.GetExternalPersonalAccessRequest
-	237, // 354: teamos.academy.v1.AcademyService.ExtendExternalPersonalAccess:input_type -> teamos.academy.v1.ExtendExternalPersonalAccessRequest
-	239, // 355: teamos.academy.v1.AcademyService.RotateExternalPersonalAccessToken:input_type -> teamos.academy.v1.RotateExternalPersonalAccessTokenRequest
-	241, // 356: teamos.academy.v1.AcademyService.RevokeExternalPersonalAccess:input_type -> teamos.academy.v1.RevokeExternalPersonalAccessRequest
-	243, // 357: teamos.academy.v1.AcademyService.RepeatExternalPersonalAccess:input_type -> teamos.academy.v1.RepeatExternalPersonalAccessRequest
-	245, // 358: teamos.academy.v1.AcademyService.CreateExternalCampaign:input_type -> teamos.academy.v1.CreateExternalCampaignRequest
-	247, // 359: teamos.academy.v1.AcademyService.GetExternalCampaigns:input_type -> teamos.academy.v1.GetExternalCampaignsRequest
-	249, // 360: teamos.academy.v1.AcademyService.GetExternalCampaign:input_type -> teamos.academy.v1.GetExternalCampaignRequest
-	251, // 361: teamos.academy.v1.AcademyService.PauseExternalCampaign:input_type -> teamos.academy.v1.PauseExternalCampaignRequest
-	253, // 362: teamos.academy.v1.AcademyService.ResumeExternalCampaign:input_type -> teamos.academy.v1.ResumeExternalCampaignRequest
-	255, // 363: teamos.academy.v1.AcademyService.RotateExternalCampaignToken:input_type -> teamos.academy.v1.RotateExternalCampaignTokenRequest
-	257, // 364: teamos.academy.v1.AcademyService.RevokeExternalCampaign:input_type -> teamos.academy.v1.RevokeExternalCampaignRequest
-	259, // 365: teamos.academy.v1.AcademyService.GetExternalCampaignReport:input_type -> teamos.academy.v1.GetExternalCampaignReportRequest
-	261, // 366: teamos.academy.v1.AcademyService.GetCourseExternalReport:input_type -> teamos.academy.v1.GetCourseExternalReportRequest
-	263, // 367: teamos.academy.v1.AcademyService.GetPublicAcademyAccess:input_type -> teamos.academy.v1.GetPublicAcademyAccessRequest
-	265, // 368: teamos.academy.v1.AcademyService.RequestPublicAcademyVerification:input_type -> teamos.academy.v1.RequestPublicAcademyVerificationRequest
-	267, // 369: teamos.academy.v1.AcademyService.ConfirmPublicAcademyVerification:input_type -> teamos.academy.v1.ConfirmPublicAcademyVerificationRequest
-	269, // 370: teamos.academy.v1.AcademyService.ActivatePublicAcademyAccess:input_type -> teamos.academy.v1.ActivatePublicAcademyAccessRequest
-	271, // 371: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollment:input_type -> teamos.academy.v1.GetPublicAcademyEnrollmentRequest
-	273, // 372: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollmentOutline:input_type -> teamos.academy.v1.GetPublicAcademyEnrollmentOutlineRequest
-	275, // 373: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollmentLesson:input_type -> teamos.academy.v1.GetPublicAcademyEnrollmentLessonRequest
-	277, // 374: teamos.academy.v1.AcademyService.CompletePublicAcademyEnrollmentLesson:input_type -> teamos.academy.v1.CompletePublicAcademyEnrollmentLessonRequest
-	279, // 375: teamos.academy.v1.AcademyService.SubmitPublicAcademyQuizAttempt:input_type -> teamos.academy.v1.SubmitPublicAcademyQuizAttemptRequest
-	281, // 376: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollmentResults:input_type -> teamos.academy.v1.GetPublicAcademyEnrollmentResultsRequest
-	283, // 377: teamos.academy.v1.AcademyService.GetExternalLearners:input_type -> teamos.academy.v1.GetExternalLearnersRequest
-	285, // 378: teamos.academy.v1.AcademyService.GetExternalLearner:input_type -> teamos.academy.v1.GetExternalLearnerRequest
-	287, // 379: teamos.academy.v1.AcademyService.GetExternalLearnerEnrollments:input_type -> teamos.academy.v1.GetExternalLearnerEnrollmentsRequest
-	289, // 380: teamos.academy.v1.AcademyService.GetExternalLearnerTimeline:input_type -> teamos.academy.v1.GetExternalLearnerTimelineRequest
-	77,  // 381: teamos.academy.v1.AcademyService.GetCourses:output_type -> teamos.academy.v1.GetCoursesResponse
-	79,  // 382: teamos.academy.v1.AcademyService.GetCourse:output_type -> teamos.academy.v1.GetCourseResponse
-	81,  // 383: teamos.academy.v1.AcademyService.GetPublicCourse:output_type -> teamos.academy.v1.GetPublicCourseResponse
-	83,  // 384: teamos.academy.v1.AcademyService.CreateCourse:output_type -> teamos.academy.v1.CreateCourseResponse
-	85,  // 385: teamos.academy.v1.AcademyService.CreateCourseFromKb:output_type -> teamos.academy.v1.CreateCourseFromKbResponse
-	87,  // 386: teamos.academy.v1.AcademyService.UpdateCourse:output_type -> teamos.academy.v1.UpdateCourseResponse
-	89,  // 387: teamos.academy.v1.AcademyService.ArchiveCourse:output_type -> teamos.academy.v1.ArchiveCourseResponse
-	91,  // 388: teamos.academy.v1.AcademyService.RestoreCourse:output_type -> teamos.academy.v1.RestoreCourseResponse
-	93,  // 389: teamos.academy.v1.AcademyService.DeleteCourse:output_type -> teamos.academy.v1.DeleteCourseResponse
-	95,  // 390: teamos.academy.v1.AcademyService.GetCourseVersions:output_type -> teamos.academy.v1.GetCourseVersionsResponse
-	97,  // 391: teamos.academy.v1.AcademyService.GetCourseVersion:output_type -> teamos.academy.v1.GetCourseVersionResponse
-	99,  // 392: teamos.academy.v1.AcademyService.CreateCourseDraft:output_type -> teamos.academy.v1.CreateCourseDraftResponse
-	101, // 393: teamos.academy.v1.AcademyService.UpdateCourseDraft:output_type -> teamos.academy.v1.UpdateCourseDraftResponse
-	103, // 394: teamos.academy.v1.AcademyService.PublishCourseVersion:output_type -> teamos.academy.v1.PublishCourseVersionResponse
-	105, // 395: teamos.academy.v1.AcademyService.GetPublishedCourseVersion:output_type -> teamos.academy.v1.GetPublishedCourseVersionResponse
-	107, // 396: teamos.academy.v1.AcademyService.CreateCourseVersionSection:output_type -> teamos.academy.v1.CreateCourseVersionSectionResponse
-	109, // 397: teamos.academy.v1.AcademyService.UpdateCourseVersionSection:output_type -> teamos.academy.v1.UpdateCourseVersionSectionResponse
-	111, // 398: teamos.academy.v1.AcademyService.DeleteCourseVersionSection:output_type -> teamos.academy.v1.DeleteCourseVersionSectionResponse
-	113, // 399: teamos.academy.v1.AcademyService.CreateCourseVersionLesson:output_type -> teamos.academy.v1.CreateCourseVersionLessonResponse
-	115, // 400: teamos.academy.v1.AcademyService.UpdateCourseVersionLesson:output_type -> teamos.academy.v1.UpdateCourseVersionLessonResponse
-	117, // 401: teamos.academy.v1.AcademyService.DeleteCourseVersionLesson:output_type -> teamos.academy.v1.DeleteCourseVersionLessonResponse
-	119, // 402: teamos.academy.v1.AcademyService.MoveCourseVersionLesson:output_type -> teamos.academy.v1.MoveCourseVersionLessonResponse
-	121, // 403: teamos.academy.v1.AcademyService.UpsertCourseVersionQuiz:output_type -> teamos.academy.v1.UpsertCourseVersionQuizResponse
-	123, // 404: teamos.academy.v1.AcademyService.DeleteCourseVersionQuiz:output_type -> teamos.academy.v1.DeleteCourseVersionQuizResponse
-	125, // 405: teamos.academy.v1.AcademyService.GetCourseSections:output_type -> teamos.academy.v1.GetCourseSectionsResponse
-	127, // 406: teamos.academy.v1.AcademyService.CreateCourseSection:output_type -> teamos.academy.v1.CreateCourseSectionResponse
-	129, // 407: teamos.academy.v1.AcademyService.UpdateCourseSection:output_type -> teamos.academy.v1.UpdateCourseSectionResponse
-	131, // 408: teamos.academy.v1.AcademyService.DeleteCourseSection:output_type -> teamos.academy.v1.DeleteCourseSectionResponse
-	133, // 409: teamos.academy.v1.AcademyService.GetLessons:output_type -> teamos.academy.v1.GetLessonsResponse
-	135, // 410: teamos.academy.v1.AcademyService.CreateLesson:output_type -> teamos.academy.v1.CreateLessonResponse
-	137, // 411: teamos.academy.v1.AcademyService.UpdateLesson:output_type -> teamos.academy.v1.UpdateLessonResponse
-	139, // 412: teamos.academy.v1.AcademyService.DeleteLesson:output_type -> teamos.academy.v1.DeleteLessonResponse
-	141, // 413: teamos.academy.v1.AcademyService.MoveLesson:output_type -> teamos.academy.v1.MoveLessonResponse
-	143, // 414: teamos.academy.v1.AcademyService.GetQuizzes:output_type -> teamos.academy.v1.GetQuizzesResponse
-	145, // 415: teamos.academy.v1.AcademyService.UpsertQuiz:output_type -> teamos.academy.v1.UpsertQuizResponse
-	147, // 416: teamos.academy.v1.AcademyService.GetAssignments:output_type -> teamos.academy.v1.GetAssignmentsResponse
-	149, // 417: teamos.academy.v1.AcademyService.AssignCourse:output_type -> teamos.academy.v1.AssignCourseResponse
-	151, // 418: teamos.academy.v1.AcademyService.RevokeAssignment:output_type -> teamos.academy.v1.RevokeAssignmentResponse
-	153, // 419: teamos.academy.v1.AcademyService.GetProgress:output_type -> teamos.academy.v1.GetProgressResponse
-	155, // 420: teamos.academy.v1.AcademyService.MarkLessonComplete:output_type -> teamos.academy.v1.MarkLessonCompleteResponse
-	157, // 421: teamos.academy.v1.AcademyService.GetEnrollments:output_type -> teamos.academy.v1.GetEnrollmentsResponse
-	159, // 422: teamos.academy.v1.AcademyService.SelfEnrollCourse:output_type -> teamos.academy.v1.SelfEnrollCourseResponse
-	161, // 423: teamos.academy.v1.AcademyService.GetCatalogCourseVersion:output_type -> teamos.academy.v1.GetCatalogCourseVersionResponse
-	163, // 424: teamos.academy.v1.AcademyService.GetEnrollment:output_type -> teamos.academy.v1.GetEnrollmentResponse
-	165, // 425: teamos.academy.v1.AcademyService.GetEnrollmentOutline:output_type -> teamos.academy.v1.GetEnrollmentOutlineResponse
-	167, // 426: teamos.academy.v1.AcademyService.GetEnrollmentLesson:output_type -> teamos.academy.v1.GetEnrollmentLessonResponse
-	169, // 427: teamos.academy.v1.AcademyService.ResumeEnrollment:output_type -> teamos.academy.v1.ResumeEnrollmentResponse
-	171, // 428: teamos.academy.v1.AcademyService.CompleteEnrollmentLesson:output_type -> teamos.academy.v1.CompleteEnrollmentLessonResponse
-	173, // 429: teamos.academy.v1.AcademyService.SubmitEnrollmentQuizAttempt:output_type -> teamos.academy.v1.SubmitEnrollmentQuizAttemptResponse
-	175, // 430: teamos.academy.v1.AcademyService.GetEnrollmentReport:output_type -> teamos.academy.v1.GetEnrollmentReportResponse
-	177, // 431: teamos.academy.v1.AcademyService.GetPartnerCourseGroups:output_type -> teamos.academy.v1.GetPartnerCourseGroupsResponse
-	179, // 432: teamos.academy.v1.AcademyService.GetPartnerCoursesReport:output_type -> teamos.academy.v1.GetPartnerCoursesReportResponse
-	181, // 433: teamos.academy.v1.AcademyService.GetCourseVersionPreview:output_type -> teamos.academy.v1.GetCourseVersionPreviewResponse
-	183, // 434: teamos.academy.v1.AcademyService.SubmitCoursePreviewQuizAttempt:output_type -> teamos.academy.v1.SubmitCoursePreviewQuizAttemptResponse
-	185, // 435: teamos.academy.v1.AcademyService.PausePartnerCourseDistribution:output_type -> teamos.academy.v1.PausePartnerCourseDistributionResponse
-	187, // 436: teamos.academy.v1.AcademyService.BlockPartnerCourse:output_type -> teamos.academy.v1.BlockPartnerCourseResponse
-	189, // 437: teamos.academy.v1.AcademyService.ResolvePartnerCourseRestriction:output_type -> teamos.academy.v1.ResolvePartnerCourseRestrictionResponse
-	191, // 438: teamos.academy.v1.AcademyService.GetCourseRestrictions:output_type -> teamos.academy.v1.GetCourseRestrictionsResponse
-	193, // 439: teamos.academy.v1.AcademyService.CopyPartnerCourseVersionToCompany:output_type -> teamos.academy.v1.CopyPartnerCourseVersionToCompanyResponse
-	195, // 440: teamos.academy.v1.AcademyService.GetCourseTemplates:output_type -> teamos.academy.v1.GetCourseTemplatesResponse
-	197, // 441: teamos.academy.v1.AcademyService.GetCourseTemplate:output_type -> teamos.academy.v1.GetCourseTemplateResponse
-	199, // 442: teamos.academy.v1.AcademyService.CreateCourseTemplate:output_type -> teamos.academy.v1.CreateCourseTemplateResponse
-	201, // 443: teamos.academy.v1.AcademyService.UpdateCourseTemplateDraft:output_type -> teamos.academy.v1.UpdateCourseTemplateDraftResponse
-	203, // 444: teamos.academy.v1.AcademyService.CreateCourseTemplateDraft:output_type -> teamos.academy.v1.CreateCourseTemplateDraftResponse
-	205, // 445: teamos.academy.v1.AcademyService.PublishCourseTemplateVersion:output_type -> teamos.academy.v1.PublishCourseTemplateVersionResponse
-	207, // 446: teamos.academy.v1.AcademyService.ArchiveCourseTemplate:output_type -> teamos.academy.v1.ArchiveCourseTemplateResponse
-	209, // 447: teamos.academy.v1.AcademyService.InstantiateCourseTemplateVersion:output_type -> teamos.academy.v1.InstantiateCourseTemplateVersionResponse
-	232, // 448: teamos.academy.v1.AcademyService.CreateExternalPersonalAccess:output_type -> teamos.academy.v1.CreateExternalPersonalAccessResponse
-	234, // 449: teamos.academy.v1.AcademyService.GetExternalPersonalAccesses:output_type -> teamos.academy.v1.GetExternalPersonalAccessesResponse
-	236, // 450: teamos.academy.v1.AcademyService.GetExternalPersonalAccess:output_type -> teamos.academy.v1.GetExternalPersonalAccessResponse
-	238, // 451: teamos.academy.v1.AcademyService.ExtendExternalPersonalAccess:output_type -> teamos.academy.v1.ExtendExternalPersonalAccessResponse
-	240, // 452: teamos.academy.v1.AcademyService.RotateExternalPersonalAccessToken:output_type -> teamos.academy.v1.RotateExternalPersonalAccessTokenResponse
-	242, // 453: teamos.academy.v1.AcademyService.RevokeExternalPersonalAccess:output_type -> teamos.academy.v1.RevokeExternalPersonalAccessResponse
-	244, // 454: teamos.academy.v1.AcademyService.RepeatExternalPersonalAccess:output_type -> teamos.academy.v1.RepeatExternalPersonalAccessResponse
-	246, // 455: teamos.academy.v1.AcademyService.CreateExternalCampaign:output_type -> teamos.academy.v1.CreateExternalCampaignResponse
-	248, // 456: teamos.academy.v1.AcademyService.GetExternalCampaigns:output_type -> teamos.academy.v1.GetExternalCampaignsResponse
-	250, // 457: teamos.academy.v1.AcademyService.GetExternalCampaign:output_type -> teamos.academy.v1.GetExternalCampaignResponse
-	252, // 458: teamos.academy.v1.AcademyService.PauseExternalCampaign:output_type -> teamos.academy.v1.PauseExternalCampaignResponse
-	254, // 459: teamos.academy.v1.AcademyService.ResumeExternalCampaign:output_type -> teamos.academy.v1.ResumeExternalCampaignResponse
-	256, // 460: teamos.academy.v1.AcademyService.RotateExternalCampaignToken:output_type -> teamos.academy.v1.RotateExternalCampaignTokenResponse
-	258, // 461: teamos.academy.v1.AcademyService.RevokeExternalCampaign:output_type -> teamos.academy.v1.RevokeExternalCampaignResponse
-	260, // 462: teamos.academy.v1.AcademyService.GetExternalCampaignReport:output_type -> teamos.academy.v1.GetExternalCampaignReportResponse
-	262, // 463: teamos.academy.v1.AcademyService.GetCourseExternalReport:output_type -> teamos.academy.v1.GetCourseExternalReportResponse
-	264, // 464: teamos.academy.v1.AcademyService.GetPublicAcademyAccess:output_type -> teamos.academy.v1.GetPublicAcademyAccessResponse
-	266, // 465: teamos.academy.v1.AcademyService.RequestPublicAcademyVerification:output_type -> teamos.academy.v1.RequestPublicAcademyVerificationResponse
-	268, // 466: teamos.academy.v1.AcademyService.ConfirmPublicAcademyVerification:output_type -> teamos.academy.v1.ConfirmPublicAcademyVerificationResponse
-	270, // 467: teamos.academy.v1.AcademyService.ActivatePublicAcademyAccess:output_type -> teamos.academy.v1.ActivatePublicAcademyAccessResponse
-	272, // 468: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollment:output_type -> teamos.academy.v1.GetPublicAcademyEnrollmentResponse
-	274, // 469: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollmentOutline:output_type -> teamos.academy.v1.GetPublicAcademyEnrollmentOutlineResponse
-	276, // 470: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollmentLesson:output_type -> teamos.academy.v1.GetPublicAcademyEnrollmentLessonResponse
-	278, // 471: teamos.academy.v1.AcademyService.CompletePublicAcademyEnrollmentLesson:output_type -> teamos.academy.v1.CompletePublicAcademyEnrollmentLessonResponse
-	280, // 472: teamos.academy.v1.AcademyService.SubmitPublicAcademyQuizAttempt:output_type -> teamos.academy.v1.SubmitPublicAcademyQuizAttemptResponse
-	282, // 473: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollmentResults:output_type -> teamos.academy.v1.GetPublicAcademyEnrollmentResultsResponse
-	284, // 474: teamos.academy.v1.AcademyService.GetExternalLearners:output_type -> teamos.academy.v1.GetExternalLearnersResponse
-	286, // 475: teamos.academy.v1.AcademyService.GetExternalLearner:output_type -> teamos.academy.v1.GetExternalLearnerResponse
-	288, // 476: teamos.academy.v1.AcademyService.GetExternalLearnerEnrollments:output_type -> teamos.academy.v1.GetExternalLearnerEnrollmentsResponse
-	290, // 477: teamos.academy.v1.AcademyService.GetExternalLearnerTimeline:output_type -> teamos.academy.v1.GetExternalLearnerTimelineResponse
-	381, // [381:478] is the sub-list for method output_type
-	284, // [284:381] is the sub-list for method input_type
-	284, // [284:284] is the sub-list for extension type_name
-	284, // [284:284] is the sub-list for extension extendee
-	0,   // [0:284] is the sub-list for field type_name
+	48,  // 169: teamos.academy.v1.GetEnrollmentsResponse.enrollments:type_name -> teamos.academy.v1.CourseEnrollment
+	26,  // 170: teamos.academy.v1.GetInternalEnrollmentReportPageRequest.status:type_name -> teamos.academy.v1.InternalEnrollmentReportStatus
+	27,  // 171: teamos.academy.v1.GetInternalEnrollmentReportPageRequest.sort:type_name -> teamos.academy.v1.InternalEnrollmentReportSort
+	48,  // 172: teamos.academy.v1.GetInternalEnrollmentReportPageResponse.items:type_name -> teamos.academy.v1.CourseEnrollment
+	163, // 173: teamos.academy.v1.GetAcademyCatalogResponse.items:type_name -> teamos.academy.v1.CatalogCourseCard
+	28,  // 174: teamos.academy.v1.GetCoursePartnerAudienceResponse.audience:type_name -> teamos.academy.v1.CoursePartnerAudience
+	28,  // 175: teamos.academy.v1.SetCoursePartnerAudienceRequest.audience:type_name -> teamos.academy.v1.CoursePartnerAudience
+	28,  // 176: teamos.academy.v1.SetCoursePartnerAudienceResponse.audience:type_name -> teamos.academy.v1.CoursePartnerAudience
+	48,  // 177: teamos.academy.v1.SelfEnrollCourseResponse.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
+	44,  // 178: teamos.academy.v1.GetCatalogCourseVersionResponse.version:type_name -> teamos.academy.v1.LearnerPublishedCourseVersion
+	48,  // 179: teamos.academy.v1.GetEnrollmentResponse.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
+	54,  // 180: teamos.academy.v1.GetEnrollmentOutlineResponse.outline:type_name -> teamos.academy.v1.EnrollmentOutline
+	55,  // 181: teamos.academy.v1.GetEnrollmentLessonResponse.lesson:type_name -> teamos.academy.v1.EnrollmentLesson
+	48,  // 182: teamos.academy.v1.ResumeEnrollmentResponse.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
+	55,  // 183: teamos.academy.v1.ResumeEnrollmentResponse.current_lesson:type_name -> teamos.academy.v1.EnrollmentLesson
+	311, // 184: teamos.academy.v1.CompleteEnrollmentLessonRequest.last_position:type_name -> google.protobuf.Struct
+	56,  // 185: teamos.academy.v1.CompleteEnrollmentLessonResponse.progress:type_name -> teamos.academy.v1.EnrollmentProgressSnapshot
+	50,  // 186: teamos.academy.v1.SubmitEnrollmentQuizAttemptRequest.answers:type_name -> teamos.academy.v1.EnrollmentQuizAnswer
+	311, // 187: teamos.academy.v1.SubmitEnrollmentQuizAttemptRequest.last_position:type_name -> google.protobuf.Struct
+	51,  // 188: teamos.academy.v1.SubmitEnrollmentQuizAttemptResponse.attempt:type_name -> teamos.academy.v1.EnrollmentQuizAttempt
+	56,  // 189: teamos.academy.v1.SubmitEnrollmentQuizAttemptResponse.progress:type_name -> teamos.academy.v1.EnrollmentProgressSnapshot
+	51,  // 190: teamos.academy.v1.ReviewEnrollmentQuizAttemptResponse.attempt:type_name -> teamos.academy.v1.EnrollmentQuizAttempt
+	56,  // 191: teamos.academy.v1.ReviewEnrollmentQuizAttemptResponse.progress:type_name -> teamos.academy.v1.EnrollmentProgressSnapshot
+	57,  // 192: teamos.academy.v1.GetEnrollmentReportResponse.report:type_name -> teamos.academy.v1.EnrollmentReport
+	3,   // 193: teamos.academy.v1.GetPartnerCourseGroupsRequest.lifecycle:type_name -> teamos.academy.v1.CourseLifecycleStatus
+	4,   // 194: teamos.academy.v1.GetPartnerCourseGroupsRequest.distribution:type_name -> teamos.academy.v1.CourseDistributionStatus
+	61,  // 195: teamos.academy.v1.GetPartnerCourseGroupsResponse.groups:type_name -> teamos.academy.v1.PartnerCourseGroup
+	64,  // 196: teamos.academy.v1.GetPartnerCoursesReportResponse.report:type_name -> teamos.academy.v1.PartnerCoursesReport
+	65,  // 197: teamos.academy.v1.GetCourseVersionPreviewResponse.preview:type_name -> teamos.academy.v1.CourseVersionPreview
+	50,  // 198: teamos.academy.v1.SubmitCoursePreviewQuizAttemptRequest.answers:type_name -> teamos.academy.v1.EnrollmentQuizAnswer
+	66,  // 199: teamos.academy.v1.SubmitCoursePreviewQuizAttemptResponse.result:type_name -> teamos.academy.v1.CoursePreviewQuizAttemptResult
+	58,  // 200: teamos.academy.v1.PausePartnerCourseDistributionResponse.restriction:type_name -> teamos.academy.v1.CourseRestriction
+	58,  // 201: teamos.academy.v1.BlockPartnerCourseResponse.restriction:type_name -> teamos.academy.v1.CourseRestriction
+	58,  // 202: teamos.academy.v1.ResolvePartnerCourseRestrictionResponse.restriction:type_name -> teamos.academy.v1.CourseRestriction
+	58,  // 203: teamos.academy.v1.GetCourseRestrictionsResponse.restrictions:type_name -> teamos.academy.v1.CourseRestriction
+	60,  // 204: teamos.academy.v1.CopyPartnerCourseVersionToCompanyResponse.result:type_name -> teamos.academy.v1.PartnerCourseCopyResult
+	18,  // 205: teamos.academy.v1.GetCourseTemplatesRequest.type:type_name -> teamos.academy.v1.CourseTemplateType
+	19,  // 206: teamos.academy.v1.GetCourseTemplatesRequest.lifecycle_status:type_name -> teamos.academy.v1.CourseTemplateLifecycleStatus
+	67,  // 207: teamos.academy.v1.GetCourseTemplatesResponse.templates:type_name -> teamos.academy.v1.CourseTemplate
+	309, // 208: teamos.academy.v1.GetCourseTemplatesResponse.items:type_name -> teamos.academy.v1.AcademyTemplateSummary
+	67,  // 209: teamos.academy.v1.GetCourseTemplateResponse.template:type_name -> teamos.academy.v1.CourseTemplate
+	68,  // 210: teamos.academy.v1.GetCourseTemplateResponse.versions:type_name -> teamos.academy.v1.CourseTemplateVersion
+	73,  // 211: teamos.academy.v1.GetCourseTemplateResponse.selected_version:type_name -> teamos.academy.v1.CourseTemplateVersionDetails
+	77,  // 212: teamos.academy.v1.CreateCourseTemplateRequest.content:type_name -> teamos.academy.v1.CourseTemplateDraftContentInput
+	67,  // 213: teamos.academy.v1.CreateCourseTemplateResponse.template:type_name -> teamos.academy.v1.CourseTemplate
+	68,  // 214: teamos.academy.v1.CreateCourseTemplateResponse.draft:type_name -> teamos.academy.v1.CourseTemplateVersion
+	77,  // 215: teamos.academy.v1.UpdateCourseTemplateDraftRequest.content:type_name -> teamos.academy.v1.CourseTemplateDraftContentInput
+	73,  // 216: teamos.academy.v1.UpdateCourseTemplateDraftResponse.draft:type_name -> teamos.academy.v1.CourseTemplateVersionDetails
+	73,  // 217: teamos.academy.v1.CreateCourseTemplateDraftResponse.draft:type_name -> teamos.academy.v1.CourseTemplateVersionDetails
+	68,  // 218: teamos.academy.v1.PublishCourseTemplateVersionResponse.version:type_name -> teamos.academy.v1.CourseTemplateVersion
+	67,  // 219: teamos.academy.v1.ArchiveCourseTemplateResponse.template:type_name -> teamos.academy.v1.CourseTemplate
+	78,  // 220: teamos.academy.v1.InstantiateCourseTemplateVersionResponse.result:type_name -> teamos.academy.v1.CourseTemplateInstantiationResult
+	20,  // 221: teamos.academy.v1.ExternalPersonalAccess.status:type_name -> teamos.academy.v1.ExternalPersonalAccessStatus
+	310, // 222: teamos.academy.v1.ExternalPersonalAccess.issued_at:type_name -> google.protobuf.Timestamp
+	310, // 223: teamos.academy.v1.ExternalPersonalAccess.activated_at:type_name -> google.protobuf.Timestamp
+	310, // 224: teamos.academy.v1.ExternalPersonalAccess.revoked_at:type_name -> google.protobuf.Timestamp
+	224, // 225: teamos.academy.v1.ExternalPersonalAccessCreated.access:type_name -> teamos.academy.v1.ExternalPersonalAccess
+	21,  // 226: teamos.academy.v1.ExternalCampaign.owner_type:type_name -> teamos.academy.v1.ExternalCampaignOwnerType
+	22,  // 227: teamos.academy.v1.ExternalCampaign.purpose:type_name -> teamos.academy.v1.ExternalCampaignPurpose
+	23,  // 228: teamos.academy.v1.ExternalCampaign.status:type_name -> teamos.academy.v1.ExternalCampaignStatus
+	310, // 229: teamos.academy.v1.ExternalCampaign.created_at:type_name -> google.protobuf.Timestamp
+	310, // 230: teamos.academy.v1.ExternalCampaign.paused_at:type_name -> google.protobuf.Timestamp
+	310, // 231: teamos.academy.v1.ExternalCampaign.revoked_at:type_name -> google.protobuf.Timestamp
+	226, // 232: teamos.academy.v1.ExternalCampaignCreated.campaign:type_name -> teamos.academy.v1.ExternalCampaign
+	229, // 233: teamos.academy.v1.CampaignAnalytics.lesson_drop_off:type_name -> teamos.academy.v1.CampaignLessonDropOff
+	230, // 234: teamos.academy.v1.CampaignAnalytics.attribution:type_name -> teamos.academy.v1.CampaignAttribution
+	231, // 235: teamos.academy.v1.CampaignAnalytics.versions:type_name -> teamos.academy.v1.CampaignVersionAnalytics
+	226, // 236: teamos.academy.v1.ExternalCampaignReport.campaign:type_name -> teamos.academy.v1.ExternalCampaign
+	228, // 237: teamos.academy.v1.ExternalCampaignReport.funnel:type_name -> teamos.academy.v1.CampaignFunnel
+	48,  // 238: teamos.academy.v1.ExternalCampaignReport.enrollments:type_name -> teamos.academy.v1.CourseEnrollment
+	232, // 239: teamos.academy.v1.ExternalCampaignReport.analytics:type_name -> teamos.academy.v1.CampaignAnalytics
+	48,  // 240: teamos.academy.v1.CourseExternalReport.enrollments:type_name -> teamos.academy.v1.CourseEnrollment
+	24,  // 241: teamos.academy.v1.ExternalLearnerTimelineEvent.type:type_name -> teamos.academy.v1.ExternalLearnerTimelineEventType
+	310, // 242: teamos.academy.v1.ExternalLearnerTimelineEvent.occurred_at:type_name -> google.protobuf.Timestamp
+	13,  // 243: teamos.academy.v1.ExternalLearnerTimelineEvent.source_type:type_name -> teamos.academy.v1.EnrollmentSourceType
+	15,  // 244: teamos.academy.v1.ExternalLearnerTimelineEvent.access_status:type_name -> teamos.academy.v1.EnrollmentAccessStatus
+	237, // 245: teamos.academy.v1.ExternalLearnerTimeline.learner:type_name -> teamos.academy.v1.ExternalLearner
+	235, // 246: teamos.academy.v1.ExternalLearnerTimeline.events:type_name -> teamos.academy.v1.ExternalLearnerTimelineEvent
+	310, // 247: teamos.academy.v1.ExternalLearner.email_verified_at:type_name -> google.protobuf.Timestamp
+	310, // 248: teamos.academy.v1.ExternalLearner.created_at:type_name -> google.protobuf.Timestamp
+	310, // 249: teamos.academy.v1.ExternalLearner.updated_at:type_name -> google.protobuf.Timestamp
+	14,  // 250: teamos.academy.v1.PartnerExternalReportRow.progress_status:type_name -> teamos.academy.v1.EnrollmentProgressStatus
+	15,  // 251: teamos.academy.v1.PartnerExternalReportRow.access_status:type_name -> teamos.academy.v1.EnrollmentAccessStatus
+	310, // 252: teamos.academy.v1.PartnerExternalReportRow.activated_at:type_name -> google.protobuf.Timestamp
+	310, // 253: teamos.academy.v1.PartnerExternalReportRow.completed_at:type_name -> google.protobuf.Timestamp
+	238, // 254: teamos.academy.v1.GetPartnerExternalReportPageResponse.items:type_name -> teamos.academy.v1.PartnerExternalReportRow
+	241, // 255: teamos.academy.v1.PublicAcademyOutlineSection.lessons:type_name -> teamos.academy.v1.PublicAcademyOutlineLesson
+	25,  // 256: teamos.academy.v1.PublicAcademyAccess.kind:type_name -> teamos.academy.v1.PublicAcademyAccessKind
+	2,   // 257: teamos.academy.v1.PublicAcademyAccess.owner_type:type_name -> teamos.academy.v1.CourseOwnerType
+	242, // 258: teamos.academy.v1.PublicAcademyAccess.outline:type_name -> teamos.academy.v1.PublicAcademyOutlineSection
+	310, // 259: teamos.academy.v1.ExternalVerificationChallenge.expires_at:type_name -> google.protobuf.Timestamp
+	310, // 260: teamos.academy.v1.ExternalVerificationConfirmed.verified_at:type_name -> google.protobuf.Timestamp
+	310, // 261: teamos.academy.v1.ExternalVerificationConfirmed.session_expires_at:type_name -> google.protobuf.Timestamp
+	310, // 262: teamos.academy.v1.ExternalQuizAttemptResult.created_at:type_name -> google.protobuf.Timestamp
+	48,  // 263: teamos.academy.v1.ExternalEnrollmentResults.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
+	246, // 264: teamos.academy.v1.ExternalEnrollmentResults.quiz_attempts:type_name -> teamos.academy.v1.ExternalQuizAttemptResult
+	225, // 265: teamos.academy.v1.CreateExternalPersonalAccessResponse.created:type_name -> teamos.academy.v1.ExternalPersonalAccessCreated
+	224, // 266: teamos.academy.v1.GetExternalPersonalAccessesResponse.accesses:type_name -> teamos.academy.v1.ExternalPersonalAccess
+	224, // 267: teamos.academy.v1.GetExternalPersonalAccessResponse.access:type_name -> teamos.academy.v1.ExternalPersonalAccess
+	224, // 268: teamos.academy.v1.ExtendExternalPersonalAccessResponse.access:type_name -> teamos.academy.v1.ExternalPersonalAccess
+	225, // 269: teamos.academy.v1.RotateExternalPersonalAccessTokenResponse.created:type_name -> teamos.academy.v1.ExternalPersonalAccessCreated
+	224, // 270: teamos.academy.v1.RevokeExternalPersonalAccessResponse.access:type_name -> teamos.academy.v1.ExternalPersonalAccess
+	225, // 271: teamos.academy.v1.RepeatExternalPersonalAccessResponse.created:type_name -> teamos.academy.v1.ExternalPersonalAccessCreated
+	22,  // 272: teamos.academy.v1.CreateExternalCampaignRequest.purpose:type_name -> teamos.academy.v1.ExternalCampaignPurpose
+	227, // 273: teamos.academy.v1.CreateExternalCampaignResponse.created:type_name -> teamos.academy.v1.ExternalCampaignCreated
+	226, // 274: teamos.academy.v1.GetExternalCampaignsResponse.campaigns:type_name -> teamos.academy.v1.ExternalCampaign
+	226, // 275: teamos.academy.v1.GetExternalCampaignResponse.campaign:type_name -> teamos.academy.v1.ExternalCampaign
+	226, // 276: teamos.academy.v1.PauseExternalCampaignResponse.campaign:type_name -> teamos.academy.v1.ExternalCampaign
+	226, // 277: teamos.academy.v1.ResumeExternalCampaignResponse.campaign:type_name -> teamos.academy.v1.ExternalCampaign
+	227, // 278: teamos.academy.v1.RotateExternalCampaignTokenResponse.created:type_name -> teamos.academy.v1.ExternalCampaignCreated
+	226, // 279: teamos.academy.v1.RevokeExternalCampaignResponse.campaign:type_name -> teamos.academy.v1.ExternalCampaign
+	233, // 280: teamos.academy.v1.GetExternalCampaignReportResponse.report:type_name -> teamos.academy.v1.ExternalCampaignReport
+	234, // 281: teamos.academy.v1.GetCourseExternalReportResponse.report:type_name -> teamos.academy.v1.CourseExternalReport
+	243, // 282: teamos.academy.v1.GetPublicAcademyAccessResponse.access:type_name -> teamos.academy.v1.PublicAcademyAccess
+	244, // 283: teamos.academy.v1.RequestPublicAcademyVerificationResponse.challenge:type_name -> teamos.academy.v1.ExternalVerificationChallenge
+	245, // 284: teamos.academy.v1.ConfirmPublicAcademyVerificationResponse.confirmed:type_name -> teamos.academy.v1.ExternalVerificationConfirmed
+	48,  // 285: teamos.academy.v1.ActivatePublicAcademyAccessResponse.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
+	48,  // 286: teamos.academy.v1.GetPublicAcademyEnrollmentResponse.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
+	54,  // 287: teamos.academy.v1.GetPublicAcademyEnrollmentOutlineResponse.outline:type_name -> teamos.academy.v1.EnrollmentOutline
+	55,  // 288: teamos.academy.v1.GetPublicAcademyEnrollmentLessonResponse.lesson:type_name -> teamos.academy.v1.EnrollmentLesson
+	48,  // 289: teamos.academy.v1.CompletePublicAcademyEnrollmentLessonResponse.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
+	50,  // 290: teamos.academy.v1.SubmitPublicAcademyQuizAttemptRequest.answers:type_name -> teamos.academy.v1.EnrollmentQuizAnswer
+	246, // 291: teamos.academy.v1.SubmitPublicAcademyQuizAttemptResponse.result:type_name -> teamos.academy.v1.ExternalQuizAttemptResult
+	48,  // 292: teamos.academy.v1.SubmitPublicAcademyQuizAttemptResponse.enrollment:type_name -> teamos.academy.v1.CourseEnrollment
+	247, // 293: teamos.academy.v1.GetPublicAcademyEnrollmentResultsResponse.results:type_name -> teamos.academy.v1.ExternalEnrollmentResults
+	237, // 294: teamos.academy.v1.GetExternalLearnersResponse.learners:type_name -> teamos.academy.v1.ExternalLearner
+	237, // 295: teamos.academy.v1.GetExternalLearnerResponse.learner:type_name -> teamos.academy.v1.ExternalLearner
+	48,  // 296: teamos.academy.v1.GetExternalLearnerEnrollmentsResponse.enrollments:type_name -> teamos.academy.v1.CourseEnrollment
+	236, // 297: teamos.academy.v1.GetExternalLearnerTimelineResponse.timeline:type_name -> teamos.academy.v1.ExternalLearnerTimeline
+	308, // 298: teamos.academy.v1.AcademyTemplateSummary.capabilities:type_name -> teamos.academy.v1.AcademyTemplateCapabilities
+	79,  // 299: teamos.academy.v1.AcademyService.GetCourses:input_type -> teamos.academy.v1.GetCoursesRequest
+	81,  // 300: teamos.academy.v1.AcademyService.GetCourse:input_type -> teamos.academy.v1.GetCourseRequest
+	83,  // 301: teamos.academy.v1.AcademyService.GetPublicCourse:input_type -> teamos.academy.v1.GetPublicCourseRequest
+	85,  // 302: teamos.academy.v1.AcademyService.CreateCourse:input_type -> teamos.academy.v1.CreateCourseRequest
+	87,  // 303: teamos.academy.v1.AcademyService.CreateCourseFromKb:input_type -> teamos.academy.v1.CreateCourseFromKbRequest
+	89,  // 304: teamos.academy.v1.AcademyService.UpdateCourse:input_type -> teamos.academy.v1.UpdateCourseRequest
+	91,  // 305: teamos.academy.v1.AcademyService.ArchiveCourse:input_type -> teamos.academy.v1.ArchiveCourseRequest
+	93,  // 306: teamos.academy.v1.AcademyService.RestoreCourse:input_type -> teamos.academy.v1.RestoreCourseRequest
+	95,  // 307: teamos.academy.v1.AcademyService.DeleteCourse:input_type -> teamos.academy.v1.DeleteCourseRequest
+	97,  // 308: teamos.academy.v1.AcademyService.GetCourseVersions:input_type -> teamos.academy.v1.GetCourseVersionsRequest
+	99,  // 309: teamos.academy.v1.AcademyService.GetCourseVersion:input_type -> teamos.academy.v1.GetCourseVersionRequest
+	101, // 310: teamos.academy.v1.AcademyService.CreateCourseDraft:input_type -> teamos.academy.v1.CreateCourseDraftRequest
+	103, // 311: teamos.academy.v1.AcademyService.UpdateCourseDraft:input_type -> teamos.academy.v1.UpdateCourseDraftRequest
+	105, // 312: teamos.academy.v1.AcademyService.PublishCourseVersion:input_type -> teamos.academy.v1.PublishCourseVersionRequest
+	107, // 313: teamos.academy.v1.AcademyService.GetPublishedCourseVersion:input_type -> teamos.academy.v1.GetPublishedCourseVersionRequest
+	109, // 314: teamos.academy.v1.AcademyService.CreateCourseVersionSection:input_type -> teamos.academy.v1.CreateCourseVersionSectionRequest
+	111, // 315: teamos.academy.v1.AcademyService.UpdateCourseVersionSection:input_type -> teamos.academy.v1.UpdateCourseVersionSectionRequest
+	113, // 316: teamos.academy.v1.AcademyService.DeleteCourseVersionSection:input_type -> teamos.academy.v1.DeleteCourseVersionSectionRequest
+	115, // 317: teamos.academy.v1.AcademyService.CreateCourseVersionLesson:input_type -> teamos.academy.v1.CreateCourseVersionLessonRequest
+	117, // 318: teamos.academy.v1.AcademyService.UpdateCourseVersionLesson:input_type -> teamos.academy.v1.UpdateCourseVersionLessonRequest
+	119, // 319: teamos.academy.v1.AcademyService.DeleteCourseVersionLesson:input_type -> teamos.academy.v1.DeleteCourseVersionLessonRequest
+	121, // 320: teamos.academy.v1.AcademyService.MoveCourseVersionLesson:input_type -> teamos.academy.v1.MoveCourseVersionLessonRequest
+	123, // 321: teamos.academy.v1.AcademyService.UpsertCourseVersionQuiz:input_type -> teamos.academy.v1.UpsertCourseVersionQuizRequest
+	125, // 322: teamos.academy.v1.AcademyService.DeleteCourseVersionQuiz:input_type -> teamos.academy.v1.DeleteCourseVersionQuizRequest
+	127, // 323: teamos.academy.v1.AcademyService.GetCourseSections:input_type -> teamos.academy.v1.GetCourseSectionsRequest
+	129, // 324: teamos.academy.v1.AcademyService.CreateCourseSection:input_type -> teamos.academy.v1.CreateCourseSectionRequest
+	131, // 325: teamos.academy.v1.AcademyService.UpdateCourseSection:input_type -> teamos.academy.v1.UpdateCourseSectionRequest
+	133, // 326: teamos.academy.v1.AcademyService.DeleteCourseSection:input_type -> teamos.academy.v1.DeleteCourseSectionRequest
+	135, // 327: teamos.academy.v1.AcademyService.GetLessons:input_type -> teamos.academy.v1.GetLessonsRequest
+	137, // 328: teamos.academy.v1.AcademyService.CreateLesson:input_type -> teamos.academy.v1.CreateLessonRequest
+	139, // 329: teamos.academy.v1.AcademyService.UpdateLesson:input_type -> teamos.academy.v1.UpdateLessonRequest
+	141, // 330: teamos.academy.v1.AcademyService.DeleteLesson:input_type -> teamos.academy.v1.DeleteLessonRequest
+	143, // 331: teamos.academy.v1.AcademyService.MoveLesson:input_type -> teamos.academy.v1.MoveLessonRequest
+	145, // 332: teamos.academy.v1.AcademyService.GetQuizzes:input_type -> teamos.academy.v1.GetQuizzesRequest
+	147, // 333: teamos.academy.v1.AcademyService.UpsertQuiz:input_type -> teamos.academy.v1.UpsertQuizRequest
+	149, // 334: teamos.academy.v1.AcademyService.GetAssignments:input_type -> teamos.academy.v1.GetAssignmentsRequest
+	151, // 335: teamos.academy.v1.AcademyService.AssignCourse:input_type -> teamos.academy.v1.AssignCourseRequest
+	153, // 336: teamos.academy.v1.AcademyService.RevokeAssignment:input_type -> teamos.academy.v1.RevokeAssignmentRequest
+	155, // 337: teamos.academy.v1.AcademyService.GetProgress:input_type -> teamos.academy.v1.GetProgressRequest
+	157, // 338: teamos.academy.v1.AcademyService.MarkLessonComplete:input_type -> teamos.academy.v1.MarkLessonCompleteRequest
+	159, // 339: teamos.academy.v1.AcademyService.GetEnrollments:input_type -> teamos.academy.v1.GetEnrollmentsRequest
+	161, // 340: teamos.academy.v1.AcademyService.GetInternalEnrollmentReportPage:input_type -> teamos.academy.v1.GetInternalEnrollmentReportPageRequest
+	164, // 341: teamos.academy.v1.AcademyService.GetAcademyCatalog:input_type -> teamos.academy.v1.GetAcademyCatalogRequest
+	170, // 342: teamos.academy.v1.AcademyService.SelfEnrollCourse:input_type -> teamos.academy.v1.SelfEnrollCourseRequest
+	172, // 343: teamos.academy.v1.AcademyService.GetCatalogCourseVersion:input_type -> teamos.academy.v1.GetCatalogCourseVersionRequest
+	174, // 344: teamos.academy.v1.AcademyService.GetEnrollment:input_type -> teamos.academy.v1.GetEnrollmentRequest
+	176, // 345: teamos.academy.v1.AcademyService.GetEnrollmentOutline:input_type -> teamos.academy.v1.GetEnrollmentOutlineRequest
+	178, // 346: teamos.academy.v1.AcademyService.GetEnrollmentLesson:input_type -> teamos.academy.v1.GetEnrollmentLessonRequest
+	180, // 347: teamos.academy.v1.AcademyService.ResumeEnrollment:input_type -> teamos.academy.v1.ResumeEnrollmentRequest
+	182, // 348: teamos.academy.v1.AcademyService.CompleteEnrollmentLesson:input_type -> teamos.academy.v1.CompleteEnrollmentLessonRequest
+	184, // 349: teamos.academy.v1.AcademyService.SubmitEnrollmentQuizAttempt:input_type -> teamos.academy.v1.SubmitEnrollmentQuizAttemptRequest
+	186, // 350: teamos.academy.v1.AcademyService.ReviewEnrollmentQuizAttempt:input_type -> teamos.academy.v1.ReviewEnrollmentQuizAttemptRequest
+	188, // 351: teamos.academy.v1.AcademyService.GetEnrollmentReport:input_type -> teamos.academy.v1.GetEnrollmentReportRequest
+	190, // 352: teamos.academy.v1.AcademyService.GetPartnerCourseGroups:input_type -> teamos.academy.v1.GetPartnerCourseGroupsRequest
+	192, // 353: teamos.academy.v1.AcademyService.GetPartnerCoursesReport:input_type -> teamos.academy.v1.GetPartnerCoursesReportRequest
+	194, // 354: teamos.academy.v1.AcademyService.GetCourseVersionPreview:input_type -> teamos.academy.v1.GetCourseVersionPreviewRequest
+	196, // 355: teamos.academy.v1.AcademyService.SubmitCoursePreviewQuizAttempt:input_type -> teamos.academy.v1.SubmitCoursePreviewQuizAttemptRequest
+	198, // 356: teamos.academy.v1.AcademyService.PausePartnerCourseDistribution:input_type -> teamos.academy.v1.PausePartnerCourseDistributionRequest
+	200, // 357: teamos.academy.v1.AcademyService.BlockPartnerCourse:input_type -> teamos.academy.v1.BlockPartnerCourseRequest
+	202, // 358: teamos.academy.v1.AcademyService.ResolvePartnerCourseRestriction:input_type -> teamos.academy.v1.ResolvePartnerCourseRestrictionRequest
+	204, // 359: teamos.academy.v1.AcademyService.GetCourseRestrictions:input_type -> teamos.academy.v1.GetCourseRestrictionsRequest
+	206, // 360: teamos.academy.v1.AcademyService.CopyPartnerCourseVersionToCompany:input_type -> teamos.academy.v1.CopyPartnerCourseVersionToCompanyRequest
+	166, // 361: teamos.academy.v1.AcademyService.GetCoursePartnerAudience:input_type -> teamos.academy.v1.GetCoursePartnerAudienceRequest
+	168, // 362: teamos.academy.v1.AcademyService.SetCoursePartnerAudience:input_type -> teamos.academy.v1.SetCoursePartnerAudienceRequest
+	208, // 363: teamos.academy.v1.AcademyService.GetCourseTemplates:input_type -> teamos.academy.v1.GetCourseTemplatesRequest
+	210, // 364: teamos.academy.v1.AcademyService.GetCourseTemplate:input_type -> teamos.academy.v1.GetCourseTemplateRequest
+	212, // 365: teamos.academy.v1.AcademyService.CreateCourseTemplate:input_type -> teamos.academy.v1.CreateCourseTemplateRequest
+	214, // 366: teamos.academy.v1.AcademyService.UpdateCourseTemplateDraft:input_type -> teamos.academy.v1.UpdateCourseTemplateDraftRequest
+	216, // 367: teamos.academy.v1.AcademyService.CreateCourseTemplateDraft:input_type -> teamos.academy.v1.CreateCourseTemplateDraftRequest
+	218, // 368: teamos.academy.v1.AcademyService.PublishCourseTemplateVersion:input_type -> teamos.academy.v1.PublishCourseTemplateVersionRequest
+	220, // 369: teamos.academy.v1.AcademyService.ArchiveCourseTemplate:input_type -> teamos.academy.v1.ArchiveCourseTemplateRequest
+	222, // 370: teamos.academy.v1.AcademyService.InstantiateCourseTemplateVersion:input_type -> teamos.academy.v1.InstantiateCourseTemplateVersionRequest
+	248, // 371: teamos.academy.v1.AcademyService.CreateExternalPersonalAccess:input_type -> teamos.academy.v1.CreateExternalPersonalAccessRequest
+	250, // 372: teamos.academy.v1.AcademyService.GetExternalPersonalAccesses:input_type -> teamos.academy.v1.GetExternalPersonalAccessesRequest
+	252, // 373: teamos.academy.v1.AcademyService.GetExternalPersonalAccess:input_type -> teamos.academy.v1.GetExternalPersonalAccessRequest
+	254, // 374: teamos.academy.v1.AcademyService.ExtendExternalPersonalAccess:input_type -> teamos.academy.v1.ExtendExternalPersonalAccessRequest
+	256, // 375: teamos.academy.v1.AcademyService.RotateExternalPersonalAccessToken:input_type -> teamos.academy.v1.RotateExternalPersonalAccessTokenRequest
+	258, // 376: teamos.academy.v1.AcademyService.RevokeExternalPersonalAccess:input_type -> teamos.academy.v1.RevokeExternalPersonalAccessRequest
+	260, // 377: teamos.academy.v1.AcademyService.RepeatExternalPersonalAccess:input_type -> teamos.academy.v1.RepeatExternalPersonalAccessRequest
+	262, // 378: teamos.academy.v1.AcademyService.CreateExternalCampaign:input_type -> teamos.academy.v1.CreateExternalCampaignRequest
+	264, // 379: teamos.academy.v1.AcademyService.GetExternalCampaigns:input_type -> teamos.academy.v1.GetExternalCampaignsRequest
+	266, // 380: teamos.academy.v1.AcademyService.GetExternalCampaign:input_type -> teamos.academy.v1.GetExternalCampaignRequest
+	268, // 381: teamos.academy.v1.AcademyService.PauseExternalCampaign:input_type -> teamos.academy.v1.PauseExternalCampaignRequest
+	270, // 382: teamos.academy.v1.AcademyService.ResumeExternalCampaign:input_type -> teamos.academy.v1.ResumeExternalCampaignRequest
+	272, // 383: teamos.academy.v1.AcademyService.RotateExternalCampaignToken:input_type -> teamos.academy.v1.RotateExternalCampaignTokenRequest
+	274, // 384: teamos.academy.v1.AcademyService.RevokeExternalCampaign:input_type -> teamos.academy.v1.RevokeExternalCampaignRequest
+	276, // 385: teamos.academy.v1.AcademyService.GetExternalCampaignReport:input_type -> teamos.academy.v1.GetExternalCampaignReportRequest
+	278, // 386: teamos.academy.v1.AcademyService.GetCourseExternalReport:input_type -> teamos.academy.v1.GetCourseExternalReportRequest
+	280, // 387: teamos.academy.v1.AcademyService.GetPublicAcademyAccess:input_type -> teamos.academy.v1.GetPublicAcademyAccessRequest
+	282, // 388: teamos.academy.v1.AcademyService.RequestPublicAcademyVerification:input_type -> teamos.academy.v1.RequestPublicAcademyVerificationRequest
+	284, // 389: teamos.academy.v1.AcademyService.ConfirmPublicAcademyVerification:input_type -> teamos.academy.v1.ConfirmPublicAcademyVerificationRequest
+	286, // 390: teamos.academy.v1.AcademyService.ActivatePublicAcademyAccess:input_type -> teamos.academy.v1.ActivatePublicAcademyAccessRequest
+	288, // 391: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollment:input_type -> teamos.academy.v1.GetPublicAcademyEnrollmentRequest
+	290, // 392: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollmentOutline:input_type -> teamos.academy.v1.GetPublicAcademyEnrollmentOutlineRequest
+	292, // 393: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollmentLesson:input_type -> teamos.academy.v1.GetPublicAcademyEnrollmentLessonRequest
+	294, // 394: teamos.academy.v1.AcademyService.CompletePublicAcademyEnrollmentLesson:input_type -> teamos.academy.v1.CompletePublicAcademyEnrollmentLessonRequest
+	296, // 395: teamos.academy.v1.AcademyService.SubmitPublicAcademyQuizAttempt:input_type -> teamos.academy.v1.SubmitPublicAcademyQuizAttemptRequest
+	298, // 396: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollmentResults:input_type -> teamos.academy.v1.GetPublicAcademyEnrollmentResultsRequest
+	300, // 397: teamos.academy.v1.AcademyService.GetExternalLearners:input_type -> teamos.academy.v1.GetExternalLearnersRequest
+	302, // 398: teamos.academy.v1.AcademyService.GetExternalLearner:input_type -> teamos.academy.v1.GetExternalLearnerRequest
+	304, // 399: teamos.academy.v1.AcademyService.GetExternalLearnerEnrollments:input_type -> teamos.academy.v1.GetExternalLearnerEnrollmentsRequest
+	306, // 400: teamos.academy.v1.AcademyService.GetExternalLearnerTimeline:input_type -> teamos.academy.v1.GetExternalLearnerTimelineRequest
+	239, // 401: teamos.academy.v1.AcademyService.GetPartnerExternalReportPage:input_type -> teamos.academy.v1.GetPartnerExternalReportPageRequest
+	80,  // 402: teamos.academy.v1.AcademyService.GetCourses:output_type -> teamos.academy.v1.GetCoursesResponse
+	82,  // 403: teamos.academy.v1.AcademyService.GetCourse:output_type -> teamos.academy.v1.GetCourseResponse
+	84,  // 404: teamos.academy.v1.AcademyService.GetPublicCourse:output_type -> teamos.academy.v1.GetPublicCourseResponse
+	86,  // 405: teamos.academy.v1.AcademyService.CreateCourse:output_type -> teamos.academy.v1.CreateCourseResponse
+	88,  // 406: teamos.academy.v1.AcademyService.CreateCourseFromKb:output_type -> teamos.academy.v1.CreateCourseFromKbResponse
+	90,  // 407: teamos.academy.v1.AcademyService.UpdateCourse:output_type -> teamos.academy.v1.UpdateCourseResponse
+	92,  // 408: teamos.academy.v1.AcademyService.ArchiveCourse:output_type -> teamos.academy.v1.ArchiveCourseResponse
+	94,  // 409: teamos.academy.v1.AcademyService.RestoreCourse:output_type -> teamos.academy.v1.RestoreCourseResponse
+	96,  // 410: teamos.academy.v1.AcademyService.DeleteCourse:output_type -> teamos.academy.v1.DeleteCourseResponse
+	98,  // 411: teamos.academy.v1.AcademyService.GetCourseVersions:output_type -> teamos.academy.v1.GetCourseVersionsResponse
+	100, // 412: teamos.academy.v1.AcademyService.GetCourseVersion:output_type -> teamos.academy.v1.GetCourseVersionResponse
+	102, // 413: teamos.academy.v1.AcademyService.CreateCourseDraft:output_type -> teamos.academy.v1.CreateCourseDraftResponse
+	104, // 414: teamos.academy.v1.AcademyService.UpdateCourseDraft:output_type -> teamos.academy.v1.UpdateCourseDraftResponse
+	106, // 415: teamos.academy.v1.AcademyService.PublishCourseVersion:output_type -> teamos.academy.v1.PublishCourseVersionResponse
+	108, // 416: teamos.academy.v1.AcademyService.GetPublishedCourseVersion:output_type -> teamos.academy.v1.GetPublishedCourseVersionResponse
+	110, // 417: teamos.academy.v1.AcademyService.CreateCourseVersionSection:output_type -> teamos.academy.v1.CreateCourseVersionSectionResponse
+	112, // 418: teamos.academy.v1.AcademyService.UpdateCourseVersionSection:output_type -> teamos.academy.v1.UpdateCourseVersionSectionResponse
+	114, // 419: teamos.academy.v1.AcademyService.DeleteCourseVersionSection:output_type -> teamos.academy.v1.DeleteCourseVersionSectionResponse
+	116, // 420: teamos.academy.v1.AcademyService.CreateCourseVersionLesson:output_type -> teamos.academy.v1.CreateCourseVersionLessonResponse
+	118, // 421: teamos.academy.v1.AcademyService.UpdateCourseVersionLesson:output_type -> teamos.academy.v1.UpdateCourseVersionLessonResponse
+	120, // 422: teamos.academy.v1.AcademyService.DeleteCourseVersionLesson:output_type -> teamos.academy.v1.DeleteCourseVersionLessonResponse
+	122, // 423: teamos.academy.v1.AcademyService.MoveCourseVersionLesson:output_type -> teamos.academy.v1.MoveCourseVersionLessonResponse
+	124, // 424: teamos.academy.v1.AcademyService.UpsertCourseVersionQuiz:output_type -> teamos.academy.v1.UpsertCourseVersionQuizResponse
+	126, // 425: teamos.academy.v1.AcademyService.DeleteCourseVersionQuiz:output_type -> teamos.academy.v1.DeleteCourseVersionQuizResponse
+	128, // 426: teamos.academy.v1.AcademyService.GetCourseSections:output_type -> teamos.academy.v1.GetCourseSectionsResponse
+	130, // 427: teamos.academy.v1.AcademyService.CreateCourseSection:output_type -> teamos.academy.v1.CreateCourseSectionResponse
+	132, // 428: teamos.academy.v1.AcademyService.UpdateCourseSection:output_type -> teamos.academy.v1.UpdateCourseSectionResponse
+	134, // 429: teamos.academy.v1.AcademyService.DeleteCourseSection:output_type -> teamos.academy.v1.DeleteCourseSectionResponse
+	136, // 430: teamos.academy.v1.AcademyService.GetLessons:output_type -> teamos.academy.v1.GetLessonsResponse
+	138, // 431: teamos.academy.v1.AcademyService.CreateLesson:output_type -> teamos.academy.v1.CreateLessonResponse
+	140, // 432: teamos.academy.v1.AcademyService.UpdateLesson:output_type -> teamos.academy.v1.UpdateLessonResponse
+	142, // 433: teamos.academy.v1.AcademyService.DeleteLesson:output_type -> teamos.academy.v1.DeleteLessonResponse
+	144, // 434: teamos.academy.v1.AcademyService.MoveLesson:output_type -> teamos.academy.v1.MoveLessonResponse
+	146, // 435: teamos.academy.v1.AcademyService.GetQuizzes:output_type -> teamos.academy.v1.GetQuizzesResponse
+	148, // 436: teamos.academy.v1.AcademyService.UpsertQuiz:output_type -> teamos.academy.v1.UpsertQuizResponse
+	150, // 437: teamos.academy.v1.AcademyService.GetAssignments:output_type -> teamos.academy.v1.GetAssignmentsResponse
+	152, // 438: teamos.academy.v1.AcademyService.AssignCourse:output_type -> teamos.academy.v1.AssignCourseResponse
+	154, // 439: teamos.academy.v1.AcademyService.RevokeAssignment:output_type -> teamos.academy.v1.RevokeAssignmentResponse
+	156, // 440: teamos.academy.v1.AcademyService.GetProgress:output_type -> teamos.academy.v1.GetProgressResponse
+	158, // 441: teamos.academy.v1.AcademyService.MarkLessonComplete:output_type -> teamos.academy.v1.MarkLessonCompleteResponse
+	160, // 442: teamos.academy.v1.AcademyService.GetEnrollments:output_type -> teamos.academy.v1.GetEnrollmentsResponse
+	162, // 443: teamos.academy.v1.AcademyService.GetInternalEnrollmentReportPage:output_type -> teamos.academy.v1.GetInternalEnrollmentReportPageResponse
+	165, // 444: teamos.academy.v1.AcademyService.GetAcademyCatalog:output_type -> teamos.academy.v1.GetAcademyCatalogResponse
+	171, // 445: teamos.academy.v1.AcademyService.SelfEnrollCourse:output_type -> teamos.academy.v1.SelfEnrollCourseResponse
+	173, // 446: teamos.academy.v1.AcademyService.GetCatalogCourseVersion:output_type -> teamos.academy.v1.GetCatalogCourseVersionResponse
+	175, // 447: teamos.academy.v1.AcademyService.GetEnrollment:output_type -> teamos.academy.v1.GetEnrollmentResponse
+	177, // 448: teamos.academy.v1.AcademyService.GetEnrollmentOutline:output_type -> teamos.academy.v1.GetEnrollmentOutlineResponse
+	179, // 449: teamos.academy.v1.AcademyService.GetEnrollmentLesson:output_type -> teamos.academy.v1.GetEnrollmentLessonResponse
+	181, // 450: teamos.academy.v1.AcademyService.ResumeEnrollment:output_type -> teamos.academy.v1.ResumeEnrollmentResponse
+	183, // 451: teamos.academy.v1.AcademyService.CompleteEnrollmentLesson:output_type -> teamos.academy.v1.CompleteEnrollmentLessonResponse
+	185, // 452: teamos.academy.v1.AcademyService.SubmitEnrollmentQuizAttempt:output_type -> teamos.academy.v1.SubmitEnrollmentQuizAttemptResponse
+	187, // 453: teamos.academy.v1.AcademyService.ReviewEnrollmentQuizAttempt:output_type -> teamos.academy.v1.ReviewEnrollmentQuizAttemptResponse
+	189, // 454: teamos.academy.v1.AcademyService.GetEnrollmentReport:output_type -> teamos.academy.v1.GetEnrollmentReportResponse
+	191, // 455: teamos.academy.v1.AcademyService.GetPartnerCourseGroups:output_type -> teamos.academy.v1.GetPartnerCourseGroupsResponse
+	193, // 456: teamos.academy.v1.AcademyService.GetPartnerCoursesReport:output_type -> teamos.academy.v1.GetPartnerCoursesReportResponse
+	195, // 457: teamos.academy.v1.AcademyService.GetCourseVersionPreview:output_type -> teamos.academy.v1.GetCourseVersionPreviewResponse
+	197, // 458: teamos.academy.v1.AcademyService.SubmitCoursePreviewQuizAttempt:output_type -> teamos.academy.v1.SubmitCoursePreviewQuizAttemptResponse
+	199, // 459: teamos.academy.v1.AcademyService.PausePartnerCourseDistribution:output_type -> teamos.academy.v1.PausePartnerCourseDistributionResponse
+	201, // 460: teamos.academy.v1.AcademyService.BlockPartnerCourse:output_type -> teamos.academy.v1.BlockPartnerCourseResponse
+	203, // 461: teamos.academy.v1.AcademyService.ResolvePartnerCourseRestriction:output_type -> teamos.academy.v1.ResolvePartnerCourseRestrictionResponse
+	205, // 462: teamos.academy.v1.AcademyService.GetCourseRestrictions:output_type -> teamos.academy.v1.GetCourseRestrictionsResponse
+	207, // 463: teamos.academy.v1.AcademyService.CopyPartnerCourseVersionToCompany:output_type -> teamos.academy.v1.CopyPartnerCourseVersionToCompanyResponse
+	167, // 464: teamos.academy.v1.AcademyService.GetCoursePartnerAudience:output_type -> teamos.academy.v1.GetCoursePartnerAudienceResponse
+	169, // 465: teamos.academy.v1.AcademyService.SetCoursePartnerAudience:output_type -> teamos.academy.v1.SetCoursePartnerAudienceResponse
+	209, // 466: teamos.academy.v1.AcademyService.GetCourseTemplates:output_type -> teamos.academy.v1.GetCourseTemplatesResponse
+	211, // 467: teamos.academy.v1.AcademyService.GetCourseTemplate:output_type -> teamos.academy.v1.GetCourseTemplateResponse
+	213, // 468: teamos.academy.v1.AcademyService.CreateCourseTemplate:output_type -> teamos.academy.v1.CreateCourseTemplateResponse
+	215, // 469: teamos.academy.v1.AcademyService.UpdateCourseTemplateDraft:output_type -> teamos.academy.v1.UpdateCourseTemplateDraftResponse
+	217, // 470: teamos.academy.v1.AcademyService.CreateCourseTemplateDraft:output_type -> teamos.academy.v1.CreateCourseTemplateDraftResponse
+	219, // 471: teamos.academy.v1.AcademyService.PublishCourseTemplateVersion:output_type -> teamos.academy.v1.PublishCourseTemplateVersionResponse
+	221, // 472: teamos.academy.v1.AcademyService.ArchiveCourseTemplate:output_type -> teamos.academy.v1.ArchiveCourseTemplateResponse
+	223, // 473: teamos.academy.v1.AcademyService.InstantiateCourseTemplateVersion:output_type -> teamos.academy.v1.InstantiateCourseTemplateVersionResponse
+	249, // 474: teamos.academy.v1.AcademyService.CreateExternalPersonalAccess:output_type -> teamos.academy.v1.CreateExternalPersonalAccessResponse
+	251, // 475: teamos.academy.v1.AcademyService.GetExternalPersonalAccesses:output_type -> teamos.academy.v1.GetExternalPersonalAccessesResponse
+	253, // 476: teamos.academy.v1.AcademyService.GetExternalPersonalAccess:output_type -> teamos.academy.v1.GetExternalPersonalAccessResponse
+	255, // 477: teamos.academy.v1.AcademyService.ExtendExternalPersonalAccess:output_type -> teamos.academy.v1.ExtendExternalPersonalAccessResponse
+	257, // 478: teamos.academy.v1.AcademyService.RotateExternalPersonalAccessToken:output_type -> teamos.academy.v1.RotateExternalPersonalAccessTokenResponse
+	259, // 479: teamos.academy.v1.AcademyService.RevokeExternalPersonalAccess:output_type -> teamos.academy.v1.RevokeExternalPersonalAccessResponse
+	261, // 480: teamos.academy.v1.AcademyService.RepeatExternalPersonalAccess:output_type -> teamos.academy.v1.RepeatExternalPersonalAccessResponse
+	263, // 481: teamos.academy.v1.AcademyService.CreateExternalCampaign:output_type -> teamos.academy.v1.CreateExternalCampaignResponse
+	265, // 482: teamos.academy.v1.AcademyService.GetExternalCampaigns:output_type -> teamos.academy.v1.GetExternalCampaignsResponse
+	267, // 483: teamos.academy.v1.AcademyService.GetExternalCampaign:output_type -> teamos.academy.v1.GetExternalCampaignResponse
+	269, // 484: teamos.academy.v1.AcademyService.PauseExternalCampaign:output_type -> teamos.academy.v1.PauseExternalCampaignResponse
+	271, // 485: teamos.academy.v1.AcademyService.ResumeExternalCampaign:output_type -> teamos.academy.v1.ResumeExternalCampaignResponse
+	273, // 486: teamos.academy.v1.AcademyService.RotateExternalCampaignToken:output_type -> teamos.academy.v1.RotateExternalCampaignTokenResponse
+	275, // 487: teamos.academy.v1.AcademyService.RevokeExternalCampaign:output_type -> teamos.academy.v1.RevokeExternalCampaignResponse
+	277, // 488: teamos.academy.v1.AcademyService.GetExternalCampaignReport:output_type -> teamos.academy.v1.GetExternalCampaignReportResponse
+	279, // 489: teamos.academy.v1.AcademyService.GetCourseExternalReport:output_type -> teamos.academy.v1.GetCourseExternalReportResponse
+	281, // 490: teamos.academy.v1.AcademyService.GetPublicAcademyAccess:output_type -> teamos.academy.v1.GetPublicAcademyAccessResponse
+	283, // 491: teamos.academy.v1.AcademyService.RequestPublicAcademyVerification:output_type -> teamos.academy.v1.RequestPublicAcademyVerificationResponse
+	285, // 492: teamos.academy.v1.AcademyService.ConfirmPublicAcademyVerification:output_type -> teamos.academy.v1.ConfirmPublicAcademyVerificationResponse
+	287, // 493: teamos.academy.v1.AcademyService.ActivatePublicAcademyAccess:output_type -> teamos.academy.v1.ActivatePublicAcademyAccessResponse
+	289, // 494: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollment:output_type -> teamos.academy.v1.GetPublicAcademyEnrollmentResponse
+	291, // 495: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollmentOutline:output_type -> teamos.academy.v1.GetPublicAcademyEnrollmentOutlineResponse
+	293, // 496: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollmentLesson:output_type -> teamos.academy.v1.GetPublicAcademyEnrollmentLessonResponse
+	295, // 497: teamos.academy.v1.AcademyService.CompletePublicAcademyEnrollmentLesson:output_type -> teamos.academy.v1.CompletePublicAcademyEnrollmentLessonResponse
+	297, // 498: teamos.academy.v1.AcademyService.SubmitPublicAcademyQuizAttempt:output_type -> teamos.academy.v1.SubmitPublicAcademyQuizAttemptResponse
+	299, // 499: teamos.academy.v1.AcademyService.GetPublicAcademyEnrollmentResults:output_type -> teamos.academy.v1.GetPublicAcademyEnrollmentResultsResponse
+	301, // 500: teamos.academy.v1.AcademyService.GetExternalLearners:output_type -> teamos.academy.v1.GetExternalLearnersResponse
+	303, // 501: teamos.academy.v1.AcademyService.GetExternalLearner:output_type -> teamos.academy.v1.GetExternalLearnerResponse
+	305, // 502: teamos.academy.v1.AcademyService.GetExternalLearnerEnrollments:output_type -> teamos.academy.v1.GetExternalLearnerEnrollmentsResponse
+	307, // 503: teamos.academy.v1.AcademyService.GetExternalLearnerTimeline:output_type -> teamos.academy.v1.GetExternalLearnerTimelineResponse
+	240, // 504: teamos.academy.v1.AcademyService.GetPartnerExternalReportPage:output_type -> teamos.academy.v1.GetPartnerExternalReportPageResponse
+	402, // [402:505] is the sub-list for method output_type
+	299, // [299:402] is the sub-list for method input_type
+	299, // [299:299] is the sub-list for extension type_name
+	299, // [299:299] is the sub-list for extension extendee
+	0,   // [0:299] is the sub-list for field type_name
 }
 
 func init() { file_proto_academy_v1_academy_proto_init() }
@@ -20394,35 +21776,41 @@ func file_proto_academy_v1_academy_proto_init() {
 	file_proto_academy_v1_academy_proto_msgTypes[126].OneofWrappers = []any{}
 	file_proto_academy_v1_academy_proto_msgTypes[128].OneofWrappers = []any{}
 	file_proto_academy_v1_academy_proto_msgTypes[130].OneofWrappers = []any{}
-	file_proto_academy_v1_academy_proto_msgTypes[143].OneofWrappers = []any{}
-	file_proto_academy_v1_academy_proto_msgTypes[144].OneofWrappers = []any{}
-	file_proto_academy_v1_academy_proto_msgTypes[146].OneofWrappers = []any{}
-	file_proto_academy_v1_academy_proto_msgTypes[150].OneofWrappers = []any{}
-	file_proto_academy_v1_academy_proto_msgTypes[168].OneofWrappers = []any{}
-	file_proto_academy_v1_academy_proto_msgTypes[170].OneofWrappers = []any{}
-	file_proto_academy_v1_academy_proto_msgTypes[171].OneofWrappers = []any{}
-	file_proto_academy_v1_academy_proto_msgTypes[172].OneofWrappers = []any{}
-	file_proto_academy_v1_academy_proto_msgTypes[174].OneofWrappers = []any{}
-	file_proto_academy_v1_academy_proto_msgTypes[184].OneofWrappers = []any{}
-	file_proto_academy_v1_academy_proto_msgTypes[186].OneofWrappers = []any{}
-	file_proto_academy_v1_academy_proto_msgTypes[190].OneofWrappers = []any{}
-	file_proto_academy_v1_academy_proto_msgTypes[192].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[132].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[134].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[135].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[152].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[153].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[155].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[157].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[161].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[179].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[181].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[182].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[183].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[185].OneofWrappers = []any{}
 	file_proto_academy_v1_academy_proto_msgTypes[195].OneofWrappers = []any{}
 	file_proto_academy_v1_academy_proto_msgTypes[197].OneofWrappers = []any{}
-	file_proto_academy_v1_academy_proto_msgTypes[198].OneofWrappers = []any{}
-	file_proto_academy_v1_academy_proto_msgTypes[200].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[201].OneofWrappers = []any{}
 	file_proto_academy_v1_academy_proto_msgTypes[203].OneofWrappers = []any{}
-	file_proto_academy_v1_academy_proto_msgTypes[205].OneofWrappers = []any{}
-	file_proto_academy_v1_academy_proto_msgTypes[237].OneofWrappers = []any{}
-	file_proto_academy_v1_academy_proto_msgTypes[239].OneofWrappers = []any{}
-	file_proto_academy_v1_academy_proto_msgTypes[266].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[206].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[208].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[209].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[210].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[212].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[214].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[217].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[219].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[251].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[253].OneofWrappers = []any{}
+	file_proto_academy_v1_academy_proto_msgTypes[280].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_academy_v1_academy_proto_rawDesc), len(file_proto_academy_v1_academy_proto_rawDesc)),
-			NumEnums:      26,
-			NumMessages:   267,
+			NumEnums:      29,
+			NumMessages:   281,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

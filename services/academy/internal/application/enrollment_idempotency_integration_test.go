@@ -72,7 +72,7 @@ func TestInternalEnrollmentMutationsAreAtomicAndIdempotent(t *testing.T) {
 		EnrollmentID: enrollmentID, QuizID: fixture.quizID,
 		IdempotencyKey: "internal-quiz-0001",
 		Answers: []EnrollmentQuizAnswer{{
-			QuestionID: "q1", SelectedOptionIDs: []string{"correct"},
+			QuestionID: fixture.questionID, SelectedOptionIDs: []string{fixture.correctOptionID},
 		}},
 	}
 	quizResults := runConcurrently(2, func() (EnrollmentQuizAttempt, error) {
@@ -102,7 +102,7 @@ func TestInternalEnrollmentMutationsAreAtomicAndIdempotent(t *testing.T) {
 		fixture.companyID, userID, quizInput.IdempotencyKey)
 
 	conflicting := quizInput
-	conflicting.Answers = []EnrollmentQuizAnswer{{QuestionID: "q1"}}
+	conflicting.Answers = []EnrollmentQuizAnswer{{QuestionID: fixture.questionID}}
 	if _, _, conflictErr := service.SubmitEnrollmentQuizAttempt(ctx, actor, conflicting); !isApplicationError(conflictErr, ErrorConflict) {
 		t.Fatalf("другой request с тем же ключом: %v", conflictErr)
 	}

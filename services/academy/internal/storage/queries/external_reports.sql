@@ -443,6 +443,70 @@ WHERE history.company_id = sqlc.arg(company_id)
        OR access.partner_owner_id = sqlc.narg(partner_owner_id)::uuid)
 ORDER BY history.occurred_at, history.id;
 
+-- name: CountPartnerExternalReportRows :one
+SELECT count(*)::bigint
+FROM course_enrollments AS enrollment
+JOIN courses AS course
+  ON course.company_id = enrollment.company_id
+ AND course.id = enrollment.course_id
+JOIN external_learners AS learner
+  ON learner.company_id = enrollment.company_id
+ AND learner.id = enrollment.external_learner_id
+WHERE enrollment.company_id = sqlc.arg(company_id)
+  AND enrollment.learner_type = 'external'
+  AND course.owner_type = 'partner'
+  AND course.owner_user_id = sqlc.arg(partner_owner_id)
+  AND (sqlc.narg(course_id)::uuid IS NULL
+       OR enrollment.course_id = sqlc.narg(course_id)::uuid)
+  AND (sqlc.narg(search)::text IS NULL
+       OR course.title ILIKE '%' || sqlc.narg(search)::text || '%'
+       OR learner.normalized_email ILIKE '%' || sqlc.narg(search)::text || '%'
+       OR COALESCE(learner.first_name, '') ILIKE '%' || sqlc.narg(search)::text || '%'
+       OR COALESCE(learner.last_name, '') ILIKE '%' || sqlc.narg(search)::text || '%');
+
+-- name: ListPartnerExternalReportRows :many
+SELECT enrollment.id AS enrollment_id, enrollment.course_id,
+    course.title AS course_title, learner.email AS learner_email,
+    NULLIF(btrim(concat_ws(' ', learner.first_name, learner.last_name)), '')::text
+        AS learner_name,
+    enrollment.progress_status, enrollment.access_status,
+    COALESCE(progress.completed_count * 100 / NULLIF(progress.lesson_count, 0), 0)::integer
+        AS progress_percent,
+    enrollment.activated_at, enrollment.completed_at
+FROM course_enrollments AS enrollment
+JOIN courses AS course
+  ON course.company_id = enrollment.company_id
+ AND course.id = enrollment.course_id
+JOIN external_learners AS learner
+  ON learner.company_id = enrollment.company_id
+ AND learner.id = enrollment.external_learner_id
+LEFT JOIN LATERAL (
+    SELECT count(*)::integer AS lesson_count,
+           count(*) FILTER (WHERE lesson_progress.status = 'completed')::integer
+               AS completed_count
+    FROM course_version_lessons AS lesson
+    LEFT JOIN enrollment_lesson_progress AS lesson_progress
+      ON lesson_progress.company_id = enrollment.company_id
+     AND lesson_progress.enrollment_id = enrollment.id
+     AND lesson_progress.lesson_version_id = lesson.id
+    WHERE lesson.company_id = enrollment.company_id
+      AND lesson.course_version_id = enrollment.course_version_id
+) AS progress ON true
+WHERE enrollment.company_id = sqlc.arg(company_id)
+  AND enrollment.learner_type = 'external'
+  AND course.owner_type = 'partner'
+  AND course.owner_user_id = sqlc.arg(partner_owner_id)
+  AND (sqlc.narg(course_id)::uuid IS NULL
+       OR enrollment.course_id = sqlc.narg(course_id)::uuid)
+  AND (sqlc.narg(search)::text IS NULL
+       OR course.title ILIKE '%' || sqlc.narg(search)::text || '%'
+       OR learner.normalized_email ILIKE '%' || sqlc.narg(search)::text || '%'
+       OR COALESCE(learner.first_name, '') ILIKE '%' || sqlc.narg(search)::text || '%'
+       OR COALESCE(learner.last_name, '') ILIKE '%' || sqlc.narg(search)::text || '%')
+ORDER BY enrollment.activated_at DESC NULLS LAST,
+    enrollment.created_at DESC, enrollment.id DESC
+LIMIT sqlc.arg(page_limit) OFFSET sqlc.arg(page_offset);
+
 -- name: ListCourseEnrollmentAccessHistory :many
 SELECT history.id, history.company_id, history.enrollment_id,
     history.from_access_status, history.to_access_status,

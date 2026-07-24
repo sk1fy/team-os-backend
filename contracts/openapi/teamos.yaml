@@ -1794,6 +1794,28 @@ paths:
         default:
           $ref: '#/components/responses/Error'
 
+  /api/v1/academy/enrollments/{enrollmentId}/quiz-attempts/{attemptId}/review:
+    parameters:
+      - $ref: '#/components/parameters/EnrollmentId'
+      - $ref: '#/components/parameters/AttemptId'
+    post:
+      tags: [Academy]
+      operationId: reviewAcademyEnrollmentQuizAttempt
+      summary: Проверить открытый ответ (pending_review) и при успехе завершить урок
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewEnrollmentQuizAttemptInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/EnrollmentQuizAttemptSubmitted'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
   /api/v1/academy/courses/{courseId}/draft:
     parameters:
       - $ref: '#/components/parameters/CourseId'
@@ -2433,6 +2455,38 @@ paths:
         default:
           $ref: '#/components/responses/Error'
 
+  /api/v1/academy/courses/{courseId}/partner-audience:
+    parameters:
+      - $ref: '#/components/parameters/CourseId'
+    get:
+      tags: [Academy]
+      operationId: getCoursePartnerAudience
+      summary: Получить настройку доступа партнёров к курсу компании
+      responses:
+        '200':
+          $ref: '#/components/responses/CoursePartnerAudience'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+    put:
+      tags: [Academy]
+      operationId: setCoursePartnerAudience
+      summary: Задать доступ партнёров к курсу компании (none/all_partners/selected_partners)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetCoursePartnerAudienceInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/CoursePartnerAudience'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
   /api/v1/academy/partner-course-groups:
     get:
       tags: [Academy]
@@ -3039,7 +3093,7 @@ paths:
               $ref: '#/components/schemas/SubmitExternalQuizAttemptInput'
       responses:
         '201':
-          $ref: '#/components/responses/ExternalQuizAttemptResult'
+          $ref: '#/components/responses/ExternalQuizAttemptSubmitted'
         '4XX':
           $ref: '#/components/responses/Error'
         default:
@@ -3594,6 +3648,12 @@ components:
         $ref: '#/components/schemas/ID'
     QuizVersionId:
       name: quizVersionId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/ID'
+    AttemptId:
+      name: attemptId
       in: path
       required: true
       schema:
@@ -4180,6 +4240,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/CourseRestriction'
+    CoursePartnerAudience:
+      description: Настройка доступа партнёров к курсу компании
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CoursePartnerAudience'
     CourseRestrictions:
       description: История ограничений курса
       content:
@@ -4308,12 +4374,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ExternalEnrollmentLesson'
-    ExternalQuizAttemptResult:
-      description: Результат попытки теста без правильных ответов
+    ExternalQuizAttemptSubmitted:
+      description: Атомарный результат внешнего теста (попытка + enrollment)
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ExternalQuizAttemptResult'
+            $ref: '#/components/schemas/ExternalQuizAttemptSubmitted'
     ExternalEnrollmentResults:
       description: Собственные результаты внешнего ученика
       content:
@@ -6751,6 +6817,31 @@ components:
           type: string
           minLength: 1
           maxLength: 2000
+    CoursePartnerAudienceKind:
+      type: string
+      enum: [none, all_partners, selected_partners]
+    CoursePartnerAudience:
+      type: object
+      additionalProperties: false
+      required: [audience, partnerUserIds]
+      properties:
+        audience:
+          $ref: '#/components/schemas/CoursePartnerAudienceKind'
+        partnerUserIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/ID'
+    SetCoursePartnerAudienceInput:
+      type: object
+      additionalProperties: false
+      required: [audience]
+      properties:
+        audience:
+          $ref: '#/components/schemas/CoursePartnerAudienceKind'
+        partnerUserIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/ID'
     CourseOrigin:
       type: object
       additionalProperties: false
@@ -7890,6 +7981,44 @@ components:
           minimum: 0
         createdAt:
           $ref: '#/components/schemas/ISODateTime'
+    ExternalQuizAttemptSubmitted:
+      type: object
+      additionalProperties: false
+      description: >-
+        Атомарный результат внешнего теста. Верхнеуровневые поля попытки
+        сохранены для обратной совместимости; новые клиенты используют
+        attempt и enrollment.
+      required: [id, score, passed, pendingReview, createdAt, attempt, enrollment]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        score:
+          type: integer
+          minimum: 0
+          maximum: 100
+        passed:
+          type: boolean
+        pendingReview:
+          type: boolean
+        attemptsRemaining:
+          type: integer
+          minimum: 0
+        createdAt:
+          $ref: '#/components/schemas/ISODateTime'
+        attempt:
+          $ref: '#/components/schemas/ExternalQuizAttemptResult'
+        enrollment:
+          $ref: '#/components/schemas/ExternalEnrollment'
+    ReviewEnrollmentQuizAttemptInput:
+      type: object
+      additionalProperties: false
+      required: [passed]
+      properties:
+        passed:
+          type: boolean
+        comment:
+          type: string
+          maxLength: 2000
     ExternalEnrollmentResults:
       type: object
       additionalProperties: false

@@ -4,6 +4,7 @@ package application
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"path/filepath"
 	"runtime"
@@ -65,26 +66,47 @@ func TestExternalProgressMutationsAreAtomicAndIdempotent(t *testing.T) {
 			QuizID:         fixture.quizID,
 			IdempotencyKey: "quiz-key-0001",
 			Answers: []EnrollmentQuizAnswer{{
-				QuestionID: "q1", SelectedOptionIDs: []string{"correct"},
+				QuestionID: fixture.questionID, SelectedOptionIDs: []string{fixture.correctOptionID},
 			}},
 		}
-		results := runConcurrently(2, func() (ExternalQuizAttemptResult, error) {
+		results := runConcurrently(2, func() (ExternalQuizAttemptSubmitted, error) {
 			return service.SubmitPublicAcademyQuizAttempt(ctx, principal, input)
 		})
 		for index, result := range results {
 			if result.err != nil {
 				t.Fatalf("quiz result %d: %v", index, result.err)
 			}
-			if result.value.ID == uuid.Nil || result.value.Score != 100 || !result.value.Passed {
+			if result.value.Attempt.ID == uuid.Nil || result.value.Attempt.Score != 100 || !result.value.Attempt.Passed {
 				t.Fatalf("quiz result %d: %+v", index, result.value)
 			}
+			if result.value.Enrollment.ID == uuid.Nil {
+				t.Fatalf("quiz result %d missing enrollment", index)
+			}
 		}
-		if results[0].value.ID != results[1].value.ID {
+		if results[0].value.Attempt.ID != results[1].value.Attempt.ID {
 			t.Fatalf("повтор создал разные attempts: %s и %s",
-				results[0].value.ID, results[1].value.ID)
+				results[0].value.Attempt.ID, results[1].value.Attempt.ID)
 		}
 		assertExternalMutationCount(t, ctx, pool, fixture.companyID,
 			externalOperationSubmitQuiz, input.IdempotencyKey, 1)
+		var storedPayload []byte
+		if err = pool.QueryRow(ctx, `
+			SELECT result_payload
+			FROM external_mutation_idempotency
+			WHERE company_id=$1 AND external_learner_id=$2
+			  AND operation=$3 AND idempotency_key=$4`,
+			fixture.companyID, fixture.learnerID,
+			externalOperationSubmitQuiz, input.IdempotencyKey,
+		).Scan(&storedPayload); err != nil {
+			t.Fatalf("stored atomic payload: %v", err)
+		}
+		var stored ExternalQuizAttemptSubmitted
+		if err = json.Unmarshal(storedPayload, &stored); err != nil {
+			t.Fatalf("decode stored atomic payload: %v", err)
+		}
+		if stored.Attempt.ID == uuid.Nil || stored.Enrollment.ID != fixture.enrollmentID {
+			t.Fatalf("stored payload is not atomic: %+v", stored)
+		}
 		assertCount(t, ctx, pool, `
 			SELECT count(*) FROM quiz_attempts
 			WHERE company_id = $1 AND enrollment_id = $2`, 1,
@@ -103,7 +125,7 @@ func TestExternalProgressMutationsAreAtomicAndIdempotent(t *testing.T) {
 		}
 
 		conflicting := input
-		conflicting.Answers = []EnrollmentQuizAnswer{{QuestionID: "q1"}}
+		conflicting.Answers = []EnrollmentQuizAnswer{{QuestionID: fixture.questionID}}
 		if _, conflictErr := service.SubmitPublicAcademyQuizAttempt(ctx, principal, conflicting); !isApplicationError(conflictErr, ErrorConflict) {
 			t.Fatalf("другой request с тем же ключом: %v", conflictErr)
 		}
@@ -111,6 +133,39 @@ func TestExternalProgressMutationsAreAtomicAndIdempotent(t *testing.T) {
 			SELECT count(*) FROM quiz_attempts
 			WHERE company_id = $1 AND enrollment_id = $2`, 1,
 			fixture.companyID, fixture.enrollmentID)
+
+		legacyKey := "quiz-key-legacy-1"
+		legacyPayload, marshalErr := json.Marshal(results[0].value.Attempt)
+		if marshalErr != nil {
+			t.Fatalf("legacy payload: %v", marshalErr)
+		}
+		requestHash := externalMutationRequestHash(struct {
+			EnrollmentID uuid.UUID              `json:"enrollmentId"`
+			QuizID       uuid.UUID              `json:"quizId"`
+			Answers      []EnrollmentQuizAnswer `json:"answers"`
+		}{input.EnrollmentID, input.QuizID, input.Answers})
+		if _, err = pool.Exec(ctx, `
+			INSERT INTO external_mutation_idempotency (
+				id, company_id, external_learner_id, operation, idempotency_key,
+				request_hash, aggregate_id, result_id, enrollment_id,
+				result_payload, completed_at, created_at
+			) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$11)`,
+			uuid.New(), fixture.companyID, fixture.learnerID,
+			externalOperationSubmitQuiz, legacyKey, requestHash, input.QuizID,
+			results[0].value.Attempt.ID, fixture.enrollmentID, legacyPayload, fixedNow,
+		); err != nil {
+			t.Fatalf("insert legacy replay payload: %v", err)
+		}
+		legacyInput := input
+		legacyInput.IdempotencyKey = legacyKey
+		legacyReplay, replayErr := service.SubmitPublicAcademyQuizAttempt(ctx, principal, legacyInput)
+		if replayErr != nil {
+			t.Fatalf("legacy replay: %v", replayErr)
+		}
+		if legacyReplay.Attempt.ID != results[0].value.Attempt.ID ||
+			legacyReplay.Enrollment.ID != fixture.enrollmentID {
+			t.Fatalf("legacy replay result: %+v", legacyReplay)
+		}
 	})
 
 	t.Run("failed mutation rolls reservation back", func(t *testing.T) {
@@ -190,6 +245,7 @@ type externalQuizFixture struct {
 	companyID, courseID, versionID, sectionID uuid.UUID
 	firstLessonID, quizLessonID, quizID       uuid.UUID
 	learnerID, sessionID, enrollmentID        uuid.UUID
+	questionID, correctOptionID               string
 }
 
 func seedExternalQuizFixture(
@@ -197,6 +253,19 @@ func seedExternalQuizFixture(
 	ctx context.Context,
 	pool *pgxpool.Pool,
 	now time.Time,
+) externalQuizFixture {
+	t.Helper()
+	return seedExternalQuizFixtureWithQuestions(t, ctx, pool, now, []byte(
+		`[{"id":"q1","type":"single","text":"Вопрос","options":[{"id":"correct","text":"Да","correct":true}]}]`,
+	))
+}
+
+func seedExternalQuizFixtureWithQuestions(
+	t *testing.T,
+	ctx context.Context,
+	pool *pgxpool.Pool,
+	now time.Time,
+	questions []byte,
 ) externalQuizFixture {
 	t.Helper()
 	fixture := externalQuizFixture{
@@ -233,8 +302,7 @@ func seedExternalQuizFixture(
 			id, company_id, course_version_id, lesson_version_id,
 			questions, passing_score, max_attempts
 		) VALUES ($1,$2,$3,$4,$5,80,3)`,
-			[]any{fixture.quizID, fixture.companyID, fixture.versionID, fixture.quizLessonID,
-				[]byte(`[{"id":"q1","type":"single","text":"Вопрос","options":[{"id":"correct","text":"Да","correct":true}]}]`)}},
+			[]any{fixture.quizID, fixture.companyID, fixture.versionID, fixture.quizLessonID, questions}},
 		{`UPDATE course_version_lessons SET quiz_version_id=$1 WHERE id=$2`,
 			[]any{fixture.quizID, fixture.quizLessonID}},
 		{`UPDATE course_versions SET status='published', published_by_id=$2,
@@ -270,6 +338,15 @@ func seedExternalQuizFixture(
 		if _, err := pool.Exec(ctx, statement.query, statement.args...); err != nil {
 			t.Fatalf("seed external quiz fixture: %v\n%s", err, statement.query)
 		}
+	}
+	if err := pool.QueryRow(ctx, `
+		SELECT questions->0->>'id',
+		       COALESCE(questions->0->'options'->0->>'id', '')
+		FROM course_version_quizzes
+		WHERE company_id=$1 AND id=$2`,
+		fixture.companyID, fixture.quizID,
+	).Scan(&fixture.questionID, &fixture.correctOptionID); err != nil {
+		t.Fatalf("load normalized quiz ids: %v", err)
 	}
 	return fixture
 }
@@ -403,6 +480,8 @@ func externalQuizTestPool(t *testing.T, ctx context.Context) *pgxpool.Pool {
 			filepath.Join(migrationsDir, "000011_self_enrollment.up.sql"),
 			filepath.Join(migrationsDir, "000012_external_quiz_attempts.up.sql"),
 			filepath.Join(migrationsDir, "000013_enrollment_mutation_idempotency.up.sql"),
+			filepath.Join(migrationsDir, "000014_normalize_quiz_question_ids.up.sql"),
+			filepath.Join(migrationsDir, "000015_course_partner_audience.up.sql"),
 		), postgres.BasicWaitStrategies(),
 	)
 	if err != nil {

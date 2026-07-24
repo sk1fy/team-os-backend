@@ -8,6 +8,48 @@ import (
 	"github.com/sk1fy/team-os-backend/services/academy/internal/application"
 )
 
+func (s *Server) GetCoursePartnerAudience(ctx context.Context, request *academyv1.GetCoursePartnerAudienceRequest) (*academyv1.GetCoursePartnerAudienceResponse, error) {
+	actor, err := s.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	courseID, err := parseUUID(request.GetCourseId())
+	if err != nil {
+		return nil, err
+	}
+	audience, err := s.application.GetCoursePartnerAudience(ctx, actor, courseID)
+	if err != nil {
+		return nil, transportError(err)
+	}
+	return &academyv1.GetCoursePartnerAudienceResponse{
+		Audience: coursePartnerAudienceToProto(audience.Audience), PartnerUserIds: uuidsToStrings(audience.PartnerUserIDs),
+	}, nil
+}
+
+func (s *Server) SetCoursePartnerAudience(ctx context.Context, request *academyv1.SetCoursePartnerAudienceRequest) (*academyv1.SetCoursePartnerAudienceResponse, error) {
+	actor, err := s.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	courseID, err := parseUUID(request.GetCourseId())
+	if err != nil {
+		return nil, err
+	}
+	partnerIDs, err := parseUUIDList(request.GetPartnerUserIds())
+	if err != nil {
+		return nil, err
+	}
+	audience, err := s.application.SetCoursePartnerAudience(ctx, actor, application.SetCoursePartnerAudienceInput{
+		CourseID: courseID, Audience: coursePartnerAudienceFromProto(request.GetAudience()), PartnerUserIDs: partnerIDs,
+	})
+	if err != nil {
+		return nil, transportError(err)
+	}
+	return &academyv1.SetCoursePartnerAudienceResponse{
+		Audience: coursePartnerAudienceToProto(audience.Audience), PartnerUserIds: uuidsToStrings(audience.PartnerUserIDs),
+	}, nil
+}
+
 func (s *Server) GetPartnerCourseGroups(ctx context.Context, request *academyv1.GetPartnerCourseGroupsRequest) (*academyv1.GetPartnerCourseGroupsResponse, error) {
 	actor, err := s.actor(ctx)
 	if err != nil {

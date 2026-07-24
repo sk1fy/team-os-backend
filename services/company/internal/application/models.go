@@ -40,6 +40,32 @@ type User struct {
 	AccessMode        string
 }
 
+type ReportUserScope struct {
+	UserIDs       []uuid.UUID
+	SearchUserIDs []uuid.UUID
+}
+
+type ResolveReportUserScopeInput struct {
+	Search       *string
+	PositionID   *uuid.UUID
+	DepartmentID *uuid.UUID
+}
+
+type ReportUserProfile struct {
+	UserID         uuid.UUID
+	Email          string
+	FirstName      string
+	LastName       string
+	PositionName   *string
+	DepartmentName *string
+}
+
+type GetReportUserProfilesInput struct {
+	UserIDs               []uuid.UUID
+	PreferredPositionID   *uuid.UUID
+	PreferredDepartmentID *uuid.UUID
+}
+
 type EmployeeAccess struct {
 	Mode          string
 	LinkToken     *string

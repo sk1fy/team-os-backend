@@ -814,6 +814,15 @@ func decode(w http.ResponseWriter, r *http.Request, destination any) bool {
 	return true
 }
 
+// decodeOptional accepts an empty body as zero-value destination (OpenAPI optional body).
+func decodeOptional(w http.ResponseWriter, r *http.Request, destination any) bool {
+	if err := httpx.DecodeJSONOptional(w, r, destination, httpx.DefaultMaxBodyBytes); err != nil {
+		apierror.Write(w, err)
+		return false
+	}
+	return true
+}
+
 func writeJSON(w http.ResponseWriter, code int, value any) {
 	if err := httpx.WriteJSON(w, code, value); err != nil {
 		// At this point a response might already be committed; middleware logs

@@ -70,6 +70,8 @@ func seedTestPool(t *testing.T, ctx context.Context) *pgxpool.Pool {
 			filepath.Join(migrationsDir, "000011_self_enrollment.up.sql"),
 			filepath.Join(migrationsDir, "000012_external_quiz_attempts.up.sql"),
 			filepath.Join(migrationsDir, "000013_enrollment_mutation_idempotency.up.sql"),
+			filepath.Join(migrationsDir, "000014_normalize_quiz_question_ids.up.sql"),
+			filepath.Join(migrationsDir, "000015_course_partner_audience.up.sql"),
 		),
 		postgres.BasicWaitStrategies(),
 	)

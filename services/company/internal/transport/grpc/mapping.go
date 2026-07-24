@@ -89,6 +89,18 @@ func usersToProto(values []application.User) []*companyv1.User {
 	return result
 }
 
+func reportUserProfilesToProto(values []application.ReportUserProfile) []*companyv1.ReportUserProfile {
+	result := make([]*companyv1.ReportUserProfile, len(values))
+	for index, value := range values {
+		result[index] = &companyv1.ReportUserProfile{
+			UserId: value.UserID.String(), Email: value.Email,
+			FirstName: value.FirstName, LastName: value.LastName,
+			PositionName: cloneString(value.PositionName), DepartmentName: cloneString(value.DepartmentName),
+		}
+	}
+	return result
+}
+
 func departmentToProto(value application.Department) *companyv1.Department {
 	order := uint32(0)
 	if value.Order > 0 {
