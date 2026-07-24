@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"slices"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -24,7 +25,7 @@ type EnrollmentFilters struct {
 }
 
 func (s *Service) GetCatalogCourseVersion(ctx context.Context, actor Actor, courseID uuid.UUID) (CourseVersionContent, error) {
-	if !canReadAcademy(actor) || actor.Role == "partner" {
+	if !canReadAcademy(actor) {
 		return CourseVersionContent{}, forbidden("Недостаточно прав для просмотра каталога")
 	}
 	queries := db.New(s.pool)
@@ -40,6 +41,11 @@ func (s *Service) GetCatalogCourseVersion(ctx context.Context, actor Actor, cour
 		course.DistributionStatus != "active" || course.Status != "published" ||
 		(course.Visibility != "public" && course.Visibility != "company") ||
 		course.LatestPublishedVersionID == nil {
+		return CourseVersionContent{}, notFound("Курс каталога")
+	}
+	if allowed, audienceErr := s.partnerAudienceAllows(ctx, queries, actor, course); audienceErr != nil {
+		return CourseVersionContent{}, audienceErr
+	} else if !allowed {
 		return CourseVersionContent{}, notFound("Курс каталога")
 	}
 	version, err := queries.GetCourseVersion(ctx, db.GetCourseVersionParams{
@@ -59,51 +65,113 @@ func (s *Service) GetEnrollments(ctx context.Context, actor Actor, filters Enrol
 		return nil, err
 	}
 	userID := filters.UserID
+	var partnerOwnerID *uuid.UUID
 	if !actor.canManage() && actor.Role != "partner" {
 		userID = &actor.UserID
+	} else if actor.Role == "partner" {
+		partnerOwnerID = &actor.UserID
 	}
 	rows, err := db.New(s.pool).ListInternalEnrollments(ctx, db.ListInternalEnrollmentsParams{
-		CompanyID: actor.CompanyID, UserID: nullUUID(userID), CourseID: nullUUID(filters.CourseID),
+		Now: s.now().UTC(), CompanyID: actor.CompanyID,
+		UserID: nullUUID(userID), CourseID: nullUUID(filters.CourseID),
+		CourseVersionID: nullUUID(filters.CourseVersionID),
+		ProgressStatus:  nullText(filters.ProgressStatus), AccessStatus: nullText(filters.AccessStatus),
+		PartnerOwnerID: nullUUID(partnerOwnerID),
 	})
 	if err != nil {
 		return nil, internal("Не удалось получить прохождения", err)
 	}
-	queries := db.New(s.pool)
-	reportRows, err := queries.ListInternalEnrollmentReports(ctx, db.ListInternalEnrollmentReportsParams{
-		Now: s.now().UTC(), CompanyID: actor.CompanyID, UserID: nullUUID(userID), CourseID: nullUUID(filters.CourseID),
-	})
-	if err != nil {
-		return nil, internal("Не удалось получить сроки прохождений", err)
-	}
-	reportMetadata := make(map[uuid.UUID]db.ListInternalEnrollmentReportsRow, len(reportRows))
-	for _, reportRow := range reportRows {
-		reportMetadata[reportRow.EnrollmentID] = reportRow
-	}
 	result := make([]Enrollment, 0, len(rows))
 	for _, row := range rows {
-		value := enrollmentFromListRow(row)
-		if metadata, ok := reportMetadata[value.ID]; ok {
-			value.DueDate = timestamptzPointer(metadata.DueDate)
-			value.Overdue, _ = metadata.Overdue.(bool)
-		}
-		if filters.CourseVersionID != nil && value.CourseVersionID != *filters.CourseVersionID ||
-			filters.ProgressStatus != nil && value.ProgressStatus != *filters.ProgressStatus ||
-			filters.AccessStatus != nil && value.AccessStatus != *filters.AccessStatus {
-			continue
-		}
-		courseRow, courseErr := queries.GetCourse(ctx, db.GetCourseParams{CompanyID: actor.CompanyID, ID: value.CourseID})
-		if courseErr != nil {
-			return nil, internal("Не удалось проверить доступ к прохождению", courseErr)
-		}
-		if canViewEnrollment(actor, value, courseFromRow(courseRow)) {
-			result = append(result, value)
-		}
+		result = append(result, enrollmentFromListRow(row))
 	}
 	return result, nil
 }
 
+func (s *Service) GetInternalEnrollmentReportPage(
+	ctx context.Context,
+	actor Actor,
+	query InternalEnrollmentReportQuery,
+) (InternalEnrollmentReportPage, error) {
+	if !actor.canManage() {
+		return InternalEnrollmentReportPage{}, forbidden("Отчёт доступен только владельцу или администратору")
+	}
+	if err := validateInternalEnrollmentReportQuery(query); err != nil {
+		return InternalEnrollmentReportPage{}, err
+	}
+	page := query.Page
+	if page < 1 {
+		page = 1
+	}
+	pageSize := query.PageSize
+	if pageSize < 1 {
+		pageSize = 20
+	}
+	if pageSize > maxInternalEnrollmentReportPageSize {
+		pageSize = maxInternalEnrollmentReportPageSize
+	}
+	var search *string
+	if query.Search != nil {
+		if trimmed := strings.TrimSpace(*query.Search); trimmed != "" {
+			search = &trimmed
+		}
+	}
+	queries := db.New(s.pool)
+	countParams := db.CountInternalEnrollmentReportRowsParams{
+		Now: s.now().UTC(), CompanyID: actor.CompanyID,
+		UserIds:  append([]uuid.UUID(nil), query.UserIDs...),
+		CourseID: nullUUID(query.CourseID), Search: nullText(search),
+		SearchUserIds: append([]uuid.UUID(nil), query.SearchUserIDs...),
+		Status:        nullText(query.Status),
+	}
+	total, err := queries.CountInternalEnrollmentReportRows(ctx, countParams)
+	if err != nil {
+		return InternalEnrollmentReportPage{}, internal("Не удалось подсчитать строки внутреннего отчёта", err)
+	}
+	rows, err := queries.ListInternalEnrollmentReportRows(ctx, db.ListInternalEnrollmentReportRowsParams{
+		Now: countParams.Now, CompanyID: countParams.CompanyID,
+		UserIds: countParams.UserIds, CourseID: countParams.CourseID,
+		Search: countParams.Search, SearchUserIds: countParams.SearchUserIds,
+		Status: countParams.Status, Sort: normalizedInternalEnrollmentReportSort(query.Sort),
+		PageLimit: pageSize, PageOffset: (page - 1) * pageSize,
+	})
+	if err != nil {
+		return InternalEnrollmentReportPage{}, internal("Не удалось получить внутренний отчёт", err)
+	}
+	items := make([]Enrollment, len(rows))
+	for index := range rows {
+		items[index] = enrollmentFromInternalReportRow(rows[index])
+	}
+	return InternalEnrollmentReportPage{Items: items, Page: page, PageSize: pageSize, Total: total}, nil
+}
+
+const maxInternalEnrollmentReportPageSize int32 = 10_001
+
+func validateInternalEnrollmentReportQuery(query InternalEnrollmentReportQuery) error {
+	if query.Status != nil {
+		switch *query.Status {
+		case "not_started", "in_progress", "completed", "overdue", "frozen":
+		default:
+			return validation("Некорректный статус внутреннего отчёта")
+		}
+	}
+	switch query.Sort {
+	case "", "updated_desc", "updated_asc", "title_asc", "title_desc", "deadline_asc", "status":
+		return nil
+	default:
+		return validation("Некорректная сортировка внутреннего отчёта")
+	}
+}
+
+func normalizedInternalEnrollmentReportSort(value string) string {
+	if value == "" {
+		return "updated_desc"
+	}
+	return value
+}
+
 func (s *Service) SelfEnrollCourse(ctx context.Context, actor Actor, courseID uuid.UUID) (Enrollment, error) {
-	if !canReadAcademy(actor) || actor.Role == "partner" {
+	if !canReadAcademy(actor) {
 		return Enrollment{}, forbidden("Недостаточно прав для самостоятельной записи на курс")
 	}
 	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{})
@@ -128,6 +196,11 @@ func (s *Service) SelfEnrollCourse(ctx context.Context, actor Actor, courseID uu
 		course.LatestPublishedVersionID == nil {
 		return Enrollment{}, notFound("Курс каталога")
 	}
+	if allowed, audienceErr := s.partnerAudienceAllows(ctx, queries, actor, course); audienceErr != nil {
+		return Enrollment{}, audienceErr
+	} else if !allowed {
+		return Enrollment{}, notFound("Курс каталога")
+	}
 	existing, existingErr := queries.GetCurrentUserCourseEnrollmentForUpdate(ctx, db.GetCurrentUserCourseEnrollmentForUpdateParams{
 		CompanyID: actor.CompanyID, UserID: nullUUID(&actor.UserID), CourseID: courseID,
 	})
@@ -135,7 +208,7 @@ func (s *Service) SelfEnrollCourse(ctx context.Context, actor Actor, courseID uu
 		if err = tx.Commit(ctx); err != nil {
 			return Enrollment{}, internal("Не удалось завершить проверку прохождения", err)
 		}
-		return s.GetEnrollment(ctx, actor, existing.ID)
+		return s.getInternalEnrollmentReadModel(ctx, actor, existing.ID, courseID)
 	}
 	if !isNoRows(existingErr) {
 		return Enrollment{}, internal("Не удалось проверить текущее прохождение", existingErr)
@@ -163,7 +236,24 @@ func (s *Service) SelfEnrollCourse(ctx context.Context, actor Actor, courseID uu
 	if err = tx.Commit(ctx); err != nil {
 		return Enrollment{}, internal("Не удалось сохранить запись на курс", err)
 	}
-	return s.GetEnrollment(ctx, actor, row.ID)
+	return s.getInternalEnrollmentReadModel(ctx, actor, row.ID, courseID)
+}
+
+func (s *Service) getInternalEnrollmentReadModel(
+	ctx context.Context,
+	actor Actor,
+	enrollmentID, courseID uuid.UUID,
+) (Enrollment, error) {
+	values, err := s.GetEnrollments(ctx, actor, EnrollmentFilters{CourseID: &courseID})
+	if err != nil {
+		return Enrollment{}, err
+	}
+	for _, value := range values {
+		if value.ID == enrollmentID {
+			return value, nil
+		}
+	}
+	return Enrollment{}, notFound("Прохождение")
 }
 
 func validateEnrollmentFilters(filters EnrollmentFilters) error {
@@ -679,6 +769,102 @@ func (s *Service) submitEnrollmentQuizAttemptInTx(
 	return created, nil
 }
 
+// ReviewEnrollmentQuizAttempt resolves an open-answer attempt that is stuck in
+// pending_review and, on pass, completes the lesson the same way a closed quiz would.
+func (s *Service) ReviewEnrollmentQuizAttempt(
+	ctx context.Context,
+	actor Actor,
+	input ReviewEnrollmentQuizInput,
+) (EnrollmentQuizAttempt, EnrollmentProgressSnapshot, error) {
+	if !actor.canManage() && actor.Role != "partner" {
+		return EnrollmentQuizAttempt{}, EnrollmentProgressSnapshot{}, forbidden("Недостаточно прав для проверки открытых ответов")
+	}
+	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{})
+	if err != nil {
+		return EnrollmentQuizAttempt{}, EnrollmentProgressSnapshot{}, internal("Не удалось начать транзакцию", err)
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+	queries := db.New(tx)
+	enrollment, err := s.requireEnrollmentAccess(ctx, queries, actor, input.EnrollmentID, false)
+	if err != nil {
+		return EnrollmentQuizAttempt{}, EnrollmentProgressSnapshot{}, err
+	}
+	if actor.Role == "partner" {
+		courseRow, courseErr := queries.GetCourse(ctx, db.GetCourseParams{CompanyID: actor.CompanyID, ID: enrollment.CourseID})
+		if courseErr != nil {
+			return EnrollmentQuizAttempt{}, EnrollmentProgressSnapshot{}, internal("Не удалось проверить курс прохождения", courseErr)
+		}
+		course := courseFromRow(courseRow)
+		if course.OwnerType != "partner" || course.OwnerUserID == nil || *course.OwnerUserID != actor.UserID {
+			return EnrollmentQuizAttempt{}, EnrollmentProgressSnapshot{}, forbidden("Недостаточно прав для проверки открытых ответов")
+		}
+	}
+	aggregate, err := s.loadEnrollmentAggregate(ctx, queries, actor.CompanyID, input.EnrollmentID)
+	if err != nil {
+		return EnrollmentQuizAttempt{}, EnrollmentProgressSnapshot{}, err
+	}
+	now := s.now().UTC()
+	outcome, err := aggregate.ReviewAttempt(domainenrollment.Review{
+		AttemptID: domainenrollment.ID(input.AttemptID.String()),
+		ActorID:   domainenrollment.ID(actor.UserID.String()),
+		Passed:    input.Passed,
+		Comment:   input.Comment,
+		At:        now,
+	})
+	if err != nil {
+		return EnrollmentQuizAttempt{}, EnrollmentProgressSnapshot{}, enrollmentDomainError(err)
+	}
+	score := int32(0)
+	for _, attempt := range aggregate.Snapshot().QuizAttempts {
+		if attempt.ID == domainenrollment.ID(input.AttemptID.String()) {
+			score = int32(attempt.Score)
+			break
+		}
+	}
+	reviewedRow, err := queries.ReviewEnrollmentQuizAttempt(ctx, db.ReviewEnrollmentQuizAttemptParams{
+		Passed: input.Passed, Score: score, ReviewedByID: nullUUID(&actor.UserID),
+		ReviewedAt: nullTimestamptz(&now), ReviewComment: nullText(input.Comment),
+		CompanyID: actor.CompanyID, EnrollmentID: input.EnrollmentID, ID: input.AttemptID,
+	})
+	if err != nil {
+		if isNoRows(err) {
+			return EnrollmentQuizAttempt{}, EnrollmentProgressSnapshot{}, notFound("Попытка теста")
+		}
+		return EnrollmentQuizAttempt{}, EnrollmentProgressSnapshot{}, internal("Не удалось сохранить результат проверки", err)
+	}
+	snapshot := aggregate.Snapshot()
+	if _, err = s.persistEnrollmentSnapshot(ctx, queries, snapshot, now); err != nil {
+		return EnrollmentQuizAttempt{}, EnrollmentProgressSnapshot{}, err
+	}
+	completedLessonID, convertErr := optionalUUIDFromEnrollmentID(outcome.CompletedLessonID)
+	if convertErr != nil {
+		return EnrollmentQuizAttempt{}, EnrollmentProgressSnapshot{}, internal("Некорректный завершённый урок", convertErr)
+	}
+	if err = s.emitEnrollmentProgressed(ctx, queries, actor, snapshot, completedLessonID, &input.AttemptID, now); err != nil {
+		return EnrollmentQuizAttempt{}, EnrollmentProgressSnapshot{}, err
+	}
+	if outcome.EnrollmentComplete {
+		if err = s.emitEnrollmentCompleted(ctx, queries, actor, snapshot); err != nil {
+			return EnrollmentQuizAttempt{}, EnrollmentProgressSnapshot{}, err
+		}
+	}
+	if err = s.auditMutation(ctx, queries, actor, "quiz_attempt_reviewed", "quiz_attempt", input.AttemptID,
+		map[string]any{"pendingReview": true},
+		map[string]any{"pendingReview": false, "passed": input.Passed, "enrollmentId": input.EnrollmentID}); err != nil {
+		return EnrollmentQuizAttempt{}, EnrollmentProgressSnapshot{}, err
+	}
+	if err = tx.Commit(ctx); err != nil {
+		return EnrollmentQuizAttempt{}, EnrollmentProgressSnapshot{}, internal("Не удалось сохранить проверку теста", err)
+	}
+	progress, err := s.getEnrollmentProgressSnapshot(ctx, actor, input.EnrollmentID)
+	if err != nil {
+		return EnrollmentQuizAttempt{}, EnrollmentProgressSnapshot{}, err
+	}
+	reviewed := enrollmentQuizAttemptFromReviewRow(reviewedRow)
+	reviewed.AttemptNumber = int32(outcome.AttemptNumber)
+	return reviewed, progress, nil
+}
+
 func (s *Service) getEnrollmentProgressSnapshot(
 	ctx context.Context,
 	actor Actor,
@@ -1118,6 +1304,10 @@ func enrollmentDomainError(err error) error {
 		errors.Is(err, domainenrollment.ErrLessonAlreadyCompleted),
 		errors.Is(err, domainenrollment.ErrQuizAttemptLimit),
 		errors.Is(err, domainenrollment.ErrQuizPendingReview):
+		return conflict(err.Error())
+	case errors.Is(err, domainenrollment.ErrAttemptNotFound):
+		return notFound("Попытка теста")
+	case errors.Is(err, domainenrollment.ErrAttemptNotPending):
 		return conflict(err.Error())
 	default:
 		return validation(err.Error())

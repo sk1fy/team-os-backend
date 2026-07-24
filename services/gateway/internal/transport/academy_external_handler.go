@@ -334,12 +334,21 @@ func (h *Handler) SubmitPublicAcademyQuizAttempt(w http.ResponseWriter, r *http.
 		h.writeAcademyRPCError(w, r, err)
 		return
 	}
-	converted, err := externalQuizAttemptResultFromProto(response.GetResult())
+	attempt, err := externalQuizAttemptResultFromProto(response.GetResult())
 	if err != nil {
 		h.writeConversionError(w, r, err)
 		return
 	}
-	writeJSON(w, http.StatusCreated, converted)
+	enrollment, err := externalEnrollmentFromProto(response.GetEnrollment())
+	if err != nil {
+		h.writeConversionError(w, r, err)
+		return
+	}
+	writeJSON(w, http.StatusCreated, api.ExternalQuizAttemptSubmitted{
+		Id: attempt.Id, Score: attempt.Score, Passed: attempt.Passed, PendingReview: attempt.PendingReview,
+		AttemptsRemaining: attempt.AttemptsRemaining, CreatedAt: attempt.CreatedAt,
+		Attempt: attempt, Enrollment: enrollment,
+	})
 }
 
 func (h *Handler) GetPublicAcademyEnrollmentResults(w http.ResponseWriter, r *http.Request, enrollmentID api.EnrollmentId) {

@@ -73,9 +73,13 @@ func (s *Service) GetCourses(ctx context.Context, actor Actor, optionalFilters .
 	for _, id := range assignedIDs {
 		assigned[id] = struct{}{}
 	}
+	partnerAudience, err := s.partnerAudienceCourseIDs(ctx, queries, actor)
+	if err != nil {
+		return nil, err
+	}
 	result := make([]Course, 0, len(courses))
 	for _, course := range courses {
-		if visibleCourse(actor, course, assigned) {
+		if visibleCourse(actor, course, assigned, partnerAudience) {
 			result = append(result, course)
 		}
 	}

@@ -19,7 +19,6 @@ import (
 	kbv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/kb/v1"
 	notificationsv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/notifications/v1"
 	tasksv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/tasks/v1"
-	"github.com/sk1fy/team-os-backend/pkg/apierror"
 	sharedauth "github.com/sk1fy/team-os-backend/pkg/auth"
 	"github.com/sk1fy/team-os-backend/pkg/httpx"
 	"github.com/sk1fy/team-os-backend/services/gateway/internal/api"
@@ -253,8 +252,8 @@ func run(logger *slog.Logger) error {
 		apiRouter.Use(ratelimit.New(30, time.Minute, configuration.TrustedProxyCIDRs...).Middleware, authmw.Middleware(verifier))
 		api.HandlerWithOptions(handler, api.ChiServerOptions{
 			BaseRouter: apiRouter,
-			ErrorHandlerFunc: func(w http.ResponseWriter, _ *http.Request, _ error) {
-				apierror.Write(w, apierror.BadRequest("Некорректные параметры запроса"))
+			ErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
+				transport.WriteOpenAPIParamError(w, r, err)
 			},
 		})
 	})

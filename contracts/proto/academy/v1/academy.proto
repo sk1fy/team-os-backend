@@ -62,6 +62,8 @@ service AcademyService {
   // external learning progress. Internal caller identity is taken from JWT by
   // the gateway/application layer and is never trusted from the request body.
   rpc GetEnrollments(GetEnrollmentsRequest) returns (GetEnrollmentsResponse);
+  rpc GetInternalEnrollmentReportPage(GetInternalEnrollmentReportPageRequest) returns (GetInternalEnrollmentReportPageResponse);
+  rpc GetAcademyCatalog(GetAcademyCatalogRequest) returns (GetAcademyCatalogResponse);
   rpc SelfEnrollCourse(SelfEnrollCourseRequest) returns (SelfEnrollCourseResponse);
   rpc GetCatalogCourseVersion(GetCatalogCourseVersionRequest) returns (GetCatalogCourseVersionResponse);
   rpc GetEnrollment(GetEnrollmentRequest) returns (GetEnrollmentResponse);
@@ -70,6 +72,7 @@ service AcademyService {
   rpc ResumeEnrollment(ResumeEnrollmentRequest) returns (ResumeEnrollmentResponse);
   rpc CompleteEnrollmentLesson(CompleteEnrollmentLessonRequest) returns (CompleteEnrollmentLessonResponse);
   rpc SubmitEnrollmentQuizAttempt(SubmitEnrollmentQuizAttemptRequest) returns (SubmitEnrollmentQuizAttemptResponse);
+  rpc ReviewEnrollmentQuizAttempt(ReviewEnrollmentQuizAttemptRequest) returns (ReviewEnrollmentQuizAttemptResponse);
   rpc GetEnrollmentReport(GetEnrollmentReportRequest) returns (GetEnrollmentReportResponse);
 
   // Partner course administration. Authorization is object-scoped: partner
@@ -84,6 +87,11 @@ service AcademyService {
   rpc ResolvePartnerCourseRestriction(ResolvePartnerCourseRestrictionRequest) returns (ResolvePartnerCourseRestrictionResponse);
   rpc GetCourseRestrictions(GetCourseRestrictionsRequest) returns (GetCourseRestrictionsResponse);
   rpc CopyPartnerCourseVersionToCompany(CopyPartnerCourseVersionToCompanyRequest) returns (CopyPartnerCourseVersionToCompanyResponse);
+
+  // Partner audience controls which partners may see and take a company course.
+  // Only owner/admin may read or change it; the default is deny ('none').
+  rpc GetCoursePartnerAudience(GetCoursePartnerAudienceRequest) returns (GetCoursePartnerAudienceResponse);
+  rpc SetCoursePartnerAudience(SetCoursePartnerAudienceRequest) returns (SetCoursePartnerAudienceResponse);
 
   // CourseTemplate is a separate versioned aggregate. Templates cannot be
   // assigned or learned; instantiation always creates an independent course
@@ -139,6 +147,7 @@ service AcademyService {
   rpc GetExternalLearner(GetExternalLearnerRequest) returns (GetExternalLearnerResponse);
   rpc GetExternalLearnerEnrollments(GetExternalLearnerEnrollmentsRequest) returns (GetExternalLearnerEnrollmentsResponse);
   rpc GetExternalLearnerTimeline(GetExternalLearnerTimelineRequest) returns (GetExternalLearnerTimelineResponse);
+  rpc GetPartnerExternalReportPage(GetPartnerExternalReportPageRequest) returns (GetPartnerExternalReportPageResponse);
 }
 
 enum CourseStatus {
@@ -575,6 +584,11 @@ message CourseEnrollment {
   bool overdue = 24;
   string company_id = 25;
   uint32 version_number = 26;
+  // Denormalized read-model fields populated by list/self-enrollment queries.
+  optional string course_title = 27;
+  optional string course_cover_url = 28;
+  optional uint32 completed_lesson_count = 29;
+  optional uint32 total_lesson_count = 30;
 }
 
 message EnrollmentLessonProgress {
@@ -1242,6 +1256,98 @@ message GetEnrollmentsResponse {
   repeated CourseEnrollment enrollments = 1;
 }
 
+enum InternalEnrollmentReportStatus {
+  INTERNAL_ENROLLMENT_REPORT_STATUS_UNSPECIFIED = 0;
+  INTERNAL_ENROLLMENT_REPORT_STATUS_NOT_STARTED = 1;
+  INTERNAL_ENROLLMENT_REPORT_STATUS_IN_PROGRESS = 2;
+  INTERNAL_ENROLLMENT_REPORT_STATUS_COMPLETED = 3;
+  INTERNAL_ENROLLMENT_REPORT_STATUS_OVERDUE = 4;
+  INTERNAL_ENROLLMENT_REPORT_STATUS_FROZEN = 5;
+}
+
+enum InternalEnrollmentReportSort {
+  INTERNAL_ENROLLMENT_REPORT_SORT_UNSPECIFIED = 0;
+  INTERNAL_ENROLLMENT_REPORT_SORT_UPDATED_DESC = 1;
+  INTERNAL_ENROLLMENT_REPORT_SORT_UPDATED_ASC = 2;
+  INTERNAL_ENROLLMENT_REPORT_SORT_TITLE_ASC = 3;
+  INTERNAL_ENROLLMENT_REPORT_SORT_TITLE_DESC = 4;
+  INTERNAL_ENROLLMENT_REPORT_SORT_DEADLINE_ASC = 5;
+  INTERNAL_ENROLLMENT_REPORT_SORT_STATUS = 6;
+}
+
+message GetInternalEnrollmentReportPageRequest {
+  // Company owns employee/org data, so gateway resolves the allowed scope and
+  // user-name matches before Academy filters and paginates its training data.
+  repeated string user_ids = 1;
+  repeated string search_user_ids = 2;
+  optional string search = 3;
+  optional string course_id = 4;
+  InternalEnrollmentReportStatus status = 5;
+  InternalEnrollmentReportSort sort = 6;
+  uint32 page = 7;
+  uint32 page_size = 8;
+}
+
+message GetInternalEnrollmentReportPageResponse {
+  repeated CourseEnrollment items = 1;
+  uint32 page = 2;
+  uint32 page_size = 3;
+  uint32 total = 4;
+}
+
+enum CoursePartnerAudience {
+  COURSE_PARTNER_AUDIENCE_UNSPECIFIED = 0;
+  COURSE_PARTNER_AUDIENCE_NONE = 1;
+  COURSE_PARTNER_AUDIENCE_ALL_PARTNERS = 2;
+  COURSE_PARTNER_AUDIENCE_SELECTED_PARTNERS = 3;
+}
+
+message CatalogCourseCard {
+  string id = 1;
+  string title = 2;
+  optional string description = 3;
+  optional string cover_url = 4;
+  int32 lesson_count = 5;
+  int32 estimated_minutes = 6;
+  int32 latest_version_number = 7;
+  bool enrolled = 8;
+  optional string enrollment_id = 9;
+  optional int32 progress_percent = 10;
+}
+
+message GetAcademyCatalogRequest {
+  optional string search = 1;
+  uint32 page = 2;
+  uint32 page_size = 3;
+}
+
+message GetAcademyCatalogResponse {
+  repeated CatalogCourseCard items = 1;
+  uint32 page = 2;
+  uint32 page_size = 3;
+  uint32 total = 4;
+}
+
+message GetCoursePartnerAudienceRequest {
+  string course_id = 1;
+}
+
+message GetCoursePartnerAudienceResponse {
+  CoursePartnerAudience audience = 1;
+  repeated string partner_user_ids = 2;
+}
+
+message SetCoursePartnerAudienceRequest {
+  string course_id = 1;
+  CoursePartnerAudience audience = 2;
+  repeated string partner_user_ids = 3;
+}
+
+message SetCoursePartnerAudienceResponse {
+  CoursePartnerAudience audience = 1;
+  repeated string partner_user_ids = 2;
+}
+
 message SelfEnrollCourseRequest {
   string course_id = 1;
 }
@@ -1314,6 +1420,18 @@ message SubmitEnrollmentQuizAttemptRequest {
 }
 
 message SubmitEnrollmentQuizAttemptResponse {
+  EnrollmentQuizAttempt attempt = 1;
+  EnrollmentProgressSnapshot progress = 2;
+}
+
+message ReviewEnrollmentQuizAttemptRequest {
+  string enrollment_id = 1;
+  string attempt_id = 2;
+  bool passed = 3;
+  optional string comment = 4;
+}
+
+message ReviewEnrollmentQuizAttemptResponse {
   EnrollmentQuizAttempt attempt = 1;
   EnrollmentProgressSnapshot progress = 2;
 }
@@ -1645,6 +1763,33 @@ message ExternalLearner {
   google.protobuf.Timestamp updated_at = 10;
 }
 
+message PartnerExternalReportRow {
+  string enrollment_id = 1;
+  string course_id = 2;
+  string course_title = 3;
+  string learner_email = 4;
+  optional string learner_name = 5;
+  EnrollmentProgressStatus progress_status = 6;
+  EnrollmentAccessStatus access_status = 7;
+  uint32 progress_percent = 8;
+  optional google.protobuf.Timestamp activated_at = 9;
+  optional google.protobuf.Timestamp completed_at = 10;
+}
+
+message GetPartnerExternalReportPageRequest {
+  optional string search = 1;
+  optional string course_id = 2;
+  uint32 page = 3;
+  uint32 page_size = 4;
+}
+
+message GetPartnerExternalReportPageResponse {
+  repeated PartnerExternalReportRow items = 1;
+  uint32 page = 2;
+  uint32 page_size = 3;
+  uint32 total = 4;
+}
+
 message PublicAcademyOutlineLesson {
   string id = 1;
   string title = 2;
@@ -1932,6 +2077,7 @@ message SubmitPublicAcademyQuizAttemptRequest {
 
 message SubmitPublicAcademyQuizAttemptResponse {
   ExternalQuizAttemptResult result = 1;
+  CourseEnrollment enrollment = 2;
 }
 
 message GetPublicAcademyEnrollmentResultsRequest {

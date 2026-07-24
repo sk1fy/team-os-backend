@@ -13,6 +13,73 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const countInternalEnrollmentReportRows = `-- name: CountInternalEnrollmentReportRows :one
+WITH report_rows AS (
+    SELECT enrollment.id,
+        CASE
+            WHEN enrollment.access_status = 'frozen' THEN 'frozen'
+            WHEN COALESCE(
+                COALESCE(
+                    assignment.due_date,
+                    assignment.created_at
+                        + make_interval(days => version.default_internal_deadline_days)
+                ) < $2::timestamptz
+                AND enrollment.progress_status <> 'completed',
+                false
+            ) THEN 'overdue'
+            ELSE enrollment.progress_status
+        END AS report_status
+    FROM course_enrollments AS enrollment
+    JOIN course_versions AS version
+      ON version.company_id = enrollment.company_id
+     AND version.id = enrollment.course_version_id
+    JOIN courses AS course
+      ON course.company_id = enrollment.company_id
+     AND course.id = enrollment.course_id
+    LEFT JOIN assignments AS assignment
+      ON enrollment.source_type = 'assignment'
+     AND assignment.company_id = enrollment.company_id
+     AND assignment.id = enrollment.source_id
+    WHERE enrollment.company_id = $3
+      AND enrollment.learner_type = 'user'
+      AND enrollment.user_id = ANY($4::uuid[])
+      AND ($5::uuid IS NULL
+           OR enrollment.course_id = $5::uuid)
+      AND ($6::text IS NULL
+           OR course.title ILIKE '%' || $6::text || '%'
+           OR enrollment.user_id = ANY($7::uuid[]))
+)
+SELECT count(*)::bigint
+FROM report_rows
+WHERE $1::text IS NULL
+   OR report_status = $1::text
+`
+
+type CountInternalEnrollmentReportRowsParams struct {
+	Status        pgtype.Text   `json:"status"`
+	Now           time.Time     `json:"now"`
+	CompanyID     uuid.UUID     `json:"company_id"`
+	UserIds       []uuid.UUID   `json:"user_ids"`
+	CourseID      uuid.NullUUID `json:"course_id"`
+	Search        pgtype.Text   `json:"search"`
+	SearchUserIds []uuid.UUID   `json:"search_user_ids"`
+}
+
+func (q *Queries) CountInternalEnrollmentReportRows(ctx context.Context, arg CountInternalEnrollmentReportRowsParams) (int64, error) {
+	row := q.db.QueryRow(ctx, countInternalEnrollmentReportRows,
+		arg.Status,
+		arg.Now,
+		arg.CompanyID,
+		arg.UserIds,
+		arg.CourseID,
+		arg.Search,
+		arg.SearchUserIds,
+	)
+	var column_1 int64
+	err := row.Scan(&column_1)
+	return column_1, err
+}
+
 const createInternalEnrollmentForAssignment = `-- name: CreateInternalEnrollmentForAssignment :one
 WITH enrollment AS (
     INSERT INTO course_enrollments (
@@ -457,16 +524,20 @@ SELECT enrollment.id, enrollment.company_id, enrollment.course_id,
     enrollment.frozen_at, enrollment.suspended_at,
     enrollment.created_at, enrollment.updated_at
 FROM course_enrollments AS enrollment
-JOIN course_versions AS version ON version.id = enrollment.course_version_id
+JOIN course_versions AS version
+  ON version.company_id = enrollment.company_id
+ AND version.id = enrollment.course_version_id
 LEFT JOIN LATERAL (
     SELECT count(*)::integer AS lesson_count,
            count(*) FILTER (WHERE lesson_progress.status = 'completed')::integer
                AS completed_count
     FROM course_version_lessons AS lesson
     LEFT JOIN enrollment_lesson_progress AS lesson_progress
-      ON lesson_progress.enrollment_id = enrollment.id
+      ON lesson_progress.company_id = enrollment.company_id
+     AND lesson_progress.enrollment_id = enrollment.id
      AND lesson_progress.lesson_version_id = lesson.id
-    WHERE lesson.course_version_id = enrollment.course_version_id
+    WHERE lesson.company_id = enrollment.company_id
+      AND lesson.course_version_id = enrollment.course_version_id
 ) AS progress ON true
 WHERE enrollment.company_id = $1
   AND enrollment.id = $2
@@ -742,6 +813,223 @@ func (q *Queries) ListEnrollmentVersionLessonsWithQuiz(ctx context.Context, arg 
 	return items, nil
 }
 
+const listInternalEnrollmentReportRows = `-- name: ListInternalEnrollmentReportRows :many
+WITH report_rows AS (
+    SELECT enrollment.id, enrollment.company_id, enrollment.course_id,
+        enrollment.course_version_id, version.number AS version_number,
+        course.title AS course_title, course.cover_url AS course_cover_url,
+        enrollment.learner_type, enrollment.user_id,
+        enrollment.external_learner_id, enrollment.source_type,
+        enrollment.source_id, enrollment.attempt_number,
+        enrollment.progress_status, enrollment.access_status,
+        enrollment.current_lesson_version_id,
+        COALESCE(progress.completed_count * 100 / NULLIF(progress.lesson_count, 0), 0)::integer
+            AS progress_percent,
+        progress.completed_count AS completed_lesson_count,
+        progress.lesson_count AS total_lesson_count,
+        COALESCE(
+            assignment.due_date,
+            assignment.created_at
+                + make_interval(days => version.default_internal_deadline_days)
+        ) AS due_date,
+        COALESCE(
+            COALESCE(
+                assignment.due_date,
+                assignment.created_at
+                    + make_interval(days => version.default_internal_deadline_days)
+            ) < $5::timestamptz
+            AND enrollment.progress_status <> 'completed',
+            false
+        ) AS overdue,
+        CASE
+            WHEN enrollment.access_status = 'frozen' THEN 'frozen'
+            WHEN COALESCE(
+                COALESCE(
+                    assignment.due_date,
+                    assignment.created_at
+                        + make_interval(days => version.default_internal_deadline_days)
+                ) < $5::timestamptz
+                AND enrollment.progress_status <> 'completed',
+                false
+            ) THEN 'overdue'
+            ELSE enrollment.progress_status
+        END AS report_status,
+        enrollment.activated_at, enrollment.access_until,
+        enrollment.started_at, enrollment.completed_at,
+        enrollment.last_activity_at, enrollment.frozen_at,
+        enrollment.suspended_at, enrollment.created_at,
+        enrollment.updated_at
+    FROM course_enrollments AS enrollment
+    JOIN course_versions AS version
+      ON version.company_id = enrollment.company_id
+     AND version.id = enrollment.course_version_id
+    JOIN courses AS course
+      ON course.company_id = enrollment.company_id
+     AND course.id = enrollment.course_id
+    LEFT JOIN assignments AS assignment
+      ON enrollment.source_type = 'assignment'
+     AND assignment.company_id = enrollment.company_id
+     AND assignment.id = enrollment.source_id
+    LEFT JOIN LATERAL (
+        SELECT count(*)::integer AS lesson_count,
+               count(*) FILTER (
+                   WHERE lesson_progress.status = 'completed'
+               )::integer AS completed_count
+        FROM course_version_lessons AS lesson
+        LEFT JOIN enrollment_lesson_progress AS lesson_progress
+          ON lesson_progress.company_id = enrollment.company_id
+         AND lesson_progress.enrollment_id = enrollment.id
+         AND lesson_progress.lesson_version_id = lesson.id
+        WHERE lesson.company_id = enrollment.company_id
+          AND lesson.course_version_id = enrollment.course_version_id
+    ) AS progress ON true
+    WHERE enrollment.company_id = $6
+      AND enrollment.learner_type = 'user'
+      AND enrollment.user_id = ANY($7::uuid[])
+      AND ($8::uuid IS NULL
+           OR enrollment.course_id = $8::uuid)
+      AND ($9::text IS NULL
+           OR course.title ILIKE '%' || $9::text || '%'
+           OR enrollment.user_id = ANY($10::uuid[]))
+)
+SELECT id, company_id, course_id, course_version_id, version_number,
+    course_title, course_cover_url, learner_type, user_id,
+    external_learner_id, source_type, source_id, attempt_number,
+    progress_status, access_status, current_lesson_version_id,
+    progress_percent, completed_lesson_count, total_lesson_count,
+    due_date, overdue, activated_at, access_until, started_at,
+    completed_at, last_activity_at, frozen_at, suspended_at,
+    created_at, updated_at
+FROM report_rows
+WHERE $1::text IS NULL
+   OR report_status = $1::text
+ORDER BY
+    CASE WHEN $2::text = 'title_asc'
+         THEN lower(course_title) END ASC,
+    CASE WHEN $2::text = 'title_desc'
+         THEN lower(course_title) END DESC,
+    CASE WHEN $2::text = 'deadline_asc'
+         THEN due_date END ASC NULLS LAST,
+    CASE WHEN $2::text = 'status'
+         THEN report_status END ASC,
+    CASE WHEN $2::text = 'updated_asc'
+         THEN last_activity_at END ASC NULLS LAST,
+    CASE WHEN $2::text = 'updated_desc'
+         THEN last_activity_at END DESC NULLS LAST,
+    created_at DESC,
+    id DESC
+LIMIT $4::integer
+OFFSET $3::integer
+`
+
+type ListInternalEnrollmentReportRowsParams struct {
+	Status        pgtype.Text   `json:"status"`
+	Sort          string        `json:"sort"`
+	PageOffset    int32         `json:"page_offset"`
+	PageLimit     int32         `json:"page_limit"`
+	Now           time.Time     `json:"now"`
+	CompanyID     uuid.UUID     `json:"company_id"`
+	UserIds       []uuid.UUID   `json:"user_ids"`
+	CourseID      uuid.NullUUID `json:"course_id"`
+	Search        pgtype.Text   `json:"search"`
+	SearchUserIds []uuid.UUID   `json:"search_user_ids"`
+}
+
+type ListInternalEnrollmentReportRowsRow struct {
+	ID                     uuid.UUID          `json:"id"`
+	CompanyID              uuid.UUID          `json:"company_id"`
+	CourseID               uuid.UUID          `json:"course_id"`
+	CourseVersionID        uuid.UUID          `json:"course_version_id"`
+	VersionNumber          int32              `json:"version_number"`
+	CourseTitle            string             `json:"course_title"`
+	CourseCoverUrl         pgtype.Text        `json:"course_cover_url"`
+	LearnerType            string             `json:"learner_type"`
+	UserID                 uuid.NullUUID      `json:"user_id"`
+	ExternalLearnerID      uuid.NullUUID      `json:"external_learner_id"`
+	SourceType             string             `json:"source_type"`
+	SourceID               uuid.NullUUID      `json:"source_id"`
+	AttemptNumber          int32              `json:"attempt_number"`
+	ProgressStatus         string             `json:"progress_status"`
+	AccessStatus           string             `json:"access_status"`
+	CurrentLessonVersionID uuid.NullUUID      `json:"current_lesson_version_id"`
+	ProgressPercent        int32              `json:"progress_percent"`
+	CompletedLessonCount   int32              `json:"completed_lesson_count"`
+	TotalLessonCount       int32              `json:"total_lesson_count"`
+	DueDate                pgtype.Timestamptz `json:"due_date"`
+	Overdue                interface{}        `json:"overdue"`
+	ActivatedAt            pgtype.Timestamptz `json:"activated_at"`
+	AccessUntil            pgtype.Timestamptz `json:"access_until"`
+	StartedAt              pgtype.Timestamptz `json:"started_at"`
+	CompletedAt            pgtype.Timestamptz `json:"completed_at"`
+	LastActivityAt         pgtype.Timestamptz `json:"last_activity_at"`
+	FrozenAt               pgtype.Timestamptz `json:"frozen_at"`
+	SuspendedAt            pgtype.Timestamptz `json:"suspended_at"`
+	CreatedAt              time.Time          `json:"created_at"`
+	UpdatedAt              time.Time          `json:"updated_at"`
+}
+
+func (q *Queries) ListInternalEnrollmentReportRows(ctx context.Context, arg ListInternalEnrollmentReportRowsParams) ([]ListInternalEnrollmentReportRowsRow, error) {
+	rows, err := q.db.Query(ctx, listInternalEnrollmentReportRows,
+		arg.Status,
+		arg.Sort,
+		arg.PageOffset,
+		arg.PageLimit,
+		arg.Now,
+		arg.CompanyID,
+		arg.UserIds,
+		arg.CourseID,
+		arg.Search,
+		arg.SearchUserIds,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListInternalEnrollmentReportRowsRow{}
+	for rows.Next() {
+		var i ListInternalEnrollmentReportRowsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.CompanyID,
+			&i.CourseID,
+			&i.CourseVersionID,
+			&i.VersionNumber,
+			&i.CourseTitle,
+			&i.CourseCoverUrl,
+			&i.LearnerType,
+			&i.UserID,
+			&i.ExternalLearnerID,
+			&i.SourceType,
+			&i.SourceID,
+			&i.AttemptNumber,
+			&i.ProgressStatus,
+			&i.AccessStatus,
+			&i.CurrentLessonVersionID,
+			&i.ProgressPercent,
+			&i.CompletedLessonCount,
+			&i.TotalLessonCount,
+			&i.DueDate,
+			&i.Overdue,
+			&i.ActivatedAt,
+			&i.AccessUntil,
+			&i.StartedAt,
+			&i.CompletedAt,
+			&i.LastActivityAt,
+			&i.FrozenAt,
+			&i.SuspendedAt,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listInternalEnrollmentReports = `-- name: ListInternalEnrollmentReports :many
 SELECT enrollment.id AS enrollment_id, enrollment.company_id,
     enrollment.course_id, enrollment.course_version_id,
@@ -772,14 +1060,19 @@ SELECT enrollment.id AS enrollment_id, enrollment.company_id,
     enrollment.started_at, enrollment.completed_at,
     enrollment.last_activity_at, enrollment.created_at
 FROM course_enrollments AS enrollment
-JOIN course_versions AS version ON version.id = enrollment.course_version_id
+JOIN course_versions AS version
+  ON version.company_id = enrollment.company_id
+ AND version.id = enrollment.course_version_id
 LEFT JOIN assignments AS assignment
   ON enrollment.source_type = 'assignment'
+ AND assignment.company_id = enrollment.company_id
  AND assignment.id = enrollment.source_id
 LEFT JOIN course_version_lessons AS lesson
-  ON lesson.course_version_id = enrollment.course_version_id
+  ON lesson.company_id = enrollment.company_id
+ AND lesson.course_version_id = enrollment.course_version_id
 LEFT JOIN enrollment_lesson_progress AS lesson_progress
-  ON lesson_progress.enrollment_id = enrollment.id
+  ON lesson_progress.company_id = enrollment.company_id
+ AND lesson_progress.enrollment_id = enrollment.id
  AND lesson_progress.lesson_version_id = lesson.id
 WHERE enrollment.company_id = $2
   AND enrollment.learner_type = 'user'
@@ -878,6 +1171,7 @@ func (q *Queries) ListInternalEnrollmentReports(ctx context.Context, arg ListInt
 const listInternalEnrollments = `-- name: ListInternalEnrollments :many
 SELECT enrollment.id, enrollment.company_id, enrollment.course_id,
     enrollment.course_version_id, version.number AS version_number,
+    course.title AS course_title, course.cover_url AS course_cover_url,
     enrollment.learner_type, enrollment.user_id,
     enrollment.external_learner_id, enrollment.source_type,
     enrollment.source_id, enrollment.attempt_number,
@@ -885,35 +1179,74 @@ SELECT enrollment.id, enrollment.company_id, enrollment.course_id,
     enrollment.current_lesson_version_id,
     COALESCE(progress.completed_count * 100 / NULLIF(progress.lesson_count, 0), 0)::integer
         AS progress_percent,
+    progress.completed_count AS completed_lesson_count,
+    progress.lesson_count AS total_lesson_count,
+    COALESCE(
+        assignment.due_date,
+        assignment.created_at
+            + make_interval(days => version.default_internal_deadline_days)
+    ) AS due_date,
+    COALESCE((COALESCE(
+        assignment.due_date,
+        assignment.created_at
+            + make_interval(days => version.default_internal_deadline_days)
+     ) < $1::timestamptz
+        AND enrollment.progress_status <> 'completed'), false) AS overdue,
     enrollment.activated_at, enrollment.access_until, enrollment.started_at,
     enrollment.completed_at, enrollment.last_activity_at,
     enrollment.frozen_at, enrollment.suspended_at,
     enrollment.created_at, enrollment.updated_at
 FROM course_enrollments AS enrollment
-JOIN course_versions AS version ON version.id = enrollment.course_version_id
+JOIN course_versions AS version
+  ON version.company_id = enrollment.company_id
+ AND version.id = enrollment.course_version_id
+JOIN courses AS course
+  ON course.company_id = enrollment.company_id
+ AND course.id = enrollment.course_id
+LEFT JOIN assignments AS assignment
+  ON enrollment.source_type = 'assignment'
+ AND assignment.company_id = enrollment.company_id
+ AND assignment.id = enrollment.source_id
 LEFT JOIN LATERAL (
     SELECT count(*)::integer AS lesson_count,
            count(*) FILTER (WHERE lesson_progress.status = 'completed')::integer
                AS completed_count
     FROM course_version_lessons AS lesson
     LEFT JOIN enrollment_lesson_progress AS lesson_progress
-      ON lesson_progress.enrollment_id = enrollment.id
+      ON lesson_progress.company_id = enrollment.company_id
+     AND lesson_progress.enrollment_id = enrollment.id
      AND lesson_progress.lesson_version_id = lesson.id
-    WHERE lesson.course_version_id = enrollment.course_version_id
+    WHERE lesson.company_id = enrollment.company_id
+      AND lesson.course_version_id = enrollment.course_version_id
 ) AS progress ON true
-WHERE enrollment.company_id = $1
+WHERE enrollment.company_id = $2
   AND enrollment.learner_type = 'user'
-  AND ($2::uuid IS NULL
-       OR enrollment.user_id = $2::uuid)
   AND ($3::uuid IS NULL
-       OR enrollment.course_id = $3::uuid)
+       OR enrollment.user_id = $3::uuid)
+  AND ($4::uuid IS NULL
+       OR enrollment.course_id = $4::uuid)
+  AND ($5::uuid IS NULL
+       OR enrollment.course_version_id = $5::uuid)
+  AND ($6::text IS NULL
+       OR enrollment.progress_status = $6::text)
+  AND ($7::text IS NULL
+       OR enrollment.access_status = $7::text)
+  AND ($8::uuid IS NULL
+       OR enrollment.user_id = $8::uuid
+       OR (course.owner_type = 'partner'
+           AND course.owner_user_id = $8::uuid))
 ORDER BY enrollment.created_at DESC, enrollment.id DESC
 `
 
 type ListInternalEnrollmentsParams struct {
-	CompanyID uuid.UUID     `json:"company_id"`
-	UserID    uuid.NullUUID `json:"user_id"`
-	CourseID  uuid.NullUUID `json:"course_id"`
+	Now             time.Time     `json:"now"`
+	CompanyID       uuid.UUID     `json:"company_id"`
+	UserID          uuid.NullUUID `json:"user_id"`
+	CourseID        uuid.NullUUID `json:"course_id"`
+	CourseVersionID uuid.NullUUID `json:"course_version_id"`
+	ProgressStatus  pgtype.Text   `json:"progress_status"`
+	AccessStatus    pgtype.Text   `json:"access_status"`
+	PartnerOwnerID  uuid.NullUUID `json:"partner_owner_id"`
 }
 
 type ListInternalEnrollmentsRow struct {
@@ -922,6 +1255,8 @@ type ListInternalEnrollmentsRow struct {
 	CourseID               uuid.UUID          `json:"course_id"`
 	CourseVersionID        uuid.UUID          `json:"course_version_id"`
 	VersionNumber          int32              `json:"version_number"`
+	CourseTitle            string             `json:"course_title"`
+	CourseCoverUrl         pgtype.Text        `json:"course_cover_url"`
 	LearnerType            string             `json:"learner_type"`
 	UserID                 uuid.NullUUID      `json:"user_id"`
 	ExternalLearnerID      uuid.NullUUID      `json:"external_learner_id"`
@@ -932,6 +1267,10 @@ type ListInternalEnrollmentsRow struct {
 	AccessStatus           string             `json:"access_status"`
 	CurrentLessonVersionID uuid.NullUUID      `json:"current_lesson_version_id"`
 	ProgressPercent        int32              `json:"progress_percent"`
+	CompletedLessonCount   int32              `json:"completed_lesson_count"`
+	TotalLessonCount       int32              `json:"total_lesson_count"`
+	DueDate                pgtype.Timestamptz `json:"due_date"`
+	Overdue                interface{}        `json:"overdue"`
 	ActivatedAt            pgtype.Timestamptz `json:"activated_at"`
 	AccessUntil            pgtype.Timestamptz `json:"access_until"`
 	StartedAt              pgtype.Timestamptz `json:"started_at"`
@@ -944,7 +1283,16 @@ type ListInternalEnrollmentsRow struct {
 }
 
 func (q *Queries) ListInternalEnrollments(ctx context.Context, arg ListInternalEnrollmentsParams) ([]ListInternalEnrollmentsRow, error) {
-	rows, err := q.db.Query(ctx, listInternalEnrollments, arg.CompanyID, arg.UserID, arg.CourseID)
+	rows, err := q.db.Query(ctx, listInternalEnrollments,
+		arg.Now,
+		arg.CompanyID,
+		arg.UserID,
+		arg.CourseID,
+		arg.CourseVersionID,
+		arg.ProgressStatus,
+		arg.AccessStatus,
+		arg.PartnerOwnerID,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -958,6 +1306,8 @@ func (q *Queries) ListInternalEnrollments(ctx context.Context, arg ListInternalE
 			&i.CourseID,
 			&i.CourseVersionID,
 			&i.VersionNumber,
+			&i.CourseTitle,
+			&i.CourseCoverUrl,
 			&i.LearnerType,
 			&i.UserID,
 			&i.ExternalLearnerID,
@@ -968,6 +1318,10 @@ func (q *Queries) ListInternalEnrollments(ctx context.Context, arg ListInternalE
 			&i.AccessStatus,
 			&i.CurrentLessonVersionID,
 			&i.ProgressPercent,
+			&i.CompletedLessonCount,
+			&i.TotalLessonCount,
+			&i.DueDate,
+			&i.Overdue,
 			&i.ActivatedAt,
 			&i.AccessUntil,
 			&i.StartedAt,

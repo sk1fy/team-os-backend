@@ -249,10 +249,10 @@ func (s *Service) SubmitPublicAcademyQuizAttempt(
 	ctx context.Context,
 	principal ExternalPrincipal,
 	input SubmitExternalQuizInput,
-) (ExternalQuizAttemptResult, error) {
+) (ExternalQuizAttemptSubmitted, error) {
 	key := strings.TrimSpace(input.IdempotencyKey)
 	if key == "" {
-		return ExternalQuizAttemptResult{}, validation("Требуется ключ идемпотентности")
+		return ExternalQuizAttemptSubmitted{}, validation("Требуется ключ идемпотентности")
 	}
 	requestHash := externalMutationRequestHash(struct {
 		EnrollmentID uuid.UUID              `json:"enrollmentId"`
@@ -261,7 +261,7 @@ func (s *Service) SubmitPublicAcademyQuizAttempt(
 	}{input.EnrollmentID, input.QuizID, input.Answers})
 	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
-		return ExternalQuizAttemptResult{}, internal("Не удалось начать транзакцию", err)
+		return ExternalQuizAttemptSubmitted{}, internal("Не удалось начать транзакцию", err)
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
 	queries := db.New(tx)
@@ -269,15 +269,22 @@ func (s *Service) SubmitPublicAcademyQuizAttempt(
 	reservation, err := s.reserveExternalMutationInTx(ctx, queries, principal,
 		externalOperationSubmitQuiz, key, requestHash, input.QuizID, now)
 	if err != nil {
-		return ExternalQuizAttemptResult{}, err
+		return ExternalQuizAttemptSubmitted{}, err
 	}
 	if reservation.CompletedAt.Valid && len(reservation.ResultPayload) > 0 {
-		var previous ExternalQuizAttemptResult
-		if err = json.Unmarshal(reservation.ResultPayload, &previous); err != nil {
-			return ExternalQuizAttemptResult{}, internal("Не удалось прочитать сохранённый результат теста", err)
+		previous, decodeErr := decodeExternalQuizAttemptReplay(reservation.ResultPayload)
+		if decodeErr != nil {
+			return ExternalQuizAttemptSubmitted{}, internal("Не удалось прочитать сохранённый результат теста", decodeErr)
 		}
 		if err = tx.Commit(ctx); err != nil {
-			return ExternalQuizAttemptResult{}, internal("Не удалось завершить повторную отправку теста", err)
+			return ExternalQuizAttemptSubmitted{}, internal("Не удалось завершить повторную отправку теста", err)
+		}
+		if previous.Enrollment.ID == uuid.Nil {
+			enrollment, loadErr := s.GetPublicAcademyEnrollment(ctx, principal, input.EnrollmentID)
+			if loadErr != nil {
+				return ExternalQuizAttemptSubmitted{}, loadErr
+			}
+			previous.Enrollment = enrollment
 		}
 		return previous, nil
 	}
@@ -286,7 +293,7 @@ func (s *Service) SubmitPublicAcademyQuizAttempt(
 		EnrollmentID: input.EnrollmentID, QuizID: input.QuizID, Answers: input.Answers,
 	}, &principal, reservation.ID)
 	if err != nil {
-		return ExternalQuizAttemptResult{}, err
+		return ExternalQuizAttemptSubmitted{}, err
 	}
 	var remaining *int32
 	quiz, quizErr := queries.GetCourseVersionQuiz(ctx, db.GetCourseVersionQuizParams{
@@ -301,17 +308,25 @@ func (s *Service) SubmitPublicAcademyQuizAttempt(
 	}
 	result := ExternalQuizAttemptResult{ID: attempt.ID, Score: attempt.Score, Passed: attempt.Passed,
 		PendingReview: attempt.PendingReview, AttemptsRemaining: remaining, CreatedAt: attempt.CreatedAt}
-	resultPayload, _ := json.Marshal(result)
+	enrollment, err := s.getPublicAcademyEnrollmentWithQueries(ctx, queries, principal, input.EnrollmentID, now)
+	if err != nil {
+		return ExternalQuizAttemptSubmitted{}, err
+	}
+	submitted := ExternalQuizAttemptSubmitted{Attempt: result, Enrollment: enrollment}
+	resultPayload, err := json.Marshal(submitted)
+	if err != nil {
+		return ExternalQuizAttemptSubmitted{}, internal("Не удалось подготовить результат внешнего теста", err)
+	}
 	if _, err = queries.CompleteExternalMutationIdempotency(ctx, db.CompleteExternalMutationIdempotencyParams{
 		ResultID: nullUUID(&attempt.ID), EnrollmentID: nullUUID(&input.EnrollmentID), ResultPayload: resultPayload,
 		CompletedAt: nullTimestamptz(&now), CompanyID: principal.CompanyID, ID: reservation.ID,
 	}); err != nil {
-		return ExternalQuizAttemptResult{}, internal("Не удалось сохранить результат идемпотентной отправки", err)
+		return ExternalQuizAttemptSubmitted{}, internal("Не удалось сохранить результат идемпотентной отправки", err)
 	}
 	if err = tx.Commit(ctx); err != nil {
-		return ExternalQuizAttemptResult{}, internal("Не удалось сохранить результат внешнего теста", err)
+		return ExternalQuizAttemptSubmitted{}, internal("Не удалось сохранить результат внешнего теста", err)
 	}
-	if enrollment, loadErr := s.GetPublicAcademyEnrollment(ctx, principal, input.EnrollmentID); loadErr == nil && isCampaignEnrollment(enrollment) {
+	if isCampaignEnrollment(enrollment) {
 		analyticsErr := s.recordCampaignAnalyticsEvent(ctx, db.New(s.pool), principal.CompanyID, campaignAnalyticsEvent{
 			CampaignID: *enrollment.SourceID, EnrollmentID: &enrollment.ID, ExternalLearnerID: &principal.LearnerID,
 			Type: "quiz_submitted", IdempotencyKey: "quiz-submitted:" + strings.TrimSpace(input.IdempotencyKey),
@@ -321,7 +336,30 @@ func (s *Service) SubmitPublicAcademyQuizAttempt(
 			s.logger.Warn("campaign quiz analytics failed", "enrollmentId", enrollment.ID, "error", analyticsErr)
 		}
 	}
-	return result, nil
+	return submitted, nil
+}
+
+// decodeExternalQuizAttemptReplay supports both the current atomic envelope and
+// flat payloads stored before the envelope was introduced. encoding/json ignores
+// unknown object fields, so the attempt id—not Unmarshal's error—is the shape
+// discriminator.
+func decodeExternalQuizAttemptReplay(payload []byte) (ExternalQuizAttemptSubmitted, error) {
+	var submitted ExternalQuizAttemptSubmitted
+	if err := json.Unmarshal(payload, &submitted); err != nil {
+		return ExternalQuizAttemptSubmitted{}, err
+	}
+	if submitted.Attempt.ID != uuid.Nil {
+		return submitted, nil
+	}
+	var legacy ExternalQuizAttemptResult
+	if err := json.Unmarshal(payload, &legacy); err != nil {
+		return ExternalQuizAttemptSubmitted{}, err
+	}
+	if legacy.ID == uuid.Nil {
+		return ExternalQuizAttemptSubmitted{}, fmt.Errorf("в сохранённом результате отсутствует идентификатор попытки")
+	}
+	submitted.Attempt = legacy
+	return submitted, nil
 }
 
 func (s *Service) reserveExternalMutationInTx(

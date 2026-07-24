@@ -33,16 +33,16 @@ func (h *Handler) GetAcademyInternalReport(w http.ResponseWriter, r *http.Reques
 		return
 	}
 	filters := internalReportFiltersFromParams(params)
-	rows, err := h.internalReportRows(r, filters)
+	page, pageSize := pagination(params.Page, params.PageSize)
+	report, err := h.internalReportPage(r, filters, page, pageSize)
 	if err != nil {
 		h.writeAcademyRPCError(w, r, err)
 		return
 	}
-	page, pageSize := pagination(params.Page, params.PageSize)
-	start, end := pageWindow(len(rows), page, pageSize)
-	totalPages := (len(rows) + pageSize - 1) / pageSize
+	totalPages := (report.total + report.pageSize - 1) / report.pageSize
 	writeJSON(w, http.StatusOK, api.InternalReportResult{
-		Items: rows[start:end], Page: page, PageSize: pageSize, Total: len(rows), TotalPages: totalPages,
+		Items: report.items, Page: report.page, PageSize: report.pageSize,
+		Total: report.total, TotalPages: totalPages,
 		FiltersApplied: internalFiltersApplied(filters),
 	})
 }
@@ -56,12 +56,12 @@ func (h *Handler) ExportAcademyInternalReport(w http.ResponseWriter, r *http.Req
 		departmentID: uuidPointer(params.DepartmentId), positionID: uuidPointer(params.PositionId),
 		status: pointerString((*string)(params.Status)), sort: pointerString((*string)(params.Sort)),
 	}
-	rows, err := h.internalReportRows(r, filters)
+	report, err := h.internalReportPage(r, filters, 1, maxInternalReportExportRows+1)
 	if err != nil {
 		h.writeAcademyRPCError(w, r, err)
 		return
 	}
-	if len(rows) > maxInternalReportExportRows {
+	if report.total > maxInternalReportExportRows {
 		apierror.Write(w, apierror.BadRequest("Выгрузка ограничена 10 000 строками; уточните фильтры"))
 		return
 	}
@@ -74,7 +74,7 @@ func (h *Handler) ExportAcademyInternalReport(w http.ResponseWriter, r *http.Req
 		"Сотрудник", "Отдел", "Должность", "Курс", "Статус", "Прогресс, %",
 		"Пройдено уроков", "Всего уроков", "Срок", "Начато", "Завершено", "Последняя активность",
 	})
-	for _, row := range rows {
+	for _, row := range report.items {
 		_ = writer.Write([]string{
 			csvSafe(row.UserName), csvSafe(pointerString(row.DepartmentName)), csvSafe(pointerString(row.PositionName)),
 			csvSafe(row.CourseTitle), string(row.Status), strconv.Itoa(row.Percent),
@@ -92,126 +92,148 @@ func (h *Handler) GetAcademyExternalReport(w http.ResponseWriter, r *http.Reques
 		return
 	}
 	ctx := outgoingContext(r)
-	ownerType := academyv1.CourseOwnerType_COURSE_OWNER_TYPE_PARTNER
-	coursesResponse, err := h.academy.GetCourses(ctx, &academyv1.GetCoursesRequest{
-		OwnerType: &ownerType, PartnerId: protoStringPointer(claims.Subject),
-	})
+	page, pageSize := pagination(params.Page, params.PageSize)
+	request := &academyv1.GetPartnerExternalReportPageRequest{
+		Search: params.Q, Page: uint32(page), PageSize: uint32(pageSize),
+	}
+	if params.CourseId != nil {
+		courseID := params.CourseId.String()
+		request.CourseId = &courseID
+	}
+	response, err := h.academy.GetPartnerExternalReportPage(ctx, request)
 	if err != nil {
 		h.writeAcademyRPCError(w, r, err)
 		return
 	}
-	query := ""
-	if params.Q != nil {
-		query = strings.ToLower(strings.TrimSpace(*params.Q))
-	}
-	learners := make(map[string]*academyv1.ExternalLearner)
-	rows := []api.PartnerExternalReportRow{}
-	for _, course := range coursesResponse.GetCourses() {
-		if params.CourseId != nil && course.GetId() != params.CourseId.String() {
-			continue
-		}
-		report, reportErr := h.academy.GetCourseExternalReport(ctx, &academyv1.GetCourseExternalReportRequest{CourseId: course.GetId()})
-		if reportErr != nil {
-			h.writeAcademyRPCError(w, r, reportErr)
-			return
-		}
-		courseID, parseErr := uuid.Parse(course.GetId())
+	rows := make([]api.PartnerExternalReportRow, len(response.GetItems()))
+	for index, item := range response.GetItems() {
+		enrollmentID, parseErr := uuid.Parse(item.GetEnrollmentId())
 		if parseErr != nil {
 			h.writeConversionError(w, r, parseErr)
 			return
 		}
-		for _, enrollment := range report.GetReport().GetEnrollments() {
-			learnerID := enrollment.GetExternalLearnerId()
-			learner := learners[learnerID]
-			if learner == nil {
-				learnerResponse, learnerErr := h.academy.GetExternalLearner(ctx, &academyv1.GetExternalLearnerRequest{LearnerId: learnerID})
-				if learnerErr != nil {
-					h.writeAcademyRPCError(w, r, learnerErr)
-					return
-				}
-				learner = learnerResponse.GetLearner()
-				learners[learnerID] = learner
-			}
-			name := strings.TrimSpace(learner.GetFirstName() + " " + learner.GetLastName())
-			searchable := strings.ToLower(course.GetTitle() + " " + learner.GetEmail() + " " + name)
-			if query != "" && !strings.Contains(searchable, query) {
-				continue
-			}
-			enrollmentID, parseErr := uuid.Parse(enrollment.GetId())
-			if parseErr != nil {
-				h.writeConversionError(w, r, parseErr)
-				return
-			}
-			row := api.PartnerExternalReportRow{
-				EnrollmentId: enrollmentID, CourseId: courseID, CourseTitle: course.GetTitle(),
-				LearnerEmail: openapi_types.Email(learner.GetEmail()), ProgressStatus: string(enrollmentProgressStatusFromProto(enrollment.GetProgressStatus())),
-				AccessStatus: string(enrollmentAccessStatusFromProto(enrollment.GetAccessStatus())), Percent: int(enrollment.GetProgressPercent()),
-				ActivatedAt: protoTimestampPointer(enrollment.GetActivatedAt()), CompletedAt: protoTimestampPointer(enrollment.GetCompletedAt()),
-			}
-			if name != "" {
-				row.LearnerName = &name
-			}
-			rows = append(rows, row)
+		courseID, parseErr := uuid.Parse(item.GetCourseId())
+		if parseErr != nil {
+			h.writeConversionError(w, r, parseErr)
+			return
+		}
+		rows[index] = api.PartnerExternalReportRow{
+			EnrollmentId: enrollmentID, CourseId: courseID, CourseTitle: item.GetCourseTitle(),
+			LearnerEmail: openapi_types.Email(item.GetLearnerEmail()), LearnerName: item.LearnerName,
+			ProgressStatus: string(enrollmentProgressStatusFromProto(item.GetProgressStatus())),
+			AccessStatus:   string(enrollmentAccessStatusFromProto(item.GetAccessStatus())),
+			Percent:        int(item.GetProgressPercent()), ActivatedAt: protoTimestampPointer(item.GetActivatedAt()),
+			CompletedAt: protoTimestampPointer(item.GetCompletedAt()),
 		}
 	}
-	sort.SliceStable(rows, func(i, j int) bool {
-		left, right := rows[i].ActivatedAt, rows[j].ActivatedAt
-		return left != nil && (right == nil || left.After(*right))
-	})
-	page, pageSize := pagination(params.Page, params.PageSize)
-	start, end := pageWindow(len(rows), page, pageSize)
-	totalPages := (len(rows) + pageSize - 1) / pageSize
+	total := int(response.GetTotal())
+	resolvedPageSize := int(response.GetPageSize())
+	totalPages := 0
+	if resolvedPageSize > 0 {
+		totalPages = (total + resolvedPageSize - 1) / resolvedPageSize
+	}
 	writeJSON(w, http.StatusOK, api.PaginatedPartnerExternalReportRows{
-		Items: rows[start:end], Page: page, PageSize: pageSize, Total: len(rows), TotalPages: totalPages,
+		Items: rows, Page: int(response.GetPage()), PageSize: resolvedPageSize, Total: total, TotalPages: totalPages,
 	})
 }
 
-func (h *Handler) internalReportRows(r *http.Request, filters internalReportFilters) ([]api.InternalReportRow, error) {
+type internalReportPage struct {
+	items    []api.InternalReportRow
+	page     int
+	pageSize int
+	total    int
+}
+
+func (h *Handler) internalReportPage(
+	r *http.Request,
+	filters internalReportFilters,
+	page, pageSize int,
+) (internalReportPage, error) {
 	ctx := outgoingContext(r)
-	request := &academyv1.GetEnrollmentsRequest{}
+	normalizedQuery := strings.TrimSpace(filters.query)
+	scopeRequest := &companyv1.ResolveReportUserScopeRequest{}
+	if normalizedQuery != "" {
+		scopeRequest.Search = &normalizedQuery
+	}
+	if filters.positionID != nil {
+		scopeRequest.PositionId = protoStringPointer(filters.positionID.String())
+	}
+	if filters.departmentID != nil {
+		scopeRequest.DepartmentId = protoStringPointer(filters.departmentID.String())
+	}
+	scope, err := h.company.ResolveReportUserScope(ctx, scopeRequest)
+	if err != nil {
+		return internalReportPage{}, err
+	}
+	request := &academyv1.GetInternalEnrollmentReportPageRequest{
+		UserIds: scope.GetUserIds(), SearchUserIds: scope.GetSearchUserIds(),
+		Status: internalReportStatusToProto(filters.status),
+		Sort:   internalReportSortToProto(filters.sort),
+		Page:   uint32(page), PageSize: uint32(pageSize),
+	}
+	if normalizedQuery != "" {
+		request.Search = &normalizedQuery
+	}
 	if filters.courseID != nil {
 		request.CourseId = protoStringPointer(filters.courseID.String())
 	}
-	response, err := h.academy.GetEnrollments(ctx, request)
+	response, err := h.academy.GetInternalEnrollmentReportPage(ctx, request)
 	if err != nil {
-		return nil, err
+		return internalReportPage{}, err
 	}
-	summaries, err := h.enrollmentSummaries(ctx, response.GetEnrollments())
-	if err != nil {
-		return nil, err
+	profileIDs := make([]string, 0, len(response.GetItems()))
+	seenProfileIDs := make(map[string]struct{}, len(response.GetItems()))
+	for _, enrollment := range response.GetItems() {
+		userID := enrollment.GetUserId()
+		if userID == "" {
+			continue
+		}
+		if _, exists := seenProfileIDs[userID]; exists {
+			continue
+		}
+		seenProfileIDs[userID] = struct{}{}
+		profileIDs = append(profileIDs, userID)
 	}
-	directory, err := h.loadCompanyDirectory(ctx)
+	profileRequest := &companyv1.GetReportUserProfilesRequest{UserIds: profileIDs}
+	if filters.positionID != nil {
+		profileRequest.PreferredPositionId = protoStringPointer(filters.positionID.String())
+	}
+	if filters.departmentID != nil {
+		profileRequest.PreferredDepartmentId = protoStringPointer(filters.departmentID.String())
+	}
+	profiles, err := h.company.GetReportUserProfiles(ctx, profileRequest)
 	if err != nil {
-		return nil, err
+		return internalReportPage{}, err
+	}
+	profileByID := make(map[string]*companyv1.ReportUserProfile, len(profiles.GetProfiles()))
+	for _, profile := range profiles.GetProfiles() {
+		profileByID[profile.GetUserId()] = profile
+	}
+	summaries, err := h.enrollmentSummaries(response.GetItems())
+	if err != nil {
+		return internalReportPage{}, err
 	}
 	summaryByID := make(map[string]api.EnrollmentSummary, len(summaries))
 	for _, summary := range summaries {
 		summaryByID[summary.Id.String()] = summary
 	}
-	rows := make([]api.InternalReportRow, 0, len(response.GetEnrollments()))
-	for _, enrollment := range response.GetEnrollments() {
+	rows := make([]api.InternalReportRow, 0, len(response.GetItems()))
+	for _, enrollment := range response.GetItems() {
 		if enrollment.GetUserId() == "" {
 			continue
 		}
 		userID, parseErr := uuid.Parse(enrollment.GetUserId())
 		if parseErr != nil {
-			return nil, parseErr
+			return internalReportPage{}, parseErr
 		}
-		user := directory.users[userID]
-		if user == nil {
-			continue
-		}
-		_, _, positionName, departmentName, matchesOrg := directory.userOrg(user, filters.positionID, filters.departmentID)
-		if !matchesOrg {
+		profile := profileByID[userID.String()]
+		if profile == nil {
 			continue
 		}
 		summary := summaryByID[enrollment.GetId()]
-		name := strings.TrimSpace(user.GetFirstName() + " " + user.GetLastName())
+		name := strings.TrimSpace(profile.GetFirstName() + " " + profile.GetLastName())
 		if name == "" {
-			name = user.GetEmail()
-		}
-		if filters.query != "" && !strings.Contains(strings.ToLower(name+" "+user.GetEmail()+" "+summary.CourseTitle), strings.ToLower(filters.query)) {
-			continue
+			name = profile.GetEmail()
 		}
 		status := api.InternalReportStatus(summary.ProgressStatus)
 		if enrollment.GetAccessStatus() == academyv1.EnrollmentAccessStatus_ENROLLMENT_ACCESS_STATUS_FROZEN {
@@ -219,21 +241,20 @@ func (h *Handler) internalReportRows(r *http.Request, filters internalReportFilt
 		} else if enrollment.GetOverdue() && summary.ProgressStatus != api.EnrollmentProgressStatusCompleted {
 			status = api.InternalReportStatusOverdue
 		}
-		if filters.status != "" && string(status) != filters.status {
-			continue
-		}
 		enrollmentID := summary.Id
 		rows = append(rows, api.InternalReportRow{
 			EnrollmentId: &enrollmentID, UserId: userID, UserName: name,
-			DepartmentName: departmentName, PositionName: positionName,
+			DepartmentName: profile.DepartmentName, PositionName: profile.PositionName,
 			CourseId: summary.CourseId, CourseTitle: summary.CourseTitle, Status: status,
 			Percent: summary.Percent, CompletedLessons: summary.CompletedLessons, TotalLessons: summary.TotalLessons,
 			DueDate: summary.DueDate, StartedAt: summary.StartedAt, CompletedAt: summary.CompletedAt,
 			LastActivityAt: summary.LastActivityAt,
 		})
 	}
-	sortInternalReport(rows, filters.sort)
-	return rows, nil
+	return internalReportPage{
+		items: rows, page: int(response.GetPage()),
+		pageSize: int(response.GetPageSize()), total: int(response.GetTotal()),
+	}, nil
 }
 
 func (d companyDirectory) userOrg(
@@ -326,30 +347,40 @@ func internalFiltersApplied(filters internalReportFilters) map[string]interface{
 	return result
 }
 
-func sortInternalReport(rows []api.InternalReportRow, mode string) {
-	sort.SliceStable(rows, func(i, j int) bool {
-		switch mode {
-		case "title_asc":
-			return strings.ToLower(rows[i].CourseTitle) < strings.ToLower(rows[j].CourseTitle)
-		case "title_desc":
-			return strings.ToLower(rows[i].CourseTitle) > strings.ToLower(rows[j].CourseTitle)
-		case "deadline_asc":
-			return timeBefore(rows[i].DueDate, rows[j].DueDate)
-		case "status":
-			return rows[i].Status < rows[j].Status
-		case "updated_asc":
-			return timeBefore(rows[i].LastActivityAt, rows[j].LastActivityAt)
-		default:
-			return timeAfter(rows[i].LastActivityAt, rows[j].LastActivityAt)
-		}
-	})
+func internalReportStatusToProto(value string) academyv1.InternalEnrollmentReportStatus {
+	switch value {
+	case "not_started":
+		return academyv1.InternalEnrollmentReportStatus_INTERNAL_ENROLLMENT_REPORT_STATUS_NOT_STARTED
+	case "in_progress":
+		return academyv1.InternalEnrollmentReportStatus_INTERNAL_ENROLLMENT_REPORT_STATUS_IN_PROGRESS
+	case "completed":
+		return academyv1.InternalEnrollmentReportStatus_INTERNAL_ENROLLMENT_REPORT_STATUS_COMPLETED
+	case "overdue":
+		return academyv1.InternalEnrollmentReportStatus_INTERNAL_ENROLLMENT_REPORT_STATUS_OVERDUE
+	case "frozen":
+		return academyv1.InternalEnrollmentReportStatus_INTERNAL_ENROLLMENT_REPORT_STATUS_FROZEN
+	default:
+		return academyv1.InternalEnrollmentReportStatus_INTERNAL_ENROLLMENT_REPORT_STATUS_UNSPECIFIED
+	}
 }
 
-func timeBefore(left, right *time.Time) bool {
-	return left != nil && (right == nil || left.Before(*right))
-}
-func timeAfter(left, right *time.Time) bool {
-	return left != nil && (right == nil || left.After(*right))
+func internalReportSortToProto(value string) academyv1.InternalEnrollmentReportSort {
+	switch value {
+	case "updated_asc":
+		return academyv1.InternalEnrollmentReportSort_INTERNAL_ENROLLMENT_REPORT_SORT_UPDATED_ASC
+	case "title_asc":
+		return academyv1.InternalEnrollmentReportSort_INTERNAL_ENROLLMENT_REPORT_SORT_TITLE_ASC
+	case "title_desc":
+		return academyv1.InternalEnrollmentReportSort_INTERNAL_ENROLLMENT_REPORT_SORT_TITLE_DESC
+	case "deadline_asc":
+		return academyv1.InternalEnrollmentReportSort_INTERNAL_ENROLLMENT_REPORT_SORT_DEADLINE_ASC
+	case "status":
+		return academyv1.InternalEnrollmentReportSort_INTERNAL_ENROLLMENT_REPORT_SORT_STATUS
+	case "updated_desc":
+		return academyv1.InternalEnrollmentReportSort_INTERNAL_ENROLLMENT_REPORT_SORT_UPDATED_DESC
+	default:
+		return academyv1.InternalEnrollmentReportSort_INTERNAL_ENROLLMENT_REPORT_SORT_UNSPECIFIED
+	}
 }
 
 func pointerString(value *string) string {

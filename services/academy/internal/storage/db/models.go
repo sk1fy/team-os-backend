@@ -184,6 +184,20 @@ type CourseOrigin struct {
 	EntitlementID           uuid.NullUUID `json:"entitlement_id"`
 }
 
+type CoursePartnerAudience struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	CourseID  uuid.UUID `json:"course_id"`
+	Audience  string    `json:"audience"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type CoursePartnerAudienceMember struct {
+	CompanyID     uuid.UUID `json:"company_id"`
+	CourseID      uuid.UUID `json:"course_id"`
+	PartnerUserID uuid.UUID `json:"partner_user_id"`
+	CreatedAt     time.Time `json:"created_at"`
+}
+
 type CourseRestriction struct {
 	ID               uuid.UUID          `json:"id"`
 	CompanyID        uuid.UUID          `json:"company_id"`

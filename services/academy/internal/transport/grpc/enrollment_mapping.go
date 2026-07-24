@@ -9,6 +9,29 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+func catalogCardToProto(card application.CatalogCard) *academyv1.CatalogCourseCard {
+	return &academyv1.CatalogCourseCard{
+		Id: card.ID.String(), Title: card.Title, Description: card.Description, CoverUrl: card.CoverURL,
+		LessonCount: card.LessonCount, EstimatedMinutes: card.EstimatedMinutes,
+		LatestVersionNumber: card.LatestVersionNumber, Enrolled: card.Enrolled,
+		EnrollmentId: optionalUUIDString(card.EnrollmentID), ProgressPercent: card.ProgressPercent,
+	}
+}
+
+func catalogPageToProto(page application.CatalogPage) *academyv1.GetAcademyCatalogResponse {
+	items := make([]*academyv1.CatalogCourseCard, len(page.Items))
+	for index := range page.Items {
+		items[index] = catalogCardToProto(page.Items[index])
+	}
+	total := page.Total
+	if total < 0 {
+		total = 0
+	}
+	return &academyv1.GetAcademyCatalogResponse{
+		Items: items, Page: uint32(max(0, page.Page)), PageSize: uint32(max(0, page.PageSize)), Total: uint32(total),
+	}
+}
+
 func enrollmentToProto(value application.Enrollment) *academyv1.CourseEnrollment {
 	result := &academyv1.CourseEnrollment{
 		Id: value.ID.String(), CompanyId: value.CompanyID.String(), CourseId: value.CourseID.String(),
@@ -19,6 +42,15 @@ func enrollmentToProto(value application.Enrollment) *academyv1.CourseEnrollment
 		AccessStatus: enrollmentAccessStatusToProto(value.AccessStatus), CurrentLessonVersionId: optionalUUIDString(value.CurrentLessonVersionID),
 		ProgressPercent: uint32(max(0, value.ProgressPercent)), CreatedAt: timestamppb.New(value.CreatedAt.UTC()),
 		UpdatedAt: timestamppb.New(value.UpdatedAt.UTC()), Overdue: value.Overdue,
+		CourseTitle: value.CourseTitle, CourseCoverUrl: value.CourseCoverURL,
+	}
+	if value.CompletedLessonCount != nil {
+		completed := uint32(max(0, *value.CompletedLessonCount))
+		result.CompletedLessonCount = &completed
+	}
+	if value.TotalLessonCount != nil {
+		total := uint32(max(0, *value.TotalLessonCount))
+		result.TotalLessonCount = &total
 	}
 	if value.DueDate != nil {
 		result.DueDate = timestamppb.New(value.DueDate.UTC())
@@ -53,6 +85,19 @@ func enrollmentsToProto(values []application.Enrollment) []*academyv1.CourseEnro
 		result[index] = enrollmentToProto(values[index])
 	}
 	return result
+}
+
+func internalEnrollmentReportPageToProto(
+	value application.InternalEnrollmentReportPage,
+) *academyv1.GetInternalEnrollmentReportPageResponse {
+	total := value.Total
+	if total < 0 {
+		total = 0
+	}
+	return &academyv1.GetInternalEnrollmentReportPageResponse{
+		Items: enrollmentsToProto(value.Items), Page: uint32(max(0, value.Page)),
+		PageSize: uint32(max(0, value.PageSize)), Total: uint32(total),
+	}
 }
 
 func enrollmentLessonProgressToProto(value application.EnrollmentLessonProgress) (*academyv1.EnrollmentLessonProgress, error) {
@@ -265,6 +310,51 @@ func enrollmentProgressStatusFromProto(value academyv1.EnrollmentProgressStatus)
 		return "completed", nil
 	default:
 		return "", invalidArgument("Некорректное состояние прогресса")
+	}
+}
+
+func internalEnrollmentReportStatusFromProto(
+	value academyv1.InternalEnrollmentReportStatus,
+) (*string, error) {
+	var result string
+	switch value {
+	case academyv1.InternalEnrollmentReportStatus_INTERNAL_ENROLLMENT_REPORT_STATUS_UNSPECIFIED:
+		return nil, nil
+	case academyv1.InternalEnrollmentReportStatus_INTERNAL_ENROLLMENT_REPORT_STATUS_NOT_STARTED:
+		result = "not_started"
+	case academyv1.InternalEnrollmentReportStatus_INTERNAL_ENROLLMENT_REPORT_STATUS_IN_PROGRESS:
+		result = "in_progress"
+	case academyv1.InternalEnrollmentReportStatus_INTERNAL_ENROLLMENT_REPORT_STATUS_COMPLETED:
+		result = "completed"
+	case academyv1.InternalEnrollmentReportStatus_INTERNAL_ENROLLMENT_REPORT_STATUS_OVERDUE:
+		result = "overdue"
+	case academyv1.InternalEnrollmentReportStatus_INTERNAL_ENROLLMENT_REPORT_STATUS_FROZEN:
+		result = "frozen"
+	default:
+		return nil, invalidArgument("Некорректный статус внутреннего отчёта")
+	}
+	return &result, nil
+}
+
+func internalEnrollmentReportSortFromProto(
+	value academyv1.InternalEnrollmentReportSort,
+) (string, error) {
+	switch value {
+	case academyv1.InternalEnrollmentReportSort_INTERNAL_ENROLLMENT_REPORT_SORT_UNSPECIFIED,
+		academyv1.InternalEnrollmentReportSort_INTERNAL_ENROLLMENT_REPORT_SORT_UPDATED_DESC:
+		return "updated_desc", nil
+	case academyv1.InternalEnrollmentReportSort_INTERNAL_ENROLLMENT_REPORT_SORT_UPDATED_ASC:
+		return "updated_asc", nil
+	case academyv1.InternalEnrollmentReportSort_INTERNAL_ENROLLMENT_REPORT_SORT_TITLE_ASC:
+		return "title_asc", nil
+	case academyv1.InternalEnrollmentReportSort_INTERNAL_ENROLLMENT_REPORT_SORT_TITLE_DESC:
+		return "title_desc", nil
+	case academyv1.InternalEnrollmentReportSort_INTERNAL_ENROLLMENT_REPORT_SORT_DEADLINE_ASC:
+		return "deadline_asc", nil
+	case academyv1.InternalEnrollmentReportSort_INTERNAL_ENROLLMENT_REPORT_SORT_STATUS:
+		return "status", nil
+	default:
+		return "", invalidArgument("Некорректная сортировка внутреннего отчёта")
 	}
 }
 

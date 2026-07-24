@@ -31,6 +31,16 @@ func WriteJSON(w http.ResponseWriter, status int, value any) error {
 // Unknown fields are intentionally ignored so additive clients can be deployed
 // before every service instance has rolled to the new contract version.
 func DecodeJSON(w http.ResponseWriter, r *http.Request, destination any, maxBytes int64) *apierror.Error {
+	return decodeJSON(w, r, destination, maxBytes, false)
+}
+
+// DecodeJSONOptional is DecodeJSON, but an empty body is treated as "{}" so
+// OpenAPI operations with optional request bodies can accept POST without a payload.
+func DecodeJSONOptional(w http.ResponseWriter, r *http.Request, destination any, maxBytes int64) *apierror.Error {
+	return decodeJSON(w, r, destination, maxBytes, true)
+}
+
+func decodeJSON(w http.ResponseWriter, r *http.Request, destination any, maxBytes int64, allowEmpty bool) *apierror.Error {
 	if maxBytes <= 0 {
 		maxBytes = DefaultMaxBodyBytes
 	}
@@ -44,6 +54,9 @@ func DecodeJSON(w http.ResponseWriter, r *http.Request, destination any, maxByte
 		case errors.As(err, &maxBytesErr):
 			return apierror.BadRequest("Тело запроса превышает допустимый размер")
 		case errors.Is(err, io.EOF):
+			if allowEmpty {
+				return nil
+			}
 			return apierror.BadRequest("Тело запроса не должно быть пустым")
 		default:
 			return apierror.BadRequest("Некорректный JSON в теле запроса")

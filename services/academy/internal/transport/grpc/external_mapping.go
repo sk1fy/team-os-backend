@@ -49,6 +49,28 @@ func externalLearnersToProto(values []application.ExternalLearner) []*academyv1.
 	return result
 }
 
+func partnerExternalReportPageToProto(value application.PartnerExternalReportPage) *academyv1.GetPartnerExternalReportPageResponse {
+	items := make([]*academyv1.PartnerExternalReportRow, len(value.Items))
+	for index, item := range value.Items {
+		items[index] = &academyv1.PartnerExternalReportRow{
+			EnrollmentId: item.EnrollmentID.String(), CourseId: item.CourseID.String(),
+			CourseTitle: item.CourseTitle, LearnerEmail: item.LearnerEmail, LearnerName: item.LearnerName,
+			ProgressStatus:  enrollmentProgressStatusToProto(item.ProgressStatus),
+			AccessStatus:    enrollmentAccessStatusToProto(item.AccessStatus),
+			ProgressPercent: uint32(max(0, item.ProgressPercent)),
+			ActivatedAt:     externalOptionalTimestamp(item.ActivatedAt),
+			CompletedAt:     externalOptionalTimestamp(item.CompletedAt),
+		}
+	}
+	total := value.Total
+	if total < 0 {
+		total = 0
+	}
+	return &academyv1.GetPartnerExternalReportPageResponse{
+		Items: items, Page: uint32(max(0, value.Page)), PageSize: uint32(max(0, value.PageSize)), Total: uint32(total),
+	}
+}
+
 func publicAcademyAccessToProto(value application.PublicAcademyAccess) *academyv1.PublicAcademyAccess {
 	result := &academyv1.PublicAcademyAccess{Kind: publicAccessKindToProto(value.Kind), CourseId: value.CourseID.String(),
 		CourseVersionId: value.CourseVersionID.String(), Title: value.Title, Description: value.Description,

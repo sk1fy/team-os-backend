@@ -2,10 +2,76 @@ package application
 
 import (
 	"context"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/sk1fy/team-os-backend/services/company/internal/storage/db"
 )
+
+func (s *Service) ResolveReportUserScope(
+	ctx context.Context,
+	actor Actor,
+	input ResolveReportUserScopeInput,
+) (ReportUserScope, error) {
+	if err := requireAdministrator(actor); err != nil {
+		return ReportUserScope{}, err
+	}
+	var search *string
+	if input.Search != nil {
+		if trimmed := strings.TrimSpace(*input.Search); trimmed != "" {
+			search = &trimmed
+		}
+	}
+	rows, err := db.New(s.pool).ResolveReportUserScope(ctx, db.ResolveReportUserScopeParams{
+		Search: pgText(search), CompanyID: actor.CompanyID,
+		PositionID: nullableUUID(input.PositionID), DepartmentID: nullableUUID(input.DepartmentID),
+	})
+	if err != nil {
+		return ReportUserScope{}, internal("Не удалось определить сотрудников для отчёта", err)
+	}
+	result := ReportUserScope{
+		UserIDs: make([]uuid.UUID, 0, len(rows)),
+	}
+	for _, row := range rows {
+		result.UserIDs = append(result.UserIDs, row.ID)
+		if matches, ok := row.MatchesSearch.(bool); ok && matches {
+			result.SearchUserIDs = append(result.SearchUserIDs, row.ID)
+		}
+	}
+	return result, nil
+}
+
+func (s *Service) GetReportUserProfiles(
+	ctx context.Context,
+	actor Actor,
+	input GetReportUserProfilesInput,
+) ([]ReportUserProfile, error) {
+	if err := requireAdministrator(actor); err != nil {
+		return nil, err
+	}
+	if len(input.UserIDs) == 0 {
+		return []ReportUserProfile{}, nil
+	}
+	rows, err := db.New(s.pool).GetReportUserProfiles(ctx, db.GetReportUserProfilesParams{
+		PreferredPositionID:   nullableUUID(input.PreferredPositionID),
+		PreferredDepartmentID: nullableUUID(input.PreferredDepartmentID),
+		CompanyID:             actor.CompanyID, UserIds: append([]uuid.UUID(nil), input.UserIDs...),
+	})
+	if err != nil {
+		return nil, internal("Не удалось получить сотрудников страницы отчёта", err)
+	}
+	result := make([]ReportUserProfile, len(rows))
+	for index, row := range rows {
+		result[index] = ReportUserProfile{
+			UserID: row.UserID, Email: row.Email, FirstName: row.FirstName,
+			LastName: textValue(row.LastName), DepartmentName: textPointer(row.DepartmentName),
+		}
+		if name := strings.TrimSpace(row.PositionName); name != "" {
+			result[index].PositionName = &name
+		}
+	}
+	return result, nil
+}
 
 // GetUsersByIDs returns only users belonging to the actor's company. Missing
 // IDs are omitted, which keeps the lookup useful for denormalization callers.

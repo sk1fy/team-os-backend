@@ -42,13 +42,17 @@ type Querier interface {
 	CompleteFileCloneJob(ctx context.Context, arg CompleteFileCloneJobParams) (AcademyFileCloneJob, error)
 	CompleteFileCloneJobItem(ctx context.Context, arg CompleteFileCloneJobItemParams) (AcademyFileCloneJobItem, error)
 	ConsumeExternalVerificationChallenge(ctx context.Context, arg ConsumeExternalVerificationChallengeParams) (ExternalVerificationChallenge, error)
+	CountCatalogCourses(ctx context.Context, arg CountCatalogCoursesParams) (int64, error)
 	CountCourseSections(ctx context.Context, arg CountCourseSectionsParams) (int64, error)
 	CountEnrollmentQuizAttempts(ctx context.Context, arg CountEnrollmentQuizAttemptsParams) (int32, error)
+	CountInternalEnrollmentReportRows(ctx context.Context, arg CountInternalEnrollmentReportRowsParams) (int64, error)
+	CountPartnerExternalReportRows(ctx context.Context, arg CountPartnerExternalReportRowsParams) (int64, error)
 	CountRecentCampaignAnalyticsByRequestIPHash(ctx context.Context, arg CountRecentCampaignAnalyticsByRequestIPHashParams) (int32, error)
 	CountRecentExternalChallengesByEmail(ctx context.Context, arg CountRecentExternalChallengesByEmailParams) (int32, error)
 	CountRecentExternalChallengesByIPHash(ctx context.Context, arg CountRecentExternalChallengesByIPHashParams) (int32, error)
 	CountRecentExternalChallengesBySource(ctx context.Context, arg CountRecentExternalChallengesBySourceParams) (int32, error)
 	CountSectionLessons(ctx context.Context, arg CountSectionLessonsParams) (int64, error)
+	CoursePartnerAudienceHasMember(ctx context.Context, arg CoursePartnerAudienceHasMemberParams) (bool, error)
 	CreateAssignment(ctx context.Context, arg CreateAssignmentParams) (CreateAssignmentRow, error)
 	CreateAuditLogEntry(ctx context.Context, arg CreateAuditLogEntryParams) (AuditLog, error)
 	CreateCompanyCourseTemplate(ctx context.Context, arg CreateCompanyCourseTemplateParams) (CourseTemplate, error)
@@ -86,6 +90,7 @@ type Querier interface {
 	CreateSelfEnrollment(ctx context.Context, arg CreateSelfEnrollmentParams) (CreateSelfEnrollmentRow, error)
 	CreateTemplateCourseOrigin(ctx context.Context, arg CreateTemplateCourseOriginParams) (CourseOrigin, error)
 	DeleteCourseLegacyHard(ctx context.Context, arg DeleteCourseLegacyHardParams) (int64, error)
+	DeleteCoursePartnerAudienceMembers(ctx context.Context, arg DeleteCoursePartnerAudienceMembersParams) error
 	DeleteCourseSection(ctx context.Context, arg DeleteCourseSectionParams) (int64, error)
 	DeleteCourseTemplateVersionLesson(ctx context.Context, arg DeleteCourseTemplateVersionLessonParams) (int64, error)
 	DeleteCourseTemplateVersionQuiz(ctx context.Context, arg DeleteCourseTemplateVersionQuizParams) (int64, error)
@@ -113,6 +118,9 @@ type Querier interface {
 	GetCourseLessonIds(ctx context.Context, arg GetCourseLessonIdsParams) ([]uuid.UUID, error)
 	GetCourseLessons(ctx context.Context, arg GetCourseLessonsParams) ([]Lesson, error)
 	GetCourseOrigin(ctx context.Context, arg GetCourseOriginParams) (CourseOrigin, error)
+	// Resolves the effective partner audience for a company course. A missing
+	// controls row means the default deny ('none').
+	GetCoursePartnerAudience(ctx context.Context, arg GetCoursePartnerAudienceParams) (string, error)
 	GetCourseProgress(ctx context.Context, arg GetCourseProgressParams) ([]Progress, error)
 	GetCourseSection(ctx context.Context, arg GetCourseSectionParams) (CourseSection, error)
 	GetCourseSections(ctx context.Context, arg GetCourseSectionsParams) ([]CourseSection, error)
@@ -203,14 +211,17 @@ type Querier interface {
 	GetSectionLessonsForUpdate(ctx context.Context, arg GetSectionLessonsForUpdateParams) ([]GetSectionLessonsForUpdateRow, error)
 	GetUserAssignments(ctx context.Context, arg GetUserAssignmentsParams) ([]GetUserAssignmentsRow, error)
 	GetUserProgressRows(ctx context.Context, arg GetUserProgressRowsParams) ([]Progress, error)
+	InsertCoursePartnerAudienceMember(ctx context.Context, arg InsertCoursePartnerAudienceMemberParams) error
 	InsertExternalCampaignAnalyticsEvent(ctx context.Context, arg InsertExternalCampaignAnalyticsEventParams) (AnalyticsEvent, error)
 	InsertExternalCampaignHistory(ctx context.Context, arg InsertExternalCampaignHistoryParams) (ExternalCampaignHistory, error)
 	InstantiateCourseTemplateLessons(ctx context.Context, arg InstantiateCourseTemplateLessonsParams) (int64, error)
 	InstantiateCourseTemplateQuizzes(ctx context.Context, arg InstantiateCourseTemplateQuizzesParams) (int64, error)
 	InstantiateCourseTemplateSections(ctx context.Context, arg InstantiateCourseTemplateSectionsParams) (int64, error)
 	InvalidateOpenExternalChallenges(ctx context.Context, arg InvalidateOpenExternalChallengesParams) (int64, error)
+	ListCatalogCourses(ctx context.Context, arg ListCatalogCoursesParams) ([]ListCatalogCoursesRow, error)
 	ListCourseEnrollmentAccessHistory(ctx context.Context, arg ListCourseEnrollmentAccessHistoryParams) ([]CourseEnrollmentAccessHistory, error)
 	ListCourseExternalCampaignAnalyticsReports(ctx context.Context, arg ListCourseExternalCampaignAnalyticsReportsParams) ([]ListCourseExternalCampaignAnalyticsReportsRow, error)
+	ListCoursePartnerAudienceMembers(ctx context.Context, arg ListCoursePartnerAudienceMembersParams) ([]uuid.UUID, error)
 	ListCourseRestrictions(ctx context.Context, arg ListCourseRestrictionsParams) ([]CourseRestriction, error)
 	ListCourseTemplateSummaries(ctx context.Context, arg ListCourseTemplateSummariesParams) ([]ListCourseTemplateSummariesRow, error)
 	ListCourseTemplateVersionFileIDs(ctx context.Context, arg ListCourseTemplateVersionFileIDsParams) ([]uuid.UUID, error)
@@ -243,15 +254,23 @@ type Querier interface {
 	ListExternalPersonalAccesses(ctx context.Context, arg ListExternalPersonalAccessesParams) ([]ListExternalPersonalAccessesRow, error)
 	ListExternalQuizResultsForSession(ctx context.Context, arg ListExternalQuizResultsForSessionParams) ([]ListExternalQuizResultsForSessionRow, error)
 	ListFileCloneJobItems(ctx context.Context, arg ListFileCloneJobItemsParams) ([]AcademyFileCloneJobItem, error)
+	ListInternalEnrollmentReportRows(ctx context.Context, arg ListInternalEnrollmentReportRowsParams) ([]ListInternalEnrollmentReportRowsRow, error)
 	ListInternalEnrollmentReports(ctx context.Context, arg ListInternalEnrollmentReportsParams) ([]ListInternalEnrollmentReportsRow, error)
 	ListInternalEnrollments(ctx context.Context, arg ListInternalEnrollmentsParams) ([]ListInternalEnrollmentsRow, error)
 	ListKBArticleSnapshotsBySource(ctx context.Context, arg ListKBArticleSnapshotsBySourceParams) ([]KbArticleSnapshot, error)
+	// Company course ids a partner may access, resolved in one query so course
+	// listings can gate partner visibility without a per-course lookup.
+	ListPartnerAudienceCourseIDs(ctx context.Context, arg ListPartnerAudienceCourseIDsParams) ([]uuid.UUID, error)
 	ListPartnerCourseCopies(ctx context.Context, arg ListPartnerCourseCopiesParams) ([]CourseOrigin, error)
 	ListPartnerCourseGroups(ctx context.Context, companyID uuid.UUID) ([]ListPartnerCourseGroupsRow, error)
 	ListPartnerExternalCampaignAnalyticsReports(ctx context.Context, arg ListPartnerExternalCampaignAnalyticsReportsParams) ([]ListPartnerExternalCampaignAnalyticsReportsRow, error)
+	ListPartnerExternalReportRows(ctx context.Context, arg ListPartnerExternalReportRowsParams) ([]ListPartnerExternalReportRowsRow, error)
 	ListPartnerOwnedCourseReports(ctx context.Context, arg ListPartnerOwnedCourseReportsParams) ([]ListPartnerOwnedCourseReportsRow, error)
 	ListScopedExternalEnrollmentsForReport(ctx context.Context, arg ListScopedExternalEnrollmentsForReportParams) ([]ListScopedExternalEnrollmentsForReportRow, error)
 	ListSystemTemplateSeedCheckpoints(ctx context.Context, companyID uuid.UUID) ([]SystemTemplateSeedCheckpoint, error)
+	// Latest active enrollment per course for the given user, restricted to a page
+	// of course ids so the catalog stays a bounded number of queries (no N+1).
+	ListUserCourseEnrollmentsForCatalog(ctx context.Context, arg ListUserCourseEnrollmentsForCatalogParams) ([]ListUserCourseEnrollmentsForCatalogRow, error)
 	LockCourseAndCurrentDraftVersion(ctx context.Context, arg LockCourseAndCurrentDraftVersionParams) (CourseVersion, error)
 	LockCourseOrder(ctx context.Context, courseID uuid.UUID) error
 	LockCourseVersionFileCloneJobs(ctx context.Context, arg LockCourseVersionFileCloneJobsParams) ([]LockCourseVersionFileCloneJobsRow, error)
@@ -336,6 +355,7 @@ type Querier interface {
 	UpdateEnrollmentResumeStatus(ctx context.Context, arg UpdateEnrollmentResumeStatusParams) (CourseEnrollment, error)
 	UpdateLesson(ctx context.Context, arg UpdateLessonParams) (Lesson, error)
 	UpdateQuiz(ctx context.Context, arg UpdateQuizParams) (Quiz, error)
+	UpsertCoursePartnerAudience(ctx context.Context, arg UpsertCoursePartnerAudienceParams) error
 	UpsertCourseTemplateVersionQuiz(ctx context.Context, arg UpsertCourseTemplateVersionQuizParams) (UpsertCourseTemplateVersionQuizRow, error)
 	UpsertEnrollmentLessonProgress(ctx context.Context, arg UpsertEnrollmentLessonProgressParams) (EnrollmentLessonProgress, error)
 	// Worker-owned exact replacement/upsert for one day and UTM slice. The

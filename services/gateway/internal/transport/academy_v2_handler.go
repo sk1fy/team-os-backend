@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"net/http"
-	"sort"
 	"strings"
 	"time"
 
@@ -277,7 +276,7 @@ func (h *Handler) SelfEnrollAcademyCourse(w http.ResponseWriter, r *http.Request
 		h.writeAcademyRPCError(w, r, err)
 		return
 	}
-	values, err := h.enrollmentSummaries(outgoingContext(r), []*academyv1.CourseEnrollment{response.GetEnrollment()})
+	values, err := h.enrollmentSummaries([]*academyv1.CourseEnrollment{response.GetEnrollment()})
 	if err != nil || len(values) != 1 {
 		if err == nil {
 			err = errors.New("academy returned empty self enrollment")
@@ -290,102 +289,149 @@ func (h *Handler) SelfEnrollAcademyCourse(w http.ResponseWriter, r *http.Request
 
 func (h *Handler) GetAcademyCatalog(w http.ResponseWriter, r *http.Request, params api.GetAcademyCatalogParams) {
 	ctx := outgoingContext(r)
-	claims, ok := authmw.Claims(r.Context())
-	if !ok {
+	if _, ok := authmw.Claims(r.Context()); !ok {
 		apierror.Write(w, apierror.Unauthorized())
 		return
 	}
-	if claims.Role == "partner" {
-		page, pageSize := pagination(params.Page, params.PageSize)
-		writeJSON(w, http.StatusOK, api.PaginatedCatalogCourseCards{Items: []api.CatalogCourseCard{}, Page: page, PageSize: pageSize, Total: 0, TotalPages: 0})
-		return
-	}
-	courseResponse, err := h.academy.GetCourses(ctx, &academyv1.GetCoursesRequest{})
-	if err != nil {
-		h.writeAcademyRPCError(w, r, err)
-		return
-	}
-	enrollmentResponse, err := h.academy.GetEnrollments(ctx, &academyv1.GetEnrollmentsRequest{UserId: protoStringPointer(claims.Subject)})
-	if err != nil {
-		h.writeAcademyRPCError(w, r, err)
-		return
-	}
-	enrolled := make(map[string]*academyv1.CourseEnrollment)
-	for _, enrollment := range enrollmentResponse.GetEnrollments() {
-		if enrollment.GetAccessStatus() == academyv1.EnrollmentAccessStatus_ENROLLMENT_ACCESS_STATUS_REVOKED ||
-			enrollment.GetAccessStatus() == academyv1.EnrollmentAccessStatus_ENROLLMENT_ACCESS_STATUS_CLOSED ||
-			enrollment.GetAccessStatus() == academyv1.EnrollmentAccessStatus_ENROLLMENT_ACCESS_STATUS_EXPIRED {
-			continue
-		}
-		if _, exists := enrolled[enrollment.GetCourseId()]; !exists {
-			enrolled[enrollment.GetCourseId()] = enrollment
-		}
-	}
-	query := ""
-	if params.Q != nil {
-		query = strings.ToLower(strings.TrimSpace(*params.Q))
-	}
-	courses := make([]*academyv1.Course, 0, len(courseResponse.GetCourses()))
-	for _, course := range courseResponse.GetCourses() {
-		if course.GetOwnerType() != academyv1.CourseOwnerType_COURSE_OWNER_TYPE_COMPANY ||
-			course.GetLifecycleStatus() != academyv1.CourseLifecycleStatus_COURSE_LIFECYCLE_STATUS_ACTIVE ||
-			course.GetDistributionStatus() != academyv1.CourseDistributionStatus_COURSE_DISTRIBUTION_STATUS_ACTIVE ||
-			course.GetStatus() != academyv1.CourseStatus_COURSE_STATUS_PUBLISHED || course.GetLatestPublishedVersionId() == "" ||
-			(course.GetVisibility() != academyv1.CourseVisibility_COURSE_VISIBILITY_PUBLIC &&
-				course.GetVisibility() != academyv1.CourseVisibility_COURSE_VISIBILITY_COMPANY) ||
-			(query != "" && !strings.Contains(strings.ToLower(course.GetTitle()+" "+course.GetDescription()), query)) {
-			continue
-		}
-		courses = append(courses, course)
-	}
-	sort.SliceStable(courses, func(i, j int) bool {
-		return strings.ToLower(courses[i].GetTitle()) < strings.ToLower(courses[j].GetTitle())
-	})
+	// Filtering, pagination, aggregates, partner audience and enrollment state are
+	// resolved server-side by the academy read model (no load-all + N+1 version fetch).
 	page, pageSize := pagination(params.Page, params.PageSize)
-	start, end := pageWindow(len(courses), page, pageSize)
-	items := make([]api.CatalogCourseCard, 0, end-start)
-	for _, course := range courses[start:end] {
-		versionResponse, getErr := h.academy.GetCatalogCourseVersion(ctx, &academyv1.GetCatalogCourseVersionRequest{CourseId: course.GetId()})
-		if getErr != nil {
-			h.writeAcademyRPCError(w, r, getErr)
-			return
-		}
-		id, parseErr := uuid.Parse(course.GetId())
-		if parseErr != nil {
-			h.writeConversionError(w, r, parseErr)
-			return
-		}
-		version := versionResponse.GetVersion()
-		minutes, lessonCount := 0, 0
-		for _, section := range version.GetSections() {
-			for _, lesson := range section.GetLessons() {
-				lessonCount++
-				minutes += int(lesson.GetEstimatedMinutes())
-			}
-		}
-		versionNumber := int(version.GetNumber())
-		item := api.CatalogCourseCard{
-			Id: id, Title: course.GetTitle(), Description: course.Description, CoverUrl: course.CoverUrl,
-			LessonCount: lessonCount, EstimatedMinutes: &minutes, LatestVersionNumber: &versionNumber,
-		}
-		isEnrolled := false
-		if enrollment := enrolled[course.GetId()]; enrollment != nil {
-			isEnrolled = true
-			enrollmentID, parseEnrollmentErr := uuid.Parse(enrollment.GetId())
-			if parseEnrollmentErr != nil {
-				h.writeConversionError(w, r, parseEnrollmentErr)
-				return
-			}
-			progress := int(enrollment.GetProgressPercent())
-			item.EnrollmentId, item.ProgressPercent = &enrollmentID, &progress
-		}
-		item.Enrolled = &isEnrolled
-		items = append(items, item)
-	}
-	totalPages := (len(courses) + pageSize - 1) / pageSize
-	writeJSON(w, http.StatusOK, api.PaginatedCatalogCourseCards{
-		Items: items, Page: page, PageSize: pageSize, Total: len(courses), TotalPages: totalPages,
+	response, err := h.academy.GetAcademyCatalog(ctx, &academyv1.GetAcademyCatalogRequest{
+		Search: params.Q, Page: uint32(page), PageSize: uint32(pageSize),
 	})
+	if err != nil {
+		h.writeAcademyRPCError(w, r, err)
+		return
+	}
+	items := make([]api.CatalogCourseCard, 0, len(response.GetItems()))
+	for _, card := range response.GetItems() {
+		converted, convertErr := academyCatalogCardFromProto(card)
+		if convertErr != nil {
+			h.writeConversionError(w, r, convertErr)
+			return
+		}
+		items = append(items, converted)
+	}
+	total := int(response.GetTotal())
+	resolvedPageSize := int(response.GetPageSize())
+	totalPages := 0
+	if resolvedPageSize > 0 {
+		totalPages = (total + resolvedPageSize - 1) / resolvedPageSize
+	}
+	writeJSON(w, http.StatusOK, api.PaginatedCatalogCourseCards{
+		Items: items, Page: int(response.GetPage()), PageSize: resolvedPageSize, Total: total, TotalPages: totalPages,
+	})
+}
+
+func (h *Handler) GetCoursePartnerAudience(w http.ResponseWriter, r *http.Request, courseID api.CourseId) {
+	response, err := h.academy.GetCoursePartnerAudience(outgoingContext(r), &academyv1.GetCoursePartnerAudienceRequest{
+		CourseId: courseID.String(),
+	})
+	if err != nil {
+		h.writeAcademyRPCError(w, r, err)
+		return
+	}
+	converted, convertErr := coursePartnerAudienceFromProto(response.GetAudience(), response.GetPartnerUserIds())
+	if convertErr != nil {
+		h.writeConversionError(w, r, convertErr)
+		return
+	}
+	writeJSON(w, http.StatusOK, converted)
+}
+
+func (h *Handler) SetCoursePartnerAudience(w http.ResponseWriter, r *http.Request, courseID api.CourseId) {
+	var input api.SetCoursePartnerAudienceInput
+	if !decode(w, r, &input) {
+		return
+	}
+	request := &academyv1.SetCoursePartnerAudienceRequest{
+		CourseId: courseID.String(), Audience: coursePartnerAudienceKindToProto(input.Audience),
+	}
+	if input.PartnerUserIds != nil {
+		request.PartnerUserIds = academyIDsToStrings(*input.PartnerUserIds)
+	}
+	response, err := h.academy.SetCoursePartnerAudience(outgoingContext(r), request)
+	if err != nil {
+		h.writeAcademyRPCError(w, r, err)
+		return
+	}
+	converted, convertErr := coursePartnerAudienceFromProto(response.GetAudience(), response.GetPartnerUserIds())
+	if convertErr != nil {
+		h.writeConversionError(w, r, convertErr)
+		return
+	}
+	writeJSON(w, http.StatusOK, converted)
+}
+
+func coursePartnerAudienceFromProto(audience academyv1.CoursePartnerAudience, partnerIDs []string) (api.CoursePartnerAudience, error) {
+	ids := make([]api.ID, 0, len(partnerIDs))
+	for _, value := range partnerIDs {
+		parsed, err := uuid.Parse(value)
+		if err != nil {
+			return api.CoursePartnerAudience{}, err
+		}
+		ids = append(ids, parsed)
+	}
+	return api.CoursePartnerAudience{Audience: coursePartnerAudienceKindFromProto(audience), PartnerUserIds: ids}, nil
+}
+
+func coursePartnerAudienceKindFromProto(value academyv1.CoursePartnerAudience) api.CoursePartnerAudienceKind {
+	switch value {
+	case academyv1.CoursePartnerAudience_COURSE_PARTNER_AUDIENCE_ALL_PARTNERS:
+		return api.CoursePartnerAudienceKindAllPartners
+	case academyv1.CoursePartnerAudience_COURSE_PARTNER_AUDIENCE_SELECTED_PARTNERS:
+		return api.CoursePartnerAudienceKindSelectedPartners
+	default:
+		return api.CoursePartnerAudienceKindNone
+	}
+}
+
+func coursePartnerAudienceKindToProto(value api.CoursePartnerAudienceKind) academyv1.CoursePartnerAudience {
+	switch value {
+	case api.CoursePartnerAudienceKindAllPartners:
+		return academyv1.CoursePartnerAudience_COURSE_PARTNER_AUDIENCE_ALL_PARTNERS
+	case api.CoursePartnerAudienceKindSelectedPartners:
+		return academyv1.CoursePartnerAudience_COURSE_PARTNER_AUDIENCE_SELECTED_PARTNERS
+	case api.CoursePartnerAudienceKindNone:
+		return academyv1.CoursePartnerAudience_COURSE_PARTNER_AUDIENCE_NONE
+	default:
+		return academyv1.CoursePartnerAudience_COURSE_PARTNER_AUDIENCE_UNSPECIFIED
+	}
+}
+
+func academyIDsToStrings(values []api.ID) []string {
+	result := make([]string, len(values))
+	for index := range values {
+		result[index] = values[index].String()
+	}
+	return result
+}
+
+func academyCatalogCardFromProto(card *academyv1.CatalogCourseCard) (api.CatalogCourseCard, error) {
+	id, err := uuid.Parse(card.GetId())
+	if err != nil {
+		return api.CatalogCourseCard{}, err
+	}
+	estimatedMinutes := int(card.GetEstimatedMinutes())
+	latestVersionNumber := int(card.GetLatestVersionNumber())
+	enrolled := card.GetEnrolled()
+	result := api.CatalogCourseCard{
+		Id: id, Title: card.GetTitle(), Description: card.Description, CoverUrl: card.CoverUrl,
+		LessonCount: int(card.GetLessonCount()), EstimatedMinutes: &estimatedMinutes,
+		LatestVersionNumber: &latestVersionNumber, Enrolled: &enrolled,
+	}
+	if card.EnrollmentId != nil {
+		enrollmentID, parseErr := uuid.Parse(card.GetEnrollmentId())
+		if parseErr != nil {
+			return api.CatalogCourseCard{}, parseErr
+		}
+		result.EnrollmentId = &enrollmentID
+	}
+	if card.ProgressPercent != nil {
+		progress := int(card.GetProgressPercent())
+		result.ProgressPercent = &progress
+	}
+	return result, nil
 }
 
 func (h *Handler) myEnrollmentSummaries(r *http.Request, statusFilter *api.EnrollmentProgressStatus) ([]api.EnrollmentSummary, error) {
@@ -412,46 +458,24 @@ func (h *Handler) myEnrollmentSummaries(r *http.Request, statusFilter *api.Enrol
 	if err != nil {
 		return nil, err
 	}
-	return h.enrollmentSummaries(outgoingContext(r), response.GetEnrollments())
+	return h.enrollmentSummaries(response.GetEnrollments())
 }
 
-func (h *Handler) enrollmentSummaries(ctx context.Context, values []*academyv1.CourseEnrollment) ([]api.EnrollmentSummary, error) {
-	courses := make(map[string]*academyv1.Course)
+func (h *Handler) enrollmentSummaries(values []*academyv1.CourseEnrollment) ([]api.EnrollmentSummary, error) {
 	result := make([]api.EnrollmentSummary, 0, len(values))
 	for _, value := range values {
 		base, err := academyEnrollmentFromProto(value)
 		if err != nil {
 			return nil, err
 		}
-		course := courses[value.GetCourseId()]
-		if course == nil {
-			response, getErr := h.academy.GetCourse(ctx, &academyv1.GetCourseRequest{Id: value.GetCourseId()})
-			if getErr != nil {
-				return nil, getErr
-			}
-			course = response.GetCourse()
-			courses[value.GetCourseId()] = course
-		}
-		outline, err := h.academy.GetEnrollmentOutline(ctx, &academyv1.GetEnrollmentOutlineRequest{EnrollmentId: value.GetId()})
-		if err != nil {
-			return nil, err
-		}
-		total, completed := 0, 0
-		for _, section := range outline.GetOutline().GetSections() {
-			for _, lesson := range section.GetLessons() {
-				total++
-				if lesson.GetStatus() == academyv1.EnrollmentLessonStatus_ENROLLMENT_LESSON_STATUS_COMPLETED {
-					completed++
-				}
-			}
-		}
 		summary := api.EnrollmentSummary{
 			Id: base.Id, CourseId: base.CourseId, CourseVersionId: base.CourseVersionId,
-			CourseTitle: course.GetTitle(), CourseCoverUrl: course.CoverUrl,
+			CourseTitle: value.GetCourseTitle(), CourseCoverUrl: value.CourseCoverUrl,
 			LearnerType: api.EnrollmentSummaryLearnerType(base.LearnerType), ProgressStatus: base.ProgressStatus,
 			AccessStatus: base.AccessStatus, Percent: base.ProgressPercent,
-			CompletedLessons: completed, TotalLessons: total, CurrentLessonId: base.CurrentLessonVersionId,
-			ActivatedAt: base.ActivatedAt, AccessUntil: base.AccessUntil, DueDate: base.DueDate,
+			CompletedLessons: int(value.GetCompletedLessonCount()), TotalLessons: int(value.GetTotalLessonCount()),
+			CurrentLessonId: base.CurrentLessonVersionId,
+			ActivatedAt:     base.ActivatedAt, AccessUntil: base.AccessUntil, DueDate: base.DueDate,
 			StartedAt: base.StartedAt, CompletedAt: base.CompletedAt, LastActivityAt: base.LastActivityAt,
 		}
 		if base.SourceId != nil {

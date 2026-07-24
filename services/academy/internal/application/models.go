@@ -421,6 +421,10 @@ type Enrollment struct {
 	AccessStatus           string
 	CurrentLessonVersionID *uuid.UUID
 	ProgressPercent        int32
+	CourseTitle            *string
+	CourseCoverURL         *string
+	CompletedLessonCount   *int32
+	TotalLessonCount       *int32
 	DueDate                *time.Time
 	Overdue                bool
 	ActivatedAt            *time.Time
@@ -434,6 +438,24 @@ type Enrollment struct {
 	UpdatedAt              time.Time
 }
 
+type InternalEnrollmentReportQuery struct {
+	UserIDs       []uuid.UUID
+	SearchUserIDs []uuid.UUID
+	Search        *string
+	CourseID      *uuid.UUID
+	Status        *string
+	Sort          string
+	Page          int32
+	PageSize      int32
+}
+
+type InternalEnrollmentReportPage struct {
+	Items    []Enrollment
+	Page     int32
+	PageSize int32
+	Total    int64
+}
+
 type EnrollmentLessonProgress struct {
 	CompanyID       uuid.UUID
 	EnrollmentID    uuid.UUID
@@ -443,6 +465,14 @@ type EnrollmentLessonProgress struct {
 	CompletedAt     *time.Time
 	ActiveSeconds   int64
 	LastPosition    *string
+}
+
+// ReviewEnrollmentQuizInput resolves a pending open-answer quiz attempt.
+type ReviewEnrollmentQuizInput struct {
+	EnrollmentID uuid.UUID
+	AttemptID    uuid.UUID
+	Passed       bool
+	Comment      *string
 }
 
 type EnrollmentQuizAttempt struct {

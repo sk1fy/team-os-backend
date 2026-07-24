@@ -23,7 +23,9 @@ func TestVisibleCourseMatrix(t *testing.T) {
 	t.Parallel()
 	assignedID := uuid.New()
 	partnerID := uuid.New()
+	audienceCourseID := uuid.New()
 	assigned := map[uuid.UUID]struct{}{assignedID: {}}
+	partnerAudience := map[uuid.UUID]struct{}{audienceCourseID: {}}
 	tests := []struct {
 		name   string
 		actor  Actor
@@ -39,12 +41,14 @@ func TestVisibleCourseMatrix(t *testing.T) {
 		{name: "partner sees own course", actor: Actor{Role: "partner", UserID: partnerID}, course: Course{OwnerType: "partner", OwnerUserID: &partnerID, LifecycleStatus: "active"}, want: true},
 		{name: "partner cannot see another partner course", actor: Actor{Role: "partner", UserID: uuid.New()}, course: Course{OwnerType: "partner", OwnerUserID: &partnerID, LifecycleStatus: "active"}},
 		{name: "employee cannot see partner course", actor: Actor{Role: "employee"}, course: Course{OwnerType: "partner", OwnerUserID: &partnerID, Status: "published", LifecycleStatus: "active"}},
+		{name: "partner sees company course in audience", actor: Actor{Role: "partner", UserID: partnerID}, course: Course{ID: audienceCourseID, OwnerType: "company", Status: "published", Visibility: "company", LifecycleStatus: "active"}, want: true},
+		{name: "partner cannot see company course outside audience", actor: Actor{Role: "partner", UserID: partnerID}, course: Course{ID: uuid.New(), OwnerType: "company", Status: "published", Visibility: "company", LifecycleStatus: "active"}},
 		{name: "archived hidden from employee", actor: Actor{Role: "employee"}, course: Course{OwnerType: "company", Status: "published", Visibility: "public", LifecycleStatus: "archived"}},
 		{name: "blocked hidden from partner owner", actor: Actor{Role: "partner", UserID: partnerID}, course: Course{OwnerType: "partner", OwnerUserID: &partnerID, LifecycleStatus: "active", DistributionStatus: "blocked"}},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			if got := visibleCourse(test.actor, test.course, assigned); got != test.want {
+			if got := visibleCourse(test.actor, test.course, assigned, partnerAudience); got != test.want {
 				t.Fatalf("visibleCourse() = %v, want %v", got, test.want)
 			}
 		})

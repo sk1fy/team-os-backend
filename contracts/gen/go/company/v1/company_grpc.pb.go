@@ -56,6 +56,8 @@ const (
 	CompanyService_ResendInvite_FullMethodName             = "/teamos.company.v1.CompanyService/ResendInvite"
 	CompanyService_RevokeInvite_FullMethodName             = "/teamos.company.v1.CompanyService/RevokeInvite"
 	CompanyService_GetUsersByIds_FullMethodName            = "/teamos.company.v1.CompanyService/GetUsersByIds"
+	CompanyService_ResolveReportUserScope_FullMethodName   = "/teamos.company.v1.CompanyService/ResolveReportUserScope"
+	CompanyService_GetReportUserProfiles_FullMethodName    = "/teamos.company.v1.CompanyService/GetReportUserProfiles"
 	CompanyService_ResolvePositionUsers_FullMethodName     = "/teamos.company.v1.CompanyService/ResolvePositionUsers"
 	CompanyService_ResolveDepartmentUsers_FullMethodName   = "/teamos.company.v1.CompanyService/ResolveDepartmentUsers"
 	CompanyService_GetSchedules_FullMethodName             = "/teamos.company.v1.CompanyService/GetSchedules"
@@ -116,6 +118,8 @@ type CompanyServiceClient interface {
 	ResendInvite(ctx context.Context, in *ResendInviteRequest, opts ...grpc.CallOption) (*ResendInviteResponse, error)
 	RevokeInvite(ctx context.Context, in *RevokeInviteRequest, opts ...grpc.CallOption) (*RevokeInviteResponse, error)
 	GetUsersByIds(ctx context.Context, in *GetUsersByIdsRequest, opts ...grpc.CallOption) (*GetUsersByIdsResponse, error)
+	ResolveReportUserScope(ctx context.Context, in *ResolveReportUserScopeRequest, opts ...grpc.CallOption) (*ResolveReportUserScopeResponse, error)
+	GetReportUserProfiles(ctx context.Context, in *GetReportUserProfilesRequest, opts ...grpc.CallOption) (*GetReportUserProfilesResponse, error)
 	ResolvePositionUsers(ctx context.Context, in *ResolvePositionUsersRequest, opts ...grpc.CallOption) (*ResolvePositionUsersResponse, error)
 	ResolveDepartmentUsers(ctx context.Context, in *ResolveDepartmentUsersRequest, opts ...grpc.CallOption) (*ResolveDepartmentUsersResponse, error)
 	GetSchedules(ctx context.Context, in *GetSchedulesRequest, opts ...grpc.CallOption) (*GetSchedulesResponse, error)
@@ -509,6 +513,26 @@ func (c *companyServiceClient) GetUsersByIds(ctx context.Context, in *GetUsersBy
 	return out, nil
 }
 
+func (c *companyServiceClient) ResolveReportUserScope(ctx context.Context, in *ResolveReportUserScopeRequest, opts ...grpc.CallOption) (*ResolveReportUserScopeResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ResolveReportUserScopeResponse)
+	err := c.cc.Invoke(ctx, CompanyService_ResolveReportUserScope_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) GetReportUserProfiles(ctx context.Context, in *GetReportUserProfilesRequest, opts ...grpc.CallOption) (*GetReportUserProfilesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetReportUserProfilesResponse)
+	err := c.cc.Invoke(ctx, CompanyService_GetReportUserProfiles_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *companyServiceClient) ResolvePositionUsers(ctx context.Context, in *ResolvePositionUsersRequest, opts ...grpc.CallOption) (*ResolvePositionUsersResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ResolvePositionUsersResponse)
@@ -684,6 +708,8 @@ type CompanyServiceServer interface {
 	ResendInvite(context.Context, *ResendInviteRequest) (*ResendInviteResponse, error)
 	RevokeInvite(context.Context, *RevokeInviteRequest) (*RevokeInviteResponse, error)
 	GetUsersByIds(context.Context, *GetUsersByIdsRequest) (*GetUsersByIdsResponse, error)
+	ResolveReportUserScope(context.Context, *ResolveReportUserScopeRequest) (*ResolveReportUserScopeResponse, error)
+	GetReportUserProfiles(context.Context, *GetReportUserProfilesRequest) (*GetReportUserProfilesResponse, error)
 	ResolvePositionUsers(context.Context, *ResolvePositionUsersRequest) (*ResolvePositionUsersResponse, error)
 	ResolveDepartmentUsers(context.Context, *ResolveDepartmentUsersRequest) (*ResolveDepartmentUsersResponse, error)
 	GetSchedules(context.Context, *GetSchedulesRequest) (*GetSchedulesResponse, error)
@@ -817,6 +843,12 @@ func (UnimplementedCompanyServiceServer) RevokeInvite(context.Context, *RevokeIn
 }
 func (UnimplementedCompanyServiceServer) GetUsersByIds(context.Context, *GetUsersByIdsRequest) (*GetUsersByIdsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUsersByIds not implemented")
+}
+func (UnimplementedCompanyServiceServer) ResolveReportUserScope(context.Context, *ResolveReportUserScopeRequest) (*ResolveReportUserScopeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ResolveReportUserScope not implemented")
+}
+func (UnimplementedCompanyServiceServer) GetReportUserProfiles(context.Context, *GetReportUserProfilesRequest) (*GetReportUserProfilesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetReportUserProfiles not implemented")
 }
 func (UnimplementedCompanyServiceServer) ResolvePositionUsers(context.Context, *ResolvePositionUsersRequest) (*ResolvePositionUsersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ResolvePositionUsers not implemented")
@@ -1544,6 +1576,42 @@ func _CompanyService_GetUsersByIds_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CompanyService_ResolveReportUserScope_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ResolveReportUserScopeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).ResolveReportUserScope(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_ResolveReportUserScope_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).ResolveReportUserScope(ctx, req.(*ResolveReportUserScopeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_GetReportUserProfiles_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetReportUserProfilesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).GetReportUserProfiles(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_GetReportUserProfiles_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).GetReportUserProfiles(ctx, req.(*GetReportUserProfilesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _CompanyService_ResolvePositionUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ResolvePositionUsersRequest)
 	if err := dec(in); err != nil {
@@ -1932,6 +2000,14 @@ var CompanyService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUsersByIds",
 			Handler:    _CompanyService_GetUsersByIds_Handler,
+		},
+		{
+			MethodName: "ResolveReportUserScope",
+			Handler:    _CompanyService_ResolveReportUserScope_Handler,
+		},
+		{
+			MethodName: "GetReportUserProfiles",
+			Handler:    _CompanyService_GetReportUserProfiles_Handler,
 		},
 		{
 			MethodName: "ResolvePositionUsers",

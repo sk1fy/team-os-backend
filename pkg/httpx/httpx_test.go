@@ -55,6 +55,35 @@ func TestRequestID(t *testing.T) {
 	}
 }
 
+func TestDecodeJSONOptionalAllowsEmptyBody(t *testing.T) {
+	t.Parallel()
+
+	type payload struct {
+		ActiveSeconds *int64 `json:"activeSeconds"`
+	}
+
+	request := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/", http.NoBody)
+	response := httptest.NewRecorder()
+	var value payload
+	if err := httpx.DecodeJSONOptional(response, request, &value, 0); err != nil {
+		t.Fatalf("DecodeJSONOptional empty body: %v", err)
+	}
+	if value.ActiveSeconds != nil {
+		t.Fatalf("expected zero value, got %+v", value)
+	}
+
+	request = httptest.NewRequestWithContext(
+		context.Background(), http.MethodPost, "/", strings.NewReader(`{"activeSeconds":12}`),
+	)
+	response = httptest.NewRecorder()
+	if err := httpx.DecodeJSONOptional(response, request, &value, 0); err != nil {
+		t.Fatalf("DecodeJSONOptional with body: %v", err)
+	}
+	if value.ActiveSeconds == nil || *value.ActiveSeconds != 12 {
+		t.Fatalf("decoded = %+v", value)
+	}
+}
+
 func TestRecovererWritesSafeAPIError(t *testing.T) {
 	t.Parallel()
 

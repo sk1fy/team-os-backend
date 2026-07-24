@@ -45,6 +45,33 @@ type ExternalLearner struct {
 	UpdatedAt       time.Time
 }
 
+type PartnerExternalReportQuery struct {
+	Search   *string
+	CourseID *uuid.UUID
+	Page     int32
+	PageSize int32
+}
+
+type PartnerExternalReportRow struct {
+	EnrollmentID    uuid.UUID
+	CourseID        uuid.UUID
+	CourseTitle     string
+	LearnerEmail    string
+	LearnerName     *string
+	ProgressStatus  string
+	AccessStatus    string
+	ProgressPercent int32
+	ActivatedAt     *time.Time
+	CompletedAt     *time.Time
+}
+
+type PartnerExternalReportPage struct {
+	Items    []PartnerExternalReportRow
+	Page     int32
+	PageSize int32
+	Total    int64
+}
+
 type ExternalPrincipal struct {
 	CompanyID uuid.UUID
 	LearnerID uuid.UUID
@@ -101,6 +128,13 @@ type ExternalQuizAttemptResult struct {
 	PendingReview     bool
 	AttemptsRemaining *int32
 	CreatedAt         time.Time
+}
+
+// ExternalQuizAttemptSubmitted is the atomic public quiz response: attempt plus
+// the updated enrollment snapshot so the client does not need a follow-up GET.
+type ExternalQuizAttemptSubmitted struct {
+	Attempt    ExternalQuizAttemptResult
+	Enrollment Enrollment
 }
 
 type ExternalEnrollmentResults struct {

@@ -60,6 +60,8 @@ const (
 	AcademyService_GetProgress_FullMethodName                           = "/teamos.academy.v1.AcademyService/GetProgress"
 	AcademyService_MarkLessonComplete_FullMethodName                    = "/teamos.academy.v1.AcademyService/MarkLessonComplete"
 	AcademyService_GetEnrollments_FullMethodName                        = "/teamos.academy.v1.AcademyService/GetEnrollments"
+	AcademyService_GetInternalEnrollmentReportPage_FullMethodName       = "/teamos.academy.v1.AcademyService/GetInternalEnrollmentReportPage"
+	AcademyService_GetAcademyCatalog_FullMethodName                     = "/teamos.academy.v1.AcademyService/GetAcademyCatalog"
 	AcademyService_SelfEnrollCourse_FullMethodName                      = "/teamos.academy.v1.AcademyService/SelfEnrollCourse"
 	AcademyService_GetCatalogCourseVersion_FullMethodName               = "/teamos.academy.v1.AcademyService/GetCatalogCourseVersion"
 	AcademyService_GetEnrollment_FullMethodName                         = "/teamos.academy.v1.AcademyService/GetEnrollment"
@@ -68,6 +70,7 @@ const (
 	AcademyService_ResumeEnrollment_FullMethodName                      = "/teamos.academy.v1.AcademyService/ResumeEnrollment"
 	AcademyService_CompleteEnrollmentLesson_FullMethodName              = "/teamos.academy.v1.AcademyService/CompleteEnrollmentLesson"
 	AcademyService_SubmitEnrollmentQuizAttempt_FullMethodName           = "/teamos.academy.v1.AcademyService/SubmitEnrollmentQuizAttempt"
+	AcademyService_ReviewEnrollmentQuizAttempt_FullMethodName           = "/teamos.academy.v1.AcademyService/ReviewEnrollmentQuizAttempt"
 	AcademyService_GetEnrollmentReport_FullMethodName                   = "/teamos.academy.v1.AcademyService/GetEnrollmentReport"
 	AcademyService_GetPartnerCourseGroups_FullMethodName                = "/teamos.academy.v1.AcademyService/GetPartnerCourseGroups"
 	AcademyService_GetPartnerCoursesReport_FullMethodName               = "/teamos.academy.v1.AcademyService/GetPartnerCoursesReport"
@@ -78,6 +81,8 @@ const (
 	AcademyService_ResolvePartnerCourseRestriction_FullMethodName       = "/teamos.academy.v1.AcademyService/ResolvePartnerCourseRestriction"
 	AcademyService_GetCourseRestrictions_FullMethodName                 = "/teamos.academy.v1.AcademyService/GetCourseRestrictions"
 	AcademyService_CopyPartnerCourseVersionToCompany_FullMethodName     = "/teamos.academy.v1.AcademyService/CopyPartnerCourseVersionToCompany"
+	AcademyService_GetCoursePartnerAudience_FullMethodName              = "/teamos.academy.v1.AcademyService/GetCoursePartnerAudience"
+	AcademyService_SetCoursePartnerAudience_FullMethodName              = "/teamos.academy.v1.AcademyService/SetCoursePartnerAudience"
 	AcademyService_GetCourseTemplates_FullMethodName                    = "/teamos.academy.v1.AcademyService/GetCourseTemplates"
 	AcademyService_GetCourseTemplate_FullMethodName                     = "/teamos.academy.v1.AcademyService/GetCourseTemplate"
 	AcademyService_CreateCourseTemplate_FullMethodName                  = "/teamos.academy.v1.AcademyService/CreateCourseTemplate"
@@ -116,6 +121,7 @@ const (
 	AcademyService_GetExternalLearner_FullMethodName                    = "/teamos.academy.v1.AcademyService/GetExternalLearner"
 	AcademyService_GetExternalLearnerEnrollments_FullMethodName         = "/teamos.academy.v1.AcademyService/GetExternalLearnerEnrollments"
 	AcademyService_GetExternalLearnerTimeline_FullMethodName            = "/teamos.academy.v1.AcademyService/GetExternalLearnerTimeline"
+	AcademyService_GetPartnerExternalReportPage_FullMethodName          = "/teamos.academy.v1.AcademyService/GetPartnerExternalReportPage"
 )
 
 // AcademyServiceClient is the client API for AcademyService service.
@@ -166,6 +172,8 @@ type AcademyServiceClient interface {
 	// external learning progress. Internal caller identity is taken from JWT by
 	// the gateway/application layer and is never trusted from the request body.
 	GetEnrollments(ctx context.Context, in *GetEnrollmentsRequest, opts ...grpc.CallOption) (*GetEnrollmentsResponse, error)
+	GetInternalEnrollmentReportPage(ctx context.Context, in *GetInternalEnrollmentReportPageRequest, opts ...grpc.CallOption) (*GetInternalEnrollmentReportPageResponse, error)
+	GetAcademyCatalog(ctx context.Context, in *GetAcademyCatalogRequest, opts ...grpc.CallOption) (*GetAcademyCatalogResponse, error)
 	SelfEnrollCourse(ctx context.Context, in *SelfEnrollCourseRequest, opts ...grpc.CallOption) (*SelfEnrollCourseResponse, error)
 	GetCatalogCourseVersion(ctx context.Context, in *GetCatalogCourseVersionRequest, opts ...grpc.CallOption) (*GetCatalogCourseVersionResponse, error)
 	GetEnrollment(ctx context.Context, in *GetEnrollmentRequest, opts ...grpc.CallOption) (*GetEnrollmentResponse, error)
@@ -174,6 +182,7 @@ type AcademyServiceClient interface {
 	ResumeEnrollment(ctx context.Context, in *ResumeEnrollmentRequest, opts ...grpc.CallOption) (*ResumeEnrollmentResponse, error)
 	CompleteEnrollmentLesson(ctx context.Context, in *CompleteEnrollmentLessonRequest, opts ...grpc.CallOption) (*CompleteEnrollmentLessonResponse, error)
 	SubmitEnrollmentQuizAttempt(ctx context.Context, in *SubmitEnrollmentQuizAttemptRequest, opts ...grpc.CallOption) (*SubmitEnrollmentQuizAttemptResponse, error)
+	ReviewEnrollmentQuizAttempt(ctx context.Context, in *ReviewEnrollmentQuizAttemptRequest, opts ...grpc.CallOption) (*ReviewEnrollmentQuizAttemptResponse, error)
 	GetEnrollmentReport(ctx context.Context, in *GetEnrollmentReportRequest, opts ...grpc.CallOption) (*GetEnrollmentReportResponse, error)
 	// Partner course administration. Authorization is object-scoped: partner
 	// authors can preview only their own courses, while only owner/admin can
@@ -187,6 +196,10 @@ type AcademyServiceClient interface {
 	ResolvePartnerCourseRestriction(ctx context.Context, in *ResolvePartnerCourseRestrictionRequest, opts ...grpc.CallOption) (*ResolvePartnerCourseRestrictionResponse, error)
 	GetCourseRestrictions(ctx context.Context, in *GetCourseRestrictionsRequest, opts ...grpc.CallOption) (*GetCourseRestrictionsResponse, error)
 	CopyPartnerCourseVersionToCompany(ctx context.Context, in *CopyPartnerCourseVersionToCompanyRequest, opts ...grpc.CallOption) (*CopyPartnerCourseVersionToCompanyResponse, error)
+	// Partner audience controls which partners may see and take a company course.
+	// Only owner/admin may read or change it; the default is deny ('none').
+	GetCoursePartnerAudience(ctx context.Context, in *GetCoursePartnerAudienceRequest, opts ...grpc.CallOption) (*GetCoursePartnerAudienceResponse, error)
+	SetCoursePartnerAudience(ctx context.Context, in *SetCoursePartnerAudienceRequest, opts ...grpc.CallOption) (*SetCoursePartnerAudienceResponse, error)
 	// CourseTemplate is a separate versioned aggregate. Templates cannot be
 	// assigned or learned; instantiation always creates an independent course
 	// draft and the server derives its owner from the authenticated actor.
@@ -237,6 +250,7 @@ type AcademyServiceClient interface {
 	GetExternalLearner(ctx context.Context, in *GetExternalLearnerRequest, opts ...grpc.CallOption) (*GetExternalLearnerResponse, error)
 	GetExternalLearnerEnrollments(ctx context.Context, in *GetExternalLearnerEnrollmentsRequest, opts ...grpc.CallOption) (*GetExternalLearnerEnrollmentsResponse, error)
 	GetExternalLearnerTimeline(ctx context.Context, in *GetExternalLearnerTimelineRequest, opts ...grpc.CallOption) (*GetExternalLearnerTimelineResponse, error)
+	GetPartnerExternalReportPage(ctx context.Context, in *GetPartnerExternalReportPageRequest, opts ...grpc.CallOption) (*GetPartnerExternalReportPageResponse, error)
 }
 
 type academyServiceClient struct {
@@ -657,6 +671,26 @@ func (c *academyServiceClient) GetEnrollments(ctx context.Context, in *GetEnroll
 	return out, nil
 }
 
+func (c *academyServiceClient) GetInternalEnrollmentReportPage(ctx context.Context, in *GetInternalEnrollmentReportPageRequest, opts ...grpc.CallOption) (*GetInternalEnrollmentReportPageResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetInternalEnrollmentReportPageResponse)
+	err := c.cc.Invoke(ctx, AcademyService_GetInternalEnrollmentReportPage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) GetAcademyCatalog(ctx context.Context, in *GetAcademyCatalogRequest, opts ...grpc.CallOption) (*GetAcademyCatalogResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetAcademyCatalogResponse)
+	err := c.cc.Invoke(ctx, AcademyService_GetAcademyCatalog_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *academyServiceClient) SelfEnrollCourse(ctx context.Context, in *SelfEnrollCourseRequest, opts ...grpc.CallOption) (*SelfEnrollCourseResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(SelfEnrollCourseResponse)
@@ -731,6 +765,16 @@ func (c *academyServiceClient) SubmitEnrollmentQuizAttempt(ctx context.Context, 
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(SubmitEnrollmentQuizAttemptResponse)
 	err := c.cc.Invoke(ctx, AcademyService_SubmitEnrollmentQuizAttempt_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) ReviewEnrollmentQuizAttempt(ctx context.Context, in *ReviewEnrollmentQuizAttemptRequest, opts ...grpc.CallOption) (*ReviewEnrollmentQuizAttemptResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ReviewEnrollmentQuizAttemptResponse)
+	err := c.cc.Invoke(ctx, AcademyService_ReviewEnrollmentQuizAttempt_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -831,6 +875,26 @@ func (c *academyServiceClient) CopyPartnerCourseVersionToCompany(ctx context.Con
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CopyPartnerCourseVersionToCompanyResponse)
 	err := c.cc.Invoke(ctx, AcademyService_CopyPartnerCourseVersionToCompany_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) GetCoursePartnerAudience(ctx context.Context, in *GetCoursePartnerAudienceRequest, opts ...grpc.CallOption) (*GetCoursePartnerAudienceResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetCoursePartnerAudienceResponse)
+	err := c.cc.Invoke(ctx, AcademyService_GetCoursePartnerAudience_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *academyServiceClient) SetCoursePartnerAudience(ctx context.Context, in *SetCoursePartnerAudienceRequest, opts ...grpc.CallOption) (*SetCoursePartnerAudienceResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SetCoursePartnerAudienceResponse)
+	err := c.cc.Invoke(ctx, AcademyService_SetCoursePartnerAudience_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1217,6 +1281,16 @@ func (c *academyServiceClient) GetExternalLearnerTimeline(ctx context.Context, i
 	return out, nil
 }
 
+func (c *academyServiceClient) GetPartnerExternalReportPage(ctx context.Context, in *GetPartnerExternalReportPageRequest, opts ...grpc.CallOption) (*GetPartnerExternalReportPageResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetPartnerExternalReportPageResponse)
+	err := c.cc.Invoke(ctx, AcademyService_GetPartnerExternalReportPage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AcademyServiceServer is the server API for AcademyService service.
 // All implementations must embed UnimplementedAcademyServiceServer
 // for forward compatibility.
@@ -1265,6 +1339,8 @@ type AcademyServiceServer interface {
 	// external learning progress. Internal caller identity is taken from JWT by
 	// the gateway/application layer and is never trusted from the request body.
 	GetEnrollments(context.Context, *GetEnrollmentsRequest) (*GetEnrollmentsResponse, error)
+	GetInternalEnrollmentReportPage(context.Context, *GetInternalEnrollmentReportPageRequest) (*GetInternalEnrollmentReportPageResponse, error)
+	GetAcademyCatalog(context.Context, *GetAcademyCatalogRequest) (*GetAcademyCatalogResponse, error)
 	SelfEnrollCourse(context.Context, *SelfEnrollCourseRequest) (*SelfEnrollCourseResponse, error)
 	GetCatalogCourseVersion(context.Context, *GetCatalogCourseVersionRequest) (*GetCatalogCourseVersionResponse, error)
 	GetEnrollment(context.Context, *GetEnrollmentRequest) (*GetEnrollmentResponse, error)
@@ -1273,6 +1349,7 @@ type AcademyServiceServer interface {
 	ResumeEnrollment(context.Context, *ResumeEnrollmentRequest) (*ResumeEnrollmentResponse, error)
 	CompleteEnrollmentLesson(context.Context, *CompleteEnrollmentLessonRequest) (*CompleteEnrollmentLessonResponse, error)
 	SubmitEnrollmentQuizAttempt(context.Context, *SubmitEnrollmentQuizAttemptRequest) (*SubmitEnrollmentQuizAttemptResponse, error)
+	ReviewEnrollmentQuizAttempt(context.Context, *ReviewEnrollmentQuizAttemptRequest) (*ReviewEnrollmentQuizAttemptResponse, error)
 	GetEnrollmentReport(context.Context, *GetEnrollmentReportRequest) (*GetEnrollmentReportResponse, error)
 	// Partner course administration. Authorization is object-scoped: partner
 	// authors can preview only their own courses, while only owner/admin can
@@ -1286,6 +1363,10 @@ type AcademyServiceServer interface {
 	ResolvePartnerCourseRestriction(context.Context, *ResolvePartnerCourseRestrictionRequest) (*ResolvePartnerCourseRestrictionResponse, error)
 	GetCourseRestrictions(context.Context, *GetCourseRestrictionsRequest) (*GetCourseRestrictionsResponse, error)
 	CopyPartnerCourseVersionToCompany(context.Context, *CopyPartnerCourseVersionToCompanyRequest) (*CopyPartnerCourseVersionToCompanyResponse, error)
+	// Partner audience controls which partners may see and take a company course.
+	// Only owner/admin may read or change it; the default is deny ('none').
+	GetCoursePartnerAudience(context.Context, *GetCoursePartnerAudienceRequest) (*GetCoursePartnerAudienceResponse, error)
+	SetCoursePartnerAudience(context.Context, *SetCoursePartnerAudienceRequest) (*SetCoursePartnerAudienceResponse, error)
 	// CourseTemplate is a separate versioned aggregate. Templates cannot be
 	// assigned or learned; instantiation always creates an independent course
 	// draft and the server derives its owner from the authenticated actor.
@@ -1336,6 +1417,7 @@ type AcademyServiceServer interface {
 	GetExternalLearner(context.Context, *GetExternalLearnerRequest) (*GetExternalLearnerResponse, error)
 	GetExternalLearnerEnrollments(context.Context, *GetExternalLearnerEnrollmentsRequest) (*GetExternalLearnerEnrollmentsResponse, error)
 	GetExternalLearnerTimeline(context.Context, *GetExternalLearnerTimelineRequest) (*GetExternalLearnerTimelineResponse, error)
+	GetPartnerExternalReportPage(context.Context, *GetPartnerExternalReportPageRequest) (*GetPartnerExternalReportPageResponse, error)
 	mustEmbedUnimplementedAcademyServiceServer()
 }
 
@@ -1469,6 +1551,12 @@ func (UnimplementedAcademyServiceServer) MarkLessonComplete(context.Context, *Ma
 func (UnimplementedAcademyServiceServer) GetEnrollments(context.Context, *GetEnrollmentsRequest) (*GetEnrollmentsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetEnrollments not implemented")
 }
+func (UnimplementedAcademyServiceServer) GetInternalEnrollmentReportPage(context.Context, *GetInternalEnrollmentReportPageRequest) (*GetInternalEnrollmentReportPageResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetInternalEnrollmentReportPage not implemented")
+}
+func (UnimplementedAcademyServiceServer) GetAcademyCatalog(context.Context, *GetAcademyCatalogRequest) (*GetAcademyCatalogResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAcademyCatalog not implemented")
+}
 func (UnimplementedAcademyServiceServer) SelfEnrollCourse(context.Context, *SelfEnrollCourseRequest) (*SelfEnrollCourseResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SelfEnrollCourse not implemented")
 }
@@ -1492,6 +1580,9 @@ func (UnimplementedAcademyServiceServer) CompleteEnrollmentLesson(context.Contex
 }
 func (UnimplementedAcademyServiceServer) SubmitEnrollmentQuizAttempt(context.Context, *SubmitEnrollmentQuizAttemptRequest) (*SubmitEnrollmentQuizAttemptResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubmitEnrollmentQuizAttempt not implemented")
+}
+func (UnimplementedAcademyServiceServer) ReviewEnrollmentQuizAttempt(context.Context, *ReviewEnrollmentQuizAttemptRequest) (*ReviewEnrollmentQuizAttemptResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReviewEnrollmentQuizAttempt not implemented")
 }
 func (UnimplementedAcademyServiceServer) GetEnrollmentReport(context.Context, *GetEnrollmentReportRequest) (*GetEnrollmentReportResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetEnrollmentReport not implemented")
@@ -1522,6 +1613,12 @@ func (UnimplementedAcademyServiceServer) GetCourseRestrictions(context.Context, 
 }
 func (UnimplementedAcademyServiceServer) CopyPartnerCourseVersionToCompany(context.Context, *CopyPartnerCourseVersionToCompanyRequest) (*CopyPartnerCourseVersionToCompanyResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CopyPartnerCourseVersionToCompany not implemented")
+}
+func (UnimplementedAcademyServiceServer) GetCoursePartnerAudience(context.Context, *GetCoursePartnerAudienceRequest) (*GetCoursePartnerAudienceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCoursePartnerAudience not implemented")
+}
+func (UnimplementedAcademyServiceServer) SetCoursePartnerAudience(context.Context, *SetCoursePartnerAudienceRequest) (*SetCoursePartnerAudienceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetCoursePartnerAudience not implemented")
 }
 func (UnimplementedAcademyServiceServer) GetCourseTemplates(context.Context, *GetCourseTemplatesRequest) (*GetCourseTemplatesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCourseTemplates not implemented")
@@ -1636,6 +1733,9 @@ func (UnimplementedAcademyServiceServer) GetExternalLearnerEnrollments(context.C
 }
 func (UnimplementedAcademyServiceServer) GetExternalLearnerTimeline(context.Context, *GetExternalLearnerTimelineRequest) (*GetExternalLearnerTimelineResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetExternalLearnerTimeline not implemented")
+}
+func (UnimplementedAcademyServiceServer) GetPartnerExternalReportPage(context.Context, *GetPartnerExternalReportPageRequest) (*GetPartnerExternalReportPageResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPartnerExternalReportPage not implemented")
 }
 func (UnimplementedAcademyServiceServer) mustEmbedUnimplementedAcademyServiceServer() {}
 func (UnimplementedAcademyServiceServer) testEmbeddedByValue()                        {}
@@ -2396,6 +2496,42 @@ func _AcademyService_GetEnrollments_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AcademyService_GetInternalEnrollmentReportPage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetInternalEnrollmentReportPageRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).GetInternalEnrollmentReportPage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_GetInternalEnrollmentReportPage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).GetInternalEnrollmentReportPage(ctx, req.(*GetInternalEnrollmentReportPageRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_GetAcademyCatalog_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAcademyCatalogRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).GetAcademyCatalog(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_GetAcademyCatalog_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).GetAcademyCatalog(ctx, req.(*GetAcademyCatalogRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AcademyService_SelfEnrollCourse_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SelfEnrollCourseRequest)
 	if err := dec(in); err != nil {
@@ -2536,6 +2672,24 @@ func _AcademyService_SubmitEnrollmentQuizAttempt_Handler(srv interface{}, ctx co
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AcademyServiceServer).SubmitEnrollmentQuizAttempt(ctx, req.(*SubmitEnrollmentQuizAttemptRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_ReviewEnrollmentQuizAttempt_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReviewEnrollmentQuizAttemptRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).ReviewEnrollmentQuizAttempt(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_ReviewEnrollmentQuizAttempt_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).ReviewEnrollmentQuizAttempt(ctx, req.(*ReviewEnrollmentQuizAttemptRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2716,6 +2870,42 @@ func _AcademyService_CopyPartnerCourseVersionToCompany_Handler(srv interface{}, 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AcademyServiceServer).CopyPartnerCourseVersionToCompany(ctx, req.(*CopyPartnerCourseVersionToCompanyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_GetCoursePartnerAudience_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCoursePartnerAudienceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).GetCoursePartnerAudience(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_GetCoursePartnerAudience_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).GetCoursePartnerAudience(ctx, req.(*GetCoursePartnerAudienceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AcademyService_SetCoursePartnerAudience_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetCoursePartnerAudienceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).SetCoursePartnerAudience(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_SetCoursePartnerAudience_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).SetCoursePartnerAudience(ctx, req.(*SetCoursePartnerAudienceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -3404,6 +3594,24 @@ func _AcademyService_GetExternalLearnerTimeline_Handler(srv interface{}, ctx con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AcademyService_GetPartnerExternalReportPage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPartnerExternalReportPageRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AcademyServiceServer).GetPartnerExternalReportPage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AcademyService_GetPartnerExternalReportPage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AcademyServiceServer).GetPartnerExternalReportPage(ctx, req.(*GetPartnerExternalReportPageRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AcademyService_ServiceDesc is the grpc.ServiceDesc for AcademyService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -3576,6 +3784,14 @@ var AcademyService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AcademyService_GetEnrollments_Handler,
 		},
 		{
+			MethodName: "GetInternalEnrollmentReportPage",
+			Handler:    _AcademyService_GetInternalEnrollmentReportPage_Handler,
+		},
+		{
+			MethodName: "GetAcademyCatalog",
+			Handler:    _AcademyService_GetAcademyCatalog_Handler,
+		},
+		{
 			MethodName: "SelfEnrollCourse",
 			Handler:    _AcademyService_SelfEnrollCourse_Handler,
 		},
@@ -3606,6 +3822,10 @@ var AcademyService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SubmitEnrollmentQuizAttempt",
 			Handler:    _AcademyService_SubmitEnrollmentQuizAttempt_Handler,
+		},
+		{
+			MethodName: "ReviewEnrollmentQuizAttempt",
+			Handler:    _AcademyService_ReviewEnrollmentQuizAttempt_Handler,
 		},
 		{
 			MethodName: "GetEnrollmentReport",
@@ -3646,6 +3866,14 @@ var AcademyService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CopyPartnerCourseVersionToCompany",
 			Handler:    _AcademyService_CopyPartnerCourseVersionToCompany_Handler,
+		},
+		{
+			MethodName: "GetCoursePartnerAudience",
+			Handler:    _AcademyService_GetCoursePartnerAudience_Handler,
+		},
+		{
+			MethodName: "SetCoursePartnerAudience",
+			Handler:    _AcademyService_SetCoursePartnerAudience_Handler,
 		},
 		{
 			MethodName: "GetCourseTemplates",
@@ -3798,6 +4026,10 @@ var AcademyService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetExternalLearnerTimeline",
 			Handler:    _AcademyService_GetExternalLearnerTimeline_Handler,
+		},
+		{
+			MethodName: "GetPartnerExternalReportPage",
+			Handler:    _AcademyService_GetPartnerExternalReportPage_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

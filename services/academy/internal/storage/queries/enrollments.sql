@@ -172,6 +172,7 @@ WHERE company_id = sqlc.arg(company_id)
 -- name: ListInternalEnrollments :many
 SELECT enrollment.id, enrollment.company_id, enrollment.course_id,
     enrollment.course_version_id, version.number AS version_number,
+    course.title AS course_title, course.cover_url AS course_cover_url,
     enrollment.learner_type, enrollment.user_id,
     enrollment.external_learner_id, enrollment.source_type,
     enrollment.source_id, enrollment.attempt_number,
@@ -179,21 +180,45 @@ SELECT enrollment.id, enrollment.company_id, enrollment.course_id,
     enrollment.current_lesson_version_id,
     COALESCE(progress.completed_count * 100 / NULLIF(progress.lesson_count, 0), 0)::integer
         AS progress_percent,
+    progress.completed_count AS completed_lesson_count,
+    progress.lesson_count AS total_lesson_count,
+    COALESCE(
+        assignment.due_date,
+        assignment.created_at
+            + make_interval(days => version.default_internal_deadline_days)
+    ) AS due_date,
+    COALESCE((COALESCE(
+        assignment.due_date,
+        assignment.created_at
+            + make_interval(days => version.default_internal_deadline_days)
+     ) < sqlc.arg(now)::timestamptz
+        AND enrollment.progress_status <> 'completed'), false) AS overdue,
     enrollment.activated_at, enrollment.access_until, enrollment.started_at,
     enrollment.completed_at, enrollment.last_activity_at,
     enrollment.frozen_at, enrollment.suspended_at,
     enrollment.created_at, enrollment.updated_at
 FROM course_enrollments AS enrollment
-JOIN course_versions AS version ON version.id = enrollment.course_version_id
+JOIN course_versions AS version
+  ON version.company_id = enrollment.company_id
+ AND version.id = enrollment.course_version_id
+JOIN courses AS course
+  ON course.company_id = enrollment.company_id
+ AND course.id = enrollment.course_id
+LEFT JOIN assignments AS assignment
+  ON enrollment.source_type = 'assignment'
+ AND assignment.company_id = enrollment.company_id
+ AND assignment.id = enrollment.source_id
 LEFT JOIN LATERAL (
     SELECT count(*)::integer AS lesson_count,
            count(*) FILTER (WHERE lesson_progress.status = 'completed')::integer
                AS completed_count
     FROM course_version_lessons AS lesson
     LEFT JOIN enrollment_lesson_progress AS lesson_progress
-      ON lesson_progress.enrollment_id = enrollment.id
+      ON lesson_progress.company_id = enrollment.company_id
+     AND lesson_progress.enrollment_id = enrollment.id
      AND lesson_progress.lesson_version_id = lesson.id
-    WHERE lesson.course_version_id = enrollment.course_version_id
+    WHERE lesson.company_id = enrollment.company_id
+      AND lesson.course_version_id = enrollment.course_version_id
 ) AS progress ON true
 WHERE enrollment.company_id = sqlc.arg(company_id)
   AND enrollment.learner_type = 'user'
@@ -201,7 +226,166 @@ WHERE enrollment.company_id = sqlc.arg(company_id)
        OR enrollment.user_id = sqlc.narg(user_id)::uuid)
   AND (sqlc.narg(course_id)::uuid IS NULL
        OR enrollment.course_id = sqlc.narg(course_id)::uuid)
+  AND (sqlc.narg(course_version_id)::uuid IS NULL
+       OR enrollment.course_version_id = sqlc.narg(course_version_id)::uuid)
+  AND (sqlc.narg(progress_status)::text IS NULL
+       OR enrollment.progress_status = sqlc.narg(progress_status)::text)
+  AND (sqlc.narg(access_status)::text IS NULL
+       OR enrollment.access_status = sqlc.narg(access_status)::text)
+  AND (sqlc.narg(partner_owner_id)::uuid IS NULL
+       OR enrollment.user_id = sqlc.narg(partner_owner_id)::uuid
+       OR (course.owner_type = 'partner'
+           AND course.owner_user_id = sqlc.narg(partner_owner_id)::uuid))
 ORDER BY enrollment.created_at DESC, enrollment.id DESC;
+
+-- name: CountInternalEnrollmentReportRows :one
+WITH report_rows AS (
+    SELECT enrollment.id,
+        CASE
+            WHEN enrollment.access_status = 'frozen' THEN 'frozen'
+            WHEN COALESCE(
+                COALESCE(
+                    assignment.due_date,
+                    assignment.created_at
+                        + make_interval(days => version.default_internal_deadline_days)
+                ) < sqlc.arg(now)::timestamptz
+                AND enrollment.progress_status <> 'completed',
+                false
+            ) THEN 'overdue'
+            ELSE enrollment.progress_status
+        END AS report_status
+    FROM course_enrollments AS enrollment
+    JOIN course_versions AS version
+      ON version.company_id = enrollment.company_id
+     AND version.id = enrollment.course_version_id
+    JOIN courses AS course
+      ON course.company_id = enrollment.company_id
+     AND course.id = enrollment.course_id
+    LEFT JOIN assignments AS assignment
+      ON enrollment.source_type = 'assignment'
+     AND assignment.company_id = enrollment.company_id
+     AND assignment.id = enrollment.source_id
+    WHERE enrollment.company_id = sqlc.arg(company_id)
+      AND enrollment.learner_type = 'user'
+      AND enrollment.user_id = ANY(sqlc.arg(user_ids)::uuid[])
+      AND (sqlc.narg(course_id)::uuid IS NULL
+           OR enrollment.course_id = sqlc.narg(course_id)::uuid)
+      AND (sqlc.narg(search)::text IS NULL
+           OR course.title ILIKE '%' || sqlc.narg(search)::text || '%'
+           OR enrollment.user_id = ANY(sqlc.arg(search_user_ids)::uuid[]))
+)
+SELECT count(*)::bigint
+FROM report_rows
+WHERE sqlc.narg(status)::text IS NULL
+   OR report_status = sqlc.narg(status)::text;
+
+-- name: ListInternalEnrollmentReportRows :many
+WITH report_rows AS (
+    SELECT enrollment.id, enrollment.company_id, enrollment.course_id,
+        enrollment.course_version_id, version.number AS version_number,
+        course.title AS course_title, course.cover_url AS course_cover_url,
+        enrollment.learner_type, enrollment.user_id,
+        enrollment.external_learner_id, enrollment.source_type,
+        enrollment.source_id, enrollment.attempt_number,
+        enrollment.progress_status, enrollment.access_status,
+        enrollment.current_lesson_version_id,
+        COALESCE(progress.completed_count * 100 / NULLIF(progress.lesson_count, 0), 0)::integer
+            AS progress_percent,
+        progress.completed_count AS completed_lesson_count,
+        progress.lesson_count AS total_lesson_count,
+        COALESCE(
+            assignment.due_date,
+            assignment.created_at
+                + make_interval(days => version.default_internal_deadline_days)
+        ) AS due_date,
+        COALESCE(
+            COALESCE(
+                assignment.due_date,
+                assignment.created_at
+                    + make_interval(days => version.default_internal_deadline_days)
+            ) < sqlc.arg(now)::timestamptz
+            AND enrollment.progress_status <> 'completed',
+            false
+        ) AS overdue,
+        CASE
+            WHEN enrollment.access_status = 'frozen' THEN 'frozen'
+            WHEN COALESCE(
+                COALESCE(
+                    assignment.due_date,
+                    assignment.created_at
+                        + make_interval(days => version.default_internal_deadline_days)
+                ) < sqlc.arg(now)::timestamptz
+                AND enrollment.progress_status <> 'completed',
+                false
+            ) THEN 'overdue'
+            ELSE enrollment.progress_status
+        END AS report_status,
+        enrollment.activated_at, enrollment.access_until,
+        enrollment.started_at, enrollment.completed_at,
+        enrollment.last_activity_at, enrollment.frozen_at,
+        enrollment.suspended_at, enrollment.created_at,
+        enrollment.updated_at
+    FROM course_enrollments AS enrollment
+    JOIN course_versions AS version
+      ON version.company_id = enrollment.company_id
+     AND version.id = enrollment.course_version_id
+    JOIN courses AS course
+      ON course.company_id = enrollment.company_id
+     AND course.id = enrollment.course_id
+    LEFT JOIN assignments AS assignment
+      ON enrollment.source_type = 'assignment'
+     AND assignment.company_id = enrollment.company_id
+     AND assignment.id = enrollment.source_id
+    LEFT JOIN LATERAL (
+        SELECT count(*)::integer AS lesson_count,
+               count(*) FILTER (
+                   WHERE lesson_progress.status = 'completed'
+               )::integer AS completed_count
+        FROM course_version_lessons AS lesson
+        LEFT JOIN enrollment_lesson_progress AS lesson_progress
+          ON lesson_progress.company_id = enrollment.company_id
+         AND lesson_progress.enrollment_id = enrollment.id
+         AND lesson_progress.lesson_version_id = lesson.id
+        WHERE lesson.company_id = enrollment.company_id
+          AND lesson.course_version_id = enrollment.course_version_id
+    ) AS progress ON true
+    WHERE enrollment.company_id = sqlc.arg(company_id)
+      AND enrollment.learner_type = 'user'
+      AND enrollment.user_id = ANY(sqlc.arg(user_ids)::uuid[])
+      AND (sqlc.narg(course_id)::uuid IS NULL
+           OR enrollment.course_id = sqlc.narg(course_id)::uuid)
+      AND (sqlc.narg(search)::text IS NULL
+           OR course.title ILIKE '%' || sqlc.narg(search)::text || '%'
+           OR enrollment.user_id = ANY(sqlc.arg(search_user_ids)::uuid[]))
+)
+SELECT id, company_id, course_id, course_version_id, version_number,
+    course_title, course_cover_url, learner_type, user_id,
+    external_learner_id, source_type, source_id, attempt_number,
+    progress_status, access_status, current_lesson_version_id,
+    progress_percent, completed_lesson_count, total_lesson_count,
+    due_date, overdue, activated_at, access_until, started_at,
+    completed_at, last_activity_at, frozen_at, suspended_at,
+    created_at, updated_at
+FROM report_rows
+WHERE sqlc.narg(status)::text IS NULL
+   OR report_status = sqlc.narg(status)::text
+ORDER BY
+    CASE WHEN sqlc.arg(sort)::text = 'title_asc'
+         THEN lower(course_title) END ASC,
+    CASE WHEN sqlc.arg(sort)::text = 'title_desc'
+         THEN lower(course_title) END DESC,
+    CASE WHEN sqlc.arg(sort)::text = 'deadline_asc'
+         THEN due_date END ASC NULLS LAST,
+    CASE WHEN sqlc.arg(sort)::text = 'status'
+         THEN report_status END ASC,
+    CASE WHEN sqlc.arg(sort)::text = 'updated_asc'
+         THEN last_activity_at END ASC NULLS LAST,
+    CASE WHEN sqlc.arg(sort)::text = 'updated_desc'
+         THEN last_activity_at END DESC NULLS LAST,
+    created_at DESC,
+    id DESC
+LIMIT sqlc.arg(page_limit)::integer
+OFFSET sqlc.arg(page_offset)::integer;
 
 -- name: GetEnrollmentResume :one
 SELECT enrollment.id, enrollment.company_id, enrollment.course_id,
@@ -218,16 +402,20 @@ SELECT enrollment.id, enrollment.company_id, enrollment.course_id,
     enrollment.frozen_at, enrollment.suspended_at,
     enrollment.created_at, enrollment.updated_at
 FROM course_enrollments AS enrollment
-JOIN course_versions AS version ON version.id = enrollment.course_version_id
+JOIN course_versions AS version
+  ON version.company_id = enrollment.company_id
+ AND version.id = enrollment.course_version_id
 LEFT JOIN LATERAL (
     SELECT count(*)::integer AS lesson_count,
            count(*) FILTER (WHERE lesson_progress.status = 'completed')::integer
                AS completed_count
     FROM course_version_lessons AS lesson
     LEFT JOIN enrollment_lesson_progress AS lesson_progress
-      ON lesson_progress.enrollment_id = enrollment.id
+      ON lesson_progress.company_id = enrollment.company_id
+     AND lesson_progress.enrollment_id = enrollment.id
      AND lesson_progress.lesson_version_id = lesson.id
-    WHERE lesson.course_version_id = enrollment.course_version_id
+    WHERE lesson.company_id = enrollment.company_id
+      AND lesson.course_version_id = enrollment.course_version_id
 ) AS progress ON true
 WHERE enrollment.company_id = sqlc.arg(company_id)
   AND enrollment.id = sqlc.arg(id);
@@ -309,14 +497,19 @@ SELECT enrollment.id AS enrollment_id, enrollment.company_id,
     enrollment.started_at, enrollment.completed_at,
     enrollment.last_activity_at, enrollment.created_at
 FROM course_enrollments AS enrollment
-JOIN course_versions AS version ON version.id = enrollment.course_version_id
+JOIN course_versions AS version
+  ON version.company_id = enrollment.company_id
+ AND version.id = enrollment.course_version_id
 LEFT JOIN assignments AS assignment
   ON enrollment.source_type = 'assignment'
+ AND assignment.company_id = enrollment.company_id
  AND assignment.id = enrollment.source_id
 LEFT JOIN course_version_lessons AS lesson
-  ON lesson.course_version_id = enrollment.course_version_id
+  ON lesson.company_id = enrollment.company_id
+ AND lesson.course_version_id = enrollment.course_version_id
 LEFT JOIN enrollment_lesson_progress AS lesson_progress
-  ON lesson_progress.enrollment_id = enrollment.id
+  ON lesson_progress.company_id = enrollment.company_id
+ AND lesson_progress.enrollment_id = enrollment.id
  AND lesson_progress.lesson_version_id = lesson.id
 WHERE enrollment.company_id = sqlc.arg(company_id)
   AND enrollment.learner_type = 'user'

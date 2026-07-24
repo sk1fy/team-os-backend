@@ -47,6 +47,45 @@ func (s *Server) GetEnrollments(ctx context.Context, request *academyv1.GetEnrol
 	return &academyv1.GetEnrollmentsResponse{Enrollments: enrollmentsToProto(values)}, nil
 }
 
+func (s *Server) GetInternalEnrollmentReportPage(
+	ctx context.Context,
+	request *academyv1.GetInternalEnrollmentReportPageRequest,
+) (*academyv1.GetInternalEnrollmentReportPageResponse, error) {
+	actor, err := s.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	userIDs, err := parseUUIDList(request.GetUserIds())
+	if err != nil {
+		return nil, err
+	}
+	searchUserIDs, err := parseUUIDList(request.GetSearchUserIds())
+	if err != nil {
+		return nil, err
+	}
+	courseID, err := parseOptionalUUID(request.CourseId)
+	if err != nil {
+		return nil, err
+	}
+	reportStatus, err := internalEnrollmentReportStatusFromProto(request.GetStatus())
+	if err != nil {
+		return nil, err
+	}
+	reportSort, err := internalEnrollmentReportSortFromProto(request.GetSort())
+	if err != nil {
+		return nil, err
+	}
+	page, err := s.application.GetInternalEnrollmentReportPage(ctx, actor, application.InternalEnrollmentReportQuery{
+		UserIDs: userIDs, SearchUserIDs: searchUserIDs, Search: request.Search,
+		CourseID: courseID, Status: reportStatus, Sort: reportSort,
+		Page: int32(request.GetPage()), PageSize: int32(request.GetPageSize()),
+	})
+	if err != nil {
+		return nil, transportError(err)
+	}
+	return internalEnrollmentReportPageToProto(page), nil
+}
+
 func (s *Server) SelfEnrollCourse(ctx context.Context, request *academyv1.SelfEnrollCourseRequest) (*academyv1.SelfEnrollCourseResponse, error) {
 	actor, err := s.actor(ctx)
 	if err != nil {
@@ -61,6 +100,20 @@ func (s *Server) SelfEnrollCourse(ctx context.Context, request *academyv1.SelfEn
 		return nil, transportError(err)
 	}
 	return &academyv1.SelfEnrollCourseResponse{Enrollment: enrollmentToProto(value)}, nil
+}
+
+func (s *Server) GetAcademyCatalog(ctx context.Context, request *academyv1.GetAcademyCatalogRequest) (*academyv1.GetAcademyCatalogResponse, error) {
+	actor, err := s.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	page, err := s.application.GetAcademyCatalog(ctx, actor, application.CatalogQuery{
+		Search: request.Search, Page: int32(request.GetPage()), PageSize: int32(request.GetPageSize()),
+	})
+	if err != nil {
+		return nil, transportError(err)
+	}
+	return catalogPageToProto(page), nil
 }
 
 func (s *Server) GetCatalogCourseVersion(ctx context.Context, request *academyv1.GetCatalogCourseVersionRequest) (*academyv1.GetCatalogCourseVersionResponse, error) {
@@ -234,6 +287,36 @@ func (s *Server) SubmitEnrollmentQuizAttempt(ctx context.Context, request *acade
 		return nil, enrollmentMappingError(err)
 	}
 	return &academyv1.SubmitEnrollmentQuizAttemptResponse{Attempt: convertedAttempt, Progress: convertedProgress}, nil
+}
+
+func (s *Server) ReviewEnrollmentQuizAttempt(ctx context.Context, request *academyv1.ReviewEnrollmentQuizAttemptRequest) (*academyv1.ReviewEnrollmentQuizAttemptResponse, error) {
+	actor, err := s.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	enrollmentID, err := parseUUID(request.GetEnrollmentId())
+	if err != nil {
+		return nil, err
+	}
+	attemptID, err := parseUUID(request.GetAttemptId())
+	if err != nil {
+		return nil, err
+	}
+	attempt, progress, err := s.application.ReviewEnrollmentQuizAttempt(ctx, actor, application.ReviewEnrollmentQuizInput{
+		EnrollmentID: enrollmentID, AttemptID: attemptID, Passed: request.GetPassed(), Comment: request.Comment,
+	})
+	if err != nil {
+		return nil, transportError(err)
+	}
+	convertedAttempt, err := enrollmentQuizAttemptToProto(attempt)
+	if err != nil {
+		return nil, enrollmentMappingError(err)
+	}
+	convertedProgress, err := enrollmentProgressSnapshotToProto(progress)
+	if err != nil {
+		return nil, enrollmentMappingError(err)
+	}
+	return &academyv1.ReviewEnrollmentQuizAttemptResponse{Attempt: convertedAttempt, Progress: convertedProgress}, nil
 }
 
 func (s *Server) GetEnrollmentReport(ctx context.Context, request *academyv1.GetEnrollmentReportRequest) (*academyv1.GetEnrollmentReportResponse, error) {

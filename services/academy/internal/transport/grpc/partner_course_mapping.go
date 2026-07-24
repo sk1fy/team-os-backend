@@ -9,6 +9,40 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+func uuidsToStrings(values []uuid.UUID) []string {
+	result := make([]string, len(values))
+	for index := range values {
+		result[index] = values[index].String()
+	}
+	return result
+}
+
+func coursePartnerAudienceToProto(value string) academyv1.CoursePartnerAudience {
+	switch value {
+	case "all_partners":
+		return academyv1.CoursePartnerAudience_COURSE_PARTNER_AUDIENCE_ALL_PARTNERS
+	case "selected_partners":
+		return academyv1.CoursePartnerAudience_COURSE_PARTNER_AUDIENCE_SELECTED_PARTNERS
+	case "none":
+		return academyv1.CoursePartnerAudience_COURSE_PARTNER_AUDIENCE_NONE
+	default:
+		return academyv1.CoursePartnerAudience_COURSE_PARTNER_AUDIENCE_UNSPECIFIED
+	}
+}
+
+func coursePartnerAudienceFromProto(value academyv1.CoursePartnerAudience) string {
+	switch value {
+	case academyv1.CoursePartnerAudience_COURSE_PARTNER_AUDIENCE_ALL_PARTNERS:
+		return "all_partners"
+	case academyv1.CoursePartnerAudience_COURSE_PARTNER_AUDIENCE_SELECTED_PARTNERS:
+		return "selected_partners"
+	case academyv1.CoursePartnerAudience_COURSE_PARTNER_AUDIENCE_NONE:
+		return "none"
+	default:
+		return ""
+	}
+}
+
 func optionalProtoUUID(value *uuid.UUID) *string {
 	if value == nil {
 		return nil
