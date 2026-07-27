@@ -77,7 +77,8 @@ func publicAcademyAccessToProto(value application.PublicAcademyAccess) *academyv
 		CoverUrl: value.CoverURL, OwnerType: courseOwnerTypeToProto(value.OwnerType), OwnerUserId: optionalUUIDString(value.OwnerUserID),
 		DeadlineDays: uint32(max(0, value.DeadlineDays)), Available: value.Available,
 		UnavailableReason: value.UnavailableReason, EmailVerificationRequired: value.EmailVerificationRequired,
-		Outline: make([]*academyv1.PublicAcademyOutlineSection, len(value.Outline))}
+		Outline: make([]*academyv1.PublicAcademyOutlineSection, len(value.Outline)),
+		Message: value.Message, ExistingEnrollmentId: optionalUUIDString(value.ExistingEnrollmentID)}
 	for sectionIndex, section := range value.Outline {
 		lessons := make([]*academyv1.PublicAcademyOutlineLesson, len(section.Lessons))
 		for lessonIndex, lesson := range section.Lessons {

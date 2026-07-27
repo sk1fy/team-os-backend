@@ -93,6 +93,20 @@ JOIN course_versions AS version
  AND version.id = campaign.course_version_id
 WHERE campaign.token_hash = sqlc.arg(token_hash);
 
+-- name: GetExternalCampaignEnrollment :one
+SELECT enrollment.id, enrollment.access_status,
+    COALESCE(enrollment.access_until <= sqlc.arg(now)::timestamptz, false)::boolean
+        AS deadline_expired
+FROM course_enrollments AS enrollment
+WHERE enrollment.company_id = sqlc.arg(company_id)
+  AND enrollment.source_id = sqlc.arg(campaign_id)
+  AND enrollment.external_learner_id = sqlc.arg(external_learner_id)
+  AND enrollment.source_type IN (
+      'partner_promo_campaign', 'company_candidate_campaign'
+  )
+ORDER BY enrollment.attempt_number DESC
+LIMIT 1;
+
 -- name: ListExternalCampaigns :many
 SELECT campaign.id, campaign.company_id, campaign.course_id,
     campaign.course_version_id, campaign.owner_type,

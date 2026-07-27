@@ -15464,20 +15464,23 @@ func (x *PublicAcademyOutlineSection) GetLessons() []*PublicAcademyOutlineLesson
 }
 
 type PublicAcademyAccess struct {
-	state                     protoimpl.MessageState         `protogen:"open.v1"`
-	Kind                      PublicAcademyAccessKind        `protobuf:"varint,1,opt,name=kind,proto3,enum=teamos.academy.v1.PublicAcademyAccessKind" json:"kind,omitempty"`
-	CourseId                  string                         `protobuf:"bytes,2,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
-	CourseVersionId           string                         `protobuf:"bytes,3,opt,name=course_version_id,json=courseVersionId,proto3" json:"course_version_id,omitempty"`
-	Title                     string                         `protobuf:"bytes,4,opt,name=title,proto3" json:"title,omitempty"`
-	Description               *string                        `protobuf:"bytes,5,opt,name=description,proto3,oneof" json:"description,omitempty"`
-	CoverUrl                  *string                        `protobuf:"bytes,6,opt,name=cover_url,json=coverUrl,proto3,oneof" json:"cover_url,omitempty"`
-	OwnerType                 CourseOwnerType                `protobuf:"varint,7,opt,name=owner_type,json=ownerType,proto3,enum=teamos.academy.v1.CourseOwnerType" json:"owner_type,omitempty"`
-	OwnerUserId               *string                        `protobuf:"bytes,8,opt,name=owner_user_id,json=ownerUserId,proto3,oneof" json:"owner_user_id,omitempty"`
-	DeadlineDays              uint32                         `protobuf:"varint,9,opt,name=deadline_days,json=deadlineDays,proto3" json:"deadline_days,omitempty"`
-	Available                 bool                           `protobuf:"varint,10,opt,name=available,proto3" json:"available,omitempty"`
+	state           protoimpl.MessageState  `protogen:"open.v1"`
+	Kind            PublicAcademyAccessKind `protobuf:"varint,1,opt,name=kind,proto3,enum=teamos.academy.v1.PublicAcademyAccessKind" json:"kind,omitempty"`
+	CourseId        string                  `protobuf:"bytes,2,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	CourseVersionId string                  `protobuf:"bytes,3,opt,name=course_version_id,json=courseVersionId,proto3" json:"course_version_id,omitempty"`
+	Title           string                  `protobuf:"bytes,4,opt,name=title,proto3" json:"title,omitempty"`
+	Description     *string                 `protobuf:"bytes,5,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	CoverUrl        *string                 `protobuf:"bytes,6,opt,name=cover_url,json=coverUrl,proto3,oneof" json:"cover_url,omitempty"`
+	OwnerType       CourseOwnerType         `protobuf:"varint,7,opt,name=owner_type,json=ownerType,proto3,enum=teamos.academy.v1.CourseOwnerType" json:"owner_type,omitempty"`
+	OwnerUserId     *string                 `protobuf:"bytes,8,opt,name=owner_user_id,json=ownerUserId,proto3,oneof" json:"owner_user_id,omitempty"`
+	DeadlineDays    uint32                  `protobuf:"varint,9,opt,name=deadline_days,json=deadlineDays,proto3" json:"deadline_days,omitempty"`
+	Available       bool                    `protobuf:"varint,10,opt,name=available,proto3" json:"available,omitempty"`
+	// Stable machine-readable code. User-facing text is carried by message.
 	UnavailableReason         *string                        `protobuf:"bytes,11,opt,name=unavailable_reason,json=unavailableReason,proto3,oneof" json:"unavailable_reason,omitempty"`
 	EmailVerificationRequired bool                           `protobuf:"varint,12,opt,name=email_verification_required,json=emailVerificationRequired,proto3" json:"email_verification_required,omitempty"`
 	Outline                   []*PublicAcademyOutlineSection `protobuf:"bytes,13,rep,name=outline,proto3" json:"outline,omitempty"`
+	Message                   *string                        `protobuf:"bytes,14,opt,name=message,proto3,oneof" json:"message,omitempty"`
+	ExistingEnrollmentId      *string                        `protobuf:"bytes,15,opt,name=existing_enrollment_id,json=existingEnrollmentId,proto3,oneof" json:"existing_enrollment_id,omitempty"`
 	unknownFields             protoimpl.UnknownFields
 	sizeCache                 protoimpl.SizeCache
 }
@@ -15601,6 +15604,20 @@ func (x *PublicAcademyAccess) GetOutline() []*PublicAcademyOutlineSection {
 		return x.Outline
 	}
 	return nil
+}
+
+func (x *PublicAcademyAccess) GetMessage() string {
+	if x != nil && x.Message != nil {
+		return *x.Message
+	}
+	return ""
+}
+
+func (x *PublicAcademyAccess) GetExistingEnrollmentId() string {
+	if x != nil && x.ExistingEnrollmentId != nil {
+		return *x.ExistingEnrollmentId
+	}
+	return ""
 }
 
 type ExternalVerificationChallenge struct {
@@ -20386,7 +20403,7 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x14\n" +
 	"\x05order\x18\x03 \x01(\rR\x05order\x12G\n" +
-	"\alessons\x18\x04 \x03(\v2-.teamos.academy.v1.PublicAcademyOutlineLessonR\alessons\"\xb1\x05\n" +
+	"\alessons\x18\x04 \x03(\v2-.teamos.academy.v1.PublicAcademyOutlineLessonR\alessons\"\xb2\x06\n" +
 	"\x13PublicAcademyAccess\x12>\n" +
 	"\x04kind\x18\x01 \x01(\x0e2*.teamos.academy.v1.PublicAcademyAccessKindR\x04kind\x12\x1b\n" +
 	"\tcourse_id\x18\x02 \x01(\tR\bcourseId\x12*\n" +
@@ -20402,12 +20419,17 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	" \x01(\bR\tavailable\x122\n" +
 	"\x12unavailable_reason\x18\v \x01(\tH\x03R\x11unavailableReason\x88\x01\x01\x12>\n" +
 	"\x1bemail_verification_required\x18\f \x01(\bR\x19emailVerificationRequired\x12H\n" +
-	"\aoutline\x18\r \x03(\v2..teamos.academy.v1.PublicAcademyOutlineSectionR\aoutlineB\x0e\n" +
+	"\aoutline\x18\r \x03(\v2..teamos.academy.v1.PublicAcademyOutlineSectionR\aoutline\x12\x1d\n" +
+	"\amessage\x18\x0e \x01(\tH\x04R\amessage\x88\x01\x01\x129\n" +
+	"\x16existing_enrollment_id\x18\x0f \x01(\tH\x05R\x14existingEnrollmentId\x88\x01\x01B\x0e\n" +
 	"\f_descriptionB\f\n" +
 	"\n" +
 	"_cover_urlB\x10\n" +
 	"\x0e_owner_user_idB\x15\n" +
-	"\x13_unavailable_reason\"}\n" +
+	"\x13_unavailable_reasonB\n" +
+	"\n" +
+	"\b_messageB\x19\n" +
+	"\x17_existing_enrollment_id\"}\n" +
 	"\x1dExternalVerificationChallenge\x12!\n" +
 	"\fchallenge_id\x18\x01 \x01(\tR\vchallengeId\x129\n" +
 	"\n" +

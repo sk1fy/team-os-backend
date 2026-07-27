@@ -401,7 +401,7 @@ func (s *Service) GetPublicAcademyAccess(
 	analytics CampaignAnalyticsContext,
 ) (PublicAcademyAccess, error) {
 	row, err := db.New(s.pool).ResolveExternalPersonalAccessByTokenHash(ctx, db.ResolveExternalPersonalAccessByTokenHashParams{
-		Now: nullTimestamptzPointer(s.now().UTC()), TokenHash: s.externalTokenHash(token),
+		Now: s.now().UTC(), TokenHash: s.externalTokenHash(token),
 	})
 	if err != nil {
 		if isNoRows(err) {
@@ -409,12 +409,14 @@ func (s *Service) GetPublicAcademyAccess(
 		}
 		return PublicAcademyAccess{}, internal("Не удалось получить внешний доступ", err)
 	}
-	available := row.LifecycleStatus == "active" && row.DistributionStatus != "blocked" && row.CourseVersionStatus == "published"
-	var reason *string
-	if !available {
-		value := "Курс сейчас недоступен"
-		reason = &value
-	}
+	availability := personalAccessAvailability(
+		row.Status,
+		row.LifecycleStatus,
+		row.DistributionStatus,
+		row.CourseVersionStatus,
+		row.DeadlineExpired,
+	)
+	reason, message := availabilityPointers(availability)
 	outlineRows, err := db.New(s.pool).ListExternalAccessLandingOutline(ctx, db.ListExternalAccessLandingOutlineParams{
 		CompanyID: row.CompanyID, PersonalAccessID: row.ID,
 	})
@@ -432,8 +434,9 @@ func (s *Service) GetPublicAcademyAccess(
 	return PublicAcademyAccess{
 		Kind: "personal", CourseID: row.CourseID, CourseVersionID: row.CourseVersionID,
 		Title: row.CourseVersionTitle, Description: textPointer(row.CourseVersionDescription), OwnerType: "partner",
-		OwnerUserID: &row.PartnerOwnerID, DeadlineDays: int32(row.DeadlineDays), Available: available,
-		UnavailableReason: reason, EmailVerificationRequired: !verified, Outline: outline,
+		OwnerUserID: &row.PartnerOwnerID, DeadlineDays: int32(row.DeadlineDays), Available: availability.Available,
+		UnavailableReason: reason, Message: message, ExistingEnrollmentID: nullUUIDPointer(row.EnrollmentID),
+		EmailVerificationRequired: !verified, Outline: outline,
 	}, nil
 }
 
@@ -452,13 +455,23 @@ func (s *Service) RequestPublicAcademyVerification(
 	defer func() { _ = tx.Rollback(ctx) }()
 	queries := db.New(tx)
 	access, err := queries.ResolveExternalPersonalAccessByTokenHash(ctx, db.ResolveExternalPersonalAccessByTokenHashParams{
-		Now: nullTimestamptzPointer(s.now().UTC()), TokenHash: s.externalTokenHash(input.AccessToken),
+		Now: s.now().UTC(), TokenHash: s.externalTokenHash(input.AccessToken),
 	})
 	if isNoRows(err) {
 		return s.requestPublicCampaignVerification(ctx, tx, queries, input, normalized)
 	}
 	if err != nil || normalized != access.NormalizedExpectedEmail {
 		return ExternalVerificationChallenge{}, notFound("Внешний доступ")
+	}
+	availability := personalAccessAvailability(
+		access.Status,
+		access.LifecycleStatus,
+		access.DistributionStatus,
+		access.CourseVersionStatus,
+		access.DeadlineExpired,
+	)
+	if !availability.Available {
+		return ExternalVerificationChallenge{}, conflict(availability.Message)
 	}
 	now := s.now().UTC()
 	if err = s.checkExternalVerificationRate(ctx, queries, access.CompanyID, access.ID, normalized,
@@ -628,7 +641,7 @@ func (s *Service) ActivatePublicAcademyAccess(
 		return Enrollment{}, validation("Требуется ключ идемпотентности")
 	}
 	if _, resolveErr := db.New(s.pool).ResolveExternalPersonalAccessByTokenHash(ctx, db.ResolveExternalPersonalAccessByTokenHashParams{
-		Now: nullTimestamptzPointer(s.now().UTC()), TokenHash: s.externalTokenHash(accessToken),
+		Now: s.now().UTC(), TokenHash: s.externalTokenHash(accessToken),
 	}); isNoRows(resolveErr) {
 		return s.activatePublicCampaignAccess(ctx, principal, accessToken, idempotencyKey, analytics)
 	} else if resolveErr != nil {
@@ -641,7 +654,7 @@ func (s *Service) ActivatePublicAcademyAccess(
 	defer func() { _ = tx.Rollback(ctx) }()
 	queries := db.New(tx)
 	access, err := queries.ResolveExternalPersonalAccessByTokenHash(ctx, db.ResolveExternalPersonalAccessByTokenHashParams{
-		Now: nullTimestamptzPointer(s.now().UTC()), TokenHash: s.externalTokenHash(accessToken),
+		Now: s.now().UTC(), TokenHash: s.externalTokenHash(accessToken),
 	})
 	if err != nil || access.CompanyID != principal.CompanyID {
 		return Enrollment{}, notFound("Внешний доступ")

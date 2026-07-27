@@ -1815,9 +1815,12 @@ message PublicAcademyAccess {
   optional string owner_user_id = 8;
   uint32 deadline_days = 9;
   bool available = 10;
+  // Stable machine-readable code. User-facing text is carried by message.
   optional string unavailable_reason = 11;
   bool email_verification_required = 12;
   repeated PublicAcademyOutlineSection outline = 13;
+  optional string message = 14;
+  optional string existing_enrollment_id = 15;
 }
 
 message ExternalVerificationChallenge {

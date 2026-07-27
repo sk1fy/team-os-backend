@@ -139,10 +139,17 @@ func publicAcademyAccessFromProto(value *academyv1.PublicAcademyAccess) (api.Pub
 		Kind: publicAcademyAccessKindFromProto(value.GetKind()), CourseId: courseID, CourseVersionId: versionID,
 		Title: value.GetTitle(), Description: value.Description, CoverUrl: value.CoverUrl,
 		OwnerType: ownerType, DeadlineDays: int(value.GetDeadlineDays()), Available: value.GetAvailable(),
-		UnavailableReason: value.UnavailableReason, EmailVerificationRequired: value.GetEmailVerificationRequired(),
+		EmailVerificationRequired: value.GetEmailVerificationRequired(), Message: value.Message,
 		Outline: make([]api.PublicAcademyOutlineSection, len(value.GetOutline())),
 	}
+	if value.UnavailableReason != nil {
+		reason := api.PublicAcademyUnavailableReason(value.GetUnavailableReason())
+		result.UnavailableReason = &reason
+	}
 	if result.OwnerUserId, err = parseOptionalUUIDString(value.GetOwnerUserId()); err != nil {
+		return api.PublicAcademyAccess{}, err
+	}
+	if result.ExistingEnrollmentId, err = parseOptionalUUIDString(value.GetExistingEnrollmentId()); err != nil {
 		return api.PublicAcademyAccess{}, err
 	}
 	for sectionIndex, section := range value.GetOutline() {

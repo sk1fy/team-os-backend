@@ -64,4 +64,36 @@ func TestCourseFromProtoPreservesVersionPointers(t *testing.T) {
 	}
 }
 
+func TestPublicAcademyAccessFromProtoPreservesUnavailableContract(t *testing.T) {
+	enrollmentID := uuid.New()
+	reason := "distribution_paused"
+	message := "Распространение курса временно приостановлено"
+
+	converted, err := publicAcademyAccessFromProto(&academyv1.PublicAcademyAccess{
+		Kind:                 academyv1.PublicAcademyAccessKind_PUBLIC_ACADEMY_ACCESS_KIND_PERSONAL_ACCESS,
+		CourseId:             uuid.NewString(),
+		CourseVersionId:      uuid.NewString(),
+		Title:                "Курс",
+		OwnerType:            academyv1.CourseOwnerType_COURSE_OWNER_TYPE_PARTNER,
+		DeadlineDays:         3,
+		Available:            false,
+		UnavailableReason:    &reason,
+		Message:              &message,
+		ExistingEnrollmentId: stringPointer(enrollmentID.String()),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if converted.UnavailableReason == nil ||
+		*converted.UnavailableReason != api.PublicAcademyUnavailableReason("distribution_paused") {
+		t.Fatalf("unavailableReason = %v", converted.UnavailableReason)
+	}
+	if converted.Message == nil || *converted.Message != message {
+		t.Fatalf("message = %v", converted.Message)
+	}
+	if converted.ExistingEnrollmentId == nil || *converted.ExistingEnrollmentId != enrollmentID {
+		t.Fatalf("existingEnrollmentId = %v", converted.ExistingEnrollmentId)
+	}
+}
+
 func stringPointer(value string) *string { return &value }

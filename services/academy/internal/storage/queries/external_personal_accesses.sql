@@ -113,7 +113,7 @@ SELECT access.id, access.company_id, access.course_id,
     version.description AS course_version_description,
     version.cover_file_id, version.status AS course_version_status,
     version.sequential,
-    COALESCE(enrollment.access_until <= sqlc.arg(now), false)
+    COALESCE(enrollment.access_until <= sqlc.arg(now)::timestamptz, false)::boolean
         AS deadline_expired
 FROM external_personal_accesses AS access
 JOIN courses AS course
@@ -125,8 +125,7 @@ JOIN course_versions AS version
 LEFT JOIN course_enrollments AS enrollment
   ON enrollment.company_id = access.company_id
  AND enrollment.id = access.enrollment_id
-WHERE access.token_hash = sqlc.arg(token_hash)
-  AND access.status IN ('issued', 'activated');
+WHERE access.token_hash = sqlc.arg(token_hash);
 
 -- name: ListExternalPersonalAccesses :many
 SELECT access.id, access.company_id, access.course_id,

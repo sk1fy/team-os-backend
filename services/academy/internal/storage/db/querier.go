@@ -166,6 +166,7 @@ type Querier interface {
 	GetExternalCampaignAnalyticsReport(ctx context.Context, arg GetExternalCampaignAnalyticsReportParams) (GetExternalCampaignAnalyticsReportRow, error)
 	GetExternalCampaignAttributionByEnrollment(ctx context.Context, arg GetExternalCampaignAttributionByEnrollmentParams) (GetExternalCampaignAttributionByEnrollmentRow, error)
 	GetExternalCampaignAttributionByVisitorHash(ctx context.Context, arg GetExternalCampaignAttributionByVisitorHashParams) (GetExternalCampaignAttributionByVisitorHashRow, error)
+	GetExternalCampaignEnrollment(ctx context.Context, arg GetExternalCampaignEnrollmentParams) (GetExternalCampaignEnrollmentRow, error)
 	GetExternalCampaignForUpdate(ctx context.Context, arg GetExternalCampaignForUpdateParams) (ExternalCampaign, error)
 	GetExternalEnrollmentForMutationForUpdate(ctx context.Context, arg GetExternalEnrollmentForMutationForUpdateParams) (GetExternalEnrollmentForMutationForUpdateRow, error)
 	GetExternalEnrollmentForSession(ctx context.Context, arg GetExternalEnrollmentForSessionParams) (GetExternalEnrollmentForSessionRow, error)

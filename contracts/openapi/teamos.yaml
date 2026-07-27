@@ -7477,13 +7477,34 @@ components:
         available:
           type: boolean
         unavailableReason:
+          $ref: '#/components/schemas/PublicAcademyUnavailableReason'
+        message:
           type: string
+          description: Понятное пользователю описание недоступности на русском языке
+        existingEnrollmentId:
+          $ref: '#/components/schemas/ID'
         emailVerificationRequired:
           type: boolean
         outline:
           type: array
           items:
             $ref: '#/components/schemas/PublicAcademyOutlineSection'
+    PublicAcademyUnavailableReason:
+      type: string
+      description: Стабильный машинно-читаемый код недоступности landing
+      enum:
+        - distribution_paused
+        - course_blocked
+        - course_archived
+        - course_deleted
+        - access_revoked
+        - access_expired
+        - campaign_paused
+        - campaign_revoked
+        - campaign_closed
+        - already_activated
+        - version_unavailable
+        - unavailable
     PublicAcademyOutlineSection:
       type: object
       additionalProperties: false

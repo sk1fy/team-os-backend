@@ -105,6 +105,8 @@ type PublicAcademyAccess struct {
 	DeadlineDays              int32
 	Available                 bool
 	UnavailableReason         *string
+	Message                   *string
+	ExistingEnrollmentID      *uuid.UUID
 	EmailVerificationRequired bool
 	Outline                   []PublicAcademyOutlineSection
 }

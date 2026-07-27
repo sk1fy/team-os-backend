@@ -1378,7 +1378,7 @@ SELECT access.id, access.company_id, access.course_id,
     version.description AS course_version_description,
     version.cover_file_id, version.status AS course_version_status,
     version.sequential,
-    COALESCE(enrollment.access_until <= $1, false)
+    COALESCE(enrollment.access_until <= $1::timestamptz, false)::boolean
         AS deadline_expired
 FROM external_personal_accesses AS access
 JOIN courses AS course
@@ -1391,12 +1391,11 @@ LEFT JOIN course_enrollments AS enrollment
   ON enrollment.company_id = access.company_id
  AND enrollment.id = access.enrollment_id
 WHERE access.token_hash = $2
-  AND access.status IN ('issued', 'activated')
 `
 
 type ResolveExternalPersonalAccessByTokenHashParams struct {
-	Now       pgtype.Timestamptz `json:"now"`
-	TokenHash []byte             `json:"token_hash"`
+	Now       time.Time `json:"now"`
+	TokenHash []byte    `json:"token_hash"`
 }
 
 type ResolveExternalPersonalAccessByTokenHashRow struct {
@@ -1434,7 +1433,7 @@ type ResolveExternalPersonalAccessByTokenHashRow struct {
 	CoverFileID              uuid.NullUUID      `json:"cover_file_id"`
 	CourseVersionStatus      string             `json:"course_version_status"`
 	Sequential               bool               `json:"sequential"`
-	DeadlineExpired          interface{}        `json:"deadline_expired"`
+	DeadlineExpired          bool               `json:"deadline_expired"`
 }
 
 // Resolve is the only tenant-bootstrap query. token_hash is globally unique;

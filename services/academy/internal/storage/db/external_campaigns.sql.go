@@ -472,6 +472,46 @@ func (q *Queries) GetExternalCampaign(ctx context.Context, arg GetExternalCampai
 	return i, err
 }
 
+const getExternalCampaignEnrollment = `-- name: GetExternalCampaignEnrollment :one
+SELECT enrollment.id, enrollment.access_status,
+    COALESCE(enrollment.access_until <= $1::timestamptz, false)::boolean
+        AS deadline_expired
+FROM course_enrollments AS enrollment
+WHERE enrollment.company_id = $2
+  AND enrollment.source_id = $3
+  AND enrollment.external_learner_id = $4
+  AND enrollment.source_type IN (
+      'partner_promo_campaign', 'company_candidate_campaign'
+  )
+ORDER BY enrollment.attempt_number DESC
+LIMIT 1
+`
+
+type GetExternalCampaignEnrollmentParams struct {
+	Now               time.Time     `json:"now"`
+	CompanyID         uuid.UUID     `json:"company_id"`
+	CampaignID        uuid.NullUUID `json:"campaign_id"`
+	ExternalLearnerID uuid.NullUUID `json:"external_learner_id"`
+}
+
+type GetExternalCampaignEnrollmentRow struct {
+	ID              uuid.UUID `json:"id"`
+	AccessStatus    string    `json:"access_status"`
+	DeadlineExpired bool      `json:"deadline_expired"`
+}
+
+func (q *Queries) GetExternalCampaignEnrollment(ctx context.Context, arg GetExternalCampaignEnrollmentParams) (GetExternalCampaignEnrollmentRow, error) {
+	row := q.db.QueryRow(ctx, getExternalCampaignEnrollment,
+		arg.Now,
+		arg.CompanyID,
+		arg.CampaignID,
+		arg.ExternalLearnerID,
+	)
+	var i GetExternalCampaignEnrollmentRow
+	err := row.Scan(&i.ID, &i.AccessStatus, &i.DeadlineExpired)
+	return i, err
+}
+
 const getExternalCampaignForUpdate = `-- name: GetExternalCampaignForUpdate :one
 SELECT id, company_id, course_id, course_version_id, owner_type,
     owner_user_id, purpose, name, deadline_days, status, token_hash,

@@ -41,10 +41,16 @@ func (s *Service) requestPublicCampaignVerification(
 	if err != nil {
 		return ExternalVerificationChallenge{}, notFound("Внешний доступ")
 	}
-	if !campaign.CanActivate.Valid || !campaign.CanActivate.Bool {
-		return ExternalVerificationChallenge{}, conflict(campaignUnavailableReason(
-			campaign.Status, campaign.CourseLifecycleStatus, campaign.CourseDistributionStatus, campaign.CourseVersionStatus,
-		))
+	availability := campaignAccessAvailability(
+		campaign.Status,
+		campaign.CourseLifecycleStatus,
+		campaign.CourseDistributionStatus,
+		campaign.CourseVersionStatus,
+		false,
+		false,
+	)
+	if !availability.Available {
+		return ExternalVerificationChallenge{}, conflict(availability.Message)
 	}
 	now := s.now().UTC()
 	if err = s.checkExternalVerificationRate(ctx, queries, campaign.CompanyID, campaign.ID, normalized,
@@ -131,12 +137,31 @@ func (s *Service) getPublicCampaignAccess(
 	if err != nil {
 		return PublicAcademyAccess{}, internal("Не удалось получить структуру курса", err)
 	}
-	available := row.CanActivate.Valid && row.CanActivate.Bool
-	var reason *string
-	if !available {
-		value := campaignUnavailableReason(row.Status, row.CourseLifecycleStatus, row.CourseDistributionStatus, row.CourseVersionStatus)
-		reason = &value
+	var existingEnrollmentID *uuid.UUID
+	enrollmentExpired := false
+	if principal != nil && principal.CompanyID == row.CompanyID {
+		enrollment, enrollmentErr := db.New(s.pool).GetExternalCampaignEnrollment(ctx, db.GetExternalCampaignEnrollmentParams{
+			Now:               s.now().UTC(),
+			CompanyID:         row.CompanyID,
+			CampaignID:        nullUUID(&row.ID),
+			ExternalLearnerID: nullUUID(&principal.LearnerID),
+		})
+		if enrollmentErr == nil {
+			existingEnrollmentID = &enrollment.ID
+			enrollmentExpired = enrollment.DeadlineExpired || enrollment.AccessStatus == "expired"
+		} else if !isNoRows(enrollmentErr) {
+			return PublicAcademyAccess{}, internal("Не удалось проверить существующее прохождение", enrollmentErr)
+		}
 	}
+	availability := campaignAccessAvailability(
+		row.Status,
+		row.CourseLifecycleStatus,
+		row.CourseDistributionStatus,
+		row.CourseVersionStatus,
+		existingEnrollmentID != nil,
+		enrollmentExpired,
+	)
+	reason, message := availabilityPointers(availability)
 	verified := principal != nil && principal.CompanyID == row.CompanyID
 	now := s.now().UTC()
 	eventTypes := []string{"landing_viewed"}
@@ -155,7 +180,8 @@ func (s *Service) getPublicCampaignAccess(
 		Kind: campaignSourceType(row.Purpose), CourseID: row.CourseID, CourseVersionID: row.CourseVersionID,
 		Title: interfaceText(row.CourseTitle, "Курс"), Description: interfaceTextPointer(row.CourseDescription),
 		OwnerType: row.OwnerType, OwnerUserID: nullUUIDPointer(row.OwnerUserID),
-		DeadlineDays: int32(row.DeadlineDays), Available: available, UnavailableReason: reason,
+		DeadlineDays: int32(row.DeadlineDays), Available: availability.Available, UnavailableReason: reason,
+		Message: message, ExistingEnrollmentID: existingEnrollmentID,
 		EmailVerificationRequired: !verified, Outline: publicCampaignOutlineFromRows(outlineRows),
 	}, nil
 }
@@ -325,26 +351,7 @@ func enrollmentFromCampaignActivatedRow(row db.ActivateExternalCampaignRow, vers
 }
 
 func campaignUnavailableReason(status, lifecycle, distribution, versionStatus string) string {
-	switch {
-	case lifecycle == "deleted":
-		return "Курс удалён"
-	case distribution == "blocked":
-		return "Курс временно заблокирован"
-	case lifecycle == "archived":
-		return "Курс находится в архиве"
-	case distribution == "paused":
-		return "Распространение курса приостановлено"
-	case status == "paused":
-		return "Кампания приостановлена"
-	case status == "revoked":
-		return "Кампания отозвана"
-	case status == "closed":
-		return "Кампания закрыта"
-	case versionStatus != "published":
-		return "Версия курса недоступна"
-	default:
-		return "Курс сейчас недоступен"
-	}
+	return campaignAccessAvailability(status, lifecycle, distribution, versionStatus, false, false).Message
 }
 
 func campaignSourceType(purpose string) string {
