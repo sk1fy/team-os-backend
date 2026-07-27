@@ -1856,6 +1856,7 @@ message CreateExternalPersonalAccessRequest {
   optional string first_name = 4;
   optional string last_name = 5;
   uint32 deadline_days = 6;
+  string idempotency_key = 7;
 }
 
 message CreateExternalPersonalAccessResponse {
@@ -1889,6 +1890,7 @@ message ExtendExternalPersonalAccessResponse {
 
 message RotateExternalPersonalAccessTokenRequest {
   string access_id = 1;
+  string idempotency_key = 2;
 }
 
 message RotateExternalPersonalAccessTokenResponse {
@@ -1905,6 +1907,7 @@ message RevokeExternalPersonalAccessResponse {
 
 message RepeatExternalPersonalAccessRequest {
   string access_id = 1;
+  string idempotency_key = 2;
 }
 
 message RepeatExternalPersonalAccessResponse {
@@ -1917,6 +1920,7 @@ message CreateExternalCampaignRequest {
   string name = 3;
   ExternalCampaignPurpose purpose = 4;
   uint32 deadline_days = 5;
+  string idempotency_key = 6;
 }
 
 message CreateExternalCampaignResponse {
@@ -1957,6 +1961,7 @@ message ResumeExternalCampaignResponse {
 
 message RotateExternalCampaignTokenRequest {
   string campaign_id = 1;
+  string idempotency_key = 2;
 }
 
 message RotateExternalCampaignTokenResponse {

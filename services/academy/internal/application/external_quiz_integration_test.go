@@ -482,6 +482,7 @@ func externalQuizTestPool(t *testing.T, ctx context.Context) *pgxpool.Pool {
 			filepath.Join(migrationsDir, "000013_enrollment_mutation_idempotency.up.sql"),
 			filepath.Join(migrationsDir, "000014_normalize_quiz_question_ids.up.sql"),
 			filepath.Join(migrationsDir, "000015_course_partner_audience.up.sql"),
+			filepath.Join(migrationsDir, "000016_external_token_mutation_idempotency.up.sql"),
 		), postgres.BasicWaitStrategies(),
 	)
 	if err != nil {

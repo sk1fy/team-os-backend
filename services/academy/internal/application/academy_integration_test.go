@@ -16,6 +16,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	eventsv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/events/v1"
 	"github.com/sk1fy/team-os-backend/pkg/eventbus"
+	"github.com/sk1fy/team-os-backend/services/academy/internal/storage/db"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/postgres"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -50,6 +51,69 @@ func TestAcademyAuthorizationConsumersAndOrdering(t *testing.T) {
 	}
 	partner := Actor{CompanyID: companyID, UserID: partnerID, Role: "partner"}
 	manager := Actor{CompanyID: companyID, UserID: managerID, Role: "admin"}
+
+	t.Run("одноразовый token response резервируется и воспроизводится", func(t *testing.T) {
+		now := time.Now().UTC()
+		resultID := uuid.New()
+		request := struct {
+			CourseID uuid.UUID
+			Email    string
+		}{CourseID: uuid.New(), Email: "learner@example.com"}
+
+		tx, beginErr := pool.Begin(ctx)
+		if beginErr != nil {
+			t.Fatal(beginErr)
+		}
+		queries := db.New(tx)
+		reservation, replayed, reserveErr := service.reserveExternalTokenMutationInTx(
+			ctx, queries, partner, externalTokenOperationCreatePersonalAccess,
+			"reservation-key-0001", request, resultID, now,
+		)
+		if reserveErr != nil || replayed {
+			_ = tx.Rollback(ctx)
+			t.Fatalf("первая резервация: replayed=%v err=%v", replayed, reserveErr)
+		}
+		response := ExternalPersonalAccess{
+			ID: resultID, CompanyID: companyID, PartnerOwnerID: partnerID,
+			CourseID: request.CourseID, CourseVersionID: uuid.New(),
+			ExpectedEmail: request.Email, DeadlineDays: 3, Status: "issued",
+			TokenPrefix: "prefix0001", IssuedByID: partnerID, IssuedAt: now,
+		}
+		if completeErr := completeExternalTokenMutationInTx(
+			ctx, queries, companyID, reservation.ID, response, now,
+		); completeErr != nil {
+			_ = tx.Rollback(ctx)
+			t.Fatal(completeErr)
+		}
+		if commitErr := tx.Commit(ctx); commitErr != nil {
+			t.Fatal(commitErr)
+		}
+
+		replayTx, beginErr := pool.Begin(ctx)
+		if beginErr != nil {
+			t.Fatal(beginErr)
+		}
+		replayQueries := db.New(replayTx)
+		replayedReservation, replayed, reserveErr := service.reserveExternalTokenMutationInTx(
+			ctx, replayQueries, partner, externalTokenOperationCreatePersonalAccess,
+			"reservation-key-0001", request, uuid.New(), now.Add(time.Second),
+		)
+		if reserveErr != nil || !replayed {
+			_ = replayTx.Rollback(ctx)
+			t.Fatalf("повторная резервация: replayed=%v err=%v", replayed, reserveErr)
+		}
+		replayedResponse, decodeErr := decodeExternalTokenMutationReplay[ExternalPersonalAccess](
+			replayedReservation.ResponsePayload,
+		)
+		if decodeErr != nil || replayedResponse.ID != response.ID ||
+			replayedResponse.TokenPrefix != response.TokenPrefix {
+			_ = replayTx.Rollback(ctx)
+			t.Fatalf("сохранённый response=%+v err=%v", replayedResponse, decodeErr)
+		}
+		if commitErr := replayTx.Commit(ctx); commitErr != nil {
+			t.Fatal(commitErr)
+		}
+	})
 
 	t.Run("company created создаёт системные шаблоны идемпотентно", func(t *testing.T) {
 		event := academyEvent(t, companyID, &eventsv1.CompanyCreatedPayload{
@@ -320,6 +384,7 @@ func academyTestPool(t *testing.T, ctx context.Context) *pgxpool.Pool {
 			filepath.Join(migrationsDir, "000013_enrollment_mutation_idempotency.up.sql"),
 			filepath.Join(migrationsDir, "000014_normalize_quiz_question_ids.up.sql"),
 			filepath.Join(migrationsDir, "000015_course_partner_audience.up.sql"),
+			filepath.Join(migrationsDir, "000016_external_token_mutation_idempotency.up.sql"),
 		),
 		postgres.BasicWaitStrategies(),
 	)

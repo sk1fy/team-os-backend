@@ -8,7 +8,13 @@ import (
 	"github.com/sk1fy/team-os-backend/services/gateway/internal/api"
 )
 
-func (h *Handler) CreateExternalCampaign(w http.ResponseWriter, r *http.Request, courseID api.CourseId, versionID api.VersionId) {
+func (h *Handler) CreateExternalCampaign(
+	w http.ResponseWriter,
+	r *http.Request,
+	courseID api.CourseId,
+	versionID api.VersionId,
+	params api.CreateExternalCampaignParams,
+) {
 	var input api.CreateExternalCampaignInput
 	if !decode(w, r, &input) {
 		return
@@ -21,6 +27,7 @@ func (h *Handler) CreateExternalCampaign(w http.ResponseWriter, r *http.Request,
 	response, err := h.academy.CreateExternalCampaign(outgoingContext(r), &academyv1.CreateExternalCampaignRequest{
 		CourseId: courseID.String(), CourseVersionId: versionID.String(), Name: input.Name,
 		Purpose: purpose, DeadlineDays: uint32(input.DeadlineDays),
+		IdempotencyKey: string(params.IdempotencyKey),
 	})
 	if err != nil {
 		h.writeAcademyRPCError(w, r, err)
@@ -83,9 +90,14 @@ func (h *Handler) ResumeExternalCampaign(w http.ResponseWriter, r *http.Request,
 	h.writeExternalCampaign(w, r, response.GetCampaign())
 }
 
-func (h *Handler) RotateExternalCampaignToken(w http.ResponseWriter, r *http.Request, campaignID api.CampaignId) {
+func (h *Handler) RotateExternalCampaignToken(
+	w http.ResponseWriter,
+	r *http.Request,
+	campaignID api.CampaignId,
+	params api.RotateExternalCampaignTokenParams,
+) {
 	response, err := h.academy.RotateExternalCampaignToken(outgoingContext(r), &academyv1.RotateExternalCampaignTokenRequest{
-		CampaignId: campaignID.String(),
+		CampaignId: campaignID.String(), IdempotencyKey: string(params.IdempotencyKey),
 	})
 	if err != nil {
 		h.writeAcademyRPCError(w, r, err)

@@ -28,6 +28,7 @@ type CreateExternalPersonalAccessInput struct {
 	FirstName       *string
 	LastName        *string
 	DeadlineDays    int32
+	IdempotencyKey  string
 }
 
 func (s *Service) CreateExternalPersonalAccess(
@@ -35,12 +36,50 @@ func (s *Service) CreateExternalPersonalAccess(
 	actor Actor,
 	input CreateExternalPersonalAccessInput,
 ) (ExternalPersonalAccessCreated, error) {
+	key, err := normalizeExternalTokenKey(input.IdempotencyKey)
+	if err != nil {
+		return ExternalPersonalAccessCreated{}, err
+	}
+	token, tokenHash, prefix, err := s.idempotentExternalToken(
+		actor, externalTokenOperationCreatePersonalAccess, key,
+	)
+	if err != nil {
+		return ExternalPersonalAccessCreated{}, internal("Не удалось создать токен доступа", err)
+	}
+	now, accessID := s.now().UTC(), uuid.New()
 	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return ExternalPersonalAccessCreated{}, internal("Не удалось начать транзакцию", err)
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
 	queries := db.New(tx)
+	reservation, replayed, err := s.reserveExternalTokenMutationInTx(
+		ctx, queries, actor, externalTokenOperationCreatePersonalAccess, key,
+		struct {
+			CourseID, CourseVersionID uuid.UUID
+			Email                     string
+			FirstName, LastName       *string
+			DeadlineDays              int32
+		}{
+			CourseID: input.CourseID, CourseVersionID: input.CourseVersionID,
+			Email: strings.TrimSpace(input.Email), FirstName: input.FirstName,
+			LastName: input.LastName, DeadlineDays: input.DeadlineDays,
+		},
+		accessID, now,
+	)
+	if err != nil {
+		return ExternalPersonalAccessCreated{}, err
+	}
+	if replayed {
+		access, decodeErr := decodeExternalTokenMutationReplay[ExternalPersonalAccess](reservation.ResponsePayload)
+		if decodeErr != nil {
+			return ExternalPersonalAccessCreated{}, decodeErr
+		}
+		if err = tx.Commit(ctx); err != nil {
+			return ExternalPersonalAccessCreated{}, internal("Не удалось подтвердить повтор операции", err)
+		}
+		return ExternalPersonalAccessCreated{Access: access, Token: token}, nil
+	}
 	courseRow, err := queries.GetCourse(ctx, db.GetCourseParams{CompanyID: actor.CompanyID, ID: input.CourseID})
 	if err != nil {
 		if isNoRows(err) {
@@ -63,17 +102,12 @@ func (s *Service) CreateExternalPersonalAccess(
 	if err != nil || !domainauth.CanCreatePersonalAccess(authorizationActor(actor), authorizationCourse(courseFromRow(courseRow)), domainVersion.Snapshot()) {
 		return ExternalPersonalAccessCreated{}, forbidden("Создать персональный доступ можно только к опубликованной версии собственного партнёрского курса")
 	}
-	token, tokenHash, prefix, err := s.generateExternalToken()
-	if err != nil {
-		return ExternalPersonalAccessCreated{}, internal("Не удалось создать токен доступа", err)
-	}
-	now, accessID := s.now().UTC(), uuid.New()
 	aggregate, err := domainaccess.New(domainaccess.NewParams{
 		ID: domainaccess.ID(accessID.String()), CompanyID: domainaccess.ID(actor.CompanyID.String()),
 		CourseID: domainaccess.ID(input.CourseID.String()), CourseVersionID: domainaccess.ID(input.CourseVersionID.String()),
 		PartnerOwnerID: domainaccess.ID(actor.UserID.String()), ExpectedEmail: input.Email,
 		RecipientFirstName: input.FirstName, RecipientLastName: input.LastName, DeadlineDays: int(input.DeadlineDays),
-		TokenHash: tokenHash, TokenPrefix: prefix, IssuanceIdempotencyKey: uuid.NewString(),
+		TokenHash: tokenHash, TokenPrefix: prefix, IssuanceIdempotencyKey: key,
 		IssuedByID: domainaccess.ID(actor.UserID.String()), IssuedAt: now,
 	})
 	if err != nil {
@@ -83,14 +117,21 @@ func (s *Service) CreateExternalPersonalAccess(
 	if err != nil {
 		return ExternalPersonalAccessCreated{}, internal("Не удалось создать персональный доступ", err)
 	}
+	if createdRow.ID != accessID {
+		return ExternalPersonalAccessCreated{}, conflict("Ключ идемпотентности уже использован для другого персонального доступа")
+	}
+	access := personalAccessFromDB(createdRow)
 	if err = s.recordPersonalAccessHistory(ctx, queries, actor.CompanyID, createdRow.ID, createdRow.ExternalLearnerID,
-		createdRow.EnrollmentID, "created", "internal_user", &actor.UserID, nil, nil, &createdRow.TokenPrefix, now); err != nil {
+		createdRow.EnrollmentID, "created", "internal_user", &actor.UserID, &key, nil, &createdRow.TokenPrefix, now); err != nil {
+		return ExternalPersonalAccessCreated{}, err
+	}
+	if err = completeExternalTokenMutationInTx(ctx, queries, actor.CompanyID, reservation.ID, access, now); err != nil {
 		return ExternalPersonalAccessCreated{}, err
 	}
 	if err = tx.Commit(ctx); err != nil {
 		return ExternalPersonalAccessCreated{}, internal("Не удалось сохранить персональный доступ", err)
 	}
-	return ExternalPersonalAccessCreated{Access: personalAccessFromDB(createdRow), Token: token}, nil
+	return ExternalPersonalAccessCreated{Access: access, Token: token}, nil
 }
 
 func (s *Service) GetExternalPersonalAccesses(ctx context.Context, actor Actor, courseID uuid.UUID) ([]ExternalPersonalAccess, error) {
@@ -128,8 +169,19 @@ func (s *Service) GetExternalPersonalAccess(ctx context.Context, actor Actor, ac
 	return personalAccessFromGetRow(row), nil
 }
 
-func (s *Service) RotateExternalPersonalAccessToken(ctx context.Context, actor Actor, accessID uuid.UUID) (ExternalPersonalAccessCreated, error) {
-	token, tokenHash, prefix, err := s.generateExternalToken()
+func (s *Service) RotateExternalPersonalAccessToken(
+	ctx context.Context,
+	actor Actor,
+	accessID uuid.UUID,
+	idempotencyKey string,
+) (ExternalPersonalAccessCreated, error) {
+	key, err := normalizeExternalTokenKey(idempotencyKey)
+	if err != nil {
+		return ExternalPersonalAccessCreated{}, err
+	}
+	token, tokenHash, prefix, err := s.idempotentExternalToken(
+		actor, externalTokenOperationRotatePersonalAccess, key,
+	)
 	if err != nil {
 		return ExternalPersonalAccessCreated{}, internal("Не удалось создать новый токен", err)
 	}
@@ -139,11 +191,28 @@ func (s *Service) RotateExternalPersonalAccessToken(ctx context.Context, actor A
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
 	queries := db.New(tx)
+	now := s.now().UTC()
+	reservation, replayed, err := s.reserveExternalTokenMutationInTx(
+		ctx, queries, actor, externalTokenOperationRotatePersonalAccess, key,
+		struct{ AccessID uuid.UUID }{AccessID: accessID}, accessID, now,
+	)
+	if err != nil {
+		return ExternalPersonalAccessCreated{}, err
+	}
+	if replayed {
+		access, decodeErr := decodeExternalTokenMutationReplay[ExternalPersonalAccess](reservation.ResponsePayload)
+		if decodeErr != nil {
+			return ExternalPersonalAccessCreated{}, decodeErr
+		}
+		if err = tx.Commit(ctx); err != nil {
+			return ExternalPersonalAccessCreated{}, internal("Не удалось подтвердить повтор операции", err)
+		}
+		return ExternalPersonalAccessCreated{Access: access, Token: token}, nil
+	}
 	current, aggregate, err := s.requireManagedPersonalAccess(ctx, queries, actor, accessID)
 	if err != nil {
 		return ExternalPersonalAccessCreated{}, err
 	}
-	now := s.now().UTC()
 	if err = aggregate.RotateToken(tokenHash, prefix, now); err != nil {
 		return ExternalPersonalAccessCreated{}, conflict(err.Error())
 	}
@@ -154,14 +223,18 @@ func (s *Service) RotateExternalPersonalAccessToken(ctx context.Context, actor A
 	if err != nil {
 		return ExternalPersonalAccessCreated{}, internal("Не удалось заменить токен", err)
 	}
+	access := personalAccessFromRotateRow(row)
 	if err = s.recordPersonalAccessHistory(ctx, queries, actor.CompanyID, accessID, row.ExternalLearnerID, row.EnrollmentID,
-		"token_rotated", "internal_user", &actor.UserID, nil, &current.TokenPrefix, &row.TokenPrefix, now); err != nil {
+		"token_rotated", "internal_user", &actor.UserID, &key, &current.TokenPrefix, &row.TokenPrefix, now); err != nil {
+		return ExternalPersonalAccessCreated{}, err
+	}
+	if err = completeExternalTokenMutationInTx(ctx, queries, actor.CompanyID, reservation.ID, access, now); err != nil {
 		return ExternalPersonalAccessCreated{}, err
 	}
 	if err = tx.Commit(ctx); err != nil {
 		return ExternalPersonalAccessCreated{}, internal("Не удалось сохранить новый токен", err)
 	}
-	return ExternalPersonalAccessCreated{Access: personalAccessFromRotateRow(row), Token: token}, nil
+	return ExternalPersonalAccessCreated{Access: access, Token: token}, nil
 }
 
 func (s *Service) ExtendExternalPersonalAccess(ctx context.Context, actor Actor, accessID uuid.UUID, days int32) (ExternalPersonalAccess, error) {
@@ -241,17 +314,46 @@ func (s *Service) RevokeExternalPersonalAccess(ctx context.Context, actor Actor,
 	return personalAccessFromRevokeRow(row), nil
 }
 
-func (s *Service) RepeatExternalPersonalAccess(ctx context.Context, actor Actor, accessID uuid.UUID) (ExternalPersonalAccessCreated, error) {
-	token, tokenHash, prefix, err := s.generateExternalToken()
+func (s *Service) RepeatExternalPersonalAccess(
+	ctx context.Context,
+	actor Actor,
+	accessID uuid.UUID,
+	idempotencyKey string,
+) (ExternalPersonalAccessCreated, error) {
+	key, err := normalizeExternalTokenKey(idempotencyKey)
+	if err != nil {
+		return ExternalPersonalAccessCreated{}, err
+	}
+	token, tokenHash, prefix, err := s.idempotentExternalToken(
+		actor, externalTokenOperationRepeatPersonalAccess, key,
+	)
 	if err != nil {
 		return ExternalPersonalAccessCreated{}, internal("Не удалось создать токен повторного прохождения", err)
 	}
+	now, newID := s.now().UTC(), uuid.New()
 	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return ExternalPersonalAccessCreated{}, internal("Не удалось начать транзакцию", err)
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
 	queries := db.New(tx)
+	reservation, replayed, err := s.reserveExternalTokenMutationInTx(
+		ctx, queries, actor, externalTokenOperationRepeatPersonalAccess, key,
+		struct{ AccessID uuid.UUID }{AccessID: accessID}, newID, now,
+	)
+	if err != nil {
+		return ExternalPersonalAccessCreated{}, err
+	}
+	if replayed {
+		access, decodeErr := decodeExternalTokenMutationReplay[ExternalPersonalAccess](reservation.ResponsePayload)
+		if decodeErr != nil {
+			return ExternalPersonalAccessCreated{}, decodeErr
+		}
+		if err = tx.Commit(ctx); err != nil {
+			return ExternalPersonalAccessCreated{}, internal("Не удалось подтвердить повтор операции", err)
+		}
+		return ExternalPersonalAccessCreated{Access: access, Token: token}, nil
+	}
 	current, aggregate, err := s.requireManagedPersonalAccess(ctx, queries, actor, accessID)
 	if err != nil {
 		return ExternalPersonalAccessCreated{}, err
@@ -264,10 +366,9 @@ func (s *Service) RepeatExternalPersonalAccess(ctx context.Context, actor Actor,
 		}
 		completed = enrollment.ProgressStatus == "completed"
 	}
-	now, newID := s.now().UTC(), uuid.New()
 	repeat, err := aggregate.PlanRepeat(domainaccess.RepeatParams{
 		ID: domainaccess.ID(newID.String()), TokenHash: tokenHash, TokenPrefix: prefix,
-		IssuanceIdempotencyKey: uuid.NewString(), IssuedAt: now, PreviousCompleted: completed,
+		IssuanceIdempotencyKey: key, IssuedAt: now, PreviousCompleted: completed,
 	})
 	if err != nil {
 		return ExternalPersonalAccessCreated{}, conflict(err.Error())
@@ -276,14 +377,21 @@ func (s *Service) RepeatExternalPersonalAccess(ctx context.Context, actor Actor,
 	if err != nil {
 		return ExternalPersonalAccessCreated{}, internal("Не удалось создать повторный доступ", err)
 	}
+	if row.ID != newID {
+		return ExternalPersonalAccessCreated{}, conflict("Ключ идемпотентности уже использован для другого повторного доступа")
+	}
+	access := personalAccessFromDB(row)
 	if err = s.recordPersonalAccessHistory(ctx, queries, actor.CompanyID, row.ID, row.ExternalLearnerID, row.EnrollmentID,
-		"repeat_created", "internal_user", &actor.UserID, nil, nil, &row.TokenPrefix, now); err != nil {
+		"repeat_created", "internal_user", &actor.UserID, &key, nil, &row.TokenPrefix, now); err != nil {
+		return ExternalPersonalAccessCreated{}, err
+	}
+	if err = completeExternalTokenMutationInTx(ctx, queries, actor.CompanyID, reservation.ID, access, now); err != nil {
 		return ExternalPersonalAccessCreated{}, err
 	}
 	if err = tx.Commit(ctx); err != nil {
 		return ExternalPersonalAccessCreated{}, internal("Не удалось сохранить повторный доступ", err)
 	}
-	return ExternalPersonalAccessCreated{Access: personalAccessFromDB(row), Token: token}, nil
+	return ExternalPersonalAccessCreated{Access: access, Token: token}, nil
 }
 
 func (s *Service) GetPublicAcademyAccess(

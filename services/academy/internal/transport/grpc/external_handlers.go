@@ -28,6 +28,7 @@ func (s *Server) CreateExternalPersonalAccess(ctx context.Context, request *acad
 	created, err := s.application.CreateExternalPersonalAccess(ctx, actor, application.CreateExternalPersonalAccessInput{
 		CourseID: courseID, CourseVersionID: versionID, Email: request.GetEmail(),
 		FirstName: request.FirstName, LastName: request.LastName, DeadlineDays: int32(request.GetDeadlineDays()),
+		IdempotencyKey: request.GetIdempotencyKey(),
 	})
 	if err != nil {
 		return nil, transportError(err)
@@ -80,7 +81,7 @@ func (s *Server) RotateExternalPersonalAccessToken(ctx context.Context, request 
 	if err != nil {
 		return nil, err
 	}
-	value, err := s.application.RotateExternalPersonalAccessToken(ctx, actor, accessID)
+	value, err := s.application.RotateExternalPersonalAccessToken(ctx, actor, accessID, request.GetIdempotencyKey())
 	if err != nil {
 		return nil, transportError(err)
 	}
@@ -104,7 +105,7 @@ func (s *Server) RepeatExternalPersonalAccess(ctx context.Context, request *acad
 	if err != nil {
 		return nil, err
 	}
-	value, err := s.application.RepeatExternalPersonalAccess(ctx, actor, accessID)
+	value, err := s.application.RepeatExternalPersonalAccess(ctx, actor, accessID, request.GetIdempotencyKey())
 	if err != nil {
 		return nil, transportError(err)
 	}

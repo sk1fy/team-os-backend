@@ -15877,6 +15877,7 @@ type CreateExternalPersonalAccessRequest struct {
 	FirstName       *string                `protobuf:"bytes,4,opt,name=first_name,json=firstName,proto3,oneof" json:"first_name,omitempty"`
 	LastName        *string                `protobuf:"bytes,5,opt,name=last_name,json=lastName,proto3,oneof" json:"last_name,omitempty"`
 	DeadlineDays    uint32                 `protobuf:"varint,6,opt,name=deadline_days,json=deadlineDays,proto3" json:"deadline_days,omitempty"`
+	IdempotencyKey  string                 `protobuf:"bytes,7,opt,name=idempotency_key,json=idempotencyKey,proto3" json:"idempotency_key,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -15951,6 +15952,13 @@ func (x *CreateExternalPersonalAccessRequest) GetDeadlineDays() uint32 {
 		return x.DeadlineDays
 	}
 	return 0
+}
+
+func (x *CreateExternalPersonalAccessRequest) GetIdempotencyKey() string {
+	if x != nil {
+		return x.IdempotencyKey
+	}
+	return ""
 }
 
 type CreateExternalPersonalAccessResponse struct {
@@ -16270,10 +16278,11 @@ func (x *ExtendExternalPersonalAccessResponse) GetAccess() *ExternalPersonalAcce
 }
 
 type RotateExternalPersonalAccessTokenRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	AccessId      string                 `protobuf:"bytes,1,opt,name=access_id,json=accessId,proto3" json:"access_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	AccessId       string                 `protobuf:"bytes,1,opt,name=access_id,json=accessId,proto3" json:"access_id,omitempty"`
+	IdempotencyKey string                 `protobuf:"bytes,2,opt,name=idempotency_key,json=idempotencyKey,proto3" json:"idempotency_key,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *RotateExternalPersonalAccessTokenRequest) Reset() {
@@ -16309,6 +16318,13 @@ func (*RotateExternalPersonalAccessTokenRequest) Descriptor() ([]byte, []int) {
 func (x *RotateExternalPersonalAccessTokenRequest) GetAccessId() string {
 	if x != nil {
 		return x.AccessId
+	}
+	return ""
+}
+
+func (x *RotateExternalPersonalAccessTokenRequest) GetIdempotencyKey() string {
+	if x != nil {
+		return x.IdempotencyKey
 	}
 	return ""
 }
@@ -16446,10 +16462,11 @@ func (x *RevokeExternalPersonalAccessResponse) GetAccess() *ExternalPersonalAcce
 }
 
 type RepeatExternalPersonalAccessRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	AccessId      string                 `protobuf:"bytes,1,opt,name=access_id,json=accessId,proto3" json:"access_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	AccessId       string                 `protobuf:"bytes,1,opt,name=access_id,json=accessId,proto3" json:"access_id,omitempty"`
+	IdempotencyKey string                 `protobuf:"bytes,2,opt,name=idempotency_key,json=idempotencyKey,proto3" json:"idempotency_key,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *RepeatExternalPersonalAccessRequest) Reset() {
@@ -16485,6 +16502,13 @@ func (*RepeatExternalPersonalAccessRequest) Descriptor() ([]byte, []int) {
 func (x *RepeatExternalPersonalAccessRequest) GetAccessId() string {
 	if x != nil {
 		return x.AccessId
+	}
+	return ""
+}
+
+func (x *RepeatExternalPersonalAccessRequest) GetIdempotencyKey() string {
+	if x != nil {
+		return x.IdempotencyKey
 	}
 	return ""
 }
@@ -16540,6 +16564,7 @@ type CreateExternalCampaignRequest struct {
 	Name            string                  `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
 	Purpose         ExternalCampaignPurpose `protobuf:"varint,4,opt,name=purpose,proto3,enum=teamos.academy.v1.ExternalCampaignPurpose" json:"purpose,omitempty"`
 	DeadlineDays    uint32                  `protobuf:"varint,5,opt,name=deadline_days,json=deadlineDays,proto3" json:"deadline_days,omitempty"`
+	IdempotencyKey  string                  `protobuf:"bytes,6,opt,name=idempotency_key,json=idempotencyKey,proto3" json:"idempotency_key,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -16607,6 +16632,13 @@ func (x *CreateExternalCampaignRequest) GetDeadlineDays() uint32 {
 		return x.DeadlineDays
 	}
 	return 0
+}
+
+func (x *CreateExternalCampaignRequest) GetIdempotencyKey() string {
+	if x != nil {
+		return x.IdempotencyKey
+	}
+	return ""
 }
 
 type CreateExternalCampaignResponse struct {
@@ -17006,10 +17038,11 @@ func (x *ResumeExternalCampaignResponse) GetCampaign() *ExternalCampaign {
 }
 
 type RotateExternalCampaignTokenRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	CampaignId    string                 `protobuf:"bytes,1,opt,name=campaign_id,json=campaignId,proto3" json:"campaign_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	CampaignId     string                 `protobuf:"bytes,1,opt,name=campaign_id,json=campaignId,proto3" json:"campaign_id,omitempty"`
+	IdempotencyKey string                 `protobuf:"bytes,2,opt,name=idempotency_key,json=idempotencyKey,proto3" json:"idempotency_key,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *RotateExternalCampaignTokenRequest) Reset() {
@@ -17045,6 +17078,13 @@ func (*RotateExternalCampaignTokenRequest) Descriptor() ([]byte, []int) {
 func (x *RotateExternalCampaignTokenRequest) GetCampaignId() string {
 	if x != nil {
 		return x.CampaignId
+	}
+	return ""
+}
+
+func (x *RotateExternalCampaignTokenRequest) GetIdempotencyKey() string {
+	if x != nil {
+		return x.IdempotencyKey
 	}
 	return ""
 }
@@ -20393,7 +20433,7 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"enrollment\x18\x01 \x01(\v2#.teamos.academy.v1.CourseEnrollmentR\n" +
 	"enrollment\x120\n" +
 	"\x14completed_lesson_ids\x18\x02 \x03(\tR\x12completedLessonIds\x12Q\n" +
-	"\rquiz_attempts\x18\x03 \x03(\v2,.teamos.academy.v1.ExternalQuizAttemptResultR\fquizAttempts\"\x8c\x02\n" +
+	"\rquiz_attempts\x18\x03 \x03(\v2,.teamos.academy.v1.ExternalQuizAttemptResultR\fquizAttempts\"\xb5\x02\n" +
 	"#CreateExternalPersonalAccessRequest\x12\x1b\n" +
 	"\tcourse_id\x18\x01 \x01(\tR\bcourseId\x12*\n" +
 	"\x11course_version_id\x18\x02 \x01(\tR\x0fcourseVersionId\x12\x14\n" +
@@ -20401,7 +20441,8 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"\n" +
 	"first_name\x18\x04 \x01(\tH\x00R\tfirstName\x88\x01\x01\x12 \n" +
 	"\tlast_name\x18\x05 \x01(\tH\x01R\blastName\x88\x01\x01\x12#\n" +
-	"\rdeadline_days\x18\x06 \x01(\rR\fdeadlineDaysB\r\n" +
+	"\rdeadline_days\x18\x06 \x01(\rR\fdeadlineDays\x12'\n" +
+	"\x0fidempotency_key\x18\a \x01(\tR\x0eidempotencyKeyB\r\n" +
 	"\v_first_nameB\f\n" +
 	"\n" +
 	"_last_name\"r\n" +
@@ -20419,25 +20460,28 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"\taccess_id\x18\x01 \x01(\tR\baccessId\x12#\n" +
 	"\rdeadline_days\x18\x02 \x01(\rR\fdeadlineDays\"i\n" +
 	"$ExtendExternalPersonalAccessResponse\x12A\n" +
-	"\x06access\x18\x01 \x01(\v2).teamos.academy.v1.ExternalPersonalAccessR\x06access\"G\n" +
+	"\x06access\x18\x01 \x01(\v2).teamos.academy.v1.ExternalPersonalAccessR\x06access\"p\n" +
 	"(RotateExternalPersonalAccessTokenRequest\x12\x1b\n" +
-	"\taccess_id\x18\x01 \x01(\tR\baccessId\"w\n" +
+	"\taccess_id\x18\x01 \x01(\tR\baccessId\x12'\n" +
+	"\x0fidempotency_key\x18\x02 \x01(\tR\x0eidempotencyKey\"w\n" +
 	")RotateExternalPersonalAccessTokenResponse\x12J\n" +
 	"\acreated\x18\x01 \x01(\v20.teamos.academy.v1.ExternalPersonalAccessCreatedR\acreated\"B\n" +
 	"#RevokeExternalPersonalAccessRequest\x12\x1b\n" +
 	"\taccess_id\x18\x01 \x01(\tR\baccessId\"i\n" +
 	"$RevokeExternalPersonalAccessResponse\x12A\n" +
-	"\x06access\x18\x01 \x01(\v2).teamos.academy.v1.ExternalPersonalAccessR\x06access\"B\n" +
+	"\x06access\x18\x01 \x01(\v2).teamos.academy.v1.ExternalPersonalAccessR\x06access\"k\n" +
 	"#RepeatExternalPersonalAccessRequest\x12\x1b\n" +
-	"\taccess_id\x18\x01 \x01(\tR\baccessId\"r\n" +
+	"\taccess_id\x18\x01 \x01(\tR\baccessId\x12'\n" +
+	"\x0fidempotency_key\x18\x02 \x01(\tR\x0eidempotencyKey\"r\n" +
 	"$RepeatExternalPersonalAccessResponse\x12J\n" +
-	"\acreated\x18\x01 \x01(\v20.teamos.academy.v1.ExternalPersonalAccessCreatedR\acreated\"\xe7\x01\n" +
+	"\acreated\x18\x01 \x01(\v20.teamos.academy.v1.ExternalPersonalAccessCreatedR\acreated\"\x90\x02\n" +
 	"\x1dCreateExternalCampaignRequest\x12\x1b\n" +
 	"\tcourse_id\x18\x01 \x01(\tR\bcourseId\x12*\n" +
 	"\x11course_version_id\x18\x02 \x01(\tR\x0fcourseVersionId\x12\x12\n" +
 	"\x04name\x18\x03 \x01(\tR\x04name\x12D\n" +
 	"\apurpose\x18\x04 \x01(\x0e2*.teamos.academy.v1.ExternalCampaignPurposeR\apurpose\x12#\n" +
-	"\rdeadline_days\x18\x05 \x01(\rR\fdeadlineDays\"f\n" +
+	"\rdeadline_days\x18\x05 \x01(\rR\fdeadlineDays\x12'\n" +
+	"\x0fidempotency_key\x18\x06 \x01(\tR\x0eidempotencyKey\"f\n" +
 	"\x1eCreateExternalCampaignResponse\x12D\n" +
 	"\acreated\x18\x01 \x01(\v2*.teamos.academy.v1.ExternalCampaignCreatedR\acreated\":\n" +
 	"\x1bGetExternalCampaignsRequest\x12\x1b\n" +
@@ -20458,10 +20502,11 @@ const file_proto_academy_v1_academy_proto_rawDesc = "" +
 	"\vcampaign_id\x18\x01 \x01(\tR\n" +
 	"campaignId\"a\n" +
 	"\x1eResumeExternalCampaignResponse\x12?\n" +
-	"\bcampaign\x18\x01 \x01(\v2#.teamos.academy.v1.ExternalCampaignR\bcampaign\"E\n" +
+	"\bcampaign\x18\x01 \x01(\v2#.teamos.academy.v1.ExternalCampaignR\bcampaign\"n\n" +
 	"\"RotateExternalCampaignTokenRequest\x12\x1f\n" +
 	"\vcampaign_id\x18\x01 \x01(\tR\n" +
-	"campaignId\"k\n" +
+	"campaignId\x12'\n" +
+	"\x0fidempotency_key\x18\x02 \x01(\tR\x0eidempotencyKey\"k\n" +
 	"#RotateExternalCampaignTokenResponse\x12D\n" +
 	"\acreated\x18\x01 \x01(\v2*.teamos.academy.v1.ExternalCampaignCreatedR\acreated\"@\n" +
 	"\x1dRevokeExternalCampaignRequest\x12\x1f\n" +

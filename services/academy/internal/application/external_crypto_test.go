@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"regexp"
 	"testing"
+
+	"github.com/google/uuid"
 )
 
 func TestExternalTokensAreOpaqueAndKeyed(t *testing.T) {
@@ -26,6 +28,42 @@ func TestExternalTokensAreOpaqueAndKeyed(t *testing.T) {
 	}
 	if !secureHashEqual(firstHash, service.externalTokenHash(first)) {
 		t.Fatal("hash токена нестабилен")
+	}
+}
+
+func TestIdempotentExternalTokenIsStableAndScoped(t *testing.T) {
+	service := &Service{externalSecret: []byte("0123456789abcdef0123456789abcdef")}
+	actor := Actor{CompanyID: uuid.New(), UserID: uuid.New(), Role: "partner"}
+
+	first, firstHash, firstPrefix, err := service.idempotentExternalToken(
+		actor, externalTokenOperationCreatePersonalAccess, "retry-key-0001",
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	replay, replayHash, replayPrefix, err := service.idempotentExternalToken(
+		actor, externalTokenOperationCreatePersonalAccess, "retry-key-0001",
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if first != replay || !secureHashEqual(firstHash, replayHash) || firstPrefix != replayPrefix {
+		t.Fatal("повтор с тем же ключом не воспроизвёл исходный токен")
+	}
+
+	differentKey, _, _, _ := service.idempotentExternalToken(
+		actor, externalTokenOperationCreatePersonalAccess, "retry-key-0002",
+	)
+	differentOperation, _, _, _ := service.idempotentExternalToken(
+		actor, externalTokenOperationRepeatPersonalAccess, "retry-key-0001",
+	)
+	otherActor := actor
+	otherActor.UserID = uuid.New()
+	differentActor, _, _, _ := service.idempotentExternalToken(
+		otherActor, externalTokenOperationCreatePersonalAccess, "retry-key-0001",
+	)
+	if first == differentKey || first == differentOperation || first == differentActor {
+		t.Fatal("токен не изолирован по ключу, операции и инициатору")
 	}
 }
 

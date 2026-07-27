@@ -2699,6 +2699,7 @@ paths:
     parameters:
       - $ref: '#/components/parameters/CourseId'
       - $ref: '#/components/parameters/VersionId'
+      - $ref: '#/components/parameters/IdempotencyKey'
     post:
       tags: [Academy]
       operationId: createExternalPersonalAccess
@@ -2771,6 +2772,7 @@ paths:
   /api/v1/academy/personal-accesses/{accessId}/rotate-token:
     parameters:
       - $ref: '#/components/parameters/AccessId'
+      - $ref: '#/components/parameters/IdempotencyKey'
     post:
       tags: [Academy]
       operationId: rotateExternalPersonalAccessToken
@@ -2801,6 +2803,7 @@ paths:
   /api/v1/academy/personal-accesses/{accessId}/repeat:
     parameters:
       - $ref: '#/components/parameters/AccessId'
+      - $ref: '#/components/parameters/IdempotencyKey'
     post:
       tags: [Academy]
       operationId: repeatExternalPersonalAccess
@@ -2817,6 +2820,7 @@ paths:
     parameters:
       - $ref: '#/components/parameters/CourseId'
       - $ref: '#/components/parameters/VersionId'
+      - $ref: '#/components/parameters/IdempotencyKey'
     post:
       tags: [Academy]
       operationId: createExternalCampaign
@@ -2898,6 +2902,7 @@ paths:
   /api/v1/academy/campaigns/{campaignId}/rotate-token:
     parameters:
       - $ref: '#/components/parameters/CampaignId'
+      - $ref: '#/components/parameters/IdempotencyKey'
     post:
       tags: [Academy]
       operationId: rotateExternalCampaignToken

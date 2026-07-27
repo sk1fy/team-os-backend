@@ -54,10 +54,15 @@ type stubCompanyServer struct {
 
 type stubAcademyServer struct {
 	academyv1.UnimplementedAcademyServiceServer
-	getCourseFn                func(context.Context, *academyv1.GetCourseRequest) (*academyv1.GetCourseResponse, error)
-	getCourseTemplatesFn       func(context.Context, *academyv1.GetCourseTemplatesRequest) (*academyv1.GetCourseTemplatesResponse, error)
-	completeEnrollmentLessonFn func(context.Context, *academyv1.CompleteEnrollmentLessonRequest) (*academyv1.CompleteEnrollmentLessonResponse, error)
-	submitEnrollmentQuizFn     func(context.Context, *academyv1.SubmitEnrollmentQuizAttemptRequest) (*academyv1.SubmitEnrollmentQuizAttemptResponse, error)
+	getCourseFn                   func(context.Context, *academyv1.GetCourseRequest) (*academyv1.GetCourseResponse, error)
+	getCourseTemplatesFn          func(context.Context, *academyv1.GetCourseTemplatesRequest) (*academyv1.GetCourseTemplatesResponse, error)
+	completeEnrollmentLessonFn    func(context.Context, *academyv1.CompleteEnrollmentLessonRequest) (*academyv1.CompleteEnrollmentLessonResponse, error)
+	submitEnrollmentQuizFn        func(context.Context, *academyv1.SubmitEnrollmentQuizAttemptRequest) (*academyv1.SubmitEnrollmentQuizAttemptResponse, error)
+	createPersonalAccessFn        func(context.Context, *academyv1.CreateExternalPersonalAccessRequest) (*academyv1.CreateExternalPersonalAccessResponse, error)
+	rotatePersonalAccessFn        func(context.Context, *academyv1.RotateExternalPersonalAccessTokenRequest) (*academyv1.RotateExternalPersonalAccessTokenResponse, error)
+	repeatPersonalAccessFn        func(context.Context, *academyv1.RepeatExternalPersonalAccessRequest) (*academyv1.RepeatExternalPersonalAccessResponse, error)
+	createExternalCampaignFn      func(context.Context, *academyv1.CreateExternalCampaignRequest) (*academyv1.CreateExternalCampaignResponse, error)
+	rotateExternalCampaignTokenFn func(context.Context, *academyv1.RotateExternalCampaignTokenRequest) (*academyv1.RotateExternalCampaignTokenResponse, error)
 }
 
 func (s *stubAcademyServer) GetCourseTemplates(ctx context.Context, request *academyv1.GetCourseTemplatesRequest) (*academyv1.GetCourseTemplatesResponse, error) {
@@ -127,6 +132,41 @@ func (s *stubAcademyServer) SubmitEnrollmentQuizAttempt(ctx context.Context, req
 		return nil, status.Error(codes.Unimplemented, "unexpected SubmitEnrollmentQuizAttempt call")
 	}
 	return s.submitEnrollmentQuizFn(ctx, request)
+}
+
+func (s *stubAcademyServer) CreateExternalPersonalAccess(ctx context.Context, request *academyv1.CreateExternalPersonalAccessRequest) (*academyv1.CreateExternalPersonalAccessResponse, error) {
+	if s.createPersonalAccessFn == nil {
+		return nil, status.Error(codes.Unimplemented, "unexpected CreateExternalPersonalAccess call")
+	}
+	return s.createPersonalAccessFn(ctx, request)
+}
+
+func (s *stubAcademyServer) RotateExternalPersonalAccessToken(ctx context.Context, request *academyv1.RotateExternalPersonalAccessTokenRequest) (*academyv1.RotateExternalPersonalAccessTokenResponse, error) {
+	if s.rotatePersonalAccessFn == nil {
+		return nil, status.Error(codes.Unimplemented, "unexpected RotateExternalPersonalAccessToken call")
+	}
+	return s.rotatePersonalAccessFn(ctx, request)
+}
+
+func (s *stubAcademyServer) RepeatExternalPersonalAccess(ctx context.Context, request *academyv1.RepeatExternalPersonalAccessRequest) (*academyv1.RepeatExternalPersonalAccessResponse, error) {
+	if s.repeatPersonalAccessFn == nil {
+		return nil, status.Error(codes.Unimplemented, "unexpected RepeatExternalPersonalAccess call")
+	}
+	return s.repeatPersonalAccessFn(ctx, request)
+}
+
+func (s *stubAcademyServer) CreateExternalCampaign(ctx context.Context, request *academyv1.CreateExternalCampaignRequest) (*academyv1.CreateExternalCampaignResponse, error) {
+	if s.createExternalCampaignFn == nil {
+		return nil, status.Error(codes.Unimplemented, "unexpected CreateExternalCampaign call")
+	}
+	return s.createExternalCampaignFn(ctx, request)
+}
+
+func (s *stubAcademyServer) RotateExternalCampaignToken(ctx context.Context, request *academyv1.RotateExternalCampaignTokenRequest) (*academyv1.RotateExternalCampaignTokenResponse, error) {
+	if s.rotateExternalCampaignTokenFn == nil {
+		return nil, status.Error(codes.Unimplemented, "unexpected RotateExternalCampaignToken call")
+	}
+	return s.rotateExternalCampaignTokenFn(ctx, request)
 }
 
 func (s *stubCompanyServer) GetUser(ctx context.Context, request *companyv1.GetUserRequest) (*companyv1.GetUserResponse, error) {
@@ -308,6 +348,78 @@ func TestGatewayForwardsEnrollmentIdempotencyKeys(t *testing.T) {
 	}
 	if quizKey != "quiz-key-1" {
 		t.Fatalf("SubmitEnrollmentQuizAttempt idempotency key = %q", quizKey)
+	}
+}
+
+func TestGatewayForwardsOneTimeTokenIdempotencyKeys(t *testing.T) {
+	keys := make(map[string]string)
+	academy := &stubAcademyServer{
+		createPersonalAccessFn: func(_ context.Context, request *academyv1.CreateExternalPersonalAccessRequest) (*academyv1.CreateExternalPersonalAccessResponse, error) {
+			keys["create-access"] = request.GetIdempotencyKey()
+			return nil, status.Error(codes.InvalidArgument, "проверка завершена")
+		},
+		rotatePersonalAccessFn: func(_ context.Context, request *academyv1.RotateExternalPersonalAccessTokenRequest) (*academyv1.RotateExternalPersonalAccessTokenResponse, error) {
+			keys["rotate-access"] = request.GetIdempotencyKey()
+			return nil, status.Error(codes.InvalidArgument, "проверка завершена")
+		},
+		repeatPersonalAccessFn: func(_ context.Context, request *academyv1.RepeatExternalPersonalAccessRequest) (*academyv1.RepeatExternalPersonalAccessResponse, error) {
+			keys["repeat-access"] = request.GetIdempotencyKey()
+			return nil, status.Error(codes.InvalidArgument, "проверка завершена")
+		},
+		createExternalCampaignFn: func(_ context.Context, request *academyv1.CreateExternalCampaignRequest) (*academyv1.CreateExternalCampaignResponse, error) {
+			keys["create-campaign"] = request.GetIdempotencyKey()
+			return nil, status.Error(codes.InvalidArgument, "проверка завершена")
+		},
+		rotateExternalCampaignTokenFn: func(_ context.Context, request *academyv1.RotateExternalCampaignTokenRequest) (*academyv1.RotateExternalCampaignTokenResponse, error) {
+			keys["rotate-campaign"] = request.GetIdempotencyKey()
+			return nil, status.Error(codes.InvalidArgument, "проверка завершена")
+		},
+	}
+	handler := newTestGatewayWithAcademy(t, &stubCompanyServer{}, academy)
+	requests := []struct {
+		name, path, body, key string
+	}{
+		{
+			name: "create-access",
+			path: "/api/v1/academy/courses/" + testChildID + "/versions/" + testDepartmentID + "/personal-accesses",
+			body: `{"email":"learner@example.com","deadlineDays":3}`,
+			key:  "create-access-key",
+		},
+		{
+			name: "rotate-access",
+			path: "/api/v1/academy/personal-accesses/" + testChildID + "/rotate-token",
+			body: `{}`,
+			key:  "rotate-access-key",
+		},
+		{
+			name: "repeat-access",
+			path: "/api/v1/academy/personal-accesses/" + testChildID + "/repeat",
+			body: `{}`,
+			key:  "repeat-access-key",
+		},
+		{
+			name: "create-campaign",
+			path: "/api/v1/academy/courses/" + testChildID + "/versions/" + testDepartmentID + "/campaigns",
+			body: `{"name":"Кандидаты","purpose":"company_candidate","deadlineDays":3}`,
+			key:  "create-campaign-key",
+		},
+		{
+			name: "rotate-campaign",
+			path: "/api/v1/academy/campaigns/" + testChildID + "/rotate-token",
+			body: `{}`,
+			key:  "rotate-campaign-key",
+		},
+	}
+	for _, test := range requests {
+		request := httptest.NewRequestWithContext(
+			context.Background(), http.MethodPost, test.path, strings.NewReader(test.body),
+		)
+		request.Header.Set("Content-Type", "application/json")
+		request.Header.Set("Idempotency-Key", test.key)
+		handler.ServeHTTP(httptest.NewRecorder(), request)
+		if keys[test.name] != test.key {
+			t.Fatalf("%s idempotency key = %q, want %q", test.name, keys[test.name], test.key)
+		}
 	}
 }
 

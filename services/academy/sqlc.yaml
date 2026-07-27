@@ -16,6 +16,7 @@ sql:
       - migrations/000013_enrollment_mutation_idempotency.up.sql
       - migrations/000014_normalize_quiz_question_ids.up.sql
       - migrations/000015_course_partner_audience.up.sql
+      - migrations/000016_external_token_mutation_idempotency.up.sql
     queries: internal/storage/queries
     gen:
       go:

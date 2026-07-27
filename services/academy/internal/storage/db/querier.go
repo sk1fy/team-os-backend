@@ -39,6 +39,7 @@ type Querier interface {
 	CompleteCurrentAndUnlockNextLesson(ctx context.Context, arg CompleteCurrentAndUnlockNextLessonParams) ([]CompleteCurrentAndUnlockNextLessonRow, error)
 	CompleteEnrollmentMutationIdempotency(ctx context.Context, arg CompleteEnrollmentMutationIdempotencyParams) (EnrollmentMutationIdempotency, error)
 	CompleteExternalMutationIdempotency(ctx context.Context, arg CompleteExternalMutationIdempotencyParams) (ExternalMutationIdempotency, error)
+	CompleteExternalTokenMutationIdempotency(ctx context.Context, arg CompleteExternalTokenMutationIdempotencyParams) (ExternalTokenMutationIdempotency, error)
 	CompleteFileCloneJob(ctx context.Context, arg CompleteFileCloneJobParams) (AcademyFileCloneJob, error)
 	CompleteFileCloneJobItem(ctx context.Context, arg CompleteFileCloneJobItemParams) (AcademyFileCloneJobItem, error)
 	ConsumeExternalVerificationChallenge(ctx context.Context, arg ConsumeExternalVerificationChallengeParams) (ExternalVerificationChallenge, error)
@@ -297,6 +298,9 @@ type Querier interface {
 	// This serializes concurrent retries with the same key.
 	ReserveEnrollmentMutationIdempotency(ctx context.Context, arg ReserveEnrollmentMutationIdempotencyParams) (EnrollmentMutationIdempotency, error)
 	ReserveExternalMutationIdempotency(ctx context.Context, arg ReserveExternalMutationIdempotencyParams) (ExternalMutationIdempotency, error)
+	// The conflict branch takes a row lock until the transaction finishes. A
+	// concurrent retry therefore sees either the completed response or a rollback.
+	ReserveExternalTokenMutationIdempotency(ctx context.Context, arg ReserveExternalTokenMutationIdempotencyParams) (ExternalTokenMutationIdempotency, error)
 	ResolveCourseRestriction(ctx context.Context, arg ResolveCourseRestrictionParams) (CourseRestriction, error)
 	// token_hash is globally unique and is the only tenant-bootstrap lookup.
 	// Every subsequent query must use the returned company_id.

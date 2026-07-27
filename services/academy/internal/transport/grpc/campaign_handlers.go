@@ -23,6 +23,7 @@ func (s *Server) CreateExternalCampaign(ctx context.Context, request *academyv1.
 	created, err := s.application.CreateExternalCampaign(ctx, actor, application.CreateExternalCampaignInput{
 		CourseID: courseID, CourseVersionID: versionID, Name: request.GetName(),
 		Purpose: externalCampaignPurposeFromProto(request.GetPurpose()), DeadlineDays: int32(request.GetDeadlineDays()),
+		IdempotencyKey: request.GetIdempotencyKey(),
 	})
 	if err != nil {
 		return nil, transportError(err)
@@ -87,7 +88,7 @@ func (s *Server) RotateExternalCampaignToken(ctx context.Context, request *acade
 	if err != nil {
 		return nil, err
 	}
-	value, err := s.application.RotateExternalCampaignToken(ctx, actor, campaignID)
+	value, err := s.application.RotateExternalCampaignToken(ctx, actor, campaignID, request.GetIdempotencyKey())
 	if err != nil {
 		return nil, transportError(err)
 	}

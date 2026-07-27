@@ -8,7 +8,13 @@ import (
 	"github.com/sk1fy/team-os-backend/services/gateway/internal/api"
 )
 
-func (h *Handler) CreateExternalPersonalAccess(w http.ResponseWriter, r *http.Request, courseID api.CourseId, versionID api.VersionId) {
+func (h *Handler) CreateExternalPersonalAccess(
+	w http.ResponseWriter,
+	r *http.Request,
+	courseID api.CourseId,
+	versionID api.VersionId,
+	params api.CreateExternalPersonalAccessParams,
+) {
 	var input api.CreateExternalPersonalAccessInput
 	if !decode(w, r, &input) {
 		return
@@ -16,6 +22,7 @@ func (h *Handler) CreateExternalPersonalAccess(w http.ResponseWriter, r *http.Re
 	response, err := h.academy.CreateExternalPersonalAccess(outgoingContext(r), &academyv1.CreateExternalPersonalAccessRequest{
 		CourseId: courseID.String(), CourseVersionId: versionID.String(), Email: string(input.Email),
 		FirstName: input.FirstName, LastName: input.LastName, DeadlineDays: uint32(input.DeadlineDays),
+		IdempotencyKey: string(params.IdempotencyKey),
 	})
 	if err != nil {
 		h.writeAcademyRPCError(w, r, err)
@@ -81,9 +88,14 @@ func (h *Handler) ExtendExternalPersonalAccess(w http.ResponseWriter, r *http.Re
 	writeJSON(w, http.StatusOK, converted)
 }
 
-func (h *Handler) RotateExternalPersonalAccessToken(w http.ResponseWriter, r *http.Request, accessID api.AccessId) {
+func (h *Handler) RotateExternalPersonalAccessToken(
+	w http.ResponseWriter,
+	r *http.Request,
+	accessID api.AccessId,
+	params api.RotateExternalPersonalAccessTokenParams,
+) {
 	response, err := h.academy.RotateExternalPersonalAccessToken(outgoingContext(r), &academyv1.RotateExternalPersonalAccessTokenRequest{
-		AccessId: accessID.String(),
+		AccessId: accessID.String(), IdempotencyKey: string(params.IdempotencyKey),
 	})
 	if err != nil {
 		h.writeAcademyRPCError(w, r, err)
@@ -113,9 +125,14 @@ func (h *Handler) RevokeExternalPersonalAccess(w http.ResponseWriter, r *http.Re
 	writeJSON(w, http.StatusOK, converted)
 }
 
-func (h *Handler) RepeatExternalPersonalAccess(w http.ResponseWriter, r *http.Request, accessID api.AccessId) {
+func (h *Handler) RepeatExternalPersonalAccess(
+	w http.ResponseWriter,
+	r *http.Request,
+	accessID api.AccessId,
+	params api.RepeatExternalPersonalAccessParams,
+) {
 	response, err := h.academy.RepeatExternalPersonalAccess(outgoingContext(r), &academyv1.RepeatExternalPersonalAccessRequest{
-		AccessId: accessID.String(),
+		AccessId: accessID.String(), IdempotencyKey: string(params.IdempotencyKey),
 	})
 	if err != nil {
 		h.writeAcademyRPCError(w, r, err)

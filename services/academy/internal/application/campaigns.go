@@ -21,6 +21,7 @@ type CreateExternalCampaignInput struct {
 	Name            string
 	Purpose         string
 	DeadlineDays    int32
+	IdempotencyKey  string
 }
 
 func (s *Service) CreateExternalCampaign(
@@ -28,12 +29,48 @@ func (s *Service) CreateExternalCampaign(
 	actor Actor,
 	input CreateExternalCampaignInput,
 ) (ExternalCampaignCreated, error) {
+	key, err := normalizeExternalTokenKey(input.IdempotencyKey)
+	if err != nil {
+		return ExternalCampaignCreated{}, err
+	}
+	token, tokenHash, prefix, err := s.idempotentExternalToken(
+		actor, externalTokenOperationCreateCampaign, key,
+	)
+	if err != nil {
+		return ExternalCampaignCreated{}, internal("Не удалось создать токен кампании", err)
+	}
+	now, campaignID := s.now().UTC(), uuid.New()
 	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return ExternalCampaignCreated{}, internal("Не удалось начать транзакцию", err)
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
 	queries := db.New(tx)
+	reservation, replayed, err := s.reserveExternalTokenMutationInTx(
+		ctx, queries, actor, externalTokenOperationCreateCampaign, key,
+		struct {
+			CourseID, CourseVersionID uuid.UUID
+			Name, Purpose             string
+			DeadlineDays              int32
+		}{
+			CourseID: input.CourseID, CourseVersionID: input.CourseVersionID,
+			Name: input.Name, Purpose: input.Purpose, DeadlineDays: input.DeadlineDays,
+		},
+		campaignID, now,
+	)
+	if err != nil {
+		return ExternalCampaignCreated{}, err
+	}
+	if replayed {
+		campaign, decodeErr := decodeExternalTokenMutationReplay[ExternalCampaign](reservation.ResponsePayload)
+		if decodeErr != nil {
+			return ExternalCampaignCreated{}, decodeErr
+		}
+		if err = tx.Commit(ctx); err != nil {
+			return ExternalCampaignCreated{}, internal("Не удалось подтвердить повтор операции", err)
+		}
+		return ExternalCampaignCreated{Campaign: campaign, Token: token}, nil
+	}
 	courseRow, err := queries.GetCourse(ctx, db.GetCourseParams{CompanyID: actor.CompanyID, ID: input.CourseID})
 	if err != nil {
 		if isNoRows(err) {
@@ -63,17 +100,12 @@ func (s *Service) CreateExternalCampaign(
 	) {
 		return ExternalCampaignCreated{}, forbidden("Недостаточно прав для создания кампании этого типа")
 	}
-	token, tokenHash, prefix, err := s.generateExternalToken()
-	if err != nil {
-		return ExternalCampaignCreated{}, internal("Не удалось создать токен кампании", err)
-	}
 	ownerType := domaincampaign.OwnerType(course.OwnerType)
 	var ownerID *domaincampaign.ID
 	if course.OwnerUserID != nil {
 		value := domaincampaign.ID(course.OwnerUserID.String())
 		ownerID = &value
 	}
-	now, campaignID := s.now().UTC(), uuid.New()
 	aggregate, err := domaincampaign.New(domaincampaign.NewParams{
 		ID: domaincampaign.ID(campaignID.String()), CompanyID: domaincampaign.ID(actor.CompanyID.String()),
 		CourseID: domaincampaign.ID(input.CourseID.String()), CourseVersionID: domaincampaign.ID(input.CourseVersionID.String()),
@@ -103,6 +135,9 @@ func (s *Service) CreateExternalCampaign(
 			OwnerUserId: optionalUUIDString(value.OwnerUserID), Purpose: campaignPurposeToEvent(value.Purpose),
 			CreatedById: actor.UserID.String(), CreatedAt: timestamppb.New(now),
 		}); err != nil {
+		return ExternalCampaignCreated{}, err
+	}
+	if err = completeExternalTokenMutationInTx(ctx, queries, actor.CompanyID, reservation.ID, value, now); err != nil {
 		return ExternalCampaignCreated{}, err
 	}
 	if err = tx.Commit(ctx); err != nil {
@@ -210,27 +245,92 @@ func (s *Service) RotateExternalCampaignToken(
 	ctx context.Context,
 	actor Actor,
 	campaignID uuid.UUID,
+	idempotencyKey string,
 ) (ExternalCampaignCreated, error) {
-	token, tokenHash, prefix, err := s.generateExternalToken()
-	if err != nil {
-		return ExternalCampaignCreated{}, internal("Не удалось создать новый токен кампании", err)
-	}
-	value, err := s.changeExternalCampaign(ctx, actor, campaignID, "campaign_token_rotated", func(
-		ctx context.Context, queries *db.Queries, aggregate *domaincampaign.Campaign, now time.Time, partnerID *uuid.UUID,
-	) error {
-		if err := aggregate.RotateToken(tokenHash, prefix, now); err != nil {
-			return conflict(err.Error())
-		}
-		_, err := queries.RotateExternalCampaignToken(ctx, db.RotateExternalCampaignTokenParams{
-			TokenHash: tokenHash, TokenPrefix: prefix, RotatedAt: nullTimestamptz(&now),
-			CompanyID: actor.CompanyID, ID: campaignID, PartnerOwnerID: nullUUID(partnerID),
-		})
-		return err
-	})
+	key, err := normalizeExternalTokenKey(idempotencyKey)
 	if err != nil {
 		return ExternalCampaignCreated{}, err
 	}
-	return ExternalCampaignCreated{Campaign: value, Token: token}, nil
+	token, tokenHash, prefix, err := s.idempotentExternalToken(
+		actor, externalTokenOperationRotateCampaign, key,
+	)
+	if err != nil {
+		return ExternalCampaignCreated{}, internal("Не удалось создать новый токен кампании", err)
+	}
+	partnerID, err := campaignPartnerScope(actor)
+	if err != nil {
+		return ExternalCampaignCreated{}, err
+	}
+	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{})
+	if err != nil {
+		return ExternalCampaignCreated{}, internal("Не удалось начать транзакцию", err)
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+	queries := db.New(tx)
+	now := s.now().UTC()
+	reservation, replayed, err := s.reserveExternalTokenMutationInTx(
+		ctx, queries, actor, externalTokenOperationRotateCampaign, key,
+		struct{ CampaignID uuid.UUID }{CampaignID: campaignID}, campaignID, now,
+	)
+	if err != nil {
+		return ExternalCampaignCreated{}, err
+	}
+	if replayed {
+		campaign, decodeErr := decodeExternalTokenMutationReplay[ExternalCampaign](reservation.ResponsePayload)
+		if decodeErr != nil {
+			return ExternalCampaignCreated{}, decodeErr
+		}
+		if err = tx.Commit(ctx); err != nil {
+			return ExternalCampaignCreated{}, internal("Не удалось подтвердить повтор операции", err)
+		}
+		return ExternalCampaignCreated{Campaign: campaign, Token: token}, nil
+	}
+	row, err := queries.GetExternalCampaignForUpdate(ctx, db.GetExternalCampaignForUpdateParams{
+		CompanyID: actor.CompanyID, ID: campaignID, PartnerOwnerID: nullUUID(partnerID),
+	})
+	if err != nil {
+		if isNoRows(err) {
+			return ExternalCampaignCreated{}, notFound("Кампания")
+		}
+		return ExternalCampaignCreated{}, internal("Не удалось заблокировать кампанию", err)
+	}
+	aggregate, err := domaincampaign.Rehydrate(campaignSnapshotFromDB(row))
+	if err != nil {
+		return ExternalCampaignCreated{}, internal("Некорректное состояние кампании", err)
+	}
+	beforeSnapshot := aggregate.Snapshot()
+	if !domainauth.CanManageExternalCampaign(authorizationActor(actor), beforeSnapshot) {
+		return ExternalCampaignCreated{}, forbidden("Недостаточно прав для изменения кампании")
+	}
+	if err = aggregate.RotateToken(tokenHash, prefix, now); err != nil {
+		return ExternalCampaignCreated{}, conflict(err.Error())
+	}
+	if _, err = queries.RotateExternalCampaignToken(ctx, db.RotateExternalCampaignTokenParams{
+		TokenHash: tokenHash, TokenPrefix: prefix, RotatedAt: nullTimestamptz(&now),
+		CompanyID: actor.CompanyID, ID: campaignID, PartnerOwnerID: nullUUID(partnerID),
+	}); err != nil {
+		if isNoRows(err) {
+			return ExternalCampaignCreated{}, conflict("Кампанию нельзя изменить в текущем состоянии")
+		}
+		return ExternalCampaignCreated{}, internal("Не удалось заменить токен кампании", err)
+	}
+	after := campaignFromSnapshot(aggregate.Snapshot())
+	if err = s.recordCampaignHistory(ctx, queries, actor.CompanyID, campaignID, "token_rotated", actor,
+		stringPointer(string(beforeSnapshot.Status)), after.Status,
+		stringPointer(beforeSnapshot.TokenPrefix), &after.TokenPrefix, now); err != nil {
+		return ExternalCampaignCreated{}, err
+	}
+	before := campaignFromSnapshot(beforeSnapshot)
+	if err = s.auditCampaign(ctx, queries, actor, "campaign_token_rotated", &before, after); err != nil {
+		return ExternalCampaignCreated{}, err
+	}
+	if err = completeExternalTokenMutationInTx(ctx, queries, actor.CompanyID, reservation.ID, after, now); err != nil {
+		return ExternalCampaignCreated{}, err
+	}
+	if err = tx.Commit(ctx); err != nil {
+		return ExternalCampaignCreated{}, internal("Не удалось сохранить новый токен кампании", err)
+	}
+	return ExternalCampaignCreated{Campaign: after, Token: token}, nil
 }
 
 func (s *Service) RevokeExternalCampaign(ctx context.Context, actor Actor, campaignID uuid.UUID) (ExternalCampaign, error) {

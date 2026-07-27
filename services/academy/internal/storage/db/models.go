@@ -554,6 +554,19 @@ type ExternalSession struct {
 	CreatedAt         time.Time          `json:"created_at"`
 }
 
+type ExternalTokenMutationIdempotency struct {
+	ID              uuid.UUID          `json:"id"`
+	CompanyID       uuid.UUID          `json:"company_id"`
+	ActorUserID     uuid.UUID          `json:"actor_user_id"`
+	Operation       string             `json:"operation"`
+	IdempotencyKey  string             `json:"idempotency_key"`
+	RequestHash     string             `json:"request_hash"`
+	ResultID        uuid.UUID          `json:"result_id"`
+	ResponsePayload []byte             `json:"response_payload"`
+	CompletedAt     pgtype.Timestamptz `json:"completed_at"`
+	CreatedAt       time.Time          `json:"created_at"`
+}
+
 type ExternalVerificationChallenge struct {
 	ID                 uuid.UUID          `json:"id"`
 	CompanyID          uuid.UUID          `json:"company_id"`
