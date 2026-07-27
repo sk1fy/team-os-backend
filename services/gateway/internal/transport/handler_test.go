@@ -423,6 +423,79 @@ func TestGatewayForwardsOneTimeTokenIdempotencyKeys(t *testing.T) {
 	}
 }
 
+// Заголовок необязателен, поэтому клиент, который его не присылает, должен получить
+// прежнее поведение, а не 400 из сгенерированного wrapper. Ключ при этом синтезирует
+// gateway: academy обязан видеть непустое значение.
+func TestGatewaySynthesizesOneTimeTokenIdempotencyKeyWhenHeaderAbsent(t *testing.T) {
+	var observed string
+	academy := &stubAcademyServer{
+		repeatPersonalAccessFn: func(_ context.Context, request *academyv1.RepeatExternalPersonalAccessRequest) (*academyv1.RepeatExternalPersonalAccessResponse, error) {
+			observed = request.GetIdempotencyKey()
+			return nil, status.Error(codes.InvalidArgument, "проверка завершена")
+		},
+	}
+	handler := newTestGatewayWithAcademy(t, &stubCompanyServer{}, academy)
+	request := httptest.NewRequestWithContext(
+		context.Background(),
+		http.MethodPost,
+		"/api/v1/academy/personal-accesses/"+testChildID+"/repeat",
+		strings.NewReader(`{}`),
+	)
+	request.Header.Set("Content-Type", "application/json")
+	recorder := httptest.NewRecorder()
+	handler.ServeHTTP(recorder, request)
+
+	// Стаб отвечает InvalidArgument, поэтому по коду ответа нельзя отличить отказ wrapper
+	// от успешного прохода: признак того, что запрос дошёл до academy, — вызов стаба.
+	if observed == "" {
+		t.Fatalf("academy не вызван без Idempotency-Key: %d %s", recorder.Code, recorder.Body.String())
+	}
+	if !strings.HasPrefix(observed, "auto:") {
+		t.Fatalf("synthesized idempotency key = %q, want auto: prefix", observed)
+	}
+	if len(observed) < 8 {
+		t.Fatalf("synthesized idempotency key = %q, want at least 8 bytes", observed)
+	}
+}
+
+// Присутствующий, но непригодный заголовок отклоняется до вызова academy: иначе клиент
+// считал бы себя защищённым от дублей, фактически уходя по auto-пути.
+func TestGatewayRejectsUnusableOneTimeTokenIdempotencyKeys(t *testing.T) {
+	for _, test := range []struct{ name, key string }{
+		{name: "too-short", key: "short"},
+		{name: "blank", key: "        "},
+		{name: "reserved-prefix", key: "auto:11111111-2222-3333-4444-555555555555"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			called := false
+			academy := &stubAcademyServer{
+				repeatPersonalAccessFn: func(_ context.Context, _ *academyv1.RepeatExternalPersonalAccessRequest) (*academyv1.RepeatExternalPersonalAccessResponse, error) {
+					called = true
+					return nil, status.Error(codes.InvalidArgument, "не должно вызываться")
+				},
+			}
+			handler := newTestGatewayWithAcademy(t, &stubCompanyServer{}, academy)
+			request := httptest.NewRequestWithContext(
+				context.Background(),
+				http.MethodPost,
+				"/api/v1/academy/personal-accesses/"+testChildID+"/repeat",
+				strings.NewReader(`{}`),
+			)
+			request.Header.Set("Content-Type", "application/json")
+			request.Header.Set("Idempotency-Key", test.key)
+			recorder := httptest.NewRecorder()
+			handler.ServeHTTP(recorder, request)
+
+			if recorder.Code != http.StatusBadRequest {
+				t.Fatalf("status = %d, want 400 (body %s)", recorder.Code, recorder.Body.String())
+			}
+			if called {
+				t.Fatal("academy вызван с непригодным ключом идемпотентности")
+			}
+		})
+	}
+}
+
 func TestGatewayRejectsMalformedEntityIDsWithoutCallingServices(t *testing.T) {
 	handler := newTestGateway(t, &stubCompanyServer{})
 	for _, path := range []string{

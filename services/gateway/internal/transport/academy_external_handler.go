@@ -19,10 +19,14 @@ func (h *Handler) CreateExternalPersonalAccess(
 	if !decode(w, r, &input) {
 		return
 	}
+	idempotencyKey, ok := resolveIdempotencyKey(w, params.IdempotencyKey)
+	if !ok {
+		return
+	}
 	response, err := h.academy.CreateExternalPersonalAccess(outgoingContext(r), &academyv1.CreateExternalPersonalAccessRequest{
 		CourseId: courseID.String(), CourseVersionId: versionID.String(), Email: string(input.Email),
 		FirstName: input.FirstName, LastName: input.LastName, DeadlineDays: uint32(input.DeadlineDays),
-		IdempotencyKey: string(params.IdempotencyKey),
+		IdempotencyKey: idempotencyKey,
 	})
 	if err != nil {
 		h.writeAcademyRPCError(w, r, err)
@@ -94,8 +98,12 @@ func (h *Handler) RotateExternalPersonalAccessToken(
 	accessID api.AccessId,
 	params api.RotateExternalPersonalAccessTokenParams,
 ) {
+	idempotencyKey, ok := resolveIdempotencyKey(w, params.IdempotencyKey)
+	if !ok {
+		return
+	}
 	response, err := h.academy.RotateExternalPersonalAccessToken(outgoingContext(r), &academyv1.RotateExternalPersonalAccessTokenRequest{
-		AccessId: accessID.String(), IdempotencyKey: string(params.IdempotencyKey),
+		AccessId: accessID.String(), IdempotencyKey: idempotencyKey,
 	})
 	if err != nil {
 		h.writeAcademyRPCError(w, r, err)
@@ -131,8 +139,12 @@ func (h *Handler) RepeatExternalPersonalAccess(
 	accessID api.AccessId,
 	params api.RepeatExternalPersonalAccessParams,
 ) {
+	idempotencyKey, ok := resolveIdempotencyKey(w, params.IdempotencyKey)
+	if !ok {
+		return
+	}
 	response, err := h.academy.RepeatExternalPersonalAccess(outgoingContext(r), &academyv1.RepeatExternalPersonalAccessRequest{
-		AccessId: accessID.String(), IdempotencyKey: string(params.IdempotencyKey),
+		AccessId: accessID.String(), IdempotencyKey: idempotencyKey,
 	})
 	if err != nil {
 		h.writeAcademyRPCError(w, r, err)

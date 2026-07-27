@@ -2699,7 +2699,7 @@ paths:
     parameters:
       - $ref: '#/components/parameters/CourseId'
       - $ref: '#/components/parameters/VersionId'
-      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/OptionalIdempotencyKey'
     post:
       tags: [Academy]
       operationId: createExternalPersonalAccess
@@ -2772,7 +2772,7 @@ paths:
   /api/v1/academy/personal-accesses/{accessId}/rotate-token:
     parameters:
       - $ref: '#/components/parameters/AccessId'
-      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/OptionalIdempotencyKey'
     post:
       tags: [Academy]
       operationId: rotateExternalPersonalAccessToken
@@ -2803,7 +2803,7 @@ paths:
   /api/v1/academy/personal-accesses/{accessId}/repeat:
     parameters:
       - $ref: '#/components/parameters/AccessId'
-      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/OptionalIdempotencyKey'
     post:
       tags: [Academy]
       operationId: repeatExternalPersonalAccess
@@ -2820,7 +2820,7 @@ paths:
     parameters:
       - $ref: '#/components/parameters/CourseId'
       - $ref: '#/components/parameters/VersionId'
-      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/OptionalIdempotencyKey'
     post:
       tags: [Academy]
       operationId: createExternalCampaign
@@ -2902,7 +2902,7 @@ paths:
   /api/v1/academy/campaigns/{campaignId}/rotate-token:
     parameters:
       - $ref: '#/components/parameters/CampaignId'
-      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/OptionalIdempotencyKey'
     post:
       tags: [Academy]
       operationId: rotateExternalCampaignToken
@@ -3760,10 +3760,29 @@ components:
         type: string
         minLength: 32
         maxLength: 512
+    # Двух компонентов два по историческим причинам, а не по смыслу. Заголовок —
+    # средство клиента для безопасного retry, поэтому правильная форма — необязательный
+    # параметр (OptionalIdempotencyKey): сервер не может вывести тождество операции
+    # ниоткуда, кроме ключа, и при его отсутствии обязан честно работать без дедупликации.
+    # IdempotencyKey (required) остаётся на endpoints, где он был выпущен таким изначально:
+    # снятие обязательности не breaking для клиентов, но по ADR-004 такой cleanup контракта
+    # нельзя совмещать с функциональным изменением. Целевое состояние — Optional везде.
     IdempotencyKey:
       name: Idempotency-Key
       in: header
       required: true
+      schema:
+        type: string
+        minLength: 8
+        maxLength: 255
+    OptionalIdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: false
+      description: |
+        Если заголовок передан, повтор запроса с тем же ключом вернёт первый ответ
+        вместо создания второй операции. Если не передан, gateway подставляет
+        собственный ключ и запрос выполняется без защиты от дублей.
       schema:
         type: string
         minLength: 8

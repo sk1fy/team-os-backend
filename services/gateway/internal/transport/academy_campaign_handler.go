@@ -24,10 +24,14 @@ func (h *Handler) CreateExternalCampaign(
 		apierror.Write(w, apierror.BadRequest("Некорректная цель внешней кампании"))
 		return
 	}
+	idempotencyKey, ok := resolveIdempotencyKey(w, params.IdempotencyKey)
+	if !ok {
+		return
+	}
 	response, err := h.academy.CreateExternalCampaign(outgoingContext(r), &academyv1.CreateExternalCampaignRequest{
 		CourseId: courseID.String(), CourseVersionId: versionID.String(), Name: input.Name,
 		Purpose: purpose, DeadlineDays: uint32(input.DeadlineDays),
-		IdempotencyKey: string(params.IdempotencyKey),
+		IdempotencyKey: idempotencyKey,
 	})
 	if err != nil {
 		h.writeAcademyRPCError(w, r, err)
@@ -96,8 +100,12 @@ func (h *Handler) RotateExternalCampaignToken(
 	campaignID api.CampaignId,
 	params api.RotateExternalCampaignTokenParams,
 ) {
+	idempotencyKey, ok := resolveIdempotencyKey(w, params.IdempotencyKey)
+	if !ok {
+		return
+	}
 	response, err := h.academy.RotateExternalCampaignToken(outgoingContext(r), &academyv1.RotateExternalCampaignTokenRequest{
-		CampaignId: campaignID.String(), IdempotencyKey: string(params.IdempotencyKey),
+		CampaignId: campaignID.String(), IdempotencyKey: idempotencyKey,
 	})
 	if err != nil {
 		h.writeAcademyRPCError(w, r, err)
