@@ -23,7 +23,10 @@ func TestActorUsesVerifiedBearerClaims(t *testing.T) {
 	userID := uuid.New()
 	companyID := uuid.New()
 	issuer := sharedauth.NewTokenIssuer(privateKey, "teamos-company", "teamos-api", time.Minute)
-	raw, _, err := issuer.Issue(userID.String(), companyID.String(), "admin", nil, nil)
+	raw, _, err := issuer.Issue(
+		userID.String(), companyID.String(), "employee", nil, nil,
+		[]string{"schedule", "knowledge"},
+	)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -38,7 +41,8 @@ func TestActorUsesVerifiedBearerClaims(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if actor.UserID != userID || actor.CompanyID != companyID || actor.Role != "admin" {
+	if actor.UserID != userID || actor.CompanyID != companyID || actor.Role != "employee" ||
+		len(actor.SectionAccess) != 2 || actor.SectionAccess[1] != "knowledge" {
 		t.Fatalf("actor = %#v", actor)
 	}
 }

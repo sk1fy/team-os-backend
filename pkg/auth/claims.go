@@ -10,5 +10,6 @@ type Claims struct {
 	Role          string   `json:"role"`
 	PositionIDs   []string `json:"pos,omitempty"`
 	DepartmentIDs []string `json:"dep,omitempty"`
+	SectionAccess []string `json:"sec,omitempty"`
 	jwt.RegisteredClaims
 }

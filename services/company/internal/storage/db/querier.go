@@ -15,6 +15,7 @@ type Querier interface {
 	AcceptInvite(ctx context.Context, id uuid.UUID) (Invite, error)
 	ActivateInvitedUser(ctx context.Context, arg ActivateInvitedUserParams) (User, error)
 	AssignUserPosition(ctx context.Context, arg AssignUserPositionParams) error
+	ClearAmoUserTombstone(ctx context.Context, arg ClearAmoUserTombstoneParams) (User, error)
 	CountDepartmentChildren(ctx context.Context, arg CountDepartmentChildrenParams) (int64, error)
 	CountDepartmentPositions(ctx context.Context, arg CountDepartmentPositionsParams) (int64, error)
 	CreateAmoUser(ctx context.Context, arg CreateAmoUserParams) (User, error)
@@ -28,14 +29,17 @@ type Querier interface {
 	CreatePosition(ctx context.Context, arg CreatePositionParams) (Position, error)
 	CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
+	CreateUserAdminAudit(ctx context.Context, arg CreateUserAdminAuditParams) error
 	DeleteAccessLink(ctx context.Context, arg DeleteAccessLinkParams) error
 	DeleteCredential(ctx context.Context, arg DeleteCredentialParams) error
 	DeleteDepartment(ctx context.Context, arg DeleteDepartmentParams) (int64, error)
 	DeleteDistributionGroup(ctx context.Context, arg DeleteDistributionGroupParams) (int64, error)
+	DeleteEmployeeSectionAccess(ctx context.Context, arg DeleteEmployeeSectionAccessParams) error
 	DeleteExpiredSessions(ctx context.Context, expiresAt time.Time) (int64, error)
 	DeleteLocalUser(ctx context.Context, arg DeleteLocalUserParams) (int64, error)
 	DeletePosition(ctx context.Context, arg DeletePositionParams) (int64, error)
 	DeleteUserPositions(ctx context.Context, arg DeleteUserPositionsParams) error
+	DisableUserInDistributionGroups(ctx context.Context, arg DisableUserInDistributionGroupsParams) error
 	FindUserForAmoSync(ctx context.Context, arg FindUserForAmoSyncParams) (User, error)
 	GetAccessLink(ctx context.Context, arg GetAccessLinkParams) (AccessLink, error)
 	GetCompany(ctx context.Context, id uuid.UUID) (Company, error)
@@ -59,17 +63,23 @@ type Querier interface {
 	GetUserPositionIDs(ctx context.Context, arg GetUserPositionIDsParams) ([]uuid.UUID, error)
 	GetUserWithPositions(ctx context.Context, arg GetUserWithPositionsParams) (GetUserWithPositionsRow, error)
 	GetUsersByIDs(ctx context.Context, arg GetUsersByIDsParams) ([]GetUsersByIDsRow, error)
+	GrantEmployeeSectionAccess(ctx context.Context, arg GrantEmployeeSectionAccessParams) error
+	ListAmoUsersForReconciliation(ctx context.Context, companyID uuid.UUID) ([]User, error)
 	ListDepartments(ctx context.Context, companyID uuid.UUID) ([]Department, error)
 	ListDistributionEvents(ctx context.Context, arg ListDistributionEventsParams) ([]DistributionEvent, error)
 	ListDistributionGroups(ctx context.Context, companyID uuid.UUID) ([]DistributionGroup, error)
+	ListDistributionGroupsContainingUserForUpdate(ctx context.Context, arg ListDistributionGroupsContainingUserForUpdateParams) ([]DistributionGroup, error)
+	ListEmployeeSectionAccess(ctx context.Context, arg ListEmployeeSectionAccessParams) ([]string, error)
 	ListInvites(ctx context.Context, companyID uuid.UUID) ([]Invite, error)
 	ListPositions(ctx context.Context, companyID uuid.UUID) ([]Position, error)
 	ListSchedules(ctx context.Context, companyID uuid.UUID) ([]UserSchedule, error)
 	ListShiftExceptionsByMonth(ctx context.Context, arg ListShiftExceptionsByMonthParams) ([]ShiftException, error)
 	ListUsers(ctx context.Context, companyID uuid.UUID) ([]ListUsersRow, error)
 	LockAmoUserSync(ctx context.Context, companyID uuid.UUID) error
+	MarkAmoUserExternallyDeleted(ctx context.Context, arg MarkAmoUserExternallyDeletedParams) (User, error)
 	MoveDepartment(ctx context.Context, arg MoveDepartmentParams) (Department, error)
 	ReassignUserInvites(ctx context.Context, arg ReassignUserInvitesParams) error
+	RemoveUserFromDistributionGroups(ctx context.Context, arg RemoveUserFromDistributionGroupsParams) error
 	ResendInvite(ctx context.Context, arg ResendInviteParams) (Invite, error)
 	ResetDistributionEvents(ctx context.Context, arg ResetDistributionEventsParams) (int64, error)
 	ResolveDepartmentUserIDs(ctx context.Context, arg ResolveDepartmentUserIDsParams) ([]uuid.UUID, error)

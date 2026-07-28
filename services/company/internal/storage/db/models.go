@@ -76,13 +76,21 @@ type DistributionGroup struct {
 }
 
 type EmployeeAccessAudit struct {
-	ID           uuid.UUID `json:"id"`
-	CompanyID    uuid.UUID `json:"company_id"`
-	TargetUserID uuid.UUID `json:"target_user_id"`
-	ActorUserID  uuid.UUID `json:"actor_user_id"`
-	Action       string    `json:"action"`
-	Mode         string    `json:"mode"`
-	CreatedAt    time.Time `json:"created_at"`
+	ID           uuid.UUID     `json:"id"`
+	CompanyID    uuid.UUID     `json:"company_id"`
+	TargetUserID uuid.NullUUID `json:"target_user_id"`
+	ActorUserID  uuid.NullUUID `json:"actor_user_id"`
+	Action       string        `json:"action"`
+	Mode         string        `json:"mode"`
+	CreatedAt    time.Time     `json:"created_at"`
+}
+
+type EmployeeSectionAccess struct {
+	CompanyID uuid.UUID     `json:"company_id"`
+	UserID    uuid.UUID     `json:"user_id"`
+	Section   string        `json:"section"`
+	GrantedBy uuid.NullUUID `json:"granted_by"`
+	GrantedAt time.Time     `json:"granted_at"`
 }
 
 type Invite struct {
@@ -161,25 +169,39 @@ type ShiftException struct {
 }
 
 type User struct {
-	ID                uuid.UUID   `json:"id"`
-	CompanyID         uuid.UUID   `json:"company_id"`
-	Email             string      `json:"email"`
-	FirstName         string      `json:"first_name"`
-	LastName          pgtype.Text `json:"last_name"`
-	Phone             pgtype.Text `json:"phone"`
-	AvatarUrl         pgtype.Text `json:"avatar_url"`
-	Role              string      `json:"role"`
-	Status            string      `json:"status"`
-	BirthDate         pgtype.Date `json:"birth_date"`
-	HiredAt           pgtype.Date `json:"hired_at"`
-	VacationAllowance pgtype.Int2 `json:"vacation_allowance"`
-	CreatedAt         time.Time   `json:"created_at"`
-	UpdatedAt         time.Time   `json:"updated_at"`
-	Source            string      `json:"source"`
-	ExternalID        pgtype.Text `json:"external_id"`
-	ExternalGroupID   pgtype.Text `json:"external_group_id"`
-	ExternalGroupName pgtype.Text `json:"external_group_name"`
-	AvatarSource      pgtype.Text `json:"avatar_source"`
+	ID                uuid.UUID          `json:"id"`
+	CompanyID         uuid.UUID          `json:"company_id"`
+	Email             string             `json:"email"`
+	FirstName         string             `json:"first_name"`
+	LastName          pgtype.Text        `json:"last_name"`
+	Phone             pgtype.Text        `json:"phone"`
+	AvatarUrl         pgtype.Text        `json:"avatar_url"`
+	Role              string             `json:"role"`
+	Status            string             `json:"status"`
+	BirthDate         pgtype.Date        `json:"birth_date"`
+	HiredAt           pgtype.Date        `json:"hired_at"`
+	VacationAllowance pgtype.Int2        `json:"vacation_allowance"`
+	CreatedAt         time.Time          `json:"created_at"`
+	UpdatedAt         time.Time          `json:"updated_at"`
+	Source            string             `json:"source"`
+	ExternalID        pgtype.Text        `json:"external_id"`
+	ExternalGroupID   pgtype.Text        `json:"external_group_id"`
+	ExternalGroupName pgtype.Text        `json:"external_group_name"`
+	AvatarSource      pgtype.Text        `json:"avatar_source"`
+	ExternalDeletedAt pgtype.Timestamptz `json:"external_deleted_at"`
+}
+
+type UserAdminAudit struct {
+	ID           uuid.UUID     `json:"id"`
+	CompanyID    uuid.UUID     `json:"company_id"`
+	TargetUserID uuid.NullUUID `json:"target_user_id"`
+	ActorUserID  uuid.NullUUID `json:"actor_user_id"`
+	ActorKind    string        `json:"actor_kind"`
+	Action       string        `json:"action"`
+	BeforeState  []byte        `json:"before_state"`
+	AfterState   []byte        `json:"after_state"`
+	RequestID    pgtype.Text   `json:"request_id"`
+	CreatedAt    time.Time     `json:"created_at"`
 }
 
 type UserPosition struct {

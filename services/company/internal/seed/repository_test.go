@@ -43,6 +43,8 @@ func TestApplyUsesDependencyOrderAndAllRepositorySteps(t *testing.T) {
 		"INSERT INTO companies",
 		"INSERT INTO users",
 		"INSERT INTO credentials",
+		"DELETE FROM employee_section_access",
+		"INSERT INTO employee_section_access",
 		"INSERT INTO departments",
 		"UPDATE departments",
 		"INSERT INTO positions",

@@ -27,6 +27,12 @@ const (
 	defaultAmoSyncTTL = 5 * time.Minute
 )
 
+var defaultEmployeeSections = []string{"schedule", "knowledge", "academy"}
+
+var validEmployeeSections = map[string]struct{}{
+	"schedule": {}, "knowledge": {}, "academy": {}, "distribution": {},
+}
+
 type amoSyncState struct {
 	mu          sync.Mutex
 	lastAttempt time.Time
@@ -119,6 +125,41 @@ func (s *Service) acquirePasswordSlot(ctx context.Context) (func(), error) {
 func requireAdministrator(actor Actor) error {
 	if actor.Role != "owner" && actor.Role != "admin" {
 		return forbidden("Недостаточно прав для изменения оргструктуры")
+	}
+	return nil
+}
+
+func actorHasSection(actor Actor, section string) bool {
+	if actor.Role == "owner" || actor.Role == "admin" {
+		return true
+	}
+	if actor.Role != "employee" {
+		return false
+	}
+	for _, granted := range actor.SectionAccess {
+		if granted == section {
+			return true
+		}
+	}
+	return false
+}
+
+func validateEmployeeSections(values []string) error {
+	if len(values) == 0 {
+		return validation("У сотрудника должен оставаться хотя бы один рабочий раздел")
+	}
+	if len(values) > len(validEmployeeSections) {
+		return validation("Некорректный набор разделов сотрудника")
+	}
+	seen := make(map[string]struct{}, len(values))
+	for _, value := range values {
+		if _, ok := validEmployeeSections[value]; !ok {
+			return validation("Некорректный раздел сотрудника")
+		}
+		if _, duplicate := seen[value]; duplicate {
+			return validation("Разделы сотрудника не должны повторяться")
+		}
+		seen[value] = struct{}{}
 	}
 	return nil
 }
@@ -273,7 +314,18 @@ func userEventSnapshot(user User, departmentIDs []uuid.UUID) map[string]any {
 		"firstName": user.FirstName, "lastName": user.LastName,
 		"role": orgRoleEventValue(user.Role), "status": orgStatusEventValue(user.Status),
 		"positionIds": stringsFromUUIDs(user.PositionIDs), "departmentIds": stringsFromUUIDs(departmentIDs),
+		"sectionAccess": orgSectionEventValues(user.SectionAccess),
 	}
+}
+
+func orgSectionEventValues(values []string) []string {
+	result := make([]string, 0, len(values))
+	for _, value := range values {
+		if _, ok := validEmployeeSections[value]; ok {
+			result = append(result, "ORG_EMPLOYEE_SECTION_"+strings.ToUpper(value))
+		}
+	}
+	return result
 }
 
 func stringsFromUUIDs(values []uuid.UUID) []string {

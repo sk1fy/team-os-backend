@@ -43,7 +43,44 @@ func userToProto(value application.User) *companyv1.User {
 		CreatedAt:         timestamppb.New(value.CreatedAt.UTC()),
 		Source:            userSourceToProto(value.Source),
 		AccessMode:        userAccessModeToProto(value.AccessMode),
+		SectionAccess:     employeeSectionsToProto(value.SectionAccess),
 	}
+}
+
+func employeeSectionsToProto(values []string) []companyv1.EmployeeSection {
+	result := make([]companyv1.EmployeeSection, 0, len(values))
+	for _, value := range values {
+		switch value {
+		case "schedule":
+			result = append(result, companyv1.EmployeeSection_EMPLOYEE_SECTION_SCHEDULE)
+		case "knowledge":
+			result = append(result, companyv1.EmployeeSection_EMPLOYEE_SECTION_KNOWLEDGE)
+		case "academy":
+			result = append(result, companyv1.EmployeeSection_EMPLOYEE_SECTION_ACADEMY)
+		case "distribution":
+			result = append(result, companyv1.EmployeeSection_EMPLOYEE_SECTION_DISTRIBUTION)
+		}
+	}
+	return result
+}
+
+func employeeSectionsFromProto(values []companyv1.EmployeeSection) ([]string, error) {
+	result := make([]string, len(values))
+	for index, value := range values {
+		switch value {
+		case companyv1.EmployeeSection_EMPLOYEE_SECTION_SCHEDULE:
+			result[index] = "schedule"
+		case companyv1.EmployeeSection_EMPLOYEE_SECTION_KNOWLEDGE:
+			result[index] = "knowledge"
+		case companyv1.EmployeeSection_EMPLOYEE_SECTION_ACADEMY:
+			result[index] = "academy"
+		case companyv1.EmployeeSection_EMPLOYEE_SECTION_DISTRIBUTION:
+			result[index] = "distribution"
+		default:
+			return nil, invalidArgument("Некорректный раздел сотрудника")
+		}
+	}
+	return result, nil
 }
 
 func userAccessModeToProto(value string) companyv1.UserAccessMode {

@@ -128,6 +128,61 @@ func (OrgUserStatus) EnumDescriptor() ([]byte, []int) {
 	return file_events_org_proto_rawDescGZIP(), []int{1}
 }
 
+type OrgEmployeeSection int32
+
+const (
+	OrgEmployeeSection_ORG_EMPLOYEE_SECTION_UNSPECIFIED  OrgEmployeeSection = 0
+	OrgEmployeeSection_ORG_EMPLOYEE_SECTION_SCHEDULE     OrgEmployeeSection = 1
+	OrgEmployeeSection_ORG_EMPLOYEE_SECTION_KNOWLEDGE    OrgEmployeeSection = 2
+	OrgEmployeeSection_ORG_EMPLOYEE_SECTION_ACADEMY      OrgEmployeeSection = 3
+	OrgEmployeeSection_ORG_EMPLOYEE_SECTION_DISTRIBUTION OrgEmployeeSection = 4
+)
+
+// Enum value maps for OrgEmployeeSection.
+var (
+	OrgEmployeeSection_name = map[int32]string{
+		0: "ORG_EMPLOYEE_SECTION_UNSPECIFIED",
+		1: "ORG_EMPLOYEE_SECTION_SCHEDULE",
+		2: "ORG_EMPLOYEE_SECTION_KNOWLEDGE",
+		3: "ORG_EMPLOYEE_SECTION_ACADEMY",
+		4: "ORG_EMPLOYEE_SECTION_DISTRIBUTION",
+	}
+	OrgEmployeeSection_value = map[string]int32{
+		"ORG_EMPLOYEE_SECTION_UNSPECIFIED":  0,
+		"ORG_EMPLOYEE_SECTION_SCHEDULE":     1,
+		"ORG_EMPLOYEE_SECTION_KNOWLEDGE":    2,
+		"ORG_EMPLOYEE_SECTION_ACADEMY":      3,
+		"ORG_EMPLOYEE_SECTION_DISTRIBUTION": 4,
+	}
+)
+
+func (x OrgEmployeeSection) Enum() *OrgEmployeeSection {
+	p := new(OrgEmployeeSection)
+	*p = x
+	return p
+}
+
+func (x OrgEmployeeSection) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (OrgEmployeeSection) Descriptor() protoreflect.EnumDescriptor {
+	return file_events_org_proto_enumTypes[2].Descriptor()
+}
+
+func (OrgEmployeeSection) Type() protoreflect.EnumType {
+	return &file_events_org_proto_enumTypes[2]
+}
+
+func (x OrgEmployeeSection) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use OrgEmployeeSection.Descriptor instead.
+func (OrgEmployeeSection) EnumDescriptor() ([]byte, []int) {
+	return file_events_org_proto_rawDescGZIP(), []int{2}
+}
+
 type OrgUserSnapshot struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
@@ -138,6 +193,7 @@ type OrgUserSnapshot struct {
 	Status        OrgUserStatus          `protobuf:"varint,6,opt,name=status,proto3,enum=teamos.events.v1.OrgUserStatus" json:"status,omitempty"`
 	PositionIds   []string               `protobuf:"bytes,7,rep,name=position_ids,json=positionIds,proto3" json:"position_ids,omitempty"`
 	DepartmentIds []string               `protobuf:"bytes,8,rep,name=department_ids,json=departmentIds,proto3" json:"department_ids,omitempty"`
+	SectionAccess []OrgEmployeeSection   `protobuf:"varint,9,rep,packed,name=section_access,json=sectionAccess,proto3,enum=teamos.events.v1.OrgEmployeeSection" json:"section_access,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -224,6 +280,13 @@ func (x *OrgUserSnapshot) GetPositionIds() []string {
 func (x *OrgUserSnapshot) GetDepartmentIds() []string {
 	if x != nil {
 		return x.DepartmentIds
+	}
+	return nil
+}
+
+func (x *OrgUserSnapshot) GetSectionAccess() []OrgEmployeeSection {
+	if x != nil {
+		return x.SectionAccess
 	}
 	return nil
 }
@@ -524,6 +587,102 @@ func (x *OrgUserDeactivatedPayload) GetUserId() string {
 	return ""
 }
 
+type OrgUserDeletedEvent struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Metadata      *EventMetadata         `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	Payload       *OrgUserDeletedPayload `protobuf:"bytes,2,opt,name=payload,proto3" json:"payload,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OrgUserDeletedEvent) Reset() {
+	*x = OrgUserDeletedEvent{}
+	mi := &file_events_org_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OrgUserDeletedEvent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OrgUserDeletedEvent) ProtoMessage() {}
+
+func (x *OrgUserDeletedEvent) ProtoReflect() protoreflect.Message {
+	mi := &file_events_org_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OrgUserDeletedEvent.ProtoReflect.Descriptor instead.
+func (*OrgUserDeletedEvent) Descriptor() ([]byte, []int) {
+	return file_events_org_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *OrgUserDeletedEvent) GetMetadata() *EventMetadata {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
+func (x *OrgUserDeletedEvent) GetPayload() *OrgUserDeletedPayload {
+	if x != nil {
+		return x.Payload
+	}
+	return nil
+}
+
+type OrgUserDeletedPayload struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OrgUserDeletedPayload) Reset() {
+	*x = OrgUserDeletedPayload{}
+	mi := &file_events_org_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OrgUserDeletedPayload) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OrgUserDeletedPayload) ProtoMessage() {}
+
+func (x *OrgUserDeletedPayload) ProtoReflect() protoreflect.Message {
+	mi := &file_events_org_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OrgUserDeletedPayload.ProtoReflect.Descriptor instead.
+func (*OrgUserDeletedPayload) Descriptor() ([]byte, []int) {
+	return file_events_org_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *OrgUserDeletedPayload) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
 type OrgPositionDeletedEvent struct {
 	state         protoimpl.MessageState     `protogen:"open.v1"`
 	Metadata      *EventMetadata             `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
@@ -534,7 +693,7 @@ type OrgPositionDeletedEvent struct {
 
 func (x *OrgPositionDeletedEvent) Reset() {
 	*x = OrgPositionDeletedEvent{}
-	mi := &file_events_org_proto_msgTypes[7]
+	mi := &file_events_org_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -546,7 +705,7 @@ func (x *OrgPositionDeletedEvent) String() string {
 func (*OrgPositionDeletedEvent) ProtoMessage() {}
 
 func (x *OrgPositionDeletedEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_events_org_proto_msgTypes[7]
+	mi := &file_events_org_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -559,7 +718,7 @@ func (x *OrgPositionDeletedEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OrgPositionDeletedEvent.ProtoReflect.Descriptor instead.
 func (*OrgPositionDeletedEvent) Descriptor() ([]byte, []int) {
-	return file_events_org_proto_rawDescGZIP(), []int{7}
+	return file_events_org_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *OrgPositionDeletedEvent) GetMetadata() *EventMetadata {
@@ -586,7 +745,7 @@ type OrgPositionDeletedPayload struct {
 
 func (x *OrgPositionDeletedPayload) Reset() {
 	*x = OrgPositionDeletedPayload{}
-	mi := &file_events_org_proto_msgTypes[8]
+	mi := &file_events_org_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -598,7 +757,7 @@ func (x *OrgPositionDeletedPayload) String() string {
 func (*OrgPositionDeletedPayload) ProtoMessage() {}
 
 func (x *OrgPositionDeletedPayload) ProtoReflect() protoreflect.Message {
-	mi := &file_events_org_proto_msgTypes[8]
+	mi := &file_events_org_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -611,7 +770,7 @@ func (x *OrgPositionDeletedPayload) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OrgPositionDeletedPayload.ProtoReflect.Descriptor instead.
 func (*OrgPositionDeletedPayload) Descriptor() ([]byte, []int) {
-	return file_events_org_proto_rawDescGZIP(), []int{8}
+	return file_events_org_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *OrgPositionDeletedPayload) GetPositionId() string {
@@ -638,7 +797,7 @@ type OrgInviteCreatedEvent struct {
 
 func (x *OrgInviteCreatedEvent) Reset() {
 	*x = OrgInviteCreatedEvent{}
-	mi := &file_events_org_proto_msgTypes[9]
+	mi := &file_events_org_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -650,7 +809,7 @@ func (x *OrgInviteCreatedEvent) String() string {
 func (*OrgInviteCreatedEvent) ProtoMessage() {}
 
 func (x *OrgInviteCreatedEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_events_org_proto_msgTypes[9]
+	mi := &file_events_org_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -663,7 +822,7 @@ func (x *OrgInviteCreatedEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OrgInviteCreatedEvent.ProtoReflect.Descriptor instead.
 func (*OrgInviteCreatedEvent) Descriptor() ([]byte, []int) {
-	return file_events_org_proto_rawDescGZIP(), []int{9}
+	return file_events_org_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *OrgInviteCreatedEvent) GetMetadata() *EventMetadata {
@@ -695,7 +854,7 @@ type OrgInviteCreatedPayload struct {
 
 func (x *OrgInviteCreatedPayload) Reset() {
 	*x = OrgInviteCreatedPayload{}
-	mi := &file_events_org_proto_msgTypes[10]
+	mi := &file_events_org_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -707,7 +866,7 @@ func (x *OrgInviteCreatedPayload) String() string {
 func (*OrgInviteCreatedPayload) ProtoMessage() {}
 
 func (x *OrgInviteCreatedPayload) ProtoReflect() protoreflect.Message {
-	mi := &file_events_org_proto_msgTypes[10]
+	mi := &file_events_org_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -720,7 +879,7 @@ func (x *OrgInviteCreatedPayload) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OrgInviteCreatedPayload.ProtoReflect.Descriptor instead.
 func (*OrgInviteCreatedPayload) Descriptor() ([]byte, []int) {
-	return file_events_org_proto_rawDescGZIP(), []int{10}
+	return file_events_org_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *OrgInviteCreatedPayload) GetInviteId() string {
@@ -776,7 +935,7 @@ var File_events_org_proto protoreflect.FileDescriptor
 
 const file_events_org_proto_rawDesc = "" +
 	"\n" +
-	"\x10events/org.proto\x12\x10teamos.events.v1\x1a\x13events/common.proto\"\xb2\x02\n" +
+	"\x10events/org.proto\x12\x10teamos.events.v1\x1a\x13events/common.proto\"\xff\x02\n" +
 	"\x0fOrgUserSnapshot\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x12\x1d\n" +
@@ -786,7 +945,8 @@ const file_events_org_proto_rawDesc = "" +
 	"\x04role\x18\x05 \x01(\x0e2\x1d.teamos.events.v1.OrgUserRoleR\x04role\x127\n" +
 	"\x06status\x18\x06 \x01(\x0e2\x1f.teamos.events.v1.OrgUserStatusR\x06status\x12!\n" +
 	"\fposition_ids\x18\a \x03(\tR\vpositionIds\x12%\n" +
-	"\x0edepartment_ids\x18\b \x03(\tR\rdepartmentIds\"\x95\x01\n" +
+	"\x0edepartment_ids\x18\b \x03(\tR\rdepartmentIds\x12K\n" +
+	"\x0esection_access\x18\t \x03(\x0e2$.teamos.events.v1.OrgEmployeeSectionR\rsectionAccess\"\x95\x01\n" +
 	"\x13OrgUserCreatedEvent\x12;\n" +
 	"\bmetadata\x18\x01 \x01(\v2\x1f.teamos.events.v1.EventMetadataR\bmetadata\x12A\n" +
 	"\apayload\x18\x02 \x01(\v2'.teamos.events.v1.OrgUserCreatedPayloadR\apayload\"N\n" +
@@ -802,6 +962,11 @@ const file_events_org_proto_rawDesc = "" +
 	"\bmetadata\x18\x01 \x01(\v2\x1f.teamos.events.v1.EventMetadataR\bmetadata\x12E\n" +
 	"\apayload\x18\x02 \x01(\v2+.teamos.events.v1.OrgUserDeactivatedPayloadR\apayload\"4\n" +
 	"\x19OrgUserDeactivatedPayload\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\"\x95\x01\n" +
+	"\x13OrgUserDeletedEvent\x12;\n" +
+	"\bmetadata\x18\x01 \x01(\v2\x1f.teamos.events.v1.EventMetadataR\bmetadata\x12A\n" +
+	"\apayload\x18\x02 \x01(\v2'.teamos.events.v1.OrgUserDeletedPayloadR\apayload\"0\n" +
+	"\x15OrgUserDeletedPayload\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\"\x9d\x01\n" +
 	"\x17OrgPositionDeletedEvent\x12;\n" +
 	"\bmetadata\x18\x01 \x01(\v2\x1f.teamos.events.v1.EventMetadataR\bmetadata\x12E\n" +
@@ -835,7 +1000,13 @@ const file_events_org_proto_rawDesc = "" +
 	"\x1bORG_USER_STATUS_UNSPECIFIED\x10\x00\x12\x1a\n" +
 	"\x16ORG_USER_STATUS_ACTIVE\x10\x01\x12\x1b\n" +
 	"\x17ORG_USER_STATUS_INVITED\x10\x02\x12\x1f\n" +
-	"\x1bORG_USER_STATUS_DEACTIVATED\x10\x03BFZDgithub.com/sk1fy/team-os-backend/contracts/gen/go/events/v1;eventsv1b\x06proto3"
+	"\x1bORG_USER_STATUS_DEACTIVATED\x10\x03*\xca\x01\n" +
+	"\x12OrgEmployeeSection\x12$\n" +
+	" ORG_EMPLOYEE_SECTION_UNSPECIFIED\x10\x00\x12!\n" +
+	"\x1dORG_EMPLOYEE_SECTION_SCHEDULE\x10\x01\x12\"\n" +
+	"\x1eORG_EMPLOYEE_SECTION_KNOWLEDGE\x10\x02\x12 \n" +
+	"\x1cORG_EMPLOYEE_SECTION_ACADEMY\x10\x03\x12%\n" +
+	"!ORG_EMPLOYEE_SECTION_DISTRIBUTION\x10\x04BFZDgithub.com/sk1fy/team-os-backend/contracts/gen/go/events/v1;eventsv1b\x06proto3"
 
 var (
 	file_events_org_proto_rawDescOnce sync.Once
@@ -849,45 +1020,51 @@ func file_events_org_proto_rawDescGZIP() []byte {
 	return file_events_org_proto_rawDescData
 }
 
-var file_events_org_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_events_org_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_events_org_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_events_org_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_events_org_proto_goTypes = []any{
 	(OrgUserRole)(0),                  // 0: teamos.events.v1.OrgUserRole
 	(OrgUserStatus)(0),                // 1: teamos.events.v1.OrgUserStatus
-	(*OrgUserSnapshot)(nil),           // 2: teamos.events.v1.OrgUserSnapshot
-	(*OrgUserCreatedEvent)(nil),       // 3: teamos.events.v1.OrgUserCreatedEvent
-	(*OrgUserCreatedPayload)(nil),     // 4: teamos.events.v1.OrgUserCreatedPayload
-	(*OrgUserUpdatedEvent)(nil),       // 5: teamos.events.v1.OrgUserUpdatedEvent
-	(*OrgUserUpdatedPayload)(nil),     // 6: teamos.events.v1.OrgUserUpdatedPayload
-	(*OrgUserDeactivatedEvent)(nil),   // 7: teamos.events.v1.OrgUserDeactivatedEvent
-	(*OrgUserDeactivatedPayload)(nil), // 8: teamos.events.v1.OrgUserDeactivatedPayload
-	(*OrgPositionDeletedEvent)(nil),   // 9: teamos.events.v1.OrgPositionDeletedEvent
-	(*OrgPositionDeletedPayload)(nil), // 10: teamos.events.v1.OrgPositionDeletedPayload
-	(*OrgInviteCreatedEvent)(nil),     // 11: teamos.events.v1.OrgInviteCreatedEvent
-	(*OrgInviteCreatedPayload)(nil),   // 12: teamos.events.v1.OrgInviteCreatedPayload
-	(*EventMetadata)(nil),             // 13: teamos.events.v1.EventMetadata
+	(OrgEmployeeSection)(0),           // 2: teamos.events.v1.OrgEmployeeSection
+	(*OrgUserSnapshot)(nil),           // 3: teamos.events.v1.OrgUserSnapshot
+	(*OrgUserCreatedEvent)(nil),       // 4: teamos.events.v1.OrgUserCreatedEvent
+	(*OrgUserCreatedPayload)(nil),     // 5: teamos.events.v1.OrgUserCreatedPayload
+	(*OrgUserUpdatedEvent)(nil),       // 6: teamos.events.v1.OrgUserUpdatedEvent
+	(*OrgUserUpdatedPayload)(nil),     // 7: teamos.events.v1.OrgUserUpdatedPayload
+	(*OrgUserDeactivatedEvent)(nil),   // 8: teamos.events.v1.OrgUserDeactivatedEvent
+	(*OrgUserDeactivatedPayload)(nil), // 9: teamos.events.v1.OrgUserDeactivatedPayload
+	(*OrgUserDeletedEvent)(nil),       // 10: teamos.events.v1.OrgUserDeletedEvent
+	(*OrgUserDeletedPayload)(nil),     // 11: teamos.events.v1.OrgUserDeletedPayload
+	(*OrgPositionDeletedEvent)(nil),   // 12: teamos.events.v1.OrgPositionDeletedEvent
+	(*OrgPositionDeletedPayload)(nil), // 13: teamos.events.v1.OrgPositionDeletedPayload
+	(*OrgInviteCreatedEvent)(nil),     // 14: teamos.events.v1.OrgInviteCreatedEvent
+	(*OrgInviteCreatedPayload)(nil),   // 15: teamos.events.v1.OrgInviteCreatedPayload
+	(*EventMetadata)(nil),             // 16: teamos.events.v1.EventMetadata
 }
 var file_events_org_proto_depIdxs = []int32{
 	0,  // 0: teamos.events.v1.OrgUserSnapshot.role:type_name -> teamos.events.v1.OrgUserRole
 	1,  // 1: teamos.events.v1.OrgUserSnapshot.status:type_name -> teamos.events.v1.OrgUserStatus
-	13, // 2: teamos.events.v1.OrgUserCreatedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
-	4,  // 3: teamos.events.v1.OrgUserCreatedEvent.payload:type_name -> teamos.events.v1.OrgUserCreatedPayload
-	2,  // 4: teamos.events.v1.OrgUserCreatedPayload.user:type_name -> teamos.events.v1.OrgUserSnapshot
-	13, // 5: teamos.events.v1.OrgUserUpdatedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
-	6,  // 6: teamos.events.v1.OrgUserUpdatedEvent.payload:type_name -> teamos.events.v1.OrgUserUpdatedPayload
-	2,  // 7: teamos.events.v1.OrgUserUpdatedPayload.user:type_name -> teamos.events.v1.OrgUserSnapshot
-	13, // 8: teamos.events.v1.OrgUserDeactivatedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
-	8,  // 9: teamos.events.v1.OrgUserDeactivatedEvent.payload:type_name -> teamos.events.v1.OrgUserDeactivatedPayload
-	13, // 10: teamos.events.v1.OrgPositionDeletedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
-	10, // 11: teamos.events.v1.OrgPositionDeletedEvent.payload:type_name -> teamos.events.v1.OrgPositionDeletedPayload
-	13, // 12: teamos.events.v1.OrgInviteCreatedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
-	12, // 13: teamos.events.v1.OrgInviteCreatedEvent.payload:type_name -> teamos.events.v1.OrgInviteCreatedPayload
-	0,  // 14: teamos.events.v1.OrgInviteCreatedPayload.role:type_name -> teamos.events.v1.OrgUserRole
-	15, // [15:15] is the sub-list for method output_type
-	15, // [15:15] is the sub-list for method input_type
-	15, // [15:15] is the sub-list for extension type_name
-	15, // [15:15] is the sub-list for extension extendee
-	0,  // [0:15] is the sub-list for field type_name
+	2,  // 2: teamos.events.v1.OrgUserSnapshot.section_access:type_name -> teamos.events.v1.OrgEmployeeSection
+	16, // 3: teamos.events.v1.OrgUserCreatedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	5,  // 4: teamos.events.v1.OrgUserCreatedEvent.payload:type_name -> teamos.events.v1.OrgUserCreatedPayload
+	3,  // 5: teamos.events.v1.OrgUserCreatedPayload.user:type_name -> teamos.events.v1.OrgUserSnapshot
+	16, // 6: teamos.events.v1.OrgUserUpdatedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	7,  // 7: teamos.events.v1.OrgUserUpdatedEvent.payload:type_name -> teamos.events.v1.OrgUserUpdatedPayload
+	3,  // 8: teamos.events.v1.OrgUserUpdatedPayload.user:type_name -> teamos.events.v1.OrgUserSnapshot
+	16, // 9: teamos.events.v1.OrgUserDeactivatedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	9,  // 10: teamos.events.v1.OrgUserDeactivatedEvent.payload:type_name -> teamos.events.v1.OrgUserDeactivatedPayload
+	16, // 11: teamos.events.v1.OrgUserDeletedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	11, // 12: teamos.events.v1.OrgUserDeletedEvent.payload:type_name -> teamos.events.v1.OrgUserDeletedPayload
+	16, // 13: teamos.events.v1.OrgPositionDeletedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	13, // 14: teamos.events.v1.OrgPositionDeletedEvent.payload:type_name -> teamos.events.v1.OrgPositionDeletedPayload
+	16, // 15: teamos.events.v1.OrgInviteCreatedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	15, // 16: teamos.events.v1.OrgInviteCreatedEvent.payload:type_name -> teamos.events.v1.OrgInviteCreatedPayload
+	0,  // 17: teamos.events.v1.OrgInviteCreatedPayload.role:type_name -> teamos.events.v1.OrgUserRole
+	18, // [18:18] is the sub-list for method output_type
+	18, // [18:18] is the sub-list for method input_type
+	18, // [18:18] is the sub-list for extension type_name
+	18, // [18:18] is the sub-list for extension extendee
+	0,  // [0:18] is the sub-list for field type_name
 }
 
 func init() { file_events_org_proto_init() }
@@ -896,14 +1073,14 @@ func file_events_org_proto_init() {
 		return
 	}
 	file_events_common_proto_init()
-	file_events_org_proto_msgTypes[10].OneofWrappers = []any{}
+	file_events_org_proto_msgTypes[12].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_events_org_proto_rawDesc), len(file_events_org_proto_rawDesc)),
-			NumEnums:      2,
-			NumMessages:   11,
+			NumEnums:      3,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

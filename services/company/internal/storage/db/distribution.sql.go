@@ -107,6 +107,35 @@ func (q *Queries) DeleteDistributionGroup(ctx context.Context, arg DeleteDistrib
 	return result.RowsAffected(), nil
 }
 
+const disableUserInDistributionGroups = `-- name: DisableUserInDistributionGroups :exec
+UPDATE distribution_groups
+SET disabled_member_ids = CASE
+        WHEN $1::uuid = ANY(member_ids)
+         AND NOT ($1::uuid = ANY(disabled_member_ids))
+        THEN array_append(disabled_member_ids, $1::uuid)
+        ELSE disabled_member_ids
+    END,
+    updated_at = CASE
+        WHEN $1::uuid = ANY(member_ids)
+         AND NOT ($1::uuid = ANY(disabled_member_ids))
+        THEN now()
+        ELSE updated_at
+    END
+WHERE company_id = $2
+  AND $1::uuid = ANY(member_ids)
+  AND NOT ($1::uuid = ANY(disabled_member_ids))
+`
+
+type DisableUserInDistributionGroupsParams struct {
+	UserID    uuid.UUID `json:"user_id"`
+	CompanyID uuid.UUID `json:"company_id"`
+}
+
+func (q *Queries) DisableUserInDistributionGroups(ctx context.Context, arg DisableUserInDistributionGroupsParams) error {
+	_, err := q.db.Exec(ctx, disableUserInDistributionGroups, arg.UserID, arg.CompanyID)
+	return err
+}
+
 const getDistributionGroup = `-- name: GetDistributionGroup :one
 SELECT id, company_id, name, description, active, algorithm, member_ids, disabled_member_ids, source, deal_limit, unclaimed_minutes, created_at, updated_at FROM distribution_groups WHERE company_id = $1 AND id = $2
 `
@@ -240,6 +269,72 @@ func (q *Queries) ListDistributionGroups(ctx context.Context, companyID uuid.UUI
 		return nil, err
 	}
 	return items, nil
+}
+
+const listDistributionGroupsContainingUserForUpdate = `-- name: ListDistributionGroupsContainingUserForUpdate :many
+SELECT id, company_id, name, description, active, algorithm, member_ids, disabled_member_ids, source, deal_limit, unclaimed_minutes, created_at, updated_at
+FROM distribution_groups
+WHERE company_id = $1
+  AND $2::uuid = ANY(member_ids)
+FOR UPDATE
+`
+
+type ListDistributionGroupsContainingUserForUpdateParams struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	UserID    uuid.UUID `json:"user_id"`
+}
+
+func (q *Queries) ListDistributionGroupsContainingUserForUpdate(ctx context.Context, arg ListDistributionGroupsContainingUserForUpdateParams) ([]DistributionGroup, error) {
+	rows, err := q.db.Query(ctx, listDistributionGroupsContainingUserForUpdate, arg.CompanyID, arg.UserID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []DistributionGroup{}
+	for rows.Next() {
+		var i DistributionGroup
+		if err := rows.Scan(
+			&i.ID,
+			&i.CompanyID,
+			&i.Name,
+			&i.Description,
+			&i.Active,
+			&i.Algorithm,
+			&i.MemberIds,
+			&i.DisabledMemberIds,
+			&i.Source,
+			&i.DealLimit,
+			&i.UnclaimedMinutes,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const removeUserFromDistributionGroups = `-- name: RemoveUserFromDistributionGroups :exec
+UPDATE distribution_groups
+SET member_ids = array_remove(member_ids, $1::uuid),
+    disabled_member_ids = array_remove(disabled_member_ids, $1::uuid),
+    updated_at = now()
+WHERE company_id = $2
+  AND $1::uuid = ANY(member_ids)
+`
+
+type RemoveUserFromDistributionGroupsParams struct {
+	UserID    uuid.UUID `json:"user_id"`
+	CompanyID uuid.UUID `json:"company_id"`
+}
+
+func (q *Queries) RemoveUserFromDistributionGroups(ctx context.Context, arg RemoveUserFromDistributionGroupsParams) error {
+	_, err := q.db.Exec(ctx, removeUserFromDistributionGroups, arg.UserID, arg.CompanyID)
+	return err
 }
 
 const resetDistributionEvents = `-- name: ResetDistributionEvents :execrows

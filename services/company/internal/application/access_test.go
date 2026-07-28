@@ -18,7 +18,7 @@ var accessUserColumns = []string{
 	"id", "company_id", "email", "first_name", "last_name", "phone", "avatar_url",
 	"role", "status", "birth_date", "hired_at", "vacation_allowance", "created_at",
 	"updated_at", "source", "external_id", "external_group_id", "external_group_name",
-	"avatar_source",
+	"avatar_source", "external_deleted_at",
 }
 
 func TestEmployeeAccessManagementPolicy(t *testing.T) {
@@ -208,6 +208,7 @@ func expectAccessTarget(mock pgxmock.PgxPoolIface, companyID, userID uuid.UUID, 
 		WillReturnRows(pgxmock.NewRows(accessUserColumns).AddRow(
 			userID, companyID, "employee@example.com", "Иван", "Иванов", nil, nil,
 			"employee", "active", nil, nil, nil, now, now, "local", nil, nil, nil, nil,
+			nil,
 		))
 }
 
@@ -218,7 +219,12 @@ func expectAccessMode(mock pgxmock.PgxPoolIface, companyID, userID uuid.UUID, mo
 
 func expectAccessAudit(mock pgxmock.PgxPoolIface, actor Actor, userID uuid.UUID, action, mode string, now time.Time) {
 	mock.ExpectExec("INSERT INTO employee_access_audit").
-		WithArgs(pgxmock.AnyArg(), actor.CompanyID, userID, actor.UserID, action, mode, now).
+		WithArgs(
+			pgxmock.AnyArg(), actor.CompanyID,
+			uuid.NullUUID{UUID: userID, Valid: true},
+			uuid.NullUUID{UUID: actor.UserID, Valid: true},
+			action, mode, now,
+		).
 		WillReturnResult(pgconn.NewCommandTag("INSERT 0 1"))
 }
 

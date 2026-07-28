@@ -326,6 +326,9 @@ func (s *Service) AcceptInvite(ctx context.Context, input AcceptInviteInput, met
 			ID: uuid.New(), CompanyID: invite.CompanyID, Email: email,
 			FirstName: firstName, LastName: pgText(&lastName), Role: invite.Role, Status: "active",
 		})
+		if isUniqueViolation(err) {
+			return AuthResult{}, conflict("Пользователь с таким email уже существует или удалён из amoCRM")
+		}
 		if err != nil {
 			return AuthResult{}, internal("Не удалось создать пользователя", err)
 		}
@@ -347,6 +350,15 @@ func (s *Service) AcceptInvite(ctx context.Context, input AcceptInviteInput, met
 			return AuthResult{}, internal("Не удалось назначить должность", err)
 		}
 	}
+	sectionAccess := []string(nil)
+	if user.Role == "employee" {
+		sectionAccess = append([]string(nil), defaultEmployeeSections...)
+		if err = replaceEmployeeSections(ctx, queries, user.CompanyID, user.ID, sectionAccess, nil); err != nil {
+			return AuthResult{}, err
+		}
+	} else if err = replaceEmployeeSections(ctx, queries, user.CompanyID, user.ID, nil, nil); err != nil {
+		return AuthResult{}, err
+	}
 	if _, err = queries.AcceptInvite(ctx, invite.ID); err != nil {
 		return AuthResult{}, validation("Приглашение недействительно или истекло")
 	}
@@ -358,9 +370,11 @@ func (s *Service) AcceptInvite(ctx context.Context, input AcceptInviteInput, met
 	if err != nil {
 		return AuthResult{}, internal("Не удалось получить отделы", err)
 	}
+	acceptedUser := userFromDB(user, positionIDs)
+	acceptedUser.SectionAccess = normalizedEmployeeSections(sectionAccess)
 	if err = s.emit(ctx, queries, user.CompanyID, user.ID, "teamos.org.user.updated.v1", map[string]any{
-		"user":          userEventSnapshot(userFromDB(user, positionIDs), departmentIDs),
-		"changedFields": []string{"firstName", "lastName", "role", "status", "positionIds"},
+		"user":          userEventSnapshot(acceptedUser, departmentIDs),
+		"changedFields": []string{"firstName", "lastName", "role", "status", "positionIds", "sectionAccess"},
 	}); err != nil {
 		return AuthResult{}, err
 	}
@@ -404,6 +418,15 @@ func (s *Service) createSessionWithID(
 	if err != nil {
 		return AuthResult{}, internal("Не удалось получить отделы", err)
 	}
+	sectionAccess, err := queries.ListEmployeeSectionAccess(ctx, db.ListEmployeeSectionAccessParams{
+		CompanyID: user.CompanyID, UserID: user.ID,
+	})
+	if err != nil {
+		return AuthResult{}, internal("Не удалось получить доступ к разделам", err)
+	}
+	if user.Role != "employee" {
+		sectionAccess = nil
+	}
 	positions := make([]string, len(positionIDs))
 	for index, id := range positionIDs {
 		positions[index] = id.String()
@@ -413,7 +436,7 @@ func (s *Service) createSessionWithID(
 		departments[index] = id.String()
 	}
 	accessToken, accessExpiresAt, err := s.issuer.Issue(
-		user.ID.String(), user.CompanyID.String(), user.Role, positions, departments,
+		user.ID.String(), user.CompanyID.String(), user.Role, positions, departments, sectionAccess,
 	)
 	if err != nil {
 		return AuthResult{}, internal("Не удалось выпустить access token", err)
@@ -441,6 +464,7 @@ func (s *Service) createSessionWithID(
 	}
 	resultUser := userFromDB(user, positionIDs)
 	resultUser.AccessMode = accessMode
+	resultUser.SectionAccess = normalizedEmployeeSections(sectionAccess)
 	return AuthResult{
 		AccessToken: accessToken, AccessExpiresAt: accessExpiresAt,
 		RefreshToken: refreshToken, RefreshExpiresAt: refreshExpiresAt,

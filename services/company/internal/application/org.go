@@ -393,7 +393,7 @@ func (s *Service) DeleteUser(ctx context.Context, actor Actor, id uuid.UUID) err
 	if id == actor.UserID {
 		return validation("Нельзя удалить собственную учётную запись")
 	}
-	tx, err := s.pool.Begin(ctx)
+	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.Serializable})
 	if err != nil {
 		return internal("Не удалось удалить сотрудника", err)
 	}
@@ -406,6 +406,13 @@ func (s *Service) DeleteUser(ctx context.Context, actor Actor, id uuid.UUID) err
 	if company.OwnerID.Valid && company.OwnerID.UUID == id {
 		return validation("Нельзя удалить владельца компании")
 	}
+	if _, err = queries.GetUserForAccessUpdate(ctx, db.GetUserForAccessUpdateParams{
+		CompanyID: actor.CompanyID, ID: id,
+	}); isNoRows(err) {
+		return notFound("Сотрудник")
+	} else if err != nil {
+		return internal("Не удалось заблокировать сотрудника", err)
+	}
 	current, err := queries.GetUserWithPositions(ctx, db.GetUserWithPositionsParams{CompanyID: actor.CompanyID, ID: id})
 	if isNoRows(err) {
 		return notFound("Сотрудник")
@@ -416,6 +423,26 @@ func (s *Service) DeleteUser(ctx context.Context, actor Actor, id uuid.UUID) err
 	if current.Source != "local" {
 		return conflict("Сотрудников amoCRM нельзя удалять в TeamOS")
 	}
+	groups, err := queries.ListDistributionGroupsContainingUserForUpdate(
+		ctx,
+		db.ListDistributionGroupsContainingUserForUpdateParams{CompanyID: actor.CompanyID, UserID: id},
+	)
+	if err != nil {
+		return internal("Не удалось проверить группы распределения", err)
+	}
+	for _, group := range groups {
+		if len(group.MemberIds) == 1 {
+			return conflict("Нельзя удалить единственного участника группы распределения «" + group.Name + "»")
+		}
+	}
+	if err = revokeUserSessions(ctx, queries, id, s.now().UTC()); err != nil {
+		return err
+	}
+	if err = queries.RemoveUserFromDistributionGroups(ctx, db.RemoveUserFromDistributionGroupsParams{
+		CompanyID: actor.CompanyID, UserID: id,
+	}); err != nil {
+		return internal("Не удалось удалить сотрудника из групп распределения", err)
+	}
 	if err = queries.ReassignUserInvites(ctx, db.ReassignUserInvitesParams{
 		ReplacementUserID: actor.UserID, CompanyID: actor.CompanyID, DeletedUserID: id,
 	}); err != nil {
@@ -424,6 +451,17 @@ func (s *Service) DeleteUser(ctx context.Context, actor Actor, id uuid.UUID) err
 	if err = s.emit(ctx, queries, actor.CompanyID, actor.UserID, "teamos.org.user.deactivated.v1", map[string]any{
 		"userId": id.String(),
 	}); err != nil {
+		return err
+	}
+	if err = s.emit(ctx, queries, actor.CompanyID, actor.UserID, "teamos.org.user.deleted.v1", map[string]any{
+		"userId": id.String(),
+	}); err != nil {
+		return err
+	}
+	if err = createUserAdminAudit(
+		ctx, queries, actor.CompanyID, &id, &actor.UserID, "user", "deleted",
+		userAuditState(userFromJoinedRow(current)), map[string]any{}, actor.RequestID, s.now().UTC(),
+	); err != nil {
 		return err
 	}
 	rows, err := queries.DeleteLocalUser(ctx, db.DeleteLocalUserParams{CompanyID: actor.CompanyID, ID: id})
@@ -503,19 +541,28 @@ func (s *Service) CreateUser(ctx context.Context, actor Actor, input CreateUserI
 			return User{}, internal("Не удалось назначить должность", err)
 		}
 	}
+	sections := []string(nil)
+	if row.Role == "employee" {
+		sections = append([]string(nil), defaultEmployeeSections...)
+		if err = replaceEmployeeSections(ctx, queries, actor.CompanyID, row.ID, sections, &actor.UserID); err != nil {
+			return User{}, err
+		}
+	}
+	createdUser := userFromDB(row, input.PositionIDs)
+	createdUser.SectionAccess = normalizedEmployeeSections(sections)
 	departmentIDs, err := queries.GetUserDepartmentClaims(ctx, db.GetUserDepartmentClaimsParams{CompanyID: actor.CompanyID, UserID: row.ID})
 	if err != nil {
 		return User{}, internal("Не удалось получить отделы пользователя", err)
 	}
 	if err = s.emit(ctx, queries, actor.CompanyID, actor.UserID, "teamos.org.user.created.v1", map[string]any{
-		"user": userEventSnapshot(userFromDB(row, input.PositionIDs), departmentIDs),
+		"user": userEventSnapshot(createdUser, departmentIDs),
 	}); err != nil {
 		return User{}, err
 	}
 	if err = tx.Commit(ctx); err != nil {
 		return User{}, internal("Не удалось создать сотрудника", err)
 	}
-	return userFromDB(row, input.PositionIDs), nil
+	return createdUser, nil
 }
 
 func (s *Service) UpdateUser(ctx context.Context, actor Actor, input UpdateUserInput) (User, error) {
@@ -551,6 +598,11 @@ func (s *Service) updateUser(ctx context.Context, actor Actor, input UpdateUserI
 	if input.SetPositionIDs {
 		if err := domainorg.ValidatePositionAssignment(toDomainIDs(input.PositionIDs)); err != nil {
 			return User{}, validation(err.Error())
+		}
+	}
+	if input.SetSectionAccess {
+		if err := validateEmployeeSections(input.SectionAccess); err != nil {
+			return User{}, err
 		}
 	}
 	if input.FirstName != nil {
@@ -590,6 +642,13 @@ func (s *Service) updateUser(ctx context.Context, actor Actor, input UpdateUserI
 	if input.Role != nil && *input.Role == "owner" && (!company.OwnerID.Valid || input.ID != company.OwnerID.UUID) {
 		return User{}, validation("Роль владельца можно назначить только при передаче владения компанией")
 	}
+	if _, err = queries.GetUserForAccessUpdate(ctx, db.GetUserForAccessUpdateParams{
+		CompanyID: actor.CompanyID, ID: input.ID,
+	}); isNoRows(err) {
+		return User{}, notFound("Сотрудник")
+	} else if err != nil {
+		return User{}, internal("Не удалось заблокировать сотрудника", err)
+	}
 	current, err := queries.GetUserWithPositions(ctx, db.GetUserWithPositionsParams{
 		CompanyID: actor.CompanyID, ID: input.ID,
 	})
@@ -617,6 +676,23 @@ func (s *Service) updateUser(ctx context.Context, actor Actor, input UpdateUserI
 	if guardErr != nil {
 		return User{}, validation(guardErr.Error())
 	}
+	finalRole := current.Role
+	if input.Role != nil {
+		finalRole = *input.Role
+	}
+	if input.SetSectionAccess && finalRole != "employee" {
+		return User{}, validation("Индивидуальные разделы можно настроить только сотруднику")
+	}
+	nextSections := append([]string(nil), current.SectionAccess...)
+	switch {
+	case finalRole != "employee":
+		nextSections = nil
+	case input.SetSectionAccess:
+		nextSections = normalizedEmployeeSections(input.SectionAccess)
+	case current.Role != "employee":
+		nextSections = normalizedEmployeeSections(defaultEmployeeSections)
+	}
+	sectionsChanged := !employeeSectionsEqual(current.SectionAccess, nextSections)
 	if input.SetPositionIDs {
 		if err = ensurePositions(ctx, queries, actor.CompanyID, input.PositionIDs); err != nil {
 			return User{}, err
@@ -648,13 +724,48 @@ func (s *Service) updateUser(ctx context.Context, actor Actor, input UpdateUserI
 		}
 		positions = input.PositionIDs
 	}
+	if sectionsChanged {
+		if err = replaceEmployeeSections(ctx, queries, actor.CompanyID, row.ID, nextSections, &actor.UserID); err != nil {
+			return User{}, err
+		}
+		if err = revokeUserSessions(ctx, queries, row.ID, s.now().UTC()); err != nil {
+			return User{}, err
+		}
+	}
+	updatedUser := userFromDB(row, positions)
+	updatedUser.SectionAccess = normalizedEmployeeSections(nextSections)
 	subject := "teamos.org.user.updated.v1"
 	if row.Status == "deactivated" && current.Status != "deactivated" {
 		subject = "teamos.org.user.deactivated.v1"
-		if err = queries.RevokeAllUserSessions(ctx, db.RevokeAllUserSessionsParams{
-			UserID: row.ID, RevokedAt: pgtype.Timestamptz{Time: s.now().UTC(), Valid: true},
+		if err = revokeUserSessions(ctx, queries, row.ID, s.now().UTC()); err != nil {
+			return User{}, err
+		}
+		if err = queries.DisableUserInDistributionGroups(ctx, db.DisableUserInDistributionGroupsParams{
+			UserID: row.ID, CompanyID: actor.CompanyID,
 		}); err != nil {
-			return User{}, internal("Не удалось отозвать сессии пользователя", err)
+			return User{}, internal("Не удалось отключить сотрудника в распределении", err)
+		}
+		if err = createUserAdminAudit(
+			ctx, queries, actor.CompanyID, &row.ID, &actor.UserID, "user", "deactivated",
+			userAuditState(userFromJoinedRow(current)), userAuditState(updatedUser), actor.RequestID, s.now().UTC(),
+		); err != nil {
+			return User{}, err
+		}
+	} else if row.Status == "active" && current.Status == "deactivated" {
+		if err = createUserAdminAudit(
+			ctx, queries, actor.CompanyID, &row.ID, &actor.UserID, "user", "reactivated",
+			userAuditState(userFromJoinedRow(current)), userAuditState(updatedUser), actor.RequestID, s.now().UTC(),
+		); err != nil {
+			return User{}, err
+		}
+	}
+	if sectionsChanged {
+		if err = createUserAdminAudit(
+			ctx, queries, actor.CompanyID, &row.ID, &actor.UserID, "user", "sections_changed",
+			map[string]any{"sectionAccess": current.SectionAccess},
+			map[string]any{"sectionAccess": updatedUser.SectionAccess}, actor.RequestID, s.now().UTC(),
+		); err != nil {
+			return User{}, err
 		}
 	}
 	var eventPayload any
@@ -665,15 +776,18 @@ func (s *Service) updateUser(ctx context.Context, actor Actor, input UpdateUserI
 		if claimErr != nil {
 			return User{}, internal("Не удалось получить отделы пользователя", claimErr)
 		}
+		changedFields := changedUserFields(input)
+		if sectionsChanged && !input.SetSectionAccess {
+			changedFields = append(changedFields, "sectionAccess")
+		}
 		eventPayload = map[string]any{
-			"user":          userEventSnapshot(userFromDB(row, positions), departments),
-			"changedFields": changedUserFields(input),
+			"user": userEventSnapshot(updatedUser, departments), "changedFields": changedFields,
 		}
 	}
 	if err = s.emit(ctx, queries, actor.CompanyID, actor.UserID, subject, eventPayload); err != nil {
 		return User{}, err
 	}
-	return userFromDB(row, positions), nil
+	return updatedUser, nil
 }
 
 func (s *Service) ListInvites(ctx context.Context, actor Actor) ([]Invite, error) {
@@ -726,6 +840,7 @@ func (s *Service) InviteUser(ctx context.Context, actor Actor, input InviteUserI
 		}
 	}
 	if email != nil {
+		var preparedUserID uuid.UUID
 		users, listErr := queries.ListUsers(ctx, actor.CompanyID)
 		if listErr != nil {
 			return Invite{}, internal("Не удалось проверить email", listErr)
@@ -750,20 +865,32 @@ func (s *Service) InviteUser(ctx context.Context, actor Actor, input InviteUserI
 			if err = replacePosition(ctx, queries, actor.CompanyID, existing.ID, input.PositionID); err != nil {
 				return Invite{}, err
 			}
+			preparedUserID = existing.ID
 		} else if isNoRows(findErr) {
 			firstName := inviteFirstName(*email)
 			created, createErr := queries.CreateUser(ctx, db.CreateUserParams{
 				ID: uuid.New(), CompanyID: actor.CompanyID, Email: *email,
 				FirstName: firstName, LastName: pgtype.Text{String: "Сотрудник", Valid: true}, Role: input.Role, Status: "invited",
 			})
+			if isUniqueViolation(createErr) {
+				return Invite{}, conflict("Пользователь с таким email уже существует или удалён из amoCRM")
+			}
 			if createErr != nil {
 				return Invite{}, internal("Не удалось подготовить пользователя", createErr)
 			}
 			if err = replacePosition(ctx, queries, actor.CompanyID, created.ID, input.PositionID); err != nil {
 				return Invite{}, err
 			}
+			preparedUserID = created.ID
 		} else {
 			return Invite{}, internal("Не удалось проверить пользователя", findErr)
+		}
+		sections := []string(nil)
+		if input.Role == "employee" {
+			sections = defaultEmployeeSections
+		}
+		if err = replaceEmployeeSections(ctx, queries, actor.CompanyID, preparedUserID, sections, &actor.UserID); err != nil {
+			return Invite{}, err
 		}
 	}
 	now := s.now().UTC()
@@ -880,11 +1007,11 @@ func positionFromDB(row db.Position) Position {
 }
 
 func userFromJoinedRow(row db.GetUserWithPositionsRow) User {
-	return User{ID: row.ID, CompanyID: row.CompanyID, Email: row.Email, FirstName: row.FirstName, LastName: textValue(row.LastName), AvatarURL: textPointer(row.AvatarUrl), Phone: textPointer(row.Phone), Role: row.Role, Status: row.Status, PositionIDs: append([]uuid.UUID(nil), row.PositionIds...), BirthDate: datePointer(row.BirthDate), HiredAt: datePointer(row.HiredAt), VacationAllowance: int16Pointer(row.VacationAllowance), CreatedAt: row.CreatedAt, Source: row.Source, AccessMode: row.AccessMode}
+	return User{ID: row.ID, CompanyID: row.CompanyID, Email: row.Email, FirstName: row.FirstName, LastName: textValue(row.LastName), AvatarURL: textPointer(row.AvatarUrl), Phone: textPointer(row.Phone), Role: row.Role, Status: row.Status, PositionIDs: append([]uuid.UUID(nil), row.PositionIds...), BirthDate: datePointer(row.BirthDate), HiredAt: datePointer(row.HiredAt), VacationAllowance: int16Pointer(row.VacationAllowance), CreatedAt: row.CreatedAt, Source: row.Source, AccessMode: row.AccessMode, SectionAccess: append([]string(nil), row.SectionAccess...)}
 }
 
 func userFromListRow(row db.ListUsersRow) User {
-	return User{ID: row.ID, CompanyID: row.CompanyID, Email: row.Email, FirstName: row.FirstName, LastName: textValue(row.LastName), AvatarURL: textPointer(row.AvatarUrl), Phone: textPointer(row.Phone), Role: row.Role, Status: row.Status, PositionIDs: append([]uuid.UUID(nil), row.PositionIds...), BirthDate: datePointer(row.BirthDate), HiredAt: datePointer(row.HiredAt), VacationAllowance: int16Pointer(row.VacationAllowance), CreatedAt: row.CreatedAt, Source: row.Source, AccessMode: row.AccessMode}
+	return User{ID: row.ID, CompanyID: row.CompanyID, Email: row.Email, FirstName: row.FirstName, LastName: textValue(row.LastName), AvatarURL: textPointer(row.AvatarUrl), Phone: textPointer(row.Phone), Role: row.Role, Status: row.Status, PositionIDs: append([]uuid.UUID(nil), row.PositionIds...), BirthDate: datePointer(row.BirthDate), HiredAt: datePointer(row.HiredAt), VacationAllowance: int16Pointer(row.VacationAllowance), CreatedAt: row.CreatedAt, Source: row.Source, AccessMode: row.AccessMode, SectionAccess: append([]string(nil), row.SectionAccess...)}
 }
 
 func trimmedOptional(value *string) *string {
@@ -1006,6 +1133,9 @@ func changedUserFields(input UpdateUserInput) []string {
 	}
 	if input.SetPositionIDs {
 		fields = append(fields, "positionIds")
+	}
+	if input.SetSectionAccess {
+		fields = append(fields, "sectionAccess")
 	}
 	return fields
 }

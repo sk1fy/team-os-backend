@@ -99,6 +99,14 @@ enum UserAccessMode {
   USER_ACCESS_MODE_LINK = 3;
 }
 
+enum EmployeeSection {
+  EMPLOYEE_SECTION_UNSPECIFIED = 0;
+  EMPLOYEE_SECTION_SCHEDULE = 1;
+  EMPLOYEE_SECTION_KNOWLEDGE = 2;
+  EMPLOYEE_SECTION_ACADEMY = 3;
+  EMPLOYEE_SECTION_DISTRIBUTION = 4;
+}
+
 enum InviteStatus {
   INVITE_STATUS_UNSPECIFIED = 0;
   INVITE_STATUS_PENDING = 1;
@@ -132,6 +140,7 @@ message User {
   google.protobuf.Timestamp created_at = 13;
   UserSource source = 14;
   UserAccessMode access_mode = 15;
+  repeated EmployeeSection section_access = 16;
 }
 
 message Department {
@@ -417,6 +426,8 @@ message UpdateUserRequest {
   // Proto repeated fields have no presence; update_position_ids selects whether to apply it.
   repeated string position_ids = 10;
   bool update_position_ids = 11;
+  repeated EmployeeSection section_access = 12;
+  bool update_section_access = 13;
 }
 
 message UpdateUserResponse {

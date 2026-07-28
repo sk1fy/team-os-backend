@@ -12,7 +12,11 @@ import (
 )
 
 func (s *Service) ListDistributionGroups(ctx context.Context, actor Actor) ([]DistributionGroup, error) {
-	if err := requireAdministrator(actor); err != nil {
+	if actor.Role == "employee" {
+		if !actorHasSection(actor, "distribution") {
+			return nil, forbidden("Раздел «Распределение» недоступен")
+		}
+	} else if err := requireAdministrator(actor); err != nil {
 		return nil, err
 	}
 	rows, err := db.New(s.pool).ListDistributionGroups(ctx, actor.CompanyID)
@@ -136,7 +140,11 @@ func (s *Service) DeleteDistributionGroup(ctx context.Context, actor Actor, id u
 }
 
 func (s *Service) ListDistributionEvents(ctx context.Context, actor Actor, groupID uuid.UUID) ([]DistributionEvent, error) {
-	if err := requireAdministrator(actor); err != nil {
+	if actor.Role == "employee" {
+		if !actorHasSection(actor, "distribution") {
+			return nil, forbidden("Раздел «Распределение» недоступен")
+		}
+	} else if err := requireAdministrator(actor); err != nil {
 		return nil, err
 	}
 	queries := db.New(s.pool)

@@ -13,18 +13,39 @@ import (
 )
 
 func (s *Service) ListSchedules(ctx context.Context, actor Actor) ([]UserSchedule, error) {
+	if !canReadSchedule(actor) {
+		return nil, forbidden("Раздел «График» недоступен")
+	}
 	rows, err := db.New(s.pool).ListSchedules(ctx, actor.CompanyID)
 	if err != nil {
 		return nil, internal("Не удалось получить графики", err)
 	}
-	result := make([]UserSchedule, len(rows))
-	for index, row := range rows {
-		result[index], err = scheduleFromDB(row)
-		if err != nil {
-			return nil, internal("Не удалось прочитать шаблон графика", err)
+	result := make([]UserSchedule, 0, len(rows))
+	for _, row := range rows {
+		if actor.Role == "employee" && row.UserID != actor.UserID {
+			continue
 		}
+		value, mapErr := scheduleFromDB(row)
+		if mapErr != nil {
+			return nil, internal("Не удалось прочитать шаблон графика", mapErr)
+		}
+		result = append(result, value)
 	}
 	return result, nil
+}
+
+func canReadSchedule(actor Actor) bool {
+	if actor.Role == "owner" || actor.Role == "admin" {
+		return true
+	}
+	return actor.Role == "employee" && actorHasSection(actor, "schedule")
+}
+
+func canReadOwnScheduleRow(actor Actor, userID uuid.UUID) bool {
+	if actor.Role != "employee" {
+		return true
+	}
+	return actor.UserID == userID
 }
 
 func (s *Service) SaveSchedule(ctx context.Context, actor Actor, userID uuid.UUID, template ScheduleTemplate) (UserSchedule, error) {
@@ -94,6 +115,9 @@ func (s *Service) UpdateUserCard(ctx context.Context, actor Actor, input UpdateU
 }
 
 func (s *Service) ListShiftExceptions(ctx context.Context, actor Actor, month string) ([]ShiftException, error) {
+	if !canReadSchedule(actor) {
+		return nil, forbidden("Раздел «График» недоступен")
+	}
 	start, err := time.Parse("2006-01", month)
 	if err != nil {
 		return nil, validation("Месяц должен быть в формате ГГГГ-ММ")
@@ -102,9 +126,12 @@ func (s *Service) ListShiftExceptions(ctx context.Context, actor Actor, month st
 	if err != nil {
 		return nil, internal("Не удалось получить изменения графика", err)
 	}
-	result := make([]ShiftException, len(rows))
-	for index, row := range rows {
-		result[index] = exceptionFromDB(row)
+	result := make([]ShiftException, 0, len(rows))
+	for _, row := range rows {
+		if !canReadOwnScheduleRow(actor, row.UserID) {
+			continue
+		}
+		result = append(result, exceptionFromDB(row))
 	}
 	return result, nil
 }

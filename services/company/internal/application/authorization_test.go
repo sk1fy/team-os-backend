@@ -15,7 +15,7 @@ func TestEmployeeCannotUpdateCurrentUser(t *testing.T) {
 	assertForbidden(t, err)
 }
 
-func TestDistributionReadsRequireAdministrator(t *testing.T) {
+func TestDistributionReadsRejectRolesWithoutGrant(t *testing.T) {
 	service := &Service{}
 	for _, role := range []string{"employee", "partner", ""} {
 		t.Run(role, func(t *testing.T) {
@@ -26,6 +26,21 @@ func TestDistributionReadsRequireAdministrator(t *testing.T) {
 			_, eventsErr := service.ListDistributionEvents(context.Background(), actor, uuid.New())
 			assertForbidden(t, eventsErr)
 		})
+	}
+}
+
+func TestScheduleReadCapabilities(t *testing.T) {
+	if !canReadSchedule(Actor{Role: "owner"}) || !canReadSchedule(Actor{Role: "admin"}) {
+		t.Fatal("administrator schedule read rejected")
+	}
+	if !canReadSchedule(Actor{Role: "employee", SectionAccess: []string{"schedule"}}) {
+		t.Fatal("employee schedule grant rejected")
+	}
+	if canReadSchedule(Actor{Role: "employee", SectionAccess: []string{"academy"}}) {
+		t.Fatal("employee without schedule grant allowed")
+	}
+	if canReadSchedule(Actor{Role: "partner"}) {
+		t.Fatal("partner schedule read allowed")
 	}
 }
 

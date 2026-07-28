@@ -650,6 +650,24 @@ func updateUserRequest(id api.Id, input api.UpdateUserInput) (*companyv1.UpdateU
 		request.UpdatePositionIds = true
 		request.PositionIds = stringsFromUUIDs(*input.PositionIds)
 	}
+	if input.SectionAccess != nil {
+		request.UpdateSectionAccess = true
+		request.SectionAccess = make([]companyv1.EmployeeSection, len(*input.SectionAccess))
+		for index, section := range *input.SectionAccess {
+			switch section {
+			case api.Schedule:
+				request.SectionAccess[index] = companyv1.EmployeeSection_EMPLOYEE_SECTION_SCHEDULE
+			case api.Knowledge:
+				request.SectionAccess[index] = companyv1.EmployeeSection_EMPLOYEE_SECTION_KNOWLEDGE
+			case api.Academy:
+				request.SectionAccess[index] = companyv1.EmployeeSection_EMPLOYEE_SECTION_ACADEMY
+			case api.Distribution:
+				request.SectionAccess[index] = companyv1.EmployeeSection_EMPLOYEE_SECTION_DISTRIBUTION
+			default:
+				return nil, fmt.Errorf("Некорректный раздел сотрудника")
+			}
+		}
+	}
 	return request, nil
 }
 

@@ -2,6 +2,7 @@ package application
 
 import (
 	"context"
+	"errors"
 	"strings"
 	"testing"
 	"time"
@@ -17,6 +18,14 @@ type staticExternalEmployees []ExternalEmployee
 
 func (employees staticExternalEmployees) FetchAll(context.Context, string) ([]ExternalEmployee, error) {
 	return employees, nil
+}
+
+type failingExternalEmployees struct {
+	err error
+}
+
+func (provider failingExternalEmployees) FetchAll(context.Context, string) ([]ExternalEmployee, error) {
+	return nil, provider.err
 }
 
 func TestTryStartAmoSyncSkipsInFlightAndHonorsTTL(t *testing.T) {
@@ -110,6 +119,31 @@ func TestNormalizeExternalEmployeesRejectsDuplicates(t *testing.T) {
 	}
 }
 
+func TestAmoUpstreamFailureDoesNotStartReconciliationTransaction(t *testing.T) {
+	mock, err := pgxmock.NewPool()
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(mock.Close)
+	companyID := uuid.New()
+	now := time.Now()
+	mock.ExpectQuery("SELECT id, name, logo_url.+FROM companies").
+		WithArgs(companyID).
+		WillReturnRows(pgxmock.NewRows([]string{
+			"id", "name", "logo_url", "owner_id", "created_at", "updated_at", "amo_account_id",
+		}).AddRow(companyID, "Компания", nil, nil, now, now, "31355990"))
+
+	service := &Service{
+		pool: mock, externalUsers: failingExternalEmployees{err: errors.New("upstream unavailable")},
+	}
+	if err = service.syncAmoUsersNow(context.Background(), Actor{CompanyID: companyID}); err == nil {
+		t.Fatal("syncAmoUsersNow() error = nil")
+	}
+	if err = mock.ExpectationsWereMet(); err != nil {
+		t.Fatalf("unexpected database mutation after upstream failure: %v", err)
+	}
+}
+
 func TestAmoImportDoesNotChangeExistingUserStatusOrProfile(t *testing.T) {
 	mock, err := pgxmock.NewPool()
 	if err != nil {
@@ -138,17 +172,23 @@ func TestAmoImportDoesNotChangeExistingUserStatusOrProfile(t *testing.T) {
 	mock.ExpectExec("SELECT pg_advisory_xact_lock").
 		WithArgs(companyID).
 		WillReturnResult(pgconn.NewCommandTag("SELECT 1"))
+	userColumns := []string{
+		"id", "company_id", "email", "first_name", "last_name", "phone", "avatar_url",
+		"role", "status", "birth_date", "hired_at", "vacation_allowance", "created_at", "updated_at",
+		"source", "external_id", "external_group_id", "external_group_name", "avatar_source",
+		"external_deleted_at",
+	}
+	userRow := []any{
+		userID, companyID, email, "Старое", "Имя", nil, nil,
+		"employee", "deactivated", nil, nil, nil, now, now,
+		"amo", "42", nil, nil, nil, nil,
+	}
+	mock.ExpectQuery("SELECT id, company_id, email.+source = 'amo'").
+		WithArgs(companyID).
+		WillReturnRows(pgxmock.NewRows(userColumns).AddRow(userRow...))
 	mock.ExpectQuery("SELECT id, company_id, email.+FROM users").
 		WithArgs(companyID, pgtype.Text{String: "42", Valid: true}, email).
-		WillReturnRows(pgxmock.NewRows([]string{
-			"id", "company_id", "email", "first_name", "last_name", "phone", "avatar_url",
-			"role", "status", "birth_date", "hired_at", "vacation_allowance", "created_at", "updated_at",
-			"source", "external_id", "external_group_id", "external_group_name", "avatar_source",
-		}).AddRow(
-			userID, companyID, email, "Старое", "Имя", nil, nil,
-			"employee", "deactivated", nil, nil, nil, now, now,
-			"amo", "42", nil, nil, nil,
-		))
+		WillReturnRows(pgxmock.NewRows(userColumns).AddRow(userRow...))
 	mock.ExpectCommit()
 
 	if err = service.syncAmoUsersNow(context.Background(), actor); err != nil {

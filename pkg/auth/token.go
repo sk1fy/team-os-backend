@@ -24,14 +24,23 @@ func NewTokenIssuer(key ed25519.PrivateKey, issuer, audience string, ttl time.Du
 	return &TokenIssuer{key: key, issuer: issuer, audience: audience, ttl: ttl, now: time.Now}
 }
 
-func (i *TokenIssuer) Issue(subject, companyID, role string, positions, departments []string) (string, time.Time, error) {
+func (i *TokenIssuer) Issue(
+	subject, companyID, role string,
+	positions, departments []string,
+	sectionAccess ...[]string,
+) (string, time.Time, error) {
 	now := i.now().UTC()
 	expiresAt := now.Add(i.ttl)
+	var sections []string
+	if len(sectionAccess) > 0 {
+		sections = append([]string(nil), sectionAccess[0]...)
+	}
 	claims := Claims{
 		CompanyID:     companyID,
 		Role:          role,
 		PositionIDs:   append([]string(nil), positions...),
 		DepartmentIDs: append([]string(nil), departments...),
+		SectionAccess: sections,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    i.issuer,
 			Subject:   subject,
@@ -79,6 +88,13 @@ func (v *TokenVerifier) Verify(raw string) (*Claims, error) {
 	)
 	if err != nil || !token.Valid {
 		return nil, ErrInvalidToken
+	}
+	for _, section := range claims.SectionAccess {
+		switch section {
+		case "schedule", "knowledge", "academy", "distribution":
+		default:
+			return nil, ErrInvalidToken
+		}
 	}
 	return claims, nil
 }

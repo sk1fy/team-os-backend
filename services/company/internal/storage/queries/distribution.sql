@@ -44,3 +44,36 @@ RETURNING *;
 
 -- name: ResetDistributionEvents :execrows
 DELETE FROM distribution_events WHERE company_id = $1 AND group_id = $2;
+
+-- name: DisableUserInDistributionGroups :exec
+UPDATE distribution_groups
+SET disabled_member_ids = CASE
+        WHEN sqlc.arg('user_id')::uuid = ANY(member_ids)
+         AND NOT (sqlc.arg('user_id')::uuid = ANY(disabled_member_ids))
+        THEN array_append(disabled_member_ids, sqlc.arg('user_id')::uuid)
+        ELSE disabled_member_ids
+    END,
+    updated_at = CASE
+        WHEN sqlc.arg('user_id')::uuid = ANY(member_ids)
+         AND NOT (sqlc.arg('user_id')::uuid = ANY(disabled_member_ids))
+        THEN now()
+        ELSE updated_at
+    END
+WHERE company_id = sqlc.arg('company_id')
+  AND sqlc.arg('user_id')::uuid = ANY(member_ids)
+  AND NOT (sqlc.arg('user_id')::uuid = ANY(disabled_member_ids));
+
+-- name: ListDistributionGroupsContainingUserForUpdate :many
+SELECT *
+FROM distribution_groups
+WHERE company_id = sqlc.arg('company_id')
+  AND sqlc.arg('user_id')::uuid = ANY(member_ids)
+FOR UPDATE;
+
+-- name: RemoveUserFromDistributionGroups :exec
+UPDATE distribution_groups
+SET member_ids = array_remove(member_ids, sqlc.arg('user_id')::uuid),
+    disabled_member_ids = array_remove(disabled_member_ids, sqlc.arg('user_id')::uuid),
+    updated_at = now()
+WHERE company_id = sqlc.arg('company_id')
+  AND sqlc.arg('user_id')::uuid = ANY(member_ids);

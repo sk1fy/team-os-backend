@@ -7,9 +7,11 @@ import (
 )
 
 type Actor struct {
-	UserID    uuid.UUID
-	CompanyID uuid.UUID
-	Role      string
+	UserID        uuid.UUID
+	CompanyID     uuid.UUID
+	Role          string
+	SectionAccess []string
+	RequestID     string
 }
 
 type Company struct {
@@ -38,6 +40,7 @@ type User struct {
 	CreatedAt         time.Time
 	Source            string
 	AccessMode        string
+	SectionAccess     []string
 }
 
 type ReportUserScope struct {
@@ -227,6 +230,8 @@ type UpdateUserInput struct {
 	Status               *string
 	SetPositionIDs       bool
 	PositionIDs          []uuid.UUID
+	SetSectionAccess     bool
+	SectionAccess        []string
 }
 
 type InviteUserInput struct {

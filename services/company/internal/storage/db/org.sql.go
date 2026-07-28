@@ -29,6 +29,50 @@ func (q *Queries) AssignUserPosition(ctx context.Context, arg AssignUserPosition
 	return err
 }
 
+const clearAmoUserTombstone = `-- name: ClearAmoUserTombstone :one
+UPDATE users
+SET external_deleted_at = NULL,
+    updated_at = now()
+WHERE company_id = $1
+  AND id = $2
+  AND source = 'amo'
+  AND external_deleted_at IS NOT NULL
+RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source, external_deleted_at
+`
+
+type ClearAmoUserTombstoneParams struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	ID        uuid.UUID `json:"id"`
+}
+
+func (q *Queries) ClearAmoUserTombstone(ctx context.Context, arg ClearAmoUserTombstoneParams) (User, error) {
+	row := q.db.QueryRow(ctx, clearAmoUserTombstone, arg.CompanyID, arg.ID)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.Email,
+		&i.FirstName,
+		&i.LastName,
+		&i.Phone,
+		&i.AvatarUrl,
+		&i.Role,
+		&i.Status,
+		&i.BirthDate,
+		&i.HiredAt,
+		&i.VacationAllowance,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Source,
+		&i.ExternalID,
+		&i.ExternalGroupID,
+		&i.ExternalGroupName,
+		&i.AvatarSource,
+		&i.ExternalDeletedAt,
+	)
+	return i, err
+}
+
 const countDepartmentChildren = `-- name: CountDepartmentChildren :one
 SELECT count(*) FROM departments WHERE company_id = $1 AND parent_id = $2
 `
@@ -68,7 +112,7 @@ INSERT INTO users (
 )
 VALUES ($1, $2, $3, $4, $5, $6, $10,
     'employee', 'active', 'amo', $7, $8, $9)
-RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source
+RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source, external_deleted_at
 `
 
 type CreateAmoUserParams struct {
@@ -118,6 +162,7 @@ func (q *Queries) CreateAmoUser(ctx context.Context, arg CreateAmoUserParams) (U
 		&i.ExternalGroupID,
 		&i.ExternalGroupName,
 		&i.AvatarSource,
+		&i.ExternalDeletedAt,
 	)
 	return i, err
 }
@@ -256,6 +301,43 @@ func (q *Queries) CreatePosition(ctx context.Context, arg CreatePositionParams) 
 	return i, err
 }
 
+const createUserAdminAudit = `-- name: CreateUserAdminAudit :exec
+INSERT INTO user_admin_audit (
+    id, company_id, target_user_id, actor_user_id, actor_kind, action,
+    before_state, after_state, request_id, created_at
+)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+`
+
+type CreateUserAdminAuditParams struct {
+	ID           uuid.UUID     `json:"id"`
+	CompanyID    uuid.UUID     `json:"company_id"`
+	TargetUserID uuid.NullUUID `json:"target_user_id"`
+	ActorUserID  uuid.NullUUID `json:"actor_user_id"`
+	ActorKind    string        `json:"actor_kind"`
+	Action       string        `json:"action"`
+	BeforeState  []byte        `json:"before_state"`
+	AfterState   []byte        `json:"after_state"`
+	RequestID    pgtype.Text   `json:"request_id"`
+	CreatedAt    time.Time     `json:"created_at"`
+}
+
+func (q *Queries) CreateUserAdminAudit(ctx context.Context, arg CreateUserAdminAuditParams) error {
+	_, err := q.db.Exec(ctx, createUserAdminAudit,
+		arg.ID,
+		arg.CompanyID,
+		arg.TargetUserID,
+		arg.ActorUserID,
+		arg.ActorKind,
+		arg.Action,
+		arg.BeforeState,
+		arg.AfterState,
+		arg.RequestID,
+		arg.CreatedAt,
+	)
+	return err
+}
+
 const deleteDepartment = `-- name: DeleteDepartment :execrows
 DELETE FROM departments WHERE company_id = $1 AND id = $2
 `
@@ -271,6 +353,21 @@ func (q *Queries) DeleteDepartment(ctx context.Context, arg DeleteDepartmentPara
 		return 0, err
 	}
 	return result.RowsAffected(), nil
+}
+
+const deleteEmployeeSectionAccess = `-- name: DeleteEmployeeSectionAccess :exec
+DELETE FROM employee_section_access
+WHERE company_id = $1 AND user_id = $2
+`
+
+type DeleteEmployeeSectionAccessParams struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	UserID    uuid.UUID `json:"user_id"`
+}
+
+func (q *Queries) DeleteEmployeeSectionAccess(ctx context.Context, arg DeleteEmployeeSectionAccessParams) error {
+	_, err := q.db.Exec(ctx, deleteEmployeeSectionAccess, arg.CompanyID, arg.UserID)
+	return err
 }
 
 const deleteLocalUser = `-- name: DeleteLocalUser :execrows
@@ -325,7 +422,7 @@ func (q *Queries) DeleteUserPositions(ctx context.Context, arg DeleteUserPositio
 }
 
 const findUserForAmoSync = `-- name: FindUserForAmoSync :one
-SELECT id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source
+SELECT id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source, external_deleted_at
 FROM users
 WHERE company_id = $1
   AND (external_id = $2 OR email = $3)
@@ -362,6 +459,7 @@ func (q *Queries) FindUserForAmoSync(ctx context.Context, arg FindUserForAmoSync
 		&i.ExternalGroupID,
 		&i.ExternalGroupName,
 		&i.AvatarSource,
+		&i.ExternalDeletedAt,
 	)
 	return i, err
 }
@@ -452,7 +550,8 @@ const getPositionUserIDs = `-- name: GetPositionUserIDs :many
 SELECT up.user_id
 FROM user_positions up
 JOIN users u ON u.id = up.user_id AND u.company_id = up.company_id
-WHERE up.company_id = $1 AND up.position_id = $2 AND u.status = 'active'
+WHERE up.company_id = $1 AND up.position_id = $2
+  AND u.status = 'active' AND u.external_deleted_at IS NULL
 ORDER BY up.user_id
 `
 
@@ -482,8 +581,14 @@ func (q *Queries) GetPositionUserIDs(ctx context.Context, arg GetPositionUserIDs
 }
 
 const getUserWithPositions = `-- name: GetUserWithPositions :one
-SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name, u.avatar_source,
+SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name, u.avatar_source, u.external_deleted_at,
        COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids,
+       ARRAY(
+           SELECT access.section
+           FROM employee_section_access access
+           WHERE access.company_id = u.company_id AND access.user_id = u.id
+           ORDER BY access.section
+       )::text[] AS section_access,
        CASE
            WHEN EXISTS (SELECT 1 FROM access_links access WHERE access.company_id = u.company_id AND access.user_id = u.id) THEN 'link'
            WHEN EXISTS (SELECT 1 FROM credentials credential WHERE credential.company_id = u.company_id AND credential.user_id = u.id) THEN 'password'
@@ -491,7 +596,7 @@ SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar
        END::text AS access_mode
 FROM users u
 LEFT JOIN user_positions up ON up.user_id = u.id
-WHERE u.company_id = $1 AND u.id = $2
+WHERE u.company_id = $1 AND u.id = $2 AND u.external_deleted_at IS NULL
 GROUP BY u.id
 `
 
@@ -501,27 +606,29 @@ type GetUserWithPositionsParams struct {
 }
 
 type GetUserWithPositionsRow struct {
-	ID                uuid.UUID   `json:"id"`
-	CompanyID         uuid.UUID   `json:"company_id"`
-	Email             string      `json:"email"`
-	FirstName         string      `json:"first_name"`
-	LastName          pgtype.Text `json:"last_name"`
-	Phone             pgtype.Text `json:"phone"`
-	AvatarUrl         pgtype.Text `json:"avatar_url"`
-	Role              string      `json:"role"`
-	Status            string      `json:"status"`
-	BirthDate         pgtype.Date `json:"birth_date"`
-	HiredAt           pgtype.Date `json:"hired_at"`
-	VacationAllowance pgtype.Int2 `json:"vacation_allowance"`
-	CreatedAt         time.Time   `json:"created_at"`
-	UpdatedAt         time.Time   `json:"updated_at"`
-	Source            string      `json:"source"`
-	ExternalID        pgtype.Text `json:"external_id"`
-	ExternalGroupID   pgtype.Text `json:"external_group_id"`
-	ExternalGroupName pgtype.Text `json:"external_group_name"`
-	AvatarSource      pgtype.Text `json:"avatar_source"`
-	PositionIds       []uuid.UUID `json:"position_ids"`
-	AccessMode        string      `json:"access_mode"`
+	ID                uuid.UUID          `json:"id"`
+	CompanyID         uuid.UUID          `json:"company_id"`
+	Email             string             `json:"email"`
+	FirstName         string             `json:"first_name"`
+	LastName          pgtype.Text        `json:"last_name"`
+	Phone             pgtype.Text        `json:"phone"`
+	AvatarUrl         pgtype.Text        `json:"avatar_url"`
+	Role              string             `json:"role"`
+	Status            string             `json:"status"`
+	BirthDate         pgtype.Date        `json:"birth_date"`
+	HiredAt           pgtype.Date        `json:"hired_at"`
+	VacationAllowance pgtype.Int2        `json:"vacation_allowance"`
+	CreatedAt         time.Time          `json:"created_at"`
+	UpdatedAt         time.Time          `json:"updated_at"`
+	Source            string             `json:"source"`
+	ExternalID        pgtype.Text        `json:"external_id"`
+	ExternalGroupID   pgtype.Text        `json:"external_group_id"`
+	ExternalGroupName pgtype.Text        `json:"external_group_name"`
+	AvatarSource      pgtype.Text        `json:"avatar_source"`
+	ExternalDeletedAt pgtype.Timestamptz `json:"external_deleted_at"`
+	PositionIds       []uuid.UUID        `json:"position_ids"`
+	SectionAccess     []string           `json:"section_access"`
+	AccessMode        string             `json:"access_mode"`
 }
 
 func (q *Queries) GetUserWithPositions(ctx context.Context, arg GetUserWithPositionsParams) (GetUserWithPositionsRow, error) {
@@ -547,10 +654,85 @@ func (q *Queries) GetUserWithPositions(ctx context.Context, arg GetUserWithPosit
 		&i.ExternalGroupID,
 		&i.ExternalGroupName,
 		&i.AvatarSource,
+		&i.ExternalDeletedAt,
 		&i.PositionIds,
+		&i.SectionAccess,
 		&i.AccessMode,
 	)
 	return i, err
+}
+
+const grantEmployeeSectionAccess = `-- name: GrantEmployeeSectionAccess :exec
+INSERT INTO employee_section_access (company_id, user_id, section, granted_by)
+VALUES ($1, $2, $3, $4)
+ON CONFLICT (user_id, section) DO NOTHING
+`
+
+type GrantEmployeeSectionAccessParams struct {
+	CompanyID uuid.UUID     `json:"company_id"`
+	UserID    uuid.UUID     `json:"user_id"`
+	Section   string        `json:"section"`
+	GrantedBy uuid.NullUUID `json:"granted_by"`
+}
+
+func (q *Queries) GrantEmployeeSectionAccess(ctx context.Context, arg GrantEmployeeSectionAccessParams) error {
+	_, err := q.db.Exec(ctx, grantEmployeeSectionAccess,
+		arg.CompanyID,
+		arg.UserID,
+		arg.Section,
+		arg.GrantedBy,
+	)
+	return err
+}
+
+const listAmoUsersForReconciliation = `-- name: ListAmoUsersForReconciliation :many
+SELECT id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source, external_deleted_at
+FROM users
+WHERE company_id = $1
+  AND source = 'amo'
+  AND external_id IS NOT NULL
+FOR UPDATE
+`
+
+func (q *Queries) ListAmoUsersForReconciliation(ctx context.Context, companyID uuid.UUID) ([]User, error) {
+	rows, err := q.db.Query(ctx, listAmoUsersForReconciliation, companyID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []User{}
+	for rows.Next() {
+		var i User
+		if err := rows.Scan(
+			&i.ID,
+			&i.CompanyID,
+			&i.Email,
+			&i.FirstName,
+			&i.LastName,
+			&i.Phone,
+			&i.AvatarUrl,
+			&i.Role,
+			&i.Status,
+			&i.BirthDate,
+			&i.HiredAt,
+			&i.VacationAllowance,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Source,
+			&i.ExternalID,
+			&i.ExternalGroupID,
+			&i.ExternalGroupName,
+			&i.AvatarSource,
+			&i.ExternalDeletedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const listDepartments = `-- name: ListDepartments :many
@@ -582,6 +764,38 @@ func (q *Queries) ListDepartments(ctx context.Context, companyID uuid.UUID) ([]D
 			return nil, err
 		}
 		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listEmployeeSectionAccess = `-- name: ListEmployeeSectionAccess :many
+SELECT section
+FROM employee_section_access
+WHERE company_id = $1 AND user_id = $2
+ORDER BY section
+`
+
+type ListEmployeeSectionAccessParams struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	UserID    uuid.UUID `json:"user_id"`
+}
+
+func (q *Queries) ListEmployeeSectionAccess(ctx context.Context, arg ListEmployeeSectionAccessParams) ([]string, error) {
+	rows, err := q.db.Query(ctx, listEmployeeSectionAccess, arg.CompanyID, arg.UserID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []string{}
+	for rows.Next() {
+		var section string
+		if err := rows.Scan(&section); err != nil {
+			return nil, err
+		}
+		items = append(items, section)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -662,8 +876,14 @@ func (q *Queries) ListPositions(ctx context.Context, companyID uuid.UUID) ([]Pos
 }
 
 const listUsers = `-- name: ListUsers :many
-SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name, u.avatar_source,
+SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name, u.avatar_source, u.external_deleted_at,
        COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids,
+       ARRAY(
+           SELECT access.section
+           FROM employee_section_access access
+           WHERE access.company_id = u.company_id AND access.user_id = u.id
+           ORDER BY access.section
+       )::text[] AS section_access,
        CASE
            WHEN EXISTS (SELECT 1 FROM access_links access WHERE access.company_id = u.company_id AND access.user_id = u.id) THEN 'link'
            WHEN EXISTS (SELECT 1 FROM credentials credential WHERE credential.company_id = u.company_id AND credential.user_id = u.id) THEN 'password'
@@ -671,33 +891,35 @@ SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar
        END::text AS access_mode
 FROM users u
 LEFT JOIN user_positions up ON up.user_id = u.id
-WHERE u.company_id = $1
+WHERE u.company_id = $1 AND u.external_deleted_at IS NULL
 GROUP BY u.id
 ORDER BY u.created_at, u.id
 `
 
 type ListUsersRow struct {
-	ID                uuid.UUID   `json:"id"`
-	CompanyID         uuid.UUID   `json:"company_id"`
-	Email             string      `json:"email"`
-	FirstName         string      `json:"first_name"`
-	LastName          pgtype.Text `json:"last_name"`
-	Phone             pgtype.Text `json:"phone"`
-	AvatarUrl         pgtype.Text `json:"avatar_url"`
-	Role              string      `json:"role"`
-	Status            string      `json:"status"`
-	BirthDate         pgtype.Date `json:"birth_date"`
-	HiredAt           pgtype.Date `json:"hired_at"`
-	VacationAllowance pgtype.Int2 `json:"vacation_allowance"`
-	CreatedAt         time.Time   `json:"created_at"`
-	UpdatedAt         time.Time   `json:"updated_at"`
-	Source            string      `json:"source"`
-	ExternalID        pgtype.Text `json:"external_id"`
-	ExternalGroupID   pgtype.Text `json:"external_group_id"`
-	ExternalGroupName pgtype.Text `json:"external_group_name"`
-	AvatarSource      pgtype.Text `json:"avatar_source"`
-	PositionIds       []uuid.UUID `json:"position_ids"`
-	AccessMode        string      `json:"access_mode"`
+	ID                uuid.UUID          `json:"id"`
+	CompanyID         uuid.UUID          `json:"company_id"`
+	Email             string             `json:"email"`
+	FirstName         string             `json:"first_name"`
+	LastName          pgtype.Text        `json:"last_name"`
+	Phone             pgtype.Text        `json:"phone"`
+	AvatarUrl         pgtype.Text        `json:"avatar_url"`
+	Role              string             `json:"role"`
+	Status            string             `json:"status"`
+	BirthDate         pgtype.Date        `json:"birth_date"`
+	HiredAt           pgtype.Date        `json:"hired_at"`
+	VacationAllowance pgtype.Int2        `json:"vacation_allowance"`
+	CreatedAt         time.Time          `json:"created_at"`
+	UpdatedAt         time.Time          `json:"updated_at"`
+	Source            string             `json:"source"`
+	ExternalID        pgtype.Text        `json:"external_id"`
+	ExternalGroupID   pgtype.Text        `json:"external_group_id"`
+	ExternalGroupName pgtype.Text        `json:"external_group_name"`
+	AvatarSource      pgtype.Text        `json:"avatar_source"`
+	ExternalDeletedAt pgtype.Timestamptz `json:"external_deleted_at"`
+	PositionIds       []uuid.UUID        `json:"position_ids"`
+	SectionAccess     []string           `json:"section_access"`
+	AccessMode        string             `json:"access_mode"`
 }
 
 func (q *Queries) ListUsers(ctx context.Context, companyID uuid.UUID) ([]ListUsersRow, error) {
@@ -729,7 +951,9 @@ func (q *Queries) ListUsers(ctx context.Context, companyID uuid.UUID) ([]ListUse
 			&i.ExternalGroupID,
 			&i.ExternalGroupName,
 			&i.AvatarSource,
+			&i.ExternalDeletedAt,
 			&i.PositionIds,
+			&i.SectionAccess,
 			&i.AccessMode,
 		); err != nil {
 			return nil, err
@@ -749,6 +973,51 @@ SELECT pg_advisory_xact_lock(hashtextextended($1::uuid::text, 0))
 func (q *Queries) LockAmoUserSync(ctx context.Context, companyID uuid.UUID) error {
 	_, err := q.db.Exec(ctx, lockAmoUserSync, companyID)
 	return err
+}
+
+const markAmoUserExternallyDeleted = `-- name: MarkAmoUserExternallyDeleted :one
+UPDATE users
+SET external_deleted_at = $1,
+    updated_at = now()
+WHERE company_id = $2
+  AND id = $3
+  AND source = 'amo'
+  AND external_deleted_at IS NULL
+RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source, external_deleted_at
+`
+
+type MarkAmoUserExternallyDeletedParams struct {
+	DeletedAt pgtype.Timestamptz `json:"deleted_at"`
+	CompanyID uuid.UUID          `json:"company_id"`
+	ID        uuid.UUID          `json:"id"`
+}
+
+func (q *Queries) MarkAmoUserExternallyDeleted(ctx context.Context, arg MarkAmoUserExternallyDeletedParams) (User, error) {
+	row := q.db.QueryRow(ctx, markAmoUserExternallyDeleted, arg.DeletedAt, arg.CompanyID, arg.ID)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.Email,
+		&i.FirstName,
+		&i.LastName,
+		&i.Phone,
+		&i.AvatarUrl,
+		&i.Role,
+		&i.Status,
+		&i.BirthDate,
+		&i.HiredAt,
+		&i.VacationAllowance,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Source,
+		&i.ExternalID,
+		&i.ExternalGroupID,
+		&i.ExternalGroupName,
+		&i.AvatarSource,
+		&i.ExternalDeletedAt,
+	)
+	return i, err
 }
 
 const moveDepartment = `-- name: MoveDepartment :one
@@ -981,7 +1250,7 @@ SET first_name = COALESCE($1, first_name),
     status = COALESCE($12, status),
     updated_at = now()
 WHERE company_id = $13 AND id = $14
-RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source
+RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source, external_deleted_at
 `
 
 type UpdateUserParams struct {
@@ -1039,6 +1308,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.ExternalGroupID,
 		&i.ExternalGroupName,
 		&i.AvatarSource,
+		&i.ExternalDeletedAt,
 	)
 	return i, err
 }

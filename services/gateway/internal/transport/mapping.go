@@ -41,6 +41,24 @@ func userFromProto(value *companyv1.User) (api.User, error) {
 		LastName: value.GetLastName(), AvatarUrl: value.AvatarUrl, Phone: value.Phone,
 		Role: role, Status: status, PositionIds: positionIDs, CreatedAt: createdAt,
 	}
+	if value.GetRole() == companyv1.UserRole_USER_ROLE_EMPLOYEE {
+		sections := make([]api.EmployeeSection, 0, len(value.GetSectionAccess()))
+		for _, section := range value.GetSectionAccess() {
+			switch section {
+			case companyv1.EmployeeSection_EMPLOYEE_SECTION_SCHEDULE:
+				sections = append(sections, api.Schedule)
+			case companyv1.EmployeeSection_EMPLOYEE_SECTION_KNOWLEDGE:
+				sections = append(sections, api.Knowledge)
+			case companyv1.EmployeeSection_EMPLOYEE_SECTION_ACADEMY:
+				sections = append(sections, api.Academy)
+			case companyv1.EmployeeSection_EMPLOYEE_SECTION_DISTRIBUTION:
+				sections = append(sections, api.Distribution)
+			default:
+				return api.User{}, errors.New("company returned invalid employee section")
+			}
+		}
+		result.SectionAccess = &sections
+	}
 	if accessMode := accessModeFromProto(value.GetAccessMode()); accessMode != nil {
 		result.AccessMode = accessMode
 	}

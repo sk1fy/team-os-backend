@@ -14,6 +14,7 @@ type Actor struct {
 	Role          string
 	PositionIDs   []uuid.UUID
 	DepartmentIDs []uuid.UUID
+	SectionAccess []string
 }
 
 func (a Actor) subject() domainaccess.Subject {

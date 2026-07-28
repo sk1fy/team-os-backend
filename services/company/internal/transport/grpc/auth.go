@@ -49,7 +49,11 @@ func (s *Server) actor(ctx context.Context) (application.Actor, error) {
 		return application.Actor{}, status.Error(codes.Unauthenticated, "Токен недействителен или истёк")
 	}
 
-	return application.Actor{UserID: userID, CompanyID: companyID, Role: claims.Role}, nil
+	return application.Actor{
+		UserID: userID, CompanyID: companyID, Role: claims.Role,
+		SectionAccess: append([]string(nil), claims.SectionAccess...),
+		RequestID:     firstMetadataValue(md, "x-request-id"),
+	}, nil
 }
 
 func sessionMeta(ctx context.Context) application.SessionMeta {

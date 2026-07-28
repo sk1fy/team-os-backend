@@ -63,6 +63,21 @@ SET company_id = EXCLUDED.company_id,
     password_hash = EXCLUDED.password_hash,
     updated_at = now()`
 
+const resetEmployeeSectionAccessSQL = `
+DELETE FROM employee_section_access
+WHERE company_id = $1
+  AND user_id = ANY($2::uuid[])`
+
+const insertDefaultEmployeeSectionAccessSQL = `
+INSERT INTO employee_section_access (company_id, user_id, section)
+SELECT $1, source_user.id, defaults.section
+FROM users AS source_user
+CROSS JOIN unnest(ARRAY['schedule', 'knowledge', 'academy']) AS defaults(section)
+WHERE source_user.company_id = $1
+  AND source_user.id = ANY($2::uuid[])
+  AND source_user.role = 'employee'
+ON CONFLICT (user_id, section) DO NOTHING`
+
 const upsertDepartmentSQL = `
 INSERT INTO departments (
     id, company_id, name, parent_id, head_user_id, valuable_final_product, "order"
@@ -255,6 +270,12 @@ func Apply(ctx context.Context, tx execer, dataset Dataset, passwordHash string)
 	userIDs := make([]uuid.UUID, 0, len(dataset.Users))
 	for _, user := range dataset.Users {
 		userIDs = append(userIDs, user.ID)
+	}
+	if _, err := tx.Exec(ctx, resetEmployeeSectionAccessSQL, dataset.Company.ID, userIDs); err != nil {
+		return fmt.Errorf("очистить доступ к разделам: %w", err)
+	}
+	if _, err := tx.Exec(ctx, insertDefaultEmployeeSectionAccessSQL, dataset.Company.ID, userIDs); err != nil {
+		return fmt.Errorf("назначить доступ к разделам: %w", err)
 	}
 	if _, err := tx.Exec(ctx, deleteUserPositionsSQL, dataset.Company.ID, userIDs); err != nil {
 		return fmt.Errorf("очистить назначения должностей: %w", err)

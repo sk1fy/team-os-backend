@@ -83,13 +83,63 @@ func (s *Service) syncAmoUsersNow(ctx context.Context, actor Actor) error {
 	if err = queries.LockAmoUserSync(ctx, actor.CompanyID); err != nil {
 		return internal("Не удалось заблокировать импорт сотрудников", err)
 	}
+	amoUsers, err := queries.ListAmoUsersForReconciliation(ctx, actor.CompanyID)
+	if err != nil {
+		return internal("Не удалось получить сотрудников amoCRM для сверки", err)
+	}
+	snapshotIDs := make(map[string]struct{}, len(normalized))
+	for _, employee := range normalized {
+		snapshotIDs[employee.ID] = struct{}{}
+	}
 
 	for _, employee := range normalized {
-		_, findErr := queries.FindUserForAmoSync(ctx, db.FindUserForAmoSyncParams{
+		existing, findErr := queries.FindUserForAmoSync(ctx, db.FindUserForAmoSyncParams{
 			CompanyID: actor.CompanyID, ExternalID: pgtype.Text{String: employee.ID, Valid: true}, Email: employee.Email,
 		})
 		if findErr == nil {
 			// Импорт не перезаписывает профиль, статус или доступ уже известного TeamOS-пользователя.
+			if existing.Source == "amo" && existing.ExternalDeletedAt.Valid {
+				restored, restoreErr := queries.ClearAmoUserTombstone(ctx, db.ClearAmoUserTombstoneParams{
+					CompanyID: actor.CompanyID, ID: existing.ID,
+				})
+				if restoreErr != nil {
+					return internal("Не удалось восстановить сотрудника amoCRM", restoreErr)
+				}
+				sections, sectionsErr := queries.ListEmployeeSectionAccess(ctx, db.ListEmployeeSectionAccessParams{
+					CompanyID: actor.CompanyID, UserID: existing.ID,
+				})
+				if sectionsErr != nil {
+					return internal("Не удалось получить доступ к разделам сотрудника", sectionsErr)
+				}
+				positionIDs, positionsErr := queries.GetUserPositionIDs(ctx, db.GetUserPositionIDsParams{
+					CompanyID: actor.CompanyID, UserID: existing.ID,
+				})
+				if positionsErr != nil {
+					return internal("Не удалось получить должности сотрудника", positionsErr)
+				}
+				departmentIDs, departmentsErr := queries.GetUserDepartmentClaims(ctx, db.GetUserDepartmentClaimsParams{
+					CompanyID: actor.CompanyID, UserID: existing.ID,
+				})
+				if departmentsErr != nil {
+					return internal("Не удалось получить отделы сотрудника", departmentsErr)
+				}
+				restoredUser := userFromDB(restored, positionIDs)
+				if restored.Role == "employee" {
+					restoredUser.SectionAccess = normalizedEmployeeSections(sections)
+				}
+				if err = s.emit(ctx, queries, actor.CompanyID, actor.UserID, "teamos.org.user.updated.v1", map[string]any{
+					"user": userEventSnapshot(restoredUser, departmentIDs), "changedFields": []string{"externalDeletedAt"},
+				}); err != nil {
+					return err
+				}
+				if err = createUserAdminAudit(
+					ctx, queries, actor.CompanyID, &existing.ID, nil, "amo_sync", "external_restored",
+					map[string]any{"externalPresent": false}, map[string]any{"externalPresent": true},
+					actor.RequestID, s.now().UTC(),
+				); err != nil {
+					return err
+				}
+			}
 			continue
 		}
 		if !isNoRows(findErr) {
@@ -109,9 +159,59 @@ func (s *Service) syncAmoUsersNow(ctx context.Context, actor Actor) error {
 		if err != nil {
 			return internal("Не удалось сохранить сотрудника amoCRM", err)
 		}
+		sections := append([]string(nil), defaultEmployeeSections...)
+		if err = replaceEmployeeSections(ctx, queries, actor.CompanyID, row.ID, sections, nil); err != nil {
+			return err
+		}
+		createdUser := userFromDB(row, nil)
+		createdUser.SectionAccess = normalizedEmployeeSections(sections)
 		if err = s.emit(ctx, queries, actor.CompanyID, actor.UserID, "teamos.org.user.created.v1", map[string]any{
-			"user": userEventSnapshot(userFromDB(row, nil), nil),
+			"user": userEventSnapshot(createdUser, nil),
 		}); err != nil {
+			return err
+		}
+	}
+	for _, amoUser := range amoUsers {
+		if !amoUser.ExternalID.Valid {
+			continue
+		}
+		if _, present := snapshotIDs[amoUser.ExternalID.String]; present || amoUser.ExternalDeletedAt.Valid {
+			continue
+		}
+		if _, err = queries.MarkAmoUserExternallyDeleted(ctx, db.MarkAmoUserExternallyDeletedParams{
+			DeletedAt: pgtype.Timestamptz{Time: s.now().UTC(), Valid: true},
+			CompanyID: actor.CompanyID, ID: amoUser.ID,
+		}); err != nil {
+			return internal("Не удалось скрыть удалённого сотрудника amoCRM", err)
+		}
+		if err = revokeUserSessions(ctx, queries, amoUser.ID, s.now().UTC()); err != nil {
+			return err
+		}
+		if err = queries.DeleteCredential(ctx, db.DeleteCredentialParams{
+			CompanyID: actor.CompanyID, UserID: amoUser.ID,
+		}); err != nil {
+			return internal("Не удалось удалить пароль сотрудника amoCRM", err)
+		}
+		if err = queries.DeleteAccessLink(ctx, db.DeleteAccessLinkParams{
+			CompanyID: actor.CompanyID, UserID: amoUser.ID,
+		}); err != nil {
+			return internal("Не удалось удалить ссылку доступа сотрудника amoCRM", err)
+		}
+		if err = queries.DisableUserInDistributionGroups(ctx, db.DisableUserInDistributionGroupsParams{
+			UserID: amoUser.ID, CompanyID: actor.CompanyID,
+		}); err != nil {
+			return internal("Не удалось отключить сотрудника amoCRM в распределении", err)
+		}
+		if err = s.emit(ctx, queries, actor.CompanyID, actor.UserID, "teamos.org.user.deactivated.v1", map[string]any{
+			"userId": amoUser.ID.String(),
+		}); err != nil {
+			return err
+		}
+		if err = createUserAdminAudit(
+			ctx, queries, actor.CompanyID, &amoUser.ID, nil, "amo_sync", "external_removed",
+			map[string]any{"externalPresent": true}, map[string]any{"externalPresent": false},
+			actor.RequestID, s.now().UTC(),
+		); err != nil {
 			return err
 		}
 	}

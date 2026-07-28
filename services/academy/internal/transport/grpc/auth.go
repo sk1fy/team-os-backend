@@ -52,11 +52,24 @@ func (s *Server) actor(ctx context.Context) (application.Actor, error) {
 	if err != nil {
 		return application.Actor{}, status.Error(codes.Unauthenticated, "Токен недействителен или истёк")
 	}
+	if claims.Role == "employee" && !containsSection(claims.SectionAccess, "academy") {
+		return application.Actor{}, status.Error(codes.PermissionDenied, "Раздел «Академия» недоступен")
+	}
 	return application.Actor{
 		UserID: userID, CompanyID: companyID, Role: claims.Role,
 		PositionIDs: positionIDs, DepartmentIDs: departmentIDs,
-		Token: parts[1],
+		SectionAccess: append([]string(nil), claims.SectionAccess...),
+		Token:         parts[1],
 	}, nil
+}
+
+func containsSection(values []string, expected string) bool {
+	for _, value := range values {
+		if value == expected {
+			return true
+		}
+	}
+	return false
 }
 
 func parseUUIDClaims(values []string) ([]uuid.UUID, error) {

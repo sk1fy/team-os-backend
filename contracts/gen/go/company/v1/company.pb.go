@@ -230,6 +230,61 @@ func (UserAccessMode) EnumDescriptor() ([]byte, []int) {
 	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{3}
 }
 
+type EmployeeSection int32
+
+const (
+	EmployeeSection_EMPLOYEE_SECTION_UNSPECIFIED  EmployeeSection = 0
+	EmployeeSection_EMPLOYEE_SECTION_SCHEDULE     EmployeeSection = 1
+	EmployeeSection_EMPLOYEE_SECTION_KNOWLEDGE    EmployeeSection = 2
+	EmployeeSection_EMPLOYEE_SECTION_ACADEMY      EmployeeSection = 3
+	EmployeeSection_EMPLOYEE_SECTION_DISTRIBUTION EmployeeSection = 4
+)
+
+// Enum value maps for EmployeeSection.
+var (
+	EmployeeSection_name = map[int32]string{
+		0: "EMPLOYEE_SECTION_UNSPECIFIED",
+		1: "EMPLOYEE_SECTION_SCHEDULE",
+		2: "EMPLOYEE_SECTION_KNOWLEDGE",
+		3: "EMPLOYEE_SECTION_ACADEMY",
+		4: "EMPLOYEE_SECTION_DISTRIBUTION",
+	}
+	EmployeeSection_value = map[string]int32{
+		"EMPLOYEE_SECTION_UNSPECIFIED":  0,
+		"EMPLOYEE_SECTION_SCHEDULE":     1,
+		"EMPLOYEE_SECTION_KNOWLEDGE":    2,
+		"EMPLOYEE_SECTION_ACADEMY":      3,
+		"EMPLOYEE_SECTION_DISTRIBUTION": 4,
+	}
+)
+
+func (x EmployeeSection) Enum() *EmployeeSection {
+	p := new(EmployeeSection)
+	*p = x
+	return p
+}
+
+func (x EmployeeSection) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (EmployeeSection) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_company_v1_company_proto_enumTypes[4].Descriptor()
+}
+
+func (EmployeeSection) Type() protoreflect.EnumType {
+	return &file_proto_company_v1_company_proto_enumTypes[4]
+}
+
+func (x EmployeeSection) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use EmployeeSection.Descriptor instead.
+func (EmployeeSection) EnumDescriptor() ([]byte, []int) {
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{4}
+}
+
 type InviteStatus int32
 
 const (
@@ -266,11 +321,11 @@ func (x InviteStatus) String() string {
 }
 
 func (InviteStatus) Descriptor() protoreflect.EnumDescriptor {
-	return file_proto_company_v1_company_proto_enumTypes[4].Descriptor()
+	return file_proto_company_v1_company_proto_enumTypes[5].Descriptor()
 }
 
 func (InviteStatus) Type() protoreflect.EnumType {
-	return &file_proto_company_v1_company_proto_enumTypes[4]
+	return &file_proto_company_v1_company_proto_enumTypes[5]
 }
 
 func (x InviteStatus) Number() protoreflect.EnumNumber {
@@ -279,7 +334,7 @@ func (x InviteStatus) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use InviteStatus.Descriptor instead.
 func (InviteStatus) EnumDescriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{4}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{5}
 }
 
 type ShiftType int32
@@ -324,11 +379,11 @@ func (x ShiftType) String() string {
 }
 
 func (ShiftType) Descriptor() protoreflect.EnumDescriptor {
-	return file_proto_company_v1_company_proto_enumTypes[5].Descriptor()
+	return file_proto_company_v1_company_proto_enumTypes[6].Descriptor()
 }
 
 func (ShiftType) Type() protoreflect.EnumType {
-	return &file_proto_company_v1_company_proto_enumTypes[5]
+	return &file_proto_company_v1_company_proto_enumTypes[6]
 }
 
 func (x ShiftType) Number() protoreflect.EnumNumber {
@@ -337,7 +392,7 @@ func (x ShiftType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ShiftType.Descriptor instead.
 func (ShiftType) EnumDescriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{5}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{6}
 }
 
 type DistributionAlgorithm int32
@@ -376,11 +431,11 @@ func (x DistributionAlgorithm) String() string {
 }
 
 func (DistributionAlgorithm) Descriptor() protoreflect.EnumDescriptor {
-	return file_proto_company_v1_company_proto_enumTypes[6].Descriptor()
+	return file_proto_company_v1_company_proto_enumTypes[7].Descriptor()
 }
 
 func (DistributionAlgorithm) Type() protoreflect.EnumType {
-	return &file_proto_company_v1_company_proto_enumTypes[6]
+	return &file_proto_company_v1_company_proto_enumTypes[7]
 }
 
 func (x DistributionAlgorithm) Number() protoreflect.EnumNumber {
@@ -389,7 +444,7 @@ func (x DistributionAlgorithm) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use DistributionAlgorithm.Descriptor instead.
 func (DistributionAlgorithm) EnumDescriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{6}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{7}
 }
 
 type DistributionEventStatus int32
@@ -431,11 +486,11 @@ func (x DistributionEventStatus) String() string {
 }
 
 func (DistributionEventStatus) Descriptor() protoreflect.EnumDescriptor {
-	return file_proto_company_v1_company_proto_enumTypes[7].Descriptor()
+	return file_proto_company_v1_company_proto_enumTypes[8].Descriptor()
 }
 
 func (DistributionEventStatus) Type() protoreflect.EnumType {
-	return &file_proto_company_v1_company_proto_enumTypes[7]
+	return &file_proto_company_v1_company_proto_enumTypes[8]
 }
 
 func (x DistributionEventStatus) Number() protoreflect.EnumNumber {
@@ -444,7 +499,7 @@ func (x DistributionEventStatus) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use DistributionEventStatus.Descriptor instead.
 func (DistributionEventStatus) EnumDescriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{7}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{8}
 }
 
 type Company struct {
@@ -549,6 +604,7 @@ type User struct {
 	CreatedAt         *timestamppb.Timestamp `protobuf:"bytes,13,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	Source            UserSource             `protobuf:"varint,14,opt,name=source,proto3,enum=teamos.company.v1.UserSource" json:"source,omitempty"`
 	AccessMode        UserAccessMode         `protobuf:"varint,15,opt,name=access_mode,json=accessMode,proto3,enum=teamos.company.v1.UserAccessMode" json:"access_mode,omitempty"`
+	SectionAccess     []EmployeeSection      `protobuf:"varint,16,rep,packed,name=section_access,json=sectionAccess,proto3,enum=teamos.company.v1.EmployeeSection" json:"section_access,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
@@ -686,6 +742,13 @@ func (x *User) GetAccessMode() UserAccessMode {
 		return x.AccessMode
 	}
 	return UserAccessMode_USER_ACCESS_MODE_UNSPECIFIED
+}
+
+func (x *User) GetSectionAccess() []EmployeeSection {
+	if x != nil {
+		return x.SectionAccess
+	}
+	return nil
 }
 
 type Department struct {
@@ -3491,10 +3554,12 @@ type UpdateUserRequest struct {
 	Role              *UserRole   `protobuf:"varint,8,opt,name=role,proto3,enum=teamos.company.v1.UserRole,oneof" json:"role,omitempty"`
 	Status            *UserStatus `protobuf:"varint,9,opt,name=status,proto3,enum=teamos.company.v1.UserStatus,oneof" json:"status,omitempty"`
 	// Proto repeated fields have no presence; update_position_ids selects whether to apply it.
-	PositionIds       []string `protobuf:"bytes,10,rep,name=position_ids,json=positionIds,proto3" json:"position_ids,omitempty"`
-	UpdatePositionIds bool     `protobuf:"varint,11,opt,name=update_position_ids,json=updatePositionIds,proto3" json:"update_position_ids,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	PositionIds         []string          `protobuf:"bytes,10,rep,name=position_ids,json=positionIds,proto3" json:"position_ids,omitempty"`
+	UpdatePositionIds   bool              `protobuf:"varint,11,opt,name=update_position_ids,json=updatePositionIds,proto3" json:"update_position_ids,omitempty"`
+	SectionAccess       []EmployeeSection `protobuf:"varint,12,rep,packed,name=section_access,json=sectionAccess,proto3,enum=teamos.company.v1.EmployeeSection" json:"section_access,omitempty"`
+	UpdateSectionAccess bool              `protobuf:"varint,13,opt,name=update_section_access,json=updateSectionAccess,proto3" json:"update_section_access,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *UpdateUserRequest) Reset() {
@@ -3600,6 +3665,20 @@ func (x *UpdateUserRequest) GetPositionIds() []string {
 func (x *UpdateUserRequest) GetUpdatePositionIds() bool {
 	if x != nil {
 		return x.UpdatePositionIds
+	}
+	return false
+}
+
+func (x *UpdateUserRequest) GetSectionAccess() []EmployeeSection {
+	if x != nil {
+		return x.SectionAccess
+	}
+	return nil
+}
+
+func (x *UpdateUserRequest) GetUpdateSectionAccess() bool {
+	if x != nil {
+		return x.UpdateSectionAccess
 	}
 	return false
 }
@@ -6798,7 +6877,7 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"created_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12)\n" +
 	"\x0eamo_account_id\x18\x06 \x01(\tH\x01R\famoAccountId\x88\x01\x01B\v\n" +
 	"\t_logo_urlB\x11\n" +
-	"\x0f_amo_account_id\"\xac\x05\n" +
+	"\x0f_amo_account_id\"\xf7\x05\n" +
 	"\x04User\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x12\x1d\n" +
@@ -6820,7 +6899,8 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"created_at\x18\r \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x125\n" +
 	"\x06source\x18\x0e \x01(\x0e2\x1d.teamos.company.v1.UserSourceR\x06source\x12B\n" +
 	"\vaccess_mode\x18\x0f \x01(\x0e2!.teamos.company.v1.UserAccessModeR\n" +
-	"accessModeB\r\n" +
+	"accessMode\x12I\n" +
+	"\x0esection_access\x18\x10 \x03(\x0e2\".teamos.company.v1.EmployeeSectionR\rsectionAccessB\r\n" +
 	"\v_avatar_urlB\b\n" +
 	"\x06_phoneB\r\n" +
 	"\v_birth_dateB\v\n" +
@@ -7035,7 +7115,7 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\fposition_ids\x18\x06 \x03(\tR\vpositionIdsB\b\n" +
 	"\x06_phone\"A\n" +
 	"\x12CreateUserResponse\x12+\n" +
-	"\x04user\x18\x01 \x01(\v2\x17.teamos.company.v1.UserR\x04user\"\xaf\x04\n" +
+	"\x04user\x18\x01 \x01(\v2\x17.teamos.company.v1.UserR\x04user\"\xae\x05\n" +
 	"\x11UpdateUserRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\"\n" +
 	"\n" +
@@ -7050,7 +7130,9 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\x06status\x18\t \x01(\x0e2\x1d.teamos.company.v1.UserStatusH\aR\x06status\x88\x01\x01\x12!\n" +
 	"\fposition_ids\x18\n" +
 	" \x03(\tR\vpositionIds\x12.\n" +
-	"\x13update_position_ids\x18\v \x01(\bR\x11updatePositionIdsB\r\n" +
+	"\x13update_position_ids\x18\v \x01(\bR\x11updatePositionIds\x12I\n" +
+	"\x0esection_access\x18\f \x03(\x0e2\".teamos.company.v1.EmployeeSectionR\rsectionAccess\x122\n" +
+	"\x15update_section_access\x18\r \x01(\bR\x13updateSectionAccessB\r\n" +
 	"\v_first_nameB\f\n" +
 	"\n" +
 	"_last_nameB\b\n" +
@@ -7323,7 +7405,13 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\x1cUSER_ACCESS_MODE_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15USER_ACCESS_MODE_NONE\x10\x01\x12\x1d\n" +
 	"\x19USER_ACCESS_MODE_PASSWORD\x10\x02\x12\x19\n" +
-	"\x15USER_ACCESS_MODE_LINK\x10\x03*\x7f\n" +
+	"\x15USER_ACCESS_MODE_LINK\x10\x03*\xb3\x01\n" +
+	"\x0fEmployeeSection\x12 \n" +
+	"\x1cEMPLOYEE_SECTION_UNSPECIFIED\x10\x00\x12\x1d\n" +
+	"\x19EMPLOYEE_SECTION_SCHEDULE\x10\x01\x12\x1e\n" +
+	"\x1aEMPLOYEE_SECTION_KNOWLEDGE\x10\x02\x12\x1c\n" +
+	"\x18EMPLOYEE_SECTION_ACADEMY\x10\x03\x12!\n" +
+	"\x1dEMPLOYEE_SECTION_DISTRIBUTION\x10\x04*\x7f\n" +
 	"\fInviteStatus\x12\x1d\n" +
 	"\x19INVITE_STATUS_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15INVITE_STATUS_PENDING\x10\x01\x12\x1a\n" +
@@ -7419,317 +7507,320 @@ func file_proto_company_v1_company_proto_rawDescGZIP() []byte {
 	return file_proto_company_v1_company_proto_rawDescData
 }
 
-var file_proto_company_v1_company_proto_enumTypes = make([]protoimpl.EnumInfo, 8)
+var file_proto_company_v1_company_proto_enumTypes = make([]protoimpl.EnumInfo, 9)
 var file_proto_company_v1_company_proto_msgTypes = make([]protoimpl.MessageInfo, 118)
 var file_proto_company_v1_company_proto_goTypes = []any{
 	(UserRole)(0),                            // 0: teamos.company.v1.UserRole
 	(UserStatus)(0),                          // 1: teamos.company.v1.UserStatus
 	(UserSource)(0),                          // 2: teamos.company.v1.UserSource
 	(UserAccessMode)(0),                      // 3: teamos.company.v1.UserAccessMode
-	(InviteStatus)(0),                        // 4: teamos.company.v1.InviteStatus
-	(ShiftType)(0),                           // 5: teamos.company.v1.ShiftType
-	(DistributionAlgorithm)(0),               // 6: teamos.company.v1.DistributionAlgorithm
-	(DistributionEventStatus)(0),             // 7: teamos.company.v1.DistributionEventStatus
-	(*Company)(nil),                          // 8: teamos.company.v1.Company
-	(*User)(nil),                             // 9: teamos.company.v1.User
-	(*Department)(nil),                       // 10: teamos.company.v1.Department
-	(*Position)(nil),                         // 11: teamos.company.v1.Position
-	(*Invite)(nil),                           // 12: teamos.company.v1.Invite
-	(*AuthSession)(nil),                      // 13: teamos.company.v1.AuthSession
-	(*RegisterRequest)(nil),                  // 14: teamos.company.v1.RegisterRequest
-	(*RegisterResponse)(nil),                 // 15: teamos.company.v1.RegisterResponse
-	(*LoginRequest)(nil),                     // 16: teamos.company.v1.LoginRequest
-	(*LoginResponse)(nil),                    // 17: teamos.company.v1.LoginResponse
-	(*LoginWithAccessLinkRequest)(nil),       // 18: teamos.company.v1.LoginWithAccessLinkRequest
-	(*LoginWithAccessLinkResponse)(nil),      // 19: teamos.company.v1.LoginWithAccessLinkResponse
-	(*RefreshRequest)(nil),                   // 20: teamos.company.v1.RefreshRequest
-	(*RefreshResponse)(nil),                  // 21: teamos.company.v1.RefreshResponse
-	(*LogoutRequest)(nil),                    // 22: teamos.company.v1.LogoutRequest
-	(*LogoutResponse)(nil),                   // 23: teamos.company.v1.LogoutResponse
-	(*GetInviteByTokenRequest)(nil),          // 24: teamos.company.v1.GetInviteByTokenRequest
-	(*GetInviteByTokenResponse)(nil),         // 25: teamos.company.v1.GetInviteByTokenResponse
-	(*AcceptInviteRequest)(nil),              // 26: teamos.company.v1.AcceptInviteRequest
-	(*AcceptInviteResponse)(nil),             // 27: teamos.company.v1.AcceptInviteResponse
-	(*GetCurrentUserRequest)(nil),            // 28: teamos.company.v1.GetCurrentUserRequest
-	(*GetCurrentUserResponse)(nil),           // 29: teamos.company.v1.GetCurrentUserResponse
-	(*UpdateCurrentUserRequest)(nil),         // 30: teamos.company.v1.UpdateCurrentUserRequest
-	(*UpdateCurrentUserResponse)(nil),        // 31: teamos.company.v1.UpdateCurrentUserResponse
-	(*GetCompanyRequest)(nil),                // 32: teamos.company.v1.GetCompanyRequest
-	(*GetCompanyResponse)(nil),               // 33: teamos.company.v1.GetCompanyResponse
-	(*UpdateCompanyRequest)(nil),             // 34: teamos.company.v1.UpdateCompanyRequest
-	(*UpdateCompanyResponse)(nil),            // 35: teamos.company.v1.UpdateCompanyResponse
-	(*GetDepartmentsRequest)(nil),            // 36: teamos.company.v1.GetDepartmentsRequest
-	(*GetDepartmentsResponse)(nil),           // 37: teamos.company.v1.GetDepartmentsResponse
-	(*CreateDepartmentRequest)(nil),          // 38: teamos.company.v1.CreateDepartmentRequest
-	(*CreateDepartmentResponse)(nil),         // 39: teamos.company.v1.CreateDepartmentResponse
-	(*UpdateDepartmentRequest)(nil),          // 40: teamos.company.v1.UpdateDepartmentRequest
-	(*UpdateDepartmentResponse)(nil),         // 41: teamos.company.v1.UpdateDepartmentResponse
-	(*DeleteDepartmentRequest)(nil),          // 42: teamos.company.v1.DeleteDepartmentRequest
-	(*DeleteDepartmentResponse)(nil),         // 43: teamos.company.v1.DeleteDepartmentResponse
-	(*MoveDepartmentRequest)(nil),            // 44: teamos.company.v1.MoveDepartmentRequest
-	(*MoveDepartmentResponse)(nil),           // 45: teamos.company.v1.MoveDepartmentResponse
-	(*GetPositionsRequest)(nil),              // 46: teamos.company.v1.GetPositionsRequest
-	(*GetPositionsResponse)(nil),             // 47: teamos.company.v1.GetPositionsResponse
-	(*GetPositionRequest)(nil),               // 48: teamos.company.v1.GetPositionRequest
-	(*GetPositionResponse)(nil),              // 49: teamos.company.v1.GetPositionResponse
-	(*CreatePositionRequest)(nil),            // 50: teamos.company.v1.CreatePositionRequest
-	(*CreatePositionResponse)(nil),           // 51: teamos.company.v1.CreatePositionResponse
-	(*UpdatePositionRequest)(nil),            // 52: teamos.company.v1.UpdatePositionRequest
-	(*UpdatePositionResponse)(nil),           // 53: teamos.company.v1.UpdatePositionResponse
-	(*DeletePositionRequest)(nil),            // 54: teamos.company.v1.DeletePositionRequest
-	(*DeletePositionResponse)(nil),           // 55: teamos.company.v1.DeletePositionResponse
-	(*MovePositionRequest)(nil),              // 56: teamos.company.v1.MovePositionRequest
-	(*MovePositionResponse)(nil),             // 57: teamos.company.v1.MovePositionResponse
-	(*GetUsersRequest)(nil),                  // 58: teamos.company.v1.GetUsersRequest
-	(*GetUsersResponse)(nil),                 // 59: teamos.company.v1.GetUsersResponse
-	(*GetUserRequest)(nil),                   // 60: teamos.company.v1.GetUserRequest
-	(*GetUserResponse)(nil),                  // 61: teamos.company.v1.GetUserResponse
-	(*CreateUserRequest)(nil),                // 62: teamos.company.v1.CreateUserRequest
-	(*CreateUserResponse)(nil),               // 63: teamos.company.v1.CreateUserResponse
-	(*UpdateUserRequest)(nil),                // 64: teamos.company.v1.UpdateUserRequest
-	(*UpdateUserResponse)(nil),               // 65: teamos.company.v1.UpdateUserResponse
-	(*DeleteUserRequest)(nil),                // 66: teamos.company.v1.DeleteUserRequest
-	(*DeleteUserResponse)(nil),               // 67: teamos.company.v1.DeleteUserResponse
-	(*UserAccess)(nil),                       // 68: teamos.company.v1.UserAccess
-	(*GetUserAccessRequest)(nil),             // 69: teamos.company.v1.GetUserAccessRequest
-	(*GetUserAccessResponse)(nil),            // 70: teamos.company.v1.GetUserAccessResponse
-	(*SetUserPasswordAccessRequest)(nil),     // 71: teamos.company.v1.SetUserPasswordAccessRequest
-	(*SetUserPasswordAccessResponse)(nil),    // 72: teamos.company.v1.SetUserPasswordAccessResponse
-	(*SetUserLinkAccessRequest)(nil),         // 73: teamos.company.v1.SetUserLinkAccessRequest
-	(*SetUserLinkAccessResponse)(nil),        // 74: teamos.company.v1.SetUserLinkAccessResponse
-	(*RevokeUserAccessRequest)(nil),          // 75: teamos.company.v1.RevokeUserAccessRequest
-	(*RevokeUserAccessResponse)(nil),         // 76: teamos.company.v1.RevokeUserAccessResponse
-	(*GetInvitesRequest)(nil),                // 77: teamos.company.v1.GetInvitesRequest
-	(*GetInvitesResponse)(nil),               // 78: teamos.company.v1.GetInvitesResponse
-	(*InviteUserRequest)(nil),                // 79: teamos.company.v1.InviteUserRequest
-	(*InviteUserResponse)(nil),               // 80: teamos.company.v1.InviteUserResponse
-	(*ResendInviteRequest)(nil),              // 81: teamos.company.v1.ResendInviteRequest
-	(*ResendInviteResponse)(nil),             // 82: teamos.company.v1.ResendInviteResponse
-	(*RevokeInviteRequest)(nil),              // 83: teamos.company.v1.RevokeInviteRequest
-	(*RevokeInviteResponse)(nil),             // 84: teamos.company.v1.RevokeInviteResponse
-	(*GetUsersByIdsRequest)(nil),             // 85: teamos.company.v1.GetUsersByIdsRequest
-	(*GetUsersByIdsResponse)(nil),            // 86: teamos.company.v1.GetUsersByIdsResponse
-	(*ResolveReportUserScopeRequest)(nil),    // 87: teamos.company.v1.ResolveReportUserScopeRequest
-	(*ResolveReportUserScopeResponse)(nil),   // 88: teamos.company.v1.ResolveReportUserScopeResponse
-	(*ReportUserProfile)(nil),                // 89: teamos.company.v1.ReportUserProfile
-	(*GetReportUserProfilesRequest)(nil),     // 90: teamos.company.v1.GetReportUserProfilesRequest
-	(*GetReportUserProfilesResponse)(nil),    // 91: teamos.company.v1.GetReportUserProfilesResponse
-	(*ResolvePositionUsersRequest)(nil),      // 92: teamos.company.v1.ResolvePositionUsersRequest
-	(*ResolvePositionUsersResponse)(nil),     // 93: teamos.company.v1.ResolvePositionUsersResponse
-	(*ResolveDepartmentUsersRequest)(nil),    // 94: teamos.company.v1.ResolveDepartmentUsersRequest
-	(*ResolveDepartmentUsersResponse)(nil),   // 95: teamos.company.v1.ResolveDepartmentUsersResponse
-	(*ScheduleTemplate)(nil),                 // 96: teamos.company.v1.ScheduleTemplate
-	(*UserSchedule)(nil),                     // 97: teamos.company.v1.UserSchedule
-	(*ShiftException)(nil),                   // 98: teamos.company.v1.ShiftException
-	(*GetSchedulesRequest)(nil),              // 99: teamos.company.v1.GetSchedulesRequest
-	(*GetSchedulesResponse)(nil),             // 100: teamos.company.v1.GetSchedulesResponse
-	(*SaveScheduleRequest)(nil),              // 101: teamos.company.v1.SaveScheduleRequest
-	(*SaveScheduleResponse)(nil),             // 102: teamos.company.v1.SaveScheduleResponse
-	(*UpdateUserCardRequest)(nil),            // 103: teamos.company.v1.UpdateUserCardRequest
-	(*UpdateUserCardResponse)(nil),           // 104: teamos.company.v1.UpdateUserCardResponse
-	(*GetShiftExceptionsRequest)(nil),        // 105: teamos.company.v1.GetShiftExceptionsRequest
-	(*GetShiftExceptionsResponse)(nil),       // 106: teamos.company.v1.GetShiftExceptionsResponse
-	(*SaveShiftExceptionInput)(nil),          // 107: teamos.company.v1.SaveShiftExceptionInput
-	(*SaveShiftExceptionsRequest)(nil),       // 108: teamos.company.v1.SaveShiftExceptionsRequest
-	(*SaveShiftExceptionsResponse)(nil),      // 109: teamos.company.v1.SaveShiftExceptionsResponse
-	(*DistributionGroup)(nil),                // 110: teamos.company.v1.DistributionGroup
-	(*DistributionEvent)(nil),                // 111: teamos.company.v1.DistributionEvent
-	(*GetDistributionGroupsRequest)(nil),     // 112: teamos.company.v1.GetDistributionGroupsRequest
-	(*GetDistributionGroupsResponse)(nil),    // 113: teamos.company.v1.GetDistributionGroupsResponse
-	(*CreateDistributionGroupRequest)(nil),   // 114: teamos.company.v1.CreateDistributionGroupRequest
-	(*CreateDistributionGroupResponse)(nil),  // 115: teamos.company.v1.CreateDistributionGroupResponse
-	(*UpdateDistributionGroupRequest)(nil),   // 116: teamos.company.v1.UpdateDistributionGroupRequest
-	(*UpdateDistributionGroupResponse)(nil),  // 117: teamos.company.v1.UpdateDistributionGroupResponse
-	(*DeleteDistributionGroupRequest)(nil),   // 118: teamos.company.v1.DeleteDistributionGroupRequest
-	(*DeleteDistributionGroupResponse)(nil),  // 119: teamos.company.v1.DeleteDistributionGroupResponse
-	(*GetDistributionEventsRequest)(nil),     // 120: teamos.company.v1.GetDistributionEventsRequest
-	(*GetDistributionEventsResponse)(nil),    // 121: teamos.company.v1.GetDistributionEventsResponse
-	(*SimulateDistributionDealRequest)(nil),  // 122: teamos.company.v1.SimulateDistributionDealRequest
-	(*SimulateDistributionDealResponse)(nil), // 123: teamos.company.v1.SimulateDistributionDealResponse
-	(*ResetDistributionEventsRequest)(nil),   // 124: teamos.company.v1.ResetDistributionEventsRequest
-	(*ResetDistributionEventsResponse)(nil),  // 125: teamos.company.v1.ResetDistributionEventsResponse
-	(*timestamppb.Timestamp)(nil),            // 126: google.protobuf.Timestamp
+	(EmployeeSection)(0),                     // 4: teamos.company.v1.EmployeeSection
+	(InviteStatus)(0),                        // 5: teamos.company.v1.InviteStatus
+	(ShiftType)(0),                           // 6: teamos.company.v1.ShiftType
+	(DistributionAlgorithm)(0),               // 7: teamos.company.v1.DistributionAlgorithm
+	(DistributionEventStatus)(0),             // 8: teamos.company.v1.DistributionEventStatus
+	(*Company)(nil),                          // 9: teamos.company.v1.Company
+	(*User)(nil),                             // 10: teamos.company.v1.User
+	(*Department)(nil),                       // 11: teamos.company.v1.Department
+	(*Position)(nil),                         // 12: teamos.company.v1.Position
+	(*Invite)(nil),                           // 13: teamos.company.v1.Invite
+	(*AuthSession)(nil),                      // 14: teamos.company.v1.AuthSession
+	(*RegisterRequest)(nil),                  // 15: teamos.company.v1.RegisterRequest
+	(*RegisterResponse)(nil),                 // 16: teamos.company.v1.RegisterResponse
+	(*LoginRequest)(nil),                     // 17: teamos.company.v1.LoginRequest
+	(*LoginResponse)(nil),                    // 18: teamos.company.v1.LoginResponse
+	(*LoginWithAccessLinkRequest)(nil),       // 19: teamos.company.v1.LoginWithAccessLinkRequest
+	(*LoginWithAccessLinkResponse)(nil),      // 20: teamos.company.v1.LoginWithAccessLinkResponse
+	(*RefreshRequest)(nil),                   // 21: teamos.company.v1.RefreshRequest
+	(*RefreshResponse)(nil),                  // 22: teamos.company.v1.RefreshResponse
+	(*LogoutRequest)(nil),                    // 23: teamos.company.v1.LogoutRequest
+	(*LogoutResponse)(nil),                   // 24: teamos.company.v1.LogoutResponse
+	(*GetInviteByTokenRequest)(nil),          // 25: teamos.company.v1.GetInviteByTokenRequest
+	(*GetInviteByTokenResponse)(nil),         // 26: teamos.company.v1.GetInviteByTokenResponse
+	(*AcceptInviteRequest)(nil),              // 27: teamos.company.v1.AcceptInviteRequest
+	(*AcceptInviteResponse)(nil),             // 28: teamos.company.v1.AcceptInviteResponse
+	(*GetCurrentUserRequest)(nil),            // 29: teamos.company.v1.GetCurrentUserRequest
+	(*GetCurrentUserResponse)(nil),           // 30: teamos.company.v1.GetCurrentUserResponse
+	(*UpdateCurrentUserRequest)(nil),         // 31: teamos.company.v1.UpdateCurrentUserRequest
+	(*UpdateCurrentUserResponse)(nil),        // 32: teamos.company.v1.UpdateCurrentUserResponse
+	(*GetCompanyRequest)(nil),                // 33: teamos.company.v1.GetCompanyRequest
+	(*GetCompanyResponse)(nil),               // 34: teamos.company.v1.GetCompanyResponse
+	(*UpdateCompanyRequest)(nil),             // 35: teamos.company.v1.UpdateCompanyRequest
+	(*UpdateCompanyResponse)(nil),            // 36: teamos.company.v1.UpdateCompanyResponse
+	(*GetDepartmentsRequest)(nil),            // 37: teamos.company.v1.GetDepartmentsRequest
+	(*GetDepartmentsResponse)(nil),           // 38: teamos.company.v1.GetDepartmentsResponse
+	(*CreateDepartmentRequest)(nil),          // 39: teamos.company.v1.CreateDepartmentRequest
+	(*CreateDepartmentResponse)(nil),         // 40: teamos.company.v1.CreateDepartmentResponse
+	(*UpdateDepartmentRequest)(nil),          // 41: teamos.company.v1.UpdateDepartmentRequest
+	(*UpdateDepartmentResponse)(nil),         // 42: teamos.company.v1.UpdateDepartmentResponse
+	(*DeleteDepartmentRequest)(nil),          // 43: teamos.company.v1.DeleteDepartmentRequest
+	(*DeleteDepartmentResponse)(nil),         // 44: teamos.company.v1.DeleteDepartmentResponse
+	(*MoveDepartmentRequest)(nil),            // 45: teamos.company.v1.MoveDepartmentRequest
+	(*MoveDepartmentResponse)(nil),           // 46: teamos.company.v1.MoveDepartmentResponse
+	(*GetPositionsRequest)(nil),              // 47: teamos.company.v1.GetPositionsRequest
+	(*GetPositionsResponse)(nil),             // 48: teamos.company.v1.GetPositionsResponse
+	(*GetPositionRequest)(nil),               // 49: teamos.company.v1.GetPositionRequest
+	(*GetPositionResponse)(nil),              // 50: teamos.company.v1.GetPositionResponse
+	(*CreatePositionRequest)(nil),            // 51: teamos.company.v1.CreatePositionRequest
+	(*CreatePositionResponse)(nil),           // 52: teamos.company.v1.CreatePositionResponse
+	(*UpdatePositionRequest)(nil),            // 53: teamos.company.v1.UpdatePositionRequest
+	(*UpdatePositionResponse)(nil),           // 54: teamos.company.v1.UpdatePositionResponse
+	(*DeletePositionRequest)(nil),            // 55: teamos.company.v1.DeletePositionRequest
+	(*DeletePositionResponse)(nil),           // 56: teamos.company.v1.DeletePositionResponse
+	(*MovePositionRequest)(nil),              // 57: teamos.company.v1.MovePositionRequest
+	(*MovePositionResponse)(nil),             // 58: teamos.company.v1.MovePositionResponse
+	(*GetUsersRequest)(nil),                  // 59: teamos.company.v1.GetUsersRequest
+	(*GetUsersResponse)(nil),                 // 60: teamos.company.v1.GetUsersResponse
+	(*GetUserRequest)(nil),                   // 61: teamos.company.v1.GetUserRequest
+	(*GetUserResponse)(nil),                  // 62: teamos.company.v1.GetUserResponse
+	(*CreateUserRequest)(nil),                // 63: teamos.company.v1.CreateUserRequest
+	(*CreateUserResponse)(nil),               // 64: teamos.company.v1.CreateUserResponse
+	(*UpdateUserRequest)(nil),                // 65: teamos.company.v1.UpdateUserRequest
+	(*UpdateUserResponse)(nil),               // 66: teamos.company.v1.UpdateUserResponse
+	(*DeleteUserRequest)(nil),                // 67: teamos.company.v1.DeleteUserRequest
+	(*DeleteUserResponse)(nil),               // 68: teamos.company.v1.DeleteUserResponse
+	(*UserAccess)(nil),                       // 69: teamos.company.v1.UserAccess
+	(*GetUserAccessRequest)(nil),             // 70: teamos.company.v1.GetUserAccessRequest
+	(*GetUserAccessResponse)(nil),            // 71: teamos.company.v1.GetUserAccessResponse
+	(*SetUserPasswordAccessRequest)(nil),     // 72: teamos.company.v1.SetUserPasswordAccessRequest
+	(*SetUserPasswordAccessResponse)(nil),    // 73: teamos.company.v1.SetUserPasswordAccessResponse
+	(*SetUserLinkAccessRequest)(nil),         // 74: teamos.company.v1.SetUserLinkAccessRequest
+	(*SetUserLinkAccessResponse)(nil),        // 75: teamos.company.v1.SetUserLinkAccessResponse
+	(*RevokeUserAccessRequest)(nil),          // 76: teamos.company.v1.RevokeUserAccessRequest
+	(*RevokeUserAccessResponse)(nil),         // 77: teamos.company.v1.RevokeUserAccessResponse
+	(*GetInvitesRequest)(nil),                // 78: teamos.company.v1.GetInvitesRequest
+	(*GetInvitesResponse)(nil),               // 79: teamos.company.v1.GetInvitesResponse
+	(*InviteUserRequest)(nil),                // 80: teamos.company.v1.InviteUserRequest
+	(*InviteUserResponse)(nil),               // 81: teamos.company.v1.InviteUserResponse
+	(*ResendInviteRequest)(nil),              // 82: teamos.company.v1.ResendInviteRequest
+	(*ResendInviteResponse)(nil),             // 83: teamos.company.v1.ResendInviteResponse
+	(*RevokeInviteRequest)(nil),              // 84: teamos.company.v1.RevokeInviteRequest
+	(*RevokeInviteResponse)(nil),             // 85: teamos.company.v1.RevokeInviteResponse
+	(*GetUsersByIdsRequest)(nil),             // 86: teamos.company.v1.GetUsersByIdsRequest
+	(*GetUsersByIdsResponse)(nil),            // 87: teamos.company.v1.GetUsersByIdsResponse
+	(*ResolveReportUserScopeRequest)(nil),    // 88: teamos.company.v1.ResolveReportUserScopeRequest
+	(*ResolveReportUserScopeResponse)(nil),   // 89: teamos.company.v1.ResolveReportUserScopeResponse
+	(*ReportUserProfile)(nil),                // 90: teamos.company.v1.ReportUserProfile
+	(*GetReportUserProfilesRequest)(nil),     // 91: teamos.company.v1.GetReportUserProfilesRequest
+	(*GetReportUserProfilesResponse)(nil),    // 92: teamos.company.v1.GetReportUserProfilesResponse
+	(*ResolvePositionUsersRequest)(nil),      // 93: teamos.company.v1.ResolvePositionUsersRequest
+	(*ResolvePositionUsersResponse)(nil),     // 94: teamos.company.v1.ResolvePositionUsersResponse
+	(*ResolveDepartmentUsersRequest)(nil),    // 95: teamos.company.v1.ResolveDepartmentUsersRequest
+	(*ResolveDepartmentUsersResponse)(nil),   // 96: teamos.company.v1.ResolveDepartmentUsersResponse
+	(*ScheduleTemplate)(nil),                 // 97: teamos.company.v1.ScheduleTemplate
+	(*UserSchedule)(nil),                     // 98: teamos.company.v1.UserSchedule
+	(*ShiftException)(nil),                   // 99: teamos.company.v1.ShiftException
+	(*GetSchedulesRequest)(nil),              // 100: teamos.company.v1.GetSchedulesRequest
+	(*GetSchedulesResponse)(nil),             // 101: teamos.company.v1.GetSchedulesResponse
+	(*SaveScheduleRequest)(nil),              // 102: teamos.company.v1.SaveScheduleRequest
+	(*SaveScheduleResponse)(nil),             // 103: teamos.company.v1.SaveScheduleResponse
+	(*UpdateUserCardRequest)(nil),            // 104: teamos.company.v1.UpdateUserCardRequest
+	(*UpdateUserCardResponse)(nil),           // 105: teamos.company.v1.UpdateUserCardResponse
+	(*GetShiftExceptionsRequest)(nil),        // 106: teamos.company.v1.GetShiftExceptionsRequest
+	(*GetShiftExceptionsResponse)(nil),       // 107: teamos.company.v1.GetShiftExceptionsResponse
+	(*SaveShiftExceptionInput)(nil),          // 108: teamos.company.v1.SaveShiftExceptionInput
+	(*SaveShiftExceptionsRequest)(nil),       // 109: teamos.company.v1.SaveShiftExceptionsRequest
+	(*SaveShiftExceptionsResponse)(nil),      // 110: teamos.company.v1.SaveShiftExceptionsResponse
+	(*DistributionGroup)(nil),                // 111: teamos.company.v1.DistributionGroup
+	(*DistributionEvent)(nil),                // 112: teamos.company.v1.DistributionEvent
+	(*GetDistributionGroupsRequest)(nil),     // 113: teamos.company.v1.GetDistributionGroupsRequest
+	(*GetDistributionGroupsResponse)(nil),    // 114: teamos.company.v1.GetDistributionGroupsResponse
+	(*CreateDistributionGroupRequest)(nil),   // 115: teamos.company.v1.CreateDistributionGroupRequest
+	(*CreateDistributionGroupResponse)(nil),  // 116: teamos.company.v1.CreateDistributionGroupResponse
+	(*UpdateDistributionGroupRequest)(nil),   // 117: teamos.company.v1.UpdateDistributionGroupRequest
+	(*UpdateDistributionGroupResponse)(nil),  // 118: teamos.company.v1.UpdateDistributionGroupResponse
+	(*DeleteDistributionGroupRequest)(nil),   // 119: teamos.company.v1.DeleteDistributionGroupRequest
+	(*DeleteDistributionGroupResponse)(nil),  // 120: teamos.company.v1.DeleteDistributionGroupResponse
+	(*GetDistributionEventsRequest)(nil),     // 121: teamos.company.v1.GetDistributionEventsRequest
+	(*GetDistributionEventsResponse)(nil),    // 122: teamos.company.v1.GetDistributionEventsResponse
+	(*SimulateDistributionDealRequest)(nil),  // 123: teamos.company.v1.SimulateDistributionDealRequest
+	(*SimulateDistributionDealResponse)(nil), // 124: teamos.company.v1.SimulateDistributionDealResponse
+	(*ResetDistributionEventsRequest)(nil),   // 125: teamos.company.v1.ResetDistributionEventsRequest
+	(*ResetDistributionEventsResponse)(nil),  // 126: teamos.company.v1.ResetDistributionEventsResponse
+	(*timestamppb.Timestamp)(nil),            // 127: google.protobuf.Timestamp
 }
 var file_proto_company_v1_company_proto_depIdxs = []int32{
-	126, // 0: teamos.company.v1.Company.created_at:type_name -> google.protobuf.Timestamp
+	127, // 0: teamos.company.v1.Company.created_at:type_name -> google.protobuf.Timestamp
 	0,   // 1: teamos.company.v1.User.role:type_name -> teamos.company.v1.UserRole
 	1,   // 2: teamos.company.v1.User.status:type_name -> teamos.company.v1.UserStatus
-	126, // 3: teamos.company.v1.User.created_at:type_name -> google.protobuf.Timestamp
+	127, // 3: teamos.company.v1.User.created_at:type_name -> google.protobuf.Timestamp
 	2,   // 4: teamos.company.v1.User.source:type_name -> teamos.company.v1.UserSource
 	3,   // 5: teamos.company.v1.User.access_mode:type_name -> teamos.company.v1.UserAccessMode
-	0,   // 6: teamos.company.v1.Invite.role:type_name -> teamos.company.v1.UserRole
-	4,   // 7: teamos.company.v1.Invite.status:type_name -> teamos.company.v1.InviteStatus
-	126, // 8: teamos.company.v1.Invite.created_at:type_name -> google.protobuf.Timestamp
-	126, // 9: teamos.company.v1.AuthSession.refresh_expires_at:type_name -> google.protobuf.Timestamp
-	9,   // 10: teamos.company.v1.AuthSession.user:type_name -> teamos.company.v1.User
-	13,  // 11: teamos.company.v1.RegisterResponse.session:type_name -> teamos.company.v1.AuthSession
-	13,  // 12: teamos.company.v1.LoginResponse.session:type_name -> teamos.company.v1.AuthSession
-	13,  // 13: teamos.company.v1.LoginWithAccessLinkResponse.session:type_name -> teamos.company.v1.AuthSession
-	13,  // 14: teamos.company.v1.RefreshResponse.session:type_name -> teamos.company.v1.AuthSession
-	12,  // 15: teamos.company.v1.GetInviteByTokenResponse.invite:type_name -> teamos.company.v1.Invite
-	13,  // 16: teamos.company.v1.AcceptInviteResponse.session:type_name -> teamos.company.v1.AuthSession
-	9,   // 17: teamos.company.v1.GetCurrentUserResponse.user:type_name -> teamos.company.v1.User
-	9,   // 18: teamos.company.v1.UpdateCurrentUserResponse.user:type_name -> teamos.company.v1.User
-	8,   // 19: teamos.company.v1.GetCompanyResponse.company:type_name -> teamos.company.v1.Company
-	8,   // 20: teamos.company.v1.UpdateCompanyResponse.company:type_name -> teamos.company.v1.Company
-	10,  // 21: teamos.company.v1.GetDepartmentsResponse.departments:type_name -> teamos.company.v1.Department
-	10,  // 22: teamos.company.v1.CreateDepartmentResponse.department:type_name -> teamos.company.v1.Department
-	10,  // 23: teamos.company.v1.UpdateDepartmentResponse.department:type_name -> teamos.company.v1.Department
-	10,  // 24: teamos.company.v1.MoveDepartmentResponse.department:type_name -> teamos.company.v1.Department
-	11,  // 25: teamos.company.v1.GetPositionsResponse.positions:type_name -> teamos.company.v1.Position
-	11,  // 26: teamos.company.v1.GetPositionResponse.position:type_name -> teamos.company.v1.Position
-	11,  // 27: teamos.company.v1.CreatePositionResponse.position:type_name -> teamos.company.v1.Position
-	11,  // 28: teamos.company.v1.UpdatePositionResponse.position:type_name -> teamos.company.v1.Position
-	11,  // 29: teamos.company.v1.MovePositionResponse.position:type_name -> teamos.company.v1.Position
-	9,   // 30: teamos.company.v1.GetUsersResponse.users:type_name -> teamos.company.v1.User
-	9,   // 31: teamos.company.v1.GetUserResponse.user:type_name -> teamos.company.v1.User
-	0,   // 32: teamos.company.v1.CreateUserRequest.role:type_name -> teamos.company.v1.UserRole
-	9,   // 33: teamos.company.v1.CreateUserResponse.user:type_name -> teamos.company.v1.User
-	0,   // 34: teamos.company.v1.UpdateUserRequest.role:type_name -> teamos.company.v1.UserRole
-	1,   // 35: teamos.company.v1.UpdateUserRequest.status:type_name -> teamos.company.v1.UserStatus
-	9,   // 36: teamos.company.v1.UpdateUserResponse.user:type_name -> teamos.company.v1.User
-	3,   // 37: teamos.company.v1.UserAccess.mode:type_name -> teamos.company.v1.UserAccessMode
-	126, // 38: teamos.company.v1.UserAccess.link_created_at:type_name -> google.protobuf.Timestamp
-	68,  // 39: teamos.company.v1.GetUserAccessResponse.access:type_name -> teamos.company.v1.UserAccess
-	126, // 40: teamos.company.v1.SetUserLinkAccessResponse.created_at:type_name -> google.protobuf.Timestamp
-	12,  // 41: teamos.company.v1.GetInvitesResponse.invites:type_name -> teamos.company.v1.Invite
-	0,   // 42: teamos.company.v1.InviteUserRequest.role:type_name -> teamos.company.v1.UserRole
-	12,  // 43: teamos.company.v1.InviteUserResponse.invite:type_name -> teamos.company.v1.Invite
-	12,  // 44: teamos.company.v1.ResendInviteResponse.invite:type_name -> teamos.company.v1.Invite
-	9,   // 45: teamos.company.v1.GetUsersByIdsResponse.users:type_name -> teamos.company.v1.User
-	89,  // 46: teamos.company.v1.GetReportUserProfilesResponse.profiles:type_name -> teamos.company.v1.ReportUserProfile
-	96,  // 47: teamos.company.v1.UserSchedule.template:type_name -> teamos.company.v1.ScheduleTemplate
-	5,   // 48: teamos.company.v1.ShiftException.type:type_name -> teamos.company.v1.ShiftType
-	97,  // 49: teamos.company.v1.GetSchedulesResponse.schedules:type_name -> teamos.company.v1.UserSchedule
-	96,  // 50: teamos.company.v1.SaveScheduleRequest.template:type_name -> teamos.company.v1.ScheduleTemplate
-	97,  // 51: teamos.company.v1.SaveScheduleResponse.schedule:type_name -> teamos.company.v1.UserSchedule
-	64,  // 52: teamos.company.v1.UpdateUserCardRequest.user:type_name -> teamos.company.v1.UpdateUserRequest
-	96,  // 53: teamos.company.v1.UpdateUserCardRequest.template:type_name -> teamos.company.v1.ScheduleTemplate
-	9,   // 54: teamos.company.v1.UpdateUserCardResponse.user:type_name -> teamos.company.v1.User
-	97,  // 55: teamos.company.v1.UpdateUserCardResponse.schedule:type_name -> teamos.company.v1.UserSchedule
-	98,  // 56: teamos.company.v1.GetShiftExceptionsResponse.exceptions:type_name -> teamos.company.v1.ShiftException
-	5,   // 57: teamos.company.v1.SaveShiftExceptionInput.type:type_name -> teamos.company.v1.ShiftType
-	107, // 58: teamos.company.v1.SaveShiftExceptionsRequest.exceptions:type_name -> teamos.company.v1.SaveShiftExceptionInput
-	98,  // 59: teamos.company.v1.SaveShiftExceptionsResponse.exceptions:type_name -> teamos.company.v1.ShiftException
-	6,   // 60: teamos.company.v1.DistributionGroup.algorithm:type_name -> teamos.company.v1.DistributionAlgorithm
-	126, // 61: teamos.company.v1.DistributionGroup.created_at:type_name -> google.protobuf.Timestamp
-	7,   // 62: teamos.company.v1.DistributionEvent.status:type_name -> teamos.company.v1.DistributionEventStatus
-	126, // 63: teamos.company.v1.DistributionEvent.created_at:type_name -> google.protobuf.Timestamp
-	110, // 64: teamos.company.v1.GetDistributionGroupsResponse.groups:type_name -> teamos.company.v1.DistributionGroup
-	110, // 65: teamos.company.v1.CreateDistributionGroupResponse.group:type_name -> teamos.company.v1.DistributionGroup
-	6,   // 66: teamos.company.v1.UpdateDistributionGroupRequest.algorithm:type_name -> teamos.company.v1.DistributionAlgorithm
-	110, // 67: teamos.company.v1.UpdateDistributionGroupResponse.group:type_name -> teamos.company.v1.DistributionGroup
-	111, // 68: teamos.company.v1.GetDistributionEventsResponse.events:type_name -> teamos.company.v1.DistributionEvent
-	111, // 69: teamos.company.v1.SimulateDistributionDealResponse.event:type_name -> teamos.company.v1.DistributionEvent
-	14,  // 70: teamos.company.v1.CompanyService.Register:input_type -> teamos.company.v1.RegisterRequest
-	16,  // 71: teamos.company.v1.CompanyService.Login:input_type -> teamos.company.v1.LoginRequest
-	18,  // 72: teamos.company.v1.CompanyService.LoginWithAccessLink:input_type -> teamos.company.v1.LoginWithAccessLinkRequest
-	20,  // 73: teamos.company.v1.CompanyService.Refresh:input_type -> teamos.company.v1.RefreshRequest
-	22,  // 74: teamos.company.v1.CompanyService.Logout:input_type -> teamos.company.v1.LogoutRequest
-	24,  // 75: teamos.company.v1.CompanyService.GetInviteByToken:input_type -> teamos.company.v1.GetInviteByTokenRequest
-	26,  // 76: teamos.company.v1.CompanyService.AcceptInvite:input_type -> teamos.company.v1.AcceptInviteRequest
-	28,  // 77: teamos.company.v1.CompanyService.GetCurrentUser:input_type -> teamos.company.v1.GetCurrentUserRequest
-	30,  // 78: teamos.company.v1.CompanyService.UpdateCurrentUser:input_type -> teamos.company.v1.UpdateCurrentUserRequest
-	32,  // 79: teamos.company.v1.CompanyService.GetCompany:input_type -> teamos.company.v1.GetCompanyRequest
-	34,  // 80: teamos.company.v1.CompanyService.UpdateCompany:input_type -> teamos.company.v1.UpdateCompanyRequest
-	36,  // 81: teamos.company.v1.CompanyService.GetDepartments:input_type -> teamos.company.v1.GetDepartmentsRequest
-	38,  // 82: teamos.company.v1.CompanyService.CreateDepartment:input_type -> teamos.company.v1.CreateDepartmentRequest
-	40,  // 83: teamos.company.v1.CompanyService.UpdateDepartment:input_type -> teamos.company.v1.UpdateDepartmentRequest
-	42,  // 84: teamos.company.v1.CompanyService.DeleteDepartment:input_type -> teamos.company.v1.DeleteDepartmentRequest
-	44,  // 85: teamos.company.v1.CompanyService.MoveDepartment:input_type -> teamos.company.v1.MoveDepartmentRequest
-	46,  // 86: teamos.company.v1.CompanyService.GetPositions:input_type -> teamos.company.v1.GetPositionsRequest
-	48,  // 87: teamos.company.v1.CompanyService.GetPosition:input_type -> teamos.company.v1.GetPositionRequest
-	50,  // 88: teamos.company.v1.CompanyService.CreatePosition:input_type -> teamos.company.v1.CreatePositionRequest
-	52,  // 89: teamos.company.v1.CompanyService.UpdatePosition:input_type -> teamos.company.v1.UpdatePositionRequest
-	54,  // 90: teamos.company.v1.CompanyService.DeletePosition:input_type -> teamos.company.v1.DeletePositionRequest
-	56,  // 91: teamos.company.v1.CompanyService.MovePosition:input_type -> teamos.company.v1.MovePositionRequest
-	58,  // 92: teamos.company.v1.CompanyService.GetUsers:input_type -> teamos.company.v1.GetUsersRequest
-	60,  // 93: teamos.company.v1.CompanyService.GetUser:input_type -> teamos.company.v1.GetUserRequest
-	62,  // 94: teamos.company.v1.CompanyService.CreateUser:input_type -> teamos.company.v1.CreateUserRequest
-	64,  // 95: teamos.company.v1.CompanyService.UpdateUser:input_type -> teamos.company.v1.UpdateUserRequest
-	103, // 96: teamos.company.v1.CompanyService.UpdateUserCard:input_type -> teamos.company.v1.UpdateUserCardRequest
-	66,  // 97: teamos.company.v1.CompanyService.DeleteUser:input_type -> teamos.company.v1.DeleteUserRequest
-	69,  // 98: teamos.company.v1.CompanyService.GetUserAccess:input_type -> teamos.company.v1.GetUserAccessRequest
-	71,  // 99: teamos.company.v1.CompanyService.SetUserPasswordAccess:input_type -> teamos.company.v1.SetUserPasswordAccessRequest
-	73,  // 100: teamos.company.v1.CompanyService.SetUserLinkAccess:input_type -> teamos.company.v1.SetUserLinkAccessRequest
-	75,  // 101: teamos.company.v1.CompanyService.RevokeUserAccess:input_type -> teamos.company.v1.RevokeUserAccessRequest
-	77,  // 102: teamos.company.v1.CompanyService.GetInvites:input_type -> teamos.company.v1.GetInvitesRequest
-	79,  // 103: teamos.company.v1.CompanyService.InviteUser:input_type -> teamos.company.v1.InviteUserRequest
-	81,  // 104: teamos.company.v1.CompanyService.ResendInvite:input_type -> teamos.company.v1.ResendInviteRequest
-	83,  // 105: teamos.company.v1.CompanyService.RevokeInvite:input_type -> teamos.company.v1.RevokeInviteRequest
-	85,  // 106: teamos.company.v1.CompanyService.GetUsersByIds:input_type -> teamos.company.v1.GetUsersByIdsRequest
-	87,  // 107: teamos.company.v1.CompanyService.ResolveReportUserScope:input_type -> teamos.company.v1.ResolveReportUserScopeRequest
-	90,  // 108: teamos.company.v1.CompanyService.GetReportUserProfiles:input_type -> teamos.company.v1.GetReportUserProfilesRequest
-	92,  // 109: teamos.company.v1.CompanyService.ResolvePositionUsers:input_type -> teamos.company.v1.ResolvePositionUsersRequest
-	94,  // 110: teamos.company.v1.CompanyService.ResolveDepartmentUsers:input_type -> teamos.company.v1.ResolveDepartmentUsersRequest
-	99,  // 111: teamos.company.v1.CompanyService.GetSchedules:input_type -> teamos.company.v1.GetSchedulesRequest
-	101, // 112: teamos.company.v1.CompanyService.SaveSchedule:input_type -> teamos.company.v1.SaveScheduleRequest
-	105, // 113: teamos.company.v1.CompanyService.GetShiftExceptions:input_type -> teamos.company.v1.GetShiftExceptionsRequest
-	108, // 114: teamos.company.v1.CompanyService.SaveShiftExceptions:input_type -> teamos.company.v1.SaveShiftExceptionsRequest
-	112, // 115: teamos.company.v1.CompanyService.GetDistributionGroups:input_type -> teamos.company.v1.GetDistributionGroupsRequest
-	114, // 116: teamos.company.v1.CompanyService.CreateDistributionGroup:input_type -> teamos.company.v1.CreateDistributionGroupRequest
-	116, // 117: teamos.company.v1.CompanyService.UpdateDistributionGroup:input_type -> teamos.company.v1.UpdateDistributionGroupRequest
-	118, // 118: teamos.company.v1.CompanyService.DeleteDistributionGroup:input_type -> teamos.company.v1.DeleteDistributionGroupRequest
-	120, // 119: teamos.company.v1.CompanyService.GetDistributionEvents:input_type -> teamos.company.v1.GetDistributionEventsRequest
-	122, // 120: teamos.company.v1.CompanyService.SimulateDistributionDeal:input_type -> teamos.company.v1.SimulateDistributionDealRequest
-	124, // 121: teamos.company.v1.CompanyService.ResetDistributionEvents:input_type -> teamos.company.v1.ResetDistributionEventsRequest
-	15,  // 122: teamos.company.v1.CompanyService.Register:output_type -> teamos.company.v1.RegisterResponse
-	17,  // 123: teamos.company.v1.CompanyService.Login:output_type -> teamos.company.v1.LoginResponse
-	19,  // 124: teamos.company.v1.CompanyService.LoginWithAccessLink:output_type -> teamos.company.v1.LoginWithAccessLinkResponse
-	21,  // 125: teamos.company.v1.CompanyService.Refresh:output_type -> teamos.company.v1.RefreshResponse
-	23,  // 126: teamos.company.v1.CompanyService.Logout:output_type -> teamos.company.v1.LogoutResponse
-	25,  // 127: teamos.company.v1.CompanyService.GetInviteByToken:output_type -> teamos.company.v1.GetInviteByTokenResponse
-	27,  // 128: teamos.company.v1.CompanyService.AcceptInvite:output_type -> teamos.company.v1.AcceptInviteResponse
-	29,  // 129: teamos.company.v1.CompanyService.GetCurrentUser:output_type -> teamos.company.v1.GetCurrentUserResponse
-	31,  // 130: teamos.company.v1.CompanyService.UpdateCurrentUser:output_type -> teamos.company.v1.UpdateCurrentUserResponse
-	33,  // 131: teamos.company.v1.CompanyService.GetCompany:output_type -> teamos.company.v1.GetCompanyResponse
-	35,  // 132: teamos.company.v1.CompanyService.UpdateCompany:output_type -> teamos.company.v1.UpdateCompanyResponse
-	37,  // 133: teamos.company.v1.CompanyService.GetDepartments:output_type -> teamos.company.v1.GetDepartmentsResponse
-	39,  // 134: teamos.company.v1.CompanyService.CreateDepartment:output_type -> teamos.company.v1.CreateDepartmentResponse
-	41,  // 135: teamos.company.v1.CompanyService.UpdateDepartment:output_type -> teamos.company.v1.UpdateDepartmentResponse
-	43,  // 136: teamos.company.v1.CompanyService.DeleteDepartment:output_type -> teamos.company.v1.DeleteDepartmentResponse
-	45,  // 137: teamos.company.v1.CompanyService.MoveDepartment:output_type -> teamos.company.v1.MoveDepartmentResponse
-	47,  // 138: teamos.company.v1.CompanyService.GetPositions:output_type -> teamos.company.v1.GetPositionsResponse
-	49,  // 139: teamos.company.v1.CompanyService.GetPosition:output_type -> teamos.company.v1.GetPositionResponse
-	51,  // 140: teamos.company.v1.CompanyService.CreatePosition:output_type -> teamos.company.v1.CreatePositionResponse
-	53,  // 141: teamos.company.v1.CompanyService.UpdatePosition:output_type -> teamos.company.v1.UpdatePositionResponse
-	55,  // 142: teamos.company.v1.CompanyService.DeletePosition:output_type -> teamos.company.v1.DeletePositionResponse
-	57,  // 143: teamos.company.v1.CompanyService.MovePosition:output_type -> teamos.company.v1.MovePositionResponse
-	59,  // 144: teamos.company.v1.CompanyService.GetUsers:output_type -> teamos.company.v1.GetUsersResponse
-	61,  // 145: teamos.company.v1.CompanyService.GetUser:output_type -> teamos.company.v1.GetUserResponse
-	63,  // 146: teamos.company.v1.CompanyService.CreateUser:output_type -> teamos.company.v1.CreateUserResponse
-	65,  // 147: teamos.company.v1.CompanyService.UpdateUser:output_type -> teamos.company.v1.UpdateUserResponse
-	104, // 148: teamos.company.v1.CompanyService.UpdateUserCard:output_type -> teamos.company.v1.UpdateUserCardResponse
-	67,  // 149: teamos.company.v1.CompanyService.DeleteUser:output_type -> teamos.company.v1.DeleteUserResponse
-	70,  // 150: teamos.company.v1.CompanyService.GetUserAccess:output_type -> teamos.company.v1.GetUserAccessResponse
-	72,  // 151: teamos.company.v1.CompanyService.SetUserPasswordAccess:output_type -> teamos.company.v1.SetUserPasswordAccessResponse
-	74,  // 152: teamos.company.v1.CompanyService.SetUserLinkAccess:output_type -> teamos.company.v1.SetUserLinkAccessResponse
-	76,  // 153: teamos.company.v1.CompanyService.RevokeUserAccess:output_type -> teamos.company.v1.RevokeUserAccessResponse
-	78,  // 154: teamos.company.v1.CompanyService.GetInvites:output_type -> teamos.company.v1.GetInvitesResponse
-	80,  // 155: teamos.company.v1.CompanyService.InviteUser:output_type -> teamos.company.v1.InviteUserResponse
-	82,  // 156: teamos.company.v1.CompanyService.ResendInvite:output_type -> teamos.company.v1.ResendInviteResponse
-	84,  // 157: teamos.company.v1.CompanyService.RevokeInvite:output_type -> teamos.company.v1.RevokeInviteResponse
-	86,  // 158: teamos.company.v1.CompanyService.GetUsersByIds:output_type -> teamos.company.v1.GetUsersByIdsResponse
-	88,  // 159: teamos.company.v1.CompanyService.ResolveReportUserScope:output_type -> teamos.company.v1.ResolveReportUserScopeResponse
-	91,  // 160: teamos.company.v1.CompanyService.GetReportUserProfiles:output_type -> teamos.company.v1.GetReportUserProfilesResponse
-	93,  // 161: teamos.company.v1.CompanyService.ResolvePositionUsers:output_type -> teamos.company.v1.ResolvePositionUsersResponse
-	95,  // 162: teamos.company.v1.CompanyService.ResolveDepartmentUsers:output_type -> teamos.company.v1.ResolveDepartmentUsersResponse
-	100, // 163: teamos.company.v1.CompanyService.GetSchedules:output_type -> teamos.company.v1.GetSchedulesResponse
-	102, // 164: teamos.company.v1.CompanyService.SaveSchedule:output_type -> teamos.company.v1.SaveScheduleResponse
-	106, // 165: teamos.company.v1.CompanyService.GetShiftExceptions:output_type -> teamos.company.v1.GetShiftExceptionsResponse
-	109, // 166: teamos.company.v1.CompanyService.SaveShiftExceptions:output_type -> teamos.company.v1.SaveShiftExceptionsResponse
-	113, // 167: teamos.company.v1.CompanyService.GetDistributionGroups:output_type -> teamos.company.v1.GetDistributionGroupsResponse
-	115, // 168: teamos.company.v1.CompanyService.CreateDistributionGroup:output_type -> teamos.company.v1.CreateDistributionGroupResponse
-	117, // 169: teamos.company.v1.CompanyService.UpdateDistributionGroup:output_type -> teamos.company.v1.UpdateDistributionGroupResponse
-	119, // 170: teamos.company.v1.CompanyService.DeleteDistributionGroup:output_type -> teamos.company.v1.DeleteDistributionGroupResponse
-	121, // 171: teamos.company.v1.CompanyService.GetDistributionEvents:output_type -> teamos.company.v1.GetDistributionEventsResponse
-	123, // 172: teamos.company.v1.CompanyService.SimulateDistributionDeal:output_type -> teamos.company.v1.SimulateDistributionDealResponse
-	125, // 173: teamos.company.v1.CompanyService.ResetDistributionEvents:output_type -> teamos.company.v1.ResetDistributionEventsResponse
-	122, // [122:174] is the sub-list for method output_type
-	70,  // [70:122] is the sub-list for method input_type
-	70,  // [70:70] is the sub-list for extension type_name
-	70,  // [70:70] is the sub-list for extension extendee
-	0,   // [0:70] is the sub-list for field type_name
+	4,   // 6: teamos.company.v1.User.section_access:type_name -> teamos.company.v1.EmployeeSection
+	0,   // 7: teamos.company.v1.Invite.role:type_name -> teamos.company.v1.UserRole
+	5,   // 8: teamos.company.v1.Invite.status:type_name -> teamos.company.v1.InviteStatus
+	127, // 9: teamos.company.v1.Invite.created_at:type_name -> google.protobuf.Timestamp
+	127, // 10: teamos.company.v1.AuthSession.refresh_expires_at:type_name -> google.protobuf.Timestamp
+	10,  // 11: teamos.company.v1.AuthSession.user:type_name -> teamos.company.v1.User
+	14,  // 12: teamos.company.v1.RegisterResponse.session:type_name -> teamos.company.v1.AuthSession
+	14,  // 13: teamos.company.v1.LoginResponse.session:type_name -> teamos.company.v1.AuthSession
+	14,  // 14: teamos.company.v1.LoginWithAccessLinkResponse.session:type_name -> teamos.company.v1.AuthSession
+	14,  // 15: teamos.company.v1.RefreshResponse.session:type_name -> teamos.company.v1.AuthSession
+	13,  // 16: teamos.company.v1.GetInviteByTokenResponse.invite:type_name -> teamos.company.v1.Invite
+	14,  // 17: teamos.company.v1.AcceptInviteResponse.session:type_name -> teamos.company.v1.AuthSession
+	10,  // 18: teamos.company.v1.GetCurrentUserResponse.user:type_name -> teamos.company.v1.User
+	10,  // 19: teamos.company.v1.UpdateCurrentUserResponse.user:type_name -> teamos.company.v1.User
+	9,   // 20: teamos.company.v1.GetCompanyResponse.company:type_name -> teamos.company.v1.Company
+	9,   // 21: teamos.company.v1.UpdateCompanyResponse.company:type_name -> teamos.company.v1.Company
+	11,  // 22: teamos.company.v1.GetDepartmentsResponse.departments:type_name -> teamos.company.v1.Department
+	11,  // 23: teamos.company.v1.CreateDepartmentResponse.department:type_name -> teamos.company.v1.Department
+	11,  // 24: teamos.company.v1.UpdateDepartmentResponse.department:type_name -> teamos.company.v1.Department
+	11,  // 25: teamos.company.v1.MoveDepartmentResponse.department:type_name -> teamos.company.v1.Department
+	12,  // 26: teamos.company.v1.GetPositionsResponse.positions:type_name -> teamos.company.v1.Position
+	12,  // 27: teamos.company.v1.GetPositionResponse.position:type_name -> teamos.company.v1.Position
+	12,  // 28: teamos.company.v1.CreatePositionResponse.position:type_name -> teamos.company.v1.Position
+	12,  // 29: teamos.company.v1.UpdatePositionResponse.position:type_name -> teamos.company.v1.Position
+	12,  // 30: teamos.company.v1.MovePositionResponse.position:type_name -> teamos.company.v1.Position
+	10,  // 31: teamos.company.v1.GetUsersResponse.users:type_name -> teamos.company.v1.User
+	10,  // 32: teamos.company.v1.GetUserResponse.user:type_name -> teamos.company.v1.User
+	0,   // 33: teamos.company.v1.CreateUserRequest.role:type_name -> teamos.company.v1.UserRole
+	10,  // 34: teamos.company.v1.CreateUserResponse.user:type_name -> teamos.company.v1.User
+	0,   // 35: teamos.company.v1.UpdateUserRequest.role:type_name -> teamos.company.v1.UserRole
+	1,   // 36: teamos.company.v1.UpdateUserRequest.status:type_name -> teamos.company.v1.UserStatus
+	4,   // 37: teamos.company.v1.UpdateUserRequest.section_access:type_name -> teamos.company.v1.EmployeeSection
+	10,  // 38: teamos.company.v1.UpdateUserResponse.user:type_name -> teamos.company.v1.User
+	3,   // 39: teamos.company.v1.UserAccess.mode:type_name -> teamos.company.v1.UserAccessMode
+	127, // 40: teamos.company.v1.UserAccess.link_created_at:type_name -> google.protobuf.Timestamp
+	69,  // 41: teamos.company.v1.GetUserAccessResponse.access:type_name -> teamos.company.v1.UserAccess
+	127, // 42: teamos.company.v1.SetUserLinkAccessResponse.created_at:type_name -> google.protobuf.Timestamp
+	13,  // 43: teamos.company.v1.GetInvitesResponse.invites:type_name -> teamos.company.v1.Invite
+	0,   // 44: teamos.company.v1.InviteUserRequest.role:type_name -> teamos.company.v1.UserRole
+	13,  // 45: teamos.company.v1.InviteUserResponse.invite:type_name -> teamos.company.v1.Invite
+	13,  // 46: teamos.company.v1.ResendInviteResponse.invite:type_name -> teamos.company.v1.Invite
+	10,  // 47: teamos.company.v1.GetUsersByIdsResponse.users:type_name -> teamos.company.v1.User
+	90,  // 48: teamos.company.v1.GetReportUserProfilesResponse.profiles:type_name -> teamos.company.v1.ReportUserProfile
+	97,  // 49: teamos.company.v1.UserSchedule.template:type_name -> teamos.company.v1.ScheduleTemplate
+	6,   // 50: teamos.company.v1.ShiftException.type:type_name -> teamos.company.v1.ShiftType
+	98,  // 51: teamos.company.v1.GetSchedulesResponse.schedules:type_name -> teamos.company.v1.UserSchedule
+	97,  // 52: teamos.company.v1.SaveScheduleRequest.template:type_name -> teamos.company.v1.ScheduleTemplate
+	98,  // 53: teamos.company.v1.SaveScheduleResponse.schedule:type_name -> teamos.company.v1.UserSchedule
+	65,  // 54: teamos.company.v1.UpdateUserCardRequest.user:type_name -> teamos.company.v1.UpdateUserRequest
+	97,  // 55: teamos.company.v1.UpdateUserCardRequest.template:type_name -> teamos.company.v1.ScheduleTemplate
+	10,  // 56: teamos.company.v1.UpdateUserCardResponse.user:type_name -> teamos.company.v1.User
+	98,  // 57: teamos.company.v1.UpdateUserCardResponse.schedule:type_name -> teamos.company.v1.UserSchedule
+	99,  // 58: teamos.company.v1.GetShiftExceptionsResponse.exceptions:type_name -> teamos.company.v1.ShiftException
+	6,   // 59: teamos.company.v1.SaveShiftExceptionInput.type:type_name -> teamos.company.v1.ShiftType
+	108, // 60: teamos.company.v1.SaveShiftExceptionsRequest.exceptions:type_name -> teamos.company.v1.SaveShiftExceptionInput
+	99,  // 61: teamos.company.v1.SaveShiftExceptionsResponse.exceptions:type_name -> teamos.company.v1.ShiftException
+	7,   // 62: teamos.company.v1.DistributionGroup.algorithm:type_name -> teamos.company.v1.DistributionAlgorithm
+	127, // 63: teamos.company.v1.DistributionGroup.created_at:type_name -> google.protobuf.Timestamp
+	8,   // 64: teamos.company.v1.DistributionEvent.status:type_name -> teamos.company.v1.DistributionEventStatus
+	127, // 65: teamos.company.v1.DistributionEvent.created_at:type_name -> google.protobuf.Timestamp
+	111, // 66: teamos.company.v1.GetDistributionGroupsResponse.groups:type_name -> teamos.company.v1.DistributionGroup
+	111, // 67: teamos.company.v1.CreateDistributionGroupResponse.group:type_name -> teamos.company.v1.DistributionGroup
+	7,   // 68: teamos.company.v1.UpdateDistributionGroupRequest.algorithm:type_name -> teamos.company.v1.DistributionAlgorithm
+	111, // 69: teamos.company.v1.UpdateDistributionGroupResponse.group:type_name -> teamos.company.v1.DistributionGroup
+	112, // 70: teamos.company.v1.GetDistributionEventsResponse.events:type_name -> teamos.company.v1.DistributionEvent
+	112, // 71: teamos.company.v1.SimulateDistributionDealResponse.event:type_name -> teamos.company.v1.DistributionEvent
+	15,  // 72: teamos.company.v1.CompanyService.Register:input_type -> teamos.company.v1.RegisterRequest
+	17,  // 73: teamos.company.v1.CompanyService.Login:input_type -> teamos.company.v1.LoginRequest
+	19,  // 74: teamos.company.v1.CompanyService.LoginWithAccessLink:input_type -> teamos.company.v1.LoginWithAccessLinkRequest
+	21,  // 75: teamos.company.v1.CompanyService.Refresh:input_type -> teamos.company.v1.RefreshRequest
+	23,  // 76: teamos.company.v1.CompanyService.Logout:input_type -> teamos.company.v1.LogoutRequest
+	25,  // 77: teamos.company.v1.CompanyService.GetInviteByToken:input_type -> teamos.company.v1.GetInviteByTokenRequest
+	27,  // 78: teamos.company.v1.CompanyService.AcceptInvite:input_type -> teamos.company.v1.AcceptInviteRequest
+	29,  // 79: teamos.company.v1.CompanyService.GetCurrentUser:input_type -> teamos.company.v1.GetCurrentUserRequest
+	31,  // 80: teamos.company.v1.CompanyService.UpdateCurrentUser:input_type -> teamos.company.v1.UpdateCurrentUserRequest
+	33,  // 81: teamos.company.v1.CompanyService.GetCompany:input_type -> teamos.company.v1.GetCompanyRequest
+	35,  // 82: teamos.company.v1.CompanyService.UpdateCompany:input_type -> teamos.company.v1.UpdateCompanyRequest
+	37,  // 83: teamos.company.v1.CompanyService.GetDepartments:input_type -> teamos.company.v1.GetDepartmentsRequest
+	39,  // 84: teamos.company.v1.CompanyService.CreateDepartment:input_type -> teamos.company.v1.CreateDepartmentRequest
+	41,  // 85: teamos.company.v1.CompanyService.UpdateDepartment:input_type -> teamos.company.v1.UpdateDepartmentRequest
+	43,  // 86: teamos.company.v1.CompanyService.DeleteDepartment:input_type -> teamos.company.v1.DeleteDepartmentRequest
+	45,  // 87: teamos.company.v1.CompanyService.MoveDepartment:input_type -> teamos.company.v1.MoveDepartmentRequest
+	47,  // 88: teamos.company.v1.CompanyService.GetPositions:input_type -> teamos.company.v1.GetPositionsRequest
+	49,  // 89: teamos.company.v1.CompanyService.GetPosition:input_type -> teamos.company.v1.GetPositionRequest
+	51,  // 90: teamos.company.v1.CompanyService.CreatePosition:input_type -> teamos.company.v1.CreatePositionRequest
+	53,  // 91: teamos.company.v1.CompanyService.UpdatePosition:input_type -> teamos.company.v1.UpdatePositionRequest
+	55,  // 92: teamos.company.v1.CompanyService.DeletePosition:input_type -> teamos.company.v1.DeletePositionRequest
+	57,  // 93: teamos.company.v1.CompanyService.MovePosition:input_type -> teamos.company.v1.MovePositionRequest
+	59,  // 94: teamos.company.v1.CompanyService.GetUsers:input_type -> teamos.company.v1.GetUsersRequest
+	61,  // 95: teamos.company.v1.CompanyService.GetUser:input_type -> teamos.company.v1.GetUserRequest
+	63,  // 96: teamos.company.v1.CompanyService.CreateUser:input_type -> teamos.company.v1.CreateUserRequest
+	65,  // 97: teamos.company.v1.CompanyService.UpdateUser:input_type -> teamos.company.v1.UpdateUserRequest
+	104, // 98: teamos.company.v1.CompanyService.UpdateUserCard:input_type -> teamos.company.v1.UpdateUserCardRequest
+	67,  // 99: teamos.company.v1.CompanyService.DeleteUser:input_type -> teamos.company.v1.DeleteUserRequest
+	70,  // 100: teamos.company.v1.CompanyService.GetUserAccess:input_type -> teamos.company.v1.GetUserAccessRequest
+	72,  // 101: teamos.company.v1.CompanyService.SetUserPasswordAccess:input_type -> teamos.company.v1.SetUserPasswordAccessRequest
+	74,  // 102: teamos.company.v1.CompanyService.SetUserLinkAccess:input_type -> teamos.company.v1.SetUserLinkAccessRequest
+	76,  // 103: teamos.company.v1.CompanyService.RevokeUserAccess:input_type -> teamos.company.v1.RevokeUserAccessRequest
+	78,  // 104: teamos.company.v1.CompanyService.GetInvites:input_type -> teamos.company.v1.GetInvitesRequest
+	80,  // 105: teamos.company.v1.CompanyService.InviteUser:input_type -> teamos.company.v1.InviteUserRequest
+	82,  // 106: teamos.company.v1.CompanyService.ResendInvite:input_type -> teamos.company.v1.ResendInviteRequest
+	84,  // 107: teamos.company.v1.CompanyService.RevokeInvite:input_type -> teamos.company.v1.RevokeInviteRequest
+	86,  // 108: teamos.company.v1.CompanyService.GetUsersByIds:input_type -> teamos.company.v1.GetUsersByIdsRequest
+	88,  // 109: teamos.company.v1.CompanyService.ResolveReportUserScope:input_type -> teamos.company.v1.ResolveReportUserScopeRequest
+	91,  // 110: teamos.company.v1.CompanyService.GetReportUserProfiles:input_type -> teamos.company.v1.GetReportUserProfilesRequest
+	93,  // 111: teamos.company.v1.CompanyService.ResolvePositionUsers:input_type -> teamos.company.v1.ResolvePositionUsersRequest
+	95,  // 112: teamos.company.v1.CompanyService.ResolveDepartmentUsers:input_type -> teamos.company.v1.ResolveDepartmentUsersRequest
+	100, // 113: teamos.company.v1.CompanyService.GetSchedules:input_type -> teamos.company.v1.GetSchedulesRequest
+	102, // 114: teamos.company.v1.CompanyService.SaveSchedule:input_type -> teamos.company.v1.SaveScheduleRequest
+	106, // 115: teamos.company.v1.CompanyService.GetShiftExceptions:input_type -> teamos.company.v1.GetShiftExceptionsRequest
+	109, // 116: teamos.company.v1.CompanyService.SaveShiftExceptions:input_type -> teamos.company.v1.SaveShiftExceptionsRequest
+	113, // 117: teamos.company.v1.CompanyService.GetDistributionGroups:input_type -> teamos.company.v1.GetDistributionGroupsRequest
+	115, // 118: teamos.company.v1.CompanyService.CreateDistributionGroup:input_type -> teamos.company.v1.CreateDistributionGroupRequest
+	117, // 119: teamos.company.v1.CompanyService.UpdateDistributionGroup:input_type -> teamos.company.v1.UpdateDistributionGroupRequest
+	119, // 120: teamos.company.v1.CompanyService.DeleteDistributionGroup:input_type -> teamos.company.v1.DeleteDistributionGroupRequest
+	121, // 121: teamos.company.v1.CompanyService.GetDistributionEvents:input_type -> teamos.company.v1.GetDistributionEventsRequest
+	123, // 122: teamos.company.v1.CompanyService.SimulateDistributionDeal:input_type -> teamos.company.v1.SimulateDistributionDealRequest
+	125, // 123: teamos.company.v1.CompanyService.ResetDistributionEvents:input_type -> teamos.company.v1.ResetDistributionEventsRequest
+	16,  // 124: teamos.company.v1.CompanyService.Register:output_type -> teamos.company.v1.RegisterResponse
+	18,  // 125: teamos.company.v1.CompanyService.Login:output_type -> teamos.company.v1.LoginResponse
+	20,  // 126: teamos.company.v1.CompanyService.LoginWithAccessLink:output_type -> teamos.company.v1.LoginWithAccessLinkResponse
+	22,  // 127: teamos.company.v1.CompanyService.Refresh:output_type -> teamos.company.v1.RefreshResponse
+	24,  // 128: teamos.company.v1.CompanyService.Logout:output_type -> teamos.company.v1.LogoutResponse
+	26,  // 129: teamos.company.v1.CompanyService.GetInviteByToken:output_type -> teamos.company.v1.GetInviteByTokenResponse
+	28,  // 130: teamos.company.v1.CompanyService.AcceptInvite:output_type -> teamos.company.v1.AcceptInviteResponse
+	30,  // 131: teamos.company.v1.CompanyService.GetCurrentUser:output_type -> teamos.company.v1.GetCurrentUserResponse
+	32,  // 132: teamos.company.v1.CompanyService.UpdateCurrentUser:output_type -> teamos.company.v1.UpdateCurrentUserResponse
+	34,  // 133: teamos.company.v1.CompanyService.GetCompany:output_type -> teamos.company.v1.GetCompanyResponse
+	36,  // 134: teamos.company.v1.CompanyService.UpdateCompany:output_type -> teamos.company.v1.UpdateCompanyResponse
+	38,  // 135: teamos.company.v1.CompanyService.GetDepartments:output_type -> teamos.company.v1.GetDepartmentsResponse
+	40,  // 136: teamos.company.v1.CompanyService.CreateDepartment:output_type -> teamos.company.v1.CreateDepartmentResponse
+	42,  // 137: teamos.company.v1.CompanyService.UpdateDepartment:output_type -> teamos.company.v1.UpdateDepartmentResponse
+	44,  // 138: teamos.company.v1.CompanyService.DeleteDepartment:output_type -> teamos.company.v1.DeleteDepartmentResponse
+	46,  // 139: teamos.company.v1.CompanyService.MoveDepartment:output_type -> teamos.company.v1.MoveDepartmentResponse
+	48,  // 140: teamos.company.v1.CompanyService.GetPositions:output_type -> teamos.company.v1.GetPositionsResponse
+	50,  // 141: teamos.company.v1.CompanyService.GetPosition:output_type -> teamos.company.v1.GetPositionResponse
+	52,  // 142: teamos.company.v1.CompanyService.CreatePosition:output_type -> teamos.company.v1.CreatePositionResponse
+	54,  // 143: teamos.company.v1.CompanyService.UpdatePosition:output_type -> teamos.company.v1.UpdatePositionResponse
+	56,  // 144: teamos.company.v1.CompanyService.DeletePosition:output_type -> teamos.company.v1.DeletePositionResponse
+	58,  // 145: teamos.company.v1.CompanyService.MovePosition:output_type -> teamos.company.v1.MovePositionResponse
+	60,  // 146: teamos.company.v1.CompanyService.GetUsers:output_type -> teamos.company.v1.GetUsersResponse
+	62,  // 147: teamos.company.v1.CompanyService.GetUser:output_type -> teamos.company.v1.GetUserResponse
+	64,  // 148: teamos.company.v1.CompanyService.CreateUser:output_type -> teamos.company.v1.CreateUserResponse
+	66,  // 149: teamos.company.v1.CompanyService.UpdateUser:output_type -> teamos.company.v1.UpdateUserResponse
+	105, // 150: teamos.company.v1.CompanyService.UpdateUserCard:output_type -> teamos.company.v1.UpdateUserCardResponse
+	68,  // 151: teamos.company.v1.CompanyService.DeleteUser:output_type -> teamos.company.v1.DeleteUserResponse
+	71,  // 152: teamos.company.v1.CompanyService.GetUserAccess:output_type -> teamos.company.v1.GetUserAccessResponse
+	73,  // 153: teamos.company.v1.CompanyService.SetUserPasswordAccess:output_type -> teamos.company.v1.SetUserPasswordAccessResponse
+	75,  // 154: teamos.company.v1.CompanyService.SetUserLinkAccess:output_type -> teamos.company.v1.SetUserLinkAccessResponse
+	77,  // 155: teamos.company.v1.CompanyService.RevokeUserAccess:output_type -> teamos.company.v1.RevokeUserAccessResponse
+	79,  // 156: teamos.company.v1.CompanyService.GetInvites:output_type -> teamos.company.v1.GetInvitesResponse
+	81,  // 157: teamos.company.v1.CompanyService.InviteUser:output_type -> teamos.company.v1.InviteUserResponse
+	83,  // 158: teamos.company.v1.CompanyService.ResendInvite:output_type -> teamos.company.v1.ResendInviteResponse
+	85,  // 159: teamos.company.v1.CompanyService.RevokeInvite:output_type -> teamos.company.v1.RevokeInviteResponse
+	87,  // 160: teamos.company.v1.CompanyService.GetUsersByIds:output_type -> teamos.company.v1.GetUsersByIdsResponse
+	89,  // 161: teamos.company.v1.CompanyService.ResolveReportUserScope:output_type -> teamos.company.v1.ResolveReportUserScopeResponse
+	92,  // 162: teamos.company.v1.CompanyService.GetReportUserProfiles:output_type -> teamos.company.v1.GetReportUserProfilesResponse
+	94,  // 163: teamos.company.v1.CompanyService.ResolvePositionUsers:output_type -> teamos.company.v1.ResolvePositionUsersResponse
+	96,  // 164: teamos.company.v1.CompanyService.ResolveDepartmentUsers:output_type -> teamos.company.v1.ResolveDepartmentUsersResponse
+	101, // 165: teamos.company.v1.CompanyService.GetSchedules:output_type -> teamos.company.v1.GetSchedulesResponse
+	103, // 166: teamos.company.v1.CompanyService.SaveSchedule:output_type -> teamos.company.v1.SaveScheduleResponse
+	107, // 167: teamos.company.v1.CompanyService.GetShiftExceptions:output_type -> teamos.company.v1.GetShiftExceptionsResponse
+	110, // 168: teamos.company.v1.CompanyService.SaveShiftExceptions:output_type -> teamos.company.v1.SaveShiftExceptionsResponse
+	114, // 169: teamos.company.v1.CompanyService.GetDistributionGroups:output_type -> teamos.company.v1.GetDistributionGroupsResponse
+	116, // 170: teamos.company.v1.CompanyService.CreateDistributionGroup:output_type -> teamos.company.v1.CreateDistributionGroupResponse
+	118, // 171: teamos.company.v1.CompanyService.UpdateDistributionGroup:output_type -> teamos.company.v1.UpdateDistributionGroupResponse
+	120, // 172: teamos.company.v1.CompanyService.DeleteDistributionGroup:output_type -> teamos.company.v1.DeleteDistributionGroupResponse
+	122, // 173: teamos.company.v1.CompanyService.GetDistributionEvents:output_type -> teamos.company.v1.GetDistributionEventsResponse
+	124, // 174: teamos.company.v1.CompanyService.SimulateDistributionDeal:output_type -> teamos.company.v1.SimulateDistributionDealResponse
+	126, // 175: teamos.company.v1.CompanyService.ResetDistributionEvents:output_type -> teamos.company.v1.ResetDistributionEventsResponse
+	124, // [124:176] is the sub-list for method output_type
+	72,  // [72:124] is the sub-list for method input_type
+	72,  // [72:72] is the sub-list for extension type_name
+	72,  // [72:72] is the sub-list for extension extendee
+	0,   // [0:72] is the sub-list for field type_name
 }
 
 func init() { file_proto_company_v1_company_proto_init() }
@@ -7770,7 +7861,7 @@ func file_proto_company_v1_company_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_company_v1_company_proto_rawDesc), len(file_proto_company_v1_company_proto_rawDesc)),
-			NumEnums:      8,
+			NumEnums:      9,
 			NumMessages:   118,
 			NumExtensions: 0,
 			NumServices:   1,

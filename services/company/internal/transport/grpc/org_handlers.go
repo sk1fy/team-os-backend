@@ -387,6 +387,13 @@ func updateUserInputFromProto(request *companyv1.UpdateUserRequest) (application
 			return application.UpdateUserInput{}, err
 		}
 	}
+	var sectionAccess []string
+	if request.UpdateSectionAccess {
+		sectionAccess, err = employeeSectionsFromProto(request.SectionAccess)
+		if err != nil {
+			return application.UpdateUserInput{}, err
+		}
+	}
 	return application.UpdateUserInput{
 		ID:                   id,
 		FirstName:            cloneString(request.FirstName),
@@ -403,6 +410,8 @@ func updateUserInputFromProto(request *companyv1.UpdateUserRequest) (application
 		Status:               userStatus,
 		SetPositionIDs:       request.UpdatePositionIds,
 		PositionIDs:          positionIDs,
+		SetSectionAccess:     request.UpdateSectionAccess,
+		SectionAccess:        sectionAccess,
 	}, nil
 }
 

@@ -11,6 +11,7 @@ LEFT JOIN user_positions AS up
   ON up.company_id = u.company_id
  AND up.user_id = u.id
 WHERE u.company_id = sqlc.arg('company_id')
+  AND u.external_deleted_at IS NULL
   AND u.id = ANY(sqlc.arg('user_ids')::uuid[])
 GROUP BY u.id
 ORDER BY array_position(sqlc.arg('user_ids')::uuid[], u.id);
@@ -25,6 +26,7 @@ SELECT u.id,
        END AS matches_search
 FROM users AS u
 WHERE u.company_id = sqlc.arg('company_id')
+  AND u.external_deleted_at IS NULL
   AND (
       (sqlc.narg('position_id')::uuid IS NULL
        AND sqlc.narg('department_id')::uuid IS NULL)
@@ -69,6 +71,7 @@ LEFT JOIN LATERAL (
     LIMIT 1
 ) AS selected_org ON true
 WHERE u.company_id = sqlc.arg('company_id')
+  AND u.external_deleted_at IS NULL
   AND u.id = ANY(sqlc.arg('user_ids')::uuid[])
 ORDER BY array_position(sqlc.arg('user_ids')::uuid[], u.id);
 
@@ -81,6 +84,7 @@ JOIN user_positions AS up
 WHERE u.company_id = sqlc.arg('company_id')
   AND up.position_id = sqlc.arg('position_id')
   AND u.status = 'active'
+  AND u.external_deleted_at IS NULL
 ORDER BY u.id;
 
 -- name: ResolveDepartmentUserIDs :many
@@ -109,4 +113,5 @@ JOIN positions AS p
 JOIN selected_departments AS d ON d.id = p.department_id
 WHERE u.company_id = sqlc.arg('company_id')
   AND u.status = 'active'
+  AND u.external_deleted_at IS NULL
 ORDER BY u.id;

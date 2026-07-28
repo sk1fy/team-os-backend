@@ -38,6 +38,7 @@ LEFT JOIN LATERAL (
     LIMIT 1
 ) AS selected_org ON true
 WHERE u.company_id = $3
+  AND u.external_deleted_at IS NULL
   AND u.id = ANY($4::uuid[])
 ORDER BY array_position($4::uuid[], u.id)
 `
@@ -91,7 +92,7 @@ func (q *Queries) GetReportUserProfiles(ctx context.Context, arg GetReportUserPr
 }
 
 const getUsersByIDs = `-- name: GetUsersByIDs :many
-SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name, u.avatar_source,
+SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name, u.avatar_source, u.external_deleted_at,
        COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids,
        CASE
            WHEN EXISTS (SELECT 1 FROM access_links access WHERE access.company_id = u.company_id AND access.user_id = u.id) THEN 'link'
@@ -103,6 +104,7 @@ LEFT JOIN user_positions AS up
   ON up.company_id = u.company_id
  AND up.user_id = u.id
 WHERE u.company_id = $1
+  AND u.external_deleted_at IS NULL
   AND u.id = ANY($2::uuid[])
 GROUP BY u.id
 ORDER BY array_position($2::uuid[], u.id)
@@ -114,27 +116,28 @@ type GetUsersByIDsParams struct {
 }
 
 type GetUsersByIDsRow struct {
-	ID                uuid.UUID   `json:"id"`
-	CompanyID         uuid.UUID   `json:"company_id"`
-	Email             string      `json:"email"`
-	FirstName         string      `json:"first_name"`
-	LastName          pgtype.Text `json:"last_name"`
-	Phone             pgtype.Text `json:"phone"`
-	AvatarUrl         pgtype.Text `json:"avatar_url"`
-	Role              string      `json:"role"`
-	Status            string      `json:"status"`
-	BirthDate         pgtype.Date `json:"birth_date"`
-	HiredAt           pgtype.Date `json:"hired_at"`
-	VacationAllowance pgtype.Int2 `json:"vacation_allowance"`
-	CreatedAt         time.Time   `json:"created_at"`
-	UpdatedAt         time.Time   `json:"updated_at"`
-	Source            string      `json:"source"`
-	ExternalID        pgtype.Text `json:"external_id"`
-	ExternalGroupID   pgtype.Text `json:"external_group_id"`
-	ExternalGroupName pgtype.Text `json:"external_group_name"`
-	AvatarSource      pgtype.Text `json:"avatar_source"`
-	PositionIds       []uuid.UUID `json:"position_ids"`
-	AccessMode        string      `json:"access_mode"`
+	ID                uuid.UUID          `json:"id"`
+	CompanyID         uuid.UUID          `json:"company_id"`
+	Email             string             `json:"email"`
+	FirstName         string             `json:"first_name"`
+	LastName          pgtype.Text        `json:"last_name"`
+	Phone             pgtype.Text        `json:"phone"`
+	AvatarUrl         pgtype.Text        `json:"avatar_url"`
+	Role              string             `json:"role"`
+	Status            string             `json:"status"`
+	BirthDate         pgtype.Date        `json:"birth_date"`
+	HiredAt           pgtype.Date        `json:"hired_at"`
+	VacationAllowance pgtype.Int2        `json:"vacation_allowance"`
+	CreatedAt         time.Time          `json:"created_at"`
+	UpdatedAt         time.Time          `json:"updated_at"`
+	Source            string             `json:"source"`
+	ExternalID        pgtype.Text        `json:"external_id"`
+	ExternalGroupID   pgtype.Text        `json:"external_group_id"`
+	ExternalGroupName pgtype.Text        `json:"external_group_name"`
+	AvatarSource      pgtype.Text        `json:"avatar_source"`
+	ExternalDeletedAt pgtype.Timestamptz `json:"external_deleted_at"`
+	PositionIds       []uuid.UUID        `json:"position_ids"`
+	AccessMode        string             `json:"access_mode"`
 }
 
 func (q *Queries) GetUsersByIDs(ctx context.Context, arg GetUsersByIDsParams) ([]GetUsersByIDsRow, error) {
@@ -166,6 +169,7 @@ func (q *Queries) GetUsersByIDs(ctx context.Context, arg GetUsersByIDsParams) ([
 			&i.ExternalGroupID,
 			&i.ExternalGroupName,
 			&i.AvatarSource,
+			&i.ExternalDeletedAt,
 			&i.PositionIds,
 			&i.AccessMode,
 		); err != nil {
@@ -205,6 +209,7 @@ JOIN positions AS p
 JOIN selected_departments AS d ON d.id = p.department_id
 WHERE u.company_id = $1
   AND u.status = 'active'
+  AND u.external_deleted_at IS NULL
 ORDER BY u.id
 `
 
@@ -243,6 +248,7 @@ JOIN user_positions AS up
 WHERE u.company_id = $1
   AND up.position_id = $2
   AND u.status = 'active'
+  AND u.external_deleted_at IS NULL
 ORDER BY u.id
 `
 
@@ -281,6 +287,7 @@ SELECT u.id,
        END AS matches_search
 FROM users AS u
 WHERE u.company_id = $2
+  AND u.external_deleted_at IS NULL
   AND (
       ($3::uuid IS NULL
        AND $4::uuid IS NULL)

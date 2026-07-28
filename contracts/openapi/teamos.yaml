@@ -4700,8 +4700,11 @@ components:
       type: string
       enum: [local, amo]
       description: >-
-        Источник сотрудника. `amo` означает однократный импорт из amoCRM; после импорта профиль,
-        статус и доступ сотрудника управляются только в TeamOS.
+        Источник сотрудника. Профиль, роль, статус и доступ управляются в TeamOS.
+        Для `amo` факт наличия сотрудника периодически сверяется с amoCRM.
+    EmployeeSection:
+      type: string
+      enum: [schedule, knowledge, academy, distribution]
     InviteStatus:
       type: string
       enum: [pending, accepted, expired]
@@ -4798,6 +4801,11 @@ components:
           $ref: '#/components/schemas/UserSource'
         accessMode:
           $ref: '#/components/schemas/UserAccessMode'
+        sectionAccess:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/EmployeeSection'
         positionIds:
           type: array
           maxItems: 1
@@ -5150,7 +5158,6 @@ components:
           uniqueItems: true
           items:
             $ref: '#/components/schemas/ID'
-
     UpdateUserInput:
       type: object
       additionalProperties: false
@@ -5181,6 +5188,13 @@ components:
           uniqueItems: true
           items:
             $ref: '#/components/schemas/ID'
+        sectionAccess:
+          type: array
+          minItems: 1
+          maxItems: 4
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/EmployeeSection'
 
     InviteUserInput:
       type: object

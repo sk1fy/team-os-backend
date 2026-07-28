@@ -14,6 +14,7 @@ type Actor struct {
 	Role          string
 	PositionIDs   []uuid.UUID
 	DepartmentIDs []uuid.UUID
+	SectionAccess []string
 	// Raw bearer token, forwarded to kb/company on synchronous RPC (§9).
 	Token string
 }

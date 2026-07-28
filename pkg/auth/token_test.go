@@ -22,7 +22,10 @@ func TestTokenRoundTrip(t *testing.T) {
 	verifier := NewTokenVerifier(publicKey, "teamos-company", "teamos-api")
 	verifier.now = func() time.Time { return now.Add(time.Minute) }
 
-	raw, expiresAt, err := issuer.Issue("user-1", "company-1", "admin", []string{"pos-1"}, []string{"dep-1"})
+	raw, expiresAt, err := issuer.Issue(
+		"user-1", "company-1", "employee",
+		[]string{"pos-1"}, []string{"dep-1"}, []string{"schedule", "academy"},
+	)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -34,8 +37,28 @@ func TestTokenRoundTrip(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if claims.Subject != "user-1" || claims.CompanyID != "company-1" || claims.Role != "admin" {
+	if claims.Subject != "user-1" || claims.CompanyID != "company-1" || claims.Role != "employee" {
 		t.Fatalf("unexpected claims: %#v", claims)
+	}
+	if len(claims.SectionAccess) != 2 ||
+		claims.SectionAccess[0] != "schedule" || claims.SectionAccess[1] != "academy" {
+		t.Fatalf("section claims = %#v", claims.SectionAccess)
+	}
+}
+
+func TestTokenVerifierRejectsUnknownEmployeeSection(t *testing.T) {
+	publicKey, privateKey, err := ed25519.GenerateKey(rand.Reader)
+	if err != nil {
+		t.Fatal(err)
+	}
+	issuer := NewTokenIssuer(privateKey, "issuer", "audience", time.Minute)
+	raw, _, err := issuer.Issue("user", "company", "employee", nil, nil, []string{"unknown"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	verifier := NewTokenVerifier(publicKey, "issuer", "audience")
+	if _, err = verifier.Verify(raw); !errors.Is(err, ErrInvalidToken) {
+		t.Fatalf("Verify() error = %v, want ErrInvalidToken", err)
 	}
 }
 

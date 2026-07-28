@@ -272,8 +272,10 @@ func auditAccessChange(
 	createdAt time.Time,
 ) error {
 	if err := queries.CreateEmployeeAccessAudit(ctx, db.CreateEmployeeAccessAuditParams{
-		ID: uuid.New(), CompanyID: actor.CompanyID, TargetUserID: targetUserID,
-		ActorUserID: actor.UserID, Action: action, Mode: mode, CreatedAt: createdAt,
+		ID: uuid.New(), CompanyID: actor.CompanyID,
+		TargetUserID: uuid.NullUUID{UUID: targetUserID, Valid: true},
+		ActorUserID:  uuid.NullUUID{UUID: actor.UserID, Valid: true},
+		Action:       action, Mode: mode, CreatedAt: createdAt,
 	}); err != nil {
 		return internal("Не удалось записать аудит доступа", err)
 	}

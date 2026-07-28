@@ -76,12 +76,19 @@ DELETE FROM positions WHERE company_id = $1 AND id = $2;
 SELECT up.user_id
 FROM user_positions up
 JOIN users u ON u.id = up.user_id AND u.company_id = up.company_id
-WHERE up.company_id = $1 AND up.position_id = $2 AND u.status = 'active'
+WHERE up.company_id = $1 AND up.position_id = $2
+  AND u.status = 'active' AND u.external_deleted_at IS NULL
 ORDER BY up.user_id;
 
 -- name: ListUsers :many
 SELECT u.*,
        COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids,
+       ARRAY(
+           SELECT access.section
+           FROM employee_section_access access
+           WHERE access.company_id = u.company_id AND access.user_id = u.id
+           ORDER BY access.section
+       )::text[] AS section_access,
        CASE
            WHEN EXISTS (SELECT 1 FROM access_links access WHERE access.company_id = u.company_id AND access.user_id = u.id) THEN 'link'
            WHEN EXISTS (SELECT 1 FROM credentials credential WHERE credential.company_id = u.company_id AND credential.user_id = u.id) THEN 'password'
@@ -89,13 +96,19 @@ SELECT u.*,
        END::text AS access_mode
 FROM users u
 LEFT JOIN user_positions up ON up.user_id = u.id
-WHERE u.company_id = $1
+WHERE u.company_id = $1 AND u.external_deleted_at IS NULL
 GROUP BY u.id
 ORDER BY u.created_at, u.id;
 
 -- name: GetUserWithPositions :one
 SELECT u.*,
        COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids,
+       ARRAY(
+           SELECT access.section
+           FROM employee_section_access access
+           WHERE access.company_id = u.company_id AND access.user_id = u.id
+           ORDER BY access.section
+       )::text[] AS section_access,
        CASE
            WHEN EXISTS (SELECT 1 FROM access_links access WHERE access.company_id = u.company_id AND access.user_id = u.id) THEN 'link'
            WHEN EXISTS (SELECT 1 FROM credentials credential WHERE credential.company_id = u.company_id AND credential.user_id = u.id) THEN 'password'
@@ -103,7 +116,7 @@ SELECT u.*,
        END::text AS access_mode
 FROM users u
 LEFT JOIN user_positions up ON up.user_id = u.id
-WHERE u.company_id = $1 AND u.id = $2
+WHERE u.company_id = $1 AND u.id = $2 AND u.external_deleted_at IS NULL
 GROUP BY u.id;
 
 -- name: LockAmoUserSync :exec
@@ -116,6 +129,34 @@ WHERE company_id = sqlc.arg('company_id')
   AND (external_id = sqlc.arg('external_id') OR email = sqlc.arg('email'))
 ORDER BY (external_id = sqlc.arg('external_id')) DESC
 LIMIT 1;
+
+-- name: ListAmoUsersForReconciliation :many
+SELECT *
+FROM users
+WHERE company_id = sqlc.arg('company_id')
+  AND source = 'amo'
+  AND external_id IS NOT NULL
+FOR UPDATE;
+
+-- name: ClearAmoUserTombstone :one
+UPDATE users
+SET external_deleted_at = NULL,
+    updated_at = now()
+WHERE company_id = sqlc.arg('company_id')
+  AND id = sqlc.arg('id')
+  AND source = 'amo'
+  AND external_deleted_at IS NOT NULL
+RETURNING *;
+
+-- name: MarkAmoUserExternallyDeleted :one
+UPDATE users
+SET external_deleted_at = sqlc.arg('deleted_at'),
+    updated_at = now()
+WHERE company_id = sqlc.arg('company_id')
+  AND id = sqlc.arg('id')
+  AND source = 'amo'
+  AND external_deleted_at IS NULL
+RETURNING *;
 
 -- name: CreateAmoUser :one
 INSERT INTO users (
@@ -153,6 +194,28 @@ WHERE company_id = sqlc.arg('company_id')
 
 -- name: DeleteUserPositions :exec
 DELETE FROM user_positions WHERE company_id = $1 AND user_id = $2;
+
+-- name: ListEmployeeSectionAccess :many
+SELECT section
+FROM employee_section_access
+WHERE company_id = $1 AND user_id = $2
+ORDER BY section;
+
+-- name: DeleteEmployeeSectionAccess :exec
+DELETE FROM employee_section_access
+WHERE company_id = $1 AND user_id = $2;
+
+-- name: GrantEmployeeSectionAccess :exec
+INSERT INTO employee_section_access (company_id, user_id, section, granted_by)
+VALUES ($1, $2, $3, $4)
+ON CONFLICT (user_id, section) DO NOTHING;
+
+-- name: CreateUserAdminAudit :exec
+INSERT INTO user_admin_audit (
+    id, company_id, target_user_id, actor_user_id, actor_kind, action,
+    before_state, after_state, request_id, created_at
+)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
 
 -- name: AssignUserPosition :exec
 INSERT INTO user_positions (company_id, user_id, position_id)

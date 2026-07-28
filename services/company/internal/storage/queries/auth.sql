@@ -30,21 +30,24 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
 RETURNING *;
 
 -- name: GetUser :one
-SELECT * FROM users WHERE company_id = $1 AND id = $2;
+SELECT * FROM users
+WHERE company_id = $1 AND id = $2 AND external_deleted_at IS NULL;
 
 -- name: GetUserForAccessUpdate :one
-SELECT * FROM users WHERE company_id = $1 AND id = $2 FOR UPDATE;
+SELECT * FROM users
+WHERE company_id = $1 AND id = $2 AND external_deleted_at IS NULL
+FOR UPDATE;
 
 -- name: GetUserForLogin :one
 SELECT sqlc.embed(u), c.password_hash
 FROM users u
 JOIN credentials c ON c.user_id = u.id
-WHERE u.email = $1
+WHERE u.email = $1 AND u.external_deleted_at IS NULL
 FOR SHARE OF u;
 
 -- name: GetUserByEmailForUpdate :one
 SELECT * FROM users
-WHERE email = $1
+WHERE email = $1 AND external_deleted_at IS NULL
 FOR UPDATE;
 
 -- name: SetCredential :exec
@@ -80,6 +83,7 @@ SELECT u.*
 FROM users u
 JOIN access_links access ON access.user_id = u.id AND access.company_id = u.company_id
 WHERE access.token = $1 AND u.status = 'active'
+  AND u.external_deleted_at IS NULL
 FOR SHARE OF u, access;
 
 -- name: GetUserAccessMode :one
