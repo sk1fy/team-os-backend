@@ -21,18 +21,30 @@ var accessUserColumns = []string{
 	"avatar_source",
 }
 
-func TestRequireOwnerForEmployeeAccessManagement(t *testing.T) {
-	if err := requireOwner(Actor{Role: "owner"}); err != nil {
-		t.Fatalf("owner rejected: %v", err)
+func TestEmployeeAccessManagementPolicy(t *testing.T) {
+	for _, role := range []string{"owner", "admin"} {
+		t.Run(role+"_allowed", func(t *testing.T) {
+			actor := Actor{Role: role}
+			if !canManageEmployeeAccess(actor) {
+				t.Fatalf("%s capability rejected", role)
+			}
+			if err := requireEmployeeAccessManagement(actor); err != nil {
+				t.Fatalf("%s rejected: %v", role, err)
+			}
+		})
 	}
-	for _, role := range []string{"admin", "employee", "partner"} {
-		t.Run(role, func(t *testing.T) {
-			err := requireOwner(Actor{Role: role})
+	for _, role := range []string{"employee", "partner"} {
+		t.Run(role+"_forbidden", func(t *testing.T) {
+			actor := Actor{Role: role}
+			if canManageEmployeeAccess(actor) {
+				t.Fatalf("%s capability allowed", role)
+			}
+			err := requireEmployeeAccessManagement(actor)
 			var applicationError *Error
 			if !errors.As(err, &applicationError) || applicationError.Kind != ErrorForbidden {
 				t.Fatalf("error = %#v, want forbidden", err)
 			}
-			if applicationError.Message != "Управлять доступом сотрудников может только владелец" {
+			if applicationError.Message != "Недостаточно прав для управления доступом сотрудников" {
 				t.Fatalf("message = %q", applicationError.Message)
 			}
 		})

@@ -11,9 +11,13 @@ import (
 	"github.com/sk1fy/team-os-backend/services/company/internal/storage/db"
 )
 
-func requireOwner(actor Actor) error {
-	if actor.Role != "owner" {
-		return forbidden("Управлять доступом сотрудников может только владелец")
+func canManageEmployeeAccess(actor Actor) bool {
+	return actor.Role == "owner" || actor.Role == "admin"
+}
+
+func requireEmployeeAccessManagement(actor Actor) error {
+	if !canManageEmployeeAccess(actor) {
+		return forbidden("Недостаточно прав для управления доступом сотрудников")
 	}
 	return nil
 }
@@ -45,7 +49,7 @@ func validateAccessTarget(user db.User, err error) (db.User, error) {
 }
 
 func (s *Service) GetUserAccess(ctx context.Context, actor Actor, userID uuid.UUID) (EmployeeAccess, error) {
-	if err := requireOwner(actor); err != nil {
+	if err := requireEmployeeAccessManagement(actor); err != nil {
 		return EmployeeAccess{}, err
 	}
 	queries := db.New(s.pool)
@@ -82,7 +86,7 @@ func (s *Service) SetPasswordAccess(
 	userID uuid.UUID,
 	input SetPasswordAccessInput,
 ) (string, error) {
-	if err := requireOwner(actor); err != nil {
+	if err := requireEmployeeAccessManagement(actor); err != nil {
 		return "", err
 	}
 	password := ""
@@ -139,7 +143,7 @@ func (s *Service) SetPasswordAccess(
 }
 
 func (s *Service) SetLinkAccess(ctx context.Context, actor Actor, userID uuid.UUID) (EmployeeLinkAccess, error) {
-	if err := requireOwner(actor); err != nil {
+	if err := requireEmployeeAccessManagement(actor); err != nil {
 		return EmployeeLinkAccess{}, err
 	}
 	token, err := domainauth.NewAccessLinkToken()
@@ -181,7 +185,7 @@ func (s *Service) SetLinkAccess(ctx context.Context, actor Actor, userID uuid.UU
 }
 
 func (s *Service) RevokeAccess(ctx context.Context, actor Actor, userID uuid.UUID) error {
-	if err := requireOwner(actor); err != nil {
+	if err := requireEmployeeAccessManagement(actor); err != nil {
 		return err
 	}
 	tx, err := s.pool.Begin(ctx)
