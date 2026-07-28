@@ -26,7 +26,7 @@ func (s *Service) ImpersonateUser(
 	defer func() { _ = tx.Rollback(ctx) }()
 	queries := db.New(tx)
 
-	user, err := queries.GetUser(ctx, db.GetUserParams{
+	user, err := queries.GetUserForAccessUpdate(ctx, db.GetUserForAccessUpdateParams{
 		CompanyID: actor.CompanyID,
 		ID:        userID,
 	})
