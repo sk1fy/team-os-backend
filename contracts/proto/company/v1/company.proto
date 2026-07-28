@@ -13,6 +13,7 @@ service CompanyService {
   rpc Register(RegisterRequest) returns (RegisterResponse);
   rpc Login(LoginRequest) returns (LoginResponse);
   rpc LoginWithAccessLink(LoginWithAccessLinkRequest) returns (LoginWithAccessLinkResponse);
+  rpc ImpersonateUser(ImpersonateUserRequest) returns (ImpersonateUserResponse);
   rpc Refresh(RefreshRequest) returns (RefreshResponse);
   rpc Logout(LogoutRequest) returns (LogoutResponse);
   rpc GetInviteByToken(GetInviteByTokenRequest) returns (GetInviteByTokenResponse);
@@ -210,6 +211,14 @@ message LoginWithAccessLinkRequest {
 }
 
 message LoginWithAccessLinkResponse {
+  AuthSession session = 1;
+}
+
+message ImpersonateUserRequest {
+  string user_id = 1;
+}
+
+message ImpersonateUserResponse {
   AuthSession session = 1;
 }
 

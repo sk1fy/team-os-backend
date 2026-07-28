@@ -93,6 +93,22 @@ func (h *Handler) LoginWithAccessLink(w http.ResponseWriter, r *http.Request, to
 	h.writeSession(w, r, http.StatusOK, response.GetSession())
 }
 
+func (h *Handler) ImpersonateUser(w http.ResponseWriter, r *http.Request) {
+	var input api.ImpersonateUserInput
+	if !decode(w, r, &input) {
+		return
+	}
+	response, err := h.company.ImpersonateUser(
+		outgoingContext(r),
+		&companyv1.ImpersonateUserRequest{UserId: input.UserId.String()},
+	)
+	if err != nil {
+		h.writeRPCError(w, r, err)
+		return
+	}
+	h.writeSession(w, r, http.StatusOK, response.GetSession())
+}
+
 func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 	var input api.RegisterInput
 	if !decode(w, r, &input) {

@@ -22,6 +22,7 @@ const (
 	CompanyService_Register_FullMethodName                 = "/teamos.company.v1.CompanyService/Register"
 	CompanyService_Login_FullMethodName                    = "/teamos.company.v1.CompanyService/Login"
 	CompanyService_LoginWithAccessLink_FullMethodName      = "/teamos.company.v1.CompanyService/LoginWithAccessLink"
+	CompanyService_ImpersonateUser_FullMethodName          = "/teamos.company.v1.CompanyService/ImpersonateUser"
 	CompanyService_Refresh_FullMethodName                  = "/teamos.company.v1.CompanyService/Refresh"
 	CompanyService_Logout_FullMethodName                   = "/teamos.company.v1.CompanyService/Logout"
 	CompanyService_GetInviteByToken_FullMethodName         = "/teamos.company.v1.CompanyService/GetInviteByToken"
@@ -84,6 +85,7 @@ type CompanyServiceClient interface {
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	LoginWithAccessLink(ctx context.Context, in *LoginWithAccessLinkRequest, opts ...grpc.CallOption) (*LoginWithAccessLinkResponse, error)
+	ImpersonateUser(ctx context.Context, in *ImpersonateUserRequest, opts ...grpc.CallOption) (*ImpersonateUserResponse, error)
 	Refresh(ctx context.Context, in *RefreshRequest, opts ...grpc.CallOption) (*RefreshResponse, error)
 	Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutResponse, error)
 	GetInviteByToken(ctx context.Context, in *GetInviteByTokenRequest, opts ...grpc.CallOption) (*GetInviteByTokenResponse, error)
@@ -167,6 +169,16 @@ func (c *companyServiceClient) LoginWithAccessLink(ctx context.Context, in *Logi
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(LoginWithAccessLinkResponse)
 	err := c.cc.Invoke(ctx, CompanyService_LoginWithAccessLink_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) ImpersonateUser(ctx context.Context, in *ImpersonateUserRequest, opts ...grpc.CallOption) (*ImpersonateUserResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ImpersonateUserResponse)
+	err := c.cc.Invoke(ctx, CompanyService_ImpersonateUser_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -674,6 +686,7 @@ type CompanyServiceServer interface {
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	LoginWithAccessLink(context.Context, *LoginWithAccessLinkRequest) (*LoginWithAccessLinkResponse, error)
+	ImpersonateUser(context.Context, *ImpersonateUserRequest) (*ImpersonateUserResponse, error)
 	Refresh(context.Context, *RefreshRequest) (*RefreshResponse, error)
 	Logout(context.Context, *LogoutRequest) (*LogoutResponse, error)
 	GetInviteByToken(context.Context, *GetInviteByTokenRequest) (*GetInviteByTokenResponse, error)
@@ -741,6 +754,9 @@ func (UnimplementedCompanyServiceServer) Login(context.Context, *LoginRequest) (
 }
 func (UnimplementedCompanyServiceServer) LoginWithAccessLink(context.Context, *LoginWithAccessLinkRequest) (*LoginWithAccessLinkResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LoginWithAccessLink not implemented")
+}
+func (UnimplementedCompanyServiceServer) ImpersonateUser(context.Context, *ImpersonateUserRequest) (*ImpersonateUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ImpersonateUser not implemented")
 }
 func (UnimplementedCompanyServiceServer) Refresh(context.Context, *RefreshRequest) (*RefreshResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Refresh not implemented")
@@ -960,6 +976,24 @@ func _CompanyService_LoginWithAccessLink_Handler(srv interface{}, ctx context.Co
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CompanyServiceServer).LoginWithAccessLink(ctx, req.(*LoginWithAccessLinkRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_ImpersonateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ImpersonateUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).ImpersonateUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_ImpersonateUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).ImpersonateUser(ctx, req.(*ImpersonateUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1864,6 +1898,10 @@ var CompanyService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "LoginWithAccessLink",
 			Handler:    _CompanyService_LoginWithAccessLink_Handler,
+		},
+		{
+			MethodName: "ImpersonateUser",
+			Handler:    _CompanyService_ImpersonateUser_Handler,
 		},
 		{
 			MethodName: "Refresh",

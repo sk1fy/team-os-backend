@@ -48,6 +48,25 @@ func (s *Server) LoginWithAccessLink(ctx context.Context, request *companyv1.Log
 	return &companyv1.LoginWithAccessLinkResponse{Session: authSessionToProto(result)}, nil
 }
 
+func (s *Server) ImpersonateUser(ctx context.Context, request *companyv1.ImpersonateUserRequest) (*companyv1.ImpersonateUserResponse, error) {
+	actor, err := s.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if request == nil {
+		return nil, invalidRequest()
+	}
+	userID, err := parseUUID(request.UserId, "сотрудника")
+	if err != nil {
+		return nil, err
+	}
+	result, err := s.application.ImpersonateUser(ctx, actor, userID, sessionMeta(ctx))
+	if err != nil {
+		return nil, transportError(err)
+	}
+	return &companyv1.ImpersonateUserResponse{Session: authSessionToProto(result)}, nil
+}
+
 func (s *Server) Refresh(ctx context.Context, request *companyv1.RefreshRequest) (*companyv1.RefreshResponse, error) {
 	if request == nil {
 		return nil, invalidRequest()

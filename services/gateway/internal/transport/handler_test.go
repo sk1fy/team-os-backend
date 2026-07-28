@@ -38,6 +38,7 @@ type stubCompanyServer struct {
 
 	loginFn            func(context.Context, *companyv1.LoginRequest) (*companyv1.LoginResponse, error)
 	loginWithLinkFn    func(context.Context, *companyv1.LoginWithAccessLinkRequest) (*companyv1.LoginWithAccessLinkResponse, error)
+	impersonateUserFn  func(context.Context, *companyv1.ImpersonateUserRequest) (*companyv1.ImpersonateUserResponse, error)
 	registerFn         func(context.Context, *companyv1.RegisterRequest) (*companyv1.RegisterResponse, error)
 	refreshFn          func(context.Context, *companyv1.RefreshRequest) (*companyv1.RefreshResponse, error)
 	getDepartmentsFn   func(context.Context, *companyv1.GetDepartmentsRequest) (*companyv1.GetDepartmentsResponse, error)
@@ -181,6 +182,13 @@ func (s *stubCompanyServer) LoginWithAccessLink(ctx context.Context, request *co
 		return nil, status.Error(codes.Unimplemented, "unexpected LoginWithAccessLink call")
 	}
 	return s.loginWithLinkFn(ctx, request)
+}
+
+func (s *stubCompanyServer) ImpersonateUser(ctx context.Context, request *companyv1.ImpersonateUserRequest) (*companyv1.ImpersonateUserResponse, error) {
+	if s.impersonateUserFn == nil {
+		return nil, status.Error(codes.Unimplemented, "unexpected ImpersonateUser call")
+	}
+	return s.impersonateUserFn(ctx, request)
 }
 
 func (s *stubCompanyServer) GetUserAccess(ctx context.Context, request *companyv1.GetUserAccessRequest) (*companyv1.GetUserAccessResponse, error) {
@@ -614,6 +622,44 @@ func TestGatewayLoginWithAccessLinkSetsRefreshCookie(t *testing.T) {
 	}
 	if got := decodeStringField(t, decodeObject(t, recorder), "accessToken"); got != "access-link" {
 		t.Fatalf("access token = %q", got)
+	}
+}
+
+func TestGatewayImpersonateUserBridgesJSONAndReplacesRefreshCookie(t *testing.T) {
+	requests := make(chan *companyv1.ImpersonateUserRequest, 1)
+	server := &stubCompanyServer{
+		impersonateUserFn: func(_ context.Context, request *companyv1.ImpersonateUserRequest) (*companyv1.ImpersonateUserResponse, error) {
+			requests <- request
+			session := testAuthSession("impersonated-access", "impersonated-refresh")
+			session.User.Role = companyv1.UserRole_USER_ROLE_PARTNER
+			return &companyv1.ImpersonateUserResponse{Session: session}, nil
+		},
+	}
+
+	recorder := serveGatewayRequest(
+		t,
+		server,
+		http.MethodPost,
+		"/api/v1/auth/impersonate",
+		`{"userId":"`+testUserID+`"}`,
+		nil,
+	)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("status = %d; body = %s", recorder.Code, recorder.Body.String())
+	}
+	if request := <-requests; request.GetUserId() != testUserID {
+		t.Fatalf("user id = %q", request.GetUserId())
+	}
+	if got := responseCookie(t, recorder, refreshCookieName).Value; got != "impersonated-refresh" {
+		t.Fatalf("refresh cookie = %q", got)
+	}
+	body := decodeObject(t, recorder)
+	if got := decodeStringField(t, body, "accessToken"); got != "impersonated-access" {
+		t.Fatalf("access token = %q", got)
+	}
+	if _, exposed := body["refreshToken"]; exposed {
+		t.Fatal("refresh token must not be exposed in the JSON response")
 	}
 }
 

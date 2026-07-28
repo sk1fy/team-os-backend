@@ -64,6 +64,12 @@ func TestAccessLinkLoginIsPublic(t *testing.T) {
 	}
 }
 
+func TestImpersonationRequiresInternalBearer(t *testing.T) {
+	if isPublic(http.MethodPost, "/api/v1/auth/impersonate") {
+		t.Fatal("impersonation must remain protected by the internal JWT")
+	}
+}
+
 func TestPublicContentResolversArePublic(t *testing.T) {
 	t.Parallel()
 	for _, path := range []string{
