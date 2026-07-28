@@ -72,6 +72,14 @@ func CanEditPartnerCourse(actor Actor, target course.Course) bool {
 		target.LifecycleStatus != course.CourseDeleted
 }
 
+// CanChangeCourseVisibility is the object-level capability used by the course
+// settings endpoint. It intentionally follows the same ownership boundary as
+// draft editing: owner/admin may change company courses, while a partner may
+// change only their own partner course.
+func CanChangeCourseVisibility(actor Actor, target course.Course) bool {
+	return CanEditCompanyCourse(actor, target) || CanEditPartnerCourse(actor, target)
+}
+
 // CanPublishPartnerCourse prevents a partner from bypassing an administrative
 // block with a new published version.
 func CanPublishPartnerCourse(actor Actor, target course.Course) bool {

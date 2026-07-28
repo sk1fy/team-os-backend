@@ -165,6 +165,10 @@ func canEditCourse(actor Actor, value Course) bool {
 		domainauth.CanEditPartnerCourse(convertedActor, convertedCourse)
 }
 
+func canChangeCourseVisibility(actor Actor, value Course) bool {
+	return domainauth.CanChangeCourseVisibility(authorizationActor(actor), authorizationCourse(value))
+}
+
 func canPublishCourse(actor Actor, value Course) bool {
 	convertedActor, convertedCourse := authorizationActor(actor), authorizationCourse(value)
 	return domainauth.CanPublishCompanyCourse(convertedActor, convertedCourse) ||

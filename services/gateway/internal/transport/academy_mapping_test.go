@@ -8,6 +8,31 @@ import (
 	"github.com/sk1fy/team-os-backend/services/gateway/internal/api"
 )
 
+func TestCourseVisibilityToProtoAcceptsContractValues(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		value api.CourseVisibility
+		want  academyv1.CourseVisibility
+	}{
+		{value: api.CourseVisibilityRestricted, want: academyv1.CourseVisibility_COURSE_VISIBILITY_RESTRICTED},
+		{value: api.CourseVisibilityCompany, want: academyv1.CourseVisibility_COURSE_VISIBILITY_COMPANY},
+		{value: api.CourseVisibilityPublic, want: academyv1.CourseVisibility_COURSE_VISIBILITY_PUBLIC},
+	}
+	for _, tt := range tests {
+		t.Run(string(tt.value), func(t *testing.T) {
+			t.Parallel()
+			got, err := courseVisibilityToProto(tt.value)
+			if err != nil {
+				t.Fatalf("courseVisibilityToProto(%q): %v", tt.value, err)
+			}
+			if got != tt.want {
+				t.Fatalf("courseVisibilityToProto(%q) = %v, want %v", tt.value, got, tt.want)
+			}
+		})
+	}
+}
+
 func TestCourseFromProtoPreservesOwnershipAndLifecycle(t *testing.T) {
 	ownerUserID := uuid.New()
 	createdByID := uuid.New()

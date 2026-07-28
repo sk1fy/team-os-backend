@@ -205,7 +205,12 @@ func (h *Handler) UpdateCourse(w http.ResponseWriter, r *http.Request, id api.Id
 		return
 	}
 	var input api.UpdateCourseInput
-	if !decode(w, r, &input) {
+	if !decodeStrict(w, r, &input) {
+		return
+	}
+	if input.Title == nil && input.Description == nil && input.Status == nil &&
+		input.Sequential == nil && input.DeadlineDays == nil && input.Visibility == nil {
+		apierror.Write(w, apierror.BadRequest("Укажите хотя бы одно поле для обновления"))
 		return
 	}
 	request := &academyv1.UpdateCourseRequest{
@@ -332,7 +337,12 @@ func (h *Handler) CreateCourseDraft(w http.ResponseWriter, r *http.Request, cour
 
 func (h *Handler) UpdateCourseDraft(w http.ResponseWriter, r *http.Request, courseID api.CourseId) {
 	var input api.UpdateCourseDraftInput
-	if !decode(w, r, &input) {
+	if !decodeStrict(w, r, &input) {
+		return
+	}
+	if input.Title == nil && input.Description == nil && input.CoverFileId == nil &&
+		input.Sequential == nil && input.DefaultInternalDeadlineDays == nil {
+		apierror.Write(w, apierror.BadRequest("Укажите хотя бы одно поле для обновления"))
 		return
 	}
 	request := &academyv1.UpdateCourseDraftRequest{

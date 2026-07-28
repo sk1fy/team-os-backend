@@ -192,6 +192,79 @@ func TestAcademyAuthorizationConsumersAndOrdering(t *testing.T) {
 		}
 	})
 
+	t.Run("visibility изменяет только пользователь с object-level capability", func(t *testing.T) {
+		companyCourse, createErr := service.CreateCourse(ctx, manager, CreateCourseInput{Title: "Настройки видимости"})
+		if createErr != nil {
+			t.Fatalf("создание курса компании: %v", createErr)
+		}
+		for _, visibility := range []string{"company", "public", "restricted"} {
+			updated, updateErr := service.UpdateCourse(ctx, manager, UpdateCourseInput{
+				ID: companyCourse.ID, Visibility: &visibility,
+			})
+			if updateErr != nil || updated.Visibility != visibility {
+				t.Fatalf("admin меняет visibility на %q: course=%+v err=%v", visibility, updated, updateErr)
+			}
+		}
+
+		companyVisibility := "company"
+		owner := Actor{CompanyID: companyID, UserID: uuid.New(), Role: "owner"}
+		updated, updateErr := service.UpdateCourse(ctx, owner, UpdateCourseInput{
+			ID: companyCourse.ID, Visibility: &companyVisibility,
+		})
+		if updateErr != nil || updated.Visibility != companyVisibility {
+			t.Fatalf("owner меняет visibility: course=%+v err=%v", updated, updateErr)
+		}
+
+		employee := Actor{CompanyID: companyID, UserID: uuid.New(), Role: "employee"}
+		restrictedVisibility := "restricted"
+		if _, updateErr = service.UpdateCourse(ctx, employee, UpdateCourseInput{
+			ID: companyCourse.ID, Visibility: &restrictedVisibility,
+		}); !isApplicationError(updateErr, ErrorForbidden) {
+			t.Fatalf("employee изменил visibility курса компании: %v", updateErr)
+		}
+
+		partnerCourse, createErr := service.CreateCourse(ctx, partner, CreateCourseInput{Title: "Курс владельца-партнёра"})
+		if createErr != nil {
+			t.Fatalf("создание курса партнёра: %v", createErr)
+		}
+		partnerVisibility := "public"
+		updated, updateErr = service.UpdateCourse(ctx, partner, UpdateCourseInput{
+			ID: partnerCourse.ID, Visibility: &partnerVisibility,
+		})
+		if updateErr != nil || updated.Visibility != partnerVisibility {
+			t.Fatalf("партнёр-владелец меняет visibility: course=%+v err=%v", updated, updateErr)
+		}
+		if _, updateErr = service.UpdateCourse(ctx, manager, UpdateCourseInput{
+			ID: partnerCourse.ID, Visibility: &restrictedVisibility,
+		}); !isApplicationError(updateErr, ErrorForbidden) {
+			t.Fatalf("admin изменил visibility партнёрского оригинала: %v", updateErr)
+		}
+
+		invalidVisibility := "internal"
+		if _, updateErr = service.UpdateCourse(ctx, manager, UpdateCourseInput{
+			ID: companyCourse.ID, Visibility: &invalidVisibility,
+		}); !isApplicationError(updateErr, ErrorValidation) {
+			t.Fatalf("некорректная visibility не отклонена: %v", updateErr)
+		}
+
+		legacyTitle := "Название корневой записи"
+		if _, updateErr = service.UpdateCourse(ctx, manager, UpdateCourseInput{
+			ID: companyCourse.ID, Title: &legacyTitle,
+		}); updateErr != nil {
+			t.Fatalf("обновление метаданных корневой записи: %v", updateErr)
+		}
+		var courseTitle, draftTitle string
+		if queryErr := pool.QueryRow(ctx, `SELECT title FROM courses WHERE id=$1`, companyCourse.ID).Scan(&courseTitle); queryErr != nil {
+			t.Fatalf("чтение метаданных курса: %v", queryErr)
+		}
+		if queryErr := pool.QueryRow(ctx, `SELECT title FROM course_versions WHERE id=$1`, *companyCourse.CurrentDraftVersionID).Scan(&draftTitle); queryErr != nil {
+			t.Fatalf("чтение метаданных черновика: %v", queryErr)
+		}
+		if courseTitle != legacyTitle || draftTitle != "Настройки видимости" {
+			t.Fatalf("границы course/draft нарушены: course title=%q draft title=%q", courseTitle, draftTitle)
+		}
+	})
+
 	t.Run("archive restore и soft delete сохраняют данные", func(t *testing.T) {
 		courseID, sectionID := uuid.New(), uuid.New()
 		seedAcademyCourse(t, ctx, pool, companyID, managerID, courseID, sectionID, uuid.New(), uuid.New())

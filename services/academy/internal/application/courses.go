@@ -626,6 +626,9 @@ func (s *Service) UpdateCourse(ctx context.Context, actor Actor, input UpdateCou
 		}
 	}
 	if input.Visibility != nil {
+		if !canChangeCourseVisibility(actor, currentCourse) {
+			return Course{}, forbidden("Недостаточно прав для изменения видимости этого курса")
+		}
 		if err := validateCourseVisibility(*input.Visibility); err != nil {
 			return Course{}, err
 		}
@@ -649,28 +652,14 @@ func (s *Service) UpdateCourse(ctx context.Context, actor Actor, input UpdateCou
 		}
 	}
 
-	// The legacy course mutation remains an additive compatibility adapter. The
-	// editable metadata now belongs to the current immutable-version draft; the
-	// legacy courses row is still updated for rolling deployments and old readers.
+	// Legacy course fields remain writable for rolling deployments and old
+	// readers, but version metadata is changed only through UpdateCourseDraft.
 	if input.Status != nil && *input.Status == "draft" && currentCourse.CurrentDraftVersionID == nil && currentCourse.LatestPublishedVersionID != nil {
 		createdDraft, createErr := s.CreateCourseDraft(ctx, actor, input.ID)
 		if createErr != nil {
 			return Course{}, createErr
 		}
 		currentCourse.CurrentDraftVersionID = &createdDraft.ID
-	}
-	if currentCourse.CurrentDraftVersionID != nil && (input.Title != nil || input.Description != nil || input.Sequential != nil || input.DeadlineDays != nil) {
-		var versionDeadline *int32
-		if input.DeadlineDays != nil && *input.DeadlineDays > 0 {
-			versionDeadline = input.DeadlineDays
-		}
-		if _, updateErr := s.UpdateCourseDraft(ctx, actor, UpdateCourseDraftInput{
-			CourseID: input.ID, Title: input.Title, Description: input.Description,
-			Sequential: input.Sequential, DefaultInternalDeadlineDays: versionDeadline,
-			SetDefaultDeadline: input.DeadlineDays != nil,
-		}); updateErr != nil {
-			return Course{}, updateErr
-		}
 	}
 	if input.Status != nil && *input.Status == "published" && currentCourse.CurrentDraftVersionID != nil {
 		if _, publishErr := s.PublishCourseVersion(ctx, actor, input.ID, "legacy-update:"+uuid.NewString()); publishErr != nil {

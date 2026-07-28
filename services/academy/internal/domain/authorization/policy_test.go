@@ -66,6 +66,7 @@ func TestCompanyCoursePermissionMatrix(t *testing.T) {
 		want  roleMatrix
 	}{
 		{name: "edit", check: CanEditCompanyCourse, want: managersOnly()},
+		{name: "change visibility", check: CanChangeCourseVisibility, want: managersOnly()},
 		{name: "publish", check: CanPublishCompanyCourse, want: managersOnly()},
 		{name: "assign", check: CanAssignCompanyCourse, want: managersOnly()},
 		{name: "archive", check: CanArchiveCourse, want: managersOnly()},
@@ -99,6 +100,7 @@ func TestOwnPartnerCoursePermissionMatrix(t *testing.T) {
 		{name: "publish company course", check: CanPublishCompanyCourse, want: roleMatrix{}},
 		{name: "assign company course", check: CanAssignCompanyCourse, want: roleMatrix{}},
 		{name: "edit own partner course", check: CanEditPartnerCourse, want: partnerOnly()},
+		{name: "change own partner course visibility", check: CanChangeCourseVisibility, want: partnerOnly()},
 		{name: "publish own partner course", check: CanPublishPartnerCourse, want: partnerOnly()},
 		{name: "archive own partner course", check: CanArchiveCourse, want: partnerOnly()},
 		{name: "delete own partner course", check: CanDeleteCourse, want: partnerOnly()},
@@ -128,6 +130,7 @@ func TestOtherPartnerCoursePermissionMatrix(t *testing.T) {
 		want  roleMatrix
 	}{
 		{name: "edit", check: CanEditPartnerCourse, want: roleMatrix{}},
+		{name: "change visibility", check: CanChangeCourseVisibility, want: roleMatrix{}},
 		{name: "publish", check: CanPublishPartnerCourse, want: roleMatrix{}},
 		{name: "archive", check: CanArchiveCourse, want: roleMatrix{}},
 		{name: "delete", check: CanDeleteCourse, want: roleMatrix{}},
@@ -241,6 +244,7 @@ func TestCoursePolicyRejectsInvalidActorAndTarget(t *testing.T) {
 	invalidTarget.OwnerType = course.OwnerType("unknown")
 	checks := []func(Actor, course.Course) bool{
 		CanEditCompanyCourse,
+		CanChangeCourseVisibility,
 		CanPublishCompanyCourse,
 		CanAssignCompanyCourse,
 		CanArchiveCourse,

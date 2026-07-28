@@ -1359,16 +1359,37 @@ paths:
     patch:
       tags: [Academy]
       operationId: updateCourse
-      summary: Обновить курс
+      summary: Обновить настройки курса
+      description: |
+        Изменяет настройки самого курса, включая видимость в каталоге. Видимость может менять
+        владелец курса, администратор или пользователь с соответствующей capability.
+        Метаданные версии-черновика изменяются отдельной операцией `updateCourseDraft`.
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateCourseInput'
+            examples:
+              companyVisibility:
+                summary: Сделать опубликованный курс доступным компании
+                value:
+                  visibility: company
+              restrictedVisibility:
+                summary: Скрыть курс из общего каталога
+                value:
+                  visibility: restricted
+              publicVisibility:
+                summary: Сделать курс публичным
+                value:
+                  visibility: public
       responses:
         '200':
           $ref: '#/components/responses/Course'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '4XX':
           $ref: '#/components/responses/Error'
         default:
@@ -1834,15 +1855,32 @@ paths:
       tags: [Academy]
       operationId: updateCourseDraft
       summary: Обновить метаданные черновика курса
+      description: |
+        Изменяет только метаданные текущей версии-черновика. Настройки курса, в том числе
+        `visibility`, этой операцией не изменяются. Неизвестные и неправильно названные поля
+        отклоняются с ошибкой валидации.
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateCourseDraftInput'
+            examples:
+              metadata:
+                summary: Обновить название и параметры прохождения черновика
+                value:
+                  title: Вводный курс для новых сотрудников
+                  sequential: true
+                  defaultInternalDeadlineDays: 14
+              cover:
+                summary: Обновить обложку черновика
+                value:
+                  coverFileId: 11111111-1111-4111-8111-111111111111
       responses:
         '200':
           $ref: '#/components/responses/CourseVersion'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '4XX':
           $ref: '#/components/responses/Error'
         default:
@@ -5701,6 +5739,9 @@ components:
     CourseVisibility:
       type: string
       enum: [public, company, restricted]
+      description: |
+        `public` — публичный курс; `company` — доступен сотрудникам компании;
+        `restricted` — доступен только через назначение.
     CourseOwnerType:
       type: string
       enum: [company, partner]
@@ -5993,6 +6034,7 @@ components:
     UpdateCourseInput:
       type: object
       additionalProperties: false
+      description: Настройки курса. Не изменяет метаданные версии-черновика.
       minProperties: 1
       properties:
         title:
@@ -6593,6 +6635,9 @@ components:
     UpdateCourseDraftInput:
       type: object
       additionalProperties: false
+      description: |
+        Метаданные версии-черновика. Поля настроек курса (например, `visibility`)
+        не поддерживаются и отклоняются.
       minProperties: 1
       properties:
         title:

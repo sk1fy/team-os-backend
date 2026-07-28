@@ -244,6 +244,44 @@ func TestDecodeJSON(t *testing.T) {
 	}
 }
 
+func TestDecodeJSONStrictRejectsUnknownFields(t *testing.T) {
+	t.Parallel()
+
+	type input struct {
+		Title string `json:"title"`
+	}
+
+	tests := []struct {
+		name    string
+		body    string
+		wantErr bool
+	}{
+		{name: "known field", body: `{"title":"Курс"}`},
+		{name: "unknown field", body: `{"title":"Курс","visibility":"company"}`, wantErr: true},
+		{name: "wrong case", body: `{"Title":"Курс"}`, wantErr: true},
+		{name: "misnamed field", body: `{"cover_file_id":"11111111-1111-4111-8111-111111111111"}`, wantErr: true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			request := httptest.NewRequestWithContext(context.Background(), http.MethodPatch, "/", strings.NewReader(tt.body))
+			response := httptest.NewRecorder()
+			var decoded input
+			err := httpx.DecodeJSONStrict(response, request, &decoded, 0)
+			if tt.wantErr {
+				if err == nil || err.Status != http.StatusBadRequest || err.Message != "Тело запроса содержит неизвестное поле" {
+					t.Fatalf("error = %#v, want 400 unknown field", err)
+				}
+				return
+			}
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+		})
+	}
+}
+
 func TestReadiness(t *testing.T) {
 	t.Parallel()
 

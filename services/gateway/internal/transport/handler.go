@@ -814,6 +814,14 @@ func decode(w http.ResponseWriter, r *http.Request, destination any) bool {
 	return true
 }
 
+func decodeStrict(w http.ResponseWriter, r *http.Request, destination any) bool {
+	if err := httpx.DecodeJSONStrict(w, r, destination, httpx.DefaultMaxBodyBytes); err != nil {
+		apierror.Write(w, err)
+		return false
+	}
+	return true
+}
+
 // decodeOptional accepts an empty body as zero-value destination (OpenAPI optional body).
 func decodeOptional(w http.ResponseWriter, r *http.Request, destination any) bool {
 	if err := httpx.DecodeJSONOptional(w, r, destination, httpx.DefaultMaxBodyBytes); err != nil {

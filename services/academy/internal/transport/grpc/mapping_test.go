@@ -34,6 +34,38 @@ func TestEnrollmentSourceTypeToProto(t *testing.T) {
 	}
 }
 
+func TestCourseVisibilityFromProto(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name    string
+		value   academyv1.CourseVisibility
+		want    string
+		wantErr bool
+	}{
+		{name: "public", value: academyv1.CourseVisibility_COURSE_VISIBILITY_PUBLIC, want: "public"},
+		{name: "company", value: academyv1.CourseVisibility_COURSE_VISIBILITY_COMPANY, want: "company"},
+		{name: "restricted", value: academyv1.CourseVisibility_COURSE_VISIBILITY_RESTRICTED, want: "restricted"},
+		{name: "unspecified", value: academyv1.CourseVisibility_COURSE_VISIBILITY_UNSPECIFIED, wantErr: true},
+		{name: "unknown", value: academyv1.CourseVisibility(99), wantErr: true},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			got, err := courseVisibilityFromProto(test.value)
+			if test.wantErr {
+				if err == nil {
+					t.Fatalf("courseVisibilityFromProto(%s) не вернул ошибку", test.value)
+				}
+				return
+			}
+			if err != nil || got != test.want {
+				t.Fatalf("courseVisibilityFromProto(%s) = %q, %v; want %q", test.value, got, err, test.want)
+			}
+		})
+	}
+}
+
 func TestLearnerPublishedCourseVersionDoesNotExposeCorrectAnswers(t *testing.T) {
 	versionID := uuid.New()
 	sectionID := uuid.New()
