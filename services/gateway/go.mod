@@ -11,7 +11,7 @@ require (
 	github.com/oapi-codegen/runtime v1.4.2
 	github.com/sk1fy/team-os-backend/contracts/gen/go v0.0.0
 	github.com/sk1fy/team-os-backend/pkg v0.0.0
-	google.golang.org/grpc v1.81.1
+	google.golang.org/grpc v1.82.1
 	google.golang.org/protobuf v1.36.11
 )
 

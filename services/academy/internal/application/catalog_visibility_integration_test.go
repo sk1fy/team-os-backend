@@ -126,22 +126,32 @@ func seedCatalogCourse(
 			INSERT INTO course_versions (
 				id, company_id, course_id, number, status, title, sequential,
 				created_by_id, created_at, published_by_id, published_at, content_hash
-			) VALUES ($1,$2,$3,1,'published',$4,true,$5,$6,$5,$6,repeat('a',64));
-			UPDATE courses SET latest_published_version_id=$1 WHERE company_id=$2 AND id=$3`,
+			) VALUES ($1,$2,$3,1,'published',$4,true,$5,$6,$5,$6,repeat('a',64))`,
 			versionID, companyID, courseID, title, authorID, now,
 		); err != nil {
 			t.Fatalf("подготовка опубликованной версии курса: %v", err)
+		}
+		if _, err = tx.Exec(ctx, `
+			UPDATE courses SET latest_published_version_id=$1 WHERE company_id=$2 AND id=$3`,
+			versionID, companyID, courseID,
+		); err != nil {
+			t.Fatalf("связывание опубликованной версии курса: %v", err)
 		}
 	} else {
 		if _, err = tx.Exec(ctx, `
 			INSERT INTO course_versions (
 				id, company_id, course_id, number, status, title, sequential,
 				created_by_id, created_at
-			) VALUES ($1,$2,$3,1,'draft',$4,true,$5,$6);
-			UPDATE courses SET current_draft_version_id=$1 WHERE company_id=$2 AND id=$3`,
+			) VALUES ($1,$2,$3,1,'draft',$4,true,$5,$6)`,
 			versionID, companyID, courseID, title, authorID, now,
 		); err != nil {
 			t.Fatalf("подготовка черновой версии курса: %v", err)
+		}
+		if _, err = tx.Exec(ctx, `
+			UPDATE courses SET current_draft_version_id=$1 WHERE company_id=$2 AND id=$3`,
+			versionID, companyID, courseID,
+		); err != nil {
+			t.Fatalf("связывание черновой версии курса: %v", err)
 		}
 	}
 
