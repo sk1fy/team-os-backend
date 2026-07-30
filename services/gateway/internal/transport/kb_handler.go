@@ -278,6 +278,18 @@ func (h *Handler) UpdateArticle(w http.ResponseWriter, r *http.Request, id api.I
 	writeJSON(w, http.StatusOK, converted)
 }
 
+func (h *Handler) DeleteArticle(w http.ResponseWriter, r *http.Request, id api.Id) {
+	_, err := h.kb.DeleteArticle(
+		outgoingContext(r),
+		&kbv1.DeleteArticleRequest{Id: id.String()},
+	)
+	if err != nil {
+		h.writeKbRPCError(w, r, err)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
 func (h *Handler) GetArticlePartnerPolicy(w http.ResponseWriter, r *http.Request, id api.Id) {
 	response, err := h.kb.GetArticlePartnerPolicy(outgoingContext(r), &kbv1.GetArticlePartnerPolicyRequest{
 		ArticleId: id.String(),

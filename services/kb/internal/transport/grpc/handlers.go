@@ -277,6 +277,21 @@ func (s *Server) UpdateArticle(ctx context.Context, request *kbv1.UpdateArticleR
 	return &kbv1.UpdateArticleResponse{Article: converted}, nil
 }
 
+func (s *Server) DeleteArticle(ctx context.Context, request *kbv1.DeleteArticleRequest) (*kbv1.DeleteArticleResponse, error) {
+	actor, err := s.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	id, err := parseUUID(request.GetId())
+	if err != nil {
+		return nil, err
+	}
+	if err = s.application.DeleteArticle(ctx, actor, id); err != nil {
+		return nil, transportError(err)
+	}
+	return &kbv1.DeleteArticleResponse{}, nil
+}
+
 func (s *Server) GetArticlePartnerPolicy(ctx context.Context, request *kbv1.GetArticlePartnerPolicyRequest) (*kbv1.GetArticlePartnerPolicyResponse, error) {
 	actor, err := s.actor(ctx)
 	if err != nil {

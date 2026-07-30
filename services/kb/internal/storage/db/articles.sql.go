@@ -105,6 +105,24 @@ func (q *Queries) CreateArticle(ctx context.Context, arg CreateArticleParams) (C
 	return i, err
 }
 
+const deleteArticle = `-- name: DeleteArticle :execrows
+DELETE FROM articles
+WHERE company_id = $1 AND id = $2
+`
+
+type DeleteArticleParams struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	ID        uuid.UUID `json:"id"`
+}
+
+func (q *Queries) DeleteArticle(ctx context.Context, arg DeleteArticleParams) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteArticle, arg.CompanyID, arg.ID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
 const getArticle = `-- name: GetArticle :one
 SELECT id, company_id, section_id, title, content, status, author_id, version,
        requires_acknowledgement, plain_text, partner_access_mode,

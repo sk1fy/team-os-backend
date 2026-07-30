@@ -28,6 +28,7 @@ const (
 	KbService_GetPublicArticle_FullMethodName                 = "/teamos.kb.v1.KbService/GetPublicArticle"
 	KbService_CreateArticle_FullMethodName                    = "/teamos.kb.v1.KbService/CreateArticle"
 	KbService_UpdateArticle_FullMethodName                    = "/teamos.kb.v1.KbService/UpdateArticle"
+	KbService_DeleteArticle_FullMethodName                    = "/teamos.kb.v1.KbService/DeleteArticle"
 	KbService_RollbackArticle_FullMethodName                  = "/teamos.kb.v1.KbService/RollbackArticle"
 	KbService_GetArticleVersions_FullMethodName               = "/teamos.kb.v1.KbService/GetArticleVersions"
 	KbService_GetAcknowledgements_FullMethodName              = "/teamos.kb.v1.KbService/GetAcknowledgements"
@@ -54,6 +55,7 @@ type KbServiceClient interface {
 	GetPublicArticle(ctx context.Context, in *GetPublicArticleRequest, opts ...grpc.CallOption) (*GetPublicArticleResponse, error)
 	CreateArticle(ctx context.Context, in *CreateArticleRequest, opts ...grpc.CallOption) (*CreateArticleResponse, error)
 	UpdateArticle(ctx context.Context, in *UpdateArticleRequest, opts ...grpc.CallOption) (*UpdateArticleResponse, error)
+	DeleteArticle(ctx context.Context, in *DeleteArticleRequest, opts ...grpc.CallOption) (*DeleteArticleResponse, error)
 	RollbackArticle(ctx context.Context, in *RollbackArticleRequest, opts ...grpc.CallOption) (*RollbackArticleResponse, error)
 	GetArticleVersions(ctx context.Context, in *GetArticleVersionsRequest, opts ...grpc.CallOption) (*GetArticleVersionsResponse, error)
 	GetAcknowledgements(ctx context.Context, in *GetAcknowledgementsRequest, opts ...grpc.CallOption) (*GetAcknowledgementsResponse, error)
@@ -162,6 +164,16 @@ func (c *kbServiceClient) UpdateArticle(ctx context.Context, in *UpdateArticleRe
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UpdateArticleResponse)
 	err := c.cc.Invoke(ctx, KbService_UpdateArticle_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *kbServiceClient) DeleteArticle(ctx context.Context, in *DeleteArticleRequest, opts ...grpc.CallOption) (*DeleteArticleResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteArticleResponse)
+	err := c.cc.Invoke(ctx, KbService_DeleteArticle_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -291,6 +303,7 @@ type KbServiceServer interface {
 	GetPublicArticle(context.Context, *GetPublicArticleRequest) (*GetPublicArticleResponse, error)
 	CreateArticle(context.Context, *CreateArticleRequest) (*CreateArticleResponse, error)
 	UpdateArticle(context.Context, *UpdateArticleRequest) (*UpdateArticleResponse, error)
+	DeleteArticle(context.Context, *DeleteArticleRequest) (*DeleteArticleResponse, error)
 	RollbackArticle(context.Context, *RollbackArticleRequest) (*RollbackArticleResponse, error)
 	GetArticleVersions(context.Context, *GetArticleVersionsRequest) (*GetArticleVersionsResponse, error)
 	GetAcknowledgements(context.Context, *GetAcknowledgementsRequest) (*GetAcknowledgementsResponse, error)
@@ -341,6 +354,9 @@ func (UnimplementedKbServiceServer) CreateArticle(context.Context, *CreateArticl
 }
 func (UnimplementedKbServiceServer) UpdateArticle(context.Context, *UpdateArticleRequest) (*UpdateArticleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateArticle not implemented")
+}
+func (UnimplementedKbServiceServer) DeleteArticle(context.Context, *DeleteArticleRequest) (*DeleteArticleResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteArticle not implemented")
 }
 func (UnimplementedKbServiceServer) RollbackArticle(context.Context, *RollbackArticleRequest) (*RollbackArticleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RollbackArticle not implemented")
@@ -554,6 +570,24 @@ func _KbService_UpdateArticle_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(KbServiceServer).UpdateArticle(ctx, req.(*UpdateArticleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _KbService_DeleteArticle_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteArticleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(KbServiceServer).DeleteArticle(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: KbService_DeleteArticle_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(KbServiceServer).DeleteArticle(ctx, req.(*DeleteArticleRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -798,6 +832,10 @@ var KbService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateArticle",
 			Handler:    _KbService_UpdateArticle_Handler,
+		},
+		{
+			MethodName: "DeleteArticle",
+			Handler:    _KbService_DeleteArticle_Handler,
 		},
 		{
 			MethodName: "RollbackArticle",

@@ -1771,6 +1771,86 @@ func (x *UpdateArticleResponse) GetArticle() *Article {
 	return nil
 }
 
+type DeleteArticleRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteArticleRequest) Reset() {
+	*x = DeleteArticleRequest{}
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteArticleRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteArticleRequest) ProtoMessage() {}
+
+func (x *DeleteArticleRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteArticleRequest.ProtoReflect.Descriptor instead.
+func (*DeleteArticleRequest) Descriptor() ([]byte, []int) {
+	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{25}
+}
+
+func (x *DeleteArticleRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+type DeleteArticleResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteArticleResponse) Reset() {
+	*x = DeleteArticleResponse{}
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[26]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteArticleResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteArticleResponse) ProtoMessage() {}
+
+func (x *DeleteArticleResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[26]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteArticleResponse.ProtoReflect.Descriptor instead.
+func (*DeleteArticleResponse) Descriptor() ([]byte, []int) {
+	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{26}
+}
+
 type RollbackArticleRequest struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
 	ArticleId       string                 `protobuf:"bytes,1,opt,name=article_id,json=articleId,proto3" json:"article_id,omitempty"`
@@ -1782,7 +1862,7 @@ type RollbackArticleRequest struct {
 
 func (x *RollbackArticleRequest) Reset() {
 	*x = RollbackArticleRequest{}
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[25]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1794,7 +1874,7 @@ func (x *RollbackArticleRequest) String() string {
 func (*RollbackArticleRequest) ProtoMessage() {}
 
 func (x *RollbackArticleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[25]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1807,7 +1887,7 @@ func (x *RollbackArticleRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RollbackArticleRequest.ProtoReflect.Descriptor instead.
 func (*RollbackArticleRequest) Descriptor() ([]byte, []int) {
-	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{25}
+	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *RollbackArticleRequest) GetArticleId() string {
@@ -1840,7 +1920,7 @@ type RollbackArticleResponse struct {
 
 func (x *RollbackArticleResponse) Reset() {
 	*x = RollbackArticleResponse{}
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[26]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1852,7 +1932,7 @@ func (x *RollbackArticleResponse) String() string {
 func (*RollbackArticleResponse) ProtoMessage() {}
 
 func (x *RollbackArticleResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[26]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1865,7 +1945,7 @@ func (x *RollbackArticleResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RollbackArticleResponse.ProtoReflect.Descriptor instead.
 func (*RollbackArticleResponse) Descriptor() ([]byte, []int) {
-	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{26}
+	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *RollbackArticleResponse) GetArticle() *Article {
@@ -1884,7 +1964,7 @@ type GetArticleVersionsRequest struct {
 
 func (x *GetArticleVersionsRequest) Reset() {
 	*x = GetArticleVersionsRequest{}
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[27]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1896,7 +1976,7 @@ func (x *GetArticleVersionsRequest) String() string {
 func (*GetArticleVersionsRequest) ProtoMessage() {}
 
 func (x *GetArticleVersionsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[27]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1909,7 +1989,7 @@ func (x *GetArticleVersionsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetArticleVersionsRequest.ProtoReflect.Descriptor instead.
 func (*GetArticleVersionsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{27}
+	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *GetArticleVersionsRequest) GetArticleId() string {
@@ -1928,7 +2008,7 @@ type GetArticleVersionsResponse struct {
 
 func (x *GetArticleVersionsResponse) Reset() {
 	*x = GetArticleVersionsResponse{}
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[28]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1940,7 +2020,7 @@ func (x *GetArticleVersionsResponse) String() string {
 func (*GetArticleVersionsResponse) ProtoMessage() {}
 
 func (x *GetArticleVersionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[28]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1953,7 +2033,7 @@ func (x *GetArticleVersionsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetArticleVersionsResponse.ProtoReflect.Descriptor instead.
 func (*GetArticleVersionsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{28}
+	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *GetArticleVersionsResponse) GetVersions() []*ArticleVersion {
@@ -1972,7 +2052,7 @@ type GetAcknowledgementsRequest struct {
 
 func (x *GetAcknowledgementsRequest) Reset() {
 	*x = GetAcknowledgementsRequest{}
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[29]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1984,7 +2064,7 @@ func (x *GetAcknowledgementsRequest) String() string {
 func (*GetAcknowledgementsRequest) ProtoMessage() {}
 
 func (x *GetAcknowledgementsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[29]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1997,7 +2077,7 @@ func (x *GetAcknowledgementsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAcknowledgementsRequest.ProtoReflect.Descriptor instead.
 func (*GetAcknowledgementsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{29}
+	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *GetAcknowledgementsRequest) GetArticleId() string {
@@ -2016,7 +2096,7 @@ type GetAcknowledgementsResponse struct {
 
 func (x *GetAcknowledgementsResponse) Reset() {
 	*x = GetAcknowledgementsResponse{}
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[30]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2028,7 +2108,7 @@ func (x *GetAcknowledgementsResponse) String() string {
 func (*GetAcknowledgementsResponse) ProtoMessage() {}
 
 func (x *GetAcknowledgementsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[30]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2041,7 +2121,7 @@ func (x *GetAcknowledgementsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAcknowledgementsResponse.ProtoReflect.Descriptor instead.
 func (*GetAcknowledgementsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{30}
+	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *GetAcknowledgementsResponse) GetAcknowledgements() []*Acknowledgement {
@@ -2060,7 +2140,7 @@ type AcknowledgeArticleRequest struct {
 
 func (x *AcknowledgeArticleRequest) Reset() {
 	*x = AcknowledgeArticleRequest{}
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[31]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2072,7 +2152,7 @@ func (x *AcknowledgeArticleRequest) String() string {
 func (*AcknowledgeArticleRequest) ProtoMessage() {}
 
 func (x *AcknowledgeArticleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[31]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2085,7 +2165,7 @@ func (x *AcknowledgeArticleRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AcknowledgeArticleRequest.ProtoReflect.Descriptor instead.
 func (*AcknowledgeArticleRequest) Descriptor() ([]byte, []int) {
-	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{31}
+	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *AcknowledgeArticleRequest) GetArticleId() string {
@@ -2103,7 +2183,7 @@ type AcknowledgeArticleResponse struct {
 
 func (x *AcknowledgeArticleResponse) Reset() {
 	*x = AcknowledgeArticleResponse{}
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[32]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2115,7 +2195,7 @@ func (x *AcknowledgeArticleResponse) String() string {
 func (*AcknowledgeArticleResponse) ProtoMessage() {}
 
 func (x *AcknowledgeArticleResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[32]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2128,7 +2208,7 @@ func (x *AcknowledgeArticleResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AcknowledgeArticleResponse.ProtoReflect.Descriptor instead.
 func (*AcknowledgeArticleResponse) Descriptor() ([]byte, []int) {
-	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{32}
+	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{34}
 }
 
 type SearchArticlesRequest struct {
@@ -2140,7 +2220,7 @@ type SearchArticlesRequest struct {
 
 func (x *SearchArticlesRequest) Reset() {
 	*x = SearchArticlesRequest{}
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[33]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2152,7 +2232,7 @@ func (x *SearchArticlesRequest) String() string {
 func (*SearchArticlesRequest) ProtoMessage() {}
 
 func (x *SearchArticlesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[33]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2165,7 +2245,7 @@ func (x *SearchArticlesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchArticlesRequest.ProtoReflect.Descriptor instead.
 func (*SearchArticlesRequest) Descriptor() ([]byte, []int) {
-	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{33}
+	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *SearchArticlesRequest) GetQuery() string {
@@ -2184,7 +2264,7 @@ type SearchArticlesResponse struct {
 
 func (x *SearchArticlesResponse) Reset() {
 	*x = SearchArticlesResponse{}
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[34]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2196,7 +2276,7 @@ func (x *SearchArticlesResponse) String() string {
 func (*SearchArticlesResponse) ProtoMessage() {}
 
 func (x *SearchArticlesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[34]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2209,7 +2289,7 @@ func (x *SearchArticlesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchArticlesResponse.ProtoReflect.Descriptor instead.
 func (*SearchArticlesResponse) Descriptor() ([]byte, []int) {
-	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{34}
+	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *SearchArticlesResponse) GetArticles() []*Article {
@@ -2228,7 +2308,7 @@ type GetArticlesByIdsRequest struct {
 
 func (x *GetArticlesByIdsRequest) Reset() {
 	*x = GetArticlesByIdsRequest{}
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[35]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2240,7 +2320,7 @@ func (x *GetArticlesByIdsRequest) String() string {
 func (*GetArticlesByIdsRequest) ProtoMessage() {}
 
 func (x *GetArticlesByIdsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[35]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2253,7 +2333,7 @@ func (x *GetArticlesByIdsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetArticlesByIdsRequest.ProtoReflect.Descriptor instead.
 func (*GetArticlesByIdsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{35}
+	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *GetArticlesByIdsRequest) GetIds() []string {
@@ -2272,7 +2352,7 @@ type GetArticlesByIdsResponse struct {
 
 func (x *GetArticlesByIdsResponse) Reset() {
 	*x = GetArticlesByIdsResponse{}
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[36]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2284,7 +2364,7 @@ func (x *GetArticlesByIdsResponse) String() string {
 func (*GetArticlesByIdsResponse) ProtoMessage() {}
 
 func (x *GetArticlesByIdsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[36]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2297,7 +2377,7 @@ func (x *GetArticlesByIdsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetArticlesByIdsResponse.ProtoReflect.Descriptor instead.
 func (*GetArticlesByIdsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{36}
+	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *GetArticlesByIdsResponse) GetArticles() []*Article {
@@ -2316,7 +2396,7 @@ type ArticleExistsRequest struct {
 
 func (x *ArticleExistsRequest) Reset() {
 	*x = ArticleExistsRequest{}
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[37]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2328,7 +2408,7 @@ func (x *ArticleExistsRequest) String() string {
 func (*ArticleExistsRequest) ProtoMessage() {}
 
 func (x *ArticleExistsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[37]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2341,7 +2421,7 @@ func (x *ArticleExistsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ArticleExistsRequest.ProtoReflect.Descriptor instead.
 func (*ArticleExistsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{37}
+	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *ArticleExistsRequest) GetId() string {
@@ -2360,7 +2440,7 @@ type ArticleExistsResponse struct {
 
 func (x *ArticleExistsResponse) Reset() {
 	*x = ArticleExistsResponse{}
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[38]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2372,7 +2452,7 @@ func (x *ArticleExistsResponse) String() string {
 func (*ArticleExistsResponse) ProtoMessage() {}
 
 func (x *ArticleExistsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[38]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2385,7 +2465,7 @@ func (x *ArticleExistsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ArticleExistsResponse.ProtoReflect.Descriptor instead.
 func (*ArticleExistsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{38}
+	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *ArticleExistsResponse) GetExists() bool {
@@ -2404,7 +2484,7 @@ type GetArticlePartnerPolicyRequest struct {
 
 func (x *GetArticlePartnerPolicyRequest) Reset() {
 	*x = GetArticlePartnerPolicyRequest{}
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[39]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2416,7 +2496,7 @@ func (x *GetArticlePartnerPolicyRequest) String() string {
 func (*GetArticlePartnerPolicyRequest) ProtoMessage() {}
 
 func (x *GetArticlePartnerPolicyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[39]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2429,7 +2509,7 @@ func (x *GetArticlePartnerPolicyRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetArticlePartnerPolicyRequest.ProtoReflect.Descriptor instead.
 func (*GetArticlePartnerPolicyRequest) Descriptor() ([]byte, []int) {
-	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{39}
+	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *GetArticlePartnerPolicyRequest) GetArticleId() string {
@@ -2448,7 +2528,7 @@ type GetArticlePartnerPolicyResponse struct {
 
 func (x *GetArticlePartnerPolicyResponse) Reset() {
 	*x = GetArticlePartnerPolicyResponse{}
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[40]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2460,7 +2540,7 @@ func (x *GetArticlePartnerPolicyResponse) String() string {
 func (*GetArticlePartnerPolicyResponse) ProtoMessage() {}
 
 func (x *GetArticlePartnerPolicyResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[40]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2473,7 +2553,7 @@ func (x *GetArticlePartnerPolicyResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetArticlePartnerPolicyResponse.ProtoReflect.Descriptor instead.
 func (*GetArticlePartnerPolicyResponse) Descriptor() ([]byte, []int) {
-	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{40}
+	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *GetArticlePartnerPolicyResponse) GetPolicy() *ArticlePartnerPolicy {
@@ -2494,7 +2574,7 @@ type UpdateArticlePartnerPolicyRequest struct {
 
 func (x *UpdateArticlePartnerPolicyRequest) Reset() {
 	*x = UpdateArticlePartnerPolicyRequest{}
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[41]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2506,7 +2586,7 @@ func (x *UpdateArticlePartnerPolicyRequest) String() string {
 func (*UpdateArticlePartnerPolicyRequest) ProtoMessage() {}
 
 func (x *UpdateArticlePartnerPolicyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[41]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2519,7 +2599,7 @@ func (x *UpdateArticlePartnerPolicyRequest) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use UpdateArticlePartnerPolicyRequest.ProtoReflect.Descriptor instead.
 func (*UpdateArticlePartnerPolicyRequest) Descriptor() ([]byte, []int) {
-	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{41}
+	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *UpdateArticlePartnerPolicyRequest) GetArticleId() string {
@@ -2552,7 +2632,7 @@ type UpdateArticlePartnerPolicyResponse struct {
 
 func (x *UpdateArticlePartnerPolicyResponse) Reset() {
 	*x = UpdateArticlePartnerPolicyResponse{}
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[42]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2564,7 +2644,7 @@ func (x *UpdateArticlePartnerPolicyResponse) String() string {
 func (*UpdateArticlePartnerPolicyResponse) ProtoMessage() {}
 
 func (x *UpdateArticlePartnerPolicyResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[42]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2577,7 +2657,7 @@ func (x *UpdateArticlePartnerPolicyResponse) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use UpdateArticlePartnerPolicyResponse.ProtoReflect.Descriptor instead.
 func (*UpdateArticlePartnerPolicyResponse) Descriptor() ([]byte, []int) {
-	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{42}
+	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *UpdateArticlePartnerPolicyResponse) GetPolicy() *ArticlePartnerPolicy {
@@ -2601,7 +2681,7 @@ type CheckArticleCourseCopyPermissionRequest struct {
 
 func (x *CheckArticleCourseCopyPermissionRequest) Reset() {
 	*x = CheckArticleCourseCopyPermissionRequest{}
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[43]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2613,7 +2693,7 @@ func (x *CheckArticleCourseCopyPermissionRequest) String() string {
 func (*CheckArticleCourseCopyPermissionRequest) ProtoMessage() {}
 
 func (x *CheckArticleCourseCopyPermissionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[43]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2626,7 +2706,7 @@ func (x *CheckArticleCourseCopyPermissionRequest) ProtoReflect() protoreflect.Me
 
 // Deprecated: Use CheckArticleCourseCopyPermissionRequest.ProtoReflect.Descriptor instead.
 func (*CheckArticleCourseCopyPermissionRequest) Descriptor() ([]byte, []int) {
-	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{43}
+	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *CheckArticleCourseCopyPermissionRequest) GetArticleId() string {
@@ -2663,7 +2743,7 @@ type CheckArticleCourseCopyPermissionResponse struct {
 
 func (x *CheckArticleCourseCopyPermissionResponse) Reset() {
 	*x = CheckArticleCourseCopyPermissionResponse{}
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[44]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2675,7 +2755,7 @@ func (x *CheckArticleCourseCopyPermissionResponse) String() string {
 func (*CheckArticleCourseCopyPermissionResponse) ProtoMessage() {}
 
 func (x *CheckArticleCourseCopyPermissionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[44]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2688,7 +2768,7 @@ func (x *CheckArticleCourseCopyPermissionResponse) ProtoReflect() protoreflect.M
 
 // Deprecated: Use CheckArticleCourseCopyPermissionResponse.ProtoReflect.Descriptor instead.
 func (*CheckArticleCourseCopyPermissionResponse) Descriptor() ([]byte, []int) {
-	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{44}
+	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *CheckArticleCourseCopyPermissionResponse) GetCanRead() bool {
@@ -2738,7 +2818,7 @@ type ArticleSnapshotAttachment struct {
 
 func (x *ArticleSnapshotAttachment) Reset() {
 	*x = ArticleSnapshotAttachment{}
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[45]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2750,7 +2830,7 @@ func (x *ArticleSnapshotAttachment) String() string {
 func (*ArticleSnapshotAttachment) ProtoMessage() {}
 
 func (x *ArticleSnapshotAttachment) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[45]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2763,7 +2843,7 @@ func (x *ArticleSnapshotAttachment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ArticleSnapshotAttachment.ProtoReflect.Descriptor instead.
 func (*ArticleSnapshotAttachment) Descriptor() ([]byte, []int) {
-	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{45}
+	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *ArticleSnapshotAttachment) GetFileId() string {
@@ -2810,7 +2890,7 @@ type ArticleSnapshotForCourseCopy struct {
 
 func (x *ArticleSnapshotForCourseCopy) Reset() {
 	*x = ArticleSnapshotForCourseCopy{}
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[46]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2822,7 +2902,7 @@ func (x *ArticleSnapshotForCourseCopy) String() string {
 func (*ArticleSnapshotForCourseCopy) ProtoMessage() {}
 
 func (x *ArticleSnapshotForCourseCopy) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[46]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2835,7 +2915,7 @@ func (x *ArticleSnapshotForCourseCopy) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ArticleSnapshotForCourseCopy.ProtoReflect.Descriptor instead.
 func (*ArticleSnapshotForCourseCopy) Descriptor() ([]byte, []int) {
-	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{46}
+	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *ArticleSnapshotForCourseCopy) GetArticleId() string {
@@ -2907,7 +2987,7 @@ type GetArticleSnapshotForCourseCopyRequest struct {
 
 func (x *GetArticleSnapshotForCourseCopyRequest) Reset() {
 	*x = GetArticleSnapshotForCourseCopyRequest{}
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[47]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2919,7 +2999,7 @@ func (x *GetArticleSnapshotForCourseCopyRequest) String() string {
 func (*GetArticleSnapshotForCourseCopyRequest) ProtoMessage() {}
 
 func (x *GetArticleSnapshotForCourseCopyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[47]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2932,7 +3012,7 @@ func (x *GetArticleSnapshotForCourseCopyRequest) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use GetArticleSnapshotForCourseCopyRequest.ProtoReflect.Descriptor instead.
 func (*GetArticleSnapshotForCourseCopyRequest) Descriptor() ([]byte, []int) {
-	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{47}
+	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *GetArticleSnapshotForCourseCopyRequest) GetArticleId() string {
@@ -2965,7 +3045,7 @@ type GetArticleSnapshotForCourseCopyResponse struct {
 
 func (x *GetArticleSnapshotForCourseCopyResponse) Reset() {
 	*x = GetArticleSnapshotForCourseCopyResponse{}
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[48]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2977,7 +3057,7 @@ func (x *GetArticleSnapshotForCourseCopyResponse) String() string {
 func (*GetArticleSnapshotForCourseCopyResponse) ProtoMessage() {}
 
 func (x *GetArticleSnapshotForCourseCopyResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_kb_v1_kb_proto_msgTypes[48]
+	mi := &file_proto_kb_v1_kb_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2990,7 +3070,7 @@ func (x *GetArticleSnapshotForCourseCopyResponse) ProtoReflect() protoreflect.Me
 
 // Deprecated: Use GetArticleSnapshotForCourseCopyResponse.ProtoReflect.Descriptor instead.
 func (*GetArticleSnapshotForCourseCopyResponse) Descriptor() ([]byte, []int) {
-	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{48}
+	return file_proto_kb_v1_kb_proto_rawDescGZIP(), []int{50}
 }
 
 func (x *GetArticleSnapshotForCourseCopyResponse) GetSnapshot() *ArticleSnapshotForCourseCopy {
@@ -3147,7 +3227,10 @@ const file_proto_kb_v1_kb_proto_rawDesc = "" +
 	"\x0f_partner_accessB\x17\n" +
 	"\x15_partner_reuse_policy\"H\n" +
 	"\x15UpdateArticleResponse\x12/\n" +
-	"\aarticle\x18\x01 \x01(\v2\x15.teamos.kb.v1.ArticleR\aarticle\"\x9b\x01\n" +
+	"\aarticle\x18\x01 \x01(\v2\x15.teamos.kb.v1.ArticleR\aarticle\"&\n" +
+	"\x14DeleteArticleRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\x17\n" +
+	"\x15DeleteArticleResponse\"\x9b\x01\n" +
 	"\x16RollbackArticleRequest\x12\x1d\n" +
 	"\n" +
 	"article_id\x18\x01 \x01(\tR\tarticleId\x12\x1d\n" +
@@ -3258,7 +3341,7 @@ const file_proto_kb_v1_kb_proto_rawDesc = "" +
 	"\x12PartnerReusePolicy\x12$\n" +
 	" PARTNER_REUSE_POLICY_UNSPECIFIED\x10\x00\x12$\n" +
 	" PARTNER_REUSE_POLICY_NOT_ALLOWED\x10\x01\x12%\n" +
-	"!PARTNER_REUSE_POLICY_COPY_ALLOWED\x10\x022\xff\x0f\n" +
+	"!PARTNER_REUSE_POLICY_COPY_ALLOWED\x10\x022\xd9\x10\n" +
 	"\tKbService\x12R\n" +
 	"\vGetSections\x12 .teamos.kb.v1.GetSectionsRequest\x1a!.teamos.kb.v1.GetSectionsResponse\x12X\n" +
 	"\rCreateSection\x12\".teamos.kb.v1.CreateSectionRequest\x1a#.teamos.kb.v1.CreateSectionResponse\x12X\n" +
@@ -3269,7 +3352,8 @@ const file_proto_kb_v1_kb_proto_rawDesc = "" +
 	"GetArticle\x12\x1f.teamos.kb.v1.GetArticleRequest\x1a .teamos.kb.v1.GetArticleResponse\x12a\n" +
 	"\x10GetPublicArticle\x12%.teamos.kb.v1.GetPublicArticleRequest\x1a&.teamos.kb.v1.GetPublicArticleResponse\x12X\n" +
 	"\rCreateArticle\x12\".teamos.kb.v1.CreateArticleRequest\x1a#.teamos.kb.v1.CreateArticleResponse\x12X\n" +
-	"\rUpdateArticle\x12\".teamos.kb.v1.UpdateArticleRequest\x1a#.teamos.kb.v1.UpdateArticleResponse\x12^\n" +
+	"\rUpdateArticle\x12\".teamos.kb.v1.UpdateArticleRequest\x1a#.teamos.kb.v1.UpdateArticleResponse\x12X\n" +
+	"\rDeleteArticle\x12\".teamos.kb.v1.DeleteArticleRequest\x1a#.teamos.kb.v1.DeleteArticleResponse\x12^\n" +
 	"\x0fRollbackArticle\x12$.teamos.kb.v1.RollbackArticleRequest\x1a%.teamos.kb.v1.RollbackArticleResponse\x12g\n" +
 	"\x12GetArticleVersions\x12'.teamos.kb.v1.GetArticleVersionsRequest\x1a(.teamos.kb.v1.GetArticleVersionsResponse\x12j\n" +
 	"\x13GetAcknowledgements\x12(.teamos.kb.v1.GetAcknowledgementsRequest\x1a).teamos.kb.v1.GetAcknowledgementsResponse\x12g\n" +
@@ -3295,7 +3379,7 @@ func file_proto_kb_v1_kb_proto_rawDescGZIP() []byte {
 }
 
 var file_proto_kb_v1_kb_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
-var file_proto_kb_v1_kb_proto_msgTypes = make([]protoimpl.MessageInfo, 49)
+var file_proto_kb_v1_kb_proto_msgTypes = make([]protoimpl.MessageInfo, 51)
 var file_proto_kb_v1_kb_proto_goTypes = []any{
 	(AccessScope)(0),                                 // 0: teamos.kb.v1.AccessScope
 	(ArticleStatus)(0),                               // 1: teamos.kb.v1.ArticleStatus
@@ -3327,50 +3411,52 @@ var file_proto_kb_v1_kb_proto_goTypes = []any{
 	(*CreateArticleResponse)(nil),                    // 27: teamos.kb.v1.CreateArticleResponse
 	(*UpdateArticleRequest)(nil),                     // 28: teamos.kb.v1.UpdateArticleRequest
 	(*UpdateArticleResponse)(nil),                    // 29: teamos.kb.v1.UpdateArticleResponse
-	(*RollbackArticleRequest)(nil),                   // 30: teamos.kb.v1.RollbackArticleRequest
-	(*RollbackArticleResponse)(nil),                  // 31: teamos.kb.v1.RollbackArticleResponse
-	(*GetArticleVersionsRequest)(nil),                // 32: teamos.kb.v1.GetArticleVersionsRequest
-	(*GetArticleVersionsResponse)(nil),               // 33: teamos.kb.v1.GetArticleVersionsResponse
-	(*GetAcknowledgementsRequest)(nil),               // 34: teamos.kb.v1.GetAcknowledgementsRequest
-	(*GetAcknowledgementsResponse)(nil),              // 35: teamos.kb.v1.GetAcknowledgementsResponse
-	(*AcknowledgeArticleRequest)(nil),                // 36: teamos.kb.v1.AcknowledgeArticleRequest
-	(*AcknowledgeArticleResponse)(nil),               // 37: teamos.kb.v1.AcknowledgeArticleResponse
-	(*SearchArticlesRequest)(nil),                    // 38: teamos.kb.v1.SearchArticlesRequest
-	(*SearchArticlesResponse)(nil),                   // 39: teamos.kb.v1.SearchArticlesResponse
-	(*GetArticlesByIdsRequest)(nil),                  // 40: teamos.kb.v1.GetArticlesByIdsRequest
-	(*GetArticlesByIdsResponse)(nil),                 // 41: teamos.kb.v1.GetArticlesByIdsResponse
-	(*ArticleExistsRequest)(nil),                     // 42: teamos.kb.v1.ArticleExistsRequest
-	(*ArticleExistsResponse)(nil),                    // 43: teamos.kb.v1.ArticleExistsResponse
-	(*GetArticlePartnerPolicyRequest)(nil),           // 44: teamos.kb.v1.GetArticlePartnerPolicyRequest
-	(*GetArticlePartnerPolicyResponse)(nil),          // 45: teamos.kb.v1.GetArticlePartnerPolicyResponse
-	(*UpdateArticlePartnerPolicyRequest)(nil),        // 46: teamos.kb.v1.UpdateArticlePartnerPolicyRequest
-	(*UpdateArticlePartnerPolicyResponse)(nil),       // 47: teamos.kb.v1.UpdateArticlePartnerPolicyResponse
-	(*CheckArticleCourseCopyPermissionRequest)(nil),  // 48: teamos.kb.v1.CheckArticleCourseCopyPermissionRequest
-	(*CheckArticleCourseCopyPermissionResponse)(nil), // 49: teamos.kb.v1.CheckArticleCourseCopyPermissionResponse
-	(*ArticleSnapshotAttachment)(nil),                // 50: teamos.kb.v1.ArticleSnapshotAttachment
-	(*ArticleSnapshotForCourseCopy)(nil),             // 51: teamos.kb.v1.ArticleSnapshotForCourseCopy
-	(*GetArticleSnapshotForCourseCopyRequest)(nil),   // 52: teamos.kb.v1.GetArticleSnapshotForCourseCopyRequest
-	(*GetArticleSnapshotForCourseCopyResponse)(nil),  // 53: teamos.kb.v1.GetArticleSnapshotForCourseCopyResponse
-	(*timestamppb.Timestamp)(nil),                    // 54: google.protobuf.Timestamp
-	(*structpb.Struct)(nil),                          // 55: google.protobuf.Struct
+	(*DeleteArticleRequest)(nil),                     // 30: teamos.kb.v1.DeleteArticleRequest
+	(*DeleteArticleResponse)(nil),                    // 31: teamos.kb.v1.DeleteArticleResponse
+	(*RollbackArticleRequest)(nil),                   // 32: teamos.kb.v1.RollbackArticleRequest
+	(*RollbackArticleResponse)(nil),                  // 33: teamos.kb.v1.RollbackArticleResponse
+	(*GetArticleVersionsRequest)(nil),                // 34: teamos.kb.v1.GetArticleVersionsRequest
+	(*GetArticleVersionsResponse)(nil),               // 35: teamos.kb.v1.GetArticleVersionsResponse
+	(*GetAcknowledgementsRequest)(nil),               // 36: teamos.kb.v1.GetAcknowledgementsRequest
+	(*GetAcknowledgementsResponse)(nil),              // 37: teamos.kb.v1.GetAcknowledgementsResponse
+	(*AcknowledgeArticleRequest)(nil),                // 38: teamos.kb.v1.AcknowledgeArticleRequest
+	(*AcknowledgeArticleResponse)(nil),               // 39: teamos.kb.v1.AcknowledgeArticleResponse
+	(*SearchArticlesRequest)(nil),                    // 40: teamos.kb.v1.SearchArticlesRequest
+	(*SearchArticlesResponse)(nil),                   // 41: teamos.kb.v1.SearchArticlesResponse
+	(*GetArticlesByIdsRequest)(nil),                  // 42: teamos.kb.v1.GetArticlesByIdsRequest
+	(*GetArticlesByIdsResponse)(nil),                 // 43: teamos.kb.v1.GetArticlesByIdsResponse
+	(*ArticleExistsRequest)(nil),                     // 44: teamos.kb.v1.ArticleExistsRequest
+	(*ArticleExistsResponse)(nil),                    // 45: teamos.kb.v1.ArticleExistsResponse
+	(*GetArticlePartnerPolicyRequest)(nil),           // 46: teamos.kb.v1.GetArticlePartnerPolicyRequest
+	(*GetArticlePartnerPolicyResponse)(nil),          // 47: teamos.kb.v1.GetArticlePartnerPolicyResponse
+	(*UpdateArticlePartnerPolicyRequest)(nil),        // 48: teamos.kb.v1.UpdateArticlePartnerPolicyRequest
+	(*UpdateArticlePartnerPolicyResponse)(nil),       // 49: teamos.kb.v1.UpdateArticlePartnerPolicyResponse
+	(*CheckArticleCourseCopyPermissionRequest)(nil),  // 50: teamos.kb.v1.CheckArticleCourseCopyPermissionRequest
+	(*CheckArticleCourseCopyPermissionResponse)(nil), // 51: teamos.kb.v1.CheckArticleCourseCopyPermissionResponse
+	(*ArticleSnapshotAttachment)(nil),                // 52: teamos.kb.v1.ArticleSnapshotAttachment
+	(*ArticleSnapshotForCourseCopy)(nil),             // 53: teamos.kb.v1.ArticleSnapshotForCourseCopy
+	(*GetArticleSnapshotForCourseCopyRequest)(nil),   // 54: teamos.kb.v1.GetArticleSnapshotForCourseCopyRequest
+	(*GetArticleSnapshotForCourseCopyResponse)(nil),  // 55: teamos.kb.v1.GetArticleSnapshotForCourseCopyResponse
+	(*timestamppb.Timestamp)(nil),                    // 56: google.protobuf.Timestamp
+	(*structpb.Struct)(nil),                          // 57: google.protobuf.Struct
 }
 var file_proto_kb_v1_kb_proto_depIdxs = []int32{
 	3,  // 0: teamos.kb.v1.PartnerAccessSettings.mode:type_name -> teamos.kb.v1.PartnerAccessMode
 	5,  // 1: teamos.kb.v1.ArticlePartnerPolicy.access:type_name -> teamos.kb.v1.PartnerAccessSettings
 	4,  // 2: teamos.kb.v1.ArticlePartnerPolicy.reuse_policy:type_name -> teamos.kb.v1.PartnerReusePolicy
-	54, // 3: teamos.kb.v1.ArticlePartnerPolicy.updated_at:type_name -> google.protobuf.Timestamp
+	56, // 3: teamos.kb.v1.ArticlePartnerPolicy.updated_at:type_name -> google.protobuf.Timestamp
 	0,  // 4: teamos.kb.v1.AccessSettings.scope:type_name -> teamos.kb.v1.AccessScope
 	7,  // 5: teamos.kb.v1.ArticleSection.access:type_name -> teamos.kb.v1.AccessSettings
 	2,  // 6: teamos.kb.v1.ArticleSection.visibility:type_name -> teamos.kb.v1.SectionVisibility
-	55, // 7: teamos.kb.v1.Article.content:type_name -> google.protobuf.Struct
+	57, // 7: teamos.kb.v1.Article.content:type_name -> google.protobuf.Struct
 	1,  // 8: teamos.kb.v1.Article.status:type_name -> teamos.kb.v1.ArticleStatus
-	54, // 9: teamos.kb.v1.Article.created_at:type_name -> google.protobuf.Timestamp
-	54, // 10: teamos.kb.v1.Article.updated_at:type_name -> google.protobuf.Timestamp
+	56, // 9: teamos.kb.v1.Article.created_at:type_name -> google.protobuf.Timestamp
+	56, // 10: teamos.kb.v1.Article.updated_at:type_name -> google.protobuf.Timestamp
 	5,  // 11: teamos.kb.v1.Article.partner_access:type_name -> teamos.kb.v1.PartnerAccessSettings
 	4,  // 12: teamos.kb.v1.Article.partner_reuse_policy:type_name -> teamos.kb.v1.PartnerReusePolicy
-	55, // 13: teamos.kb.v1.ArticleVersion.content:type_name -> google.protobuf.Struct
-	54, // 14: teamos.kb.v1.ArticleVersion.created_at:type_name -> google.protobuf.Timestamp
-	54, // 15: teamos.kb.v1.Acknowledgement.acknowledged_at:type_name -> google.protobuf.Timestamp
+	57, // 13: teamos.kb.v1.ArticleVersion.content:type_name -> google.protobuf.Struct
+	56, // 14: teamos.kb.v1.ArticleVersion.created_at:type_name -> google.protobuf.Timestamp
+	56, // 15: teamos.kb.v1.Acknowledgement.acknowledged_at:type_name -> google.protobuf.Timestamp
 	8,  // 16: teamos.kb.v1.GetSectionsResponse.sections:type_name -> teamos.kb.v1.ArticleSection
 	7,  // 17: teamos.kb.v1.CreateSectionRequest.access:type_name -> teamos.kb.v1.AccessSettings
 	2,  // 18: teamos.kb.v1.CreateSectionRequest.visibility:type_name -> teamos.kb.v1.SectionVisibility
@@ -3381,12 +3467,12 @@ var file_proto_kb_v1_kb_proto_depIdxs = []int32{
 	9,  // 23: teamos.kb.v1.GetArticlesResponse.articles:type_name -> teamos.kb.v1.Article
 	9,  // 24: teamos.kb.v1.GetArticleResponse.article:type_name -> teamos.kb.v1.Article
 	9,  // 25: teamos.kb.v1.GetPublicArticleResponse.article:type_name -> teamos.kb.v1.Article
-	55, // 26: teamos.kb.v1.CreateArticleRequest.content:type_name -> google.protobuf.Struct
+	57, // 26: teamos.kb.v1.CreateArticleRequest.content:type_name -> google.protobuf.Struct
 	1,  // 27: teamos.kb.v1.CreateArticleRequest.status:type_name -> teamos.kb.v1.ArticleStatus
 	5,  // 28: teamos.kb.v1.CreateArticleRequest.partner_access:type_name -> teamos.kb.v1.PartnerAccessSettings
 	4,  // 29: teamos.kb.v1.CreateArticleRequest.partner_reuse_policy:type_name -> teamos.kb.v1.PartnerReusePolicy
 	9,  // 30: teamos.kb.v1.CreateArticleResponse.article:type_name -> teamos.kb.v1.Article
-	55, // 31: teamos.kb.v1.UpdateArticleRequest.content:type_name -> google.protobuf.Struct
+	57, // 31: teamos.kb.v1.UpdateArticleRequest.content:type_name -> google.protobuf.Struct
 	1,  // 32: teamos.kb.v1.UpdateArticleRequest.status:type_name -> teamos.kb.v1.ArticleStatus
 	5,  // 33: teamos.kb.v1.UpdateArticleRequest.partner_access:type_name -> teamos.kb.v1.PartnerAccessSettings
 	4,  // 34: teamos.kb.v1.UpdateArticleRequest.partner_reuse_policy:type_name -> teamos.kb.v1.PartnerReusePolicy
@@ -3401,10 +3487,10 @@ var file_proto_kb_v1_kb_proto_depIdxs = []int32{
 	4,  // 43: teamos.kb.v1.UpdateArticlePartnerPolicyRequest.reuse_policy:type_name -> teamos.kb.v1.PartnerReusePolicy
 	6,  // 44: teamos.kb.v1.UpdateArticlePartnerPolicyResponse.policy:type_name -> teamos.kb.v1.ArticlePartnerPolicy
 	4,  // 45: teamos.kb.v1.CheckArticleCourseCopyPermissionResponse.reuse_policy:type_name -> teamos.kb.v1.PartnerReusePolicy
-	55, // 46: teamos.kb.v1.ArticleSnapshotForCourseCopy.content:type_name -> google.protobuf.Struct
-	50, // 47: teamos.kb.v1.ArticleSnapshotForCourseCopy.attachments:type_name -> teamos.kb.v1.ArticleSnapshotAttachment
-	54, // 48: teamos.kb.v1.ArticleSnapshotForCourseCopy.captured_at:type_name -> google.protobuf.Timestamp
-	51, // 49: teamos.kb.v1.GetArticleSnapshotForCourseCopyResponse.snapshot:type_name -> teamos.kb.v1.ArticleSnapshotForCourseCopy
+	57, // 46: teamos.kb.v1.ArticleSnapshotForCourseCopy.content:type_name -> google.protobuf.Struct
+	52, // 47: teamos.kb.v1.ArticleSnapshotForCourseCopy.attachments:type_name -> teamos.kb.v1.ArticleSnapshotAttachment
+	56, // 48: teamos.kb.v1.ArticleSnapshotForCourseCopy.captured_at:type_name -> google.protobuf.Timestamp
+	53, // 49: teamos.kb.v1.GetArticleSnapshotForCourseCopyResponse.snapshot:type_name -> teamos.kb.v1.ArticleSnapshotForCourseCopy
 	12, // 50: teamos.kb.v1.KbService.GetSections:input_type -> teamos.kb.v1.GetSectionsRequest
 	14, // 51: teamos.kb.v1.KbService.CreateSection:input_type -> teamos.kb.v1.CreateSectionRequest
 	16, // 52: teamos.kb.v1.KbService.UpdateSection:input_type -> teamos.kb.v1.UpdateSectionRequest
@@ -3414,39 +3500,41 @@ var file_proto_kb_v1_kb_proto_depIdxs = []int32{
 	24, // 56: teamos.kb.v1.KbService.GetPublicArticle:input_type -> teamos.kb.v1.GetPublicArticleRequest
 	26, // 57: teamos.kb.v1.KbService.CreateArticle:input_type -> teamos.kb.v1.CreateArticleRequest
 	28, // 58: teamos.kb.v1.KbService.UpdateArticle:input_type -> teamos.kb.v1.UpdateArticleRequest
-	30, // 59: teamos.kb.v1.KbService.RollbackArticle:input_type -> teamos.kb.v1.RollbackArticleRequest
-	32, // 60: teamos.kb.v1.KbService.GetArticleVersions:input_type -> teamos.kb.v1.GetArticleVersionsRequest
-	34, // 61: teamos.kb.v1.KbService.GetAcknowledgements:input_type -> teamos.kb.v1.GetAcknowledgementsRequest
-	36, // 62: teamos.kb.v1.KbService.AcknowledgeArticle:input_type -> teamos.kb.v1.AcknowledgeArticleRequest
-	38, // 63: teamos.kb.v1.KbService.SearchArticles:input_type -> teamos.kb.v1.SearchArticlesRequest
-	40, // 64: teamos.kb.v1.KbService.GetArticlesByIds:input_type -> teamos.kb.v1.GetArticlesByIdsRequest
-	42, // 65: teamos.kb.v1.KbService.ArticleExists:input_type -> teamos.kb.v1.ArticleExistsRequest
-	44, // 66: teamos.kb.v1.KbService.GetArticlePartnerPolicy:input_type -> teamos.kb.v1.GetArticlePartnerPolicyRequest
-	46, // 67: teamos.kb.v1.KbService.UpdateArticlePartnerPolicy:input_type -> teamos.kb.v1.UpdateArticlePartnerPolicyRequest
-	48, // 68: teamos.kb.v1.KbService.CheckArticleCourseCopyPermission:input_type -> teamos.kb.v1.CheckArticleCourseCopyPermissionRequest
-	52, // 69: teamos.kb.v1.KbService.GetArticleSnapshotForCourseCopy:input_type -> teamos.kb.v1.GetArticleSnapshotForCourseCopyRequest
-	13, // 70: teamos.kb.v1.KbService.GetSections:output_type -> teamos.kb.v1.GetSectionsResponse
-	15, // 71: teamos.kb.v1.KbService.CreateSection:output_type -> teamos.kb.v1.CreateSectionResponse
-	17, // 72: teamos.kb.v1.KbService.UpdateSection:output_type -> teamos.kb.v1.UpdateSectionResponse
-	19, // 73: teamos.kb.v1.KbService.DeleteSection:output_type -> teamos.kb.v1.DeleteSectionResponse
-	21, // 74: teamos.kb.v1.KbService.GetArticles:output_type -> teamos.kb.v1.GetArticlesResponse
-	23, // 75: teamos.kb.v1.KbService.GetArticle:output_type -> teamos.kb.v1.GetArticleResponse
-	25, // 76: teamos.kb.v1.KbService.GetPublicArticle:output_type -> teamos.kb.v1.GetPublicArticleResponse
-	27, // 77: teamos.kb.v1.KbService.CreateArticle:output_type -> teamos.kb.v1.CreateArticleResponse
-	29, // 78: teamos.kb.v1.KbService.UpdateArticle:output_type -> teamos.kb.v1.UpdateArticleResponse
-	31, // 79: teamos.kb.v1.KbService.RollbackArticle:output_type -> teamos.kb.v1.RollbackArticleResponse
-	33, // 80: teamos.kb.v1.KbService.GetArticleVersions:output_type -> teamos.kb.v1.GetArticleVersionsResponse
-	35, // 81: teamos.kb.v1.KbService.GetAcknowledgements:output_type -> teamos.kb.v1.GetAcknowledgementsResponse
-	37, // 82: teamos.kb.v1.KbService.AcknowledgeArticle:output_type -> teamos.kb.v1.AcknowledgeArticleResponse
-	39, // 83: teamos.kb.v1.KbService.SearchArticles:output_type -> teamos.kb.v1.SearchArticlesResponse
-	41, // 84: teamos.kb.v1.KbService.GetArticlesByIds:output_type -> teamos.kb.v1.GetArticlesByIdsResponse
-	43, // 85: teamos.kb.v1.KbService.ArticleExists:output_type -> teamos.kb.v1.ArticleExistsResponse
-	45, // 86: teamos.kb.v1.KbService.GetArticlePartnerPolicy:output_type -> teamos.kb.v1.GetArticlePartnerPolicyResponse
-	47, // 87: teamos.kb.v1.KbService.UpdateArticlePartnerPolicy:output_type -> teamos.kb.v1.UpdateArticlePartnerPolicyResponse
-	49, // 88: teamos.kb.v1.KbService.CheckArticleCourseCopyPermission:output_type -> teamos.kb.v1.CheckArticleCourseCopyPermissionResponse
-	53, // 89: teamos.kb.v1.KbService.GetArticleSnapshotForCourseCopy:output_type -> teamos.kb.v1.GetArticleSnapshotForCourseCopyResponse
-	70, // [70:90] is the sub-list for method output_type
-	50, // [50:70] is the sub-list for method input_type
+	30, // 59: teamos.kb.v1.KbService.DeleteArticle:input_type -> teamos.kb.v1.DeleteArticleRequest
+	32, // 60: teamos.kb.v1.KbService.RollbackArticle:input_type -> teamos.kb.v1.RollbackArticleRequest
+	34, // 61: teamos.kb.v1.KbService.GetArticleVersions:input_type -> teamos.kb.v1.GetArticleVersionsRequest
+	36, // 62: teamos.kb.v1.KbService.GetAcknowledgements:input_type -> teamos.kb.v1.GetAcknowledgementsRequest
+	38, // 63: teamos.kb.v1.KbService.AcknowledgeArticle:input_type -> teamos.kb.v1.AcknowledgeArticleRequest
+	40, // 64: teamos.kb.v1.KbService.SearchArticles:input_type -> teamos.kb.v1.SearchArticlesRequest
+	42, // 65: teamos.kb.v1.KbService.GetArticlesByIds:input_type -> teamos.kb.v1.GetArticlesByIdsRequest
+	44, // 66: teamos.kb.v1.KbService.ArticleExists:input_type -> teamos.kb.v1.ArticleExistsRequest
+	46, // 67: teamos.kb.v1.KbService.GetArticlePartnerPolicy:input_type -> teamos.kb.v1.GetArticlePartnerPolicyRequest
+	48, // 68: teamos.kb.v1.KbService.UpdateArticlePartnerPolicy:input_type -> teamos.kb.v1.UpdateArticlePartnerPolicyRequest
+	50, // 69: teamos.kb.v1.KbService.CheckArticleCourseCopyPermission:input_type -> teamos.kb.v1.CheckArticleCourseCopyPermissionRequest
+	54, // 70: teamos.kb.v1.KbService.GetArticleSnapshotForCourseCopy:input_type -> teamos.kb.v1.GetArticleSnapshotForCourseCopyRequest
+	13, // 71: teamos.kb.v1.KbService.GetSections:output_type -> teamos.kb.v1.GetSectionsResponse
+	15, // 72: teamos.kb.v1.KbService.CreateSection:output_type -> teamos.kb.v1.CreateSectionResponse
+	17, // 73: teamos.kb.v1.KbService.UpdateSection:output_type -> teamos.kb.v1.UpdateSectionResponse
+	19, // 74: teamos.kb.v1.KbService.DeleteSection:output_type -> teamos.kb.v1.DeleteSectionResponse
+	21, // 75: teamos.kb.v1.KbService.GetArticles:output_type -> teamos.kb.v1.GetArticlesResponse
+	23, // 76: teamos.kb.v1.KbService.GetArticle:output_type -> teamos.kb.v1.GetArticleResponse
+	25, // 77: teamos.kb.v1.KbService.GetPublicArticle:output_type -> teamos.kb.v1.GetPublicArticleResponse
+	27, // 78: teamos.kb.v1.KbService.CreateArticle:output_type -> teamos.kb.v1.CreateArticleResponse
+	29, // 79: teamos.kb.v1.KbService.UpdateArticle:output_type -> teamos.kb.v1.UpdateArticleResponse
+	31, // 80: teamos.kb.v1.KbService.DeleteArticle:output_type -> teamos.kb.v1.DeleteArticleResponse
+	33, // 81: teamos.kb.v1.KbService.RollbackArticle:output_type -> teamos.kb.v1.RollbackArticleResponse
+	35, // 82: teamos.kb.v1.KbService.GetArticleVersions:output_type -> teamos.kb.v1.GetArticleVersionsResponse
+	37, // 83: teamos.kb.v1.KbService.GetAcknowledgements:output_type -> teamos.kb.v1.GetAcknowledgementsResponse
+	39, // 84: teamos.kb.v1.KbService.AcknowledgeArticle:output_type -> teamos.kb.v1.AcknowledgeArticleResponse
+	41, // 85: teamos.kb.v1.KbService.SearchArticles:output_type -> teamos.kb.v1.SearchArticlesResponse
+	43, // 86: teamos.kb.v1.KbService.GetArticlesByIds:output_type -> teamos.kb.v1.GetArticlesByIdsResponse
+	45, // 87: teamos.kb.v1.KbService.ArticleExists:output_type -> teamos.kb.v1.ArticleExistsResponse
+	47, // 88: teamos.kb.v1.KbService.GetArticlePartnerPolicy:output_type -> teamos.kb.v1.GetArticlePartnerPolicyResponse
+	49, // 89: teamos.kb.v1.KbService.UpdateArticlePartnerPolicy:output_type -> teamos.kb.v1.UpdateArticlePartnerPolicyResponse
+	51, // 90: teamos.kb.v1.KbService.CheckArticleCourseCopyPermission:output_type -> teamos.kb.v1.CheckArticleCourseCopyPermissionResponse
+	55, // 91: teamos.kb.v1.KbService.GetArticleSnapshotForCourseCopy:output_type -> teamos.kb.v1.GetArticleSnapshotForCourseCopyResponse
+	71, // [71:92] is the sub-list for method output_type
+	50, // [50:71] is the sub-list for method input_type
 	50, // [50:50] is the sub-list for extension type_name
 	50, // [50:50] is the sub-list for extension extendee
 	0,  // [0:50] is the sub-list for field type_name
@@ -3465,18 +3553,18 @@ func file_proto_kb_v1_kb_proto_init() {
 	file_proto_kb_v1_kb_proto_msgTypes[15].OneofWrappers = []any{}
 	file_proto_kb_v1_kb_proto_msgTypes[21].OneofWrappers = []any{}
 	file_proto_kb_v1_kb_proto_msgTypes[23].OneofWrappers = []any{}
-	file_proto_kb_v1_kb_proto_msgTypes[25].OneofWrappers = []any{}
-	file_proto_kb_v1_kb_proto_msgTypes[43].OneofWrappers = []any{}
-	file_proto_kb_v1_kb_proto_msgTypes[44].OneofWrappers = []any{}
+	file_proto_kb_v1_kb_proto_msgTypes[27].OneofWrappers = []any{}
 	file_proto_kb_v1_kb_proto_msgTypes[45].OneofWrappers = []any{}
+	file_proto_kb_v1_kb_proto_msgTypes[46].OneofWrappers = []any{}
 	file_proto_kb_v1_kb_proto_msgTypes[47].OneofWrappers = []any{}
+	file_proto_kb_v1_kb_proto_msgTypes[49].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_kb_v1_kb_proto_rawDesc), len(file_proto_kb_v1_kb_proto_rawDesc)),
 			NumEnums:      5,
-			NumMessages:   49,
+			NumMessages:   51,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

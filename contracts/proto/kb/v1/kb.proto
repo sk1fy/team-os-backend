@@ -18,6 +18,7 @@ service KbService {
   rpc GetPublicArticle(GetPublicArticleRequest) returns (GetPublicArticleResponse);
   rpc CreateArticle(CreateArticleRequest) returns (CreateArticleResponse);
   rpc UpdateArticle(UpdateArticleRequest) returns (UpdateArticleResponse);
+  rpc DeleteArticle(DeleteArticleRequest) returns (DeleteArticleResponse);
   rpc RollbackArticle(RollbackArticleRequest) returns (RollbackArticleResponse);
   rpc GetArticleVersions(GetArticleVersionsRequest) returns (GetArticleVersionsResponse);
   rpc GetAcknowledgements(GetAcknowledgementsRequest) returns (GetAcknowledgementsResponse);
@@ -214,6 +215,12 @@ message UpdateArticleRequest {
 message UpdateArticleResponse {
   Article article = 1;
 }
+
+message DeleteArticleRequest {
+  string id = 1;
+}
+
+message DeleteArticleResponse {}
 
 message RollbackArticleRequest {
   string article_id = 1;

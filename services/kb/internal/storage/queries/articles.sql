@@ -62,6 +62,10 @@ RETURNING id, company_id, section_id, title, content, status, author_id, version
           requires_acknowledgement, plain_text, partner_access_mode,
           partner_reuse_policy, created_at, updated_at;
 
+-- name: DeleteArticle :execrows
+DELETE FROM articles
+WHERE company_id = $1 AND id = $2;
+
 -- name: UpdateArticle :one
 UPDATE articles
 SET

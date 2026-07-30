@@ -474,6 +474,45 @@ type RollbackArticleInput struct {
 	ExpectedVersion *int32
 }
 
+func (s *Service) DeleteArticle(ctx context.Context, actor Actor, id uuid.UUID) error {
+	if !domainaccess.CanManage(actor.subject()) {
+		return forbidden("Недостаточно прав для изменения базы знаний")
+	}
+
+	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{})
+	if err != nil {
+		return internal("Не удалось начать транзакцию", err)
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+	queries := db.New(tx)
+
+	deleted, err := queries.DeleteArticle(ctx, db.DeleteArticleParams{
+		CompanyID: actor.CompanyID,
+		ID:        id,
+	})
+	if err != nil {
+		return internal("Не удалось удалить статью", err)
+	}
+	if deleted == 0 {
+		return notFound("Статья")
+	}
+	if err = s.emit(
+		ctx,
+		queries,
+		actor.CompanyID,
+		id,
+		actor.UserID,
+		"teamos.kb.article.deleted.v1",
+		&eventsv1.KbArticleDeletedPayload{ArticleId: id.String()},
+	); err != nil {
+		return err
+	}
+	if err = tx.Commit(ctx); err != nil {
+		return internal("Не удалось удалить статью", err)
+	}
+	return nil
+}
+
 func (s *Service) RollbackArticle(ctx context.Context, actor Actor, input RollbackArticleInput) (Article, error) {
 	if !domainaccess.CanManage(actor.subject()) {
 		return Article{}, forbidden("Недостаточно прав для изменения базы знаний")

@@ -953,6 +953,17 @@ paths:
           $ref: '#/components/responses/Conflict'
         default:
           $ref: '#/components/responses/Error'
+    delete:
+      tags: [Knowledge Base]
+      operationId: deleteArticle
+      summary: Удалить статью
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
 
   /api/v1/kb/articles/{articleId}/rollback:
     parameters:

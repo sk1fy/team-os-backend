@@ -21,6 +21,7 @@ type Querier interface {
 	CreateArticleVersion(ctx context.Context, arg CreateArticleVersionParams) (ArticleVersion, error)
 	CreateOutboxEvent(ctx context.Context, arg CreateOutboxEventParams) (Outbox, error)
 	CreateSection(ctx context.Context, arg CreateSectionParams) (Section, error)
+	DeleteArticle(ctx context.Context, arg DeleteArticleParams) (int64, error)
 	DeleteArticlePartnerAccessGrants(ctx context.Context, arg DeleteArticlePartnerAccessGrantsParams) (int64, error)
 	DeleteSection(ctx context.Context, arg DeleteSectionParams) error
 	EnsureCurrentArticleVersion(ctx context.Context, arg EnsureCurrentArticleVersionParams) error
