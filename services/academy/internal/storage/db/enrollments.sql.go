@@ -512,6 +512,7 @@ func (q *Queries) GetEnrollmentForUpdate(ctx context.Context, arg GetEnrollmentF
 const getEnrollmentResume = `-- name: GetEnrollmentResume :one
 SELECT enrollment.id, enrollment.company_id, enrollment.course_id,
     enrollment.course_version_id, version.number AS version_number,
+    version.title AS course_title, course.cover_url AS course_cover_url,
     enrollment.learner_type, enrollment.user_id,
     enrollment.external_learner_id, enrollment.source_type,
     enrollment.source_id, enrollment.attempt_number,
@@ -519,6 +520,8 @@ SELECT enrollment.id, enrollment.company_id, enrollment.course_id,
     enrollment.current_lesson_version_id,
     COALESCE(progress.completed_count * 100 / NULLIF(progress.lesson_count, 0), 0)::integer
         AS progress_percent,
+    progress.completed_count AS completed_lesson_count,
+    progress.lesson_count AS total_lesson_count,
     enrollment.activated_at, enrollment.access_until, enrollment.started_at,
     enrollment.completed_at, enrollment.last_activity_at,
     enrollment.frozen_at, enrollment.suspended_at,
@@ -527,6 +530,9 @@ FROM course_enrollments AS enrollment
 JOIN course_versions AS version
   ON version.company_id = enrollment.company_id
  AND version.id = enrollment.course_version_id
+JOIN courses AS course
+  ON course.company_id = enrollment.company_id
+ AND course.id = enrollment.course_id
 LEFT JOIN LATERAL (
     SELECT count(*)::integer AS lesson_count,
            count(*) FILTER (WHERE lesson_progress.status = 'completed')::integer
@@ -554,6 +560,8 @@ type GetEnrollmentResumeRow struct {
 	CourseID               uuid.UUID          `json:"course_id"`
 	CourseVersionID        uuid.UUID          `json:"course_version_id"`
 	VersionNumber          int32              `json:"version_number"`
+	CourseTitle            string             `json:"course_title"`
+	CourseCoverUrl         pgtype.Text        `json:"course_cover_url"`
 	LearnerType            string             `json:"learner_type"`
 	UserID                 uuid.NullUUID      `json:"user_id"`
 	ExternalLearnerID      uuid.NullUUID      `json:"external_learner_id"`
@@ -564,6 +572,8 @@ type GetEnrollmentResumeRow struct {
 	AccessStatus           string             `json:"access_status"`
 	CurrentLessonVersionID uuid.NullUUID      `json:"current_lesson_version_id"`
 	ProgressPercent        int32              `json:"progress_percent"`
+	CompletedLessonCount   int32              `json:"completed_lesson_count"`
+	TotalLessonCount       int32              `json:"total_lesson_count"`
 	ActivatedAt            pgtype.Timestamptz `json:"activated_at"`
 	AccessUntil            pgtype.Timestamptz `json:"access_until"`
 	StartedAt              pgtype.Timestamptz `json:"started_at"`
@@ -584,6 +594,8 @@ func (q *Queries) GetEnrollmentResume(ctx context.Context, arg GetEnrollmentResu
 		&i.CourseID,
 		&i.CourseVersionID,
 		&i.VersionNumber,
+		&i.CourseTitle,
+		&i.CourseCoverUrl,
 		&i.LearnerType,
 		&i.UserID,
 		&i.ExternalLearnerID,
@@ -594,6 +606,8 @@ func (q *Queries) GetEnrollmentResume(ctx context.Context, arg GetEnrollmentResu
 		&i.AccessStatus,
 		&i.CurrentLessonVersionID,
 		&i.ProgressPercent,
+		&i.CompletedLessonCount,
+		&i.TotalLessonCount,
 		&i.ActivatedAt,
 		&i.AccessUntil,
 		&i.StartedAt,

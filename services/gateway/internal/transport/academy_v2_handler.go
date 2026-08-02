@@ -217,6 +217,10 @@ func (h *Handler) GetMyLearning(w http.ResponseWriter, r *http.Request) {
 		h.writeAcademyRPCError(w, r, err)
 		return
 	}
+	writeJSON(w, http.StatusOK, buildMyLearningSummary(values, nowUTC()))
+}
+
+func buildMyLearningSummary(values []api.EnrollmentSummary, now time.Time) api.MyLearningSummary {
 	result := api.MyLearningSummary{Enrollments: values}
 	for index := range values {
 		value := &values[index]
@@ -226,18 +230,26 @@ func (h *Handler) GetMyLearning(w http.ResponseWriter, r *http.Request) {
 			result.Stats.Completed++
 		case api.EnrollmentProgressStatusInProgress:
 			result.Stats.InProgress++
-			if result.ContinueEnrollment == nil {
+			if result.ContinueEnrollment == nil && enrollmentAccessAllowsLearning(value.AccessStatus) {
 				result.ContinueEnrollment = value
 			}
 		}
-		if value.DueDate != nil && value.ProgressStatus != api.EnrollmentProgressStatusCompleted && value.DueDate.Before(nowUTC()) {
+		if value.DueDate != nil && value.ProgressStatus != api.EnrollmentProgressStatusCompleted && value.DueDate.Before(now) {
 			result.Stats.Overdue++
 		}
 	}
-	if result.ContinueEnrollment == nil && len(values) > 0 {
-		result.ContinueEnrollment = &values[0]
+	return result
+}
+
+func enrollmentAccessAllowsLearning(status api.EnrollmentAccessStatus) bool {
+	switch status {
+	case api.EnrollmentAccessStatusInvited,
+		api.EnrollmentAccessStatusReady,
+		api.EnrollmentAccessStatusActive:
+		return true
+	default:
+		return false
 	}
-	writeJSON(w, http.StatusOK, result)
 }
 
 func (h *Handler) GetMyCourseEnrollment(w http.ResponseWriter, r *http.Request, courseID api.CourseId) {

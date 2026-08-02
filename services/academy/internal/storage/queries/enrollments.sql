@@ -390,6 +390,7 @@ OFFSET sqlc.arg(page_offset)::integer;
 -- name: GetEnrollmentResume :one
 SELECT enrollment.id, enrollment.company_id, enrollment.course_id,
     enrollment.course_version_id, version.number AS version_number,
+    version.title AS course_title, course.cover_url AS course_cover_url,
     enrollment.learner_type, enrollment.user_id,
     enrollment.external_learner_id, enrollment.source_type,
     enrollment.source_id, enrollment.attempt_number,
@@ -397,6 +398,8 @@ SELECT enrollment.id, enrollment.company_id, enrollment.course_id,
     enrollment.current_lesson_version_id,
     COALESCE(progress.completed_count * 100 / NULLIF(progress.lesson_count, 0), 0)::integer
         AS progress_percent,
+    progress.completed_count AS completed_lesson_count,
+    progress.lesson_count AS total_lesson_count,
     enrollment.activated_at, enrollment.access_until, enrollment.started_at,
     enrollment.completed_at, enrollment.last_activity_at,
     enrollment.frozen_at, enrollment.suspended_at,
@@ -405,6 +408,9 @@ FROM course_enrollments AS enrollment
 JOIN course_versions AS version
   ON version.company_id = enrollment.company_id
  AND version.id = enrollment.course_version_id
+JOIN courses AS course
+  ON course.company_id = enrollment.company_id
+ AND course.id = enrollment.course_id
 LEFT JOIN LATERAL (
     SELECT count(*)::integer AS lesson_count,
            count(*) FILTER (WHERE lesson_progress.status = 'completed')::integer

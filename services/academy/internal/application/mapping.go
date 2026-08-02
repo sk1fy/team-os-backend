@@ -252,6 +252,11 @@ func enrollmentFromResumeRow(row db.GetEnrollmentResumeRow) Enrollment {
 		SuspendedAt: timestamptzPointer(row.SuspendedAt), CreatedAt: row.CreatedAt, UpdatedAt: row.UpdatedAt,
 	}
 	result.VersionNumber = row.VersionNumber
+	result.CourseTitle = &row.CourseTitle
+	result.CourseCoverURL = textPointer(row.CourseCoverUrl)
+	completedLessons, totalLessons := row.CompletedLessonCount, row.TotalLessonCount
+	result.CompletedLessonCount = &completedLessons
+	result.TotalLessonCount = &totalLessons
 	return result
 }
 

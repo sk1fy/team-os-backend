@@ -90,6 +90,22 @@ func TestPartnerAudienceControlsCatalogDetailAndSelfEnrollment(t *testing.T) {
 		enrollment.TotalLessonCount == nil || *enrollment.TotalLessonCount != 2 {
 		t.Fatalf("partner enrollment read model = %+v", enrollment)
 	}
+	openedEnrollment, err := service.GetEnrollment(ctx, partner, enrollment.ID)
+	if err != nil {
+		t.Fatalf("get partner enrollment: %v", err)
+	}
+	if openedEnrollment.CourseTitle == nil || *openedEnrollment.CourseTitle != "Внешний курс" ||
+		openedEnrollment.CompletedLessonCount == nil || *openedEnrollment.CompletedLessonCount != 0 ||
+		openedEnrollment.TotalLessonCount == nil || *openedEnrollment.TotalLessonCount != 2 {
+		t.Fatalf("opened enrollment read model = %+v", openedEnrollment)
+	}
+	report, err := service.GetEnrollmentReport(ctx, partner, enrollment.ID)
+	if err != nil {
+		t.Fatalf("get partner enrollment report: %v", err)
+	}
+	if report.Enrollment.CourseTitle == nil || *report.Enrollment.CourseTitle != "Внешний курс" {
+		t.Fatalf("report enrollment title = %+v", report.Enrollment.CourseTitle)
+	}
 
 	if _, err = pool.Exec(ctx, `
 		INSERT INTO course_partner_audiences (company_id, course_id, audience)

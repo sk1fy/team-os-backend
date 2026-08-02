@@ -7765,6 +7765,12 @@ components:
           $ref: '#/components/schemas/ID'
         courseVersionId:
           $ref: '#/components/schemas/ID'
+        courseTitle:
+          type: string
+          description: Название зафиксированной версии курса.
+        courseCoverUrl:
+          type: string
+          format: uri
         learnerType:
           $ref: '#/components/schemas/EnrollmentLearnerType'
         userId:
@@ -7789,6 +7795,12 @@ components:
           type: integer
           minimum: 0
           maximum: 100
+        completedLessons:
+          type: integer
+          minimum: 0
+        totalLessons:
+          type: integer
+          minimum: 0
         activatedAt:
           $ref: '#/components/schemas/ISODateTime'
         accessUntil:

@@ -33,11 +33,20 @@ func academyEnrollmentFromProto(value *academyv1.CourseEnrollment) (api.AcademyE
 	}
 	result := api.AcademyEnrollment{
 		Id: id, CompanyId: companyID, CourseId: courseID, CourseVersionId: versionID,
+		CourseTitle: value.CourseTitle, CourseCoverUrl: value.CourseCoverUrl,
 		LearnerType: enrollmentLearnerTypeFromProto(value.GetLearnerType()),
 		SourceType:  enrollmentSourceTypeFromProto(value.GetSourceType()), AttemptNumber: int(value.GetAttemptNumber()),
 		ProgressStatus:  enrollmentProgressStatusFromProto(value.GetProgressStatus()),
 		AccessStatus:    enrollmentAccessStatusFromProto(value.GetAccessStatus()),
 		ProgressPercent: int(value.GetProgressPercent()), Overdue: value.GetOverdue(),
+	}
+	if value.CompletedLessonCount != nil {
+		completed := int(value.GetCompletedLessonCount())
+		result.CompletedLessons = &completed
+	}
+	if value.TotalLessonCount != nil {
+		total := int(value.GetTotalLessonCount())
+		result.TotalLessons = &total
 	}
 	if value.GetCreatedAt() != nil {
 		result.CreatedAt = value.GetCreatedAt().AsTime()
