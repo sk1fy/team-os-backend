@@ -121,4 +121,40 @@ func TestPublicAcademyAccessFromProtoPreservesUnavailableContract(t *testing.T) 
 	}
 }
 
+func TestLessonBlockRichTextSurvivesGatewayRoundTrip(t *testing.T) {
+	t.Parallel()
+
+	nodes := []any{
+		map[string]any{
+			"type": "lessonBlock",
+			"attrs": map[string]any{
+				"id": "checklist-1", "kind": "checklist",
+				"data": map[string]any{
+					"style": "card", "title": "Проверьте себя",
+					"items": []any{map[string]any{"id": "item-1", "text": "Первый пункт"}},
+				},
+			},
+		},
+	}
+	encoded, err := richTextToStruct(api.RichTextContent{Type: "doc", Content: &nodes})
+	if err != nil {
+		t.Fatalf("encode lesson blocks: %v", err)
+	}
+	decoded, err := richTextFromStruct(encoded)
+	if err != nil {
+		t.Fatalf("decode lesson blocks: %v", err)
+	}
+	if decoded.Content == nil || len(*decoded.Content) != 1 {
+		t.Fatalf("decoded content = %#v", decoded.Content)
+	}
+	block, ok := (*decoded.Content)[0].(map[string]any)
+	if !ok || block["type"] != "lessonBlock" {
+		t.Fatalf("decoded block = %#v", (*decoded.Content)[0])
+	}
+	attrs, ok := block["attrs"].(map[string]any)
+	if !ok || attrs["kind"] != "checklist" {
+		t.Fatalf("decoded attrs = %#v", block["attrs"])
+	}
+}
+
 func stringPointer(value string) *string { return &value }

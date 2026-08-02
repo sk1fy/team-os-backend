@@ -12,6 +12,7 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 	eventsv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/events/v1"
 	"github.com/sk1fy/team-os-backend/services/academy/internal/storage/db"
+	"golang.org/x/sync/errgroup"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -641,13 +642,20 @@ func (s *Service) UpdateCourse(ctx context.Context, actor Actor, input UpdateCou
 			if len(linkedArticleIDs) > 0 && s.kb == nil {
 				return Course{}, unavailable("Сервис базы знаний временно недоступен", nil)
 			}
+			group, lookupContext := errgroup.WithContext(ctx)
+			group.SetLimit(8)
 			for _, articleID := range linkedArticleIDs {
 				if !articleID.Valid {
 					continue
 				}
-				if _, publicErr := s.kb.GetPublicArticle(ctx, articleID.UUID); publicErr != nil {
-					return Course{}, validation("Публичный курс может ссылаться только на публичные статьи; используйте режим copy")
-				}
+				id := articleID.UUID
+				group.Go(func() error {
+					_, lookupErr := s.kb.GetPublicArticle(lookupContext, id)
+					return lookupErr
+				})
+			}
+			if publicErr := group.Wait(); publicErr != nil {
+				return Course{}, validation("Публичный курс может ссылаться только на публичные статьи; используйте режим copy")
 			}
 		}
 	}
