@@ -43,6 +43,10 @@ compose-config: ensure-env ## Validate and render the Compose configuration.
 check-production-compose: ## Verify production ports and security overrides, including legacy .env values.
 	@command -v jq >/dev/null || { echo "jq is required" >&2; exit 1; }
 	@FILES_S3_SECURE=true FILES_S3_PUBLIC_SECURE=false GATEWAY_COOKIE_SECURE=false \
+		COMPANY_GATEWAY_SERVICE_TOKEN=production-compose-check-company-token-0001 \
+		GATEWAY_COMPANY_SERVICE_TOKEN=production-compose-check-company-token-0001 \
+		GATEWAY_PROVISIONING_SERVICE_TOKEN=production-compose-check-provisioning-token-0001 \
+		GATEWAY_PROVISIONING_SERVICE_PROVIDER=rakurs \
 		ACADEMY_EXTERNAL_TOKEN_SECRET=production-compose-check-token-secret-0001 \
 		ACADEMY_EXTERNAL_EMAIL_KEY=MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlBQkNERUY= \
 		NOTIFICATIONS_SMTP_HOST=smtp.example.invalid NOTIFICATIONS_SMTP_FROM=noreply@example.invalid \

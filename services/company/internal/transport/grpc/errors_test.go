@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/sk1fy/team-os-backend/services/company/internal/application"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -31,6 +32,22 @@ func TestTransportErrorMapsApplicationKinds(t *testing.T) {
 				t.Fatalf("message = %q", message)
 			}
 		})
+	}
+}
+
+func TestTransportErrorIncludesStableErrorInfo(t *testing.T) {
+	err := transportError(&application.Error{
+		Kind: application.ErrorConflict, Code: application.ErrorCodeBootstrapConsumed,
+		Message: "Ссылка уже использована", Details: map[string]string{"user_id": "user-1"},
+	})
+	converted := status.Convert(err)
+	if len(converted.Details()) != 1 {
+		t.Fatalf("details = %#v", converted.Details())
+	}
+	detail, ok := converted.Details()[0].(*errdetails.ErrorInfo)
+	if !ok || detail.Reason != application.ErrorCodeBootstrapConsumed || detail.Domain != "teamos.company" ||
+		detail.Metadata["user_id"] != "user-1" {
+		t.Fatalf("detail = %#v", detail)
 	}
 }
 

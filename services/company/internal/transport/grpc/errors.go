@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/sk1fy/team-os-backend/services/company/internal/application"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -48,7 +49,17 @@ func transportError(err error) error {
 	if message == "" {
 		message = "Не удалось выполнить запрос"
 	}
-	return status.Error(code, message)
+	result := status.New(code, message)
+	if applicationError.Code != "" {
+		withDetails, detailsErr := result.WithDetails(&errdetails.ErrorInfo{
+			Reason: applicationError.Code, Domain: "teamos.company",
+			Metadata: applicationError.Details,
+		})
+		if detailsErr == nil {
+			result = withDetails
+		}
+	}
+	return result.Err()
 }
 
 func invalidRequest() error {

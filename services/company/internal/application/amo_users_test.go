@@ -131,7 +131,8 @@ func TestAmoUpstreamFailureDoesNotStartReconciliationTransaction(t *testing.T) {
 		WithArgs(companyID).
 		WillReturnRows(pgxmock.NewRows([]string{
 			"id", "name", "logo_url", "owner_id", "created_at", "updated_at", "amo_account_id",
-		}).AddRow(companyID, "Компания", nil, nil, now, now, "31355990"))
+			"status", "onboarding_completed_at",
+		}).AddRow(companyID, "Компания", nil, nil, now, now, "31355990", "active", now))
 
 	service := &Service{
 		pool: mock, externalUsers: failingExternalEmployees{err: errors.New("upstream unavailable")},
@@ -167,7 +168,8 @@ func TestAmoImportDoesNotChangeExistingUserStatusOrProfile(t *testing.T) {
 		WithArgs(companyID).
 		WillReturnRows(pgxmock.NewRows([]string{
 			"id", "name", "logo_url", "owner_id", "created_at", "updated_at", "amo_account_id",
-		}).AddRow(companyID, "Компания", nil, nil, now, now, "31355990"))
+			"status", "onboarding_completed_at",
+		}).AddRow(companyID, "Компания", nil, nil, now, now, "31355990", "active", now))
 	mock.ExpectBeginTx(pgx.TxOptions{IsoLevel: pgx.Serializable})
 	mock.ExpectExec("SELECT pg_advisory_xact_lock").
 		WithArgs(companyID).

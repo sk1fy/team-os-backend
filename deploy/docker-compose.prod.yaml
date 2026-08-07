@@ -26,6 +26,8 @@ services:
   company:
     ports: !override []
     restart: unless-stopped
+    environment:
+      COMPANY_GATEWAY_SERVICE_TOKEN: ${GATEWAY_COMPANY_SERVICE_TOKEN:?GATEWAY_COMPANY_SERVICE_TOKEN is required}
 
   kb:
     ports: !override []
@@ -74,3 +76,6 @@ services:
       # Production всегда обслуживается через HTTPS reverse proxy. Значение
       # намеренно не читается из .env.example, где для разработки стоит false.
       GATEWAY_COOKIE_SECURE: "true"
+      GATEWAY_PROVISIONING_SERVICE_TOKEN: ${GATEWAY_PROVISIONING_SERVICE_TOKEN:?GATEWAY_PROVISIONING_SERVICE_TOKEN is required}
+      GATEWAY_PROVISIONING_SERVICE_PROVIDER: ${GATEWAY_PROVISIONING_SERVICE_PROVIDER:?GATEWAY_PROVISIONING_SERVICE_PROVIDER is required}
+      GATEWAY_COMPANY_SERVICE_TOKEN: ${GATEWAY_COMPANY_SERVICE_TOKEN:?GATEWAY_COMPANY_SERVICE_TOKEN is required}

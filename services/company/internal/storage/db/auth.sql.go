@@ -97,7 +97,7 @@ func (q *Queries) ActivateInvitedUser(ctx context.Context, arg ActivateInvitedUs
 const createCompany = `-- name: CreateCompany :one
 INSERT INTO companies (id, name, logo_url)
 VALUES ($1, $2, $3)
-RETURNING id, name, logo_url, owner_id, created_at, updated_at, amo_account_id
+RETURNING id, name, logo_url, owner_id, created_at, updated_at, amo_account_id, status, onboarding_completed_at
 `
 
 type CreateCompanyParams struct {
@@ -117,6 +117,8 @@ func (q *Queries) CreateCompany(ctx context.Context, arg CreateCompanyParams) (C
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.AmoAccountID,
+		&i.Status,
+		&i.OnboardingCompletedAt,
 	)
 	return i, err
 }
@@ -367,7 +369,7 @@ func (q *Queries) GetAccessLink(ctx context.Context, arg GetAccessLinkParams) (A
 }
 
 const getCompany = `-- name: GetCompany :one
-SELECT id, name, logo_url, owner_id, created_at, updated_at, amo_account_id FROM companies WHERE id = $1
+SELECT id, name, logo_url, owner_id, created_at, updated_at, amo_account_id, status, onboarding_completed_at FROM companies WHERE id = $1
 `
 
 func (q *Queries) GetCompany(ctx context.Context, id uuid.UUID) (Company, error) {
@@ -381,6 +383,8 @@ func (q *Queries) GetCompany(ctx context.Context, id uuid.UUID) (Company, error)
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.AmoAccountID,
+		&i.Status,
+		&i.OnboardingCompletedAt,
 	)
 	return i, err
 }
@@ -808,7 +812,7 @@ const setCompanyOwner = `-- name: SetCompanyOwner :one
 UPDATE companies
 SET owner_id = $2, updated_at = now()
 WHERE id = $1
-RETURNING id, name, logo_url, owner_id, created_at, updated_at, amo_account_id
+RETURNING id, name, logo_url, owner_id, created_at, updated_at, amo_account_id, status, onboarding_completed_at
 `
 
 type SetCompanyOwnerParams struct {
@@ -827,6 +831,8 @@ func (q *Queries) SetCompanyOwner(ctx context.Context, arg SetCompanyOwnerParams
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.AmoAccountID,
+		&i.Status,
+		&i.OnboardingCompletedAt,
 	)
 	return i, err
 }
@@ -856,7 +862,7 @@ SET name = COALESCE($1, name),
     amo_account_id = CASE WHEN $4::boolean THEN $5 ELSE amo_account_id END,
     updated_at = now()
 WHERE id = $6
-RETURNING id, name, logo_url, owner_id, created_at, updated_at, amo_account_id
+RETURNING id, name, logo_url, owner_id, created_at, updated_at, amo_account_id, status, onboarding_completed_at
 `
 
 type UpdateCompanyParams struct {
@@ -886,6 +892,8 @@ func (q *Queries) UpdateCompany(ctx context.Context, arg UpdateCompanyParams) (C
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.AmoAccountID,
+		&i.Status,
+		&i.OnboardingCompletedAt,
 	)
 	return i, err
 }

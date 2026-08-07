@@ -2,6 +2,7 @@ package auth
 
 import (
 	"bytes"
+	"crypto/sha256"
 	"encoding/base64"
 	"testing"
 )
@@ -49,5 +50,27 @@ func TestNewRefreshToken(t *testing.T) {
 	}
 	if !bytes.Equal(hash, HashRefreshToken(token)) {
 		t.Fatal("returned hash does not match token")
+	}
+}
+
+func TestOpaqueTokenIsURLSafeAndStoredAsHash(t *testing.T) {
+	first, err := NewOpaqueToken()
+	if err != nil {
+		t.Fatal(err)
+	}
+	second, err := NewOpaqueToken()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if first == second || len(first) < 32 {
+		t.Fatalf("одноразовые токены не уникальны: %q, %q", first, second)
+	}
+	if _, err = base64.RawURLEncoding.Strict().DecodeString(first); err != nil {
+		t.Fatalf("токен не URL-safe: %v", err)
+	}
+	firstHash := HashOpaqueToken(first)
+	secondHash := HashOpaqueToken(second)
+	if len(firstHash) != sha256.Size || bytes.Equal(firstHash, secondHash) {
+		t.Fatalf("некорректные хеши: %x, %x", firstHash, secondHash)
 	}
 }

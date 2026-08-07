@@ -185,6 +185,7 @@ services:
       COMPANY_JWT_PRIVATE_KEY: ${COMPANY_JWT_PRIVATE_KEY:-development-key-not-generated}
       COMPANY_JWT_ISSUER: ${COMPANY_JWT_ISSUER:-teamos-company}
       COMPANY_JWT_AUDIENCE: ${COMPANY_JWT_AUDIENCE:-teamos-api}
+      COMPANY_GATEWAY_SERVICE_TOKEN: ${GATEWAY_COMPANY_SERVICE_TOKEN:-development-gateway-company-service-token-change-me}
       COMPANY_ACCESS_TTL: ${COMPANY_ACCESS_TTL:-15m}
       COMPANY_SHUTDOWN_TIMEOUT: ${COMPANY_SHUTDOWN_TIMEOUT:-30s}
       EXTERNAL_API_URL: ${EXTERNAL_API_URL:-https://ssd.rkrs.ru/api/v1/rkrs_activity/getEmployee}
@@ -354,6 +355,9 @@ services:
       GATEWAY_JWT_PUBLIC_KEY: ${GATEWAY_JWT_PUBLIC_KEY:-development-key-not-generated}
       GATEWAY_JWT_ISSUER: ${GATEWAY_JWT_ISSUER:-teamos-company}
       GATEWAY_JWT_AUDIENCE: ${GATEWAY_JWT_AUDIENCE:-teamos-api}
+      GATEWAY_PROVISIONING_SERVICE_TOKEN: ${GATEWAY_PROVISIONING_SERVICE_TOKEN:-development-provisioning-service-token-change-me}
+      GATEWAY_PROVISIONING_SERVICE_PROVIDER: ${GATEWAY_PROVISIONING_SERVICE_PROVIDER:-rakurs}
+      GATEWAY_COMPANY_SERVICE_TOKEN: ${GATEWAY_COMPANY_SERVICE_TOKEN:-development-gateway-company-service-token-change-me}
       GATEWAY_CORS_ORIGINS: ${GATEWAY_CORS_ORIGINS:-http://localhost:5173}
       GATEWAY_PUBLIC_APP_URL: ${GATEWAY_PUBLIC_APP_URL:-http://localhost:5173}
       GATEWAY_TRUSTED_PROXY_CIDRS: ${GATEWAY_TRUSTED_PROXY_CIDRS:-}

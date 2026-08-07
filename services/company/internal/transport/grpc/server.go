@@ -12,14 +12,22 @@ import (
 type Server struct {
 	companyv1.UnimplementedCompanyServiceServer
 
-	application *application.Service
-	verifier    tokenVerifier
+	application         *application.Service
+	verifier            tokenVerifier
+	gatewayServiceToken string
 }
 
 // NewServer constructs a company gRPC server. The verifier is mandatory for
 // every RPC except the public authentication and invitation methods.
-func NewServer(applicationService *application.Service, verifier *sharedauth.TokenVerifier) *Server {
-	return &Server{application: applicationService, verifier: verifier}
+func NewServer(
+	applicationService *application.Service,
+	verifier *sharedauth.TokenVerifier,
+	gatewayServiceToken string,
+) *Server {
+	return &Server{
+		application: applicationService, verifier: verifier,
+		gatewayServiceToken: gatewayServiceToken,
+	}
 }
 
 var _ companyv1.CompanyServiceServer = (*Server)(nil)

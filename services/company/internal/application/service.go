@@ -22,9 +22,11 @@ import (
 )
 
 const (
-	defaultRefreshTTL = 30 * 24 * time.Hour
-	defaultInviteTTL  = 7 * 24 * time.Hour
-	defaultAmoSyncTTL = 5 * time.Minute
+	defaultRefreshTTL   = 30 * 24 * time.Hour
+	defaultInviteTTL    = 7 * 24 * time.Hour
+	defaultAmoSyncTTL   = 5 * time.Minute
+	defaultBootstrapTTL = 24 * time.Hour
+	defaultSsoTTL       = time.Minute
 )
 
 var defaultEmployeeSections = []string{"schedule", "knowledge", "academy"}
@@ -51,6 +53,8 @@ type Service struct {
 	amoSyncTTL    time.Duration
 	amoSyncMu     sync.Mutex
 	amoSyncStates map[uuid.UUID]*amoSyncState
+	bootstrapTTL  time.Duration
+	ssoTTL        time.Duration
 }
 
 // databasePool is the subset of pgxpool.Pool used by the application layer.
@@ -90,6 +94,17 @@ func WithAmoSyncInterval(interval time.Duration) ServiceOption {
 	}
 }
 
+func WithProvisioningTTLs(bootstrapTTL, ssoTTL time.Duration) ServiceOption {
+	return func(service *Service) {
+		if bootstrapTTL > 0 {
+			service.bootstrapTTL = bootstrapTTL
+		}
+		if ssoTTL > 0 {
+			service.ssoTTL = ssoTTL
+		}
+	}
+}
+
 func NewService(pool *pgxpool.Pool, issuer *sharedauth.TokenIssuer, options ...ServiceOption) (*Service, error) {
 	dummyHash, err := domainauth.HashPassword("teamos-dummy-password")
 	if err != nil {
@@ -106,6 +121,8 @@ func NewService(pool *pgxpool.Pool, issuer *sharedauth.TokenIssuer, options ...S
 		logger:        slog.Default(),
 		amoSyncTTL:    defaultAmoSyncTTL,
 		amoSyncStates: make(map[uuid.UUID]*amoSyncState),
+		bootstrapTTL:  defaultBootstrapTTL,
+		ssoTTL:        defaultSsoTTL,
 	}
 	for _, option := range options {
 		option(service)
@@ -351,8 +368,18 @@ func companyFromDB(value db.Company) Company {
 	}
 	return Company{
 		ID: value.ID, Name: value.Name, LogoURL: textPointer(value.LogoUrl),
-		OwnerID: ownerID, CreatedAt: value.CreatedAt, AmoAccountID: textPointer(value.AmoAccountID),
+		OwnerID: ownerID, Status: value.Status,
+		OnboardingCompletedAt: timestamppointer(value.OnboardingCompletedAt),
+		CreatedAt:             value.CreatedAt, AmoAccountID: textPointer(value.AmoAccountID),
 	}
+}
+
+func timestamppointer(value pgtype.Timestamptz) *time.Time {
+	if !value.Valid {
+		return nil
+	}
+	result := value.Time.UTC()
+	return &result
 }
 
 func inviteFromDB(value db.Invite) Invite {

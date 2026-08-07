@@ -18,3 +18,33 @@ message CompanyCreatedPayload {
   string name = 2;
   string owner_user_id = 3;
 }
+
+// Published under teamos.company.company.provisioned.v1 after the company,
+// integration and both bootstrap users are committed atomically.
+message CompanyProvisionedEvent {
+  EventMetadata metadata = 1;
+  CompanyProvisionedPayload payload = 2;
+}
+
+message CompanyProvisionedPayload {
+  string company_id = 1;
+  string name = 2;
+  string provider = 3;
+  string external_account_id = 4;
+  string owner_user_id = 5;
+  string admin_user_id = 6;
+  string initiator_user_id = 7;
+}
+
+// Published under teamos.company.onboarding.completed.v1 once both bootstrap
+// users have active password credentials.
+message CompanyOnboardingCompletedEvent {
+  EventMetadata metadata = 1;
+  CompanyOnboardingCompletedPayload payload = 2;
+}
+
+message CompanyOnboardingCompletedPayload {
+  string company_id = 1;
+  string owner_user_id = 2;
+  string admin_user_id = 3;
+}

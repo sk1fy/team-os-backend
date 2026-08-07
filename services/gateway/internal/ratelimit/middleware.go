@@ -1,6 +1,8 @@
 package ratelimit
 
 import (
+	"crypto/sha256"
+	"crypto/subtle"
 	"net"
 	"net/http"
 	"net/netip"
@@ -21,13 +23,16 @@ type entry struct {
 // restart does not affect correctness; a shared Redis limiter can replace it
 // when gateway replicas require a global quota.
 type Limiter struct {
-	mu             sync.Mutex
-	entries        map[string]entry
-	limit          int
-	window         time.Duration
-	now            func() time.Time
-	lastGC         time.Time
-	trustedProxies []netip.Prefix
+	mu                         sync.Mutex
+	entries                    map[string]entry
+	limit                      int
+	window                     time.Duration
+	now                        func() time.Time
+	lastGC                     time.Time
+	trustedProxies             []netip.Prefix
+	provisioningCredentialHash [sha256.Size]byte
+	provisioningLimit          int
+	hasProvisioningPrincipal   bool
 }
 
 func New(limit int, window time.Duration, trustedProxies ...netip.Prefix) *Limiter {
@@ -40,16 +45,34 @@ func New(limit int, window time.Duration, trustedProxies ...netip.Prefix) *Limit
 	return &Limiter{entries: make(map[string]entry), limit: limit, window: window, now: time.Now, trustedProxies: append([]netip.Prefix(nil), trustedProxies...)}
 }
 
+// WithProvisioningPrincipal gives an authenticated service principal its own,
+// higher quota. Invalid Service credentials still consume the conservative
+// per-IP auth quota, so changing a bogus credential cannot bypass throttling.
+func (l *Limiter) WithProvisioningPrincipal(credential string, limit int) *Limiter {
+	credential = strings.TrimSpace(credential)
+	if credential == "" || limit <= 0 {
+		return l
+	}
+	l.provisioningCredentialHash = sha256.Sum256([]byte(credential))
+	l.provisioningLimit = limit
+	l.hasProvisioningPrincipal = true
+	return l
+}
+
 func (l *Limiter) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodOptions || !rateLimitedPath(r.Method, r.URL.Path) {
 			next.ServeHTTP(w, r)
 			return
 		}
-		allowed, retryAfter := l.allow(l.clientIP(r))
+		key, limit := l.clientIP(r), l.limit
+		if isProvisioningPath(r.Method, r.URL.Path) && l.matchesProvisioningPrincipal(r.Header.Get("Authorization")) {
+			key, limit = "service:provisioning", l.provisioningLimit
+		}
+		allowed, retryAfter := l.allow(key, limit)
 		if !allowed {
 			w.Header().Set("Retry-After", strconv.Itoa(max(1, int(retryAfter.Round(time.Second).Seconds()))))
-			apierror.Write(w, apierror.New(http.StatusTooManyRequests, "Слишком много запросов. Повторите позже."))
+			apierror.Write(w, apierror.New(http.StatusTooManyRequests, "Слишком много запросов. Повторите позже.").WithCode("RATE_LIMITED"))
 			return
 		}
 		next.ServeHTTP(w, r)
@@ -58,10 +81,28 @@ func (l *Limiter) Middleware(next http.Handler) http.Handler {
 
 func rateLimitedPath(method, path string) bool {
 	return strings.HasPrefix(path, "/api/v1/auth/") ||
+		isProvisioningPath(method, path) ||
 		(method == http.MethodPost && strings.HasPrefix(path, "/api/v1/public/academy/"))
 }
 
-func (l *Limiter) allow(key string) (bool, time.Duration) {
+func isProvisioningPath(method, path string) bool {
+	return (method == http.MethodGet || method == http.MethodPost) &&
+		strings.HasPrefix(path, "/api/v1/provisioning/")
+}
+
+func (l *Limiter) matchesProvisioningPrincipal(authorization string) bool {
+	if !l.hasProvisioningPrincipal {
+		return false
+	}
+	parts := strings.Fields(authorization)
+	if len(parts) != 2 || !strings.EqualFold(parts[0], "Service") || parts[1] == "" {
+		return false
+	}
+	provided := sha256.Sum256([]byte(parts[1]))
+	return subtle.ConstantTimeCompare(provided[:], l.provisioningCredentialHash[:]) == 1
+}
+
+func (l *Limiter) allow(key string, limit int) (bool, time.Duration) {
 	now := l.now()
 	l.mu.Lock()
 	defer l.mu.Unlock()
@@ -78,7 +119,7 @@ func (l *Limiter) allow(key string) (bool, time.Duration) {
 		l.entries[key] = entry{windowStart: now, count: 1}
 		return true, 0
 	}
-	if value.count >= l.limit {
+	if value.count >= limit {
 		return false, l.window - now.Sub(value.windowStart)
 	}
 	value.count++

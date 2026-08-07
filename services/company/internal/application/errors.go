@@ -14,10 +14,27 @@ const (
 	ErrorInternal
 )
 
+const (
+	ErrorCodeBootstrapInvalid        = "BOOTSTRAP_INVALID"
+	ErrorCodeBootstrapExpired        = "BOOTSTRAP_EXPIRED"
+	ErrorCodeBootstrapConsumed       = "BOOTSTRAP_CONSUMED"
+	ErrorCodeExternalUserDeactivated = "EXTERNAL_USER_DEACTIVATED"
+	ErrorCodeIntegrationFrozen       = "INTEGRATION_FROZEN"
+	ErrorCodeOnboardingCompleted     = "ONBOARDING_COMPLETED"
+	ErrorCodeNoPendingActivation     = "NO_PENDING_ACTIVATION"
+	ErrorCodeProvisioningConflict    = "PROVISIONING_CONFLICT"
+	ErrorCodeSSOInvalid              = "SSO_INVALID"
+	ErrorCodeSSOExpired              = "SSO_EXPIRED"
+	ErrorCodeSSOConsumed             = "SSO_CONSUMED"
+	ErrorCodePendingBootstrapLocked  = "PENDING_BOOTSTRAP_USER_LOCKED"
+)
+
 // Error carries a stable user-facing Russian message independently of the
 // transport used to deliver it.
 type Error struct {
 	Kind    ErrorKind
+	Code    string
+	Details map[string]string
 	Message string
 	Cause   error
 }
@@ -41,6 +58,42 @@ func unauthenticated() error {
 
 func invalidAccessLink() error {
 	return &Error{Kind: ErrorUnauthenticated, Message: "Ссылка доступа недействительна"}
+}
+
+func coded(kind ErrorKind, code, message string) error {
+	return &Error{Kind: kind, Code: code, Message: message}
+}
+
+func bootstrapInvalid() error {
+	return coded(ErrorNotFound, ErrorCodeBootstrapInvalid, "Ссылка активации недействительна")
+}
+
+func bootstrapExpired() error {
+	return coded(ErrorValidation, ErrorCodeBootstrapExpired, "Срок действия ссылки активации истёк")
+}
+
+func bootstrapConsumed() error {
+	return coded(ErrorConflict, ErrorCodeBootstrapConsumed, "Ссылка активации уже использована")
+}
+
+func ssoInvalid() error {
+	return coded(ErrorUnauthenticated, ErrorCodeSSOInvalid, "Ссылка входа недействительна")
+}
+
+func ssoExpired() error {
+	return coded(ErrorUnauthenticated, ErrorCodeSSOExpired, "Срок действия ссылки входа истёк")
+}
+
+func ssoConsumed() error {
+	return coded(ErrorUnauthenticated, ErrorCodeSSOConsumed, "Ссылка входа уже использована")
+}
+
+func integrationFrozen() error {
+	return coded(ErrorForbidden, ErrorCodeIntegrationFrozen, "Интеграция временно недоступна")
+}
+
+func externalUserDeactivated() error {
+	return coded(ErrorForbidden, ErrorCodeExternalUserDeactivated, "Учётная запись внешнего пользователя деактивирована")
 }
 
 func invalidSession() error {

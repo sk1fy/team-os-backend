@@ -2,6 +2,8 @@ package grpc
 
 import (
 	"context"
+	"crypto/sha256"
+	"crypto/subtle"
 	"net"
 	"strings"
 
@@ -23,20 +25,13 @@ func (s *Server) actor(ctx context.Context) (application.Actor, error) {
 		return application.Actor{}, status.Error(codes.Unauthenticated, "Требуется авторизация")
 	}
 
-	md, ok := metadata.FromIncomingContext(ctx)
-	if !ok {
-		return application.Actor{}, status.Error(codes.Unauthenticated, "Требуется авторизация")
+	raw, err := incomingBearerToken(ctx)
+	if err != nil {
+		return application.Actor{}, err
 	}
-	values := md.Get("authorization")
-	if len(values) != 1 {
-		return application.Actor{}, status.Error(codes.Unauthenticated, "Требуется авторизация")
-	}
-	parts := strings.Fields(values[0])
-	if len(parts) != 2 || !strings.EqualFold(parts[0], "Bearer") || parts[1] == "" {
-		return application.Actor{}, status.Error(codes.Unauthenticated, "Некорректный заголовок авторизации")
-	}
+	md, _ := metadata.FromIncomingContext(ctx)
 
-	claims, err := s.verifier.Verify(parts[1])
+	claims, err := s.verifier.Verify(raw)
 	if err != nil || claims == nil {
 		return application.Actor{}, status.Error(codes.Unauthenticated, "Токен недействителен или истёк")
 	}
@@ -54,6 +49,47 @@ func (s *Server) actor(ctx context.Context) (application.Actor, error) {
 		SectionAccess: append([]string(nil), claims.SectionAccess...),
 		RequestID:     firstMetadataValue(md, "x-request-id"),
 	}, nil
+}
+
+// authorizeProvisioning verifies the dedicated gateway-to-company credential.
+// It is deliberately separate from the external provisioning credential.
+func (s *Server) authorizeProvisioning(ctx context.Context) error {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return status.Error(codes.Unauthenticated, "Требуется служебная авторизация")
+	}
+	markers := md.Get("x-teamos-service")
+	values := md.Get("x-teamos-service-token")
+	if len(markers) != 1 || markers[0] != "provisioning" ||
+		len(values) != 1 || !secureServiceTokenEqual(values[0], s.gatewayServiceToken) {
+		return status.Error(codes.Unauthenticated, "Требуется служебная авторизация")
+	}
+	return nil
+}
+
+func secureServiceTokenEqual(provided, expected string) bool {
+	if provided == "" || expected == "" {
+		return false
+	}
+	providedHash := sha256.Sum256([]byte(provided))
+	expectedHash := sha256.Sum256([]byte(expected))
+	return subtle.ConstantTimeCompare(providedHash[:], expectedHash[:]) == 1
+}
+
+func incomingBearerToken(ctx context.Context) (string, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return "", status.Error(codes.Unauthenticated, "Требуется авторизация")
+	}
+	values := md.Get("authorization")
+	if len(values) != 1 {
+		return "", status.Error(codes.Unauthenticated, "Требуется авторизация")
+	}
+	parts := strings.Fields(values[0])
+	if len(parts) != 2 || !strings.EqualFold(parts[0], "Bearer") || parts[1] == "" {
+		return "", status.Error(codes.Unauthenticated, "Некорректный заголовок авторизации")
+	}
+	return parts[1], nil
 }
 
 func sessionMeta(ctx context.Context) application.SessionMeta {

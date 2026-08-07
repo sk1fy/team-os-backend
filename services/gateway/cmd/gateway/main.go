@@ -155,6 +155,9 @@ func run(logger *slog.Logger) error {
 		notificationsClient,
 	)
 	handler.SetFilesClient(filesClient)
+	handler.SetProvisioningServiceToken(configuration.ProvisioningServiceToken)
+	handler.SetProvisioningServiceProvider(configuration.ProvisioningServiceProvider)
+	handler.SetCompanyServiceToken(configuration.CompanyServiceToken)
 
 	router := chi.NewRouter()
 	router.Use(cors.Handler(cors.Options{
@@ -249,7 +252,9 @@ func run(logger *slog.Logger) error {
 		},
 	}).ServeHTTP)
 	router.Group(func(apiRouter chi.Router) {
-		apiRouter.Use(ratelimit.New(30, time.Minute, configuration.TrustedProxyCIDRs...).Middleware, authmw.Middleware(verifier))
+		limiter := ratelimit.New(30, time.Minute, configuration.TrustedProxyCIDRs...).
+			WithProvisioningPrincipal(configuration.ProvisioningServiceToken, 600)
+		apiRouter.Use(limiter.Middleware, authmw.Middleware(verifier))
 		api.HandlerWithOptions(handler, api.ChiServerOptions{
 			BaseRouter: apiRouter,
 			ErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {

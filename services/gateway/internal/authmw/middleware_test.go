@@ -55,6 +55,78 @@ func TestMiddlewareRejectsMissingToken(t *testing.T) {
 	}
 }
 
+func TestMiddlewareLeavesProvisioningAuthenticationToHandlers(t *testing.T) {
+	handler := Middleware(nil)(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if _, ok := Token(r.Context()); ok {
+			t.Fatal("provisioning request must not create a user token")
+		}
+		if _, ok := Claims(r.Context()); ok {
+			t.Fatal("provisioning request must not create user claims")
+		}
+		w.WriteHeader(http.StatusNoContent)
+	}))
+
+	for _, requestCase := range []struct {
+		method string
+		path   string
+	}{
+		{method: http.MethodPost, path: "/api/v1/provisioning/companies"},
+		{method: http.MethodPost, path: "/api/v1/provisioning/sessions"},
+		{method: http.MethodGet, path: "/api/v1/provisioning/companies/status"},
+	} {
+		t.Run(requestCase.path, func(t *testing.T) {
+			request := httptest.NewRequestWithContext(context.Background(), requestCase.method, requestCase.path, nil)
+			response := httptest.NewRecorder()
+			handler.ServeHTTP(response, request)
+			if response.Code != http.StatusNoContent {
+				t.Fatalf("status = %d, body = %s", response.Code, response.Body.String())
+			}
+		})
+	}
+}
+
+func TestProvisioningRoutesAreExact(t *testing.T) {
+	for _, test := range []struct {
+		method string
+		path   string
+		want   bool
+	}{
+		{method: http.MethodPost, path: "/api/v1/provisioning/companies", want: true},
+		{method: http.MethodPost, path: "/api/v1/provisioning/sessions", want: true},
+		{method: http.MethodGet, path: "/api/v1/provisioning/companies/status", want: true},
+		{method: http.MethodGet, path: "/api/v1/provisioning/companies", want: false},
+		{method: http.MethodPost, path: "/api/v1/provisioning/companies/status", want: false},
+		{method: http.MethodGet, path: "/api/v1/provisioning/companies/status/", want: false},
+		{method: http.MethodPost, path: "/api/v1/provisioning/companies/", want: false},
+		{method: http.MethodPost, path: "/api/v1/provisioning/companies/anything", want: false},
+		{method: http.MethodPost, path: "/api/v1/provisioning", want: false},
+	} {
+		if got := isProvisioning(test.method, test.path); got != test.want {
+			t.Fatalf("isProvisioning(%q, %q) = %v, want %v", test.method, test.path, got, test.want)
+		}
+	}
+}
+
+func TestBootstrapAndSSOAuthRoutesArePublic(t *testing.T) {
+	for _, test := range []struct {
+		method string
+		path   string
+		want   bool
+	}{
+		{method: http.MethodGet, path: "/api/v1/auth/bootstrap/opaque-token", want: true},
+		{method: http.MethodPost, path: "/api/v1/auth/bootstrap/opaque-token/complete", want: true},
+		{method: http.MethodPost, path: "/api/v1/auth/sso/exchange", want: true},
+		{method: http.MethodPost, path: "/api/v1/auth/bootstrap/opaque-token", want: false},
+		{method: http.MethodGet, path: "/api/v1/auth/bootstrap/opaque-token/complete", want: false},
+		{method: http.MethodGet, path: "/api/v1/auth/sso/exchange", want: false},
+		{method: http.MethodPost, path: "/api/v1/auth/sso/exchange/extra", want: false},
+	} {
+		if got := isPublic(test.method, test.path); got != test.want {
+			t.Fatalf("isPublic(%q, %q) = %v, want %v", test.method, test.path, got, test.want)
+		}
+	}
+}
+
 func TestAccessLinkLoginIsPublic(t *testing.T) {
 	if !isPublic(http.MethodPost, "/api/v1/auth/access-link/opaque-token") {
 		t.Fatal("access-link login must be public")

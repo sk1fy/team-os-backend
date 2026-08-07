@@ -1,6 +1,11 @@
 (.services.files.environment.FILES_S3_SECURE == "false") and
 (.services.files.environment.FILES_S3_PUBLIC_SECURE == "true") and
 (.services.gateway.environment.GATEWAY_COOKIE_SECURE == "true") and
+(.services.gateway.environment.GATEWAY_PROVISIONING_SERVICE_TOKEN != "development-provisioning-service-token-change-me") and
+(.services.gateway.environment.GATEWAY_PROVISIONING_SERVICE_PROVIDER | test("^[a-z][a-z0-9_-]{1,31}$")) and
+(.services.gateway.environment.GATEWAY_COMPANY_SERVICE_TOKEN != "development-gateway-company-service-token-change-me") and
+(.services.gateway.environment.GATEWAY_PROVISIONING_SERVICE_TOKEN != .services.gateway.environment.GATEWAY_COMPANY_SERVICE_TOKEN) and
+(.services.company.environment.COMPANY_GATEWAY_SERVICE_TOKEN == .services.gateway.environment.GATEWAY_COMPANY_SERVICE_TOKEN) and
 (.services.notifications.environment.NOTIFICATIONS_EMAIL_PROVIDER == "smtp") and
 (.services.notifications.environment.NOTIFICATIONS_SMTP_HOST | length > 0) and
 (.services.notifications.environment.NOTIFICATIONS_SMTP_FROM | length > 0) and

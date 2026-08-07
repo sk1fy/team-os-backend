@@ -20,8 +20,19 @@ const (
 type Error struct {
 	Message string `json:"message"`
 	Status  int    `json:"status"`
+	Code    string `json:"code,omitempty"`
 
 	cause error
+}
+
+// WithCode attaches a stable machine-readable code while keeping the Russian
+// message suitable for people. Empty codes are ignored so existing responses
+// retain their original additive-compatible shape.
+func (e *Error) WithCode(code string) *Error {
+	if e != nil {
+		e.Code = strings.TrimSpace(code)
+	}
+	return e
 }
 
 // Envelope mirrors the frontend ApiError response contract.

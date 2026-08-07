@@ -109,12 +109,16 @@ func Logging(logger *slog.Logger) Middleware {
 func redactedPath(path string) string {
 	const invitePrefix = "/api/v1/auth/invites/"
 	const accessLinkPrefix = "/api/v1/auth/access-link/"
+	const bootstrapPrefix = "/api/v1/auth/bootstrap/"
 	const academyAccessPrefix = "/api/v1/public/academy/access/"
 	if strings.HasPrefix(path, accessLinkPrefix) {
 		return accessLinkPrefix + ":token"
 	}
 	if strings.HasPrefix(path, academyAccessPrefix) {
 		return redactFirstPathSegment(path, academyAccessPrefix, ":token")
+	}
+	if strings.HasPrefix(path, bootstrapPrefix) {
+		return redactFirstPathSegment(path, bootstrapPrefix, ":token")
 	}
 	if !strings.HasPrefix(path, invitePrefix) {
 		return path

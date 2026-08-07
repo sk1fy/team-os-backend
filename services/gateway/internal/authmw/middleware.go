@@ -87,11 +87,44 @@ func isPublic(method, path string) bool {
 		return true
 	case method == http.MethodPost && path == "/api/v1/auth/logout":
 		return true
+	case isBootstrapAuth(method, path):
+		return true
+	case method == http.MethodPost && path == "/api/v1/auth/sso/exchange":
+		return true
+	case isProvisioning(method, path):
+		// Provisioning uses a dedicated Service credential checked by the
+		// endpoint handlers, never a user JWT.
+		return true
 	case strings.HasPrefix(path, "/api/v1/auth/invites/") && (method == http.MethodGet || method == http.MethodPost):
 		return true
 	default:
 		return false
 	}
+}
+
+func isBootstrapAuth(method, path string) bool {
+	const prefix = "/api/v1/auth/bootstrap/"
+	if !strings.HasPrefix(path, prefix) {
+		return false
+	}
+	remainder := strings.TrimPrefix(path, prefix)
+	if remainder == "" {
+		return false
+	}
+	if method == http.MethodGet {
+		return !strings.Contains(remainder, "/")
+	}
+	if method != http.MethodPost || !strings.HasSuffix(remainder, "/complete") {
+		return false
+	}
+	token := strings.TrimSuffix(remainder, "/complete")
+	return token != "" && !strings.Contains(token, "/")
+}
+
+func isProvisioning(method, path string) bool {
+	return (method == http.MethodPost &&
+		(path == "/api/v1/provisioning/companies" || path == "/api/v1/provisioning/sessions")) ||
+		(method == http.MethodGet && path == "/api/v1/provisioning/companies/status")
 }
 
 func isExternalAcademyMutation(path string) bool {

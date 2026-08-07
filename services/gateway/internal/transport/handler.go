@@ -21,6 +21,7 @@ import (
 	"github.com/sk1fy/team-os-backend/pkg/httpx"
 	"github.com/sk1fy/team-os-backend/services/gateway/internal/api"
 	"github.com/sk1fy/team-os-backend/services/gateway/internal/authmw"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
@@ -35,14 +36,17 @@ type CookieConfig struct {
 
 type Handler struct {
 	api.Unimplemented
-	company       companyv1.CompanyServiceClient
-	kb            kbv1.KbServiceClient
-	tasks         tasksv1.TasksServiceClient
-	academy       academyv1.AcademyServiceClient
-	notifications notificationsv1.NotificationsServiceClient
-	files         filesv1.FilesServiceClient
-	cookie        CookieConfig
-	logger        *slog.Logger
+	company                     companyv1.CompanyServiceClient
+	kb                          kbv1.KbServiceClient
+	tasks                       tasksv1.TasksServiceClient
+	academy                     academyv1.AcademyServiceClient
+	notifications               notificationsv1.NotificationsServiceClient
+	files                       filesv1.FilesServiceClient
+	cookie                      CookieConfig
+	logger                      *slog.Logger
+	provisioningServiceToken    string
+	provisioningServiceProvider string
+	companyServiceToken         string
 }
 
 func (h *Handler) SetFilesClient(client filesv1.FilesServiceClient) { h.files = client }
@@ -760,14 +764,23 @@ func (h *Handler) RevokeInvite(w http.ResponseWriter, r *http.Request, id api.Id
 }
 
 func (h *Handler) writeSession(w http.ResponseWriter, r *http.Request, code int, session *companyv1.AuthSession) {
+	setPrivateNoStore(w)
+	response, ok := h.prepareSession(w, r, session)
+	if !ok {
+		return
+	}
+	writeJSON(w, code, response)
+}
+
+func (h *Handler) prepareSession(w http.ResponseWriter, r *http.Request, session *companyv1.AuthSession) (api.AuthResponse, bool) {
 	if session == nil || session.GetRefreshToken() == "" || session.GetAccessToken() == "" {
 		h.writeConversionError(w, r, errors.New("company returned an empty auth session"))
-		return
+		return api.AuthResponse{}, false
 	}
 	user, err := userFromProto(session.GetUser())
 	if err != nil {
 		h.writeConversionError(w, r, err)
-		return
+		return api.AuthResponse{}, false
 	}
 	expiresAt := time.Now().Add(30 * 24 * time.Hour)
 	if session.GetRefreshExpiresAt() != nil && session.GetRefreshExpiresAt().IsValid() {
@@ -778,7 +791,7 @@ func (h *Handler) writeSession(w http.ResponseWriter, r *http.Request, code int,
 		Expires: expiresAt, MaxAge: max(1, int(time.Until(expiresAt).Seconds())),
 		HttpOnly: true, Secure: h.cookie.Secure, SameSite: http.SameSiteLaxMode,
 	})
-	writeJSON(w, code, api.AuthResponse{AccessToken: session.GetAccessToken(), User: user})
+	return api.AuthResponse{AccessToken: session.GetAccessToken(), User: user}, true
 }
 
 func (h *Handler) clearRefreshCookie(w http.ResponseWriter) {
@@ -820,24 +833,37 @@ func (h *Handler) writeRPCError(w http.ResponseWriter, r *http.Request, err erro
 		return
 	}
 	message := grpcStatus.Message()
+	errorCode := grpcErrorCode(grpcStatus)
+	write := func(publicError *apierror.Error) {
+		apierror.Write(w, publicError.WithCode(errorCode))
+	}
 	switch grpcStatus.Code() {
 	case codes.InvalidArgument, codes.FailedPrecondition, codes.OutOfRange:
-		apierror.Write(w, apierror.BadRequest(message))
+		write(apierror.BadRequest(message))
 	case codes.Unauthenticated:
-		apierror.Write(w, apierror.Unauthorized(message))
+		write(apierror.Unauthorized(message))
 	case codes.PermissionDenied:
-		apierror.Write(w, apierror.Forbidden(message))
+		write(apierror.Forbidden(message))
 	case codes.NotFound:
-		apierror.Write(w, apierror.New(http.StatusNotFound, message))
+		write(apierror.New(http.StatusNotFound, message))
 	case codes.AlreadyExists, codes.Aborted:
-		apierror.Write(w, apierror.Conflict(message))
+		write(apierror.Conflict(message))
 	case codes.Unavailable, codes.DeadlineExceeded:
 		h.logger.WarnContext(r.Context(), "company RPC unavailable", "code", grpcStatus.Code(), "error", err)
-		apierror.Write(w, apierror.New(http.StatusServiceUnavailable, "Сервис временно недоступен"))
+		write(apierror.New(http.StatusServiceUnavailable, "Сервис временно недоступен"))
 	default:
 		h.logger.ErrorContext(r.Context(), "company RPC failed", "code", grpcStatus.Code(), "error", err)
 		apierror.Write(w, apierror.Internal(err))
 	}
+}
+
+func grpcErrorCode(value *status.Status) string {
+	for _, detail := range value.Details() {
+		if info, ok := detail.(*errdetails.ErrorInfo); ok && info.GetDomain() == "teamos.company" {
+			return info.GetReason()
+		}
+	}
+	return ""
 }
 
 func decode(w http.ResponseWriter, r *http.Request, destination any) bool {
@@ -871,6 +897,10 @@ func writeJSON(w http.ResponseWriter, code int, value any) {
 		// the short write while the client receives a transport failure.
 		return
 	}
+}
+
+func setPrivateNoStore(w http.ResponseWriter) {
+	w.Header().Set("Cache-Control", "private, no-store")
 }
 
 func outgoingContext(r *http.Request) context.Context {

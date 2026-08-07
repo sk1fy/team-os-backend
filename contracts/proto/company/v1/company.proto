@@ -18,6 +18,14 @@ service CompanyService {
   rpc Logout(LogoutRequest) returns (LogoutResponse);
   rpc GetInviteByToken(GetInviteByTokenRequest) returns (GetInviteByTokenResponse);
   rpc AcceptInvite(AcceptInviteRequest) returns (AcceptInviteResponse);
+  rpc ProvisionCompany(ProvisionCompanyRequest) returns (ProvisionCompanyResponse);
+  rpc GetProvisionedCompanyStatus(GetProvisionedCompanyStatusRequest) returns (GetProvisionedCompanyStatusResponse);
+  rpc GetBootstrapActivation(GetBootstrapActivationRequest) returns (GetBootstrapActivationResponse);
+  rpc CompleteBootstrapActivation(CompleteBootstrapActivationRequest) returns (CompleteBootstrapActivationResponse);
+  rpc IssueSsoToken(IssueSsoTokenRequest) returns (IssueSsoTokenResponse);
+  rpc ExchangeSsoToken(ExchangeSsoTokenRequest) returns (ExchangeSsoTokenResponse);
+  rpc GetOnboardingStatus(GetOnboardingStatusRequest) returns (GetOnboardingStatusResponse);
+  rpc ReissueOnboardingActivation(ReissueOnboardingActivationRequest) returns (ReissueOnboardingActivationResponse);
   rpc GetCurrentUser(GetCurrentUserRequest) returns (GetCurrentUserResponse);
   rpc UpdateCurrentUser(UpdateCurrentUserRequest) returns (UpdateCurrentUserResponse);
   rpc GetCompany(GetCompanyRequest) returns (GetCompanyResponse);
@@ -91,6 +99,7 @@ enum UserSource {
   USER_SOURCE_UNSPECIFIED = 0;
   USER_SOURCE_LOCAL = 1;
   USER_SOURCE_AMO = 2;
+  USER_SOURCE_EXTERNAL = 3;
 }
 
 enum UserAccessMode {
@@ -115,6 +124,28 @@ enum InviteStatus {
   INVITE_STATUS_EXPIRED = 3;
 }
 
+enum CompanyStatus {
+  COMPANY_STATUS_UNSPECIFIED = 0;
+  COMPANY_STATUS_ONBOARDING = 1;
+  COMPANY_STATUS_ACTIVE = 2;
+  COMPANY_STATUS_FROZEN = 3;
+  COMPANY_STATUS_SUSPENDED = 4;
+}
+
+enum BootstrapActivationState {
+  BOOTSTRAP_ACTIVATION_STATE_UNSPECIFIED = 0;
+  BOOTSTRAP_ACTIVATION_STATE_PENDING = 1;
+  BOOTSTRAP_ACTIVATION_STATE_EXPIRED = 2;
+  BOOTSTRAP_ACTIVATION_STATE_CONSUMED = 3;
+  BOOTSTRAP_ACTIVATION_STATE_COMPLETED = 4;
+}
+
+enum ProvisioningContinuationKind {
+  PROVISIONING_CONTINUATION_KIND_UNSPECIFIED = 0;
+  PROVISIONING_CONTINUATION_KIND_ONBOARDING = 1;
+  PROVISIONING_CONTINUATION_KIND_SSO = 2;
+}
+
 message Company {
   string id = 1;
   string name = 2;
@@ -122,6 +153,7 @@ message Company {
   string owner_id = 4;
   google.protobuf.Timestamp created_at = 5;
   optional string amo_account_id = 6;
+  CompanyStatus status = 7;
 }
 
 message User {
@@ -255,6 +287,113 @@ message AcceptInviteRequest {
 
 message AcceptInviteResponse {
   AuthSession session = 1;
+}
+
+message ProvisioningParticipant {
+  string external_user_id = 1;
+  string email = 2;
+  string first_name = 3;
+  string last_name = 4;
+}
+
+message ProvisionCompanyRequest {
+  string provider = 1;
+  string external_account_id = 2;
+  string company_name = 3;
+  string initiator_external_user_id = 4;
+  ProvisioningParticipant owner = 5;
+  ProvisioningParticipant admin = 6;
+  string idempotency_key = 7;
+}
+
+message ProvisionCompanyResponse {
+  string company_id = 1;
+  CompanyStatus company_status = 2;
+  bool created = 3;
+  UserRole initiator_role = 4;
+  // Gateway turns this opaque token into the public TeamOS onboarding URL.
+  string bootstrap_token = 5;
+  google.protobuf.Timestamp bootstrap_expires_at = 6;
+}
+
+message BootstrapParticipant {
+  string user_id = 1;
+  string email = 2;
+  string first_name = 3;
+  string last_name = 4;
+  UserRole role = 5;
+  UserStatus status = 6;
+}
+
+message BootstrapActivation {
+  string company_id = 1;
+  string company_name = 2;
+  CompanyStatus company_status = 3;
+  BootstrapParticipant user = 4;
+  google.protobuf.Timestamp expires_at = 5;
+  BootstrapActivationState state = 6;
+}
+
+message GetBootstrapActivationRequest {
+  string token = 1;
+}
+
+message GetBootstrapActivationResponse {
+  BootstrapActivation activation = 1;
+}
+
+message CompleteBootstrapActivationRequest {
+  string token = 1;
+  string password = 2;
+}
+
+message OnboardingState {
+  string company_id = 1;
+  CompanyStatus company_status = 2;
+  bool completed = 3;
+  BootstrapParticipant pending_user = 4;
+  // Gateway turns this opaque token into the public TeamOS onboarding URL.
+  optional string activation_token = 5;
+  google.protobuf.Timestamp expires_at = 6;
+}
+
+message CompleteBootstrapActivationResponse {
+  AuthSession session = 1;
+  OnboardingState onboarding = 2;
+}
+
+message IssueSsoTokenRequest {
+  string provider = 1;
+  string external_account_id = 2;
+  string external_user_id = 3;
+  reserved 4;
+}
+
+message IssueSsoTokenResponse {
+  // Gateway puts this opaque token in the query of the TeamOS continuation URL.
+  string token = 1;
+  google.protobuf.Timestamp expires_at = 2;
+  ProvisioningContinuationKind continuation_kind = 3;
+}
+
+message ExchangeSsoTokenRequest {
+  string token = 1;
+}
+
+message ExchangeSsoTokenResponse {
+  AuthSession session = 1;
+}
+
+message GetOnboardingStatusRequest {}
+
+message GetOnboardingStatusResponse {
+  OnboardingState onboarding = 1;
+}
+
+message ReissueOnboardingActivationRequest {}
+
+message ReissueOnboardingActivationResponse {
+  OnboardingState onboarding = 1;
 }
 
 message GetCurrentUserRequest {}
@@ -700,3 +839,14 @@ message SimulateDistributionDealRequest { string group_id = 1; }
 message SimulateDistributionDealResponse { DistributionEvent event = 1; }
 message ResetDistributionEventsRequest { string group_id = 1; }
 message ResetDistributionEventsResponse {}
+
+message GetProvisionedCompanyStatusRequest {
+  string provider = 1;
+  string external_account_id = 2;
+}
+
+message GetProvisionedCompanyStatusResponse {
+  bool exists = 1;
+  optional string company_id = 2;
+  CompanyStatus company_status = 3;
+}

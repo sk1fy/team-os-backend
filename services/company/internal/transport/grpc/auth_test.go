@@ -30,7 +30,7 @@ func TestActorUsesVerifiedBearerClaims(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	server := NewServer(nil, sharedauth.NewTokenVerifier(publicKey, "teamos-company", "teamos-api"))
+	server := NewServer(nil, sharedauth.NewTokenVerifier(publicKey, "teamos-company", "teamos-api"), "gateway-service-token-at-least-32-bytes")
 	ctx := metadata.NewIncomingContext(context.Background(), metadata.Pairs(
 		"authorization", "Bearer "+raw,
 		"user-id", uuid.NewString(),
@@ -74,6 +74,60 @@ func TestProtectedRPCRejectsRequestWithoutBearerBeforeApplicationCall(t *testing
 	_, err := server.GetCompany(context.Background(), &companyv1.GetCompanyRequest{})
 	if code := status.Code(err); code != codes.Unauthenticated {
 		t.Fatalf("code = %v, want %v; err = %v", code, codes.Unauthenticated, err)
+	}
+}
+
+func TestAuthorizeProvisioningAcceptsTrustedServiceKey(t *testing.T) {
+	const serviceKey = "provisioning-service-key-32-bytes-minimum"
+	server := NewServer(nil, nil, serviceKey)
+	ctx := metadata.NewIncomingContext(context.Background(), metadata.Pairs(
+		"x-teamos-service", "provisioning",
+		"x-teamos-service-token", serviceKey,
+	))
+
+	if err := server.authorizeProvisioning(ctx); err != nil {
+		t.Fatalf("authorizeProvisioning() error = %v", err)
+	}
+}
+
+func TestAuthorizeProvisioningRejectsMissingOrInvalidKey(t *testing.T) {
+	const serviceKey = "provisioning-service-key-32-bytes-minimum"
+	tests := []struct {
+		name string
+		ctx  context.Context
+	}{
+		{name: "metadata absent", ctx: context.Background()},
+		{
+			name: "wrong key",
+			ctx: metadata.NewIncomingContext(context.Background(), metadata.Pairs(
+				"x-teamos-service", "provisioning",
+				"x-teamos-service-token", "other",
+			)),
+		},
+		{
+			name: "wrong marker",
+			ctx: metadata.NewIncomingContext(context.Background(), metadata.Pairs(
+				"x-teamos-service", "other",
+				"x-teamos-service-token", serviceKey,
+			)),
+		},
+		{
+			name: "multiple credentials",
+			ctx: metadata.NewIncomingContext(context.Background(), metadata.Pairs(
+				"x-teamos-service", "provisioning",
+				"x-teamos-service", "provisioning",
+				"x-teamos-service-token", serviceKey,
+				"x-teamos-service-token", serviceKey,
+			)),
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			if code := status.Code(NewServer(nil, nil, serviceKey).authorizeProvisioning(test.ctx)); code != codes.Unauthenticated {
+				t.Fatalf("code = %v, want %v", code, codes.Unauthenticated)
+			}
+		})
 	}
 }
 

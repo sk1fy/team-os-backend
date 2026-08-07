@@ -19,6 +19,7 @@ import (
 	tasksv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/tasks/v1"
 	"github.com/sk1fy/team-os-backend/pkg/apierror"
 	"github.com/sk1fy/team-os-backend/services/gateway/internal/api"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
@@ -28,9 +29,12 @@ import (
 )
 
 const (
-	testUserID       = "1940fa16-cc83-448f-bd82-31dd8b15ce11"
-	testDepartmentID = "9ee20c36-c91f-4b89-89ff-a60232867b82"
-	testChildID      = "bf943c3b-bcd1-4b38-99a0-a4711509ed61"
+	testUserID                   = "1940fa16-cc83-448f-bd82-31dd8b15ce11"
+	testDepartmentID             = "9ee20c36-c91f-4b89-89ff-a60232867b82"
+	testChildID                  = "bf943c3b-bcd1-4b38-99a0-a4711509ed61"
+	testProvisioningServiceToken = "test-provisioning-service-token-0001"
+	testCompanyServiceToken      = "test-gateway-company-service-token-01"
+	testProvisioningProvider     = "rakurs"
 )
 
 type stubCompanyServer struct {
@@ -867,6 +871,30 @@ func TestGatewayMapsGRPCErrorsToPublicEnvelope(t *testing.T) {
 	}
 }
 
+func TestGatewayPreservesStableGRPCErrorCode(t *testing.T) {
+	rpcStatus, err := status.New(codes.AlreadyExists, "Ссылка уже использована").WithDetails(
+		&errdetails.ErrorInfo{Reason: "BOOTSTRAP_CONSUMED", Domain: "teamos.company"},
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	server := &stubCompanyServer{loginFn: func(context.Context, *companyv1.LoginRequest) (*companyv1.LoginResponse, error) {
+		return nil, rpcStatus.Err()
+	}}
+	recorder := serveGatewayRequest(t, server, http.MethodPost, "/api/v1/auth/login", `{
+		"email":"owner@example.com","password":"secret-password"
+	}`, nil)
+	var envelope struct {
+		Error struct {
+			Code string `json:"code"`
+		} `json:"error"`
+	}
+	decodeJSON(t, recorder, &envelope)
+	if envelope.Error.Code != "BOOTSTRAP_CONSUMED" {
+		t.Fatalf("code = %q", envelope.Error.Code)
+	}
+}
+
 func TestGatewayDepartmentsPreserveNullParentAndPatchClearFlags(t *testing.T) {
 	parentID := testDepartmentID
 	updates := make(chan *companyv1.UpdateDepartmentRequest, 1)
@@ -1003,7 +1031,12 @@ func newTestGatewayWithAcademy(
 	kbClient := kbv1.NewKbServiceClient(connection)
 	tasksClient := tasksv1.NewTasksServiceClient(connection)
 	academyClient := academyv1.NewAcademyServiceClient(connection)
-	handler := NewHandler(client, kbClient, tasksClient, academyClient, CookieConfig{Secure: true}, logger)
+	handler := NewHandler(client, kbClient, tasksClient, academyClient, CookieConfig{
+		Secure: true, PublicAppURL: "https://app.example.test",
+	}, logger)
+	handler.SetProvisioningServiceToken(testProvisioningServiceToken)
+	handler.SetProvisioningServiceProvider(testProvisioningProvider)
+	handler.SetCompanyServiceToken(testCompanyServiceToken)
 	return api.HandlerWithOptions(handler, api.ChiServerOptions{ErrorHandlerFunc: func(w http.ResponseWriter, _ *http.Request, _ error) {
 		apierror.Write(w, apierror.BadRequest("Некорректные параметры запроса"))
 	}})

@@ -129,6 +129,8 @@ func sourceFromProto(value companyv1.UserSource) *api.UserSource {
 		source = api.Local
 	case companyv1.UserSource_USER_SOURCE_AMO:
 		source = api.Amo
+	case companyv1.UserSource_USER_SOURCE_EXTERNAL:
+		source = api.External
 	default:
 		return nil
 	}
@@ -163,7 +165,30 @@ func companyFromProto(value *companyv1.Company) (api.Company, error) {
 	if value.GetCreatedAt() != nil {
 		createdAt = value.GetCreatedAt().AsTime()
 	}
-	return api.Company{Id: id, Name: value.GetName(), LogoUrl: value.LogoUrl, AmoAccountId: value.AmoAccountId, OwnerId: ownerID, CreatedAt: createdAt}, nil
+	result := api.Company{Id: id, Name: value.GetName(), LogoUrl: value.LogoUrl, AmoAccountId: value.AmoAccountId, OwnerId: ownerID, CreatedAt: createdAt}
+	if value.GetStatus() != companyv1.CompanyStatus_COMPANY_STATUS_UNSPECIFIED {
+		status, conversionErr := companyStatusFromProto(value.GetStatus())
+		if conversionErr != nil {
+			return api.Company{}, conversionErr
+		}
+		result.Status = &status
+	}
+	return result, nil
+}
+
+func companyStatusFromProto(value companyv1.CompanyStatus) (api.CompanyStatus, error) {
+	switch value {
+	case companyv1.CompanyStatus_COMPANY_STATUS_ONBOARDING:
+		return api.CompanyStatusOnboarding, nil
+	case companyv1.CompanyStatus_COMPANY_STATUS_ACTIVE:
+		return api.CompanyStatusActive, nil
+	case companyv1.CompanyStatus_COMPANY_STATUS_FROZEN:
+		return api.CompanyStatusFrozen, nil
+	case companyv1.CompanyStatus_COMPANY_STATUS_SUSPENDED:
+		return api.CompanyStatusSuspended, nil
+	default:
+		return "", errors.New("company returned invalid company status")
+	}
 }
 
 func departmentFromProto(value *companyv1.Department) (api.Department, error) {
@@ -335,13 +360,13 @@ func optionalUUID(value *string) (*uuid.UUID, error) {
 
 func roleToProto(value api.UserRole) companyv1.UserRole {
 	switch value {
-	case api.Owner:
+	case api.UserRoleOwner:
 		return companyv1.UserRole_USER_ROLE_OWNER
-	case api.Admin:
+	case api.UserRoleAdmin:
 		return companyv1.UserRole_USER_ROLE_ADMIN
-	case api.Employee:
+	case api.UserRoleEmployee:
 		return companyv1.UserRole_USER_ROLE_EMPLOYEE
-	case api.Partner:
+	case api.UserRolePartner:
 		return companyv1.UserRole_USER_ROLE_PARTNER
 	default:
 		return companyv1.UserRole_USER_ROLE_UNSPECIFIED
@@ -351,13 +376,13 @@ func roleToProto(value api.UserRole) companyv1.UserRole {
 func roleFromProto(value companyv1.UserRole) (api.UserRole, error) {
 	switch value {
 	case companyv1.UserRole_USER_ROLE_OWNER:
-		return api.Owner, nil
+		return api.UserRoleOwner, nil
 	case companyv1.UserRole_USER_ROLE_ADMIN:
-		return api.Admin, nil
+		return api.UserRoleAdmin, nil
 	case companyv1.UserRole_USER_ROLE_EMPLOYEE:
-		return api.Employee, nil
+		return api.UserRoleEmployee, nil
 	case companyv1.UserRole_USER_ROLE_PARTNER:
-		return api.Partner, nil
+		return api.UserRolePartner, nil
 	default:
 		return "", errors.New("company returned an invalid user role")
 	}
@@ -365,11 +390,11 @@ func roleFromProto(value companyv1.UserRole) (api.UserRole, error) {
 
 func statusToProto(value api.UserStatus) companyv1.UserStatus {
 	switch value {
-	case api.Active:
+	case api.UserStatusActive:
 		return companyv1.UserStatus_USER_STATUS_ACTIVE
-	case api.Invited:
+	case api.UserStatusInvited:
 		return companyv1.UserStatus_USER_STATUS_INVITED
-	case api.Deactivated:
+	case api.UserStatusDeactivated:
 		return companyv1.UserStatus_USER_STATUS_DEACTIVATED
 	default:
 		return companyv1.UserStatus_USER_STATUS_UNSPECIFIED
@@ -379,11 +404,11 @@ func statusToProto(value api.UserStatus) companyv1.UserStatus {
 func statusFromProto(value companyv1.UserStatus) (api.UserStatus, error) {
 	switch value {
 	case companyv1.UserStatus_USER_STATUS_ACTIVE:
-		return api.Active, nil
+		return api.UserStatusActive, nil
 	case companyv1.UserStatus_USER_STATUS_INVITED:
-		return api.Invited, nil
+		return api.UserStatusInvited, nil
 	case companyv1.UserStatus_USER_STATUS_DEACTIVATED:
-		return api.Deactivated, nil
+		return api.UserStatusDeactivated, nil
 	default:
 		return "", errors.New("company returned an invalid user status")
 	}

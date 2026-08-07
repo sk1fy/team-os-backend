@@ -16,6 +16,8 @@ servers:
 tags:
   - name: Auth
     description: Сессии, профиль и принятие приглашений.
+  - name: Provisioning
+    description: Служебное создание компаний и SSO для доверенных внешних сервисов.
   - name: Company
     description: Настройки текущей компании.
   - name: Organization
@@ -228,6 +230,170 @@ paths:
         default:
           $ref: '#/components/responses/Error'
 
+  /api/v1/auth/bootstrap/{token}:
+    parameters:
+      - $ref: '#/components/parameters/BootstrapToken'
+    get:
+      tags: [Auth]
+      operationId: getBootstrapActivation
+      summary: Получить данные активации владельца или администратора
+      security: []
+      responses:
+        '200':
+          $ref: '#/components/responses/BootstrapActivation'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/auth/bootstrap/{token}/complete:
+    parameters:
+      - $ref: '#/components/parameters/BootstrapToken'
+    post:
+      tags: [Auth]
+      operationId: completeBootstrapActivation
+      summary: Задать пароль и активировать владельца или администратора
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteBootstrapActivationInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/BootstrapAuthSession'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/auth/sso/exchange:
+    post:
+      tags: [Auth]
+      operationId: exchangeSsoToken
+      summary: Обменять одноразовый SSO-токен на сессию TeamOS
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExchangeSsoTokenInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/AuthSession'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/provisioning/companies:
+    post:
+      tags: [Provisioning]
+      operationId: provisionCompany
+      summary: Создать компанию с владельцем и администратором из внешнего сервиса
+      security:
+        - serviceAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProvisionCompanyInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/ProvisionCompany'
+        '201':
+          $ref: '#/components/responses/ProvisionCompany'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/provisioning/companies/status:
+    get:
+      tags: [Provisioning]
+      operationId: getProvisionedCompanyStatus
+      summary: Проверить создание компании по ID аккаунта внешнего сервиса
+      description: >-
+        Провайдер определяется служебной учётной записью. Для Rakurs значение
+        externalAccountId соответствует amoCRM Account ID.
+      security:
+        - serviceAuth: []
+      parameters:
+        - name: externalAccountId
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 255
+      responses:
+        '200':
+          $ref: '#/components/responses/ProvisionedCompanyStatus'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/provisioning/sessions:
+    post:
+      tags: [Provisioning]
+      operationId: issueSsoToken
+      summary: Выдать одноразовый SSO-токен сотруднику внешнего сервиса
+      security:
+        - serviceAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueSsoTokenInput'
+      responses:
+        '201':
+          $ref: '#/components/responses/SsoIssue'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/Error'
+
   /api/v1/company:
     get:
       tags: [Company]
@@ -257,6 +423,40 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '403':
           $ref: '#/components/responses/Forbidden'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/company/onboarding:
+    get:
+      tags: [Company]
+      operationId: getOnboardingStatus
+      summary: Получить состояние онбординга текущей компании
+      responses:
+        '200':
+          $ref: '#/components/responses/Onboarding'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/company/onboarding/activation:
+    post:
+      tags: [Company]
+      operationId: reissueOnboardingActivation
+      summary: Перевыпустить ссылку активации второго пользователя
+      responses:
+        '200':
+          $ref: '#/components/responses/Onboarding'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
         default:
           $ref: '#/components/responses/Error'
 
@@ -3683,6 +3883,11 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+    serviceAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Служебная авторизация в формате `Service <credential>`.
     refreshCookie:
       type: apiKey
       in: cookie
@@ -3732,6 +3937,14 @@ components:
       schema:
         type: string
         minLength: 1
+    BootstrapToken:
+      name: token
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 32
+        maxLength: 512
     CourseId:
       name: courseId
       in: path
@@ -3947,6 +4160,45 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/AuthResponse'
+    ProvisionCompany:
+      description: Результат создания компании или идемпотентного повтора операции
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProvisionCompanyResponse'
+    ProvisionedCompanyStatus:
+      description: Результат проверки компании по внешнему аккаунту
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProvisionedCompanyStatusResponse'
+    BootstrapActivation:
+      description: Данные ожидающей активации владельца или администратора
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BootstrapActivation'
+    BootstrapAuthSession:
+      description: Пользователь активирован, refresh-токен установлен в HttpOnly cookie
+      headers:
+        Set-Cookie:
+          $ref: '#/components/headers/RefreshCookie'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BootstrapAuthResponse'
+    Onboarding:
+      description: Состояние онбординга компании и ожидающего пользователя
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/OnboardingState'
+    SsoIssue:
+      description: Одноразовый SSO-токен выдан в query-параметре URL приложения TeamOS
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SsoIssueResponse'
     User:
       description: Пользователь
       content:
@@ -4721,6 +4973,11 @@ components:
               minimum: 400
               maximum: 599
               example: 404
+            code:
+              type: string
+              pattern: '^[A-Z][A-Z0-9_]*$'
+              description: Стабильный машинно-читаемый код ошибки, если он определён.
+              example: BOOTSTRAP_EXPIRED
     RichTextContent:
       type: object
       additionalProperties: false
@@ -4736,15 +4993,25 @@ components:
     UserRole:
       type: string
       enum: [owner, admin, employee, partner]
+    BootstrapRole:
+      type: string
+      enum: [owner, admin]
+    CompanyStatus:
+      type: string
+      enum: [onboarding, active, frozen, suspended]
+    BootstrapActivationState:
+      type: string
+      enum: [pending, expired, consumed, completed]
     UserStatus:
       type: string
       enum: [active, invited, deactivated]
     UserSource:
       type: string
-      enum: [local, amo]
+      enum: [local, amo, external]
       description: >-
         Источник сотрудника. Профиль, роль, статус и доступ управляются в TeamOS.
-        Для `amo` факт наличия сотрудника периодически сверяется с amoCRM.
+        Для `amo` факт наличия сотрудника периодически сверяется с amoCRM;
+        `external` обозначает учётную запись, созданную доверенной интеграцией.
     EmployeeSection:
       type: string
       enum: [schedule, knowledge, academy, distribution]
@@ -4776,6 +5043,8 @@ components:
           $ref: '#/components/schemas/ID'
         createdAt:
           $ref: '#/components/schemas/ISODateTime'
+        status:
+          $ref: '#/components/schemas/CompanyStatus'
     FilePurpose:
       type: string
       enum: [attachment, avatar, logo]
@@ -4985,6 +5254,152 @@ components:
         createdAt:
           $ref: '#/components/schemas/ISODateTime'
 
+    ProvisioningParticipantInput:
+      type: object
+      additionalProperties: false
+      required: [externalUserId, email, firstName, lastName]
+      properties:
+        externalUserId:
+          type: string
+          minLength: 1
+          maxLength: 255
+        email:
+          $ref: '#/components/schemas/Email'
+        firstName:
+          type: string
+          minLength: 1
+        lastName:
+          type: string
+          minLength: 1
+
+    ProvisionCompanyInput:
+      type: object
+      additionalProperties: false
+      required:
+        - provider
+        - externalAccountId
+        - companyName
+        - initiatorExternalUserId
+        - owner
+        - admin
+      properties:
+        provider:
+          type: string
+          minLength: 2
+          maxLength: 32
+          pattern: '^[a-z][a-z0-9_-]{1,31}$'
+        externalAccountId:
+          type: string
+          minLength: 1
+          maxLength: 255
+        companyName:
+          type: string
+          minLength: 1
+        initiatorExternalUserId:
+          type: string
+          minLength: 1
+          maxLength: 255
+        owner:
+          $ref: '#/components/schemas/ProvisioningParticipantInput'
+        admin:
+          $ref: '#/components/schemas/ProvisioningParticipantInput'
+
+    ProvisionCompanyResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - companyId
+        - companyStatus
+        - created
+        - initiatorRole
+        - continueUrl
+        - expiresAt
+      properties:
+        companyId:
+          $ref: '#/components/schemas/ID'
+        companyStatus:
+          $ref: '#/components/schemas/CompanyStatus'
+        created:
+          type: boolean
+        initiatorRole:
+          $ref: '#/components/schemas/BootstrapRole'
+        continueUrl:
+          type: string
+          format: uri
+          description: URL страницы TeamOS, на которой инициатор завершает активацию.
+        expiresAt:
+          $ref: '#/components/schemas/ISODateTime'
+
+    ProvisionedCompanyStatusResponse:
+      type: object
+      additionalProperties: false
+      required: [exists]
+      properties:
+        exists:
+          type: boolean
+        companyId:
+          $ref: '#/components/schemas/ID'
+        companyStatus:
+          $ref: '#/components/schemas/CompanyStatus'
+
+    BootstrapParticipant:
+      type: object
+      additionalProperties: false
+      required: [userId, email, firstName, lastName, role, status]
+      properties:
+        userId:
+          $ref: '#/components/schemas/ID'
+        email:
+          $ref: '#/components/schemas/Email'
+        firstName:
+          type: string
+          minLength: 1
+        lastName:
+          type: string
+        role:
+          $ref: '#/components/schemas/BootstrapRole'
+        status:
+          $ref: '#/components/schemas/UserStatus'
+
+    BootstrapActivation:
+      type: object
+      additionalProperties: false
+      required: [companyId, companyName, companyStatus, user, expiresAt, state]
+      properties:
+        companyId:
+          $ref: '#/components/schemas/ID'
+        companyName:
+          type: string
+          minLength: 1
+        companyStatus:
+          $ref: '#/components/schemas/CompanyStatus'
+        user:
+          $ref: '#/components/schemas/BootstrapParticipant'
+        expiresAt:
+          $ref: '#/components/schemas/ISODateTime'
+        state:
+          $ref: '#/components/schemas/BootstrapActivationState'
+
+    OnboardingState:
+      type: object
+      additionalProperties: false
+      required: [companyId, companyStatus, completed]
+      properties:
+        companyId:
+          $ref: '#/components/schemas/ID'
+        companyStatus:
+          $ref: '#/components/schemas/CompanyStatus'
+        completed:
+          type: boolean
+        pendingUser:
+          $ref: '#/components/schemas/BootstrapParticipant'
+        activationUrl:
+          type: string
+          format: uri
+          description: Новая одноразовая ссылка для ожидающего пользователя; возвращается только при выдаче.
+        expiresAt:
+          $ref: '#/components/schemas/ISODateTime'
+
     AuthResponse:
       type: object
       additionalProperties: false
@@ -4996,6 +5411,20 @@ components:
           description: JWT access-токен со сроком жизни 15 минут.
         user:
           $ref: '#/components/schemas/User'
+
+    BootstrapAuthResponse:
+      type: object
+      additionalProperties: false
+      required: [accessToken, user, onboarding]
+      properties:
+        accessToken:
+          type: string
+          minLength: 1
+          description: JWT access-токен со сроком жизни 15 минут.
+        user:
+          $ref: '#/components/schemas/User'
+        onboarding:
+          $ref: '#/components/schemas/OnboardingState'
 
     LoginInput:
       type: object
@@ -5038,6 +5467,60 @@ components:
         lastName:
           type: string
           minLength: 1
+
+    CompleteBootstrapActivationInput:
+      type: object
+      additionalProperties: false
+      required: [password]
+      properties:
+        password:
+          type: string
+          format: password
+          minLength: 8
+
+    IssueSsoTokenInput:
+      type: object
+      additionalProperties: false
+      required: [provider, externalAccountId, externalUserId]
+      properties:
+        provider:
+          type: string
+          minLength: 2
+          maxLength: 32
+          pattern: '^[a-z][a-z0-9_-]{1,31}$'
+        externalAccountId:
+          type: string
+          minLength: 1
+          maxLength: 255
+        externalUserId:
+          type: string
+          minLength: 1
+          maxLength: 255
+
+    SsoIssueResponse:
+      type: object
+      additionalProperties: false
+      required: [redirectUrl, expiresAt]
+      properties:
+        redirectUrl:
+          type: string
+          format: uri
+          description: >-
+            URL страницы TeamOS с одноразовым query-параметром:
+            `/onboarding?token=...` для ещё не активированного пользователя
+            или `/sso?token=...` для активного.
+        expiresAt:
+          $ref: '#/components/schemas/ISODateTime'
+
+    ExchangeSsoTokenInput:
+      type: object
+      additionalProperties: false
+      required: [token]
+      properties:
+        token:
+          type: string
+          minLength: 32
+          maxLength: 512
 
     AcceptInviteInput:
       type: object

@@ -29,7 +29,31 @@ func accessTarget(ctx context.Context, queries *db.Queries, actor Actor, userID 
 
 func accessTargetForUpdate(ctx context.Context, queries *db.Queries, actor Actor, userID uuid.UUID) (db.User, error) {
 	user, err := queries.GetUserForAccessUpdate(ctx, db.GetUserForAccessUpdateParams{CompanyID: actor.CompanyID, ID: userID})
-	return validateAccessTarget(user, err)
+	user, err = validateAccessTarget(user, err)
+	if err != nil {
+		return db.User{}, err
+	}
+	if err = ensureNotPendingBootstrapUser(ctx, queries, actor.CompanyID, userID); err != nil {
+		return db.User{}, err
+	}
+	return user, nil
+}
+
+func ensureNotPendingBootstrapUser(
+	ctx context.Context,
+	queries *db.Queries,
+	companyID, userID uuid.UUID,
+) error {
+	pending, err := queries.IsPendingBootstrapUser(ctx, db.IsPendingBootstrapUserParams{
+		CompanyID: companyID, UserID: userID,
+	})
+	if err != nil {
+		return internal("Не удалось проверить bootstrap-активацию сотрудника", err)
+	}
+	if pending {
+		return coded(ErrorConflict, ErrorCodePendingBootstrapLocked, "Нельзя изменять участника до завершения bootstrap-активации")
+	}
+	return nil
 }
 
 func validateAccessTarget(user db.User, err error) (db.User, error) {

@@ -135,6 +135,266 @@ func (x *CompanyCreatedPayload) GetOwnerUserId() string {
 	return ""
 }
 
+// Published under teamos.company.company.provisioned.v1 after the company,
+// integration and both bootstrap users are committed atomically.
+type CompanyProvisionedEvent struct {
+	state         protoimpl.MessageState     `protogen:"open.v1"`
+	Metadata      *EventMetadata             `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	Payload       *CompanyProvisionedPayload `protobuf:"bytes,2,opt,name=payload,proto3" json:"payload,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CompanyProvisionedEvent) Reset() {
+	*x = CompanyProvisionedEvent{}
+	mi := &file_events_company_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CompanyProvisionedEvent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CompanyProvisionedEvent) ProtoMessage() {}
+
+func (x *CompanyProvisionedEvent) ProtoReflect() protoreflect.Message {
+	mi := &file_events_company_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CompanyProvisionedEvent.ProtoReflect.Descriptor instead.
+func (*CompanyProvisionedEvent) Descriptor() ([]byte, []int) {
+	return file_events_company_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *CompanyProvisionedEvent) GetMetadata() *EventMetadata {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
+func (x *CompanyProvisionedEvent) GetPayload() *CompanyProvisionedPayload {
+	if x != nil {
+		return x.Payload
+	}
+	return nil
+}
+
+type CompanyProvisionedPayload struct {
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	CompanyId         string                 `protobuf:"bytes,1,opt,name=company_id,json=companyId,proto3" json:"company_id,omitempty"`
+	Name              string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Provider          string                 `protobuf:"bytes,3,opt,name=provider,proto3" json:"provider,omitempty"`
+	ExternalAccountId string                 `protobuf:"bytes,4,opt,name=external_account_id,json=externalAccountId,proto3" json:"external_account_id,omitempty"`
+	OwnerUserId       string                 `protobuf:"bytes,5,opt,name=owner_user_id,json=ownerUserId,proto3" json:"owner_user_id,omitempty"`
+	AdminUserId       string                 `protobuf:"bytes,6,opt,name=admin_user_id,json=adminUserId,proto3" json:"admin_user_id,omitempty"`
+	InitiatorUserId   string                 `protobuf:"bytes,7,opt,name=initiator_user_id,json=initiatorUserId,proto3" json:"initiator_user_id,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *CompanyProvisionedPayload) Reset() {
+	*x = CompanyProvisionedPayload{}
+	mi := &file_events_company_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CompanyProvisionedPayload) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CompanyProvisionedPayload) ProtoMessage() {}
+
+func (x *CompanyProvisionedPayload) ProtoReflect() protoreflect.Message {
+	mi := &file_events_company_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CompanyProvisionedPayload.ProtoReflect.Descriptor instead.
+func (*CompanyProvisionedPayload) Descriptor() ([]byte, []int) {
+	return file_events_company_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *CompanyProvisionedPayload) GetCompanyId() string {
+	if x != nil {
+		return x.CompanyId
+	}
+	return ""
+}
+
+func (x *CompanyProvisionedPayload) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *CompanyProvisionedPayload) GetProvider() string {
+	if x != nil {
+		return x.Provider
+	}
+	return ""
+}
+
+func (x *CompanyProvisionedPayload) GetExternalAccountId() string {
+	if x != nil {
+		return x.ExternalAccountId
+	}
+	return ""
+}
+
+func (x *CompanyProvisionedPayload) GetOwnerUserId() string {
+	if x != nil {
+		return x.OwnerUserId
+	}
+	return ""
+}
+
+func (x *CompanyProvisionedPayload) GetAdminUserId() string {
+	if x != nil {
+		return x.AdminUserId
+	}
+	return ""
+}
+
+func (x *CompanyProvisionedPayload) GetInitiatorUserId() string {
+	if x != nil {
+		return x.InitiatorUserId
+	}
+	return ""
+}
+
+// Published under teamos.company.onboarding.completed.v1 once both bootstrap
+// users have active password credentials.
+type CompanyOnboardingCompletedEvent struct {
+	state         protoimpl.MessageState             `protogen:"open.v1"`
+	Metadata      *EventMetadata                     `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	Payload       *CompanyOnboardingCompletedPayload `protobuf:"bytes,2,opt,name=payload,proto3" json:"payload,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CompanyOnboardingCompletedEvent) Reset() {
+	*x = CompanyOnboardingCompletedEvent{}
+	mi := &file_events_company_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CompanyOnboardingCompletedEvent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CompanyOnboardingCompletedEvent) ProtoMessage() {}
+
+func (x *CompanyOnboardingCompletedEvent) ProtoReflect() protoreflect.Message {
+	mi := &file_events_company_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CompanyOnboardingCompletedEvent.ProtoReflect.Descriptor instead.
+func (*CompanyOnboardingCompletedEvent) Descriptor() ([]byte, []int) {
+	return file_events_company_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *CompanyOnboardingCompletedEvent) GetMetadata() *EventMetadata {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
+func (x *CompanyOnboardingCompletedEvent) GetPayload() *CompanyOnboardingCompletedPayload {
+	if x != nil {
+		return x.Payload
+	}
+	return nil
+}
+
+type CompanyOnboardingCompletedPayload struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CompanyId     string                 `protobuf:"bytes,1,opt,name=company_id,json=companyId,proto3" json:"company_id,omitempty"`
+	OwnerUserId   string                 `protobuf:"bytes,2,opt,name=owner_user_id,json=ownerUserId,proto3" json:"owner_user_id,omitempty"`
+	AdminUserId   string                 `protobuf:"bytes,3,opt,name=admin_user_id,json=adminUserId,proto3" json:"admin_user_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CompanyOnboardingCompletedPayload) Reset() {
+	*x = CompanyOnboardingCompletedPayload{}
+	mi := &file_events_company_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CompanyOnboardingCompletedPayload) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CompanyOnboardingCompletedPayload) ProtoMessage() {}
+
+func (x *CompanyOnboardingCompletedPayload) ProtoReflect() protoreflect.Message {
+	mi := &file_events_company_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CompanyOnboardingCompletedPayload.ProtoReflect.Descriptor instead.
+func (*CompanyOnboardingCompletedPayload) Descriptor() ([]byte, []int) {
+	return file_events_company_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *CompanyOnboardingCompletedPayload) GetCompanyId() string {
+	if x != nil {
+		return x.CompanyId
+	}
+	return ""
+}
+
+func (x *CompanyOnboardingCompletedPayload) GetOwnerUserId() string {
+	if x != nil {
+		return x.OwnerUserId
+	}
+	return ""
+}
+
+func (x *CompanyOnboardingCompletedPayload) GetAdminUserId() string {
+	if x != nil {
+		return x.AdminUserId
+	}
+	return ""
+}
+
 var File_events_company_proto protoreflect.FileDescriptor
 
 const file_events_company_proto_rawDesc = "" +
@@ -147,7 +407,27 @@ const file_events_company_proto_rawDesc = "" +
 	"\n" +
 	"company_id\x18\x01 \x01(\tR\tcompanyId\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\"\n" +
-	"\rowner_user_id\x18\x03 \x01(\tR\vownerUserIdBFZDgithub.com/sk1fy/team-os-backend/contracts/gen/go/events/v1;eventsv1b\x06proto3"
+	"\rowner_user_id\x18\x03 \x01(\tR\vownerUserId\"\x9d\x01\n" +
+	"\x17CompanyProvisionedEvent\x12;\n" +
+	"\bmetadata\x18\x01 \x01(\v2\x1f.teamos.events.v1.EventMetadataR\bmetadata\x12E\n" +
+	"\apayload\x18\x02 \x01(\v2+.teamos.events.v1.CompanyProvisionedPayloadR\apayload\"\x8e\x02\n" +
+	"\x19CompanyProvisionedPayload\x12\x1d\n" +
+	"\n" +
+	"company_id\x18\x01 \x01(\tR\tcompanyId\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x1a\n" +
+	"\bprovider\x18\x03 \x01(\tR\bprovider\x12.\n" +
+	"\x13external_account_id\x18\x04 \x01(\tR\x11externalAccountId\x12\"\n" +
+	"\rowner_user_id\x18\x05 \x01(\tR\vownerUserId\x12\"\n" +
+	"\radmin_user_id\x18\x06 \x01(\tR\vadminUserId\x12*\n" +
+	"\x11initiator_user_id\x18\a \x01(\tR\x0finitiatorUserId\"\xad\x01\n" +
+	"\x1fCompanyOnboardingCompletedEvent\x12;\n" +
+	"\bmetadata\x18\x01 \x01(\v2\x1f.teamos.events.v1.EventMetadataR\bmetadata\x12M\n" +
+	"\apayload\x18\x02 \x01(\v23.teamos.events.v1.CompanyOnboardingCompletedPayloadR\apayload\"\x8a\x01\n" +
+	"!CompanyOnboardingCompletedPayload\x12\x1d\n" +
+	"\n" +
+	"company_id\x18\x01 \x01(\tR\tcompanyId\x12\"\n" +
+	"\rowner_user_id\x18\x02 \x01(\tR\vownerUserId\x12\"\n" +
+	"\radmin_user_id\x18\x03 \x01(\tR\vadminUserIdBFZDgithub.com/sk1fy/team-os-backend/contracts/gen/go/events/v1;eventsv1b\x06proto3"
 
 var (
 	file_events_company_proto_rawDescOnce sync.Once
@@ -161,20 +441,28 @@ func file_events_company_proto_rawDescGZIP() []byte {
 	return file_events_company_proto_rawDescData
 }
 
-var file_events_company_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_events_company_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_events_company_proto_goTypes = []any{
-	(*CompanyCreatedEvent)(nil),   // 0: teamos.events.v1.CompanyCreatedEvent
-	(*CompanyCreatedPayload)(nil), // 1: teamos.events.v1.CompanyCreatedPayload
-	(*EventMetadata)(nil),         // 2: teamos.events.v1.EventMetadata
+	(*CompanyCreatedEvent)(nil),               // 0: teamos.events.v1.CompanyCreatedEvent
+	(*CompanyCreatedPayload)(nil),             // 1: teamos.events.v1.CompanyCreatedPayload
+	(*CompanyProvisionedEvent)(nil),           // 2: teamos.events.v1.CompanyProvisionedEvent
+	(*CompanyProvisionedPayload)(nil),         // 3: teamos.events.v1.CompanyProvisionedPayload
+	(*CompanyOnboardingCompletedEvent)(nil),   // 4: teamos.events.v1.CompanyOnboardingCompletedEvent
+	(*CompanyOnboardingCompletedPayload)(nil), // 5: teamos.events.v1.CompanyOnboardingCompletedPayload
+	(*EventMetadata)(nil),                     // 6: teamos.events.v1.EventMetadata
 }
 var file_events_company_proto_depIdxs = []int32{
-	2, // 0: teamos.events.v1.CompanyCreatedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	6, // 0: teamos.events.v1.CompanyCreatedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
 	1, // 1: teamos.events.v1.CompanyCreatedEvent.payload:type_name -> teamos.events.v1.CompanyCreatedPayload
-	2, // [2:2] is the sub-list for method output_type
-	2, // [2:2] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	6, // 2: teamos.events.v1.CompanyProvisionedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	3, // 3: teamos.events.v1.CompanyProvisionedEvent.payload:type_name -> teamos.events.v1.CompanyProvisionedPayload
+	6, // 4: teamos.events.v1.CompanyOnboardingCompletedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	5, // 5: teamos.events.v1.CompanyOnboardingCompletedEvent.payload:type_name -> teamos.events.v1.CompanyOnboardingCompletedPayload
+	6, // [6:6] is the sub-list for method output_type
+	6, // [6:6] is the sub-list for method input_type
+	6, // [6:6] is the sub-list for extension type_name
+	6, // [6:6] is the sub-list for extension extendee
+	0, // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_events_company_proto_init() }
@@ -189,7 +477,7 @@ func file_events_company_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_events_company_proto_rawDesc), len(file_events_company_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

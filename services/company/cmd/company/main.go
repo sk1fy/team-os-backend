@@ -131,7 +131,10 @@ func run(logger *slog.Logger) error {
 		grpc.MaxRecvMsgSize(2<<20),
 		grpc.MaxSendMsgSize(2<<20),
 	)
-	companyv1.RegisterCompanyServiceServer(grpcServer, companygrpc.NewServer(service, verifier))
+	companyv1.RegisterCompanyServiceServer(
+		grpcServer,
+		companygrpc.NewServer(service, verifier, configuration.GatewayServiceToken),
+	)
 	healthServer := health.NewServer()
 	healthServer.SetServingStatus("", grpc_health_v1.HealthCheckResponse_SERVING)
 	grpc_health_v1.RegisterHealthServer(grpcServer, healthServer)
@@ -168,6 +171,7 @@ func run(logger *slog.Logger) error {
 
 	rootContext, cancel := context.WithCancel(context.Background())
 	defer cancel()
+	go runProvisioningCleanup(rootContext, service, logger)
 	serverErrors := make(chan error, 3)
 	go func() {
 		logger.Info("company gRPC server started", "address", configuration.GRPCAddr)
@@ -212,6 +216,37 @@ func run(logger *slog.Logger) error {
 		}
 	}
 	return runErr
+}
+
+func runProvisioningCleanup(ctx context.Context, service *application.Service, logger *slog.Logger) {
+	const tokenRetention = 7 * 24 * time.Hour
+	cleanup := func() {
+		cleanupContext, cancel := context.WithTimeout(ctx, 30*time.Second)
+		defer cancel()
+		result, err := service.CleanupProvisioningArtifacts(cleanupContext, tokenRetention)
+		if err != nil {
+			if !errors.Is(err, context.Canceled) {
+				logger.Error("provisioning cleanup failed", "error", err)
+			}
+			return
+		}
+		logger.Info("provisioning cleanup completed",
+			"provisioning_requests", result.ProvisioningRequests,
+			"bootstrap_activations", result.BootstrapActivations,
+			"sso_tokens", result.SSOTokens,
+		)
+	}
+	cleanup()
+	ticker := time.NewTicker(time.Hour)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-ticker.C:
+			cleanup()
+		}
+	}
 }
 
 func healthcheck(url string) error {

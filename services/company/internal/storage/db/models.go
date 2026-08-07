@@ -20,14 +20,45 @@ type AccessLink struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+type BootstrapActivation struct {
+	ID               uuid.UUID          `json:"id"`
+	CompanyID        uuid.UUID          `json:"company_id"`
+	UserID           uuid.UUID          `json:"user_id"`
+	Role             string             `json:"role"`
+	Purpose          string             `json:"purpose"`
+	TokenHash        []byte             `json:"token_hash"`
+	ExpiresAt        time.Time          `json:"expires_at"`
+	ConsumedAt       pgtype.Timestamptz `json:"consumed_at"`
+	RevokedAt        pgtype.Timestamptz `json:"revoked_at"`
+	RevocationReason pgtype.Text        `json:"revocation_reason"`
+	CreatedAt        time.Time          `json:"created_at"`
+}
+
 type Company struct {
-	ID           uuid.UUID     `json:"id"`
-	Name         string        `json:"name"`
-	LogoUrl      pgtype.Text   `json:"logo_url"`
-	OwnerID      uuid.NullUUID `json:"owner_id"`
-	CreatedAt    time.Time     `json:"created_at"`
-	UpdatedAt    time.Time     `json:"updated_at"`
-	AmoAccountID pgtype.Text   `json:"amo_account_id"`
+	ID                    uuid.UUID          `json:"id"`
+	Name                  string             `json:"name"`
+	LogoUrl               pgtype.Text        `json:"logo_url"`
+	OwnerID               uuid.NullUUID      `json:"owner_id"`
+	CreatedAt             time.Time          `json:"created_at"`
+	UpdatedAt             time.Time          `json:"updated_at"`
+	AmoAccountID          pgtype.Text        `json:"amo_account_id"`
+	Status                string             `json:"status"`
+	OnboardingCompletedAt pgtype.Timestamptz `json:"onboarding_completed_at"`
+}
+
+type CompanyIntegration struct {
+	ID                uuid.UUID          `json:"id"`
+	CompanyID         uuid.UUID          `json:"company_id"`
+	Provider          string             `json:"provider"`
+	ExternalAccountID string             `json:"external_account_id"`
+	AppName           pgtype.Text        `json:"app_name"`
+	Entitlements      []string           `json:"entitlements"`
+	Status            string             `json:"status"`
+	LastVerifiedAt    pgtype.Timestamptz `json:"last_verified_at"`
+	FrozenAt          pgtype.Timestamptz `json:"frozen_at"`
+	Metadata          []byte             `json:"metadata"`
+	CreatedAt         time.Time          `json:"created_at"`
+	UpdatedAt         time.Time          `json:"updated_at"`
 }
 
 type Credential struct {
@@ -140,6 +171,18 @@ type ProcessedEvent struct {
 	ProcessedAt time.Time `json:"processed_at"`
 }
 
+type ProvisioningRequest struct {
+	Provider          string    `json:"provider"`
+	IdempotencyKey    string    `json:"idempotency_key"`
+	RequestHash       []byte    `json:"request_hash"`
+	ExternalAccountID string    `json:"external_account_id"`
+	CompanyID         uuid.UUID `json:"company_id"`
+	IntegrationID     uuid.UUID `json:"integration_id"`
+	InitiatorUserID   uuid.UUID `json:"initiator_user_id"`
+	CreatedAt         time.Time `json:"created_at"`
+	ExpiresAt         time.Time `json:"expires_at"`
+}
+
 type Session struct {
 	ID          uuid.UUID          `json:"id"`
 	CompanyID   uuid.UUID          `json:"company_id"`
@@ -166,6 +209,19 @@ type ShiftException struct {
 	Note      pgtype.Text `json:"note"`
 	CreatedAt time.Time   `json:"created_at"`
 	UpdatedAt time.Time   `json:"updated_at"`
+}
+
+type SsoToken struct {
+	ID                 uuid.UUID          `json:"id"`
+	CompanyID          uuid.UUID          `json:"company_id"`
+	UserID             uuid.UUID          `json:"user_id"`
+	ExternalIdentityID uuid.UUID          `json:"external_identity_id"`
+	Purpose            string             `json:"purpose"`
+	TokenHash          []byte             `json:"token_hash"`
+	ExpiresAt          time.Time          `json:"expires_at"`
+	ConsumedAt         pgtype.Timestamptz `json:"consumed_at"`
+	RevokedAt          pgtype.Timestamptz `json:"revoked_at"`
+	CreatedAt          time.Time          `json:"created_at"`
 }
 
 type User struct {
@@ -202,6 +258,20 @@ type UserAdminAudit struct {
 	AfterState   []byte        `json:"after_state"`
 	RequestID    pgtype.Text   `json:"request_id"`
 	CreatedAt    time.Time     `json:"created_at"`
+}
+
+type UserExternalIdentity struct {
+	ID                uuid.UUID `json:"id"`
+	CompanyID         uuid.UUID `json:"company_id"`
+	IntegrationID     uuid.UUID `json:"integration_id"`
+	UserID            uuid.UUID `json:"user_id"`
+	Provider          string    `json:"provider"`
+	ExternalAccountID string    `json:"external_account_id"`
+	ExternalUserID    string    `json:"external_user_id"`
+	Status            string    `json:"status"`
+	LastVerifiedAt    time.Time `json:"last_verified_at"`
+	CreatedAt         time.Time `json:"created_at"`
+	UpdatedAt         time.Time `json:"updated_at"`
 }
 
 type UserPosition struct {

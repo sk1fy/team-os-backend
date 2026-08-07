@@ -19,59 +19,67 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	CompanyService_Register_FullMethodName                 = "/teamos.company.v1.CompanyService/Register"
-	CompanyService_Login_FullMethodName                    = "/teamos.company.v1.CompanyService/Login"
-	CompanyService_LoginWithAccessLink_FullMethodName      = "/teamos.company.v1.CompanyService/LoginWithAccessLink"
-	CompanyService_ImpersonateUser_FullMethodName          = "/teamos.company.v1.CompanyService/ImpersonateUser"
-	CompanyService_Refresh_FullMethodName                  = "/teamos.company.v1.CompanyService/Refresh"
-	CompanyService_Logout_FullMethodName                   = "/teamos.company.v1.CompanyService/Logout"
-	CompanyService_GetInviteByToken_FullMethodName         = "/teamos.company.v1.CompanyService/GetInviteByToken"
-	CompanyService_AcceptInvite_FullMethodName             = "/teamos.company.v1.CompanyService/AcceptInvite"
-	CompanyService_GetCurrentUser_FullMethodName           = "/teamos.company.v1.CompanyService/GetCurrentUser"
-	CompanyService_UpdateCurrentUser_FullMethodName        = "/teamos.company.v1.CompanyService/UpdateCurrentUser"
-	CompanyService_GetCompany_FullMethodName               = "/teamos.company.v1.CompanyService/GetCompany"
-	CompanyService_UpdateCompany_FullMethodName            = "/teamos.company.v1.CompanyService/UpdateCompany"
-	CompanyService_GetDepartments_FullMethodName           = "/teamos.company.v1.CompanyService/GetDepartments"
-	CompanyService_CreateDepartment_FullMethodName         = "/teamos.company.v1.CompanyService/CreateDepartment"
-	CompanyService_UpdateDepartment_FullMethodName         = "/teamos.company.v1.CompanyService/UpdateDepartment"
-	CompanyService_DeleteDepartment_FullMethodName         = "/teamos.company.v1.CompanyService/DeleteDepartment"
-	CompanyService_MoveDepartment_FullMethodName           = "/teamos.company.v1.CompanyService/MoveDepartment"
-	CompanyService_GetPositions_FullMethodName             = "/teamos.company.v1.CompanyService/GetPositions"
-	CompanyService_GetPosition_FullMethodName              = "/teamos.company.v1.CompanyService/GetPosition"
-	CompanyService_CreatePosition_FullMethodName           = "/teamos.company.v1.CompanyService/CreatePosition"
-	CompanyService_UpdatePosition_FullMethodName           = "/teamos.company.v1.CompanyService/UpdatePosition"
-	CompanyService_DeletePosition_FullMethodName           = "/teamos.company.v1.CompanyService/DeletePosition"
-	CompanyService_MovePosition_FullMethodName             = "/teamos.company.v1.CompanyService/MovePosition"
-	CompanyService_GetUsers_FullMethodName                 = "/teamos.company.v1.CompanyService/GetUsers"
-	CompanyService_GetUser_FullMethodName                  = "/teamos.company.v1.CompanyService/GetUser"
-	CompanyService_CreateUser_FullMethodName               = "/teamos.company.v1.CompanyService/CreateUser"
-	CompanyService_UpdateUser_FullMethodName               = "/teamos.company.v1.CompanyService/UpdateUser"
-	CompanyService_UpdateUserCard_FullMethodName           = "/teamos.company.v1.CompanyService/UpdateUserCard"
-	CompanyService_DeleteUser_FullMethodName               = "/teamos.company.v1.CompanyService/DeleteUser"
-	CompanyService_GetUserAccess_FullMethodName            = "/teamos.company.v1.CompanyService/GetUserAccess"
-	CompanyService_SetUserPasswordAccess_FullMethodName    = "/teamos.company.v1.CompanyService/SetUserPasswordAccess"
-	CompanyService_SetUserLinkAccess_FullMethodName        = "/teamos.company.v1.CompanyService/SetUserLinkAccess"
-	CompanyService_RevokeUserAccess_FullMethodName         = "/teamos.company.v1.CompanyService/RevokeUserAccess"
-	CompanyService_GetInvites_FullMethodName               = "/teamos.company.v1.CompanyService/GetInvites"
-	CompanyService_InviteUser_FullMethodName               = "/teamos.company.v1.CompanyService/InviteUser"
-	CompanyService_ResendInvite_FullMethodName             = "/teamos.company.v1.CompanyService/ResendInvite"
-	CompanyService_RevokeInvite_FullMethodName             = "/teamos.company.v1.CompanyService/RevokeInvite"
-	CompanyService_GetUsersByIds_FullMethodName            = "/teamos.company.v1.CompanyService/GetUsersByIds"
-	CompanyService_ResolveReportUserScope_FullMethodName   = "/teamos.company.v1.CompanyService/ResolveReportUserScope"
-	CompanyService_GetReportUserProfiles_FullMethodName    = "/teamos.company.v1.CompanyService/GetReportUserProfiles"
-	CompanyService_ResolvePositionUsers_FullMethodName     = "/teamos.company.v1.CompanyService/ResolvePositionUsers"
-	CompanyService_ResolveDepartmentUsers_FullMethodName   = "/teamos.company.v1.CompanyService/ResolveDepartmentUsers"
-	CompanyService_GetSchedules_FullMethodName             = "/teamos.company.v1.CompanyService/GetSchedules"
-	CompanyService_SaveSchedule_FullMethodName             = "/teamos.company.v1.CompanyService/SaveSchedule"
-	CompanyService_GetShiftExceptions_FullMethodName       = "/teamos.company.v1.CompanyService/GetShiftExceptions"
-	CompanyService_SaveShiftExceptions_FullMethodName      = "/teamos.company.v1.CompanyService/SaveShiftExceptions"
-	CompanyService_GetDistributionGroups_FullMethodName    = "/teamos.company.v1.CompanyService/GetDistributionGroups"
-	CompanyService_CreateDistributionGroup_FullMethodName  = "/teamos.company.v1.CompanyService/CreateDistributionGroup"
-	CompanyService_UpdateDistributionGroup_FullMethodName  = "/teamos.company.v1.CompanyService/UpdateDistributionGroup"
-	CompanyService_DeleteDistributionGroup_FullMethodName  = "/teamos.company.v1.CompanyService/DeleteDistributionGroup"
-	CompanyService_GetDistributionEvents_FullMethodName    = "/teamos.company.v1.CompanyService/GetDistributionEvents"
-	CompanyService_SimulateDistributionDeal_FullMethodName = "/teamos.company.v1.CompanyService/SimulateDistributionDeal"
-	CompanyService_ResetDistributionEvents_FullMethodName  = "/teamos.company.v1.CompanyService/ResetDistributionEvents"
+	CompanyService_Register_FullMethodName                    = "/teamos.company.v1.CompanyService/Register"
+	CompanyService_Login_FullMethodName                       = "/teamos.company.v1.CompanyService/Login"
+	CompanyService_LoginWithAccessLink_FullMethodName         = "/teamos.company.v1.CompanyService/LoginWithAccessLink"
+	CompanyService_ImpersonateUser_FullMethodName             = "/teamos.company.v1.CompanyService/ImpersonateUser"
+	CompanyService_Refresh_FullMethodName                     = "/teamos.company.v1.CompanyService/Refresh"
+	CompanyService_Logout_FullMethodName                      = "/teamos.company.v1.CompanyService/Logout"
+	CompanyService_GetInviteByToken_FullMethodName            = "/teamos.company.v1.CompanyService/GetInviteByToken"
+	CompanyService_AcceptInvite_FullMethodName                = "/teamos.company.v1.CompanyService/AcceptInvite"
+	CompanyService_ProvisionCompany_FullMethodName            = "/teamos.company.v1.CompanyService/ProvisionCompany"
+	CompanyService_GetProvisionedCompanyStatus_FullMethodName = "/teamos.company.v1.CompanyService/GetProvisionedCompanyStatus"
+	CompanyService_GetBootstrapActivation_FullMethodName      = "/teamos.company.v1.CompanyService/GetBootstrapActivation"
+	CompanyService_CompleteBootstrapActivation_FullMethodName = "/teamos.company.v1.CompanyService/CompleteBootstrapActivation"
+	CompanyService_IssueSsoToken_FullMethodName               = "/teamos.company.v1.CompanyService/IssueSsoToken"
+	CompanyService_ExchangeSsoToken_FullMethodName            = "/teamos.company.v1.CompanyService/ExchangeSsoToken"
+	CompanyService_GetOnboardingStatus_FullMethodName         = "/teamos.company.v1.CompanyService/GetOnboardingStatus"
+	CompanyService_ReissueOnboardingActivation_FullMethodName = "/teamos.company.v1.CompanyService/ReissueOnboardingActivation"
+	CompanyService_GetCurrentUser_FullMethodName              = "/teamos.company.v1.CompanyService/GetCurrentUser"
+	CompanyService_UpdateCurrentUser_FullMethodName           = "/teamos.company.v1.CompanyService/UpdateCurrentUser"
+	CompanyService_GetCompany_FullMethodName                  = "/teamos.company.v1.CompanyService/GetCompany"
+	CompanyService_UpdateCompany_FullMethodName               = "/teamos.company.v1.CompanyService/UpdateCompany"
+	CompanyService_GetDepartments_FullMethodName              = "/teamos.company.v1.CompanyService/GetDepartments"
+	CompanyService_CreateDepartment_FullMethodName            = "/teamos.company.v1.CompanyService/CreateDepartment"
+	CompanyService_UpdateDepartment_FullMethodName            = "/teamos.company.v1.CompanyService/UpdateDepartment"
+	CompanyService_DeleteDepartment_FullMethodName            = "/teamos.company.v1.CompanyService/DeleteDepartment"
+	CompanyService_MoveDepartment_FullMethodName              = "/teamos.company.v1.CompanyService/MoveDepartment"
+	CompanyService_GetPositions_FullMethodName                = "/teamos.company.v1.CompanyService/GetPositions"
+	CompanyService_GetPosition_FullMethodName                 = "/teamos.company.v1.CompanyService/GetPosition"
+	CompanyService_CreatePosition_FullMethodName              = "/teamos.company.v1.CompanyService/CreatePosition"
+	CompanyService_UpdatePosition_FullMethodName              = "/teamos.company.v1.CompanyService/UpdatePosition"
+	CompanyService_DeletePosition_FullMethodName              = "/teamos.company.v1.CompanyService/DeletePosition"
+	CompanyService_MovePosition_FullMethodName                = "/teamos.company.v1.CompanyService/MovePosition"
+	CompanyService_GetUsers_FullMethodName                    = "/teamos.company.v1.CompanyService/GetUsers"
+	CompanyService_GetUser_FullMethodName                     = "/teamos.company.v1.CompanyService/GetUser"
+	CompanyService_CreateUser_FullMethodName                  = "/teamos.company.v1.CompanyService/CreateUser"
+	CompanyService_UpdateUser_FullMethodName                  = "/teamos.company.v1.CompanyService/UpdateUser"
+	CompanyService_UpdateUserCard_FullMethodName              = "/teamos.company.v1.CompanyService/UpdateUserCard"
+	CompanyService_DeleteUser_FullMethodName                  = "/teamos.company.v1.CompanyService/DeleteUser"
+	CompanyService_GetUserAccess_FullMethodName               = "/teamos.company.v1.CompanyService/GetUserAccess"
+	CompanyService_SetUserPasswordAccess_FullMethodName       = "/teamos.company.v1.CompanyService/SetUserPasswordAccess"
+	CompanyService_SetUserLinkAccess_FullMethodName           = "/teamos.company.v1.CompanyService/SetUserLinkAccess"
+	CompanyService_RevokeUserAccess_FullMethodName            = "/teamos.company.v1.CompanyService/RevokeUserAccess"
+	CompanyService_GetInvites_FullMethodName                  = "/teamos.company.v1.CompanyService/GetInvites"
+	CompanyService_InviteUser_FullMethodName                  = "/teamos.company.v1.CompanyService/InviteUser"
+	CompanyService_ResendInvite_FullMethodName                = "/teamos.company.v1.CompanyService/ResendInvite"
+	CompanyService_RevokeInvite_FullMethodName                = "/teamos.company.v1.CompanyService/RevokeInvite"
+	CompanyService_GetUsersByIds_FullMethodName               = "/teamos.company.v1.CompanyService/GetUsersByIds"
+	CompanyService_ResolveReportUserScope_FullMethodName      = "/teamos.company.v1.CompanyService/ResolveReportUserScope"
+	CompanyService_GetReportUserProfiles_FullMethodName       = "/teamos.company.v1.CompanyService/GetReportUserProfiles"
+	CompanyService_ResolvePositionUsers_FullMethodName        = "/teamos.company.v1.CompanyService/ResolvePositionUsers"
+	CompanyService_ResolveDepartmentUsers_FullMethodName      = "/teamos.company.v1.CompanyService/ResolveDepartmentUsers"
+	CompanyService_GetSchedules_FullMethodName                = "/teamos.company.v1.CompanyService/GetSchedules"
+	CompanyService_SaveSchedule_FullMethodName                = "/teamos.company.v1.CompanyService/SaveSchedule"
+	CompanyService_GetShiftExceptions_FullMethodName          = "/teamos.company.v1.CompanyService/GetShiftExceptions"
+	CompanyService_SaveShiftExceptions_FullMethodName         = "/teamos.company.v1.CompanyService/SaveShiftExceptions"
+	CompanyService_GetDistributionGroups_FullMethodName       = "/teamos.company.v1.CompanyService/GetDistributionGroups"
+	CompanyService_CreateDistributionGroup_FullMethodName     = "/teamos.company.v1.CompanyService/CreateDistributionGroup"
+	CompanyService_UpdateDistributionGroup_FullMethodName     = "/teamos.company.v1.CompanyService/UpdateDistributionGroup"
+	CompanyService_DeleteDistributionGroup_FullMethodName     = "/teamos.company.v1.CompanyService/DeleteDistributionGroup"
+	CompanyService_GetDistributionEvents_FullMethodName       = "/teamos.company.v1.CompanyService/GetDistributionEvents"
+	CompanyService_SimulateDistributionDeal_FullMethodName    = "/teamos.company.v1.CompanyService/SimulateDistributionDeal"
+	CompanyService_ResetDistributionEvents_FullMethodName     = "/teamos.company.v1.CompanyService/ResetDistributionEvents"
 )
 
 // CompanyServiceClient is the client API for CompanyService service.
@@ -90,6 +98,14 @@ type CompanyServiceClient interface {
 	Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutResponse, error)
 	GetInviteByToken(ctx context.Context, in *GetInviteByTokenRequest, opts ...grpc.CallOption) (*GetInviteByTokenResponse, error)
 	AcceptInvite(ctx context.Context, in *AcceptInviteRequest, opts ...grpc.CallOption) (*AcceptInviteResponse, error)
+	ProvisionCompany(ctx context.Context, in *ProvisionCompanyRequest, opts ...grpc.CallOption) (*ProvisionCompanyResponse, error)
+	GetProvisionedCompanyStatus(ctx context.Context, in *GetProvisionedCompanyStatusRequest, opts ...grpc.CallOption) (*GetProvisionedCompanyStatusResponse, error)
+	GetBootstrapActivation(ctx context.Context, in *GetBootstrapActivationRequest, opts ...grpc.CallOption) (*GetBootstrapActivationResponse, error)
+	CompleteBootstrapActivation(ctx context.Context, in *CompleteBootstrapActivationRequest, opts ...grpc.CallOption) (*CompleteBootstrapActivationResponse, error)
+	IssueSsoToken(ctx context.Context, in *IssueSsoTokenRequest, opts ...grpc.CallOption) (*IssueSsoTokenResponse, error)
+	ExchangeSsoToken(ctx context.Context, in *ExchangeSsoTokenRequest, opts ...grpc.CallOption) (*ExchangeSsoTokenResponse, error)
+	GetOnboardingStatus(ctx context.Context, in *GetOnboardingStatusRequest, opts ...grpc.CallOption) (*GetOnboardingStatusResponse, error)
+	ReissueOnboardingActivation(ctx context.Context, in *ReissueOnboardingActivationRequest, opts ...grpc.CallOption) (*ReissueOnboardingActivationResponse, error)
 	GetCurrentUser(ctx context.Context, in *GetCurrentUserRequest, opts ...grpc.CallOption) (*GetCurrentUserResponse, error)
 	UpdateCurrentUser(ctx context.Context, in *UpdateCurrentUserRequest, opts ...grpc.CallOption) (*UpdateCurrentUserResponse, error)
 	GetCompany(ctx context.Context, in *GetCompanyRequest, opts ...grpc.CallOption) (*GetCompanyResponse, error)
@@ -219,6 +235,86 @@ func (c *companyServiceClient) AcceptInvite(ctx context.Context, in *AcceptInvit
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(AcceptInviteResponse)
 	err := c.cc.Invoke(ctx, CompanyService_AcceptInvite_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) ProvisionCompany(ctx context.Context, in *ProvisionCompanyRequest, opts ...grpc.CallOption) (*ProvisionCompanyResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ProvisionCompanyResponse)
+	err := c.cc.Invoke(ctx, CompanyService_ProvisionCompany_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) GetProvisionedCompanyStatus(ctx context.Context, in *GetProvisionedCompanyStatusRequest, opts ...grpc.CallOption) (*GetProvisionedCompanyStatusResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetProvisionedCompanyStatusResponse)
+	err := c.cc.Invoke(ctx, CompanyService_GetProvisionedCompanyStatus_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) GetBootstrapActivation(ctx context.Context, in *GetBootstrapActivationRequest, opts ...grpc.CallOption) (*GetBootstrapActivationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetBootstrapActivationResponse)
+	err := c.cc.Invoke(ctx, CompanyService_GetBootstrapActivation_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) CompleteBootstrapActivation(ctx context.Context, in *CompleteBootstrapActivationRequest, opts ...grpc.CallOption) (*CompleteBootstrapActivationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CompleteBootstrapActivationResponse)
+	err := c.cc.Invoke(ctx, CompanyService_CompleteBootstrapActivation_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) IssueSsoToken(ctx context.Context, in *IssueSsoTokenRequest, opts ...grpc.CallOption) (*IssueSsoTokenResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(IssueSsoTokenResponse)
+	err := c.cc.Invoke(ctx, CompanyService_IssueSsoToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) ExchangeSsoToken(ctx context.Context, in *ExchangeSsoTokenRequest, opts ...grpc.CallOption) (*ExchangeSsoTokenResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ExchangeSsoTokenResponse)
+	err := c.cc.Invoke(ctx, CompanyService_ExchangeSsoToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) GetOnboardingStatus(ctx context.Context, in *GetOnboardingStatusRequest, opts ...grpc.CallOption) (*GetOnboardingStatusResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetOnboardingStatusResponse)
+	err := c.cc.Invoke(ctx, CompanyService_GetOnboardingStatus_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) ReissueOnboardingActivation(ctx context.Context, in *ReissueOnboardingActivationRequest, opts ...grpc.CallOption) (*ReissueOnboardingActivationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ReissueOnboardingActivationResponse)
+	err := c.cc.Invoke(ctx, CompanyService_ReissueOnboardingActivation_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -691,6 +787,14 @@ type CompanyServiceServer interface {
 	Logout(context.Context, *LogoutRequest) (*LogoutResponse, error)
 	GetInviteByToken(context.Context, *GetInviteByTokenRequest) (*GetInviteByTokenResponse, error)
 	AcceptInvite(context.Context, *AcceptInviteRequest) (*AcceptInviteResponse, error)
+	ProvisionCompany(context.Context, *ProvisionCompanyRequest) (*ProvisionCompanyResponse, error)
+	GetProvisionedCompanyStatus(context.Context, *GetProvisionedCompanyStatusRequest) (*GetProvisionedCompanyStatusResponse, error)
+	GetBootstrapActivation(context.Context, *GetBootstrapActivationRequest) (*GetBootstrapActivationResponse, error)
+	CompleteBootstrapActivation(context.Context, *CompleteBootstrapActivationRequest) (*CompleteBootstrapActivationResponse, error)
+	IssueSsoToken(context.Context, *IssueSsoTokenRequest) (*IssueSsoTokenResponse, error)
+	ExchangeSsoToken(context.Context, *ExchangeSsoTokenRequest) (*ExchangeSsoTokenResponse, error)
+	GetOnboardingStatus(context.Context, *GetOnboardingStatusRequest) (*GetOnboardingStatusResponse, error)
+	ReissueOnboardingActivation(context.Context, *ReissueOnboardingActivationRequest) (*ReissueOnboardingActivationResponse, error)
 	GetCurrentUser(context.Context, *GetCurrentUserRequest) (*GetCurrentUserResponse, error)
 	UpdateCurrentUser(context.Context, *UpdateCurrentUserRequest) (*UpdateCurrentUserResponse, error)
 	GetCompany(context.Context, *GetCompanyRequest) (*GetCompanyResponse, error)
@@ -769,6 +873,30 @@ func (UnimplementedCompanyServiceServer) GetInviteByToken(context.Context, *GetI
 }
 func (UnimplementedCompanyServiceServer) AcceptInvite(context.Context, *AcceptInviteRequest) (*AcceptInviteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AcceptInvite not implemented")
+}
+func (UnimplementedCompanyServiceServer) ProvisionCompany(context.Context, *ProvisionCompanyRequest) (*ProvisionCompanyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProvisionCompany not implemented")
+}
+func (UnimplementedCompanyServiceServer) GetProvisionedCompanyStatus(context.Context, *GetProvisionedCompanyStatusRequest) (*GetProvisionedCompanyStatusResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetProvisionedCompanyStatus not implemented")
+}
+func (UnimplementedCompanyServiceServer) GetBootstrapActivation(context.Context, *GetBootstrapActivationRequest) (*GetBootstrapActivationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetBootstrapActivation not implemented")
+}
+func (UnimplementedCompanyServiceServer) CompleteBootstrapActivation(context.Context, *CompleteBootstrapActivationRequest) (*CompleteBootstrapActivationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CompleteBootstrapActivation not implemented")
+}
+func (UnimplementedCompanyServiceServer) IssueSsoToken(context.Context, *IssueSsoTokenRequest) (*IssueSsoTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method IssueSsoToken not implemented")
+}
+func (UnimplementedCompanyServiceServer) ExchangeSsoToken(context.Context, *ExchangeSsoTokenRequest) (*ExchangeSsoTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExchangeSsoToken not implemented")
+}
+func (UnimplementedCompanyServiceServer) GetOnboardingStatus(context.Context, *GetOnboardingStatusRequest) (*GetOnboardingStatusResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetOnboardingStatus not implemented")
+}
+func (UnimplementedCompanyServiceServer) ReissueOnboardingActivation(context.Context, *ReissueOnboardingActivationRequest) (*ReissueOnboardingActivationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReissueOnboardingActivation not implemented")
 }
 func (UnimplementedCompanyServiceServer) GetCurrentUser(context.Context, *GetCurrentUserRequest) (*GetCurrentUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCurrentUser not implemented")
@@ -1066,6 +1194,150 @@ func _CompanyService_AcceptInvite_Handler(srv interface{}, ctx context.Context, 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CompanyServiceServer).AcceptInvite(ctx, req.(*AcceptInviteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_ProvisionCompany_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ProvisionCompanyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).ProvisionCompany(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_ProvisionCompany_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).ProvisionCompany(ctx, req.(*ProvisionCompanyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_GetProvisionedCompanyStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetProvisionedCompanyStatusRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).GetProvisionedCompanyStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_GetProvisionedCompanyStatus_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).GetProvisionedCompanyStatus(ctx, req.(*GetProvisionedCompanyStatusRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_GetBootstrapActivation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetBootstrapActivationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).GetBootstrapActivation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_GetBootstrapActivation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).GetBootstrapActivation(ctx, req.(*GetBootstrapActivationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_CompleteBootstrapActivation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CompleteBootstrapActivationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).CompleteBootstrapActivation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_CompleteBootstrapActivation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).CompleteBootstrapActivation(ctx, req.(*CompleteBootstrapActivationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_IssueSsoToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IssueSsoTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).IssueSsoToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_IssueSsoToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).IssueSsoToken(ctx, req.(*IssueSsoTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_ExchangeSsoToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExchangeSsoTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).ExchangeSsoToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_ExchangeSsoToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).ExchangeSsoToken(ctx, req.(*ExchangeSsoTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_GetOnboardingStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetOnboardingStatusRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).GetOnboardingStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_GetOnboardingStatus_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).GetOnboardingStatus(ctx, req.(*GetOnboardingStatusRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_ReissueOnboardingActivation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReissueOnboardingActivationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).ReissueOnboardingActivation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_ReissueOnboardingActivation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).ReissueOnboardingActivation(ctx, req.(*ReissueOnboardingActivationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1918,6 +2190,38 @@ var CompanyService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AcceptInvite",
 			Handler:    _CompanyService_AcceptInvite_Handler,
+		},
+		{
+			MethodName: "ProvisionCompany",
+			Handler:    _CompanyService_ProvisionCompany_Handler,
+		},
+		{
+			MethodName: "GetProvisionedCompanyStatus",
+			Handler:    _CompanyService_GetProvisionedCompanyStatus_Handler,
+		},
+		{
+			MethodName: "GetBootstrapActivation",
+			Handler:    _CompanyService_GetBootstrapActivation_Handler,
+		},
+		{
+			MethodName: "CompleteBootstrapActivation",
+			Handler:    _CompanyService_CompleteBootstrapActivation_Handler,
+		},
+		{
+			MethodName: "IssueSsoToken",
+			Handler:    _CompanyService_IssueSsoToken_Handler,
+		},
+		{
+			MethodName: "ExchangeSsoToken",
+			Handler:    _CompanyService_ExchangeSsoToken_Handler,
+		},
+		{
+			MethodName: "GetOnboardingStatus",
+			Handler:    _CompanyService_GetOnboardingStatus_Handler,
+		},
+		{
+			MethodName: "ReissueOnboardingActivation",
+			Handler:    _CompanyService_ReissueOnboardingActivation_Handler,
 		},
 		{
 			MethodName: "GetCurrentUser",

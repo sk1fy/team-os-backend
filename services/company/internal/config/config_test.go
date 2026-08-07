@@ -8,6 +8,7 @@ import (
 func TestLoad(t *testing.T) {
 	t.Setenv("COMPANY_DB_URL", "postgres://localhost/company")
 	t.Setenv("COMPANY_JWT_PRIVATE_KEY", "private-key")
+	t.Setenv("COMPANY_GATEWAY_SERVICE_TOKEN", "gateway-service-token-at-least-32-bytes")
 	t.Setenv("COMPANY_ACCESS_TTL", "10m")
 	config, err := Load()
 	if err != nil {
@@ -21,6 +22,7 @@ func TestLoad(t *testing.T) {
 func TestLoadEnablesAmoImportExplicitly(t *testing.T) {
 	t.Setenv("COMPANY_DB_URL", "postgres://localhost/company")
 	t.Setenv("COMPANY_JWT_PRIVATE_KEY", "private-key")
+	t.Setenv("COMPANY_GATEWAY_SERVICE_TOKEN", "gateway-service-token-at-least-32-bytes")
 	t.Setenv("COMPANY_AMO_IMPORT_ENABLED", "true")
 	config, err := Load()
 	if err != nil {
@@ -34,6 +36,7 @@ func TestLoadEnablesAmoImportExplicitly(t *testing.T) {
 func TestLoadRejectsInvalidAmoImportFlag(t *testing.T) {
 	t.Setenv("COMPANY_DB_URL", "postgres://localhost/company")
 	t.Setenv("COMPANY_JWT_PRIVATE_KEY", "private-key")
+	t.Setenv("COMPANY_GATEWAY_SERVICE_TOKEN", "gateway-service-token-at-least-32-bytes")
 	t.Setenv("COMPANY_AMO_IMPORT_ENABLED", "sometimes")
 	if _, err := Load(); err == nil {
 		t.Fatal("invalid amo import flag must fail")
@@ -43,7 +46,17 @@ func TestLoadRejectsInvalidAmoImportFlag(t *testing.T) {
 func TestLoadRequiresSecrets(t *testing.T) {
 	t.Setenv("COMPANY_DB_URL", "")
 	t.Setenv("COMPANY_JWT_PRIVATE_KEY", "")
+	t.Setenv("COMPANY_GATEWAY_SERVICE_TOKEN", "")
 	if _, err := Load(); err == nil {
 		t.Fatal("Load() expected an error")
+	}
+}
+
+func TestLoadRejectsShortGatewayServiceToken(t *testing.T) {
+	t.Setenv("COMPANY_DB_URL", "postgres://localhost/company")
+	t.Setenv("COMPANY_JWT_PRIVATE_KEY", "private-key")
+	t.Setenv("COMPANY_GATEWAY_SERVICE_TOKEN", "too-short")
+	if _, err := Load(); err == nil {
+		t.Fatal("Load() expected an error for a short gateway service token")
 	}
 }

@@ -9,6 +9,7 @@ package eventsv1
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -181,6 +182,55 @@ func (x OrgEmployeeSection) Number() protoreflect.EnumNumber {
 // Deprecated: Use OrgEmployeeSection.Descriptor instead.
 func (OrgEmployeeSection) EnumDescriptor() ([]byte, []int) {
 	return file_events_org_proto_rawDescGZIP(), []int{2}
+}
+
+type OrgUserActivationPurpose int32
+
+const (
+	OrgUserActivationPurpose_ORG_USER_ACTIVATION_PURPOSE_UNSPECIFIED OrgUserActivationPurpose = 0
+	OrgUserActivationPurpose_ORG_USER_ACTIVATION_PURPOSE_INITIATOR   OrgUserActivationPurpose = 1
+	OrgUserActivationPurpose_ORG_USER_ACTIVATION_PURPOSE_SECOND_USER OrgUserActivationPurpose = 2
+)
+
+// Enum value maps for OrgUserActivationPurpose.
+var (
+	OrgUserActivationPurpose_name = map[int32]string{
+		0: "ORG_USER_ACTIVATION_PURPOSE_UNSPECIFIED",
+		1: "ORG_USER_ACTIVATION_PURPOSE_INITIATOR",
+		2: "ORG_USER_ACTIVATION_PURPOSE_SECOND_USER",
+	}
+	OrgUserActivationPurpose_value = map[string]int32{
+		"ORG_USER_ACTIVATION_PURPOSE_UNSPECIFIED": 0,
+		"ORG_USER_ACTIVATION_PURPOSE_INITIATOR":   1,
+		"ORG_USER_ACTIVATION_PURPOSE_SECOND_USER": 2,
+	}
+)
+
+func (x OrgUserActivationPurpose) Enum() *OrgUserActivationPurpose {
+	p := new(OrgUserActivationPurpose)
+	*p = x
+	return p
+}
+
+func (x OrgUserActivationPurpose) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (OrgUserActivationPurpose) Descriptor() protoreflect.EnumDescriptor {
+	return file_events_org_proto_enumTypes[3].Descriptor()
+}
+
+func (OrgUserActivationPurpose) Type() protoreflect.EnumType {
+	return &file_events_org_proto_enumTypes[3]
+}
+
+func (x OrgUserActivationPurpose) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use OrgUserActivationPurpose.Descriptor instead.
+func (OrgUserActivationPurpose) EnumDescriptor() ([]byte, []int) {
+	return file_events_org_proto_rawDescGZIP(), []int{3}
 }
 
 type OrgUserSnapshot struct {
@@ -931,11 +981,254 @@ func (x *OrgInviteCreatedPayload) GetInvitedById() string {
 	return ""
 }
 
+// Published under teamos.org.user.activation_created.v1. Raw activation
+// tokens are intentionally excluded from the event contract.
+type OrgUserActivationCreatedEvent struct {
+	state         protoimpl.MessageState           `protogen:"open.v1"`
+	Metadata      *EventMetadata                   `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	Payload       *OrgUserActivationCreatedPayload `protobuf:"bytes,2,opt,name=payload,proto3" json:"payload,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OrgUserActivationCreatedEvent) Reset() {
+	*x = OrgUserActivationCreatedEvent{}
+	mi := &file_events_org_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OrgUserActivationCreatedEvent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OrgUserActivationCreatedEvent) ProtoMessage() {}
+
+func (x *OrgUserActivationCreatedEvent) ProtoReflect() protoreflect.Message {
+	mi := &file_events_org_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OrgUserActivationCreatedEvent.ProtoReflect.Descriptor instead.
+func (*OrgUserActivationCreatedEvent) Descriptor() ([]byte, []int) {
+	return file_events_org_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *OrgUserActivationCreatedEvent) GetMetadata() *EventMetadata {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
+func (x *OrgUserActivationCreatedEvent) GetPayload() *OrgUserActivationCreatedPayload {
+	if x != nil {
+		return x.Payload
+	}
+	return nil
+}
+
+type OrgUserActivationCreatedPayload struct {
+	state         protoimpl.MessageState   `protogen:"open.v1"`
+	ActivationId  string                   `protobuf:"bytes,1,opt,name=activation_id,json=activationId,proto3" json:"activation_id,omitempty"`
+	UserId        string                   `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Role          OrgUserRole              `protobuf:"varint,3,opt,name=role,proto3,enum=teamos.events.v1.OrgUserRole" json:"role,omitempty"`
+	Purpose       OrgUserActivationPurpose `protobuf:"varint,4,opt,name=purpose,proto3,enum=teamos.events.v1.OrgUserActivationPurpose" json:"purpose,omitempty"`
+	ExpiresAt     *timestamppb.Timestamp   `protobuf:"bytes,5,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
+	Reissued      bool                     `protobuf:"varint,6,opt,name=reissued,proto3" json:"reissued,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OrgUserActivationCreatedPayload) Reset() {
+	*x = OrgUserActivationCreatedPayload{}
+	mi := &file_events_org_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OrgUserActivationCreatedPayload) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OrgUserActivationCreatedPayload) ProtoMessage() {}
+
+func (x *OrgUserActivationCreatedPayload) ProtoReflect() protoreflect.Message {
+	mi := &file_events_org_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OrgUserActivationCreatedPayload.ProtoReflect.Descriptor instead.
+func (*OrgUserActivationCreatedPayload) Descriptor() ([]byte, []int) {
+	return file_events_org_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *OrgUserActivationCreatedPayload) GetActivationId() string {
+	if x != nil {
+		return x.ActivationId
+	}
+	return ""
+}
+
+func (x *OrgUserActivationCreatedPayload) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *OrgUserActivationCreatedPayload) GetRole() OrgUserRole {
+	if x != nil {
+		return x.Role
+	}
+	return OrgUserRole_ORG_USER_ROLE_UNSPECIFIED
+}
+
+func (x *OrgUserActivationCreatedPayload) GetPurpose() OrgUserActivationPurpose {
+	if x != nil {
+		return x.Purpose
+	}
+	return OrgUserActivationPurpose_ORG_USER_ACTIVATION_PURPOSE_UNSPECIFIED
+}
+
+func (x *OrgUserActivationCreatedPayload) GetExpiresAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ExpiresAt
+	}
+	return nil
+}
+
+func (x *OrgUserActivationCreatedPayload) GetReissued() bool {
+	if x != nil {
+		return x.Reissued
+	}
+	return false
+}
+
+// Published under teamos.org.user.activated.v1 after password setup succeeds.
+type OrgUserActivatedEvent struct {
+	state         protoimpl.MessageState   `protogen:"open.v1"`
+	Metadata      *EventMetadata           `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	Payload       *OrgUserActivatedPayload `protobuf:"bytes,2,opt,name=payload,proto3" json:"payload,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OrgUserActivatedEvent) Reset() {
+	*x = OrgUserActivatedEvent{}
+	mi := &file_events_org_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OrgUserActivatedEvent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OrgUserActivatedEvent) ProtoMessage() {}
+
+func (x *OrgUserActivatedEvent) ProtoReflect() protoreflect.Message {
+	mi := &file_events_org_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OrgUserActivatedEvent.ProtoReflect.Descriptor instead.
+func (*OrgUserActivatedEvent) Descriptor() ([]byte, []int) {
+	return file_events_org_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *OrgUserActivatedEvent) GetMetadata() *EventMetadata {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
+func (x *OrgUserActivatedEvent) GetPayload() *OrgUserActivatedPayload {
+	if x != nil {
+		return x.Payload
+	}
+	return nil
+}
+
+type OrgUserActivatedPayload struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	User          *OrgUserSnapshot       `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+	ActivatedAt   *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=activated_at,json=activatedAt,proto3" json:"activated_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OrgUserActivatedPayload) Reset() {
+	*x = OrgUserActivatedPayload{}
+	mi := &file_events_org_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OrgUserActivatedPayload) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OrgUserActivatedPayload) ProtoMessage() {}
+
+func (x *OrgUserActivatedPayload) ProtoReflect() protoreflect.Message {
+	mi := &file_events_org_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OrgUserActivatedPayload.ProtoReflect.Descriptor instead.
+func (*OrgUserActivatedPayload) Descriptor() ([]byte, []int) {
+	return file_events_org_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *OrgUserActivatedPayload) GetUser() *OrgUserSnapshot {
+	if x != nil {
+		return x.User
+	}
+	return nil
+}
+
+func (x *OrgUserActivatedPayload) GetActivatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ActivatedAt
+	}
+	return nil
+}
+
 var File_events_org_proto protoreflect.FileDescriptor
 
 const file_events_org_proto_rawDesc = "" +
 	"\n" +
-	"\x10events/org.proto\x12\x10teamos.events.v1\x1a\x13events/common.proto\"\xff\x02\n" +
+	"\x10events/org.proto\x12\x10teamos.events.v1\x1a\x13events/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xff\x02\n" +
 	"\x0fOrgUserSnapshot\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x12\x1d\n" +
@@ -989,7 +1282,24 @@ const file_events_org_proto_rawDesc = "" +
 	"\rinvited_by_id\x18\a \x01(\tR\vinvitedByIdB\b\n" +
 	"\x06_emailB\x0e\n" +
 	"\f_position_idB\x10\n" +
-	"\x0e_department_id*\x95\x01\n" +
+	"\x0e_department_id\"\xa9\x01\n" +
+	"\x1dOrgUserActivationCreatedEvent\x12;\n" +
+	"\bmetadata\x18\x01 \x01(\v2\x1f.teamos.events.v1.EventMetadataR\bmetadata\x12K\n" +
+	"\apayload\x18\x02 \x01(\v21.teamos.events.v1.OrgUserActivationCreatedPayloadR\apayload\"\xaf\x02\n" +
+	"\x1fOrgUserActivationCreatedPayload\x12#\n" +
+	"\ractivation_id\x18\x01 \x01(\tR\factivationId\x12\x17\n" +
+	"\auser_id\x18\x02 \x01(\tR\x06userId\x121\n" +
+	"\x04role\x18\x03 \x01(\x0e2\x1d.teamos.events.v1.OrgUserRoleR\x04role\x12D\n" +
+	"\apurpose\x18\x04 \x01(\x0e2*.teamos.events.v1.OrgUserActivationPurposeR\apurpose\x129\n" +
+	"\n" +
+	"expires_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\texpiresAt\x12\x1a\n" +
+	"\breissued\x18\x06 \x01(\bR\breissued\"\x99\x01\n" +
+	"\x15OrgUserActivatedEvent\x12;\n" +
+	"\bmetadata\x18\x01 \x01(\v2\x1f.teamos.events.v1.EventMetadataR\bmetadata\x12C\n" +
+	"\apayload\x18\x02 \x01(\v2).teamos.events.v1.OrgUserActivatedPayloadR\apayload\"\x8f\x01\n" +
+	"\x17OrgUserActivatedPayload\x125\n" +
+	"\x04user\x18\x01 \x01(\v2!.teamos.events.v1.OrgUserSnapshotR\x04user\x12=\n" +
+	"\factivated_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\vactivatedAt*\x95\x01\n" +
 	"\vOrgUserRole\x12\x1d\n" +
 	"\x19ORG_USER_ROLE_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13ORG_USER_ROLE_OWNER\x10\x01\x12\x17\n" +
@@ -1006,7 +1316,11 @@ const file_events_org_proto_rawDesc = "" +
 	"\x1dORG_EMPLOYEE_SECTION_SCHEDULE\x10\x01\x12\"\n" +
 	"\x1eORG_EMPLOYEE_SECTION_KNOWLEDGE\x10\x02\x12 \n" +
 	"\x1cORG_EMPLOYEE_SECTION_ACADEMY\x10\x03\x12%\n" +
-	"!ORG_EMPLOYEE_SECTION_DISTRIBUTION\x10\x04BFZDgithub.com/sk1fy/team-os-backend/contracts/gen/go/events/v1;eventsv1b\x06proto3"
+	"!ORG_EMPLOYEE_SECTION_DISTRIBUTION\x10\x04*\x9f\x01\n" +
+	"\x18OrgUserActivationPurpose\x12+\n" +
+	"'ORG_USER_ACTIVATION_PURPOSE_UNSPECIFIED\x10\x00\x12)\n" +
+	"%ORG_USER_ACTIVATION_PURPOSE_INITIATOR\x10\x01\x12+\n" +
+	"'ORG_USER_ACTIVATION_PURPOSE_SECOND_USER\x10\x02BFZDgithub.com/sk1fy/team-os-backend/contracts/gen/go/events/v1;eventsv1b\x06proto3"
 
 var (
 	file_events_org_proto_rawDescOnce sync.Once
@@ -1020,51 +1334,66 @@ func file_events_org_proto_rawDescGZIP() []byte {
 	return file_events_org_proto_rawDescData
 }
 
-var file_events_org_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_events_org_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
+var file_events_org_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
+var file_events_org_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_events_org_proto_goTypes = []any{
-	(OrgUserRole)(0),                  // 0: teamos.events.v1.OrgUserRole
-	(OrgUserStatus)(0),                // 1: teamos.events.v1.OrgUserStatus
-	(OrgEmployeeSection)(0),           // 2: teamos.events.v1.OrgEmployeeSection
-	(*OrgUserSnapshot)(nil),           // 3: teamos.events.v1.OrgUserSnapshot
-	(*OrgUserCreatedEvent)(nil),       // 4: teamos.events.v1.OrgUserCreatedEvent
-	(*OrgUserCreatedPayload)(nil),     // 5: teamos.events.v1.OrgUserCreatedPayload
-	(*OrgUserUpdatedEvent)(nil),       // 6: teamos.events.v1.OrgUserUpdatedEvent
-	(*OrgUserUpdatedPayload)(nil),     // 7: teamos.events.v1.OrgUserUpdatedPayload
-	(*OrgUserDeactivatedEvent)(nil),   // 8: teamos.events.v1.OrgUserDeactivatedEvent
-	(*OrgUserDeactivatedPayload)(nil), // 9: teamos.events.v1.OrgUserDeactivatedPayload
-	(*OrgUserDeletedEvent)(nil),       // 10: teamos.events.v1.OrgUserDeletedEvent
-	(*OrgUserDeletedPayload)(nil),     // 11: teamos.events.v1.OrgUserDeletedPayload
-	(*OrgPositionDeletedEvent)(nil),   // 12: teamos.events.v1.OrgPositionDeletedEvent
-	(*OrgPositionDeletedPayload)(nil), // 13: teamos.events.v1.OrgPositionDeletedPayload
-	(*OrgInviteCreatedEvent)(nil),     // 14: teamos.events.v1.OrgInviteCreatedEvent
-	(*OrgInviteCreatedPayload)(nil),   // 15: teamos.events.v1.OrgInviteCreatedPayload
-	(*EventMetadata)(nil),             // 16: teamos.events.v1.EventMetadata
+	(OrgUserRole)(0),                        // 0: teamos.events.v1.OrgUserRole
+	(OrgUserStatus)(0),                      // 1: teamos.events.v1.OrgUserStatus
+	(OrgEmployeeSection)(0),                 // 2: teamos.events.v1.OrgEmployeeSection
+	(OrgUserActivationPurpose)(0),           // 3: teamos.events.v1.OrgUserActivationPurpose
+	(*OrgUserSnapshot)(nil),                 // 4: teamos.events.v1.OrgUserSnapshot
+	(*OrgUserCreatedEvent)(nil),             // 5: teamos.events.v1.OrgUserCreatedEvent
+	(*OrgUserCreatedPayload)(nil),           // 6: teamos.events.v1.OrgUserCreatedPayload
+	(*OrgUserUpdatedEvent)(nil),             // 7: teamos.events.v1.OrgUserUpdatedEvent
+	(*OrgUserUpdatedPayload)(nil),           // 8: teamos.events.v1.OrgUserUpdatedPayload
+	(*OrgUserDeactivatedEvent)(nil),         // 9: teamos.events.v1.OrgUserDeactivatedEvent
+	(*OrgUserDeactivatedPayload)(nil),       // 10: teamos.events.v1.OrgUserDeactivatedPayload
+	(*OrgUserDeletedEvent)(nil),             // 11: teamos.events.v1.OrgUserDeletedEvent
+	(*OrgUserDeletedPayload)(nil),           // 12: teamos.events.v1.OrgUserDeletedPayload
+	(*OrgPositionDeletedEvent)(nil),         // 13: teamos.events.v1.OrgPositionDeletedEvent
+	(*OrgPositionDeletedPayload)(nil),       // 14: teamos.events.v1.OrgPositionDeletedPayload
+	(*OrgInviteCreatedEvent)(nil),           // 15: teamos.events.v1.OrgInviteCreatedEvent
+	(*OrgInviteCreatedPayload)(nil),         // 16: teamos.events.v1.OrgInviteCreatedPayload
+	(*OrgUserActivationCreatedEvent)(nil),   // 17: teamos.events.v1.OrgUserActivationCreatedEvent
+	(*OrgUserActivationCreatedPayload)(nil), // 18: teamos.events.v1.OrgUserActivationCreatedPayload
+	(*OrgUserActivatedEvent)(nil),           // 19: teamos.events.v1.OrgUserActivatedEvent
+	(*OrgUserActivatedPayload)(nil),         // 20: teamos.events.v1.OrgUserActivatedPayload
+	(*EventMetadata)(nil),                   // 21: teamos.events.v1.EventMetadata
+	(*timestamppb.Timestamp)(nil),           // 22: google.protobuf.Timestamp
 }
 var file_events_org_proto_depIdxs = []int32{
 	0,  // 0: teamos.events.v1.OrgUserSnapshot.role:type_name -> teamos.events.v1.OrgUserRole
 	1,  // 1: teamos.events.v1.OrgUserSnapshot.status:type_name -> teamos.events.v1.OrgUserStatus
 	2,  // 2: teamos.events.v1.OrgUserSnapshot.section_access:type_name -> teamos.events.v1.OrgEmployeeSection
-	16, // 3: teamos.events.v1.OrgUserCreatedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
-	5,  // 4: teamos.events.v1.OrgUserCreatedEvent.payload:type_name -> teamos.events.v1.OrgUserCreatedPayload
-	3,  // 5: teamos.events.v1.OrgUserCreatedPayload.user:type_name -> teamos.events.v1.OrgUserSnapshot
-	16, // 6: teamos.events.v1.OrgUserUpdatedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
-	7,  // 7: teamos.events.v1.OrgUserUpdatedEvent.payload:type_name -> teamos.events.v1.OrgUserUpdatedPayload
-	3,  // 8: teamos.events.v1.OrgUserUpdatedPayload.user:type_name -> teamos.events.v1.OrgUserSnapshot
-	16, // 9: teamos.events.v1.OrgUserDeactivatedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
-	9,  // 10: teamos.events.v1.OrgUserDeactivatedEvent.payload:type_name -> teamos.events.v1.OrgUserDeactivatedPayload
-	16, // 11: teamos.events.v1.OrgUserDeletedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
-	11, // 12: teamos.events.v1.OrgUserDeletedEvent.payload:type_name -> teamos.events.v1.OrgUserDeletedPayload
-	16, // 13: teamos.events.v1.OrgPositionDeletedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
-	13, // 14: teamos.events.v1.OrgPositionDeletedEvent.payload:type_name -> teamos.events.v1.OrgPositionDeletedPayload
-	16, // 15: teamos.events.v1.OrgInviteCreatedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
-	15, // 16: teamos.events.v1.OrgInviteCreatedEvent.payload:type_name -> teamos.events.v1.OrgInviteCreatedPayload
+	21, // 3: teamos.events.v1.OrgUserCreatedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	6,  // 4: teamos.events.v1.OrgUserCreatedEvent.payload:type_name -> teamos.events.v1.OrgUserCreatedPayload
+	4,  // 5: teamos.events.v1.OrgUserCreatedPayload.user:type_name -> teamos.events.v1.OrgUserSnapshot
+	21, // 6: teamos.events.v1.OrgUserUpdatedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	8,  // 7: teamos.events.v1.OrgUserUpdatedEvent.payload:type_name -> teamos.events.v1.OrgUserUpdatedPayload
+	4,  // 8: teamos.events.v1.OrgUserUpdatedPayload.user:type_name -> teamos.events.v1.OrgUserSnapshot
+	21, // 9: teamos.events.v1.OrgUserDeactivatedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	10, // 10: teamos.events.v1.OrgUserDeactivatedEvent.payload:type_name -> teamos.events.v1.OrgUserDeactivatedPayload
+	21, // 11: teamos.events.v1.OrgUserDeletedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	12, // 12: teamos.events.v1.OrgUserDeletedEvent.payload:type_name -> teamos.events.v1.OrgUserDeletedPayload
+	21, // 13: teamos.events.v1.OrgPositionDeletedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	14, // 14: teamos.events.v1.OrgPositionDeletedEvent.payload:type_name -> teamos.events.v1.OrgPositionDeletedPayload
+	21, // 15: teamos.events.v1.OrgInviteCreatedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	16, // 16: teamos.events.v1.OrgInviteCreatedEvent.payload:type_name -> teamos.events.v1.OrgInviteCreatedPayload
 	0,  // 17: teamos.events.v1.OrgInviteCreatedPayload.role:type_name -> teamos.events.v1.OrgUserRole
-	18, // [18:18] is the sub-list for method output_type
-	18, // [18:18] is the sub-list for method input_type
-	18, // [18:18] is the sub-list for extension type_name
-	18, // [18:18] is the sub-list for extension extendee
-	0,  // [0:18] is the sub-list for field type_name
+	21, // 18: teamos.events.v1.OrgUserActivationCreatedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	18, // 19: teamos.events.v1.OrgUserActivationCreatedEvent.payload:type_name -> teamos.events.v1.OrgUserActivationCreatedPayload
+	0,  // 20: teamos.events.v1.OrgUserActivationCreatedPayload.role:type_name -> teamos.events.v1.OrgUserRole
+	3,  // 21: teamos.events.v1.OrgUserActivationCreatedPayload.purpose:type_name -> teamos.events.v1.OrgUserActivationPurpose
+	22, // 22: teamos.events.v1.OrgUserActivationCreatedPayload.expires_at:type_name -> google.protobuf.Timestamp
+	21, // 23: teamos.events.v1.OrgUserActivatedEvent.metadata:type_name -> teamos.events.v1.EventMetadata
+	20, // 24: teamos.events.v1.OrgUserActivatedEvent.payload:type_name -> teamos.events.v1.OrgUserActivatedPayload
+	4,  // 25: teamos.events.v1.OrgUserActivatedPayload.user:type_name -> teamos.events.v1.OrgUserSnapshot
+	22, // 26: teamos.events.v1.OrgUserActivatedPayload.activated_at:type_name -> google.protobuf.Timestamp
+	27, // [27:27] is the sub-list for method output_type
+	27, // [27:27] is the sub-list for method input_type
+	27, // [27:27] is the sub-list for extension type_name
+	27, // [27:27] is the sub-list for extension extendee
+	0,  // [0:27] is the sub-list for field type_name
 }
 
 func init() { file_events_org_proto_init() }
@@ -1079,8 +1408,8 @@ func file_events_org_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_events_org_proto_rawDesc), len(file_events_org_proto_rawDesc)),
-			NumEnums:      3,
-			NumMessages:   13,
+			NumEnums:      4,
+			NumMessages:   17,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

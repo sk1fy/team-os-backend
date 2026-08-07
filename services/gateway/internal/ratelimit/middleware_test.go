@@ -98,3 +98,69 @@ func TestLimiterProtectsExternalAcademyMutations(t *testing.T) {
 		}
 	}
 }
+
+func TestLimiterProtectsProvisioningMutations(t *testing.T) {
+	limiter := New(1, time.Minute)
+	handler := limiter.Middleware(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	}))
+	for index, want := range []int{http.StatusNoContent, http.StatusTooManyRequests} {
+		request := httptest.NewRequestWithContext(
+			context.Background(), http.MethodPost, "/api/v1/provisioning/companies", nil,
+		)
+		request.RemoteAddr = "192.0.2.45:1234"
+		response := httptest.NewRecorder()
+		handler.ServeHTTP(response, request)
+		if response.Code != want {
+			t.Fatalf("request %d status=%d want=%d", index, response.Code, want)
+		}
+	}
+}
+
+func TestLimiterProtectsProvisioningStatus(t *testing.T) {
+	limiter := New(1, time.Minute)
+	handler := limiter.Middleware(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	}))
+	for index, want := range []int{http.StatusNoContent, http.StatusTooManyRequests} {
+		request := httptest.NewRequestWithContext(
+			context.Background(), http.MethodGet, "/api/v1/provisioning/companies/status", nil,
+		)
+		request.RemoteAddr = "192.0.2.46:1234"
+		response := httptest.NewRecorder()
+		handler.ServeHTTP(response, request)
+		if response.Code != want {
+			t.Fatalf("request %d status=%d want=%d", index, response.Code, want)
+		}
+	}
+}
+
+func TestLimiterUsesSeparateHigherQuotaForValidProvisioningPrincipal(t *testing.T) {
+	const credential = "trusted-provisioning-credential-at-least-32-bytes"
+	limiter := New(1, time.Minute).WithProvisioningPrincipal(credential, 2)
+	handler := limiter.Middleware(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	}))
+
+	for index, want := range []int{http.StatusNoContent, http.StatusNoContent, http.StatusTooManyRequests} {
+		request := httptest.NewRequestWithContext(
+			context.Background(), http.MethodPost, "/api/v1/provisioning/sessions", nil,
+		)
+		request.RemoteAddr = "192.0.2.45:1234"
+		request.Header.Set("Authorization", "Service "+credential)
+		response := httptest.NewRecorder()
+		handler.ServeHTTP(response, request)
+		if response.Code != want {
+			t.Fatalf("valid service request %d status=%d want=%d", index, response.Code, want)
+		}
+	}
+
+	// Valid service traffic did not consume the public per-IP auth quota.
+	request := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/api/v1/auth/login", nil)
+	request.RemoteAddr = "192.0.2.45:1234"
+	response := httptest.NewRecorder()
+	handler.ServeHTTP(response, request)
+	if response.Code != http.StatusNoContent {
+		t.Fatalf("public auth status=%d", response.Code)
+	}
+}

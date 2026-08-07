@@ -159,6 +159,24 @@ func TestLoggingRedactsInviteToken(t *testing.T) {
 	}
 }
 
+func TestLoggingRedactsBootstrapTokenAndPreservesAction(t *testing.T) {
+	t.Parallel()
+	var logs bytes.Buffer
+	logger := slog.New(slog.NewJSONHandler(&logs, nil))
+	handler := httpx.Logging(logger)(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	}))
+	request := httptest.NewRequestWithContext(
+		context.Background(), http.MethodPost,
+		"/api/v1/auth/bootstrap/secret-bootstrap-token/complete", nil,
+	)
+	handler.ServeHTTP(httptest.NewRecorder(), request)
+	if strings.Contains(logs.String(), "secret-bootstrap-token") ||
+		!strings.Contains(logs.String(), "/bootstrap/:token/complete") {
+		t.Fatalf("bootstrap token was not redacted: %s", logs.String())
+	}
+}
+
 func TestLoggingRedactsAcademyAccessTokenAndPreservesAction(t *testing.T) {
 	t.Parallel()
 	var logs bytes.Buffer

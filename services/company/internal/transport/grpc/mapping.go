@@ -17,6 +17,7 @@ func companyToProto(value application.Company) *companyv1.Company {
 		OwnerId:      value.OwnerID.String(),
 		CreatedAt:    timestamppb.New(value.CreatedAt.UTC()),
 		AmoAccountId: cloneString(value.AmoAccountID),
+		Status:       companyStatusToProto(value.Status),
 	}
 }
 
@@ -113,6 +114,8 @@ func userSourceToProto(value string) companyv1.UserSource {
 		return companyv1.UserSource_USER_SOURCE_LOCAL
 	case "amo":
 		return companyv1.UserSource_USER_SOURCE_AMO
+	case "external":
+		return companyv1.UserSource_USER_SOURCE_EXTERNAL
 	default:
 		return companyv1.UserSource_USER_SOURCE_UNSPECIFIED
 	}

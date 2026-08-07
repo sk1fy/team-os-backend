@@ -61,6 +61,19 @@ func TestInternalRetainsCauseWithoutSerializingIt(t *testing.T) {
 	}
 }
 
+func TestWithCodeAddsStableMachineReadableCode(t *testing.T) {
+	t.Parallel()
+
+	err := apierror.Conflict("Ссылка уже использована").WithCode("BOOTSTRAP_TOKEN_USED")
+	data, marshalErr := json.Marshal(err)
+	if marshalErr != nil {
+		t.Fatal(marshalErr)
+	}
+	if string(data) != `{"message":"Ссылка уже использована","status":409,"code":"BOOTSTRAP_TOKEN_USED"}` {
+		t.Fatalf("unexpected public JSON: %s", data)
+	}
+}
+
 func TestFromPreservesAPIError(t *testing.T) {
 	t.Parallel()
 
