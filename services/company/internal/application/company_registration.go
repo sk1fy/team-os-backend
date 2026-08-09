@@ -46,6 +46,13 @@ func (s *Service) IssueCompanyRegistrationToken(
 	}); err != nil {
 		return CompanyRegistrationTokenResult{}, internal("Не удалось заблокировать аккаунт amoCRM", err)
 	}
+	companyExists, lookupErr := queries.CompanyAmoAccountExists(ctx, externalAccountID)
+	if lookupErr != nil {
+		return CompanyRegistrationTokenResult{}, internal("Не удалось проверить аккаунт amoCRM", lookupErr)
+	}
+	if companyExists {
+		return CompanyRegistrationTokenResult{}, coded(ErrorConflict, ErrorCodeAmoAccountAlreadyExists, "Этот аккаунт amoCRM уже используется")
+	}
 	if _, lookupErr := queries.GetCompanyIntegrationByExternalAccount(ctx, db.GetCompanyIntegrationByExternalAccountParams{
 		Provider: provider, ExternalAccountID: externalAccountID,
 	}); lookupErr == nil {

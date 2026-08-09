@@ -17,6 +17,7 @@ type Querier interface {
 	AmoAccountExists(ctx context.Context, arg AmoAccountExistsParams) (bool, error)
 	AssignUserPosition(ctx context.Context, arg AssignUserPositionParams) error
 	ClearAmoUserTombstone(ctx context.Context, arg ClearAmoUserTombstoneParams) (User, error)
+	CompanyAmoAccountExists(ctx context.Context, externalAccountID string) (bool, error)
 	ConsumeCompanyRegistrationToken(ctx context.Context, arg ConsumeCompanyRegistrationTokenParams) (CompanyRegistrationToken, error)
 	CountDepartmentChildren(ctx context.Context, arg CountDepartmentChildrenParams) (int64, error)
 	CountDepartmentPositions(ctx context.Context, arg CountDepartmentPositionsParams) (int64, error)

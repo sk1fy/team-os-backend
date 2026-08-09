@@ -25,9 +25,21 @@ FROM company_integrations
 WHERE provider = sqlc.arg('provider')
   AND external_account_id = sqlc.arg('external_account_id');
 
+-- name: CompanyAmoAccountExists :one
+SELECT EXISTS (
+    SELECT 1
+    FROM companies AS company
+    WHERE company.amo_account_id = sqlc.arg('external_account_id')::text
+)::boolean;
+
 -- name: AmoAccountExists :one
 SELECT (
     EXISTS (
+        SELECT 1
+        FROM companies AS company
+        WHERE company.amo_account_id = sqlc.arg('external_account_id')::text
+    )
+    OR EXISTS (
         SELECT 1
         FROM company_integrations AS integration
         WHERE integration.provider = sqlc.arg('provider')

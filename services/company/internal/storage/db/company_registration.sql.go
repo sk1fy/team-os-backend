@@ -17,15 +17,20 @@ const amoAccountExists = `-- name: AmoAccountExists :one
 SELECT (
     EXISTS (
         SELECT 1
+        FROM companies AS company
+        WHERE company.amo_account_id = $1::text
+    )
+    OR EXISTS (
+        SELECT 1
         FROM company_integrations AS integration
-        WHERE integration.provider = $1
-          AND integration.external_account_id = $2
+        WHERE integration.provider = $2
+          AND integration.external_account_id = $1
     )
     OR EXISTS (
         SELECT 1
         FROM company_registration_tokens AS registration_token
-        WHERE registration_token.provider = $1
-          AND registration_token.external_account_id = $2
+        WHERE registration_token.provider = $2
+          AND registration_token.external_account_id = $1
           AND registration_token.consumed_at IS NULL
           AND registration_token.revoked_at IS NULL
           AND registration_token.expires_at > $3
@@ -34,13 +39,28 @@ SELECT (
 `
 
 type AmoAccountExistsParams struct {
-	Provider          string    `json:"provider"`
 	ExternalAccountID string    `json:"external_account_id"`
+	Provider          string    `json:"provider"`
 	Now               time.Time `json:"now"`
 }
 
 func (q *Queries) AmoAccountExists(ctx context.Context, arg AmoAccountExistsParams) (bool, error) {
-	row := q.db.QueryRow(ctx, amoAccountExists, arg.Provider, arg.ExternalAccountID, arg.Now)
+	row := q.db.QueryRow(ctx, amoAccountExists, arg.ExternalAccountID, arg.Provider, arg.Now)
+	var column_1 bool
+	err := row.Scan(&column_1)
+	return column_1, err
+}
+
+const companyAmoAccountExists = `-- name: CompanyAmoAccountExists :one
+SELECT EXISTS (
+    SELECT 1
+    FROM companies AS company
+    WHERE company.amo_account_id = $1::text
+)::boolean
+`
+
+func (q *Queries) CompanyAmoAccountExists(ctx context.Context, externalAccountID string) (bool, error) {
+	row := q.db.QueryRow(ctx, companyAmoAccountExists, externalAccountID)
 	var column_1 bool
 	err := row.Scan(&column_1)
 	return column_1, err

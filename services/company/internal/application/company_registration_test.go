@@ -61,6 +61,30 @@ func TestCompanyRegistrationTokenState(t *testing.T) {
 	}
 }
 
+func TestCheckAmoAccountFindsLegacyCompany(t *testing.T) {
+	mock, err := pgxmock.NewPool()
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(mock.Close)
+	now := time.Date(2026, time.August, 9, 12, 0, 0, 0, time.UTC)
+	mock.ExpectQuery("FROM companies AS company").
+		WithArgs("31355990", "rakurs", now).
+		WillReturnRows(pgxmock.NewRows([]string{"exists"}).AddRow(true))
+
+	service := &Service{pool: mock, now: func() time.Time { return now }}
+	exists, err := service.CheckAmoAccount(context.Background(), "rakurs", "31355990")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !exists {
+		t.Fatal("legacy amoCRM Account ID должен существовать")
+	}
+	if err = mock.ExpectationsWereMet(); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestIssueAndValidateCompanyRegistrationToken(t *testing.T) {
 	mock, err := pgxmock.NewPool()
 	if err != nil {
@@ -73,6 +97,7 @@ func TestIssueAndValidateCompanyRegistrationToken(t *testing.T) {
 
 	mock.ExpectBeginTx(pgx.TxOptions{IsoLevel: pgx.ReadCommitted})
 	mock.ExpectExec("SELECT pg_advisory_xact_lock").WithArgs("rakurs", "31355990").WillReturnResult(pgxmock.NewResult("SELECT", 1))
+	mock.ExpectQuery("FROM companies AS company").WithArgs("31355990").WillReturnRows(pgxmock.NewRows([]string{"exists"}).AddRow(false))
 	mock.ExpectQuery("FROM company_integrations").WithArgs("rakurs", "31355990").WillReturnError(pgx.ErrNoRows)
 	mock.ExpectQuery("FROM company_registration_tokens AS registration_token").WithArgs("rakurs", "31355990").WillReturnError(pgx.ErrNoRows)
 	mock.ExpectQuery("INSERT INTO company_registration_tokens").
@@ -101,6 +126,29 @@ func TestIssueAndValidateCompanyRegistrationToken(t *testing.T) {
 	}
 	if !validated.Valid || validated.State != "valid" || validated.ExternalAccountID == nil || *validated.ExternalAccountID != "31355990" {
 		t.Fatalf("validated = %#v", validated)
+	}
+	if err = mock.ExpectationsWereMet(); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestIssueCompanyRegistrationTokenRejectsLegacyCompany(t *testing.T) {
+	mock, err := pgxmock.NewPool()
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(mock.Close)
+
+	mock.ExpectBeginTx(pgx.TxOptions{IsoLevel: pgx.ReadCommitted})
+	mock.ExpectExec("SELECT pg_advisory_xact_lock").WithArgs("rakurs", "31355990").WillReturnResult(pgxmock.NewResult("SELECT", 1))
+	mock.ExpectQuery("FROM companies AS company").WithArgs("31355990").WillReturnRows(pgxmock.NewRows([]string{"exists"}).AddRow(true))
+	mock.ExpectRollback()
+
+	service := &Service{pool: mock, now: time.Now, companyRegistrationTTL: 24 * time.Hour}
+	_, err = service.IssueCompanyRegistrationToken(context.Background(), "rakurs", "31355990")
+	var applicationErr *Error
+	if !errors.As(err, &applicationErr) || applicationErr.Code != ErrorCodeAmoAccountAlreadyExists {
+		t.Fatalf("error=%v, want code %q", err, ErrorCodeAmoAccountAlreadyExists)
 	}
 	if err = mock.ExpectationsWereMet(); err != nil {
 		t.Fatal(err)

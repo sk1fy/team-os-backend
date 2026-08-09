@@ -8,6 +8,7 @@ import (
 	"crypto/rand"
 	"errors"
 	"fmt"
+	"os"
 	"path/filepath"
 	"runtime"
 	"sync"
@@ -27,15 +28,61 @@ func TestCompanyRegistrationTokenLifecycle(t *testing.T) {
 	clock := &companyRegistrationTestClock{value: time.Date(2026, time.August, 9, 12, 0, 0, 0, time.UTC)}
 	service := companyRegistrationTestService(t, pool, clock)
 
-	exists, err := service.CheckAmoAccount(ctx, "rakurs", "31355990")
-	if err != nil || exists {
-		t.Fatalf("initial exists=%v error=%v", exists, err)
+	if _, err := pool.Exec(ctx, `
+		INSERT INTO companies (name, amo_account_id, status, onboarding_completed_at)
+		VALUES ('Ракурс', '31355990', 'active', now())
+	`); err != nil {
+		t.Fatal(err)
 	}
-	issued, err := service.IssueCompanyRegistrationToken(ctx, "rakurs", "31355990")
+	var legacyIntegrations int
+	if err := pool.QueryRow(ctx, `
+		SELECT count(*) FROM company_integrations
+		WHERE provider = 'rakurs' AND external_account_id = '31355990'
+	`).Scan(&legacyIntegrations); err != nil {
+		t.Fatal(err)
+	}
+	if legacyIntegrations != 0 {
+		t.Fatalf("legacy integrations=%d, want 0", legacyIntegrations)
+	}
+	exists, err := service.CheckAmoAccount(ctx, "rakurs", "31355990")
+	if err != nil || !exists {
+		t.Fatalf("legacy exists=%v error=%v", exists, err)
+	}
+	_, err = service.IssueCompanyRegistrationToken(ctx, "rakurs", "31355990")
+	assertCompanyRegistrationCode(t, err, ErrorCodeAmoAccountAlreadyExists)
+	_, filename, _, ok := runtime.Caller(0)
+	if !ok {
+		t.Fatal("не удалось определить путь к backfill-миграции")
+	}
+	backfillSQL, err := os.ReadFile(filepath.Join(
+		filepath.Dir(filename), "..", "..", "migrations", "000011_legacy_amo_integrations.up.sql",
+	))
 	if err != nil {
 		t.Fatal(err)
 	}
-	exists, err = service.CheckAmoAccount(ctx, "rakurs", "31355990")
+	if _, err = pool.Exec(ctx, string(backfillSQL)); err != nil {
+		t.Fatal(err)
+	}
+	if err = pool.QueryRow(ctx, `
+		SELECT count(*) FROM company_integrations
+		WHERE provider = 'rakurs' AND external_account_id = '31355990'
+	`).Scan(&legacyIntegrations); err != nil {
+		t.Fatal(err)
+	}
+	if legacyIntegrations != 1 {
+		t.Fatalf("backfilled legacy integrations=%d, want 1", legacyIntegrations)
+	}
+
+	const accountID = "42424242"
+	exists, err = service.CheckAmoAccount(ctx, "rakurs", accountID)
+	if err != nil || exists {
+		t.Fatalf("initial exists=%v error=%v", exists, err)
+	}
+	issued, err := service.IssueCompanyRegistrationToken(ctx, "rakurs", accountID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	exists, err = service.CheckAmoAccount(ctx, "rakurs", accountID)
 	if err != nil || !exists {
 		t.Fatalf("reserved exists=%v error=%v", exists, err)
 	}
@@ -59,20 +106,20 @@ func TestCompanyRegistrationTokenLifecycle(t *testing.T) {
 	if err = pool.QueryRow(ctx, `SELECT amo_account_id FROM companies WHERE id=$1`, registered.User.CompanyID).Scan(&amoAccountID); err != nil {
 		t.Fatal(err)
 	}
-	if err = pool.QueryRow(ctx, `SELECT count(*) FROM company_integrations WHERE company_id=$1 AND provider='rakurs' AND external_account_id='31355990'`, registered.User.CompanyID).Scan(&integrations); err != nil {
+	if err = pool.QueryRow(ctx, `SELECT count(*) FROM company_integrations WHERE company_id=$1 AND provider='rakurs' AND external_account_id=$2`, registered.User.CompanyID, accountID).Scan(&integrations); err != nil {
 		t.Fatal(err)
 	}
 	if err = pool.QueryRow(ctx, `SELECT count(*) FROM company_registration_tokens WHERE company_id=$1 AND consumed_at IS NOT NULL`, registered.User.CompanyID).Scan(&consumed); err != nil {
 		t.Fatal(err)
 	}
-	if amoAccountID != "31355990" || integrations != 1 || consumed != 1 {
+	if amoAccountID != accountID || integrations != 1 || consumed != 1 {
 		t.Fatalf("amoAccountID=%q integrations=%d consumed=%d", amoAccountID, integrations, consumed)
 	}
 	validation, err = service.ValidateCompanyRegistrationToken(ctx, issued.Token)
 	if err != nil || validation.Valid || validation.State != "consumed" {
 		t.Fatalf("consumed validation=%+v error=%v", validation, err)
 	}
-	_, err = service.IssueCompanyRegistrationToken(ctx, "rakurs", "31355990")
+	_, err = service.IssueCompanyRegistrationToken(ctx, "rakurs", accountID)
 	assertCompanyRegistrationCode(t, err, ErrorCodeAmoAccountAlreadyExists)
 
 	expiring, err := service.IssueCompanyRegistrationToken(ctx, "rakurs", "98765432")
@@ -139,6 +186,7 @@ func companyRegistrationTestPool(t *testing.T, ctx context.Context) *pgxpool.Poo
 		"init", "phase6_schedule_distribution", "amo_users", "remove_amo_from_user_names",
 		"validate_phone", "employee_access", "user_profiles_access_audit",
 		"employee_sections_lifecycle", "provisioning", "company_registration_tokens",
+		"legacy_amo_integrations",
 	}
 	initScripts := make([]string, 0, len(names))
 	for migration, name := range names {
