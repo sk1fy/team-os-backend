@@ -11,6 +11,9 @@ option go_package = "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v
 // calls receive actor/company claims through gRPC metadata.
 service CompanyService {
   rpc Register(RegisterRequest) returns (RegisterResponse);
+  rpc CheckAmoAccount(CheckAmoAccountRequest) returns (CheckAmoAccountResponse);
+  rpc IssueCompanyRegistrationToken(IssueCompanyRegistrationTokenRequest) returns (IssueCompanyRegistrationTokenResponse);
+  rpc ValidateCompanyRegistrationToken(ValidateCompanyRegistrationTokenRequest) returns (ValidateCompanyRegistrationTokenResponse);
   rpc Login(LoginRequest) returns (LoginResponse);
   rpc LoginWithAccessLink(LoginWithAccessLinkRequest) returns (LoginWithAccessLinkResponse);
   rpc ImpersonateUser(ImpersonateUserRequest) returns (ImpersonateUserResponse);
@@ -223,10 +226,50 @@ message RegisterRequest {
   string password = 3;
   string first_name = 4;
   string last_name = 5;
+  optional string registration_token = 6;
 }
 
 message RegisterResponse {
   AuthSession session = 1;
+}
+
+enum CompanyRegistrationTokenState {
+  COMPANY_REGISTRATION_TOKEN_STATE_UNSPECIFIED = 0;
+  COMPANY_REGISTRATION_TOKEN_STATE_VALID = 1;
+  COMPANY_REGISTRATION_TOKEN_STATE_INVALID = 2;
+  COMPANY_REGISTRATION_TOKEN_STATE_EXPIRED = 3;
+  COMPANY_REGISTRATION_TOKEN_STATE_CONSUMED = 4;
+  COMPANY_REGISTRATION_TOKEN_STATE_REVOKED = 5;
+}
+
+message CheckAmoAccountRequest {
+  string provider = 1;
+  string external_account_id = 2;
+}
+
+message CheckAmoAccountResponse {
+  bool exists = 1;
+}
+
+message IssueCompanyRegistrationTokenRequest {
+  string provider = 1;
+  string external_account_id = 2;
+}
+
+message IssueCompanyRegistrationTokenResponse {
+  string token = 1;
+  google.protobuf.Timestamp expires_at = 2;
+}
+
+message ValidateCompanyRegistrationTokenRequest {
+  string token = 1;
+}
+
+message ValidateCompanyRegistrationTokenResponse {
+  bool valid = 1;
+  CompanyRegistrationTokenState state = 2;
+  optional string external_account_id = 3;
+  optional google.protobuf.Timestamp expires_at = 4;
 }
 
 message LoginRequest {

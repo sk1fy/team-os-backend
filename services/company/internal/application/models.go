@@ -140,104 +140,24 @@ type SessionMeta struct {
 }
 
 type RegisterInput struct {
-	CompanyName string
-	Email       string
-	Password    string
-	FirstName   string
-	LastName    string
+	CompanyName       string
+	Email             string
+	Password          string
+	FirstName         string
+	LastName          string
+	RegistrationToken string
 }
 
-type ProvisioningParticipantInput struct {
-	ExternalUserID string
-	Email          string
-	FirstName      string
-	LastName       string
-}
-
-type ProvisionCompanyInput struct {
-	Provider                string
-	ExternalAccountID       string
-	CompanyName             string
-	InitiatorExternalUserID string
-	Owner                   ProvisioningParticipantInput
-	Admin                   ProvisioningParticipantInput
-	IdempotencyKey          string
-}
-
-type ProvisionCompanyResult struct {
-	CompanyID          uuid.UUID
-	CompanyStatus      string
-	Created            bool
-	InitiatorRole      string
-	BootstrapToken     string
-	BootstrapExpiresAt time.Time
-}
-
-type ProvisionedCompanyStatus struct {
-	Exists        bool
-	CompanyID     *uuid.UUID
-	CompanyStatus *string
-}
-
-type BootstrapParticipant struct {
-	UserID    uuid.UUID
-	Email     string
-	FirstName string
-	LastName  string
-	Role      string
-	Status    string
-}
-
-type BootstrapActivation struct {
-	CompanyID     uuid.UUID
-	CompanyName   string
-	CompanyStatus string
-	State         string
-	Participant   BootstrapParticipant
-	ExpiresAt     time.Time
-}
-
-type BootstrapActivationLink struct {
-	Participant BootstrapParticipant
-	Token       string
-	ExpiresAt   time.Time
-}
-
-type CompleteBootstrapInput struct {
-	Token    string
-	Password string
-}
-
-type CompleteBootstrapResult struct {
-	Session    AuthResult
-	Onboarding OnboardingState
-}
-
-type IssueSsoTokenInput struct {
-	Provider          string
-	ExternalAccountID string
-	ExternalUserID    string
-}
-
-type IssueSsoTokenResult struct {
-	Kind      string
+type CompanyRegistrationTokenResult struct {
 	Token     string
 	ExpiresAt time.Time
 }
 
-type OnboardingState struct {
-	CompanyID       uuid.UUID
-	CompanyStatus   string
-	Completed       bool
-	PendingUser     *BootstrapParticipant
-	ActivationToken *string
-	ExpiresAt       *time.Time
-}
-
-type ProvisioningCleanupResult struct {
-	ProvisioningRequests int64
-	BootstrapActivations int64
-	SSOTokens            int64
+type CompanyRegistrationTokenValidation struct {
+	Valid             bool
+	State             string
+	ExternalAccountID *string
+	ExpiresAt         *time.Time
 }
 
 type LoginInput struct {

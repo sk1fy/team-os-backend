@@ -12,11 +12,12 @@ func (s *Server) Register(ctx context.Context, request *companyv1.RegisterReques
 		return nil, invalidRequest()
 	}
 	result, err := s.application.Register(ctx, application.RegisterInput{
-		CompanyName: request.CompanyName,
-		Email:       request.Email,
-		Password:    request.Password,
-		FirstName:   request.FirstName,
-		LastName:    request.LastName,
+		CompanyName:       request.CompanyName,
+		Email:             request.Email,
+		Password:          request.Password,
+		FirstName:         request.FirstName,
+		LastName:          request.LastName,
+		RegistrationToken: request.GetRegistrationToken(),
 	}, sessionMeta(ctx))
 	if err != nil {
 		return nil, transportError(err)

@@ -6,8 +6,9 @@ import "events/common.proto";
 
 option go_package = "github.com/sk1fy/team-os-backend/contracts/gen/go/events/v1;eventsv1";
 
-// Published under teamos.company.auth.sso_login.v1 after a single-use SSO token is
-// consumed and the ordinary TeamOS session is committed.
+// Retired: retained only for protobuf compatibility. New company registrations
+// use company registration tokens and ordinary password sessions; this event is
+// no longer published.
 message AuthSsoLoginEvent {
   EventMetadata metadata = 1;
   AuthSsoLoginPayload payload = 2;

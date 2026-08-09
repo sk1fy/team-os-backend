@@ -99,6 +99,30 @@ func TestLimiterProtectsExternalAcademyMutations(t *testing.T) {
 	}
 }
 
+func TestLimiterProtectsPublicCompanyRegistrationChecks(t *testing.T) {
+	for _, test := range []struct {
+		method string
+		path   string
+	}{
+		{http.MethodGet, "/api/v1/public/amocrm/accounts/31355990/exists"},
+		{http.MethodPost, "/api/v1/public/company-registration-tokens/validate"},
+	} {
+		limiter := New(1, time.Minute)
+		handler := limiter.Middleware(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+			w.WriteHeader(http.StatusNoContent)
+		}))
+		for index, want := range []int{http.StatusNoContent, http.StatusTooManyRequests} {
+			request := httptest.NewRequestWithContext(context.Background(), test.method, test.path, nil)
+			request.RemoteAddr = "192.0.2.47:1234"
+			response := httptest.NewRecorder()
+			handler.ServeHTTP(response, request)
+			if response.Code != want {
+				t.Fatalf("%s %s request %d status=%d want=%d", test.method, test.path, index, response.Code, want)
+			}
+		}
+	}
+}
+
 func TestLimiterProtectsProvisioningMutations(t *testing.T) {
 	limiter := New(1, time.Minute)
 	handler := limiter.Middleware(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {

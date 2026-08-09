@@ -10,12 +10,24 @@ func TestLoad(t *testing.T) {
 	t.Setenv("COMPANY_JWT_PRIVATE_KEY", "private-key")
 	t.Setenv("COMPANY_GATEWAY_SERVICE_TOKEN", "gateway-service-token-at-least-32-bytes")
 	t.Setenv("COMPANY_ACCESS_TTL", "10m")
+	t.Setenv("COMPANY_REGISTRATION_TOKEN_TTL", "2h")
 	config, err := Load()
 	if err != nil {
 		t.Fatal(err)
 	}
-	if config.HTTPAddr != ":8081" || config.GRPCAddr != ":9081" || config.AccessTTL != 10*time.Minute || config.AmoImportEnabled {
+	if config.HTTPAddr != ":8081" || config.GRPCAddr != ":9081" || config.AccessTTL != 10*time.Minute ||
+		config.RegistrationTokenTTL != 2*time.Hour || config.AmoImportEnabled {
 		t.Fatalf("unexpected config: %#v", config)
+	}
+}
+
+func TestLoadRejectsInvalidRegistrationTokenTTL(t *testing.T) {
+	t.Setenv("COMPANY_DB_URL", "postgres://localhost/company")
+	t.Setenv("COMPANY_JWT_PRIVATE_KEY", "private-key")
+	t.Setenv("COMPANY_GATEWAY_SERVICE_TOKEN", "gateway-service-token-at-least-32-bytes")
+	t.Setenv("COMPANY_REGISTRATION_TOKEN_TTL", "never")
+	if _, err := Load(); err == nil {
+		t.Fatal("Load() expected an error for invalid registration token TTL")
 	}
 }
 

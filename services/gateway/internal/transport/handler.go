@@ -121,6 +121,7 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 	response, err := h.company.Register(outgoingContext(r), &companyv1.RegisterRequest{
 		CompanyName: input.CompanyName, Email: string(input.Email), Password: input.Password,
 		FirstName: input.FirstName, LastName: input.LastName,
+		RegistrationToken: input.RegistrationToken,
 	})
 	if err != nil {
 		h.writeRPCError(w, r, err)

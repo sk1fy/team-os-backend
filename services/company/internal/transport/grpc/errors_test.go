@@ -37,7 +37,7 @@ func TestTransportErrorMapsApplicationKinds(t *testing.T) {
 
 func TestTransportErrorIncludesStableErrorInfo(t *testing.T) {
 	err := transportError(&application.Error{
-		Kind: application.ErrorConflict, Code: application.ErrorCodeBootstrapConsumed,
+		Kind: application.ErrorConflict, Code: application.ErrorCodeRegistrationTokenConsumed,
 		Message: "Ссылка уже использована", Details: map[string]string{"user_id": "user-1"},
 	})
 	converted := status.Convert(err)
@@ -45,7 +45,7 @@ func TestTransportErrorIncludesStableErrorInfo(t *testing.T) {
 		t.Fatalf("details = %#v", converted.Details())
 	}
 	detail, ok := converted.Details()[0].(*errdetails.ErrorInfo)
-	if !ok || detail.Reason != application.ErrorCodeBootstrapConsumed || detail.Domain != "teamos.company" ||
+	if !ok || detail.Reason != application.ErrorCodeRegistrationTokenConsumed || detail.Domain != "teamos.company" ||
 		detail.Metadata["user_id"] != "user-1" {
 		t.Fatalf("detail = %#v", detail)
 	}

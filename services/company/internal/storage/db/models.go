@@ -61,6 +61,19 @@ type CompanyIntegration struct {
 	UpdatedAt         time.Time          `json:"updated_at"`
 }
 
+type CompanyRegistrationToken struct {
+	ID                uuid.UUID          `json:"id"`
+	CompanyID         uuid.UUID          `json:"company_id"`
+	Provider          string             `json:"provider"`
+	ExternalAccountID string             `json:"external_account_id"`
+	TokenHash         []byte             `json:"token_hash"`
+	ExpiresAt         time.Time          `json:"expires_at"`
+	ConsumedAt        pgtype.Timestamptz `json:"consumed_at"`
+	RevokedAt         pgtype.Timestamptz `json:"revoked_at"`
+	RevocationReason  pgtype.Text        `json:"revocation_reason"`
+	CreatedAt         time.Time          `json:"created_at"`
+}
+
 type Credential struct {
 	CompanyID    uuid.UUID `json:"company_id"`
 	UserID       uuid.UUID `json:"user_id"`

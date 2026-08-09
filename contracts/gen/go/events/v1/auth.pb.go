@@ -21,8 +21,9 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Published under teamos.company.auth.sso_login.v1 after a single-use SSO token is
-// consumed and the ordinary TeamOS session is committed.
+// Retired: retained only for protobuf compatibility. New company registrations
+// use company registration tokens and ordinary password sessions; this event is
+// no longer published.
 type AuthSsoLoginEvent struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Metadata      *EventMetadata         `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`

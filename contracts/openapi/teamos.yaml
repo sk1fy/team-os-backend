@@ -188,6 +188,48 @@ paths:
         default:
           $ref: '#/components/responses/Error'
 
+  /api/v1/public/amocrm/accounts/{amoAccountId}/exists:
+    get:
+      tags: [Provisioning]
+      operationId: checkAmoAccount
+      summary: Проверить наличие amoCRM Account ID в TeamOS
+      security: []
+      parameters:
+        - name: amoAccountId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^\d+$'
+            maxLength: 255
+      responses:
+        '200':
+          $ref: '#/components/responses/AmoAccountAvailability'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/public/company-registration-tokens/validate:
+    post:
+      tags: [Auth]
+      operationId: validateCompanyRegistrationToken
+      summary: Проверить токен регистрации компании
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidateCompanyRegistrationTokenInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/CompanyRegistrationTokenValidation'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        default:
+          $ref: '#/components/responses/Error'
+
   /api/v1/auth/invites/{token}:
     parameters:
       - $ref: '#/components/parameters/InviteToken'
@@ -236,6 +278,7 @@ paths:
     get:
       tags: [Auth]
       operationId: getBootstrapActivation
+      deprecated: true
       summary: Получить данные активации владельца или администратора
       security: []
       responses:
@@ -258,6 +301,7 @@ paths:
     post:
       tags: [Auth]
       operationId: completeBootstrapActivation
+      deprecated: true
       summary: Задать пароль и активировать владельца или администратора
       security: []
       requestBody:
@@ -284,6 +328,7 @@ paths:
     post:
       tags: [Auth]
       operationId: exchangeSsoToken
+      deprecated: true
       summary: Обменять одноразовый SSO-токен на сессию TeamOS
       security: []
       requestBody:
@@ -310,6 +355,7 @@ paths:
     post:
       tags: [Provisioning]
       operationId: provisionCompany
+      deprecated: true
       summary: Создать компанию с владельцем и администратором из внешнего сервиса
       security:
         - serviceAuth: []
@@ -337,10 +383,36 @@ paths:
         default:
           $ref: '#/components/responses/Error'
 
+  /api/v1/provisioning/amocrm/registration-tokens:
+    post:
+      tags: [Provisioning]
+      operationId: issueCompanyRegistrationToken
+      summary: Зарезервировать amoCRM Account ID и выдать токен регистрации
+      security:
+        - serviceAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueCompanyRegistrationTokenInput'
+      responses:
+        '201':
+          $ref: '#/components/responses/CompanyRegistrationToken'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/Error'
+
   /api/v1/provisioning/companies/status:
     get:
       tags: [Provisioning]
       operationId: getProvisionedCompanyStatus
+      deprecated: true
       summary: Проверить создание компании по ID аккаунта внешнего сервиса
       description: >-
         Провайдер определяется служебной учётной записью. Для Rakurs значение
@@ -369,6 +441,7 @@ paths:
     post:
       tags: [Provisioning]
       operationId: issueSsoToken
+      deprecated: true
       summary: Выдать одноразовый SSO-токен сотруднику внешнего сервиса
       security:
         - serviceAuth: []
@@ -430,6 +503,7 @@ paths:
     get:
       tags: [Company]
       operationId: getOnboardingStatus
+      deprecated: true
       summary: Получить состояние онбординга текущей компании
       responses:
         '200':
@@ -445,6 +519,7 @@ paths:
     post:
       tags: [Company]
       operationId: reissueOnboardingActivation
+      deprecated: true
       summary: Перевыпустить ссылку активации второго пользователя
       responses:
         '200':
@@ -4160,6 +4235,24 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/AuthResponse'
+    AmoAccountAvailability:
+      description: Признак наличия или активной резервации amoCRM Account ID
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AmoAccountAvailabilityResponse'
+    CompanyRegistrationToken:
+      description: Одноразовый токен регистрации компании
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CompanyRegistrationTokenResponse'
+    CompanyRegistrationTokenValidation:
+      description: Текущее состояние токена регистрации компании
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CompanyRegistrationTokenValidationResponse'
     ProvisionCompany:
       description: Результат создания компании или идемпотентного повтора операции
       content:
@@ -5467,6 +5560,69 @@ components:
         lastName:
           type: string
           minLength: 1
+        registrationToken:
+          type: string
+          minLength: 32
+          maxLength: 512
+
+    AmoAccountAvailabilityResponse:
+      type: object
+      additionalProperties: false
+      required: [exists]
+      properties:
+        exists:
+          type: boolean
+
+    IssueCompanyRegistrationTokenInput:
+      type: object
+      additionalProperties: false
+      required: [amoAccountId]
+      properties:
+        amoAccountId:
+          type: string
+          pattern: '^\d+$'
+          maxLength: 255
+
+    CompanyRegistrationTokenResponse:
+      type: object
+      additionalProperties: false
+      required: [registrationToken, expiresAt]
+      properties:
+        registrationToken:
+          type: string
+          minLength: 32
+          maxLength: 512
+        expiresAt:
+          $ref: '#/components/schemas/ISODateTime'
+
+    ValidateCompanyRegistrationTokenInput:
+      type: object
+      additionalProperties: false
+      required: [registrationToken]
+      properties:
+        registrationToken:
+          type: string
+          minLength: 1
+          maxLength: 512
+
+    CompanyRegistrationTokenState:
+      type: string
+      enum: [valid, invalid, expired, consumed, revoked]
+
+    CompanyRegistrationTokenValidationResponse:
+      type: object
+      additionalProperties: false
+      required: [valid, state]
+      properties:
+        valid:
+          type: boolean
+        state:
+          $ref: '#/components/schemas/CompanyRegistrationTokenState'
+        amoAccountId:
+          type: string
+          pattern: '^\d+$'
+        expiresAt:
+          $ref: '#/components/schemas/ISODateTime'
 
     CompleteBootstrapActivationInput:
       type: object

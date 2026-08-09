@@ -413,9 +413,6 @@ func (s *Service) DeleteUser(ctx context.Context, actor Actor, id uuid.UUID) err
 	} else if err != nil {
 		return internal("Не удалось заблокировать сотрудника", err)
 	}
-	if err = ensureNotPendingBootstrapUser(ctx, queries, actor.CompanyID, id); err != nil {
-		return err
-	}
 	current, err := queries.GetUserWithPositions(ctx, db.GetUserWithPositionsParams{CompanyID: actor.CompanyID, ID: id})
 	if isNoRows(err) {
 		return notFound("Сотрудник")
@@ -651,9 +648,6 @@ func (s *Service) updateUser(ctx context.Context, actor Actor, input UpdateUserI
 		return User{}, notFound("Сотрудник")
 	} else if err != nil {
 		return User{}, internal("Не удалось заблокировать сотрудника", err)
-	}
-	if err = ensureNotPendingBootstrapUser(ctx, queries, actor.CompanyID, input.ID); err != nil {
-		return User{}, err
 	}
 	current, err := queries.GetUserWithPositions(ctx, db.GetUserWithPositionsParams{
 		CompanyID: actor.CompanyID, ID: input.ID,

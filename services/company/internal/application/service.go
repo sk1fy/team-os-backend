@@ -22,11 +22,10 @@ import (
 )
 
 const (
-	defaultRefreshTTL   = 30 * 24 * time.Hour
-	defaultInviteTTL    = 7 * 24 * time.Hour
-	defaultAmoSyncTTL   = 5 * time.Minute
-	defaultBootstrapTTL = 24 * time.Hour
-	defaultSsoTTL       = time.Minute
+	defaultRefreshTTL             = 30 * 24 * time.Hour
+	defaultInviteTTL              = 7 * 24 * time.Hour
+	defaultAmoSyncTTL             = 5 * time.Minute
+	defaultCompanyRegistrationTTL = 24 * time.Hour
 )
 
 var defaultEmployeeSections = []string{"schedule", "knowledge", "academy"}
@@ -41,20 +40,19 @@ type amoSyncState struct {
 }
 
 type Service struct {
-	pool          databasePool
-	issuer        *sharedauth.TokenIssuer
-	refreshTTL    time.Duration
-	inviteTTL     time.Duration
-	now           func() time.Time
-	dummyHash     string
-	passwordSlots chan struct{}
-	externalUsers ExternalEmployeeProvider
-	logger        *slog.Logger
-	amoSyncTTL    time.Duration
-	amoSyncMu     sync.Mutex
-	amoSyncStates map[uuid.UUID]*amoSyncState
-	bootstrapTTL  time.Duration
-	ssoTTL        time.Duration
+	pool                   databasePool
+	issuer                 *sharedauth.TokenIssuer
+	refreshTTL             time.Duration
+	inviteTTL              time.Duration
+	now                    func() time.Time
+	dummyHash              string
+	passwordSlots          chan struct{}
+	externalUsers          ExternalEmployeeProvider
+	logger                 *slog.Logger
+	amoSyncTTL             time.Duration
+	amoSyncMu              sync.Mutex
+	amoSyncStates          map[uuid.UUID]*amoSyncState
+	companyRegistrationTTL time.Duration
 }
 
 // databasePool is the subset of pgxpool.Pool used by the application layer.
@@ -94,13 +92,10 @@ func WithAmoSyncInterval(interval time.Duration) ServiceOption {
 	}
 }
 
-func WithProvisioningTTLs(bootstrapTTL, ssoTTL time.Duration) ServiceOption {
+func WithCompanyRegistrationTTL(ttl time.Duration) ServiceOption {
 	return func(service *Service) {
-		if bootstrapTTL > 0 {
-			service.bootstrapTTL = bootstrapTTL
-		}
-		if ssoTTL > 0 {
-			service.ssoTTL = ssoTTL
+		if ttl > 0 {
+			service.companyRegistrationTTL = ttl
 		}
 	}
 }
@@ -111,18 +106,17 @@ func NewService(pool *pgxpool.Pool, issuer *sharedauth.TokenIssuer, options ...S
 		return nil, err
 	}
 	service := &Service{
-		pool:          pool,
-		issuer:        issuer,
-		refreshTTL:    defaultRefreshTTL,
-		inviteTTL:     defaultInviteTTL,
-		now:           time.Now,
-		dummyHash:     dummyHash,
-		passwordSlots: make(chan struct{}, 4),
-		logger:        slog.Default(),
-		amoSyncTTL:    defaultAmoSyncTTL,
-		amoSyncStates: make(map[uuid.UUID]*amoSyncState),
-		bootstrapTTL:  defaultBootstrapTTL,
-		ssoTTL:        defaultSsoTTL,
+		pool:                   pool,
+		issuer:                 issuer,
+		refreshTTL:             defaultRefreshTTL,
+		inviteTTL:              defaultInviteTTL,
+		now:                    time.Now,
+		dummyHash:              dummyHash,
+		passwordSlots:          make(chan struct{}, 4),
+		logger:                 slog.Default(),
+		amoSyncTTL:             defaultAmoSyncTTL,
+		amoSyncStates:          make(map[uuid.UUID]*amoSyncState),
+		companyRegistrationTTL: defaultCompanyRegistrationTTL,
 	}
 	for _, option := range options {
 		option(service)

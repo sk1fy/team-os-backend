@@ -781,7 +781,8 @@ func TestGatewayRegisterReturnsCreated(t *testing.T) {
 		"email":"owner@example.com",
 		"password":"secret-password",
 		"firstName":"Ada",
-		"lastName":"Lovelace"
+		"lastName":"Lovelace",
+		"registrationToken":"registration-token-abcdefghijklmnopqrstuvwxyz"
 	}`, nil)
 
 	if recorder.Code != http.StatusCreated {
@@ -789,7 +790,8 @@ func TestGatewayRegisterReturnsCreated(t *testing.T) {
 	}
 	request := <-requests
 	if request.GetCompanyName() != "Acme" || request.GetEmail() != "owner@example.com" ||
-		request.GetPassword() != "secret-password" || request.GetFirstName() != "Ada" || request.GetLastName() != "Lovelace" {
+		request.GetPassword() != "secret-password" || request.GetFirstName() != "Ada" || request.GetLastName() != "Lovelace" ||
+		request.GetRegistrationToken() != "registration-token-abcdefghijklmnopqrstuvwxyz" {
 		t.Fatalf("Register RPC request = %#v", request)
 	}
 	if got := responseCookie(t, recorder, refreshCookieName).Value; got != "refresh-register" {

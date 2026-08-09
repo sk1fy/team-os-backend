@@ -210,9 +210,6 @@ func expectAccessTarget(mock pgxmock.PgxPoolIface, companyID, userID uuid.UUID, 
 			"employee", "active", nil, nil, nil, now, now, "local", nil, nil, nil, nil,
 			nil,
 		))
-	mock.ExpectQuery("SELECT EXISTS").
-		WithArgs(companyID, userID).
-		WillReturnRows(pgxmock.NewRows([]string{"exists"}).AddRow(false))
 }
 
 func expectAccessMode(mock pgxmock.PgxPoolIface, companyID, userID uuid.UUID, mode string) {

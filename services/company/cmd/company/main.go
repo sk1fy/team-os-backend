@@ -99,6 +99,7 @@ func run(logger *slog.Logger) error {
 	}()
 	serviceOptions := []application.ServiceOption{
 		application.WithAmoSyncInterval(configuration.AmoSyncInterval),
+		application.WithCompanyRegistrationTTL(configuration.RegistrationTokenTTL),
 		application.WithLogger(logger),
 	}
 	if configuration.AmoImportEnabled {
@@ -171,7 +172,7 @@ func run(logger *slog.Logger) error {
 
 	rootContext, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	go runProvisioningCleanup(rootContext, service, logger)
+	go runCompanyRegistrationCleanup(rootContext, service, logger)
 	serverErrors := make(chan error, 3)
 	go func() {
 		logger.Info("company gRPC server started", "address", configuration.GRPCAddr)
@@ -218,22 +219,20 @@ func run(logger *slog.Logger) error {
 	return runErr
 }
 
-func runProvisioningCleanup(ctx context.Context, service *application.Service, logger *slog.Logger) {
+func runCompanyRegistrationCleanup(ctx context.Context, service *application.Service, logger *slog.Logger) {
 	const tokenRetention = 7 * 24 * time.Hour
 	cleanup := func() {
 		cleanupContext, cancel := context.WithTimeout(ctx, 30*time.Second)
 		defer cancel()
-		result, err := service.CleanupProvisioningArtifacts(cleanupContext, tokenRetention)
+		deleted, err := service.CleanupCompanyRegistrationTokens(cleanupContext, tokenRetention)
 		if err != nil {
 			if !errors.Is(err, context.Canceled) {
-				logger.Error("provisioning cleanup failed", "error", err)
+				logger.Error("company registration token cleanup failed", "error", err)
 			}
 			return
 		}
-		logger.Info("provisioning cleanup completed",
-			"provisioning_requests", result.ProvisioningRequests,
-			"bootstrap_activations", result.BootstrapActivations,
-			"sso_tokens", result.SSOTokens,
+		logger.Info("company registration token cleanup completed",
+			"company_registration_tokens", deleted,
 		)
 	}
 	cleanup()

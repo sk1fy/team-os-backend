@@ -136,6 +136,18 @@ func TestAccessLinkLoginIsPublic(t *testing.T) {
 	}
 }
 
+func TestCompanyRegistrationChecksArePublic(t *testing.T) {
+	if !isPublic(http.MethodGet, "/api/v1/public/amocrm/accounts/31355990/exists") {
+		t.Fatal("amoCRM account check must be public")
+	}
+	if !isPublic(http.MethodPost, "/api/v1/public/company-registration-tokens/validate") {
+		t.Fatal("company registration token validation must be public")
+	}
+	if isPublic(http.MethodPost, "/api/v1/public/amocrm/accounts/31355990/exists") {
+		t.Fatal("amoCRM account check only permits GET")
+	}
+}
+
 func TestImpersonationRequiresInternalBearer(t *testing.T) {
 	if isPublic(http.MethodPost, "/api/v1/auth/impersonate") {
 		t.Fatal("impersonation must remain protected by the internal JWT")

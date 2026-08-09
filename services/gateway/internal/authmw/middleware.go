@@ -87,6 +87,8 @@ func isPublic(method, path string) bool {
 		return true
 	case method == http.MethodPost && path == "/api/v1/auth/logout":
 		return true
+	case method == http.MethodPost && path == "/api/v1/public/company-registration-tokens/validate":
+		return true
 	case isBootstrapAuth(method, path):
 		return true
 	case method == http.MethodPost && path == "/api/v1/auth/sso/exchange":
@@ -123,7 +125,8 @@ func isBootstrapAuth(method, path string) bool {
 
 func isProvisioning(method, path string) bool {
 	return (method == http.MethodPost &&
-		(path == "/api/v1/provisioning/companies" || path == "/api/v1/provisioning/sessions")) ||
+		(path == "/api/v1/provisioning/companies" || path == "/api/v1/provisioning/sessions" ||
+			path == "/api/v1/provisioning/amocrm/registration-tokens")) ||
 		(method == http.MethodGet && path == "/api/v1/provisioning/companies/status")
 }
 

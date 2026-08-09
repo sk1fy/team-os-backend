@@ -250,7 +250,15 @@ team-os-backend/
 | *новое: обновление токена* | `POST /api/v1/auth/refresh` (по httpOnly-cookie, с ротацией) |
 | *новое: выход* | `POST /api/v1/auth/logout` |
 | *новое: принятие инвайта* | `POST /api/v1/auth/invites/{token}/accept` `{firstName, lastName, password}` |
-| *новое: бутстрап владельца* | `POST /api/v1/auth/register` `{companyName, email, password, firstName, lastName}` |
+| *регистрация компании* | `POST /api/v1/auth/register` `{companyName, email, password, firstName, lastName, registrationToken?}`; amoCRM-компания передаёт одноразовый registration-токен |
+| *проверка amoCRM Account ID* | `GET /api/v1/public/amocrm/accounts/{amoAccountId}/exists` без авторизации → `{exists}` |
+| *выпуск registration-токена* | `POST /api/v1/provisioning/amocrm/registration-tokens` под Service credential → `{registrationToken, expiresAt}` |
+| *проверка registration-токена* | `POST /api/v1/public/company-registration-tokens/validate` без авторизации → `{valid, state, amoAccountId?, expiresAt?}` |
+
+Прежние provisioning/bootstrap/SSO endpoints оставлены в v1 только как deprecated contract
+tombstones и возвращают `410 REGISTRATION_FLOW_RETIRED`. Компания и пользователь через них больше
+не создаются. Registration-токен резервирует amoCRM Account ID и будущий `companyId`; сама компания,
+интеграция, владелец и credentials создаются атомарно только вызовом `register`.
 
 **Оргструктура (`orgApi` → сервис `company`)**
 
@@ -770,6 +778,7 @@ make dev SERVICE=kb     # один сервис локально (go run) про
 **Фаза 1 — `company` + `gateway` + авторизация. Сложность: высокая. ✅ БЭКЕНД ВЫПОЛНЕН** *(остаётся переключение фронтенда на http; самая ответственная фаза: безопасность, сессии, первый прогон всей цепочки domain → outbox → NATS; портирование трёх доменов; всё последующее строится по её образцу)*
 - [x] Миграции и sqlc для схемы §8.1 (включая ЦКП отделов, `birthDate`/`hiredAt`/`vacationAllowance`, правило одной должности); домен org (порт orgTree/userGuards/inviteRules + тесты).
 - [x] Auth: login/refresh/logout/accept-invite, argon2id, ротация сессий.
+- [x] Регистрация amoCRM-компании: публичная проверка Account ID, служебный выпуск одноразового токена, публичная проверка токена и атомарное погашение в `register`; прежний SSO/provisioning flow отключён.
 - [x] Gateway: oapi-codegen-хендлеры auth/org, JWT-middleware, CORS; health/readyz + graceful shutdown как эталон для всех сервисов (§3.7).
 - [x] Outbox + события `org.*`; seed из фикстур (§13).
 - [ ] Фронтенд: `httpRequest`, флаги модулей, переключение `auth` и `org` на http. *(не сделано: фронтенд всё ещё на `mockRequest`, `httpRequest`/флагов модулей нет)*

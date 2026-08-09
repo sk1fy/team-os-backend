@@ -19,67 +19,70 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	CompanyService_Register_FullMethodName                    = "/teamos.company.v1.CompanyService/Register"
-	CompanyService_Login_FullMethodName                       = "/teamos.company.v1.CompanyService/Login"
-	CompanyService_LoginWithAccessLink_FullMethodName         = "/teamos.company.v1.CompanyService/LoginWithAccessLink"
-	CompanyService_ImpersonateUser_FullMethodName             = "/teamos.company.v1.CompanyService/ImpersonateUser"
-	CompanyService_Refresh_FullMethodName                     = "/teamos.company.v1.CompanyService/Refresh"
-	CompanyService_Logout_FullMethodName                      = "/teamos.company.v1.CompanyService/Logout"
-	CompanyService_GetInviteByToken_FullMethodName            = "/teamos.company.v1.CompanyService/GetInviteByToken"
-	CompanyService_AcceptInvite_FullMethodName                = "/teamos.company.v1.CompanyService/AcceptInvite"
-	CompanyService_ProvisionCompany_FullMethodName            = "/teamos.company.v1.CompanyService/ProvisionCompany"
-	CompanyService_GetProvisionedCompanyStatus_FullMethodName = "/teamos.company.v1.CompanyService/GetProvisionedCompanyStatus"
-	CompanyService_GetBootstrapActivation_FullMethodName      = "/teamos.company.v1.CompanyService/GetBootstrapActivation"
-	CompanyService_CompleteBootstrapActivation_FullMethodName = "/teamos.company.v1.CompanyService/CompleteBootstrapActivation"
-	CompanyService_IssueSsoToken_FullMethodName               = "/teamos.company.v1.CompanyService/IssueSsoToken"
-	CompanyService_ExchangeSsoToken_FullMethodName            = "/teamos.company.v1.CompanyService/ExchangeSsoToken"
-	CompanyService_GetOnboardingStatus_FullMethodName         = "/teamos.company.v1.CompanyService/GetOnboardingStatus"
-	CompanyService_ReissueOnboardingActivation_FullMethodName = "/teamos.company.v1.CompanyService/ReissueOnboardingActivation"
-	CompanyService_GetCurrentUser_FullMethodName              = "/teamos.company.v1.CompanyService/GetCurrentUser"
-	CompanyService_UpdateCurrentUser_FullMethodName           = "/teamos.company.v1.CompanyService/UpdateCurrentUser"
-	CompanyService_GetCompany_FullMethodName                  = "/teamos.company.v1.CompanyService/GetCompany"
-	CompanyService_UpdateCompany_FullMethodName               = "/teamos.company.v1.CompanyService/UpdateCompany"
-	CompanyService_GetDepartments_FullMethodName              = "/teamos.company.v1.CompanyService/GetDepartments"
-	CompanyService_CreateDepartment_FullMethodName            = "/teamos.company.v1.CompanyService/CreateDepartment"
-	CompanyService_UpdateDepartment_FullMethodName            = "/teamos.company.v1.CompanyService/UpdateDepartment"
-	CompanyService_DeleteDepartment_FullMethodName            = "/teamos.company.v1.CompanyService/DeleteDepartment"
-	CompanyService_MoveDepartment_FullMethodName              = "/teamos.company.v1.CompanyService/MoveDepartment"
-	CompanyService_GetPositions_FullMethodName                = "/teamos.company.v1.CompanyService/GetPositions"
-	CompanyService_GetPosition_FullMethodName                 = "/teamos.company.v1.CompanyService/GetPosition"
-	CompanyService_CreatePosition_FullMethodName              = "/teamos.company.v1.CompanyService/CreatePosition"
-	CompanyService_UpdatePosition_FullMethodName              = "/teamos.company.v1.CompanyService/UpdatePosition"
-	CompanyService_DeletePosition_FullMethodName              = "/teamos.company.v1.CompanyService/DeletePosition"
-	CompanyService_MovePosition_FullMethodName                = "/teamos.company.v1.CompanyService/MovePosition"
-	CompanyService_GetUsers_FullMethodName                    = "/teamos.company.v1.CompanyService/GetUsers"
-	CompanyService_GetUser_FullMethodName                     = "/teamos.company.v1.CompanyService/GetUser"
-	CompanyService_CreateUser_FullMethodName                  = "/teamos.company.v1.CompanyService/CreateUser"
-	CompanyService_UpdateUser_FullMethodName                  = "/teamos.company.v1.CompanyService/UpdateUser"
-	CompanyService_UpdateUserCard_FullMethodName              = "/teamos.company.v1.CompanyService/UpdateUserCard"
-	CompanyService_DeleteUser_FullMethodName                  = "/teamos.company.v1.CompanyService/DeleteUser"
-	CompanyService_GetUserAccess_FullMethodName               = "/teamos.company.v1.CompanyService/GetUserAccess"
-	CompanyService_SetUserPasswordAccess_FullMethodName       = "/teamos.company.v1.CompanyService/SetUserPasswordAccess"
-	CompanyService_SetUserLinkAccess_FullMethodName           = "/teamos.company.v1.CompanyService/SetUserLinkAccess"
-	CompanyService_RevokeUserAccess_FullMethodName            = "/teamos.company.v1.CompanyService/RevokeUserAccess"
-	CompanyService_GetInvites_FullMethodName                  = "/teamos.company.v1.CompanyService/GetInvites"
-	CompanyService_InviteUser_FullMethodName                  = "/teamos.company.v1.CompanyService/InviteUser"
-	CompanyService_ResendInvite_FullMethodName                = "/teamos.company.v1.CompanyService/ResendInvite"
-	CompanyService_RevokeInvite_FullMethodName                = "/teamos.company.v1.CompanyService/RevokeInvite"
-	CompanyService_GetUsersByIds_FullMethodName               = "/teamos.company.v1.CompanyService/GetUsersByIds"
-	CompanyService_ResolveReportUserScope_FullMethodName      = "/teamos.company.v1.CompanyService/ResolveReportUserScope"
-	CompanyService_GetReportUserProfiles_FullMethodName       = "/teamos.company.v1.CompanyService/GetReportUserProfiles"
-	CompanyService_ResolvePositionUsers_FullMethodName        = "/teamos.company.v1.CompanyService/ResolvePositionUsers"
-	CompanyService_ResolveDepartmentUsers_FullMethodName      = "/teamos.company.v1.CompanyService/ResolveDepartmentUsers"
-	CompanyService_GetSchedules_FullMethodName                = "/teamos.company.v1.CompanyService/GetSchedules"
-	CompanyService_SaveSchedule_FullMethodName                = "/teamos.company.v1.CompanyService/SaveSchedule"
-	CompanyService_GetShiftExceptions_FullMethodName          = "/teamos.company.v1.CompanyService/GetShiftExceptions"
-	CompanyService_SaveShiftExceptions_FullMethodName         = "/teamos.company.v1.CompanyService/SaveShiftExceptions"
-	CompanyService_GetDistributionGroups_FullMethodName       = "/teamos.company.v1.CompanyService/GetDistributionGroups"
-	CompanyService_CreateDistributionGroup_FullMethodName     = "/teamos.company.v1.CompanyService/CreateDistributionGroup"
-	CompanyService_UpdateDistributionGroup_FullMethodName     = "/teamos.company.v1.CompanyService/UpdateDistributionGroup"
-	CompanyService_DeleteDistributionGroup_FullMethodName     = "/teamos.company.v1.CompanyService/DeleteDistributionGroup"
-	CompanyService_GetDistributionEvents_FullMethodName       = "/teamos.company.v1.CompanyService/GetDistributionEvents"
-	CompanyService_SimulateDistributionDeal_FullMethodName    = "/teamos.company.v1.CompanyService/SimulateDistributionDeal"
-	CompanyService_ResetDistributionEvents_FullMethodName     = "/teamos.company.v1.CompanyService/ResetDistributionEvents"
+	CompanyService_Register_FullMethodName                         = "/teamos.company.v1.CompanyService/Register"
+	CompanyService_CheckAmoAccount_FullMethodName                  = "/teamos.company.v1.CompanyService/CheckAmoAccount"
+	CompanyService_IssueCompanyRegistrationToken_FullMethodName    = "/teamos.company.v1.CompanyService/IssueCompanyRegistrationToken"
+	CompanyService_ValidateCompanyRegistrationToken_FullMethodName = "/teamos.company.v1.CompanyService/ValidateCompanyRegistrationToken"
+	CompanyService_Login_FullMethodName                            = "/teamos.company.v1.CompanyService/Login"
+	CompanyService_LoginWithAccessLink_FullMethodName              = "/teamos.company.v1.CompanyService/LoginWithAccessLink"
+	CompanyService_ImpersonateUser_FullMethodName                  = "/teamos.company.v1.CompanyService/ImpersonateUser"
+	CompanyService_Refresh_FullMethodName                          = "/teamos.company.v1.CompanyService/Refresh"
+	CompanyService_Logout_FullMethodName                           = "/teamos.company.v1.CompanyService/Logout"
+	CompanyService_GetInviteByToken_FullMethodName                 = "/teamos.company.v1.CompanyService/GetInviteByToken"
+	CompanyService_AcceptInvite_FullMethodName                     = "/teamos.company.v1.CompanyService/AcceptInvite"
+	CompanyService_ProvisionCompany_FullMethodName                 = "/teamos.company.v1.CompanyService/ProvisionCompany"
+	CompanyService_GetProvisionedCompanyStatus_FullMethodName      = "/teamos.company.v1.CompanyService/GetProvisionedCompanyStatus"
+	CompanyService_GetBootstrapActivation_FullMethodName           = "/teamos.company.v1.CompanyService/GetBootstrapActivation"
+	CompanyService_CompleteBootstrapActivation_FullMethodName      = "/teamos.company.v1.CompanyService/CompleteBootstrapActivation"
+	CompanyService_IssueSsoToken_FullMethodName                    = "/teamos.company.v1.CompanyService/IssueSsoToken"
+	CompanyService_ExchangeSsoToken_FullMethodName                 = "/teamos.company.v1.CompanyService/ExchangeSsoToken"
+	CompanyService_GetOnboardingStatus_FullMethodName              = "/teamos.company.v1.CompanyService/GetOnboardingStatus"
+	CompanyService_ReissueOnboardingActivation_FullMethodName      = "/teamos.company.v1.CompanyService/ReissueOnboardingActivation"
+	CompanyService_GetCurrentUser_FullMethodName                   = "/teamos.company.v1.CompanyService/GetCurrentUser"
+	CompanyService_UpdateCurrentUser_FullMethodName                = "/teamos.company.v1.CompanyService/UpdateCurrentUser"
+	CompanyService_GetCompany_FullMethodName                       = "/teamos.company.v1.CompanyService/GetCompany"
+	CompanyService_UpdateCompany_FullMethodName                    = "/teamos.company.v1.CompanyService/UpdateCompany"
+	CompanyService_GetDepartments_FullMethodName                   = "/teamos.company.v1.CompanyService/GetDepartments"
+	CompanyService_CreateDepartment_FullMethodName                 = "/teamos.company.v1.CompanyService/CreateDepartment"
+	CompanyService_UpdateDepartment_FullMethodName                 = "/teamos.company.v1.CompanyService/UpdateDepartment"
+	CompanyService_DeleteDepartment_FullMethodName                 = "/teamos.company.v1.CompanyService/DeleteDepartment"
+	CompanyService_MoveDepartment_FullMethodName                   = "/teamos.company.v1.CompanyService/MoveDepartment"
+	CompanyService_GetPositions_FullMethodName                     = "/teamos.company.v1.CompanyService/GetPositions"
+	CompanyService_GetPosition_FullMethodName                      = "/teamos.company.v1.CompanyService/GetPosition"
+	CompanyService_CreatePosition_FullMethodName                   = "/teamos.company.v1.CompanyService/CreatePosition"
+	CompanyService_UpdatePosition_FullMethodName                   = "/teamos.company.v1.CompanyService/UpdatePosition"
+	CompanyService_DeletePosition_FullMethodName                   = "/teamos.company.v1.CompanyService/DeletePosition"
+	CompanyService_MovePosition_FullMethodName                     = "/teamos.company.v1.CompanyService/MovePosition"
+	CompanyService_GetUsers_FullMethodName                         = "/teamos.company.v1.CompanyService/GetUsers"
+	CompanyService_GetUser_FullMethodName                          = "/teamos.company.v1.CompanyService/GetUser"
+	CompanyService_CreateUser_FullMethodName                       = "/teamos.company.v1.CompanyService/CreateUser"
+	CompanyService_UpdateUser_FullMethodName                       = "/teamos.company.v1.CompanyService/UpdateUser"
+	CompanyService_UpdateUserCard_FullMethodName                   = "/teamos.company.v1.CompanyService/UpdateUserCard"
+	CompanyService_DeleteUser_FullMethodName                       = "/teamos.company.v1.CompanyService/DeleteUser"
+	CompanyService_GetUserAccess_FullMethodName                    = "/teamos.company.v1.CompanyService/GetUserAccess"
+	CompanyService_SetUserPasswordAccess_FullMethodName            = "/teamos.company.v1.CompanyService/SetUserPasswordAccess"
+	CompanyService_SetUserLinkAccess_FullMethodName                = "/teamos.company.v1.CompanyService/SetUserLinkAccess"
+	CompanyService_RevokeUserAccess_FullMethodName                 = "/teamos.company.v1.CompanyService/RevokeUserAccess"
+	CompanyService_GetInvites_FullMethodName                       = "/teamos.company.v1.CompanyService/GetInvites"
+	CompanyService_InviteUser_FullMethodName                       = "/teamos.company.v1.CompanyService/InviteUser"
+	CompanyService_ResendInvite_FullMethodName                     = "/teamos.company.v1.CompanyService/ResendInvite"
+	CompanyService_RevokeInvite_FullMethodName                     = "/teamos.company.v1.CompanyService/RevokeInvite"
+	CompanyService_GetUsersByIds_FullMethodName                    = "/teamos.company.v1.CompanyService/GetUsersByIds"
+	CompanyService_ResolveReportUserScope_FullMethodName           = "/teamos.company.v1.CompanyService/ResolveReportUserScope"
+	CompanyService_GetReportUserProfiles_FullMethodName            = "/teamos.company.v1.CompanyService/GetReportUserProfiles"
+	CompanyService_ResolvePositionUsers_FullMethodName             = "/teamos.company.v1.CompanyService/ResolvePositionUsers"
+	CompanyService_ResolveDepartmentUsers_FullMethodName           = "/teamos.company.v1.CompanyService/ResolveDepartmentUsers"
+	CompanyService_GetSchedules_FullMethodName                     = "/teamos.company.v1.CompanyService/GetSchedules"
+	CompanyService_SaveSchedule_FullMethodName                     = "/teamos.company.v1.CompanyService/SaveSchedule"
+	CompanyService_GetShiftExceptions_FullMethodName               = "/teamos.company.v1.CompanyService/GetShiftExceptions"
+	CompanyService_SaveShiftExceptions_FullMethodName              = "/teamos.company.v1.CompanyService/SaveShiftExceptions"
+	CompanyService_GetDistributionGroups_FullMethodName            = "/teamos.company.v1.CompanyService/GetDistributionGroups"
+	CompanyService_CreateDistributionGroup_FullMethodName          = "/teamos.company.v1.CompanyService/CreateDistributionGroup"
+	CompanyService_UpdateDistributionGroup_FullMethodName          = "/teamos.company.v1.CompanyService/UpdateDistributionGroup"
+	CompanyService_DeleteDistributionGroup_FullMethodName          = "/teamos.company.v1.CompanyService/DeleteDistributionGroup"
+	CompanyService_GetDistributionEvents_FullMethodName            = "/teamos.company.v1.CompanyService/GetDistributionEvents"
+	CompanyService_SimulateDistributionDeal_FullMethodName         = "/teamos.company.v1.CompanyService/SimulateDistributionDeal"
+	CompanyService_ResetDistributionEvents_FullMethodName          = "/teamos.company.v1.CompanyService/ResetDistributionEvents"
 )
 
 // CompanyServiceClient is the client API for CompanyService service.
@@ -91,6 +94,9 @@ const (
 // calls receive actor/company claims through gRPC metadata.
 type CompanyServiceClient interface {
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
+	CheckAmoAccount(ctx context.Context, in *CheckAmoAccountRequest, opts ...grpc.CallOption) (*CheckAmoAccountResponse, error)
+	IssueCompanyRegistrationToken(ctx context.Context, in *IssueCompanyRegistrationTokenRequest, opts ...grpc.CallOption) (*IssueCompanyRegistrationTokenResponse, error)
+	ValidateCompanyRegistrationToken(ctx context.Context, in *ValidateCompanyRegistrationTokenRequest, opts ...grpc.CallOption) (*ValidateCompanyRegistrationTokenResponse, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	LoginWithAccessLink(ctx context.Context, in *LoginWithAccessLinkRequest, opts ...grpc.CallOption) (*LoginWithAccessLinkResponse, error)
 	ImpersonateUser(ctx context.Context, in *ImpersonateUserRequest, opts ...grpc.CallOption) (*ImpersonateUserResponse, error)
@@ -165,6 +171,36 @@ func (c *companyServiceClient) Register(ctx context.Context, in *RegisterRequest
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(RegisterResponse)
 	err := c.cc.Invoke(ctx, CompanyService_Register_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) CheckAmoAccount(ctx context.Context, in *CheckAmoAccountRequest, opts ...grpc.CallOption) (*CheckAmoAccountResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CheckAmoAccountResponse)
+	err := c.cc.Invoke(ctx, CompanyService_CheckAmoAccount_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) IssueCompanyRegistrationToken(ctx context.Context, in *IssueCompanyRegistrationTokenRequest, opts ...grpc.CallOption) (*IssueCompanyRegistrationTokenResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(IssueCompanyRegistrationTokenResponse)
+	err := c.cc.Invoke(ctx, CompanyService_IssueCompanyRegistrationToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) ValidateCompanyRegistrationToken(ctx context.Context, in *ValidateCompanyRegistrationTokenRequest, opts ...grpc.CallOption) (*ValidateCompanyRegistrationTokenResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ValidateCompanyRegistrationTokenResponse)
+	err := c.cc.Invoke(ctx, CompanyService_ValidateCompanyRegistrationToken_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -780,6 +816,9 @@ func (c *companyServiceClient) ResetDistributionEvents(ctx context.Context, in *
 // calls receive actor/company claims through gRPC metadata.
 type CompanyServiceServer interface {
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
+	CheckAmoAccount(context.Context, *CheckAmoAccountRequest) (*CheckAmoAccountResponse, error)
+	IssueCompanyRegistrationToken(context.Context, *IssueCompanyRegistrationTokenRequest) (*IssueCompanyRegistrationTokenResponse, error)
+	ValidateCompanyRegistrationToken(context.Context, *ValidateCompanyRegistrationTokenRequest) (*ValidateCompanyRegistrationTokenResponse, error)
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	LoginWithAccessLink(context.Context, *LoginWithAccessLinkRequest) (*LoginWithAccessLinkResponse, error)
 	ImpersonateUser(context.Context, *ImpersonateUserRequest) (*ImpersonateUserResponse, error)
@@ -852,6 +891,15 @@ type UnimplementedCompanyServiceServer struct{}
 
 func (UnimplementedCompanyServiceServer) Register(context.Context, *RegisterRequest) (*RegisterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
+}
+func (UnimplementedCompanyServiceServer) CheckAmoAccount(context.Context, *CheckAmoAccountRequest) (*CheckAmoAccountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckAmoAccount not implemented")
+}
+func (UnimplementedCompanyServiceServer) IssueCompanyRegistrationToken(context.Context, *IssueCompanyRegistrationTokenRequest) (*IssueCompanyRegistrationTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method IssueCompanyRegistrationToken not implemented")
+}
+func (UnimplementedCompanyServiceServer) ValidateCompanyRegistrationToken(context.Context, *ValidateCompanyRegistrationTokenRequest) (*ValidateCompanyRegistrationTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ValidateCompanyRegistrationToken not implemented")
 }
 func (UnimplementedCompanyServiceServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
@@ -1068,6 +1116,60 @@ func _CompanyService_Register_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CompanyServiceServer).Register(ctx, req.(*RegisterRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_CheckAmoAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckAmoAccountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).CheckAmoAccount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_CheckAmoAccount_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).CheckAmoAccount(ctx, req.(*CheckAmoAccountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_IssueCompanyRegistrationToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IssueCompanyRegistrationTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).IssueCompanyRegistrationToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_IssueCompanyRegistrationToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).IssueCompanyRegistrationToken(ctx, req.(*IssueCompanyRegistrationTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_ValidateCompanyRegistrationToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ValidateCompanyRegistrationTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).ValidateCompanyRegistrationToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_ValidateCompanyRegistrationToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).ValidateCompanyRegistrationToken(ctx, req.(*ValidateCompanyRegistrationTokenRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2162,6 +2264,18 @@ var CompanyService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Register",
 			Handler:    _CompanyService_Register_Handler,
+		},
+		{
+			MethodName: "CheckAmoAccount",
+			Handler:    _CompanyService_CheckAmoAccount_Handler,
+		},
+		{
+			MethodName: "IssueCompanyRegistrationToken",
+			Handler:    _CompanyService_IssueCompanyRegistrationToken_Handler,
+		},
+		{
+			MethodName: "ValidateCompanyRegistrationToken",
+			Handler:    _CompanyService_ValidateCompanyRegistrationToken_Handler,
 		},
 		{
 			MethodName: "Login",

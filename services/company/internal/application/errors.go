@@ -15,18 +15,12 @@ const (
 )
 
 const (
-	ErrorCodeBootstrapInvalid        = "BOOTSTRAP_INVALID"
-	ErrorCodeBootstrapExpired        = "BOOTSTRAP_EXPIRED"
-	ErrorCodeBootstrapConsumed       = "BOOTSTRAP_CONSUMED"
-	ErrorCodeExternalUserDeactivated = "EXTERNAL_USER_DEACTIVATED"
-	ErrorCodeIntegrationFrozen       = "INTEGRATION_FROZEN"
-	ErrorCodeOnboardingCompleted     = "ONBOARDING_COMPLETED"
-	ErrorCodeNoPendingActivation     = "NO_PENDING_ACTIVATION"
-	ErrorCodeProvisioningConflict    = "PROVISIONING_CONFLICT"
-	ErrorCodeSSOInvalid              = "SSO_INVALID"
-	ErrorCodeSSOExpired              = "SSO_EXPIRED"
-	ErrorCodeSSOConsumed             = "SSO_CONSUMED"
-	ErrorCodePendingBootstrapLocked  = "PENDING_BOOTSTRAP_USER_LOCKED"
+	ErrorCodeAmoAccountInvalid         = "AMO_ACCOUNT_INVALID"
+	ErrorCodeAmoAccountAlreadyExists   = "AMO_ACCOUNT_ALREADY_EXISTS"
+	ErrorCodeRegistrationTokenInvalid  = "REGISTRATION_TOKEN_INVALID"
+	ErrorCodeRegistrationTokenExpired  = "REGISTRATION_TOKEN_EXPIRED"
+	ErrorCodeRegistrationTokenConsumed = "REGISTRATION_TOKEN_CONSUMED"
+	ErrorCodeRegistrationTokenRevoked  = "REGISTRATION_TOKEN_REVOKED"
 )
 
 // Error carries a stable user-facing Russian message independently of the
@@ -64,36 +58,20 @@ func coded(kind ErrorKind, code, message string) error {
 	return &Error{Kind: kind, Code: code, Message: message}
 }
 
-func bootstrapInvalid() error {
-	return coded(ErrorNotFound, ErrorCodeBootstrapInvalid, "Ссылка активации недействительна")
+func registrationTokenInvalid() error {
+	return coded(ErrorNotFound, ErrorCodeRegistrationTokenInvalid, "Токен регистрации недействителен")
 }
 
-func bootstrapExpired() error {
-	return coded(ErrorValidation, ErrorCodeBootstrapExpired, "Срок действия ссылки активации истёк")
+func registrationTokenExpired() error {
+	return coded(ErrorValidation, ErrorCodeRegistrationTokenExpired, "Срок действия токена регистрации истёк")
 }
 
-func bootstrapConsumed() error {
-	return coded(ErrorConflict, ErrorCodeBootstrapConsumed, "Ссылка активации уже использована")
+func registrationTokenConsumed() error {
+	return coded(ErrorConflict, ErrorCodeRegistrationTokenConsumed, "Токен регистрации уже использован")
 }
 
-func ssoInvalid() error {
-	return coded(ErrorUnauthenticated, ErrorCodeSSOInvalid, "Ссылка входа недействительна")
-}
-
-func ssoExpired() error {
-	return coded(ErrorUnauthenticated, ErrorCodeSSOExpired, "Срок действия ссылки входа истёк")
-}
-
-func ssoConsumed() error {
-	return coded(ErrorUnauthenticated, ErrorCodeSSOConsumed, "Ссылка входа уже использована")
-}
-
-func integrationFrozen() error {
-	return coded(ErrorForbidden, ErrorCodeIntegrationFrozen, "Интеграция временно недоступна")
-}
-
-func externalUserDeactivated() error {
-	return coded(ErrorForbidden, ErrorCodeExternalUserDeactivated, "Учётная запись внешнего пользователя деактивирована")
+func registrationTokenRevoked() error {
+	return coded(ErrorConflict, ErrorCodeRegistrationTokenRevoked, "Токен регистрации отозван")
 }
 
 func invalidSession() error {

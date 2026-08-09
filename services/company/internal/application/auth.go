@@ -38,16 +38,72 @@ func (s *Service) Register(ctx context.Context, input RegisterInput, meta Sessio
 		return AuthResult{}, validation(err.Error())
 	}
 
-	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.Serializable})
+	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.ReadCommitted})
 	if err != nil {
 		return AuthResult{}, internal("Не удалось начать регистрацию", err)
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
 	queries := db.New(tx)
 	companyID, userID := uuid.New(), uuid.New()
-	_, err = queries.CreateCompany(ctx, db.CreateCompanyParams{ID: companyID, Name: companyName})
-	if err != nil {
-		return AuthResult{}, internal("Не удалось создать компанию", err)
+	registrationToken := strings.TrimSpace(input.RegistrationToken)
+	var registration *db.CompanyRegistrationToken
+	if registrationToken != "" {
+		if len(registrationToken) > 512 {
+			return AuthResult{}, registrationTokenInvalid()
+		}
+		tokenHash := domainauth.HashOpaqueToken(registrationToken)
+		candidate, lookupErr := queries.GetCompanyRegistrationTokenByHash(ctx, tokenHash)
+		if isNoRows(lookupErr) {
+			return AuthResult{}, registrationTokenInvalid()
+		}
+		if lookupErr != nil {
+			return AuthResult{}, internal("Не удалось проверить токен регистрации", lookupErr)
+		}
+		if stateErr := companyRegistrationTokenError(candidate, s.now().UTC()); stateErr != nil {
+			return AuthResult{}, stateErr
+		}
+		if lookupErr = queries.LockAmoAccount(ctx, db.LockAmoAccountParams{
+			Provider: candidate.Provider, ExternalAccountID: candidate.ExternalAccountID,
+		}); lookupErr != nil {
+			return AuthResult{}, internal("Не удалось заблокировать аккаунт amoCRM", lookupErr)
+		}
+		row, lookupErr := queries.GetCompanyRegistrationTokenByHashForUpdate(ctx, tokenHash)
+		if isNoRows(lookupErr) {
+			return AuthResult{}, registrationTokenInvalid()
+		}
+		if lookupErr != nil {
+			return AuthResult{}, internal("Не удалось заблокировать токен регистрации", lookupErr)
+		}
+		if stateErr := companyRegistrationTokenError(row, s.now().UTC()); stateErr != nil {
+			return AuthResult{}, stateErr
+		}
+		companyID = row.CompanyID
+		registration = &row
+		if _, err = queries.CreateCompanyFromRegistrationToken(ctx, db.CreateCompanyFromRegistrationTokenParams{
+			ID: companyID, Name: companyName,
+			AmoAccountID: pgtype.Text{String: row.ExternalAccountID, Valid: true},
+			CompletedAt:  pgTimestamp(s.now().UTC()),
+		}); err != nil {
+			if isUniqueViolation(err) {
+				return AuthResult{}, coded(ErrorConflict, ErrorCodeAmoAccountAlreadyExists, "Этот аккаунт amoCRM уже используется")
+			}
+			return AuthResult{}, internal("Не удалось создать компанию", err)
+		}
+		if _, err = queries.CreateCompanyIntegration(ctx, db.CreateCompanyIntegrationParams{
+			ID: uuid.New(), CompanyID: companyID, Provider: row.Provider,
+			ExternalAccountID: row.ExternalAccountID, Entitlements: []string{},
+			LastVerifiedAt: pgTimestamp(s.now().UTC()), Metadata: []byte(`{}`),
+		}); err != nil {
+			if isUniqueViolation(err) {
+				return AuthResult{}, coded(ErrorConflict, ErrorCodeAmoAccountAlreadyExists, "Этот аккаунт amoCRM уже используется")
+			}
+			return AuthResult{}, internal("Не удалось связать компанию с amoCRM", err)
+		}
+	} else {
+		_, err = queries.CreateCompany(ctx, db.CreateCompanyParams{ID: companyID, Name: companyName})
+		if err != nil {
+			return AuthResult{}, internal("Не удалось создать компанию", err)
+		}
 	}
 	user, err := queries.CreateUser(ctx, db.CreateUserParams{
 		ID: userID, CompanyID: companyID, Email: email, FirstName: firstName, LastName: pgText(&lastName),
@@ -78,6 +134,13 @@ func (s *Service) Register(ctx context.Context, input RegisterInput, meta Sessio
 		"user": userEventSnapshot(userFromDB(user, nil), nil),
 	}); err != nil {
 		return AuthResult{}, err
+	}
+	if registration != nil {
+		if _, err = queries.ConsumeCompanyRegistrationToken(ctx, db.ConsumeCompanyRegistrationTokenParams{
+			ConsumedAt: pgTimestamp(s.now().UTC()), ID: registration.ID,
+		}); err != nil {
+			return AuthResult{}, registrationTokenConsumed()
+		}
 	}
 	result, err := s.createSession(ctx, queries, user, meta, uuid.NullUUID{})
 	if err != nil {

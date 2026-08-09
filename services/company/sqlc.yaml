@@ -9,6 +9,7 @@ sql:
       - migrations/000007_user_profiles_access_audit.up.sql
       - migrations/000008_employee_sections_lifecycle.up.sql
       - migrations/000009_provisioning.up.sql
+      - migrations/000010_company_registration_tokens.up.sql
     queries: internal/storage/queries
     gen:
       go:
