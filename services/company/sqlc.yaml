@@ -11,6 +11,7 @@ sql:
       - migrations/000009_provisioning.up.sql
       - migrations/000010_company_registration_tokens.up.sql
       - migrations/000011_legacy_amo_integrations.up.sql
+      - migrations/000012_user_schedule_visibility.up.sql
     queries: internal/storage/queries
     gen:
       go:

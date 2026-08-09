@@ -5182,6 +5182,7 @@ components:
         - role
         - status
         - positionIds
+        - showInSchedule
         - createdAt
       properties:
         id:
@@ -5225,6 +5226,9 @@ components:
           type: integer
           minimum: 0
           maximum: 366
+        showInSchedule:
+          type: boolean
+          description: Показывать пользователя в рабочем графике. Для владельца всегда false.
         createdAt:
           $ref: '#/components/schemas/ISODateTime'
 
@@ -5860,6 +5864,8 @@ components:
           type: integer
           minimum: 0
           maximum: 366
+        showInSchedule:
+          type: boolean
         role:
           $ref: '#/components/schemas/UserRole'
         status:

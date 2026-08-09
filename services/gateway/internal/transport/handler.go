@@ -659,6 +659,9 @@ func updateUserRequest(id api.Id, input api.UpdateUserInput) (*companyv1.UpdateU
 		Id: id.String(), FirstName: input.FirstName, LastName: input.LastName, Phone: phone,
 		BirthDate: birthDate, HiredAt: hiredAt, VacationAllowance: vacation,
 	}
+	if input.ShowInSchedule != nil {
+		request.ShowInSchedule = input.ShowInSchedule
+	}
 	if input.Role != nil {
 		value := roleToProto(*input.Role)
 		request.Role = &value

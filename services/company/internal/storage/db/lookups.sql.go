@@ -92,7 +92,7 @@ func (q *Queries) GetReportUserProfiles(ctx context.Context, arg GetReportUserPr
 }
 
 const getUsersByIDs = `-- name: GetUsersByIDs :many
-SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name, u.avatar_source, u.external_deleted_at,
+SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name, u.avatar_source, u.external_deleted_at, u.show_in_schedule,
        COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids,
        CASE
            WHEN EXISTS (SELECT 1 FROM access_links access WHERE access.company_id = u.company_id AND access.user_id = u.id) THEN 'link'
@@ -136,6 +136,7 @@ type GetUsersByIDsRow struct {
 	ExternalGroupName pgtype.Text        `json:"external_group_name"`
 	AvatarSource      pgtype.Text        `json:"avatar_source"`
 	ExternalDeletedAt pgtype.Timestamptz `json:"external_deleted_at"`
+	ShowInSchedule    bool               `json:"show_in_schedule"`
 	PositionIds       []uuid.UUID        `json:"position_ids"`
 	AccessMode        string             `json:"access_mode"`
 }
@@ -170,6 +171,7 @@ func (q *Queries) GetUsersByIDs(ctx context.Context, arg GetUsersByIDsParams) ([
 			&i.ExternalGroupName,
 			&i.AvatarSource,
 			&i.ExternalDeletedAt,
+			&i.ShowInSchedule,
 			&i.PositionIds,
 			&i.AccessMode,
 		); err != nil {

@@ -24,9 +24,9 @@ RETURNING *;
 -- name: CreateUser :one
 INSERT INTO users (
     id, company_id, email, first_name, last_name, phone, avatar_url,
-    role, status, birth_date, hired_at, vacation_allowance
+    role, status, birth_date, hired_at, vacation_allowance, show_in_schedule
 )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $8 <> 'owner')
 RETURNING *;
 
 -- name: GetUser :one

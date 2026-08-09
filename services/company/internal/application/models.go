@@ -39,6 +39,7 @@ type User struct {
 	BirthDate         *string
 	HiredAt           *string
 	VacationAllowance *int16
+	ShowInSchedule    bool
 	CreatedAt         time.Time
 	Source            string
 	AccessMode        string
@@ -241,6 +242,8 @@ type UpdateUserInput struct {
 	HiredAt              *string
 	SetVacationAllowance bool
 	VacationAllowance    *int16
+	SetShowInSchedule    bool
+	ShowInSchedule       bool
 	Role                 *string
 	Status               *string
 	SetPositionIDs       bool

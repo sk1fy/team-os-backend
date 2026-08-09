@@ -177,6 +177,7 @@ message User {
   UserSource source = 14;
   UserAccessMode access_mode = 15;
   repeated EmployeeSection section_access = 16;
+  bool show_in_schedule = 17;
 }
 
 message Department {
@@ -619,6 +620,7 @@ message UpdateUserRequest {
   bool update_position_ids = 11;
   repeated EmployeeSection section_access = 12;
   bool update_section_access = 13;
+  optional bool show_in_schedule = 14;
 }
 
 message UpdateUserResponse {

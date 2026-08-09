@@ -406,6 +406,8 @@ func updateUserInputFromProto(request *companyv1.UpdateUserRequest) (application
 		HiredAt:              hiredAt,
 		SetVacationAllowance: request.VacationAllowance != nil,
 		VacationAllowance:    vacationAllowance,
+		SetShowInSchedule:    request.ShowInSchedule != nil,
+		ShowInSchedule:       request.GetShowInSchedule(),
 		Role:                 role,
 		Status:               userStatus,
 		SetPositionIDs:       request.UpdatePositionIds,

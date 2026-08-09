@@ -24,6 +24,19 @@ func TestUpdateUserRequestMapsEmployeeSections(t *testing.T) {
 	}
 }
 
+func TestUpdateUserRequestPreservesFalseScheduleVisibility(t *testing.T) {
+	showInSchedule := false
+	request, err := updateUserRequest(uuid.New(), api.UpdateUserInput{
+		ShowInSchedule: &showInSchedule,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if request.ShowInSchedule == nil || request.GetShowInSchedule() {
+		t.Fatalf("request = %#v", request)
+	}
+}
+
 func TestEmployeeSectionsMapFromCompanyUser(t *testing.T) {
 	value := &companyv1.User{
 		Id: uuid.NewString(), Email: "employee@example.com", FirstName: "Иван",

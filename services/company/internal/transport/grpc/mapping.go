@@ -41,6 +41,7 @@ func userToProto(value application.User) *companyv1.User {
 		BirthDate:         cloneString(value.BirthDate),
 		HiredAt:           cloneString(value.HiredAt),
 		VacationAllowance: vacationAllowance,
+		ShowInSchedule:    value.Role != "owner" && value.ShowInSchedule,
 		CreatedAt:         timestamppb.New(value.CreatedAt.UTC()),
 		Source:            userSourceToProto(value.Source),
 		AccessMode:        userAccessModeToProto(value.AccessMode),

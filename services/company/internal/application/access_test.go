@@ -18,7 +18,7 @@ var accessUserColumns = []string{
 	"id", "company_id", "email", "first_name", "last_name", "phone", "avatar_url",
 	"role", "status", "birth_date", "hired_at", "vacation_allowance", "created_at",
 	"updated_at", "source", "external_id", "external_group_id", "external_group_name",
-	"avatar_source", "external_deleted_at",
+	"avatar_source", "external_deleted_at", "show_in_schedule",
 }
 
 func TestEmployeeAccessManagementPolicy(t *testing.T) {
@@ -208,7 +208,7 @@ func expectAccessTarget(mock pgxmock.PgxPoolIface, companyID, userID uuid.UUID, 
 		WillReturnRows(pgxmock.NewRows(accessUserColumns).AddRow(
 			userID, companyID, "employee@example.com", "Иван", "Иванов", nil, nil,
 			"employee", "active", nil, nil, nil, now, now, "local", nil, nil, nil, nil,
-			nil,
+			nil, true,
 		))
 }
 

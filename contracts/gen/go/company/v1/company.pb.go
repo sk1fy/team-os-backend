@@ -833,6 +833,7 @@ type User struct {
 	Source            UserSource             `protobuf:"varint,14,opt,name=source,proto3,enum=teamos.company.v1.UserSource" json:"source,omitempty"`
 	AccessMode        UserAccessMode         `protobuf:"varint,15,opt,name=access_mode,json=accessMode,proto3,enum=teamos.company.v1.UserAccessMode" json:"access_mode,omitempty"`
 	SectionAccess     []EmployeeSection      `protobuf:"varint,16,rep,packed,name=section_access,json=sectionAccess,proto3,enum=teamos.company.v1.EmployeeSection" json:"section_access,omitempty"`
+	ShowInSchedule    bool                   `protobuf:"varint,17,opt,name=show_in_schedule,json=showInSchedule,proto3" json:"show_in_schedule,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
@@ -977,6 +978,13 @@ func (x *User) GetSectionAccess() []EmployeeSection {
 		return x.SectionAccess
 	}
 	return nil
+}
+
+func (x *User) GetShowInSchedule() bool {
+	if x != nil {
+		return x.ShowInSchedule
+	}
+	return false
 }
 
 type Department struct {
@@ -5253,6 +5261,7 @@ type UpdateUserRequest struct {
 	UpdatePositionIds   bool              `protobuf:"varint,11,opt,name=update_position_ids,json=updatePositionIds,proto3" json:"update_position_ids,omitempty"`
 	SectionAccess       []EmployeeSection `protobuf:"varint,12,rep,packed,name=section_access,json=sectionAccess,proto3,enum=teamos.company.v1.EmployeeSection" json:"section_access,omitempty"`
 	UpdateSectionAccess bool              `protobuf:"varint,13,opt,name=update_section_access,json=updateSectionAccess,proto3" json:"update_section_access,omitempty"`
+	ShowInSchedule      *bool             `protobuf:"varint,14,opt,name=show_in_schedule,json=showInSchedule,proto3,oneof" json:"show_in_schedule,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
 }
@@ -5374,6 +5383,13 @@ func (x *UpdateUserRequest) GetSectionAccess() []EmployeeSection {
 func (x *UpdateUserRequest) GetUpdateSectionAccess() bool {
 	if x != nil {
 		return x.UpdateSectionAccess
+	}
+	return false
+}
+
+func (x *UpdateUserRequest) GetShowInSchedule() bool {
+	if x != nil && x.ShowInSchedule != nil {
+		return *x.ShowInSchedule
 	}
 	return false
 }
@@ -8685,7 +8701,7 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\x0eamo_account_id\x18\x06 \x01(\tH\x01R\famoAccountId\x88\x01\x01\x128\n" +
 	"\x06status\x18\a \x01(\x0e2 .teamos.company.v1.CompanyStatusR\x06statusB\v\n" +
 	"\t_logo_urlB\x11\n" +
-	"\x0f_amo_account_id\"\xf7\x05\n" +
+	"\x0f_amo_account_id\"\xa1\x06\n" +
 	"\x04User\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x12\x1d\n" +
@@ -8708,7 +8724,8 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\x06source\x18\x0e \x01(\x0e2\x1d.teamos.company.v1.UserSourceR\x06source\x12B\n" +
 	"\vaccess_mode\x18\x0f \x01(\x0e2!.teamos.company.v1.UserAccessModeR\n" +
 	"accessMode\x12I\n" +
-	"\x0esection_access\x18\x10 \x03(\x0e2\".teamos.company.v1.EmployeeSectionR\rsectionAccessB\r\n" +
+	"\x0esection_access\x18\x10 \x03(\x0e2\".teamos.company.v1.EmployeeSectionR\rsectionAccess\x12(\n" +
+	"\x10show_in_schedule\x18\x11 \x01(\bR\x0eshowInScheduleB\r\n" +
 	"\v_avatar_urlB\b\n" +
 	"\x06_phoneB\r\n" +
 	"\v_birth_dateB\v\n" +
@@ -9037,7 +9054,7 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\fposition_ids\x18\x06 \x03(\tR\vpositionIdsB\b\n" +
 	"\x06_phone\"A\n" +
 	"\x12CreateUserResponse\x12+\n" +
-	"\x04user\x18\x01 \x01(\v2\x17.teamos.company.v1.UserR\x04user\"\xae\x05\n" +
+	"\x04user\x18\x01 \x01(\v2\x17.teamos.company.v1.UserR\x04user\"\xf2\x05\n" +
 	"\x11UpdateUserRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\"\n" +
 	"\n" +
@@ -9054,7 +9071,8 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	" \x03(\tR\vpositionIds\x12.\n" +
 	"\x13update_position_ids\x18\v \x01(\bR\x11updatePositionIds\x12I\n" +
 	"\x0esection_access\x18\f \x03(\x0e2\".teamos.company.v1.EmployeeSectionR\rsectionAccess\x122\n" +
-	"\x15update_section_access\x18\r \x01(\bR\x13updateSectionAccessB\r\n" +
+	"\x15update_section_access\x18\r \x01(\bR\x13updateSectionAccess\x12-\n" +
+	"\x10show_in_schedule\x18\x0e \x01(\bH\bR\x0eshowInSchedule\x88\x01\x01B\r\n" +
 	"\v_first_nameB\f\n" +
 	"\n" +
 	"_last_nameB\b\n" +
@@ -9063,7 +9081,8 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\t_hired_atB\x15\n" +
 	"\x13_vacation_allowanceB\a\n" +
 	"\x05_roleB\t\n" +
-	"\a_status\"A\n" +
+	"\a_statusB\x13\n" +
+	"\x11_show_in_schedule\"A\n" +
 	"\x12UpdateUserResponse\x12+\n" +
 	"\x04user\x18\x01 \x01(\v2\x17.teamos.company.v1.UserR\x04user\"#\n" +
 	"\x11DeleteUserRequest\x12\x0e\n" +

@@ -175,6 +175,11 @@ SET first_name = COALESCE(sqlc.narg('first_name'), first_name),
     birth_date = CASE WHEN sqlc.arg('set_birth_date')::boolean THEN sqlc.narg('birth_date') ELSE birth_date END,
     hired_at = CASE WHEN sqlc.arg('set_hired_at')::boolean THEN sqlc.narg('hired_at') ELSE hired_at END,
     vacation_allowance = CASE WHEN sqlc.arg('set_vacation')::boolean THEN sqlc.narg('vacation_allowance') ELSE vacation_allowance END,
+    show_in_schedule = CASE
+        WHEN COALESCE(sqlc.narg('role'), role) = 'owner' THEN false
+        WHEN sqlc.arg('set_show_in_schedule')::boolean THEN sqlc.arg('show_in_schedule')::boolean
+        ELSE show_in_schedule
+    END,
     role = COALESCE(sqlc.narg('role'), role),
     status = COALESCE(sqlc.narg('status'), status),
     updated_at = now()

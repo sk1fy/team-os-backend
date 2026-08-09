@@ -178,12 +178,12 @@ func TestAmoImportDoesNotChangeExistingUserStatusOrProfile(t *testing.T) {
 		"id", "company_id", "email", "first_name", "last_name", "phone", "avatar_url",
 		"role", "status", "birth_date", "hired_at", "vacation_allowance", "created_at", "updated_at",
 		"source", "external_id", "external_group_id", "external_group_name", "avatar_source",
-		"external_deleted_at",
+		"external_deleted_at", "show_in_schedule",
 	}
 	userRow := []any{
 		userID, companyID, email, "Старое", "Имя", nil, nil,
 		"employee", "deactivated", nil, nil, nil, now, now,
-		"amo", "42", nil, nil, nil, nil,
+		"amo", "42", nil, nil, nil, nil, true,
 	}
 	mock.ExpectQuery("SELECT id, company_id, email.+source = 'amo'").
 		WithArgs(companyID).

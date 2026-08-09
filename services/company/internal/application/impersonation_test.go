@@ -106,7 +106,7 @@ func TestImpersonateUserCreatesSessionWithoutChangingLoginMode(t *testing.T) {
 		WillReturnRows(pgxmock.NewRows(accessUserColumns).AddRow(
 			targetID, companyID, "partner@example.com", "QA", "Partner", nil, nil,
 			"partner", "active", nil, nil, nil, now, now, "local", nil, nil, nil, nil,
-			nil,
+			nil, true,
 		))
 	mock.ExpectQuery("SELECT position_id").
 		WithArgs(companyID, targetID).

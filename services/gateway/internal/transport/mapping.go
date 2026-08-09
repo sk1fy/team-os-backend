@@ -39,7 +39,7 @@ func userFromProto(value *companyv1.User) (api.User, error) {
 	result := api.User{
 		Id: id, Email: openapi_types.Email(value.GetEmail()), FirstName: value.GetFirstName(),
 		LastName: value.GetLastName(), AvatarUrl: value.AvatarUrl, Phone: value.Phone,
-		Role: role, Status: status, PositionIds: positionIDs, CreatedAt: createdAt,
+		Role: role, Status: status, PositionIds: positionIDs, ShowInSchedule: value.GetShowInSchedule(), CreatedAt: createdAt,
 	}
 	if value.GetRole() == companyv1.UserRole_USER_ROLE_EMPLOYEE {
 		sections := make([]api.EmployeeSection, 0, len(value.GetSectionAccess()))

@@ -37,7 +37,7 @@ WHERE company_id = $1
   AND id = $2
   AND source = 'amo'
   AND external_deleted_at IS NOT NULL
-RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source, external_deleted_at
+RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source, external_deleted_at, show_in_schedule
 `
 
 type ClearAmoUserTombstoneParams struct {
@@ -69,6 +69,7 @@ func (q *Queries) ClearAmoUserTombstone(ctx context.Context, arg ClearAmoUserTom
 		&i.ExternalGroupName,
 		&i.AvatarSource,
 		&i.ExternalDeletedAt,
+		&i.ShowInSchedule,
 	)
 	return i, err
 }
@@ -112,7 +113,7 @@ INSERT INTO users (
 )
 VALUES ($1, $2, $3, $4, $5, $6, $10,
     'employee', 'active', 'amo', $7, $8, $9)
-RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source, external_deleted_at
+RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source, external_deleted_at, show_in_schedule
 `
 
 type CreateAmoUserParams struct {
@@ -163,6 +164,7 @@ func (q *Queries) CreateAmoUser(ctx context.Context, arg CreateAmoUserParams) (U
 		&i.ExternalGroupName,
 		&i.AvatarSource,
 		&i.ExternalDeletedAt,
+		&i.ShowInSchedule,
 	)
 	return i, err
 }
@@ -422,7 +424,7 @@ func (q *Queries) DeleteUserPositions(ctx context.Context, arg DeleteUserPositio
 }
 
 const findUserForAmoSync = `-- name: FindUserForAmoSync :one
-SELECT id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source, external_deleted_at
+SELECT id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source, external_deleted_at, show_in_schedule
 FROM users
 WHERE company_id = $1
   AND (external_id = $2 OR email = $3)
@@ -460,6 +462,7 @@ func (q *Queries) FindUserForAmoSync(ctx context.Context, arg FindUserForAmoSync
 		&i.ExternalGroupName,
 		&i.AvatarSource,
 		&i.ExternalDeletedAt,
+		&i.ShowInSchedule,
 	)
 	return i, err
 }
@@ -581,7 +584,7 @@ func (q *Queries) GetPositionUserIDs(ctx context.Context, arg GetPositionUserIDs
 }
 
 const getUserWithPositions = `-- name: GetUserWithPositions :one
-SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name, u.avatar_source, u.external_deleted_at,
+SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name, u.avatar_source, u.external_deleted_at, u.show_in_schedule,
        COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids,
        ARRAY(
            SELECT access.section
@@ -626,6 +629,7 @@ type GetUserWithPositionsRow struct {
 	ExternalGroupName pgtype.Text        `json:"external_group_name"`
 	AvatarSource      pgtype.Text        `json:"avatar_source"`
 	ExternalDeletedAt pgtype.Timestamptz `json:"external_deleted_at"`
+	ShowInSchedule    bool               `json:"show_in_schedule"`
 	PositionIds       []uuid.UUID        `json:"position_ids"`
 	SectionAccess     []string           `json:"section_access"`
 	AccessMode        string             `json:"access_mode"`
@@ -655,6 +659,7 @@ func (q *Queries) GetUserWithPositions(ctx context.Context, arg GetUserWithPosit
 		&i.ExternalGroupName,
 		&i.AvatarSource,
 		&i.ExternalDeletedAt,
+		&i.ShowInSchedule,
 		&i.PositionIds,
 		&i.SectionAccess,
 		&i.AccessMode,
@@ -686,7 +691,7 @@ func (q *Queries) GrantEmployeeSectionAccess(ctx context.Context, arg GrantEmplo
 }
 
 const listAmoUsersForReconciliation = `-- name: ListAmoUsersForReconciliation :many
-SELECT id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source, external_deleted_at
+SELECT id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source, external_deleted_at, show_in_schedule
 FROM users
 WHERE company_id = $1
   AND source = 'amo'
@@ -724,6 +729,7 @@ func (q *Queries) ListAmoUsersForReconciliation(ctx context.Context, companyID u
 			&i.ExternalGroupName,
 			&i.AvatarSource,
 			&i.ExternalDeletedAt,
+			&i.ShowInSchedule,
 		); err != nil {
 			return nil, err
 		}
@@ -876,7 +882,7 @@ func (q *Queries) ListPositions(ctx context.Context, companyID uuid.UUID) ([]Pos
 }
 
 const listUsers = `-- name: ListUsers :many
-SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name, u.avatar_source, u.external_deleted_at,
+SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name, u.avatar_source, u.external_deleted_at, u.show_in_schedule,
        COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids,
        ARRAY(
            SELECT access.section
@@ -917,6 +923,7 @@ type ListUsersRow struct {
 	ExternalGroupName pgtype.Text        `json:"external_group_name"`
 	AvatarSource      pgtype.Text        `json:"avatar_source"`
 	ExternalDeletedAt pgtype.Timestamptz `json:"external_deleted_at"`
+	ShowInSchedule    bool               `json:"show_in_schedule"`
 	PositionIds       []uuid.UUID        `json:"position_ids"`
 	SectionAccess     []string           `json:"section_access"`
 	AccessMode        string             `json:"access_mode"`
@@ -952,6 +959,7 @@ func (q *Queries) ListUsers(ctx context.Context, companyID uuid.UUID) ([]ListUse
 			&i.ExternalGroupName,
 			&i.AvatarSource,
 			&i.ExternalDeletedAt,
+			&i.ShowInSchedule,
 			&i.PositionIds,
 			&i.SectionAccess,
 			&i.AccessMode,
@@ -983,7 +991,7 @@ WHERE company_id = $2
   AND id = $3
   AND source = 'amo'
   AND external_deleted_at IS NULL
-RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source, external_deleted_at
+RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source, external_deleted_at, show_in_schedule
 `
 
 type MarkAmoUserExternallyDeletedParams struct {
@@ -1016,6 +1024,7 @@ func (q *Queries) MarkAmoUserExternallyDeleted(ctx context.Context, arg MarkAmoU
 		&i.ExternalGroupName,
 		&i.AvatarSource,
 		&i.ExternalDeletedAt,
+		&i.ShowInSchedule,
 	)
 	return i, err
 }
@@ -1246,11 +1255,16 @@ SET first_name = COALESCE($1, first_name),
     birth_date = CASE WHEN $5::boolean THEN $6 ELSE birth_date END,
     hired_at = CASE WHEN $7::boolean THEN $8 ELSE hired_at END,
     vacation_allowance = CASE WHEN $9::boolean THEN $10 ELSE vacation_allowance END,
+    show_in_schedule = CASE
+        WHEN COALESCE($11, role) = 'owner' THEN false
+        WHEN $12::boolean THEN $13::boolean
+        ELSE show_in_schedule
+    END,
     role = COALESCE($11, role),
-    status = COALESCE($12, status),
+    status = COALESCE($14, status),
     updated_at = now()
-WHERE company_id = $13 AND id = $14
-RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source, external_deleted_at
+WHERE company_id = $15 AND id = $16
+RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source, external_deleted_at, show_in_schedule
 `
 
 type UpdateUserParams struct {
@@ -1265,6 +1279,8 @@ type UpdateUserParams struct {
 	SetVacation       bool        `json:"set_vacation"`
 	VacationAllowance pgtype.Int2 `json:"vacation_allowance"`
 	Role              pgtype.Text `json:"role"`
+	SetShowInSchedule bool        `json:"set_show_in_schedule"`
+	ShowInSchedule    bool        `json:"show_in_schedule"`
 	Status            pgtype.Text `json:"status"`
 	CompanyID         uuid.UUID   `json:"company_id"`
 	ID                uuid.UUID   `json:"id"`
@@ -1283,6 +1299,8 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		arg.SetVacation,
 		arg.VacationAllowance,
 		arg.Role,
+		arg.SetShowInSchedule,
+		arg.ShowInSchedule,
 		arg.Status,
 		arg.CompanyID,
 		arg.ID,
@@ -1309,6 +1327,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.ExternalGroupName,
 		&i.AvatarSource,
 		&i.ExternalDeletedAt,
+		&i.ShowInSchedule,
 	)
 	return i, err
 }

@@ -258,6 +258,7 @@ type User struct {
 	ExternalGroupName pgtype.Text        `json:"external_group_name"`
 	AvatarSource      pgtype.Text        `json:"avatar_source"`
 	ExternalDeletedAt pgtype.Timestamptz `json:"external_deleted_at"`
+	ShowInSchedule    bool               `json:"show_in_schedule"`
 }
 
 type UserAdminAudit struct {

@@ -704,6 +704,7 @@ func (s *Service) updateUser(ctx context.Context, actor Actor, input UpdateUserI
 		SetBirthDate: input.SetBirthDate, BirthDate: birthDate,
 		SetHiredAt: input.SetHiredAt, HiredAt: hiredAt,
 		SetVacation: input.SetVacationAllowance, VacationAllowance: optionalInt2(input.VacationAllowance),
+		SetShowInSchedule: input.SetShowInSchedule, ShowInSchedule: input.ShowInSchedule,
 		Role: pgText(input.Role), Status: pgText(input.Status),
 		CompanyID: actor.CompanyID, ID: input.ID,
 	})
@@ -1007,11 +1008,11 @@ func positionFromDB(row db.Position) Position {
 }
 
 func userFromJoinedRow(row db.GetUserWithPositionsRow) User {
-	return User{ID: row.ID, CompanyID: row.CompanyID, Email: row.Email, FirstName: row.FirstName, LastName: textValue(row.LastName), AvatarURL: textPointer(row.AvatarUrl), Phone: textPointer(row.Phone), Role: row.Role, Status: row.Status, PositionIDs: append([]uuid.UUID(nil), row.PositionIds...), BirthDate: datePointer(row.BirthDate), HiredAt: datePointer(row.HiredAt), VacationAllowance: int16Pointer(row.VacationAllowance), CreatedAt: row.CreatedAt, Source: row.Source, AccessMode: row.AccessMode, SectionAccess: append([]string(nil), row.SectionAccess...)}
+	return User{ID: row.ID, CompanyID: row.CompanyID, Email: row.Email, FirstName: row.FirstName, LastName: textValue(row.LastName), AvatarURL: textPointer(row.AvatarUrl), Phone: textPointer(row.Phone), Role: row.Role, Status: row.Status, PositionIDs: append([]uuid.UUID(nil), row.PositionIds...), BirthDate: datePointer(row.BirthDate), HiredAt: datePointer(row.HiredAt), VacationAllowance: int16Pointer(row.VacationAllowance), ShowInSchedule: row.Role != "owner" && row.ShowInSchedule, CreatedAt: row.CreatedAt, Source: row.Source, AccessMode: row.AccessMode, SectionAccess: append([]string(nil), row.SectionAccess...)}
 }
 
 func userFromListRow(row db.ListUsersRow) User {
-	return User{ID: row.ID, CompanyID: row.CompanyID, Email: row.Email, FirstName: row.FirstName, LastName: textValue(row.LastName), AvatarURL: textPointer(row.AvatarUrl), Phone: textPointer(row.Phone), Role: row.Role, Status: row.Status, PositionIDs: append([]uuid.UUID(nil), row.PositionIds...), BirthDate: datePointer(row.BirthDate), HiredAt: datePointer(row.HiredAt), VacationAllowance: int16Pointer(row.VacationAllowance), CreatedAt: row.CreatedAt, Source: row.Source, AccessMode: row.AccessMode, SectionAccess: append([]string(nil), row.SectionAccess...)}
+	return User{ID: row.ID, CompanyID: row.CompanyID, Email: row.Email, FirstName: row.FirstName, LastName: textValue(row.LastName), AvatarURL: textPointer(row.AvatarUrl), Phone: textPointer(row.Phone), Role: row.Role, Status: row.Status, PositionIDs: append([]uuid.UUID(nil), row.PositionIds...), BirthDate: datePointer(row.BirthDate), HiredAt: datePointer(row.HiredAt), VacationAllowance: int16Pointer(row.VacationAllowance), ShowInSchedule: row.Role != "owner" && row.ShowInSchedule, CreatedAt: row.CreatedAt, Source: row.Source, AccessMode: row.AccessMode, SectionAccess: append([]string(nil), row.SectionAccess...)}
 }
 
 func trimmedOptional(value *string) *string {
@@ -1124,6 +1125,9 @@ func changedUserFields(input UpdateUserInput) []string {
 	}
 	if input.SetVacationAllowance {
 		fields = append(fields, "vacationAllowance")
+	}
+	if input.SetShowInSchedule {
+		fields = append(fields, "showInSchedule")
 	}
 	if input.Role != nil {
 		fields = append(fields, "role")
