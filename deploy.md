@@ -198,12 +198,21 @@ GATEWAY_JWT_ISSUER=teamos-company
 GATEWAY_JWT_AUDIENCE=teamos-api
 GATEWAY_CORS_ORIGINS=https://app.example.ru
 GATEWAY_COOKIE_SECURE=true
+GATEWAY_PROVISIONING_ALLOW_UNAUTHENTICATED=false
 
 FILES_S3_PUBLIC_ENDPOINT=storage.example.ru
 FILES_S3_PUBLIC_SECURE=true
 FILES_S3_BUCKET=teamos-files
 FILES_S3_REGION=us-east-1
 ```
+
+По умолчанию provisioning-запросы требуют
+`GATEWAY_PROVISIONING_SERVICE_TOKEN` длиной не менее 32 символов. Для временного запуска интеграции
+без внешнего credential можно явно установить
+`GATEWAY_PROVISIONING_ALLOW_UNAUTHENTICATED=true` и оставить
+`GATEWAY_PROVISIONING_SERVICE_TOKEN` пустым. В этом режиме публично доступный gateway принимает
+выпуск регистрационных токенов без `Authorization`; использовать режим только как кратковременное
+исключение и вернуть значение `false` после настройки общего секрета.
 
 `deploy/docker-compose.prod.yaml` принудительно выставляет `GATEWAY_COOKIE_SECURE=true`, поэтому
 dev-значение `false`, скопированное из `.env.example`, не может отключить secure-cookie в

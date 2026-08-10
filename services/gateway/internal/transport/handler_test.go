@@ -989,14 +989,15 @@ func TestGatewayRejectsMalformedJSONBeforeRPC(t *testing.T) {
 	}
 }
 
-func newTestGateway(t *testing.T, companyServer companyv1.CompanyServiceServer) http.Handler {
-	return newTestGatewayWithAcademy(t, companyServer, academyv1.UnimplementedAcademyServiceServer{})
+func newTestGateway(t *testing.T, companyServer companyv1.CompanyServiceServer, allowUnauthenticatedProvisioning ...bool) http.Handler {
+	return newTestGatewayWithAcademy(t, companyServer, academyv1.UnimplementedAcademyServiceServer{}, allowUnauthenticatedProvisioning...)
 }
 
 func newTestGatewayWithAcademy(
 	t *testing.T,
 	companyServer companyv1.CompanyServiceServer,
 	academyServer academyv1.AcademyServiceServer,
+	allowUnauthenticatedProvisioning ...bool,
 ) http.Handler {
 	t.Helper()
 
@@ -1037,6 +1038,9 @@ func newTestGatewayWithAcademy(
 		Secure: true, PublicAppURL: "https://app.example.test",
 	}, logger)
 	handler.SetProvisioningServiceToken(testProvisioningServiceToken)
+	if len(allowUnauthenticatedProvisioning) > 0 {
+		handler.SetProvisioningAllowUnauthenticated(allowUnauthenticatedProvisioning[0])
+	}
 	handler.SetProvisioningServiceProvider(testProvisioningProvider)
 	handler.SetCompanyServiceToken(testCompanyServiceToken)
 	return api.HandlerWithOptions(handler, api.ChiServerOptions{ErrorHandlerFunc: func(w http.ResponseWriter, _ *http.Request, _ error) {

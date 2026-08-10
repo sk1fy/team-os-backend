@@ -36,17 +36,18 @@ type CookieConfig struct {
 
 type Handler struct {
 	api.Unimplemented
-	company                     companyv1.CompanyServiceClient
-	kb                          kbv1.KbServiceClient
-	tasks                       tasksv1.TasksServiceClient
-	academy                     academyv1.AcademyServiceClient
-	notifications               notificationsv1.NotificationsServiceClient
-	files                       filesv1.FilesServiceClient
-	cookie                      CookieConfig
-	logger                      *slog.Logger
-	provisioningServiceToken    string
-	provisioningServiceProvider string
-	companyServiceToken         string
+	company                          companyv1.CompanyServiceClient
+	kb                               kbv1.KbServiceClient
+	tasks                            tasksv1.TasksServiceClient
+	academy                          academyv1.AcademyServiceClient
+	notifications                    notificationsv1.NotificationsServiceClient
+	files                            filesv1.FilesServiceClient
+	cookie                           CookieConfig
+	logger                           *slog.Logger
+	provisioningServiceToken         string
+	provisioningAllowUnauthenticated bool
+	provisioningServiceProvider      string
+	companyServiceToken              string
 }
 
 func (h *Handler) SetFilesClient(client filesv1.FilesServiceClient) { h.files = client }

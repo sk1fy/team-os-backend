@@ -51,6 +51,9 @@ func run(logger *slog.Logger) error {
 	if err != nil {
 		return err
 	}
+	if configuration.ProvisioningAllowUnauthenticated {
+		logger.Warn("служебная авторизация provisioning отключена")
+	}
 	shutdownTelemetry, err := httpx.SetupTelemetry("gateway")
 	if err != nil {
 		return fmt.Errorf("настроить телеметрию: %w", err)
@@ -156,6 +159,7 @@ func run(logger *slog.Logger) error {
 	)
 	handler.SetFilesClient(filesClient)
 	handler.SetProvisioningServiceToken(configuration.ProvisioningServiceToken)
+	handler.SetProvisioningAllowUnauthenticated(configuration.ProvisioningAllowUnauthenticated)
 	handler.SetProvisioningServiceProvider(configuration.ProvisioningServiceProvider)
 	handler.SetCompanyServiceToken(configuration.CompanyServiceToken)
 

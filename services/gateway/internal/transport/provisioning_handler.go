@@ -20,6 +20,10 @@ func (h *Handler) SetProvisioningServiceToken(token string) {
 	h.provisioningServiceToken = strings.TrimSpace(token)
 }
 
+func (h *Handler) SetProvisioningAllowUnauthenticated(allow bool) {
+	h.provisioningAllowUnauthenticated = allow
+}
+
 func (h *Handler) SetProvisioningServiceProvider(provider string) {
 	h.provisioningServiceProvider = strings.TrimSpace(provider)
 }
@@ -164,6 +168,9 @@ func writeRetiredRegistrationFlow(w http.ResponseWriter) {
 }
 
 func (h *Handler) requireProvisioningService(w http.ResponseWriter, r *http.Request) bool {
+	if h.provisioningAllowUnauthenticated {
+		return true
+	}
 	if r == nil {
 		apierror.Write(w, apierror.Unauthorized("Служебная авторизация недействительна").WithCode("SERVICE_AUTH_INVALID"))
 		return false

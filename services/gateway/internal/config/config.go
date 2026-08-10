@@ -13,24 +13,25 @@ import (
 )
 
 type Config struct {
-	HTTPAddr                    string
-	CompanyGRPCAddr             string
-	KbGRPCAddr                  string
-	TasksGRPCAddr               string
-	AcademyGRPCAddr             string
-	NotificationsGRPCAddr       string
-	FilesGRPCAddr               string
-	JWTPublicKey                string
-	JWTIssuer                   string
-	JWTAudience                 string
-	ProvisioningServiceToken    string
-	ProvisioningServiceProvider string
-	CompanyServiceToken         string
-	CORSOrigins                 []string
-	PublicAppURL                string
-	CookieSecure                bool
-	ShutdownTimeout             time.Duration
-	TrustedProxyCIDRs           []netip.Prefix
+	HTTPAddr                         string
+	CompanyGRPCAddr                  string
+	KbGRPCAddr                       string
+	TasksGRPCAddr                    string
+	AcademyGRPCAddr                  string
+	NotificationsGRPCAddr            string
+	FilesGRPCAddr                    string
+	JWTPublicKey                     string
+	JWTIssuer                        string
+	JWTAudience                      string
+	ProvisioningServiceToken         string
+	ProvisioningAllowUnauthenticated bool
+	ProvisioningServiceProvider      string
+	CompanyServiceToken              string
+	CORSOrigins                      []string
+	PublicAppURL                     string
+	CookieSecure                     bool
+	ShutdownTimeout                  time.Duration
+	TrustedProxyCIDRs                []netip.Prefix
 }
 
 func Load() (Config, error) {
@@ -58,6 +59,12 @@ func Load() (Config, error) {
 	}
 	config.PublicAppURL = strings.TrimRight(publicAppURL.String(), "/")
 	var err error
+	if value := strings.TrimSpace(os.Getenv("GATEWAY_PROVISIONING_ALLOW_UNAUTHENTICATED")); value != "" {
+		config.ProvisioningAllowUnauthenticated, err = strconv.ParseBool(value)
+		if err != nil {
+			return Config{}, fmt.Errorf("GATEWAY_PROVISIONING_ALLOW_UNAUTHENTICATED: %w", err)
+		}
+	}
 	if value := strings.TrimSpace(os.Getenv("GATEWAY_COOKIE_SECURE")); value != "" {
 		config.CookieSecure, err = strconv.ParseBool(value)
 		if err != nil {
@@ -99,7 +106,7 @@ func Load() (Config, error) {
 	if config.JWTPublicKey == "" {
 		missing = append(missing, "GATEWAY_JWT_PUBLIC_KEY")
 	}
-	if len(config.ProvisioningServiceToken) < 32 {
+	if !config.ProvisioningAllowUnauthenticated && len(config.ProvisioningServiceToken) < 32 {
 		missing = append(missing, "GATEWAY_PROVISIONING_SERVICE_TOKEN (минимум 32 байта)")
 	}
 	if !provisioningProviderPattern.MatchString(config.ProvisioningServiceProvider) {

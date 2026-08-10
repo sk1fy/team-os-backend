@@ -89,6 +89,25 @@ func TestIssueCompanyRegistrationTokenRequiresServiceAuth(t *testing.T) {
 	}
 }
 
+func TestIssueCompanyRegistrationTokenAllowsMissingServiceAuthWhenEnabled(t *testing.T) {
+	var calls atomic.Int32
+	server := &provisioningCompanyServer{issueCompanyRegistrationTokenFn: func(_ context.Context, request *companyv1.IssueCompanyRegistrationTokenRequest) (*companyv1.IssueCompanyRegistrationTokenResponse, error) {
+		calls.Add(1)
+		if request.Provider != testProvisioningProvider || request.ExternalAccountId != "31355990" {
+			t.Fatalf("request = %#v", request)
+		}
+		return &companyv1.IssueCompanyRegistrationTokenResponse{
+			Token:     "registration-token-abcdefghijklmnopqrstuvwxyz",
+			ExpiresAt: timestamppb.New(time.Date(2026, time.August, 10, 12, 0, 0, 0, time.UTC)),
+		}, nil
+	}}
+	handler := newTestGateway(t, server, true)
+	recorder := performProvisioningRequest(handler, http.MethodPost, "/api/v1/provisioning/amocrm/registration-tokens", `{"amoAccountId":"31355990"}`, "")
+	if recorder.Code != http.StatusCreated || calls.Load() != 1 || !strings.Contains(recorder.Body.String(), `"registrationToken"`) {
+		t.Fatalf("status=%d calls=%d body=%s", recorder.Code, calls.Load(), recorder.Body.String())
+	}
+}
+
 func TestValidateCompanyRegistrationTokenIsPublicAndNoStore(t *testing.T) {
 	expiresAt := time.Date(2026, time.August, 10, 12, 0, 0, 0, time.UTC)
 	server := &provisioningCompanyServer{validateCompanyRegistrationTokenFn: func(_ context.Context, request *companyv1.ValidateCompanyRegistrationTokenRequest) (*companyv1.ValidateCompanyRegistrationTokenResponse, error) {
