@@ -64,13 +64,14 @@ func (s *Service) IssueCompanyRegistrationToken(
 		Provider: provider, ExternalAccountID: externalAccountID,
 	})
 	if activeErr == nil {
+		reason := "expired"
 		if active.ExpiresAt.After(now) {
-			return CompanyRegistrationTokenResult{}, coded(ErrorConflict, ErrorCodeAmoAccountAlreadyExists, "Этот аккаунт amoCRM уже зарезервирован")
+			reason = "reissued"
 		}
 		if _, err = queries.RevokeCompanyRegistrationToken(ctx, db.RevokeCompanyRegistrationTokenParams{
-			RevokedAt: pgTimestamp(now), RevocationReason: pgtype.Text{String: "expired", Valid: true}, ID: active.ID,
+			RevokedAt: pgTimestamp(now), RevocationReason: pgtype.Text{String: reason, Valid: true}, ID: active.ID,
 		}); err != nil {
-			return CompanyRegistrationTokenResult{}, internal("Не удалось закрыть просроченную резервацию", err)
+			return CompanyRegistrationTokenResult{}, internal("Не удалось перевыпустить токен регистрации", err)
 		}
 	} else if !isNoRows(activeErr) {
 		return CompanyRegistrationTokenResult{}, internal("Не удалось проверить резервацию аккаунта amoCRM", activeErr)

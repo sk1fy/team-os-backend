@@ -49,7 +49,7 @@ func Load() (Config, error) {
 		ProvisioningServiceToken:    strings.TrimSpace(os.Getenv("GATEWAY_PROVISIONING_SERVICE_TOKEN")),
 		ProvisioningServiceProvider: strings.TrimSpace(os.Getenv("GATEWAY_PROVISIONING_SERVICE_PROVIDER")),
 		CompanyServiceToken:         strings.TrimSpace(os.Getenv("GATEWAY_COMPANY_SERVICE_TOKEN")),
-		CORSOrigins:                 splitList(envOr("GATEWAY_CORS_ORIGINS", "http://localhost:5173")),
+		CORSOrigins:                 splitList(envOr("GATEWAY_CORS_ORIGINS", "http://localhost:5173,https://*.amocrm.ru,https://*.amocrm.com")),
 		PublicAppURL:                envOr("GATEWAY_PUBLIC_APP_URL", "http://localhost:5173"),
 		ShutdownTimeout:             30 * time.Second,
 	}

@@ -26,6 +26,16 @@ type Config struct {
 	ExternalTimeout      time.Duration
 	AmoSyncInterval      time.Duration
 	RegistrationTokenTTL time.Duration
+	AmoWidgetSessionTTL  time.Duration
+	AmoCRMClientUUID     string
+	AmoCRMClientSecret   string
+	AmoCRMAudience       string
+	AmoCRMTokenMaxTTL    time.Duration
+	AmoCRMTokenClockSkew time.Duration
+	AmoCRMWidgetListURL  string
+	AmoCRMWidgetTimeout  time.Duration
+	AmoCRMWidgetCacheTTL time.Duration
+	AmoCRMWidgetListTZ   string
 }
 
 func Load() (Config, error) {
@@ -46,7 +56,17 @@ func Load() (Config, error) {
 		AmoImportEnabled:     false,
 		ExternalTimeout:      10 * time.Second,
 		AmoSyncInterval:      5 * time.Minute,
-		RegistrationTokenTTL: 24 * time.Hour,
+		RegistrationTokenTTL: time.Hour,
+		AmoWidgetSessionTTL:  10 * time.Minute,
+		AmoCRMClientUUID:     strings.TrimSpace(os.Getenv("AMOCRM_CLIENT_UUID")),
+		AmoCRMClientSecret:   strings.TrimSpace(os.Getenv("AMOCRM_CLIENT_SECRET")),
+		AmoCRMAudience:       strings.TrimSpace(os.Getenv("AMOCRM_AUTHORIZED_AUDIENCE")),
+		AmoCRMTokenMaxTTL:    time.Hour,
+		AmoCRMTokenClockSkew: 10 * time.Second,
+		AmoCRMWidgetListURL:  envOr("AMOCRM_WIDGET_LIST_URL", "https://ssd.rkrs.ru/widget/account_widget_list"),
+		AmoCRMWidgetTimeout:  10 * time.Second,
+		AmoCRMWidgetCacheTTL: 5 * time.Minute,
+		AmoCRMWidgetListTZ:   envOr("AMOCRM_WIDGET_LIST_TZ", "Europe/Moscow"),
 	}
 	if value := strings.TrimSpace(os.Getenv("COMPANY_AMO_IMPORT_ENABLED")); value != "" {
 		config.AmoImportEnabled, err = strconv.ParseBool(value)
@@ -83,6 +103,36 @@ func Load() (Config, error) {
 		config.RegistrationTokenTTL, err = time.ParseDuration(value)
 		if err != nil || config.RegistrationTokenTTL <= 0 {
 			return Config{}, fmt.Errorf("COMPANY_REGISTRATION_TOKEN_TTL: %w", errInvalidDuration)
+		}
+	}
+	if value := strings.TrimSpace(os.Getenv("COMPANY_AMO_WIDGET_SESSION_TTL")); value != "" {
+		config.AmoWidgetSessionTTL, err = time.ParseDuration(value)
+		if err != nil || config.AmoWidgetSessionTTL <= 0 {
+			return Config{}, fmt.Errorf("COMPANY_AMO_WIDGET_SESSION_TTL: %w", errInvalidDuration)
+		}
+	}
+	if value := strings.TrimSpace(os.Getenv("AMOCRM_TOKEN_MAX_TTL")); value != "" {
+		config.AmoCRMTokenMaxTTL, err = time.ParseDuration(value)
+		if err != nil || config.AmoCRMTokenMaxTTL <= 0 {
+			return Config{}, fmt.Errorf("AMOCRM_TOKEN_MAX_TTL: %w", errInvalidDuration)
+		}
+	}
+	if value := strings.TrimSpace(os.Getenv("AMOCRM_TOKEN_CLOCK_SKEW")); value != "" {
+		config.AmoCRMTokenClockSkew, err = time.ParseDuration(value)
+		if err != nil || config.AmoCRMTokenClockSkew < 0 {
+			return Config{}, fmt.Errorf("AMOCRM_TOKEN_CLOCK_SKEW: ожидается неотрицательная длительность")
+		}
+	}
+	if value := strings.TrimSpace(os.Getenv("AMOCRM_WIDGET_LIST_TIMEOUT")); value != "" {
+		config.AmoCRMWidgetTimeout, err = time.ParseDuration(value)
+		if err != nil || config.AmoCRMWidgetTimeout <= 0 {
+			return Config{}, fmt.Errorf("AMOCRM_WIDGET_LIST_TIMEOUT: %w", errInvalidDuration)
+		}
+	}
+	if value := strings.TrimSpace(os.Getenv("AMOCRM_WIDGET_LIST_CACHE_TTL")); value != "" {
+		config.AmoCRMWidgetCacheTTL, err = time.ParseDuration(value)
+		if err != nil || config.AmoCRMWidgetCacheTTL <= 0 {
+			return Config{}, fmt.Errorf("AMOCRM_WIDGET_LIST_CACHE_TTL: %w", errInvalidDuration)
 		}
 	}
 	missing := make([]string, 0, 2)

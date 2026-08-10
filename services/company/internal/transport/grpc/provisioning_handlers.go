@@ -4,6 +4,7 @@ import (
 	"context"
 
 	companyv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v1"
+	"github.com/sk1fy/team-os-backend/services/company/internal/application"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -40,6 +41,81 @@ func (s *Server) IssueCompanyRegistrationToken(
 	return &companyv1.IssueCompanyRegistrationTokenResponse{
 		Token: result.Token, ExpiresAt: timestamppb.New(result.ExpiresAt.UTC()),
 	}, nil
+}
+
+func (s *Server) ExchangeAmoWidgetSession(
+	ctx context.Context,
+	request *companyv1.ExchangeAmoWidgetSessionRequest,
+) (*companyv1.ExchangeAmoWidgetSessionResponse, error) {
+	if request == nil {
+		return nil, invalidRequest()
+	}
+	result, err := s.application.ExchangeAmoWidgetSession(ctx, application.AmoWidgetSessionInput{
+		Token: request.GetToken(), ExternalUserID: request.GetExternalUserId(), Email: request.GetEmail(),
+		UserName: request.GetUserName(), CompanyName: request.GetCompanyName(),
+	})
+	if err != nil {
+		return nil, transportError(err)
+	}
+	response := &companyv1.ExchangeAmoWidgetSessionResponse{ExternalAccountId: &result.ExternalAccountID}
+	switch result.Action {
+	case "login":
+		response.Action = companyv1.AmoWidgetSessionAction_AMO_WIDGET_SESSION_ACTION_LOGIN
+	case "register":
+		if result.RegistrationToken == "" && result.SessionToken == "" {
+			return nil, status.Error(codes.Internal, "Внутренняя ошибка сервиса")
+		}
+		response.Action = companyv1.AmoWidgetSessionAction_AMO_WIDGET_SESSION_ACTION_REGISTER
+	default:
+		return nil, status.Error(codes.Internal, "Внутренняя ошибка сервиса")
+	}
+	if result.RegistrationToken != "" {
+		response.RegistrationToken = &result.RegistrationToken
+	}
+	if result.SessionToken != "" {
+		response.SessionToken = &result.SessionToken
+		response.Email = &result.Email
+		response.CompanyName = &result.CompanyName
+		response.RequiresPasswordSetup = &result.RequiresPasswordSetup
+	}
+	if result.ExpiresAt != nil {
+		response.ExpiresAt = timestamppb.New(*result.ExpiresAt)
+	}
+	return response, nil
+}
+
+func (s *Server) ValidateAmoWidgetContinuation(
+	ctx context.Context,
+	request *companyv1.ValidateAmoWidgetContinuationRequest,
+) (*companyv1.ValidateAmoWidgetContinuationResponse, error) {
+	if request == nil {
+		return nil, invalidRequest()
+	}
+	result, err := s.application.ValidateAmoWidgetContinuation(ctx, request.GetSessionToken())
+	if err != nil {
+		return nil, transportError(err)
+	}
+	return &companyv1.ValidateAmoWidgetContinuationResponse{
+		Email: result.Email, CompanyName: result.CompanyName,
+		RequiresPasswordSetup: result.RequiresPasswordSetup,
+		ExpiresAt:             timestamppb.New(result.ExpiresAt),
+	}, nil
+}
+
+func (s *Server) CompleteAmoWidgetContinuation(
+	ctx context.Context,
+	request *companyv1.CompleteAmoWidgetContinuationRequest,
+) (*companyv1.CompleteAmoWidgetContinuationResponse, error) {
+	if request == nil {
+		return nil, invalidRequest()
+	}
+	result, err := s.application.CompleteAmoWidgetContinuation(
+		ctx, request.GetSessionToken(), request.GetPassword(), sessionMeta(ctx),
+	)
+	if err != nil {
+		return nil, transportError(err)
+	}
+	return &companyv1.CompleteAmoWidgetContinuationResponse{Session: authSessionToProto(result)}, nil
 }
 
 func (s *Server) ValidateCompanyRegistrationToken(

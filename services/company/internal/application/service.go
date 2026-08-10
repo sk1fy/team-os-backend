@@ -17,6 +17,7 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 	sharedauth "github.com/sk1fy/team-os-backend/pkg/auth"
+	"github.com/sk1fy/team-os-backend/services/company/internal/domain/amoauth"
 	domainauth "github.com/sk1fy/team-os-backend/services/company/internal/domain/auth"
 	"github.com/sk1fy/team-os-backend/services/company/internal/storage/db"
 )
@@ -25,7 +26,8 @@ const (
 	defaultRefreshTTL             = 30 * 24 * time.Hour
 	defaultInviteTTL              = 7 * 24 * time.Hour
 	defaultAmoSyncTTL             = 5 * time.Minute
-	defaultCompanyRegistrationTTL = 24 * time.Hour
+	defaultCompanyRegistrationTTL = time.Hour
+	defaultAmoWidgetSessionTTL    = 10 * time.Minute
 )
 
 var defaultEmployeeSections = []string{"schedule", "knowledge", "academy"}
@@ -53,6 +55,9 @@ type Service struct {
 	amoSyncMu              sync.Mutex
 	amoSyncStates          map[uuid.UUID]*amoSyncState
 	companyRegistrationTTL time.Duration
+	amoWidgetSessionTTL    time.Duration
+	amoWidgetTokenVerifier AmoWidgetTokenVerifier
+	widgetEntitlements     WidgetEntitlementProvider
 }
 
 // databasePool is the subset of pgxpool.Pool used by the application layer.
@@ -66,6 +71,14 @@ type databasePool interface {
 
 type ExternalEmployeeProvider interface {
 	FetchAll(context.Context, string) ([]ExternalEmployee, error)
+}
+
+type AmoWidgetTokenVerifier interface {
+	Verify(string) (amoauth.Identity, error)
+}
+
+type WidgetEntitlementProvider interface {
+	Check(context.Context, string) (installed bool, paid bool, err error)
 }
 
 type ServiceOption func(*Service)
@@ -100,6 +113,26 @@ func WithCompanyRegistrationTTL(ttl time.Duration) ServiceOption {
 	}
 }
 
+func WithAmoWidgetSessionTTL(ttl time.Duration) ServiceOption {
+	return func(service *Service) {
+		if ttl > 0 {
+			service.amoWidgetSessionTTL = ttl
+		}
+	}
+}
+
+func WithAmoWidgetTokenVerifier(verifier AmoWidgetTokenVerifier) ServiceOption {
+	return func(service *Service) {
+		service.amoWidgetTokenVerifier = verifier
+	}
+}
+
+func WithWidgetEntitlementProvider(provider WidgetEntitlementProvider) ServiceOption {
+	return func(service *Service) {
+		service.widgetEntitlements = provider
+	}
+}
+
 func NewService(pool *pgxpool.Pool, issuer *sharedauth.TokenIssuer, options ...ServiceOption) (*Service, error) {
 	dummyHash, err := domainauth.HashPassword("teamos-dummy-password")
 	if err != nil {
@@ -117,6 +150,7 @@ func NewService(pool *pgxpool.Pool, issuer *sharedauth.TokenIssuer, options ...S
 		amoSyncTTL:             defaultAmoSyncTTL,
 		amoSyncStates:          make(map[uuid.UUID]*amoSyncState),
 		companyRegistrationTTL: defaultCompanyRegistrationTTL,
+		amoWidgetSessionTTL:    defaultAmoWidgetSessionTTL,
 	}
 	for _, option := range options {
 		option(service)

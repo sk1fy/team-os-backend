@@ -82,6 +82,7 @@ func (l *Limiter) Middleware(next http.Handler) http.Handler {
 func rateLimitedPath(method, path string) bool {
 	return strings.HasPrefix(path, "/api/v1/auth/") ||
 		isProvisioningPath(method, path) ||
+		(method == http.MethodPost && strings.HasPrefix(path, "/api/v1/public/amocrm/widget-sessions")) ||
 		(method == http.MethodGet && strings.HasPrefix(path, "/api/v1/public/amocrm/")) ||
 		(method == http.MethodPost && path == "/api/v1/public/company-registration-tokens/validate") ||
 		(method == http.MethodPost && strings.HasPrefix(path, "/api/v1/public/academy/"))

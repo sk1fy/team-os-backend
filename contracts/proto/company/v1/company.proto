@@ -14,6 +14,9 @@ service CompanyService {
   rpc CheckAmoAccount(CheckAmoAccountRequest) returns (CheckAmoAccountResponse);
   rpc IssueCompanyRegistrationToken(IssueCompanyRegistrationTokenRequest) returns (IssueCompanyRegistrationTokenResponse);
   rpc ValidateCompanyRegistrationToken(ValidateCompanyRegistrationTokenRequest) returns (ValidateCompanyRegistrationTokenResponse);
+  rpc ExchangeAmoWidgetSession(ExchangeAmoWidgetSessionRequest) returns (ExchangeAmoWidgetSessionResponse);
+  rpc ValidateAmoWidgetContinuation(ValidateAmoWidgetContinuationRequest) returns (ValidateAmoWidgetContinuationResponse);
+  rpc CompleteAmoWidgetContinuation(CompleteAmoWidgetContinuationRequest) returns (CompleteAmoWidgetContinuationResponse);
   rpc Login(LoginRequest) returns (LoginResponse);
   rpc LoginWithAccessLink(LoginWithAccessLinkRequest) returns (LoginWithAccessLinkResponse);
   rpc ImpersonateUser(ImpersonateUserRequest) returns (ImpersonateUserResponse);
@@ -894,4 +897,49 @@ message GetProvisionedCompanyStatusResponse {
   bool exists = 1;
   optional string company_id = 2;
   CompanyStatus company_status = 3;
+}
+
+enum AmoWidgetSessionAction {
+  AMO_WIDGET_SESSION_ACTION_UNSPECIFIED = 0;
+  AMO_WIDGET_SESSION_ACTION_REGISTER = 1;
+  AMO_WIDGET_SESSION_ACTION_LOGIN = 2;
+}
+
+message ExchangeAmoWidgetSessionRequest {
+  string token = 1;
+  optional string external_user_id = 2;
+  optional string email = 3;
+  optional string user_name = 4;
+  optional string company_name = 5;
+}
+
+message ExchangeAmoWidgetSessionResponse {
+  AmoWidgetSessionAction action = 1;
+  optional string external_account_id = 2;
+  optional string registration_token = 3;
+  optional google.protobuf.Timestamp expires_at = 4;
+  optional string session_token = 5;
+  optional string email = 6;
+  optional string company_name = 7;
+  optional bool requires_password_setup = 8;
+}
+
+message ValidateAmoWidgetContinuationRequest {
+  string session_token = 1;
+}
+
+message ValidateAmoWidgetContinuationResponse {
+  string email = 1;
+  string company_name = 2;
+  bool requires_password_setup = 3;
+  google.protobuf.Timestamp expires_at = 4;
+}
+
+message CompleteAmoWidgetContinuationRequest {
+  string session_token = 1;
+  string password = 2;
+}
+
+message CompleteAmoWidgetContinuationResponse {
+  AuthSession session = 1;
 }

@@ -161,6 +161,32 @@ type CompanyRegistrationTokenValidation struct {
 	ExpiresAt         *time.Time
 }
 
+type AmoWidgetSessionResult struct {
+	Action                string
+	ExternalAccountID     string
+	RegistrationToken     string
+	SessionToken          string
+	Email                 string
+	CompanyName           string
+	RequiresPasswordSetup bool
+	ExpiresAt             *time.Time
+}
+
+type AmoWidgetSessionInput struct {
+	Token          string
+	ExternalUserID string
+	Email          string
+	UserName       string
+	CompanyName    string
+}
+
+type AmoWidgetContinuation struct {
+	Email                 string
+	CompanyName           string
+	RequiresPasswordSetup bool
+	ExpiresAt             time.Time
+}
+
 type LoginInput struct {
 	Email    string
 	Password string

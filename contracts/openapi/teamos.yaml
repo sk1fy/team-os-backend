@@ -210,6 +210,91 @@ paths:
         default:
           $ref: '#/components/responses/Error'
 
+  /api/v1/public/amocrm/widget-sessions:
+    post:
+      tags: [Provisioning]
+      operationId: exchangeAmoWidgetSession
+      summary: Обменять одноразовый токен виджета amoCRM на продолжение входа
+      description: |
+        Клиент TeamOS передаёт токен в JSON-теле. Официальный WEB SDK amoCRM
+        передаёт тот же токен в заголовке `X-Auth-Token`. Должен быть указан
+        ровно один источник токена.
+      security: []
+      parameters:
+        - name: X-Auth-Token
+          in: header
+          required: false
+          description: Одноразовый JWT, автоматически добавляемый `self.$authorizedAjax()`.
+          schema:
+            type: string
+            minLength: 32
+            maxLength: 8192
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AmoWidgetSessionInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/AmoWidgetSession'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/public/amocrm/widget-sessions/validate:
+    post:
+      tags: [Provisioning]
+      operationId: validateAmoWidgetContinuation
+      summary: Проверить одноразовое продолжение входа из виджета amoCRM
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AmoWidgetContinuationInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/AmoWidgetContinuation'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/auth/amocrm/complete:
+    post:
+      tags: [Auth]
+      operationId: completeAmoWidgetContinuation
+      summary: Установить или проверить пароль и завершить вход из amoCRM
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteAmoWidgetContinuationInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/AuthSession'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        default:
+          $ref: '#/components/responses/Error'
+
   /api/v1/public/company-registration-tokens/validate:
     post:
       tags: [Auth]
@@ -4241,6 +4326,18 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/AmoAccountAvailabilityResponse'
+    AmoWidgetSession:
+      description: Продолжение входа или регистрации компании из виджета amoCRM
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AmoWidgetSessionResponse'
+    AmoWidgetContinuation:
+      description: Данные одноразового продолжения входа из виджета amoCRM
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AmoWidgetContinuationResponse'
     CompanyRegistrationToken:
       description: Одноразовый токен регистрации компании
       content:
@@ -5576,6 +5673,115 @@ components:
       properties:
         exists:
           type: boolean
+
+    AmoWidgetSessionInput:
+      type: object
+      additionalProperties: false
+      properties:
+        token:
+          type: string
+          minLength: 32
+          maxLength: 8192
+        user:
+          $ref: '#/components/schemas/AmoWidgetUserInput'
+        account:
+          $ref: '#/components/schemas/AmoWidgetAccountInput'
+
+    AmoWidgetUserInput:
+      type: object
+      additionalProperties: false
+      required: [id, email]
+      properties:
+        id:
+          type: string
+          pattern: '^\d+$'
+          maxLength: 255
+        email:
+          $ref: '#/components/schemas/Email'
+        name:
+          type: string
+          maxLength: 255
+
+    AmoWidgetAccountInput:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        subdomain:
+          type: string
+          maxLength: 255
+
+    AmoWidgetSessionAction:
+      type: string
+      enum: [register, login]
+
+    AmoWidgetSessionResponse:
+      type: object
+      additionalProperties: false
+      required: [action]
+      properties:
+        action:
+          $ref: '#/components/schemas/AmoWidgetSessionAction'
+        amoAccountId:
+          type: string
+          pattern: '^\d+$'
+        registrationToken:
+          type: string
+          minLength: 32
+          maxLength: 512
+        sessionToken:
+          type: string
+          minLength: 32
+          maxLength: 512
+        email:
+          $ref: '#/components/schemas/Email'
+        companyName:
+          type: string
+        requiresPasswordSetup:
+          type: boolean
+        expiresAt:
+          $ref: '#/components/schemas/ISODateTime'
+
+    AmoWidgetContinuationInput:
+      type: object
+      additionalProperties: false
+      required: [sessionToken]
+      properties:
+        sessionToken:
+          type: string
+          minLength: 32
+          maxLength: 512
+
+    AmoWidgetContinuationResponse:
+      type: object
+      additionalProperties: false
+      required: [email, companyName, requiresPasswordSetup, expiresAt]
+      properties:
+        email:
+          $ref: '#/components/schemas/Email'
+        companyName:
+          type: string
+        requiresPasswordSetup:
+          type: boolean
+        expiresAt:
+          $ref: '#/components/schemas/ISODateTime'
+
+    CompleteAmoWidgetContinuationInput:
+      type: object
+      additionalProperties: false
+      required: [sessionToken, password]
+      properties:
+        sessionToken:
+          type: string
+          minLength: 32
+          maxLength: 512
+        password:
+          type: string
+          format: password
+          minLength: 8
+          maxLength: 256
 
     IssueCompanyRegistrationTokenInput:
       type: object

@@ -23,6 +23,9 @@ const (
 	CompanyService_CheckAmoAccount_FullMethodName                  = "/teamos.company.v1.CompanyService/CheckAmoAccount"
 	CompanyService_IssueCompanyRegistrationToken_FullMethodName    = "/teamos.company.v1.CompanyService/IssueCompanyRegistrationToken"
 	CompanyService_ValidateCompanyRegistrationToken_FullMethodName = "/teamos.company.v1.CompanyService/ValidateCompanyRegistrationToken"
+	CompanyService_ExchangeAmoWidgetSession_FullMethodName         = "/teamos.company.v1.CompanyService/ExchangeAmoWidgetSession"
+	CompanyService_ValidateAmoWidgetContinuation_FullMethodName    = "/teamos.company.v1.CompanyService/ValidateAmoWidgetContinuation"
+	CompanyService_CompleteAmoWidgetContinuation_FullMethodName    = "/teamos.company.v1.CompanyService/CompleteAmoWidgetContinuation"
 	CompanyService_Login_FullMethodName                            = "/teamos.company.v1.CompanyService/Login"
 	CompanyService_LoginWithAccessLink_FullMethodName              = "/teamos.company.v1.CompanyService/LoginWithAccessLink"
 	CompanyService_ImpersonateUser_FullMethodName                  = "/teamos.company.v1.CompanyService/ImpersonateUser"
@@ -97,6 +100,9 @@ type CompanyServiceClient interface {
 	CheckAmoAccount(ctx context.Context, in *CheckAmoAccountRequest, opts ...grpc.CallOption) (*CheckAmoAccountResponse, error)
 	IssueCompanyRegistrationToken(ctx context.Context, in *IssueCompanyRegistrationTokenRequest, opts ...grpc.CallOption) (*IssueCompanyRegistrationTokenResponse, error)
 	ValidateCompanyRegistrationToken(ctx context.Context, in *ValidateCompanyRegistrationTokenRequest, opts ...grpc.CallOption) (*ValidateCompanyRegistrationTokenResponse, error)
+	ExchangeAmoWidgetSession(ctx context.Context, in *ExchangeAmoWidgetSessionRequest, opts ...grpc.CallOption) (*ExchangeAmoWidgetSessionResponse, error)
+	ValidateAmoWidgetContinuation(ctx context.Context, in *ValidateAmoWidgetContinuationRequest, opts ...grpc.CallOption) (*ValidateAmoWidgetContinuationResponse, error)
+	CompleteAmoWidgetContinuation(ctx context.Context, in *CompleteAmoWidgetContinuationRequest, opts ...grpc.CallOption) (*CompleteAmoWidgetContinuationResponse, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	LoginWithAccessLink(ctx context.Context, in *LoginWithAccessLinkRequest, opts ...grpc.CallOption) (*LoginWithAccessLinkResponse, error)
 	ImpersonateUser(ctx context.Context, in *ImpersonateUserRequest, opts ...grpc.CallOption) (*ImpersonateUserResponse, error)
@@ -201,6 +207,36 @@ func (c *companyServiceClient) ValidateCompanyRegistrationToken(ctx context.Cont
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ValidateCompanyRegistrationTokenResponse)
 	err := c.cc.Invoke(ctx, CompanyService_ValidateCompanyRegistrationToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) ExchangeAmoWidgetSession(ctx context.Context, in *ExchangeAmoWidgetSessionRequest, opts ...grpc.CallOption) (*ExchangeAmoWidgetSessionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ExchangeAmoWidgetSessionResponse)
+	err := c.cc.Invoke(ctx, CompanyService_ExchangeAmoWidgetSession_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) ValidateAmoWidgetContinuation(ctx context.Context, in *ValidateAmoWidgetContinuationRequest, opts ...grpc.CallOption) (*ValidateAmoWidgetContinuationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ValidateAmoWidgetContinuationResponse)
+	err := c.cc.Invoke(ctx, CompanyService_ValidateAmoWidgetContinuation_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) CompleteAmoWidgetContinuation(ctx context.Context, in *CompleteAmoWidgetContinuationRequest, opts ...grpc.CallOption) (*CompleteAmoWidgetContinuationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CompleteAmoWidgetContinuationResponse)
+	err := c.cc.Invoke(ctx, CompanyService_CompleteAmoWidgetContinuation_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -819,6 +855,9 @@ type CompanyServiceServer interface {
 	CheckAmoAccount(context.Context, *CheckAmoAccountRequest) (*CheckAmoAccountResponse, error)
 	IssueCompanyRegistrationToken(context.Context, *IssueCompanyRegistrationTokenRequest) (*IssueCompanyRegistrationTokenResponse, error)
 	ValidateCompanyRegistrationToken(context.Context, *ValidateCompanyRegistrationTokenRequest) (*ValidateCompanyRegistrationTokenResponse, error)
+	ExchangeAmoWidgetSession(context.Context, *ExchangeAmoWidgetSessionRequest) (*ExchangeAmoWidgetSessionResponse, error)
+	ValidateAmoWidgetContinuation(context.Context, *ValidateAmoWidgetContinuationRequest) (*ValidateAmoWidgetContinuationResponse, error)
+	CompleteAmoWidgetContinuation(context.Context, *CompleteAmoWidgetContinuationRequest) (*CompleteAmoWidgetContinuationResponse, error)
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	LoginWithAccessLink(context.Context, *LoginWithAccessLinkRequest) (*LoginWithAccessLinkResponse, error)
 	ImpersonateUser(context.Context, *ImpersonateUserRequest) (*ImpersonateUserResponse, error)
@@ -900,6 +939,15 @@ func (UnimplementedCompanyServiceServer) IssueCompanyRegistrationToken(context.C
 }
 func (UnimplementedCompanyServiceServer) ValidateCompanyRegistrationToken(context.Context, *ValidateCompanyRegistrationTokenRequest) (*ValidateCompanyRegistrationTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ValidateCompanyRegistrationToken not implemented")
+}
+func (UnimplementedCompanyServiceServer) ExchangeAmoWidgetSession(context.Context, *ExchangeAmoWidgetSessionRequest) (*ExchangeAmoWidgetSessionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExchangeAmoWidgetSession not implemented")
+}
+func (UnimplementedCompanyServiceServer) ValidateAmoWidgetContinuation(context.Context, *ValidateAmoWidgetContinuationRequest) (*ValidateAmoWidgetContinuationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ValidateAmoWidgetContinuation not implemented")
+}
+func (UnimplementedCompanyServiceServer) CompleteAmoWidgetContinuation(context.Context, *CompleteAmoWidgetContinuationRequest) (*CompleteAmoWidgetContinuationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CompleteAmoWidgetContinuation not implemented")
 }
 func (UnimplementedCompanyServiceServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
@@ -1170,6 +1218,60 @@ func _CompanyService_ValidateCompanyRegistrationToken_Handler(srv interface{}, c
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CompanyServiceServer).ValidateCompanyRegistrationToken(ctx, req.(*ValidateCompanyRegistrationTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_ExchangeAmoWidgetSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExchangeAmoWidgetSessionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).ExchangeAmoWidgetSession(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_ExchangeAmoWidgetSession_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).ExchangeAmoWidgetSession(ctx, req.(*ExchangeAmoWidgetSessionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_ValidateAmoWidgetContinuation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ValidateAmoWidgetContinuationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).ValidateAmoWidgetContinuation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_ValidateAmoWidgetContinuation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).ValidateAmoWidgetContinuation(ctx, req.(*ValidateAmoWidgetContinuationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_CompleteAmoWidgetContinuation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CompleteAmoWidgetContinuationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).CompleteAmoWidgetContinuation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_CompleteAmoWidgetContinuation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).CompleteAmoWidgetContinuation(ctx, req.(*CompleteAmoWidgetContinuationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2276,6 +2378,18 @@ var CompanyService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ValidateCompanyRegistrationToken",
 			Handler:    _CompanyService_ValidateCompanyRegistrationToken_Handler,
+		},
+		{
+			MethodName: "ExchangeAmoWidgetSession",
+			Handler:    _CompanyService_ExchangeAmoWidgetSession_Handler,
+		},
+		{
+			MethodName: "ValidateAmoWidgetContinuation",
+			Handler:    _CompanyService_ValidateAmoWidgetContinuation_Handler,
+		},
+		{
+			MethodName: "CompleteAmoWidgetContinuation",
+			Handler:    _CompanyService_CompleteAmoWidgetContinuation_Handler,
 		},
 		{
 			MethodName: "Login",

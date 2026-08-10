@@ -9,19 +9,25 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Querier interface {
 	AcceptInvite(ctx context.Context, id uuid.UUID) (Invite, error)
+	ActivateAmoWidgetIdentity(ctx context.Context, arg ActivateAmoWidgetIdentityParams) (UserExternalIdentity, error)
 	ActivateInvitedUser(ctx context.Context, arg ActivateInvitedUserParams) (User, error)
 	AmoAccountExists(ctx context.Context, arg AmoAccountExistsParams) (bool, error)
+	AmoWidgetUserHasPassword(ctx context.Context, arg AmoWidgetUserHasPasswordParams) (bool, error)
 	AssignUserPosition(ctx context.Context, arg AssignUserPositionParams) error
 	ClearAmoUserTombstone(ctx context.Context, arg ClearAmoUserTombstoneParams) (User, error)
 	CompanyAmoAccountExists(ctx context.Context, externalAccountID string) (bool, error)
+	ConsumeAmoWidgetContinuation(ctx context.Context, arg ConsumeAmoWidgetContinuationParams) (SsoToken, error)
 	ConsumeCompanyRegistrationToken(ctx context.Context, arg ConsumeCompanyRegistrationTokenParams) (CompanyRegistrationToken, error)
 	CountDepartmentChildren(ctx context.Context, arg CountDepartmentChildrenParams) (int64, error)
 	CountDepartmentPositions(ctx context.Context, arg CountDepartmentPositionsParams) (int64, error)
 	CreateAmoUser(ctx context.Context, arg CreateAmoUserParams) (User, error)
+	CreateAmoWidgetContinuation(ctx context.Context, arg CreateAmoWidgetContinuationParams) (SsoToken, error)
+	CreateAmoWidgetIdentity(ctx context.Context, arg CreateAmoWidgetIdentityParams) (UserExternalIdentity, error)
 	CreateCompany(ctx context.Context, arg CreateCompanyParams) (Company, error)
 	CreateCompanyFromRegistrationToken(ctx context.Context, arg CreateCompanyFromRegistrationTokenParams) (Company, error)
 	CreateCompanyIntegration(ctx context.Context, arg CreateCompanyIntegrationParams) (CompanyIntegration, error)
@@ -41,15 +47,21 @@ type Querier interface {
 	DeleteDepartment(ctx context.Context, arg DeleteDepartmentParams) (int64, error)
 	DeleteDistributionGroup(ctx context.Context, arg DeleteDistributionGroupParams) (int64, error)
 	DeleteEmployeeSectionAccess(ctx context.Context, arg DeleteEmployeeSectionAccessParams) error
+	DeleteExpiredAmoWidgetContinuations(ctx context.Context, before time.Time) (int64, error)
 	DeleteExpiredSessions(ctx context.Context, expiresAt time.Time) (int64, error)
 	DeleteLocalUser(ctx context.Context, arg DeleteLocalUserParams) (int64, error)
 	DeleteOldCompanyRegistrationTokens(ctx context.Context, before time.Time) (int64, error)
 	DeletePosition(ctx context.Context, arg DeletePositionParams) (int64, error)
 	DeleteUserPositions(ctx context.Context, arg DeleteUserPositionsParams) error
 	DisableUserInDistributionGroups(ctx context.Context, arg DisableUserInDistributionGroupsParams) error
+	FindAmoWidgetUserForUpdate(ctx context.Context, arg FindAmoWidgetUserForUpdateParams) (User, error)
 	FindUserForAmoSync(ctx context.Context, arg FindUserForAmoSyncParams) (User, error)
 	GetAccessLink(ctx context.Context, arg GetAccessLinkParams) (AccessLink, error)
 	GetActiveCompanyRegistrationTokenForAccount(ctx context.Context, arg GetActiveCompanyRegistrationTokenForAccountParams) (CompanyRegistrationToken, error)
+	GetAmoWidgetContinuation(ctx context.Context, tokenHash []byte) (GetAmoWidgetContinuationRow, error)
+	GetAmoWidgetContinuationForUpdate(ctx context.Context, tokenHash []byte) (GetAmoWidgetContinuationForUpdateRow, error)
+	GetAmoWidgetIntegrationForUpdate(ctx context.Context, arg GetAmoWidgetIntegrationForUpdateParams) (GetAmoWidgetIntegrationForUpdateRow, error)
+	GetAmoWidgetUserByIdentity(ctx context.Context, arg GetAmoWidgetUserByIdentityParams) (GetAmoWidgetUserByIdentityRow, error)
 	GetCompany(ctx context.Context, id uuid.UUID) (Company, error)
 	GetCompanyIntegrationByExternalAccount(ctx context.Context, arg GetCompanyIntegrationByExternalAccountParams) (CompanyIntegration, error)
 	GetCompanyRegistrationTokenByHash(ctx context.Context, tokenHash []byte) (CompanyRegistrationToken, error)
@@ -82,6 +94,7 @@ type Querier interface {
 	ListDistributionGroupsContainingUserForUpdate(ctx context.Context, arg ListDistributionGroupsContainingUserForUpdateParams) ([]DistributionGroup, error)
 	ListEmployeeSectionAccess(ctx context.Context, arg ListEmployeeSectionAccessParams) ([]string, error)
 	ListInvites(ctx context.Context, companyID uuid.UUID) ([]Invite, error)
+	ListLegacyAmoWidgetCompaniesForUpdate(ctx context.Context, externalAccountID pgtype.Text) ([]Company, error)
 	ListPositions(ctx context.Context, companyID uuid.UUID) ([]Position, error)
 	ListSchedules(ctx context.Context, companyID uuid.UUID) ([]UserSchedule, error)
 	ListShiftExceptionsByMonth(ctx context.Context, arg ListShiftExceptionsByMonthParams) ([]ShiftException, error)
@@ -90,6 +103,7 @@ type Querier interface {
 	LockAmoUserSync(ctx context.Context, companyID uuid.UUID) error
 	MarkAmoUserExternallyDeleted(ctx context.Context, arg MarkAmoUserExternallyDeletedParams) (User, error)
 	MoveDepartment(ctx context.Context, arg MoveDepartmentParams) (Department, error)
+	PromoteAmoWidgetOwner(ctx context.Context, arg PromoteAmoWidgetOwnerParams) (User, error)
 	ReassignUserInvites(ctx context.Context, arg ReassignUserInvitesParams) error
 	RemoveUserFromDistributionGroups(ctx context.Context, arg RemoveUserFromDistributionGroupsParams) error
 	ResendInvite(ctx context.Context, arg ResendInviteParams) (Invite, error)
@@ -97,6 +111,7 @@ type Querier interface {
 	ResolveDepartmentUserIDs(ctx context.Context, arg ResolveDepartmentUserIDsParams) ([]uuid.UUID, error)
 	ResolvePositionUserIDs(ctx context.Context, arg ResolvePositionUserIDsParams) ([]uuid.UUID, error)
 	ResolveReportUserScope(ctx context.Context, arg ResolveReportUserScopeParams) ([]ResolveReportUserScopeRow, error)
+	RevokeActiveAmoWidgetContinuations(ctx context.Context, arg RevokeActiveAmoWidgetContinuationsParams) (int64, error)
 	RevokeAllUserSessions(ctx context.Context, arg RevokeAllUserSessionsParams) error
 	RevokeCompanyRegistrationToken(ctx context.Context, arg RevokeCompanyRegistrationTokenParams) (CompanyRegistrationToken, error)
 	RevokeInvite(ctx context.Context, arg RevokeInviteParams) (Invite, error)

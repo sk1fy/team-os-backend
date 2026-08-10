@@ -1,6 +1,8 @@
 (.services.files.environment.FILES_S3_SECURE == "false") and
 (.services.files.environment.FILES_S3_PUBLIC_SECURE == "true") and
 (.services.gateway.environment.GATEWAY_COOKIE_SECURE == "true") and
+(.services.gateway.environment.GATEWAY_CORS_ORIGINS | contains("https://*.amocrm.ru")) and
+(.services.gateway.environment.GATEWAY_CORS_ORIGINS | contains("https://*.amocrm.com")) and
 (((.services.gateway.environment.GATEWAY_PROVISIONING_ALLOW_UNAUTHENTICATED == "true") and
   ((.services.gateway.environment.GATEWAY_PROVISIONING_SERVICE_TOKEN | length) == 0)) or
  ((.services.gateway.environment.GATEWAY_PROVISIONING_ALLOW_UNAUTHENTICATED == "false") and

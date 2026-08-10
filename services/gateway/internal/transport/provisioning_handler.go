@@ -102,6 +102,151 @@ func (h *Handler) ValidateCompanyRegistrationToken(w http.ResponseWriter, r *htt
 	writeJSON(w, http.StatusOK, result)
 }
 
+func (h *Handler) ExchangeAmoWidgetSession(w http.ResponseWriter, r *http.Request, params api.ExchangeAmoWidgetSessionParams) {
+	setPrivateNoStore(w)
+	var input api.AmoWidgetSessionInput
+	if !decodeOptional(w, r, &input) {
+		return
+	}
+	headerToken := strings.TrimSpace(r.Header.Get("X-Auth-Token"))
+	if params.XAuthToken != nil {
+		headerToken = strings.TrimSpace(*params.XAuthToken)
+	}
+	bodyToken := ""
+	if input.Token != nil {
+		bodyToken = strings.TrimSpace(*input.Token)
+	}
+	if headerToken != "" && bodyToken != "" {
+		apierror.Write(w, apierror.BadRequest("Передайте токен amoCRM только одним способом"))
+		return
+	}
+	token := bodyToken
+	if token == "" {
+		token = headerToken
+	}
+	if len(token) < 32 || len(token) > 8192 {
+		apierror.Write(w, apierror.BadRequest("Некорректный токен amoCRM"))
+		return
+	}
+	request := &companyv1.ExchangeAmoWidgetSessionRequest{Token: token}
+	if input.User != nil {
+		request.ExternalUserId = &input.User.Id
+		email := string(input.User.Email)
+		request.Email = &email
+		if input.User.Name != nil {
+			request.UserName = input.User.Name
+		}
+		companyName := ""
+		if input.Account != nil {
+			if input.Account.Name != nil {
+				companyName = strings.TrimSpace(*input.Account.Name)
+			}
+			if companyName == "" && input.Account.Subdomain != nil {
+				companyName = strings.TrimSpace(*input.Account.Subdomain)
+			}
+		}
+		if companyName != "" {
+			request.CompanyName = &companyName
+		}
+	}
+	response, err := h.company.ExchangeAmoWidgetSession(
+		outgoingContext(r),
+		request,
+	)
+	if err != nil {
+		h.writeRPCError(w, r, err)
+		return
+	}
+	result := api.AmoWidgetSessionResponse{}
+	switch response.GetAction() {
+	case companyv1.AmoWidgetSessionAction_AMO_WIDGET_SESSION_ACTION_LOGIN:
+		result.Action = api.Login
+	case companyv1.AmoWidgetSessionAction_AMO_WIDGET_SESSION_ACTION_REGISTER:
+		if response.SessionToken == nil && (response.RegistrationToken == nil || response.GetRegistrationToken() == "" ||
+			response.ExpiresAt == nil || !response.ExpiresAt.IsValid()) {
+			h.writeConversionError(w, r, errors.New("company returned an invalid amoCRM widget registration session"))
+			return
+		}
+		result.Action = api.Register
+		if response.RegistrationToken != nil {
+			result.RegistrationToken = response.RegistrationToken
+		}
+	default:
+		h.writeConversionError(w, r, errors.New("company returned an invalid amoCRM widget session action"))
+		return
+	}
+	if response.ExternalAccountId != nil {
+		result.AmoAccountId = response.ExternalAccountId
+	}
+	if response.SessionToken != nil {
+		if response.GetSessionToken() == "" || response.GetEmail() == "" || response.GetCompanyName() == "" ||
+			response.ExpiresAt == nil || !response.ExpiresAt.IsValid() {
+			h.writeConversionError(w, r, errors.New("company returned an invalid amoCRM widget continuation"))
+			return
+		}
+		result.SessionToken = response.SessionToken
+	}
+	if response.Email != nil {
+		email := api.Email(response.GetEmail())
+		result.Email = &email
+	}
+	if response.CompanyName != nil {
+		result.CompanyName = response.CompanyName
+	}
+	if response.RequiresPasswordSetup != nil {
+		result.RequiresPasswordSetup = response.RequiresPasswordSetup
+	}
+	if response.ExpiresAt != nil && response.ExpiresAt.IsValid() {
+		expiresAt := response.ExpiresAt.AsTime()
+		result.ExpiresAt = &expiresAt
+	}
+	writeJSON(w, http.StatusOK, result)
+}
+
+func (h *Handler) ValidateAmoWidgetContinuation(w http.ResponseWriter, r *http.Request) {
+	setPrivateNoStore(w)
+	var input api.AmoWidgetContinuationInput
+	if !decode(w, r, &input) {
+		return
+	}
+	response, err := h.company.ValidateAmoWidgetContinuation(
+		outgoingContext(r),
+		&companyv1.ValidateAmoWidgetContinuationRequest{SessionToken: input.SessionToken},
+	)
+	if err != nil {
+		h.writeRPCError(w, r, err)
+		return
+	}
+	if response.GetEmail() == "" || response.GetCompanyName() == "" ||
+		response.GetExpiresAt() == nil || !response.GetExpiresAt().IsValid() {
+		h.writeConversionError(w, r, errors.New("company returned an invalid amoCRM continuation"))
+		return
+	}
+	writeJSON(w, http.StatusOK, api.AmoWidgetContinuationResponse{
+		Email: api.Email(response.GetEmail()), CompanyName: response.GetCompanyName(),
+		RequiresPasswordSetup: response.GetRequiresPasswordSetup(),
+		ExpiresAt:             response.GetExpiresAt().AsTime(),
+	})
+}
+
+func (h *Handler) CompleteAmoWidgetContinuation(w http.ResponseWriter, r *http.Request) {
+	var input api.CompleteAmoWidgetContinuationInput
+	if !decode(w, r, &input) {
+		return
+	}
+	response, err := h.company.CompleteAmoWidgetContinuation(
+		outgoingContext(r),
+		&companyv1.CompleteAmoWidgetContinuationRequest{
+			SessionToken: input.SessionToken, Password: input.Password,
+		},
+	)
+	if err != nil {
+		h.writeRPCError(w, r, err)
+		return
+	}
+	h.writeSession(w, r, http.StatusOK, response.GetSession())
+}
+
 func companyRegistrationTokenStateFromProto(value companyv1.CompanyRegistrationTokenState) (api.CompanyRegistrationTokenState, error) {
 	switch value {
 	case companyv1.CompanyRegistrationTokenState_COMPANY_REGISTRATION_TOKEN_STATE_VALID:

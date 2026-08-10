@@ -15,12 +15,21 @@ const (
 )
 
 const (
-	ErrorCodeAmoAccountInvalid         = "AMO_ACCOUNT_INVALID"
-	ErrorCodeAmoAccountAlreadyExists   = "AMO_ACCOUNT_ALREADY_EXISTS"
-	ErrorCodeRegistrationTokenInvalid  = "REGISTRATION_TOKEN_INVALID"
-	ErrorCodeRegistrationTokenExpired  = "REGISTRATION_TOKEN_EXPIRED"
-	ErrorCodeRegistrationTokenConsumed = "REGISTRATION_TOKEN_CONSUMED"
-	ErrorCodeRegistrationTokenRevoked  = "REGISTRATION_TOKEN_REVOKED"
+	ErrorCodeAmoAccountInvalid             = "AMO_ACCOUNT_INVALID"
+	ErrorCodeAmoAccountAlreadyExists       = "AMO_ACCOUNT_ALREADY_EXISTS"
+	ErrorCodeRegistrationTokenInvalid      = "REGISTRATION_TOKEN_INVALID"
+	ErrorCodeRegistrationTokenExpired      = "REGISTRATION_TOKEN_EXPIRED"
+	ErrorCodeRegistrationTokenConsumed     = "REGISTRATION_TOKEN_CONSUMED"
+	ErrorCodeRegistrationTokenRevoked      = "REGISTRATION_TOKEN_REVOKED"
+	ErrorCodeAmoTokenInvalid               = "AMO_TOKEN_INVALID"
+	ErrorCodeWidgetNotInstalled            = "WIDGET_NOT_INSTALLED"
+	ErrorCodeWidgetNotPaid                 = "WIDGET_NOT_PAID"
+	ErrorCodeAmoWidgetSessionUnavailable   = "AMO_WIDGET_SESSION_UNAVAILABLE"
+	ErrorCodeAmoWidgetUserMismatch         = "AMO_WIDGET_USER_MISMATCH"
+	ErrorCodeAmoWidgetContinuationInvalid  = "AMO_WIDGET_CONTINUATION_INVALID"
+	ErrorCodeAmoWidgetContinuationExpired  = "AMO_WIDGET_CONTINUATION_EXPIRED"
+	ErrorCodeAmoWidgetContinuationConsumed = "AMO_WIDGET_CONTINUATION_CONSUMED"
+	ErrorCodeAmoWidgetPasswordInvalid      = "AMO_WIDGET_PASSWORD_INVALID"
 )
 
 // Error carries a stable user-facing Russian message independently of the
@@ -72,6 +81,18 @@ func registrationTokenConsumed() error {
 
 func registrationTokenRevoked() error {
 	return coded(ErrorConflict, ErrorCodeRegistrationTokenRevoked, "Токен регистрации отозван")
+}
+
+func amoWidgetContinuationInvalid() error {
+	return coded(ErrorUnauthenticated, ErrorCodeAmoWidgetContinuationInvalid, "Ссылка входа из amoCRM недействительна")
+}
+
+func amoWidgetContinuationExpired() error {
+	return coded(ErrorUnauthenticated, ErrorCodeAmoWidgetContinuationExpired, "Срок действия ссылки входа из amoCRM истёк")
+}
+
+func amoWidgetContinuationConsumed() error {
+	return coded(ErrorUnauthenticated, ErrorCodeAmoWidgetContinuationConsumed, "Ссылка входа из amoCRM уже использована")
 }
 
 func invalidSession() error {

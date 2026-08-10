@@ -21,9 +21,11 @@ import (
 	"github.com/sk1fy/team-os-backend/services/company/internal/application"
 	"github.com/sk1fy/team-os-backend/services/company/internal/config"
 	"github.com/sk1fy/team-os-backend/services/company/internal/consumers"
+	"github.com/sk1fy/team-os-backend/services/company/internal/domain/amoauth"
 	"github.com/sk1fy/team-os-backend/services/company/internal/externalusers"
 	"github.com/sk1fy/team-os-backend/services/company/internal/outbox"
 	companygrpc "github.com/sk1fy/team-os-backend/services/company/internal/transport/grpc"
+	"github.com/sk1fy/team-os-backend/services/company/internal/widgetentitlement"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
 	grpc_health_v1 "google.golang.org/grpc/health/grpc_health_v1"
@@ -100,15 +102,33 @@ func run(logger *slog.Logger) error {
 	serviceOptions := []application.ServiceOption{
 		application.WithAmoSyncInterval(configuration.AmoSyncInterval),
 		application.WithCompanyRegistrationTTL(configuration.RegistrationTokenTTL),
+		application.WithAmoWidgetSessionTTL(configuration.AmoWidgetSessionTTL),
 		application.WithLogger(logger),
 	}
+	amoWidgetVerifier := amoauth.NewVerifier(amoauth.Config{
+		Secret: configuration.AmoCRMClientSecret, ClientUUID: configuration.AmoCRMClientUUID,
+		Audience: configuration.AmoCRMAudience, MaxTTL: configuration.AmoCRMTokenMaxTTL,
+		ClockSkew: configuration.AmoCRMTokenClockSkew,
+	})
+	widgetEntitlementClient, clientErr := widgetentitlement.NewClient(widgetentitlement.Config{
+		BaseURL: configuration.AmoCRMWidgetListURL, AppName: configuration.AmoAppName,
+		Timeout: configuration.AmoCRMWidgetTimeout, CacheTTL: configuration.AmoCRMWidgetCacheTTL,
+		Timezone: configuration.AmoCRMWidgetListTZ,
+	})
+	if clientErr != nil {
+		return fmt.Errorf("initialize amoCRM widget entitlement client: %w", clientErr)
+	}
+	serviceOptions = append(serviceOptions,
+		application.WithAmoWidgetTokenVerifier(amoWidgetVerifier),
+		application.WithWidgetEntitlementProvider(widgetEntitlementClient),
+	)
 	if configuration.AmoImportEnabled {
-		externalUsersClient, clientErr := externalusers.NewClient(externalusers.Config{
+		externalUsersClient, externalClientErr := externalusers.NewClient(externalusers.Config{
 			APIURL: configuration.ExternalAPIURL, AppName: configuration.AmoAppName,
 			Timeout: configuration.ExternalTimeout,
 		})
-		if clientErr != nil {
-			return fmt.Errorf("initialize amoCRM employees client: %w", clientErr)
+		if externalClientErr != nil {
+			return fmt.Errorf("initialize amoCRM employees client: %w", externalClientErr)
 		}
 		serviceOptions = append(serviceOptions, application.WithExternalEmployeeProvider(externalUsersClient))
 	}
@@ -231,8 +251,18 @@ func runCompanyRegistrationCleanup(ctx context.Context, service *application.Ser
 			}
 			return
 		}
+		continuations, err := service.CleanupAmoWidgetContinuations(
+			cleanupContext, time.Now().UTC().Add(-tokenRetention),
+		)
+		if err != nil {
+			if !errors.Is(err, context.Canceled) {
+				logger.Error("amoCRM widget continuation cleanup failed", "error", err)
+			}
+			return
+		}
 		logger.Info("company registration token cleanup completed",
 			"company_registration_tokens", deleted,
+			"amo_widget_continuations", continuations,
 		)
 	}
 	cleanup()
