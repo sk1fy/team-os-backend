@@ -95,8 +95,8 @@ func (s *Service) UpdateDepartment(ctx context.Context, actor Actor, input Updat
 	if department.Source == "amo" && input.Name != nil {
 		return Department{}, validation("Название импортированного отдела нельзя изменить")
 	}
-	if department.Source == "system" && (input.SetHeadUserID || input.SetValuableFinalProduct) {
-		return Department{}, validation("У головного отдела можно изменить только название")
+	if department.Source == "system" && input.SetValuableFinalProduct {
+		return Department{}, validation("У головного отдела нельзя изменить ЦКП")
 	}
 	if input.SetHeadUserID && input.HeadUserID != nil {
 		if _, err := queries.GetUser(ctx, db.GetUserParams{CompanyID: actor.CompanyID, ID: *input.HeadUserID}); isNoRows(err) {
@@ -276,12 +276,12 @@ func (s *Service) CreatePosition(ctx context.Context, actor Actor, input CreateP
 	if err != nil {
 		return Position{}, err
 	}
-	level := int16(0)
+	level := int16(1)
 	if input.Level != nil {
 		level = *input.Level
 	}
-	if level < 0 || level > 4 {
-		return Position{}, validation("Уровень должности должен быть от 0 до 4")
+	if level < 1 || level > 5 {
+		return Position{}, validation("Уровень должности должен быть от 1 до 5")
 	}
 	queries := db.New(s.pool)
 	department, err := queries.GetDepartment(ctx, db.GetDepartmentParams{CompanyID: actor.CompanyID, ID: input.DepartmentID})
@@ -315,8 +315,8 @@ func (s *Service) UpdatePosition(ctx context.Context, actor Actor, input UpdateP
 		}
 		input.Name = &name
 	}
-	if input.Level != nil && (*input.Level < 0 || *input.Level > 4) {
-		return Position{}, validation("Уровень должности должен быть от 0 до 4")
+	if input.Level != nil && (*input.Level < 1 || *input.Level > 5) {
+		return Position{}, validation("Уровень должности должен быть от 1 до 5")
 	}
 	tx, err := s.pool.Begin(ctx)
 	if err != nil {

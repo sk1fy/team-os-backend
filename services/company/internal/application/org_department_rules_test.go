@@ -100,6 +100,37 @@ func TestUpdateAmoDepartmentAllowsHeadAndValuableFinalProduct(t *testing.T) {
 	}
 }
 
+func TestUpdateSystemDepartmentAllowsHead(t *testing.T) {
+	mock, err := pgxmock.NewPool()
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(mock.Close)
+
+	companyID, userID, departmentID := uuid.New(), uuid.New(), uuid.New()
+	expectDepartment(mock, companyID, departmentID, "system")
+	now := time.Now()
+	mock.ExpectQuery("UPDATE departments").
+		WithArgs(pgxmock.AnyArg(), true, pgxmock.AnyArg(), false, pgxmock.AnyArg(), companyID, departmentID).
+		WillReturnRows(pgxmock.NewRows([]string{
+			"id", "company_id", "name", "parent_id", "head_user_id", "valuable_final_product",
+			"order", "created_at", "updated_at", "source", "external_id",
+		}).AddRow(
+			departmentID, companyID, "Компания", nil, nil, nil,
+			int32(0), now, now, "system", pgtype.Text{},
+		))
+	service := &Service{pool: mock}
+	_, err = service.UpdateDepartment(context.Background(), Actor{
+		CompanyID: companyID, UserID: userID, Role: "admin",
+	}, UpdateDepartmentInput{ID: departmentID, SetHeadUserID: true})
+	if err != nil {
+		t.Fatalf("UpdateDepartment() error = %v", err)
+	}
+	if err = mock.ExpectationsWereMet(); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestCreatePositionAllowsAmoDepartment(t *testing.T) {
 	mock, err := pgxmock.NewPool()
 	if err != nil {

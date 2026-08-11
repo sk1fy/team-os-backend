@@ -5423,8 +5423,8 @@ components:
           $ref: '#/components/schemas/ID'
         level:
           type: integer
-          minimum: 0
-          maximum: 4
+          minimum: 1
+          maximum: 5
         description:
           type: string
         articleIds:
@@ -6018,8 +6018,8 @@ components:
           $ref: '#/components/schemas/ID'
         level:
           type: integer
-          minimum: 0
-          maximum: 4
+          minimum: 1
+          maximum: 5
         description:
           type: string
 
@@ -6035,8 +6035,8 @@ components:
           $ref: '#/components/schemas/ID'
         level:
           type: integer
-          minimum: 0
-          maximum: 4
+          minimum: 1
+          maximum: 5
         description:
           type: string
 

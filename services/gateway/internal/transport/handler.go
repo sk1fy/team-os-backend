@@ -416,8 +416,8 @@ func (h *Handler) CreatePosition(w http.ResponseWriter, r *http.Request) {
 	}
 	var level *uint32
 	if input.Level != nil {
-		if *input.Level < 0 {
-			apierror.Write(w, apierror.BadRequest("Уровень должности должен быть от 0 до 4"))
+		if *input.Level < 1 {
+			apierror.Write(w, apierror.BadRequest("Уровень должности должен быть от 1 до 5"))
 			return
 		}
 		value := uint32(*input.Level)
@@ -441,8 +441,8 @@ func (h *Handler) UpdatePosition(w http.ResponseWriter, r *http.Request, id api.
 	}
 	var level *uint32
 	if input.Level != nil {
-		if *input.Level < 0 {
-			apierror.Write(w, apierror.BadRequest("Уровень должности должен быть от 0 до 4"))
+		if *input.Level < 1 {
+			apierror.Write(w, apierror.BadRequest("Уровень должности должен быть от 1 до 5"))
 			return
 		}
 		value := uint32(*input.Level)

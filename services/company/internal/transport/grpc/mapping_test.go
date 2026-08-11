@@ -102,9 +102,9 @@ func TestProtoOptionalOutputMapping(t *testing.T) {
 		t.Fatalf("unexpected optional values: %#v", withoutOptionals)
 	}
 
-	level := int16(0)
+	level := int16(1)
 	position := positionToProto(application.Position{Level: level})
-	if position.Level == nil || *position.Level != 0 {
+	if position.Level == nil || *position.Level != 1 {
 		t.Fatalf("position level = %#v", position.Level)
 	}
 }

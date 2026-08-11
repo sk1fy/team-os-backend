@@ -293,12 +293,12 @@ func Normalize(fixtures Fixtures, now time.Time) (Dataset, error) {
 		if _, exists := departmentIDs[departmentID]; !exists {
 			return Dataset{}, fmt.Errorf("%s.departmentId: отдел %q не найден", label, raw.DepartmentID)
 		}
-		level := int16(0)
+		level := int16(1)
 		if raw.Level != nil {
 			level = *raw.Level
 		}
-		if level < 0 || level > 4 {
-			return Dataset{}, fmt.Errorf("%s.level: ожидается значение от 0 до 4", label)
+		if level < 1 || level > 5 {
+			return Dataset{}, fmt.Errorf("%s.level: ожидается значение от 1 до 5", label)
 		}
 		articleIDs, err := mapIDList(raw.ArticleIDs)
 		if err != nil {

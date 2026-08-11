@@ -169,7 +169,7 @@ func departmentsToProto(values []application.Department) []*companyv1.Department
 }
 
 func positionToProto(value application.Position) *companyv1.Position {
-	level := uint32(0)
+	level := uint32(1)
 	if value.Level > 0 {
 		level = uint32(value.Level)
 	}
@@ -327,8 +327,8 @@ func optionalLevel(value *uint32) (*int16, error) {
 	if value == nil {
 		return nil, nil
 	}
-	if *value > 4 {
-		return nil, invalidArgument("Уровень должности должен быть от 0 до 4")
+	if *value < 1 || *value > 5 {
+		return nil, invalidArgument("Уровень должности должен быть от 1 до 5")
 	}
 	converted := int16(*value)
 	return &converted, nil
