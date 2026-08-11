@@ -199,12 +199,8 @@ func (s *Service) MoveDepartment(ctx context.Context, actor Actor, id uuid.UUID,
 		}
 		domainDepartments[index] = domainorg.Department{ID: domainorg.ID(row.ID.String()), ParentID: parent}
 	}
-	var target *domainorg.ID
-	if parentID != nil {
-		value := domainorg.ID(parentID.String())
-		target = &value
-	}
-	move := domainorg.CanMoveDepartment(domainDepartments, domainorg.ID(id.String()), target)
+	target := domainorg.ID(parentID.String())
+	move := domainorg.CanMoveDepartment(domainDepartments, domainorg.ID(id.String()), &target)
 	if !move.Allowed {
 		if move.Reason == "" {
 			move.Reason = "Перемещение невозможно"
