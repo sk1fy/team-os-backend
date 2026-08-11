@@ -99,6 +99,7 @@ func (s *Service) GetUsersByIDs(ctx context.Context, actor Actor, userIDs []uuid
 			Role:              row.Role,
 			Status:            row.Status,
 			PositionIDs:       append([]uuid.UUID(nil), row.PositionIds...),
+			DepartmentIDs:     append([]uuid.UUID(nil), row.DepartmentIds...),
 			BirthDate:         datePointer(row.BirthDate),
 			HiredAt:           datePointer(row.HiredAt),
 			VacationAllowance: int16Pointer(row.VacationAllowance),

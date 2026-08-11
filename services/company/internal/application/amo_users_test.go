@@ -12,6 +12,7 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/pashagolub/pgxmock/v4"
+	"github.com/sk1fy/team-os-backend/services/company/internal/storage/db"
 )
 
 type staticExternalEmployees []ExternalEmployee
@@ -116,6 +117,131 @@ func TestNormalizeExternalEmployeesRejectsDuplicates(t *testing.T) {
 	})
 	if err == nil {
 		t.Fatal("expected duplicate email error")
+	}
+}
+
+func TestCollectAmoGroupsDeduplicatesAndSorts(t *testing.T) {
+	groups, err := collectAmoGroups([]normalizedExternalEmployee{
+		{ID: "3", GroupID: "group_2", GroupName: "Поддержка"},
+		{ID: "1", GroupID: "group_1", GroupName: "Продажи"},
+		{ID: "2", GroupID: "group_1", GroupName: "Продажи"},
+		{ID: "4"},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := []normalizedAmoGroup{
+		{ID: "group_1", Name: "Продажи"},
+		{ID: "group_2", Name: "Поддержка"},
+	}
+	if len(groups) != len(want) {
+		t.Fatalf("groups=%#v, want %#v", groups, want)
+	}
+	for index := range want {
+		if groups[index] != want[index] {
+			t.Fatalf("groups[%d]=%#v, want %#v", index, groups[index], want[index])
+		}
+	}
+}
+
+func TestCollectAmoGroupsRejectsIncompleteAndConflictingGroups(t *testing.T) {
+	tests := []struct {
+		name      string
+		employees []normalizedExternalEmployee
+	}{
+		{
+			name:      "missing name",
+			employees: []normalizedExternalEmployee{{ID: "1", GroupID: "group_1"}},
+		},
+		{
+			name: "conflicting names",
+			employees: []normalizedExternalEmployee{
+				{ID: "1", GroupID: "group_1", GroupName: "Продажи"},
+				{ID: "2", GroupID: "group_1", GroupName: "Маркетинг"},
+			},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			if _, err := collectAmoGroups(test.employees); err == nil {
+				t.Fatal("collectAmoGroups() error = nil")
+			}
+		})
+	}
+}
+
+func TestEnsureAmoGroupDepartmentsCreatesDepartment(t *testing.T) {
+	mock, err := pgxmock.NewPool()
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(mock.Close)
+
+	companyID := uuid.New()
+	departmentID := uuid.New()
+	now := time.Now()
+	externalID := pgtype.Text{String: "group_1", Valid: true}
+	mock.ExpectQuery("INSERT INTO departments").
+		WithArgs(pgxmock.AnyArg(), companyID, "Отдел продаж", externalID).
+		WillReturnRows(pgxmock.NewRows([]string{
+			"id", "company_id", "name", "parent_id", "head_user_id", "valuable_final_product",
+			"order", "created_at", "updated_at", "source", "external_id",
+		}).AddRow(
+			departmentID, companyID, "Отдел продаж", nil, nil, nil,
+			int32(0), now, now, "amo", "group_1",
+		))
+	departments, err := ensureAmoGroupDepartments(
+		context.Background(), db.New(mock), companyID,
+		[]normalizedExternalEmployee{
+			{ID: "1", GroupID: "group_1", GroupName: "Отдел продаж"},
+			{ID: "2", GroupID: "group_1", GroupName: "Отдел продаж"},
+		},
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	createdDepartmentID := departments["group_1"]
+	if createdDepartmentID == nil || *createdDepartmentID != departmentID {
+		t.Fatalf("department=%#v", createdDepartmentID)
+	}
+	if err = mock.ExpectationsWereMet(); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestSyncAmoUserDepartmentAssignsDepartmentToPreviouslyImportedUser(t *testing.T) {
+	mock, err := pgxmock.NewPool()
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(mock.Close)
+
+	companyID := uuid.New()
+	userID := uuid.New()
+	departmentID := uuid.New()
+	groupID := pgtype.Text{String: "group_1", Valid: true}
+	groupName := pgtype.Text{String: "Отдел продаж", Valid: true}
+	mock.ExpectExec("INSERT INTO user_departments").
+		WithArgs(companyID, userID, departmentID).
+		WillReturnResult(pgconn.NewCommandTag("INSERT 0 1"))
+
+	changed, err := syncAmoUserDepartment(
+		context.Background(), db.New(mock), companyID,
+		db.User{
+			ID: userID, CompanyID: companyID, Source: "amo",
+			ExternalGroupID: groupID, ExternalGroupName: groupName,
+		},
+		normalizedExternalEmployee{ID: "1", GroupID: groupID.String, GroupName: groupName.String},
+		&departmentID,
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !changed {
+		t.Fatal("changed=false, want true")
+	}
+	if err = mock.ExpectationsWereMet(); err != nil {
+		t.Fatal(err)
 	}
 }
 

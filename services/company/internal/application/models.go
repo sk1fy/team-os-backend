@@ -36,6 +36,7 @@ type User struct {
 	Role              string
 	Status            string
 	PositionIDs       []uuid.UUID
+	DepartmentIDs     []uuid.UUID
 	BirthDate         *string
 	HiredAt           *string
 	VacationAllowance *int16

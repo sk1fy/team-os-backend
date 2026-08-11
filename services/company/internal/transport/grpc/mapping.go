@@ -38,6 +38,7 @@ func userToProto(value application.User) *companyv1.User {
 		Role:              userRoleToProto(value.Role),
 		Status:            userStatusToProto(value.Status),
 		PositionIds:       positionIDs,
+		DepartmentIds:     uuidStrings(value.DepartmentIDs),
 		BirthDate:         cloneString(value.BirthDate),
 		HiredAt:           cloneString(value.HiredAt),
 		VacationAllowance: vacationAllowance,

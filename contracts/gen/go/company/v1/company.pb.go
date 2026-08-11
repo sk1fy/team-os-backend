@@ -883,8 +883,10 @@ type User struct {
 	AccessMode        UserAccessMode         `protobuf:"varint,15,opt,name=access_mode,json=accessMode,proto3,enum=teamos.company.v1.UserAccessMode" json:"access_mode,omitempty"`
 	SectionAccess     []EmployeeSection      `protobuf:"varint,16,rep,packed,name=section_access,json=sectionAccess,proto3,enum=teamos.company.v1.EmployeeSection" json:"section_access,omitempty"`
 	ShowInSchedule    bool                   `protobuf:"varint,17,opt,name=show_in_schedule,json=showInSchedule,proto3" json:"show_in_schedule,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	// Direct department assignment; imported amoCRM users can have a department without a position.
+	DepartmentIds []string `protobuf:"bytes,18,rep,name=department_ids,json=departmentIds,proto3" json:"department_ids,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *User) Reset() {
@@ -1034,6 +1036,13 @@ func (x *User) GetShowInSchedule() bool {
 		return x.ShowInSchedule
 	}
 	return false
+}
+
+func (x *User) GetDepartmentIds() []string {
+	if x != nil {
+		return x.DepartmentIds
+	}
+	return nil
 }
 
 type Department struct {
@@ -9142,7 +9151,7 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\x0eamo_account_id\x18\x06 \x01(\tH\x01R\famoAccountId\x88\x01\x01\x128\n" +
 	"\x06status\x18\a \x01(\x0e2 .teamos.company.v1.CompanyStatusR\x06statusB\v\n" +
 	"\t_logo_urlB\x11\n" +
-	"\x0f_amo_account_id\"\xa1\x06\n" +
+	"\x0f_amo_account_id\"\xc8\x06\n" +
 	"\x04User\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x12\x1d\n" +
@@ -9166,7 +9175,8 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\vaccess_mode\x18\x0f \x01(\x0e2!.teamos.company.v1.UserAccessModeR\n" +
 	"accessMode\x12I\n" +
 	"\x0esection_access\x18\x10 \x03(\x0e2\".teamos.company.v1.EmployeeSectionR\rsectionAccess\x12(\n" +
-	"\x10show_in_schedule\x18\x11 \x01(\bR\x0eshowInScheduleB\r\n" +
+	"\x10show_in_schedule\x18\x11 \x01(\bR\x0eshowInSchedule\x12%\n" +
+	"\x0edepartment_ids\x18\x12 \x03(\tR\rdepartmentIdsB\r\n" +
 	"\v_avatar_urlB\b\n" +
 	"\x06_phoneB\r\n" +
 	"\v_birth_dateB\v\n" +

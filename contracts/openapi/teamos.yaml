@@ -5318,6 +5318,13 @@ components:
           uniqueItems: true
           items:
             $ref: '#/components/schemas/ID'
+        departmentIds:
+          description: Прямое назначение в отдел, в том числе для импортированных сотрудников без должности.
+          type: array
+          maxItems: 1
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/ID'
         birthDate:
           $ref: '#/components/schemas/LocalDate'
         hiredAt:

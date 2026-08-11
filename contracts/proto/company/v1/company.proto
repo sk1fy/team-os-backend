@@ -181,6 +181,8 @@ message User {
   UserAccessMode access_mode = 15;
   repeated EmployeeSection section_access = 16;
   bool show_in_schedule = 17;
+  // Direct department assignment; imported amoCRM users can have a department without a position.
+  repeated string department_ids = 18;
 }
 
 message Department {

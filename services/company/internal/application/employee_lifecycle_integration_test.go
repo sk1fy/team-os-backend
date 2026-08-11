@@ -127,6 +127,9 @@ func TestEmployeeSectionsAndLifecycle(t *testing.T) {
 
 	amoUserID := uuid.New()
 	amoEmail := "amo.lifecycle@example.com"
+	if _, err = pool.Exec(ctx, `UPDATE companies SET amo_account_id='31355990' WHERE id=$1`, companyID); err != nil {
+		t.Fatal(err)
+	}
 	if _, err = pool.Exec(ctx, `
 		INSERT INTO users (
 			id, company_id, email, first_name, last_name, role, status, source, external_id
@@ -206,7 +209,7 @@ func assertDistributionDisabled(
 	if err := pool.QueryRow(ctx, `
 		SELECT $2::uuid = ANY(disabled_member_ids)
 		FROM distribution_groups
-		WHERE company_id=$1`, companyID, userID,
+		WHERE company_id=$1 AND $2::uuid = ANY(member_ids)`, companyID, userID,
 	).Scan(&disabled); err != nil {
 		t.Fatal(err)
 	}

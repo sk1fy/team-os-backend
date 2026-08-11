@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"net/mail"
+	"sort"
 	"strings"
 	"unicode"
 
@@ -87,24 +88,41 @@ func (s *Service) syncAmoUsersNow(ctx context.Context, actor Actor) error {
 	if err != nil {
 		return internal("Не удалось получить сотрудников amoCRM для сверки", err)
 	}
+	groupDepartments, err := ensureAmoGroupDepartments(ctx, queries, actor.CompanyID, normalized)
+	if err != nil {
+		return err
+	}
 	snapshotIDs := make(map[string]struct{}, len(normalized))
 	for _, employee := range normalized {
 		snapshotIDs[employee.ID] = struct{}{}
 	}
 
 	for _, employee := range normalized {
+		departmentID := groupDepartments[employee.GroupID]
 		existing, findErr := queries.FindUserForAmoSync(ctx, db.FindUserForAmoSyncParams{
 			CompanyID: actor.CompanyID, ExternalID: pgtype.Text{String: employee.ID, Valid: true}, Email: employee.Email,
 		})
 		if findErr == nil {
 			// Импорт не перезаписывает профиль, статус или доступ уже известного TeamOS-пользователя.
+			restored := false
+			current := existing
 			if existing.Source == "amo" && existing.ExternalDeletedAt.Valid {
-				restored, restoreErr := queries.ClearAmoUserTombstone(ctx, db.ClearAmoUserTombstoneParams{
+				restoredUser, restoreErr := queries.ClearAmoUserTombstone(ctx, db.ClearAmoUserTombstoneParams{
 					CompanyID: actor.CompanyID, ID: existing.ID,
 				})
 				if restoreErr != nil {
 					return internal("Не удалось восстановить сотрудника amoCRM", restoreErr)
 				}
+				current = restoredUser
+				restored = true
+			}
+			departmentChanged, organizationErr := syncAmoUserDepartment(
+				ctx, queries, actor.CompanyID, current, employee, departmentID,
+			)
+			if organizationErr != nil {
+				return organizationErr
+			}
+			if restored || departmentChanged {
 				sections, sectionsErr := queries.ListEmployeeSectionAccess(ctx, db.ListEmployeeSectionAccessParams{
 					CompanyID: actor.CompanyID, UserID: existing.ID,
 				})
@@ -123,15 +141,24 @@ func (s *Service) syncAmoUsersNow(ctx context.Context, actor Actor) error {
 				if departmentsErr != nil {
 					return internal("Не удалось получить отделы сотрудника", departmentsErr)
 				}
-				restoredUser := userFromDB(restored, positionIDs)
-				if restored.Role == "employee" {
-					restoredUser.SectionAccess = normalizedEmployeeSections(sections)
+				updatedUser := userFromDB(current, positionIDs)
+				if current.Role == "employee" {
+					updatedUser.SectionAccess = normalizedEmployeeSections(sections)
+				}
+				changedFields := make([]string, 0, 3)
+				if restored {
+					changedFields = append(changedFields, "externalDeletedAt")
+				}
+				if departmentChanged {
+					changedFields = append(changedFields, "departmentIds")
 				}
 				if err = s.emit(ctx, queries, actor.CompanyID, actor.UserID, "teamos.org.user.updated.v1", map[string]any{
-					"user": userEventSnapshot(restoredUser, departmentIDs), "changedFields": []string{"externalDeletedAt"},
+					"user": userEventSnapshot(updatedUser, departmentIDs), "changedFields": changedFields,
 				}); err != nil {
 					return err
 				}
+			}
+			if restored {
 				if err = createUserAdminAudit(
 					ctx, queries, actor.CompanyID, &existing.ID, nil, "amo_sync", "external_restored",
 					map[string]any{"externalPresent": false}, map[string]any{"externalPresent": true},
@@ -159,14 +186,24 @@ func (s *Service) syncAmoUsersNow(ctx context.Context, actor Actor) error {
 		if err != nil {
 			return internal("Не удалось сохранить сотрудника amoCRM", err)
 		}
+		if _, organizationErr := syncAmoUserDepartment(
+			ctx, queries, actor.CompanyID, row, employee, departmentID,
+		); organizationErr != nil {
+			return organizationErr
+		}
 		sections := append([]string(nil), defaultEmployeeSections...)
 		if err = replaceEmployeeSections(ctx, queries, actor.CompanyID, row.ID, sections, nil); err != nil {
 			return err
 		}
+		departmentIDs := []uuid.UUID(nil)
+		if departmentID != nil {
+			departmentIDs = []uuid.UUID{*departmentID}
+		}
 		createdUser := userFromDB(row, nil)
+		createdUser.DepartmentIDs = departmentIDs
 		createdUser.SectionAccess = normalizedEmployeeSections(sections)
 		if err = s.emit(ctx, queries, actor.CompanyID, actor.UserID, "teamos.org.user.created.v1", map[string]any{
-			"user": userEventSnapshot(createdUser, nil),
+			"user": userEventSnapshot(createdUser, departmentIDs),
 		}); err != nil {
 			return err
 		}
@@ -224,6 +261,104 @@ func (s *Service) syncAmoUsersNow(ctx context.Context, actor Actor) error {
 type normalizedExternalEmployee struct {
 	ID, Email, FirstName, LastName, GroupID, GroupName string
 	AvatarURL                                          *string
+}
+
+type normalizedAmoGroup struct {
+	ID   string
+	Name string
+}
+
+func ensureAmoGroupDepartments(
+	ctx context.Context,
+	queries *db.Queries,
+	companyID uuid.UUID,
+	employees []normalizedExternalEmployee,
+) (map[string]*uuid.UUID, error) {
+	groups, err := collectAmoGroups(employees)
+	if err != nil {
+		return nil, upstream("Внешний API вернул некорректные группы сотрудников", err)
+	}
+	result := make(map[string]*uuid.UUID, len(groups))
+	for _, group := range groups {
+		department, createErr := queries.UpsertAmoDepartment(ctx, db.UpsertAmoDepartmentParams{
+			ID: uuid.New(), CompanyID: companyID, Name: group.Name, ExternalID: pgtype.Text{String: group.ID, Valid: true},
+		})
+		if createErr != nil {
+			return nil, internal("Не удалось создать отдел из группы amoCRM", createErr)
+		}
+		departmentID := department.ID
+		result[group.ID] = &departmentID
+	}
+	return result, nil
+}
+
+func collectAmoGroups(employees []normalizedExternalEmployee) ([]normalizedAmoGroup, error) {
+	groups := make(map[string]string)
+	for _, employee := range employees {
+		groupID := strings.TrimSpace(employee.GroupID)
+		groupName := strings.TrimSpace(employee.GroupName)
+		if groupID == "" && groupName == "" {
+			continue
+		}
+		if groupID == "" || groupName == "" {
+			return nil, fmt.Errorf("сотрудник %s: группа должна содержать id и название", employee.ID)
+		}
+		if existing, ok := groups[groupID]; ok && existing != groupName {
+			return nil, fmt.Errorf("группа %s имеет разные названия %q и %q", groupID, existing, groupName)
+		}
+		groups[groupID] = groupName
+	}
+	result := make([]normalizedAmoGroup, 0, len(groups))
+	for id, name := range groups {
+		result = append(result, normalizedAmoGroup{ID: id, Name: name})
+	}
+	sort.Slice(result, func(left, right int) bool { return result[left].ID < result[right].ID })
+	return result, nil
+}
+
+func syncAmoUserDepartment(
+	ctx context.Context,
+	queries *db.Queries,
+	companyID uuid.UUID,
+	user db.User,
+	employee normalizedExternalEmployee,
+	departmentID *uuid.UUID,
+) (bool, error) {
+	if user.Source != "amo" {
+		return false, nil
+	}
+	groupID := pgText(trimmedStringPointer(employee.GroupID))
+	groupName := pgText(trimmedStringPointer(employee.GroupName))
+	if !sameNullableText(user.ExternalGroupID, groupID) || !sameNullableText(user.ExternalGroupName, groupName) {
+		if _, err := queries.UpdateAmoUserGroup(ctx, db.UpdateAmoUserGroupParams{
+			ExternalGroupID: groupID, ExternalGroupName: groupName, CompanyID: companyID, ID: user.ID,
+		}); err != nil {
+			return false, internal("Не удалось обновить группу сотрудника amoCRM", err)
+		}
+	}
+	if departmentID != nil {
+		changed, err := queries.AssignAmoUserDepartment(ctx, db.AssignAmoUserDepartmentParams{
+			CompanyID: companyID, UserID: user.ID, DepartmentID: *departmentID,
+		})
+		if err != nil {
+			return false, internal("Не удалось назначить сотрудника в отдел amoCRM", err)
+		}
+		return changed > 0, nil
+	}
+	if !user.ExternalGroupID.Valid && !user.ExternalGroupName.Valid {
+		return false, nil
+	}
+	changed, err := queries.ClearAmoUserDepartment(ctx, db.ClearAmoUserDepartmentParams{
+		CompanyID: companyID, UserID: user.ID,
+	})
+	if err != nil {
+		return false, internal("Не удалось убрать сотрудника из отдела amoCRM", err)
+	}
+	return changed > 0, nil
+}
+
+func sameNullableText(left, right pgtype.Text) bool {
+	return left.Valid == right.Valid && (!left.Valid || left.String == right.String)
 }
 
 func normalizeExternalEmployees(companyID uuid.UUID, values []ExternalEmployee) ([]normalizedExternalEmployee, error) {

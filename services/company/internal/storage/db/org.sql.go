@@ -13,6 +13,31 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const assignAmoUserDepartment = `-- name: AssignAmoUserDepartment :execrows
+INSERT INTO user_departments (company_id, user_id, department_id)
+VALUES ($1, $2, $3)
+ON CONFLICT (user_id)
+DO UPDATE SET
+    company_id = EXCLUDED.company_id,
+    department_id = EXCLUDED.department_id
+WHERE user_departments.company_id = EXCLUDED.company_id
+  AND user_departments.department_id IS DISTINCT FROM EXCLUDED.department_id
+`
+
+type AssignAmoUserDepartmentParams struct {
+	CompanyID    uuid.UUID `json:"company_id"`
+	UserID       uuid.UUID `json:"user_id"`
+	DepartmentID uuid.UUID `json:"department_id"`
+}
+
+func (q *Queries) AssignAmoUserDepartment(ctx context.Context, arg AssignAmoUserDepartmentParams) (int64, error) {
+	result, err := q.db.Exec(ctx, assignAmoUserDepartment, arg.CompanyID, arg.UserID, arg.DepartmentID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
 const assignUserPosition = `-- name: AssignUserPosition :exec
 INSERT INTO user_positions (company_id, user_id, position_id)
 VALUES ($1, $2, $3)
@@ -27,6 +52,29 @@ type AssignUserPositionParams struct {
 func (q *Queries) AssignUserPosition(ctx context.Context, arg AssignUserPositionParams) error {
 	_, err := q.db.Exec(ctx, assignUserPosition, arg.CompanyID, arg.UserID, arg.PositionID)
 	return err
+}
+
+const clearAmoUserDepartment = `-- name: ClearAmoUserDepartment :execrows
+DELETE FROM user_departments AS assignment
+USING departments AS department
+WHERE assignment.company_id = $1
+  AND assignment.user_id = $2
+  AND department.company_id = assignment.company_id
+  AND department.id = assignment.department_id
+  AND department.source = 'amo'
+`
+
+type ClearAmoUserDepartmentParams struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	UserID    uuid.UUID `json:"user_id"`
+}
+
+func (q *Queries) ClearAmoUserDepartment(ctx context.Context, arg ClearAmoUserDepartmentParams) (int64, error) {
+	result, err := q.db.Exec(ctx, clearAmoUserDepartment, arg.CompanyID, arg.UserID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const clearAmoUserTombstone = `-- name: ClearAmoUserTombstone :one
@@ -177,7 +225,7 @@ VALUES (
     $1, $2, $3, $4, $5, $6,
     (SELECT count(*) FROM departments WHERE company_id = $2 AND parent_id IS NOT DISTINCT FROM $4)
 )
-RETURNING id, company_id, name, parent_id, head_user_id, valuable_final_product, "order", created_at, updated_at
+RETURNING id, company_id, name, parent_id, head_user_id, valuable_final_product, "order", created_at, updated_at, source, external_id
 `
 
 type CreateDepartmentParams struct {
@@ -209,6 +257,8 @@ func (q *Queries) CreateDepartment(ctx context.Context, arg CreateDepartmentPara
 		&i.Order,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Source,
+		&i.ExternalID,
 	)
 	return i, err
 }
@@ -468,7 +518,7 @@ func (q *Queries) FindUserForAmoSync(ctx context.Context, arg FindUserForAmoSync
 }
 
 const getDepartment = `-- name: GetDepartment :one
-SELECT id, company_id, name, parent_id, head_user_id, valuable_final_product, "order", created_at, updated_at FROM departments WHERE company_id = $1 AND id = $2
+SELECT id, company_id, name, parent_id, head_user_id, valuable_final_product, "order", created_at, updated_at, source, external_id FROM departments WHERE company_id = $1 AND id = $2
 `
 
 type GetDepartmentParams struct {
@@ -489,6 +539,8 @@ func (q *Queries) GetDepartment(ctx context.Context, arg GetDepartmentParams) (D
 		&i.Order,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Source,
+		&i.ExternalID,
 	)
 	return i, err
 }
@@ -587,6 +639,11 @@ const getUserWithPositions = `-- name: GetUserWithPositions :one
 SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name, u.avatar_source, u.external_deleted_at, u.show_in_schedule,
        COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids,
        ARRAY(
+           SELECT assignment.department_id
+           FROM user_departments AS assignment
+           WHERE assignment.company_id = u.company_id AND assignment.user_id = u.id
+       )::uuid[] AS department_ids,
+       ARRAY(
            SELECT access.section
            FROM employee_section_access access
            WHERE access.company_id = u.company_id AND access.user_id = u.id
@@ -631,6 +688,7 @@ type GetUserWithPositionsRow struct {
 	ExternalDeletedAt pgtype.Timestamptz `json:"external_deleted_at"`
 	ShowInSchedule    bool               `json:"show_in_schedule"`
 	PositionIds       []uuid.UUID        `json:"position_ids"`
+	DepartmentIds     []uuid.UUID        `json:"department_ids"`
 	SectionAccess     []string           `json:"section_access"`
 	AccessMode        string             `json:"access_mode"`
 }
@@ -661,6 +719,7 @@ func (q *Queries) GetUserWithPositions(ctx context.Context, arg GetUserWithPosit
 		&i.ExternalDeletedAt,
 		&i.ShowInSchedule,
 		&i.PositionIds,
+		&i.DepartmentIds,
 		&i.SectionAccess,
 		&i.AccessMode,
 	)
@@ -742,7 +801,7 @@ func (q *Queries) ListAmoUsersForReconciliation(ctx context.Context, companyID u
 }
 
 const listDepartments = `-- name: ListDepartments :many
-SELECT id, company_id, name, parent_id, head_user_id, valuable_final_product, "order", created_at, updated_at FROM departments
+SELECT id, company_id, name, parent_id, head_user_id, valuable_final_product, "order", created_at, updated_at, source, external_id FROM departments
 WHERE company_id = $1
 ORDER BY parent_id NULLS FIRST, "order", name
 `
@@ -766,6 +825,8 @@ func (q *Queries) ListDepartments(ctx context.Context, companyID uuid.UUID) ([]D
 			&i.Order,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Source,
+			&i.ExternalID,
 		); err != nil {
 			return nil, err
 		}
@@ -885,6 +946,11 @@ const listUsers = `-- name: ListUsers :many
 SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name, u.avatar_source, u.external_deleted_at, u.show_in_schedule,
        COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids,
        ARRAY(
+           SELECT assignment.department_id
+           FROM user_departments AS assignment
+           WHERE assignment.company_id = u.company_id AND assignment.user_id = u.id
+       )::uuid[] AS department_ids,
+       ARRAY(
            SELECT access.section
            FROM employee_section_access access
            WHERE access.company_id = u.company_id AND access.user_id = u.id
@@ -925,6 +991,7 @@ type ListUsersRow struct {
 	ExternalDeletedAt pgtype.Timestamptz `json:"external_deleted_at"`
 	ShowInSchedule    bool               `json:"show_in_schedule"`
 	PositionIds       []uuid.UUID        `json:"position_ids"`
+	DepartmentIds     []uuid.UUID        `json:"department_ids"`
 	SectionAccess     []string           `json:"section_access"`
 	AccessMode        string             `json:"access_mode"`
 }
@@ -961,6 +1028,7 @@ func (q *Queries) ListUsers(ctx context.Context, companyID uuid.UUID) ([]ListUse
 			&i.ExternalDeletedAt,
 			&i.ShowInSchedule,
 			&i.PositionIds,
+			&i.DepartmentIds,
 			&i.SectionAccess,
 			&i.AccessMode,
 		); err != nil {
@@ -1041,7 +1109,7 @@ SET parent_id = $3,
     ),
     updated_at = now()
 WHERE moving.company_id = $1 AND moving.id = $2
-RETURNING moving.id, moving.company_id, moving.name, moving.parent_id, moving.head_user_id, moving.valuable_final_product, moving."order", moving.created_at, moving.updated_at
+RETURNING moving.id, moving.company_id, moving.name, moving.parent_id, moving.head_user_id, moving.valuable_final_product, moving."order", moving.created_at, moving.updated_at, moving.source, moving.external_id
 `
 
 type MoveDepartmentParams struct {
@@ -1063,6 +1131,8 @@ func (q *Queries) MoveDepartment(ctx context.Context, arg MoveDepartmentParams) 
 		&i.Order,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Source,
+		&i.ExternalID,
 	)
 	return i, err
 }
@@ -1155,6 +1225,40 @@ func (q *Queries) RevokeInvite(ctx context.Context, arg RevokeInviteParams) (Inv
 	return i, err
 }
 
+const updateAmoUserGroup = `-- name: UpdateAmoUserGroup :execrows
+UPDATE users
+SET external_group_id = $1,
+    external_group_name = $2,
+    updated_at = now()
+WHERE company_id = $3
+  AND id = $4
+  AND source = 'amo'
+  AND (
+      external_group_id IS DISTINCT FROM $1
+      OR external_group_name IS DISTINCT FROM $2
+  )
+`
+
+type UpdateAmoUserGroupParams struct {
+	ExternalGroupID   pgtype.Text `json:"external_group_id"`
+	ExternalGroupName pgtype.Text `json:"external_group_name"`
+	CompanyID         uuid.UUID   `json:"company_id"`
+	ID                uuid.UUID   `json:"id"`
+}
+
+func (q *Queries) UpdateAmoUserGroup(ctx context.Context, arg UpdateAmoUserGroupParams) (int64, error) {
+	result, err := q.db.Exec(ctx, updateAmoUserGroup,
+		arg.ExternalGroupID,
+		arg.ExternalGroupName,
+		arg.CompanyID,
+		arg.ID,
+	)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
 const updateDepartment = `-- name: UpdateDepartment :one
 UPDATE departments
 SET name = COALESCE($1, name),
@@ -1162,7 +1266,7 @@ SET name = COALESCE($1, name),
     valuable_final_product = CASE WHEN $4::boolean THEN $5 ELSE valuable_final_product END,
     updated_at = now()
 WHERE company_id = $6 AND id = $7
-RETURNING id, company_id, name, parent_id, head_user_id, valuable_final_product, "order", created_at, updated_at
+RETURNING id, company_id, name, parent_id, head_user_id, valuable_final_product, "order", created_at, updated_at, source, external_id
 `
 
 type UpdateDepartmentParams struct {
@@ -1196,6 +1300,8 @@ func (q *Queries) UpdateDepartment(ctx context.Context, arg UpdateDepartmentPara
 		&i.Order,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Source,
+		&i.ExternalID,
 	)
 	return i, err
 }
@@ -1328,6 +1434,58 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.AvatarSource,
 		&i.ExternalDeletedAt,
 		&i.ShowInSchedule,
+	)
+	return i, err
+}
+
+const upsertAmoDepartment = `-- name: UpsertAmoDepartment :one
+INSERT INTO departments (
+    id, company_id, name, parent_id, "order", source, external_id
+)
+VALUES (
+    $1, $2, $3, NULL,
+    (
+        SELECT COALESCE(max(department."order"), -1) + 1
+        FROM departments AS department
+        WHERE department.company_id = $2
+          AND department.parent_id IS NULL
+    ),
+    'amo', $4
+)
+ON CONFLICT (company_id, external_id) WHERE source = 'amo'
+DO UPDATE SET
+    name = EXCLUDED.name,
+    updated_at = now()
+RETURNING id, company_id, name, parent_id, head_user_id, valuable_final_product, "order", created_at, updated_at, source, external_id
+`
+
+type UpsertAmoDepartmentParams struct {
+	ID         uuid.UUID   `json:"id"`
+	CompanyID  uuid.UUID   `json:"company_id"`
+	Name       string      `json:"name"`
+	ExternalID pgtype.Text `json:"external_id"`
+}
+
+func (q *Queries) UpsertAmoDepartment(ctx context.Context, arg UpsertAmoDepartmentParams) (Department, error) {
+	row := q.db.QueryRow(ctx, upsertAmoDepartment,
+		arg.ID,
+		arg.CompanyID,
+		arg.Name,
+		arg.ExternalID,
+	)
+	var i Department
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.Name,
+		&i.ParentID,
+		&i.HeadUserID,
+		&i.ValuableFinalProduct,
+		&i.Order,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Source,
+		&i.ExternalID,
 	)
 	return i, err
 }

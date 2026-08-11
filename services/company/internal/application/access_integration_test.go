@@ -235,8 +235,8 @@ func companyAccessTestPool(t *testing.T, ctx context.Context) *pgxpool.Pool {
 		t.Fatal("не удалось определить путь к миграциям")
 	}
 	migrationsDir := filepath.Join(filepath.Dir(filename), "..", "..", "migrations")
-	initScripts := make([]string, 0, 9)
-	for migration := 1; migration <= 9; migration++ {
+	initScripts := make([]string, 0, 13)
+	for migration := 1; migration <= 13; migration++ {
 		initScripts = append(initScripts, filepath.Join(
 			migrationsDir, fmt.Sprintf("%06d_%s.up.sql", migration, accessMigrationName(migration)),
 		))
@@ -270,15 +270,19 @@ func companyAccessTestPool(t *testing.T, ctx context.Context) *pgxpool.Pool {
 
 func accessMigrationName(migration int) string {
 	return map[int]string{
-		1: "init",
-		2: "phase6_schedule_distribution",
-		3: "amo_users",
-		4: "remove_amo_from_user_names",
-		5: "validate_phone",
-		6: "employee_access",
-		7: "user_profiles_access_audit",
-		8: "employee_sections_lifecycle",
-		9: "provisioning",
+		1:  "init",
+		2:  "phase6_schedule_distribution",
+		3:  "amo_users",
+		4:  "remove_amo_from_user_names",
+		5:  "validate_phone",
+		6:  "employee_access",
+		7:  "user_profiles_access_audit",
+		8:  "employee_sections_lifecycle",
+		9:  "provisioning",
+		10: "company_registration_tokens",
+		11: "legacy_amo_integrations",
+		12: "user_schedule_visibility",
+		13: "amo_group_organization",
 	}[migration]
 }
 

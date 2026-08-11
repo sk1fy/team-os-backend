@@ -84,6 +84,11 @@ ORDER BY up.user_id;
 SELECT u.*,
        COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids,
        ARRAY(
+           SELECT assignment.department_id
+           FROM user_departments AS assignment
+           WHERE assignment.company_id = u.company_id AND assignment.user_id = u.id
+       )::uuid[] AS department_ids,
+       ARRAY(
            SELECT access.section
            FROM employee_section_access access
            WHERE access.company_id = u.company_id AND access.user_id = u.id
@@ -104,6 +109,11 @@ ORDER BY u.created_at, u.id;
 SELECT u.*,
        COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids,
        ARRAY(
+           SELECT assignment.department_id
+           FROM user_departments AS assignment
+           WHERE assignment.company_id = u.company_id AND assignment.user_id = u.id
+       )::uuid[] AS department_ids,
+       ARRAY(
            SELECT access.section
            FROM employee_section_access access
            WHERE access.company_id = u.company_id AND access.user_id = u.id
@@ -121,6 +131,26 @@ GROUP BY u.id;
 
 -- name: LockAmoUserSync :exec
 SELECT pg_advisory_xact_lock(hashtextextended(sqlc.arg('company_id')::uuid::text, 0));
+
+-- name: UpsertAmoDepartment :one
+INSERT INTO departments (
+    id, company_id, name, parent_id, "order", source, external_id
+)
+VALUES (
+    sqlc.arg('id'), sqlc.arg('company_id'), sqlc.arg('name'), NULL,
+    (
+        SELECT COALESCE(max(department."order"), -1) + 1
+        FROM departments AS department
+        WHERE department.company_id = sqlc.arg('company_id')
+          AND department.parent_id IS NULL
+    ),
+    'amo', sqlc.arg('external_id')
+)
+ON CONFLICT (company_id, external_id) WHERE source = 'amo'
+DO UPDATE SET
+    name = EXCLUDED.name,
+    updated_at = now()
+RETURNING *;
 
 -- name: FindUserForAmoSync :one
 SELECT *
@@ -166,6 +196,38 @@ INSERT INTO users (
 VALUES ($1, $2, $3, $4, $5, $6, sqlc.narg('avatar_source'),
     'employee', 'active', 'amo', $7, $8, $9)
 RETURNING *;
+
+-- name: UpdateAmoUserGroup :execrows
+UPDATE users
+SET external_group_id = sqlc.narg('external_group_id'),
+    external_group_name = sqlc.narg('external_group_name'),
+    updated_at = now()
+WHERE company_id = sqlc.arg('company_id')
+  AND id = sqlc.arg('id')
+  AND source = 'amo'
+  AND (
+      external_group_id IS DISTINCT FROM sqlc.narg('external_group_id')
+      OR external_group_name IS DISTINCT FROM sqlc.narg('external_group_name')
+  );
+
+-- name: AssignAmoUserDepartment :execrows
+INSERT INTO user_departments (company_id, user_id, department_id)
+VALUES (sqlc.arg('company_id'), sqlc.arg('user_id'), sqlc.arg('department_id'))
+ON CONFLICT (user_id)
+DO UPDATE SET
+    company_id = EXCLUDED.company_id,
+    department_id = EXCLUDED.department_id
+WHERE user_departments.company_id = EXCLUDED.company_id
+  AND user_departments.department_id IS DISTINCT FROM EXCLUDED.department_id;
+
+-- name: ClearAmoUserDepartment :execrows
+DELETE FROM user_departments AS assignment
+USING departments AS department
+WHERE assignment.company_id = sqlc.arg('company_id')
+  AND assignment.user_id = sqlc.arg('user_id')
+  AND department.company_id = assignment.company_id
+  AND department.id = assignment.department_id
+  AND department.source = 'amo';
 
 -- name: UpdateUser :one
 UPDATE users

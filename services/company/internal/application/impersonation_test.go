@@ -130,6 +130,9 @@ func TestImpersonateUserCreatesSessionWithoutChangingLoginMode(t *testing.T) {
 			now.Add(30*24*time.Hour), now, nil, nil, nil, nil, nil, nil,
 		))
 	expectAccessMode(mock, companyID, targetID, "password")
+	mock.ExpectQuery("SELECT department_id").
+		WithArgs(companyID, targetID).
+		WillReturnRows(pgxmock.NewRows([]string{"department_id"}))
 	mock.ExpectCommit()
 
 	_, privateKey, err := ed25519.GenerateKey(rand.Reader)

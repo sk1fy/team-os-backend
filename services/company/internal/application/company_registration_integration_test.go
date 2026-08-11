@@ -182,15 +182,22 @@ func companyRegistrationTestPool(t *testing.T, ctx context.Context) *pgxpool.Poo
 		t.Fatal("не удалось определить путь к миграциям")
 	}
 	migrationsDir := filepath.Join(filepath.Dir(filename), "..", "..", "migrations")
-	names := []string{
-		"init", "phase6_schedule_distribution", "amo_users", "remove_amo_from_user_names",
-		"validate_phone", "employee_access", "user_profiles_access_audit",
-		"employee_sections_lifecycle", "provisioning", "company_registration_tokens",
-		"legacy_amo_integrations",
+	migrations := []struct {
+		version int
+		name    string
+	}{
+		{1, "init"}, {2, "phase6_schedule_distribution"}, {3, "amo_users"},
+		{4, "remove_amo_from_user_names"}, {5, "validate_phone"}, {6, "employee_access"},
+		{7, "user_profiles_access_audit"}, {8, "employee_sections_lifecycle"}, {9, "provisioning"},
+		{10, "company_registration_tokens"},
+		// Миграцию 11 тест применяет после вставки legacy-компании, чтобы проверить backfill.
+		{12, "user_schedule_visibility"}, {13, "amo_group_organization"},
 	}
-	initScripts := make([]string, 0, len(names))
-	for migration, name := range names {
-		initScripts = append(initScripts, filepath.Join(migrationsDir, fmt.Sprintf("%06d_%s.up.sql", migration+1, name)))
+	initScripts := make([]string, 0, len(migrations))
+	for _, migration := range migrations {
+		initScripts = append(initScripts, filepath.Join(
+			migrationsDir, fmt.Sprintf("%06d_%s.up.sql", migration.version, migration.name),
+		))
 	}
 	container, err := postgres.Run(ctx, "postgres:16-alpine",
 		postgres.WithDatabase("company"), postgres.WithUsername("company"), postgres.WithPassword("company"),

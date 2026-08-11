@@ -91,6 +91,8 @@ type Department struct {
 	Order                int32         `json:"order"`
 	CreatedAt            time.Time     `json:"created_at"`
 	UpdatedAt            time.Time     `json:"updated_at"`
+	Source               string        `json:"source"`
+	ExternalID           pgtype.Text   `json:"external_id"`
 }
 
 type DistributionEvent struct {
@@ -272,6 +274,12 @@ type UserAdminAudit struct {
 	AfterState   []byte        `json:"after_state"`
 	RequestID    pgtype.Text   `json:"request_id"`
 	CreatedAt    time.Time     `json:"created_at"`
+}
+
+type UserDepartment struct {
+	CompanyID    uuid.UUID `json:"company_id"`
+	UserID       uuid.UUID `json:"user_id"`
+	DepartmentID uuid.UUID `json:"department_id"`
 }
 
 type UserExternalIdentity struct {

@@ -67,7 +67,7 @@ func (s *Service) exchangeUnsignedAmoWidgetSession(
 		return AmoWidgetSessionResult{}, err
 	}
 	return s.provisionAmoWidgetSession(
-		ctx, accountID, externalUserID, email, firstName, lastName, companyName, true, false,
+		ctx, accountID, externalUserID, email, firstName, lastName, companyName, true, true,
 	)
 }
 

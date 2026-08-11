@@ -65,7 +65,15 @@ func (s *Service) UpdateCurrentUser(
 	if err != nil {
 		return User{}, internal("Не удалось получить должность", err)
 	}
-	return userFromDB(user, positions), nil
+	directDepartmentIDs, err := queries.GetUserDirectDepartmentIDs(ctx, db.GetUserDirectDepartmentIDsParams{
+		CompanyID: actor.CompanyID, UserID: actor.UserID,
+	})
+	if err != nil {
+		return User{}, internal("Не удалось получить прямой отдел", err)
+	}
+	result := userFromDB(user, positions)
+	result.DepartmentIDs = directDepartmentIDs
+	return result, nil
 }
 
 func (s *Service) GetCompany(ctx context.Context, actor Actor) (Company, error) {

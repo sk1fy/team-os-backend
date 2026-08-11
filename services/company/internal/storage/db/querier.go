@@ -18,7 +18,9 @@ type Querier interface {
 	ActivateInvitedUser(ctx context.Context, arg ActivateInvitedUserParams) (User, error)
 	AmoAccountExists(ctx context.Context, arg AmoAccountExistsParams) (bool, error)
 	AmoWidgetUserHasPassword(ctx context.Context, arg AmoWidgetUserHasPasswordParams) (bool, error)
+	AssignAmoUserDepartment(ctx context.Context, arg AssignAmoUserDepartmentParams) (int64, error)
 	AssignUserPosition(ctx context.Context, arg AssignUserPositionParams) error
+	ClearAmoUserDepartment(ctx context.Context, arg ClearAmoUserDepartmentParams) (int64, error)
 	ClearAmoUserTombstone(ctx context.Context, arg ClearAmoUserTombstoneParams) (User, error)
 	CompanyAmoAccountExists(ctx context.Context, externalAccountID string) (bool, error)
 	ConsumeAmoWidgetContinuation(ctx context.Context, arg ConsumeAmoWidgetContinuationParams) (SsoToken, error)
@@ -81,6 +83,7 @@ type Querier interface {
 	GetUserByAccessToken(ctx context.Context, token string) (User, error)
 	GetUserByEmailForUpdate(ctx context.Context, email string) (User, error)
 	GetUserDepartmentClaims(ctx context.Context, arg GetUserDepartmentClaimsParams) ([]uuid.UUID, error)
+	GetUserDirectDepartmentIDs(ctx context.Context, arg GetUserDirectDepartmentIDsParams) ([]uuid.UUID, error)
 	GetUserForAccessUpdate(ctx context.Context, arg GetUserForAccessUpdateParams) (User, error)
 	GetUserForLogin(ctx context.Context, email string) (GetUserForLoginRow, error)
 	GetUserPositionIDs(ctx context.Context, arg GetUserPositionIDsParams) ([]uuid.UUID, error)
@@ -119,6 +122,7 @@ type Querier interface {
 	RotateSession(ctx context.Context, arg RotateSessionParams) (int64, error)
 	SetCompanyOwner(ctx context.Context, arg SetCompanyOwnerParams) (Company, error)
 	SetCredential(ctx context.Context, arg SetCredentialParams) error
+	UpdateAmoUserGroup(ctx context.Context, arg UpdateAmoUserGroupParams) (int64, error)
 	UpdateCompany(ctx context.Context, arg UpdateCompanyParams) (Company, error)
 	UpdateCurrentUser(ctx context.Context, arg UpdateCurrentUserParams) (User, error)
 	UpdateDepartment(ctx context.Context, arg UpdateDepartmentParams) (Department, error)
@@ -126,6 +130,7 @@ type Querier interface {
 	UpdatePosition(ctx context.Context, arg UpdatePositionParams) (Position, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 	UpsertAccessLink(ctx context.Context, arg UpsertAccessLinkParams) (AccessLink, error)
+	UpsertAmoDepartment(ctx context.Context, arg UpsertAmoDepartmentParams) (Department, error)
 	UpsertSchedule(ctx context.Context, arg UpsertScheduleParams) (UserSchedule, error)
 	UpsertShiftException(ctx context.Context, arg UpsertShiftExceptionParams) (ShiftException, error)
 }

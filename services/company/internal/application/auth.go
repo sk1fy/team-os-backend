@@ -526,6 +526,13 @@ func (s *Service) createSessionWithID(
 		return AuthResult{}, internal("Не удалось получить способ доступа", err)
 	}
 	resultUser := userFromDB(user, positionIDs)
+	directDepartmentIDs, err := queries.GetUserDirectDepartmentIDs(ctx, db.GetUserDirectDepartmentIDsParams{
+		CompanyID: user.CompanyID, UserID: user.ID,
+	})
+	if err != nil {
+		return AuthResult{}, internal("Не удалось получить прямой отдел", err)
+	}
+	resultUser.DepartmentIDs = directDepartmentIDs
 	resultUser.AccessMode = accessMode
 	resultUser.SectionAccess = normalizedEmployeeSections(sectionAccess)
 	return AuthResult{

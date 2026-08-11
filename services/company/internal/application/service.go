@@ -345,6 +345,7 @@ func userFromDB(value db.User, positions []uuid.UUID) User {
 		Role:              value.Role,
 		Status:            value.Status,
 		PositionIDs:       append([]uuid.UUID(nil), positions...),
+		DepartmentIDs:     []uuid.UUID{},
 		BirthDate:         datePointer(value.BirthDate),
 		HiredAt:           datePointer(value.HiredAt),
 		VacationAllowance: int16Pointer(value.VacationAllowance),

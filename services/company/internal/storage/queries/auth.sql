@@ -104,11 +104,20 @@ SELECT position_id
 FROM user_positions
 WHERE company_id = $1 AND user_id = $2;
 
+-- name: GetUserDirectDepartmentIDs :many
+SELECT department_id
+FROM user_departments
+WHERE company_id = $1 AND user_id = $2;
+
 -- name: GetUserDepartmentClaims :many
 WITH RECURSIVE direct_departments AS (
-    SELECT DISTINCT p.department_id AS id
+    SELECT ud.department_id AS id
+    FROM user_departments ud
+    WHERE ud.company_id = $1 AND ud.user_id = $2
+    UNION
+    SELECT p.department_id AS id
     FROM user_positions up
-    JOIN positions p ON p.id = up.position_id
+    JOIN positions p ON p.company_id = up.company_id AND p.id = up.position_id
     WHERE up.company_id = $1 AND up.user_id = $2
 ), department_chain AS (
     SELECT d.id, d.parent_id

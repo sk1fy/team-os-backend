@@ -734,6 +734,13 @@ func (s *Service) updateUser(ctx context.Context, actor Actor, input UpdateUserI
 		}
 	}
 	updatedUser := userFromDB(row, positions)
+	directDepartmentIDs, err := queries.GetUserDirectDepartmentIDs(ctx, db.GetUserDirectDepartmentIDsParams{
+		CompanyID: actor.CompanyID, UserID: row.ID,
+	})
+	if err != nil {
+		return User{}, internal("Не удалось получить прямой отдел сотрудника", err)
+	}
+	updatedUser.DepartmentIDs = directDepartmentIDs
 	updatedUser.SectionAccess = normalizedEmployeeSections(nextSections)
 	subject := "teamos.org.user.updated.v1"
 	if row.Status == "deactivated" && current.Status != "deactivated" {
@@ -1008,11 +1015,11 @@ func positionFromDB(row db.Position) Position {
 }
 
 func userFromJoinedRow(row db.GetUserWithPositionsRow) User {
-	return User{ID: row.ID, CompanyID: row.CompanyID, Email: row.Email, FirstName: row.FirstName, LastName: textValue(row.LastName), AvatarURL: textPointer(row.AvatarUrl), Phone: textPointer(row.Phone), Role: row.Role, Status: row.Status, PositionIDs: append([]uuid.UUID(nil), row.PositionIds...), BirthDate: datePointer(row.BirthDate), HiredAt: datePointer(row.HiredAt), VacationAllowance: int16Pointer(row.VacationAllowance), ShowInSchedule: row.Role != "owner" && row.ShowInSchedule, CreatedAt: row.CreatedAt, Source: row.Source, AccessMode: row.AccessMode, SectionAccess: append([]string(nil), row.SectionAccess...)}
+	return User{ID: row.ID, CompanyID: row.CompanyID, Email: row.Email, FirstName: row.FirstName, LastName: textValue(row.LastName), AvatarURL: textPointer(row.AvatarUrl), Phone: textPointer(row.Phone), Role: row.Role, Status: row.Status, PositionIDs: append([]uuid.UUID(nil), row.PositionIds...), DepartmentIDs: append([]uuid.UUID(nil), row.DepartmentIds...), BirthDate: datePointer(row.BirthDate), HiredAt: datePointer(row.HiredAt), VacationAllowance: int16Pointer(row.VacationAllowance), ShowInSchedule: row.Role != "owner" && row.ShowInSchedule, CreatedAt: row.CreatedAt, Source: row.Source, AccessMode: row.AccessMode, SectionAccess: append([]string(nil), row.SectionAccess...)}
 }
 
 func userFromListRow(row db.ListUsersRow) User {
-	return User{ID: row.ID, CompanyID: row.CompanyID, Email: row.Email, FirstName: row.FirstName, LastName: textValue(row.LastName), AvatarURL: textPointer(row.AvatarUrl), Phone: textPointer(row.Phone), Role: row.Role, Status: row.Status, PositionIDs: append([]uuid.UUID(nil), row.PositionIds...), BirthDate: datePointer(row.BirthDate), HiredAt: datePointer(row.HiredAt), VacationAllowance: int16Pointer(row.VacationAllowance), ShowInSchedule: row.Role != "owner" && row.ShowInSchedule, CreatedAt: row.CreatedAt, Source: row.Source, AccessMode: row.AccessMode, SectionAccess: append([]string(nil), row.SectionAccess...)}
+	return User{ID: row.ID, CompanyID: row.CompanyID, Email: row.Email, FirstName: row.FirstName, LastName: textValue(row.LastName), AvatarURL: textPointer(row.AvatarUrl), Phone: textPointer(row.Phone), Role: row.Role, Status: row.Status, PositionIDs: append([]uuid.UUID(nil), row.PositionIds...), DepartmentIDs: append([]uuid.UUID(nil), row.DepartmentIds...), BirthDate: datePointer(row.BirthDate), HiredAt: datePointer(row.HiredAt), VacationAllowance: int16Pointer(row.VacationAllowance), ShowInSchedule: row.Role != "owner" && row.ShowInSchedule, CreatedAt: row.CreatedAt, Source: row.Source, AccessMode: row.AccessMode, SectionAccess: append([]string(nil), row.SectionAccess...)}
 }
 
 func trimmedOptional(value *string) *string {

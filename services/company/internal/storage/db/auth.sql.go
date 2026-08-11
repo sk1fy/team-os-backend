@@ -605,9 +605,13 @@ func (q *Queries) GetUserByEmailForUpdate(ctx context.Context, email string) (Us
 
 const getUserDepartmentClaims = `-- name: GetUserDepartmentClaims :many
 WITH RECURSIVE direct_departments AS (
-    SELECT DISTINCT p.department_id AS id
+    SELECT ud.department_id AS id
+    FROM user_departments ud
+    WHERE ud.company_id = $1 AND ud.user_id = $2
+    UNION
+    SELECT p.department_id AS id
     FROM user_positions up
-    JOIN positions p ON p.id = up.position_id
+    JOIN positions p ON p.company_id = up.company_id AND p.id = up.position_id
     WHERE up.company_id = $1 AND up.user_id = $2
 ), department_chain AS (
     SELECT d.id, d.parent_id
@@ -639,6 +643,37 @@ func (q *Queries) GetUserDepartmentClaims(ctx context.Context, arg GetUserDepart
 			return nil, err
 		}
 		items = append(items, id)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getUserDirectDepartmentIDs = `-- name: GetUserDirectDepartmentIDs :many
+SELECT department_id
+FROM user_departments
+WHERE company_id = $1 AND user_id = $2
+`
+
+type GetUserDirectDepartmentIDsParams struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	UserID    uuid.UUID `json:"user_id"`
+}
+
+func (q *Queries) GetUserDirectDepartmentIDs(ctx context.Context, arg GetUserDirectDepartmentIDsParams) ([]uuid.UUID, error) {
+	rows, err := q.db.Query(ctx, getUserDirectDepartmentIDs, arg.CompanyID, arg.UserID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []uuid.UUID{}
+	for rows.Next() {
+		var department_id uuid.UUID
+		if err := rows.Scan(&department_id); err != nil {
+			return nil, err
+		}
+		items = append(items, department_id)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
