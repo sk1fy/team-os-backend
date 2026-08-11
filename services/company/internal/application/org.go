@@ -92,8 +92,8 @@ func (s *Service) UpdateDepartment(ctx context.Context, actor Actor, input Updat
 	if err != nil {
 		return Department{}, internal("Не удалось проверить отдел", err)
 	}
-	if department.Source == "amo" {
-		return Department{}, validation("Импортированный отдел можно только перемещать")
+	if department.Source == "amo" && input.Name != nil {
+		return Department{}, validation("Название импортированного отдела нельзя изменить")
 	}
 	if department.Source == "system" && (input.SetHeadUserID || input.SetValuableFinalProduct) {
 		return Department{}, validation("У головного отдела можно изменить только название")
@@ -290,8 +290,8 @@ func (s *Service) CreatePosition(ctx context.Context, actor Actor, input CreateP
 	} else if err != nil {
 		return Position{}, internal("Не удалось проверить отдел", err)
 	}
-	if department.Source != "local" {
-		return Position{}, validation("В головной или импортированный отдел нельзя добавить должность")
+	if department.Source == "system" {
+		return Position{}, validation("В головной отдел нельзя добавить должность")
 	}
 	description := trimmedOptional(input.Description)
 	row, err := queries.CreatePosition(ctx, db.CreatePositionParams{
@@ -331,8 +331,8 @@ func (s *Service) UpdatePosition(ctx context.Context, actor Actor, input UpdateP
 		} else if departmentErr != nil {
 			return Position{}, internal("Не удалось проверить отдел", departmentErr)
 		}
-		if department.Source != "local" {
-			return Position{}, validation("Должность нельзя переместить в головной или импортированный отдел")
+		if department.Source == "system" {
+			return Position{}, validation("Должность нельзя переместить в головной отдел")
 		}
 	}
 	affectedUserIDs := []uuid.UUID{}
