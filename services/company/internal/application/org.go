@@ -41,7 +41,13 @@ func (s *Service) CreateDepartment(ctx context.Context, actor Actor, input Creat
 		return Department{}, err
 	}
 	queries := db.New(s.pool)
-	if input.ParentID != nil {
+	if input.ParentID == nil {
+		root, rootErr := queries.GetSystemDepartment(ctx, actor.CompanyID)
+		if rootErr != nil {
+			return Department{}, internal("Не удалось получить головной отдел", rootErr)
+		}
+		input.ParentID = &root.ID
+	} else {
 		if _, err = queries.GetDepartment(ctx, db.GetDepartmentParams{CompanyID: actor.CompanyID, ID: *input.ParentID}); isNoRows(err) {
 			return Department{}, notFound("Родительский отдел")
 		} else if err != nil {
@@ -79,6 +85,19 @@ func (s *Service) UpdateDepartment(ctx context.Context, actor Actor, input Updat
 		input.Name = &name
 	}
 	queries := db.New(s.pool)
+	department, err := queries.GetDepartment(ctx, db.GetDepartmentParams{CompanyID: actor.CompanyID, ID: input.ID})
+	if isNoRows(err) {
+		return Department{}, notFound("Отдел")
+	}
+	if err != nil {
+		return Department{}, internal("Не удалось проверить отдел", err)
+	}
+	if department.Source == "amo" {
+		return Department{}, validation("Импортированный отдел можно только перемещать")
+	}
+	if department.Source == "system" && (input.SetHeadUserID || input.SetValuableFinalProduct) {
+		return Department{}, validation("У головного отдела можно изменить только название")
+	}
 	if input.SetHeadUserID && input.HeadUserID != nil {
 		if _, err := queries.GetUser(ctx, db.GetUserParams{CompanyID: actor.CompanyID, ID: *input.HeadUserID}); isNoRows(err) {
 			return Department{}, notFound("Сотрудник")
@@ -106,6 +125,19 @@ func (s *Service) DeleteDepartment(ctx context.Context, actor Actor, id uuid.UUI
 		return err
 	}
 	queries := db.New(s.pool)
+	department, err := queries.GetDepartment(ctx, db.GetDepartmentParams{CompanyID: actor.CompanyID, ID: id})
+	if isNoRows(err) {
+		return notFound("Отдел")
+	}
+	if err != nil {
+		return internal("Не удалось проверить отдел", err)
+	}
+	if department.Source == "system" {
+		return validation("Головной отдел нельзя удалить")
+	}
+	if department.Source == "amo" {
+		return validation("Импортированный отдел нельзя удалить")
+	}
 	children, err := queries.CountDepartmentChildren(ctx, db.CountDepartmentChildrenParams{
 		CompanyID: actor.CompanyID, ParentID: uuid.NullUUID{UUID: id, Valid: true},
 	})
@@ -141,6 +173,19 @@ func (s *Service) MoveDepartment(ctx context.Context, actor Actor, id uuid.UUID,
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
 	queries := db.New(tx)
+	department, err := queries.GetDepartment(ctx, db.GetDepartmentParams{CompanyID: actor.CompanyID, ID: id})
+	if isNoRows(err) {
+		return Department{}, notFound("Отдел")
+	}
+	if err != nil {
+		return Department{}, internal("Не удалось проверить отдел", err)
+	}
+	if department.Source == "system" {
+		return Department{}, validation("Головной отдел нельзя перемещать")
+	}
+	if parentID == nil {
+		return Department{}, validation("Отдел должен находиться внутри головного отдела")
+	}
 	rows, err := queries.ListDepartments(ctx, actor.CompanyID)
 	if err != nil {
 		return Department{}, internal("Не удалось получить дерево отделов", err)
@@ -243,10 +288,14 @@ func (s *Service) CreatePosition(ctx context.Context, actor Actor, input CreateP
 		return Position{}, validation("Уровень должности должен быть от 0 до 4")
 	}
 	queries := db.New(s.pool)
-	if _, err = queries.GetDepartment(ctx, db.GetDepartmentParams{CompanyID: actor.CompanyID, ID: input.DepartmentID}); isNoRows(err) {
+	department, err := queries.GetDepartment(ctx, db.GetDepartmentParams{CompanyID: actor.CompanyID, ID: input.DepartmentID})
+	if isNoRows(err) {
 		return Position{}, notFound("Отдел")
 	} else if err != nil {
 		return Position{}, internal("Не удалось проверить отдел", err)
+	}
+	if department.Source != "local" {
+		return Position{}, validation("В головной или импортированный отдел нельзя добавить должность")
 	}
 	description := trimmedOptional(input.Description)
 	row, err := queries.CreatePosition(ctx, db.CreatePositionParams{
@@ -280,10 +329,14 @@ func (s *Service) UpdatePosition(ctx context.Context, actor Actor, input UpdateP
 	defer func() { _ = tx.Rollback(ctx) }()
 	queries := db.New(tx)
 	if input.DepartmentID != nil {
-		if _, err = queries.GetDepartment(ctx, db.GetDepartmentParams{CompanyID: actor.CompanyID, ID: *input.DepartmentID}); isNoRows(err) {
+		department, departmentErr := queries.GetDepartment(ctx, db.GetDepartmentParams{CompanyID: actor.CompanyID, ID: *input.DepartmentID})
+		if isNoRows(departmentErr) {
 			return Position{}, notFound("Отдел")
-		} else if err != nil {
-			return Position{}, internal("Не удалось проверить отдел", err)
+		} else if departmentErr != nil {
+			return Position{}, internal("Не удалось проверить отдел", departmentErr)
+		}
+		if department.Source != "local" {
+			return Position{}, validation("Должность нельзя переместить в головной или импортированный отдел")
 		}
 	}
 	affectedUserIDs := []uuid.UUID{}
@@ -1007,7 +1060,7 @@ func (s *Service) RevokeInvite(ctx context.Context, actor Actor, id uuid.UUID) e
 }
 
 func departmentFromDB(row db.Department) Department {
-	return Department{ID: row.ID, Name: row.Name, ParentID: uuidPointer(row.ParentID), HeadUserID: uuidPointer(row.HeadUserID), ValuableFinalProduct: textPointer(row.ValuableFinalProduct), Order: row.Order}
+	return Department{ID: row.ID, Name: row.Name, ParentID: uuidPointer(row.ParentID), HeadUserID: uuidPointer(row.HeadUserID), ValuableFinalProduct: textPointer(row.ValuableFinalProduct), Order: row.Order, Source: row.Source, IsRoot: row.Source == "system"}
 }
 
 func positionFromDB(row db.Position) Position {

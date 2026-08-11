@@ -155,6 +155,8 @@ func departmentToProto(value application.Department) *companyv1.Department {
 		HeadUserId:           optionalUUIDString(value.HeadUserID),
 		ValuableFinalProduct: cloneString(value.ValuableFinalProduct),
 		Order:                order,
+		Source:               &value.Source,
+		IsRoot:               &value.IsRoot,
 	}
 }
 

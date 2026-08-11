@@ -78,6 +78,7 @@ type Querier interface {
 	GetPositionUserIDs(ctx context.Context, arg GetPositionUserIDsParams) ([]uuid.UUID, error)
 	GetReportUserProfiles(ctx context.Context, arg GetReportUserProfilesParams) ([]GetReportUserProfilesRow, error)
 	GetSessionByHashForUpdate(ctx context.Context, refreshHash []byte) (Session, error)
+	GetSystemDepartment(ctx context.Context, companyID uuid.UUID) (Department, error)
 	GetUser(ctx context.Context, arg GetUserParams) (User, error)
 	GetUserAccessMode(ctx context.Context, arg GetUserAccessModeParams) (string, error)
 	GetUserByAccessToken(ctx context.Context, token string) (User, error)

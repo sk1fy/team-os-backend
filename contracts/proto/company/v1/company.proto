@@ -193,6 +193,9 @@ message Department {
   optional string head_user_id = 4;
   optional string valuable_final_product = 5;
   uint32 order = 6;
+  // system — головной отдел компании, amo — импортированная группа amoCRM.
+  optional string source = 7;
+  optional bool is_root = 8;
 }
 
 message Position {

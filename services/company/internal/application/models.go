@@ -104,6 +104,8 @@ type Department struct {
 	HeadUserID           *uuid.UUID
 	ValuableFinalProduct *string
 	Order                int32
+	Source               string
+	IsRoot               bool
 }
 
 type Position struct {

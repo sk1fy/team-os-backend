@@ -6,6 +6,9 @@ ORDER BY parent_id NULLS FIRST, "order", name;
 -- name: GetDepartment :one
 SELECT * FROM departments WHERE company_id = $1 AND id = $2;
 
+-- name: GetSystemDepartment :one
+SELECT * FROM departments WHERE company_id = $1 AND source = 'system';
+
 -- name: CreateDepartment :one
 INSERT INTO departments (
     id, company_id, name, parent_id, head_user_id, valuable_final_product, "order"
@@ -137,12 +140,23 @@ INSERT INTO departments (
     id, company_id, name, parent_id, "order", source, external_id
 )
 VALUES (
-    sqlc.arg('id'), sqlc.arg('company_id'), sqlc.arg('name'), NULL,
+    sqlc.arg('id'), sqlc.arg('company_id'), sqlc.arg('name'),
+    (
+        SELECT root.id
+        FROM departments AS root
+        WHERE root.company_id = sqlc.arg('company_id')
+          AND root.source = 'system'
+    ),
     (
         SELECT COALESCE(max(department."order"), -1) + 1
         FROM departments AS department
         WHERE department.company_id = sqlc.arg('company_id')
-          AND department.parent_id IS NULL
+          AND department.parent_id = (
+              SELECT root.id
+              FROM departments AS root
+              WHERE root.company_id = sqlc.arg('company_id')
+                AND root.source = 'system'
+          )
     ),
     'amo', sqlc.arg('external_id')
 )

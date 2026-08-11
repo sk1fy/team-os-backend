@@ -37,17 +37,25 @@ func TestAmoImportCreatesDepartmentsAndAssignsEmployees(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var departments, positions, assignments int
+	var departments, roots, attachedToRoot, positions, assignments int
 	if err := pool.QueryRow(ctx, `
 		SELECT
 			(SELECT count(*) FROM departments WHERE company_id=$1 AND source='amo'),
+			(SELECT count(*) FROM departments WHERE company_id=$1 AND source='system' AND parent_id IS NULL),
+			(SELECT count(*)
+			 FROM departments AS department
+			 JOIN departments AS root ON root.id=department.parent_id AND root.company_id=department.company_id
+			 WHERE department.company_id=$1 AND department.source='amo' AND root.source='system'),
 			(SELECT count(*) FROM positions WHERE company_id=$1),
 			(SELECT count(*) FROM user_departments WHERE company_id=$1)
-	`, companyID).Scan(&departments, &positions, &assignments); err != nil {
+	`, companyID).Scan(&departments, &roots, &attachedToRoot, &positions, &assignments); err != nil {
 		t.Fatal(err)
 	}
-	if departments != 1 || positions != 0 || assignments != 2 {
-		t.Fatalf("departments=%d positions=%d assignments=%d", departments, positions, assignments)
+	if departments != 1 || roots != 1 || attachedToRoot != 1 || positions != 0 || assignments != 2 {
+		t.Fatalf(
+			"departments=%d roots=%d attachedToRoot=%d positions=%d assignments=%d",
+			departments, roots, attachedToRoot, positions, assignments,
+		)
 	}
 	assertAmoEmployeeDepartment(t, ctx, service, companyID, "1", "Отдел продаж")
 	assertAmoEmployeeDepartment(t, ctx, service, companyID, "2", "Отдел продаж")

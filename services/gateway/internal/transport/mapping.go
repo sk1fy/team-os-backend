@@ -131,11 +131,11 @@ func sourceFromProto(value companyv1.UserSource) *api.UserSource {
 	var source api.UserSource
 	switch value {
 	case companyv1.UserSource_USER_SOURCE_LOCAL:
-		source = api.Local
+		source = api.UserSourceLocal
 	case companyv1.UserSource_USER_SOURCE_AMO:
-		source = api.Amo
+		source = api.UserSourceAmo
 	case companyv1.UserSource_USER_SOURCE_EXTERNAL:
-		source = api.External
+		source = api.UserSourceExternal
 	default:
 		return nil
 	}
@@ -215,9 +215,15 @@ func departmentFromProto(value *companyv1.Department) (api.Department, error) {
 	if err != nil {
 		return api.Department{}, err
 	}
+	var source *api.DepartmentSource
+	if value.Source != nil {
+		converted := api.DepartmentSource(value.GetSource())
+		source = &converted
+	}
 	return api.Department{
 		Id: id, Name: value.GetName(), ParentId: parent, HeadUserId: headID,
 		ValuableFinalProduct: value.ValuableFinalProduct, Order: int(value.GetOrder()),
+		Source: source, IsRoot: value.IsRoot,
 	}, nil
 }
 

@@ -1054,8 +1054,11 @@ type Department struct {
 	HeadUserId           *string `protobuf:"bytes,4,opt,name=head_user_id,json=headUserId,proto3,oneof" json:"head_user_id,omitempty"`
 	ValuableFinalProduct *string `protobuf:"bytes,5,opt,name=valuable_final_product,json=valuableFinalProduct,proto3,oneof" json:"valuable_final_product,omitempty"`
 	Order                uint32  `protobuf:"varint,6,opt,name=order,proto3" json:"order,omitempty"`
-	unknownFields        protoimpl.UnknownFields
-	sizeCache            protoimpl.SizeCache
+	// system — головной отдел компании, amo — импортированная группа amoCRM.
+	Source        *string `protobuf:"bytes,7,opt,name=source,proto3,oneof" json:"source,omitempty"`
+	IsRoot        *bool   `protobuf:"varint,8,opt,name=is_root,json=isRoot,proto3,oneof" json:"is_root,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Department) Reset() {
@@ -1128,6 +1131,20 @@ func (x *Department) GetOrder() uint32 {
 		return x.Order
 	}
 	return 0
+}
+
+func (x *Department) GetSource() string {
+	if x != nil && x.Source != nil {
+		return *x.Source
+	}
+	return ""
+}
+
+func (x *Department) GetIsRoot() bool {
+	if x != nil && x.IsRoot != nil {
+		return *x.IsRoot
+	}
+	return false
 }
 
 type Position struct {
@@ -9181,7 +9198,7 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\x06_phoneB\r\n" +
 	"\v_birth_dateB\v\n" +
 	"\t_hired_atB\x15\n" +
-	"\x13_vacation_allowance\"\x84\x02\n" +
+	"\x13_vacation_allowance\"\xd6\x02\n" +
 	"\n" +
 	"Department\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
@@ -9190,11 +9207,16 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\fhead_user_id\x18\x04 \x01(\tH\x01R\n" +
 	"headUserId\x88\x01\x01\x129\n" +
 	"\x16valuable_final_product\x18\x05 \x01(\tH\x02R\x14valuableFinalProduct\x88\x01\x01\x12\x14\n" +
-	"\x05order\x18\x06 \x01(\rR\x05orderB\f\n" +
+	"\x05order\x18\x06 \x01(\rR\x05order\x12\x1b\n" +
+	"\x06source\x18\a \x01(\tH\x03R\x06source\x88\x01\x01\x12\x1c\n" +
+	"\ais_root\x18\b \x01(\bH\x04R\x06isRoot\x88\x01\x01B\f\n" +
 	"\n" +
 	"_parent_idB\x0f\n" +
 	"\r_head_user_idB\x19\n" +
-	"\x17_valuable_final_product\"\x80\x02\n" +
+	"\x17_valuable_final_productB\t\n" +
+	"\a_sourceB\n" +
+	"\n" +
+	"\b_is_root\"\x80\x02\n" +
 	"\bPosition\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12#\n" +

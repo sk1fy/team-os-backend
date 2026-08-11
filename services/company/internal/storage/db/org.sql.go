@@ -635,6 +635,29 @@ func (q *Queries) GetPositionUserIDs(ctx context.Context, arg GetPositionUserIDs
 	return items, nil
 }
 
+const getSystemDepartment = `-- name: GetSystemDepartment :one
+SELECT id, company_id, name, parent_id, head_user_id, valuable_final_product, "order", created_at, updated_at, source, external_id FROM departments WHERE company_id = $1 AND source = 'system'
+`
+
+func (q *Queries) GetSystemDepartment(ctx context.Context, companyID uuid.UUID) (Department, error) {
+	row := q.db.QueryRow(ctx, getSystemDepartment, companyID)
+	var i Department
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.Name,
+		&i.ParentID,
+		&i.HeadUserID,
+		&i.ValuableFinalProduct,
+		&i.Order,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Source,
+		&i.ExternalID,
+	)
+	return i, err
+}
+
 const getUserWithPositions = `-- name: GetUserWithPositions :one
 SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name, u.avatar_source, u.external_deleted_at, u.show_in_schedule,
        COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids,
@@ -1443,12 +1466,23 @@ INSERT INTO departments (
     id, company_id, name, parent_id, "order", source, external_id
 )
 VALUES (
-    $1, $2, $3, NULL,
+    $1, $2, $3,
+    (
+        SELECT root.id
+        FROM departments AS root
+        WHERE root.company_id = $2
+          AND root.source = 'system'
+    ),
     (
         SELECT COALESCE(max(department."order"), -1) + 1
         FROM departments AS department
         WHERE department.company_id = $2
-          AND department.parent_id IS NULL
+          AND department.parent_id = (
+              SELECT root.id
+              FROM departments AS root
+              WHERE root.company_id = $2
+                AND root.source = 'system'
+          )
     ),
     'amo', $4
 )

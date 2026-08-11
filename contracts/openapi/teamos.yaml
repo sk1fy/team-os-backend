@@ -5403,6 +5403,11 @@ components:
         order:
           type: integer
           minimum: 0
+        source:
+          type: string
+          enum: [local, amo, system]
+        isRoot:
+          type: boolean
 
     Position:
       type: object
