@@ -228,6 +228,31 @@ func TestExchangeAmoWidgetSessionForwardsCurrentAmoUserAndReturnsContinuation(t 
 	}
 }
 
+func TestExchangeAmoWidgetSessionAcceptsUnsignedProfile(t *testing.T) {
+	expiresAt := time.Date(2026, time.August, 10, 12, 10, 0, 0, time.UTC)
+	accountID, sessionToken := "31355990", "amo-continuation-token-abcdefghijklmnopqrstuvwxyz"
+	email, companyName, setup := "admin@example.com", "Ракурс", true
+	server := &provisioningCompanyServer{exchangeAmoWidgetSessionFn: func(_ context.Context, request *companyv1.ExchangeAmoWidgetSessionRequest) (*companyv1.ExchangeAmoWidgetSessionResponse, error) {
+		if request.GetToken() != "" || request.GetExternalAccountId() != accountID ||
+			request.GetExternalUserId() != "42" || request.GetEmail() != email ||
+			request.GetUserName() != "Иван Петров" || request.GetCompanyName() != companyName {
+			t.Fatalf("request=%#v", request)
+		}
+		return &companyv1.ExchangeAmoWidgetSessionResponse{
+			Action:            companyv1.AmoWidgetSessionAction_AMO_WIDGET_SESSION_ACTION_REGISTER,
+			ExternalAccountId: &accountID, SessionToken: &sessionToken, Email: &email,
+			CompanyName: &companyName, RequiresPasswordSetup: &setup, ExpiresAt: timestamppb.New(expiresAt),
+		}, nil
+	}}
+	recorder := performRequest(
+		newTestGateway(t, server), http.MethodPost, "/api/v1/public/amocrm/widget-sessions",
+		`{"user":{"id":"42","email":"admin@example.com","name":"Иван Петров"},"account":{"id":"31355990","name":"Ракурс"}}`, nil,
+	)
+	if recorder.Code != http.StatusOK || !strings.Contains(recorder.Body.String(), `"sessionToken":"`+sessionToken+`"`) {
+		t.Fatalf("status=%d body=%s", recorder.Code, recorder.Body.String())
+	}
+}
+
 func TestAmoWidgetContinuationValidationAndCompletion(t *testing.T) {
 	const sessionToken = "amo-continuation-token-abcdefghijklmnopqrstuvwxyz"
 	expiresAt := time.Date(2026, time.August, 10, 12, 10, 0, 0, time.UTC)

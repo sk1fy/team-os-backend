@@ -8736,14 +8736,15 @@ func (x *GetProvisionedCompanyStatusResponse) GetCompanyStatus() CompanyStatus {
 }
 
 type ExchangeAmoWidgetSessionRequest struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	Token          string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
-	ExternalUserId *string                `protobuf:"bytes,2,opt,name=external_user_id,json=externalUserId,proto3,oneof" json:"external_user_id,omitempty"`
-	Email          *string                `protobuf:"bytes,3,opt,name=email,proto3,oneof" json:"email,omitempty"`
-	UserName       *string                `protobuf:"bytes,4,opt,name=user_name,json=userName,proto3,oneof" json:"user_name,omitempty"`
-	CompanyName    *string                `protobuf:"bytes,5,opt,name=company_name,json=companyName,proto3,oneof" json:"company_name,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	Token             string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	ExternalUserId    *string                `protobuf:"bytes,2,opt,name=external_user_id,json=externalUserId,proto3,oneof" json:"external_user_id,omitempty"`
+	Email             *string                `protobuf:"bytes,3,opt,name=email,proto3,oneof" json:"email,omitempty"`
+	UserName          *string                `protobuf:"bytes,4,opt,name=user_name,json=userName,proto3,oneof" json:"user_name,omitempty"`
+	CompanyName       *string                `protobuf:"bytes,5,opt,name=company_name,json=companyName,proto3,oneof" json:"company_name,omitempty"`
+	ExternalAccountId *string                `protobuf:"bytes,6,opt,name=external_account_id,json=externalAccountId,proto3,oneof" json:"external_account_id,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *ExchangeAmoWidgetSessionRequest) Reset() {
@@ -8807,6 +8808,13 @@ func (x *ExchangeAmoWidgetSessionRequest) GetUserName() string {
 func (x *ExchangeAmoWidgetSessionRequest) GetCompanyName() string {
 	if x != nil && x.CompanyName != nil {
 		return *x.CompanyName
+	}
+	return ""
+}
+
+func (x *ExchangeAmoWidgetSessionRequest) GetExternalAccountId() string {
+	if x != nil && x.ExternalAccountId != nil {
+		return *x.ExternalAccountId
 	}
 	return ""
 }
@@ -9766,18 +9774,20 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\n" +
 	"company_id\x18\x02 \x01(\tH\x00R\tcompanyId\x88\x01\x01\x12G\n" +
 	"\x0ecompany_status\x18\x03 \x01(\x0e2 .teamos.company.v1.CompanyStatusR\rcompanyStatusB\r\n" +
-	"\v_company_id\"\x89\x02\n" +
+	"\v_company_id\"\xd6\x02\n" +
 	"\x1fExchangeAmoWidgetSessionRequest\x12\x14\n" +
 	"\x05token\x18\x01 \x01(\tR\x05token\x12-\n" +
 	"\x10external_user_id\x18\x02 \x01(\tH\x00R\x0eexternalUserId\x88\x01\x01\x12\x19\n" +
 	"\x05email\x18\x03 \x01(\tH\x01R\x05email\x88\x01\x01\x12 \n" +
 	"\tuser_name\x18\x04 \x01(\tH\x02R\buserName\x88\x01\x01\x12&\n" +
-	"\fcompany_name\x18\x05 \x01(\tH\x03R\vcompanyName\x88\x01\x01B\x13\n" +
+	"\fcompany_name\x18\x05 \x01(\tH\x03R\vcompanyName\x88\x01\x01\x123\n" +
+	"\x13external_account_id\x18\x06 \x01(\tH\x04R\x11externalAccountId\x88\x01\x01B\x13\n" +
 	"\x11_external_user_idB\b\n" +
 	"\x06_emailB\f\n" +
 	"\n" +
 	"_user_nameB\x0f\n" +
-	"\r_company_name\"\xbf\x04\n" +
+	"\r_company_nameB\x16\n" +
+	"\x14_external_account_id\"\xbf\x04\n" +
 	" ExchangeAmoWidgetSessionResponse\x12A\n" +
 	"\x06action\x18\x01 \x01(\x0e2).teamos.company.v1.AmoWidgetSessionActionR\x06action\x123\n" +
 	"\x13external_account_id\x18\x02 \x01(\tH\x00R\x11externalAccountId\x88\x01\x01\x122\n" +

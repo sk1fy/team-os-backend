@@ -87,6 +87,54 @@ func TestExchangeAmoWidgetSessionRejectsProfileUserMismatch(t *testing.T) {
 	}
 }
 
+func TestExchangeUnsignedAmoWidgetSessionValidatesIDs(t *testing.T) {
+	service := &Service{amoWidgetAllowUnsigned: true}
+	for _, input := range []AmoWidgetSessionInput{
+		{ExternalAccountID: "account", ExternalUserID: "42", Email: "admin@example.com"},
+		{ExternalAccountID: "31355990", ExternalUserID: "user", Email: "admin@example.com"},
+	} {
+		if _, err := service.ExchangeAmoWidgetSession(context.Background(), input); err == nil {
+			t.Fatalf("input=%#v must be rejected", input)
+		}
+	}
+}
+
+func TestExchangeUnsignedAmoWidgetSessionRejectsExistingCompany(t *testing.T) {
+	mock, err := pgxmock.NewPool()
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(mock.Close)
+	now := time.Date(2026, time.August, 10, 12, 0, 0, 0, time.UTC)
+	mock.ExpectBeginTx(pgx.TxOptions{IsoLevel: pgx.ReadCommitted})
+	mock.ExpectExec("SELECT pg_advisory_xact_lock").WithArgs("rakurs", "31355990").WillReturnResult(pgxmock.NewResult("SELECT", 1))
+	mock.ExpectQuery("FROM company_integrations AS integration").
+		WithArgs("rakurs", "31355990").
+		WillReturnError(pgx.ErrNoRows)
+	mock.ExpectQuery("FROM companies").
+		WithArgs(pgtype.Text{String: "31355990", Valid: true}).
+		WillReturnRows(pgxmock.NewRows([]string{
+			"id", "name", "logo_url", "owner_id", "created_at", "updated_at", "amo_account_id", "status", "onboarding_completed_at",
+		}).AddRow(
+			uuid.New(), "Ракурс", nil, nil, now, now, "31355990", "active", now,
+		))
+	mock.ExpectRollback()
+	service := &Service{
+		pool: mock, now: func() time.Time { return now }, amoWidgetSessionTTL: 10 * time.Minute,
+		amoWidgetAllowUnsigned: true, logger: slog.New(slog.NewTextHandler(io.Discard, nil)),
+	}
+	_, err = service.ExchangeAmoWidgetSession(context.Background(), AmoWidgetSessionInput{
+		ExternalAccountID: "31355990", ExternalUserID: "42", Email: "admin@example.com", CompanyName: "Ракурс",
+	})
+	var applicationErr *Error
+	if !errors.As(err, &applicationErr) || applicationErr.Code != ErrorCodeAmoAccountAlreadyExists {
+		t.Fatalf("error=%v, want %s", err, ErrorCodeAmoAccountAlreadyExists)
+	}
+	if err = mock.ExpectationsWereMet(); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestValidateAmoWidgetContinuationState(t *testing.T) {
 	now := time.Date(2026, time.August, 10, 12, 0, 0, 0, time.UTC)
 	tests := []struct {

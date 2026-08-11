@@ -103,6 +103,7 @@ func run(logger *slog.Logger) error {
 		application.WithAmoSyncInterval(configuration.AmoSyncInterval),
 		application.WithCompanyRegistrationTTL(configuration.RegistrationTokenTTL),
 		application.WithAmoWidgetSessionTTL(configuration.AmoWidgetSessionTTL),
+		application.WithAmoWidgetAllowUnsigned(configuration.AmoWidgetAllowUnsigned),
 		application.WithLogger(logger),
 	}
 	amoWidgetVerifier := amoauth.NewVerifier(amoauth.Config{

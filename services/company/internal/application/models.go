@@ -173,11 +173,12 @@ type AmoWidgetSessionResult struct {
 }
 
 type AmoWidgetSessionInput struct {
-	Token          string
-	ExternalUserID string
-	Email          string
-	UserName       string
-	CompanyName    string
+	Token             string
+	ExternalAccountID string
+	ExternalUserID    string
+	Email             string
+	UserName          string
+	CompanyName       string
 }
 
 type AmoWidgetContinuation struct {

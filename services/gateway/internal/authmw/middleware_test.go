@@ -148,6 +148,27 @@ func TestCompanyRegistrationChecksArePublic(t *testing.T) {
 	}
 }
 
+func TestAmoWidgetSessionRoutesArePublic(t *testing.T) {
+	for _, path := range []string{
+		"/api/v1/public/amocrm/widget-sessions",
+		"/api/v1/public/amocrm/widget-sessions/validate",
+		"/api/v1/auth/amocrm/complete",
+	} {
+		if !isPublic(http.MethodPost, path) {
+			t.Fatalf("POST %s must not require internal TeamOS JWT", path)
+		}
+		if isPublic(http.MethodPut, path) {
+			t.Fatalf("PUT %s must remain protected", path)
+		}
+		if isPublic(http.MethodPost, path+"/extra") {
+			t.Fatalf("POST %s/extra must remain protected", path)
+		}
+	}
+	if isPublic(http.MethodGet, "/api/v1/auth/amocrm/complete") {
+		t.Fatal("GET /api/v1/auth/amocrm/complete must remain protected")
+	}
+}
+
 func TestImpersonationRequiresInternalBearer(t *testing.T) {
 	if isPublic(http.MethodPost, "/api/v1/auth/impersonate") {
 		t.Fatal("impersonation must remain protected by the internal JWT")

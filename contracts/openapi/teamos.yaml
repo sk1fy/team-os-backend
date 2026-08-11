@@ -214,11 +214,14 @@ paths:
     post:
       tags: [Provisioning]
       operationId: exchangeAmoWidgetSession
-      summary: Обменять одноразовый токен виджета amoCRM на продолжение входа
+      summary: Подготовить создание компании или вход из виджета amoCRM
       description: |
         Клиент TeamOS передаёт токен в JSON-теле. Официальный WEB SDK amoCRM
         передаёт тот же токен в заголовке `X-Auth-Token`. Должен быть указан
-        ровно один источник токена.
+        ровно один источник токена. Во временном unsigned-режиме токен можно
+        не передавать: тогда Account ID берётся из `account.id`, а endpoint
+        работает только как создание новой компании и возвращает конфликт,
+        если аккаунт amoCRM уже зарегистрирован.
       security: []
       parameters:
         - name: X-Auth-Token
@@ -5696,6 +5699,7 @@ components:
           type: string
           pattern: '^\d+$'
           maxLength: 255
+          description: Account ID amoCRM для временного unsigned-создания компании.
         email:
           $ref: '#/components/schemas/Email'
         name:
@@ -5706,6 +5710,10 @@ components:
       type: object
       additionalProperties: false
       properties:
+        id:
+          type: string
+          pattern: '^\d+$'
+          maxLength: 255
         name:
           type: string
           maxLength: 255

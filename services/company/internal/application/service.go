@@ -56,6 +56,7 @@ type Service struct {
 	amoSyncStates          map[uuid.UUID]*amoSyncState
 	companyRegistrationTTL time.Duration
 	amoWidgetSessionTTL    time.Duration
+	amoWidgetAllowUnsigned bool
 	amoWidgetTokenVerifier AmoWidgetTokenVerifier
 	widgetEntitlements     WidgetEntitlementProvider
 }
@@ -118,6 +119,12 @@ func WithAmoWidgetSessionTTL(ttl time.Duration) ServiceOption {
 		if ttl > 0 {
 			service.amoWidgetSessionTTL = ttl
 		}
+	}
+}
+
+func WithAmoWidgetAllowUnsigned(allow bool) ServiceOption {
+	return func(service *Service) {
+		service.amoWidgetAllowUnsigned = allow
 	}
 }
 

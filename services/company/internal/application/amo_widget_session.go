@@ -22,6 +22,9 @@ func (s *Service) ExchangeAmoWidgetSession(
 	ctx context.Context,
 	input AmoWidgetSessionInput,
 ) (AmoWidgetSessionResult, error) {
+	if strings.TrimSpace(input.Token) == "" && s.amoWidgetAllowUnsigned {
+		return s.exchangeUnsignedAmoWidgetSession(ctx, input)
+	}
 	identity, accountID, err := s.verifyAmoWidgetAccess(ctx, input.Token)
 	if err != nil {
 		return AmoWidgetSessionResult{}, err
@@ -37,19 +40,54 @@ func (s *Service) ExchangeAmoWidgetSession(
 			"Пользователь amoCRM не совпадает с пользователем подписанного токена",
 		)
 	}
-	email, err := normalizeEmail(input.Email)
+	email, firstName, lastName, companyName, err := normalizeAmoWidgetProfile(input, accountID)
 	if err != nil {
 		return AmoWidgetSessionResult{}, err
 	}
-	firstName, lastName, _ := splitEmployeeName(input.UserName)
-	companyName := strings.TrimSpace(input.CompanyName)
+	return s.provisionAmoWidgetSession(
+		ctx, accountID, externalUserID, email, firstName, lastName, companyName, false, true,
+	)
+}
+
+func (s *Service) exchangeUnsignedAmoWidgetSession(
+	ctx context.Context,
+	input AmoWidgetSessionInput,
+) (AmoWidgetSessionResult, error) {
+	_, accountID, err := normalizeAmoAccount(amoWidgetProvider, input.ExternalAccountID)
+	if err != nil {
+		return AmoWidgetSessionResult{}, err
+	}
+	externalUserID := strings.TrimSpace(input.ExternalUserID)
+	parsedUserID, parseErr := strconv.ParseInt(externalUserID, 10, 64)
+	if parseErr != nil || parsedUserID <= 0 || strconv.FormatInt(parsedUserID, 10) != externalUserID {
+		return AmoWidgetSessionResult{}, validation("Некорректный ID пользователя amoCRM")
+	}
+	email, firstName, lastName, companyName, err := normalizeAmoWidgetProfile(input, accountID)
+	if err != nil {
+		return AmoWidgetSessionResult{}, err
+	}
+	return s.provisionAmoWidgetSession(
+		ctx, accountID, externalUserID, email, firstName, lastName, companyName, true, false,
+	)
+}
+
+func normalizeAmoWidgetProfile(
+	input AmoWidgetSessionInput,
+	accountID string,
+) (email, firstName, lastName, companyName string, err error) {
+	email, err = normalizeEmail(input.Email)
+	if err != nil {
+		return "", "", "", "", err
+	}
+	firstName, lastName, _ = splitEmployeeName(input.UserName)
+	companyName = strings.TrimSpace(input.CompanyName)
 	if companyName == "" {
 		companyName = "Компания amoCRM " + accountID
 	}
 	if len([]rune(companyName)) > 255 || len([]rune(firstName)) > 255 || len([]rune(lastName)) > 255 {
-		return AmoWidgetSessionResult{}, validation("Слишком длинное имя пользователя или компании")
+		return "", "", "", "", validation("Слишком длинное имя пользователя или компании")
 	}
-	return s.provisionAmoWidgetSession(ctx, accountID, externalUserID, email, firstName, lastName, companyName)
+	return email, firstName, lastName, companyName, nil
 }
 
 func (s *Service) verifyAmoWidgetAccess(
@@ -122,6 +160,7 @@ func (s *Service) exchangeLegacyAmoWidgetSession(
 func (s *Service) provisionAmoWidgetSession(
 	ctx context.Context,
 	accountID, externalUserID, email, firstName, lastName, companyName string,
+	createOnly, syncExternalUsers bool,
 ) (AmoWidgetSessionResult, error) {
 	now := s.now().UTC()
 	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.ReadCommitted})
@@ -137,7 +176,7 @@ func (s *Service) provisionAmoWidgetSession(
 	}
 
 	integration, company, created, err := s.getOrCreateAmoWidgetCompany(
-		ctx, queries, accountID, companyName, now,
+		ctx, queries, accountID, companyName, now, createOnly,
 	)
 	if err != nil {
 		return AmoWidgetSessionResult{}, err
@@ -215,7 +254,7 @@ func (s *Service) provisionAmoWidgetSession(
 		return AmoWidgetSessionResult{}, internal("Не удалось завершить вход из amoCRM", err)
 	}
 
-	if s.externalUsers != nil {
+	if syncExternalUsers && s.externalUsers != nil {
 		_ = s.syncAmoUsers(ctx, Actor{CompanyID: company.ID, UserID: user.ID, Role: user.Role})
 	}
 	action := "login"
@@ -234,11 +273,18 @@ func (s *Service) getOrCreateAmoWidgetCompany(
 	queries *db.Queries,
 	accountID, companyName string,
 	now time.Time,
+	createOnly bool,
 ) (db.CompanyIntegration, db.Company, bool, error) {
 	row, err := queries.GetAmoWidgetIntegrationForUpdate(ctx, db.GetAmoWidgetIntegrationForUpdateParams{
 		Provider: amoWidgetProvider, ExternalAccountID: accountID,
 	})
 	if err == nil {
+		if createOnly {
+			return db.CompanyIntegration{}, db.Company{}, false, coded(
+				ErrorConflict, ErrorCodeAmoAccountAlreadyExists,
+				"Компания для этого аккаунта amoCRM уже создана",
+			)
+		}
 		return row.CompanyIntegration, row.Company, false, nil
 	}
 	if !isNoRows(err) {
@@ -254,6 +300,12 @@ func (s *Service) getOrCreateAmoWidgetCompany(
 		return db.CompanyIntegration{}, db.Company{}, false, coded(
 			ErrorConflict, ErrorCodeAmoAccountAlreadyExists,
 			"Аккаунт amoCRM связан с несколькими компаниями TeamOS; обратитесь в поддержку",
+		)
+	}
+	if createOnly && len(legacyCompanies) > 0 {
+		return db.CompanyIntegration{}, db.Company{}, false, coded(
+			ErrorConflict, ErrorCodeAmoAccountAlreadyExists,
+			"Компания для этого аккаунта amoCRM уже создана",
 		)
 	}
 	created := len(legacyCompanies) == 0

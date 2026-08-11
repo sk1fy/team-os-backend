@@ -10,32 +10,33 @@ import (
 )
 
 type Config struct {
-	HTTPAddr             string
-	GRPCAddr             string
-	DatabaseURL          string
-	NATSURL              string
-	JWTPrivateKey        string
-	GatewayServiceToken  string
-	JWTIssuer            string
-	JWTAudience          string
-	AccessTTL            time.Duration
-	ShutdownTimeout      time.Duration
-	ExternalAPIURL       string
-	AmoAppName           string
-	AmoImportEnabled     bool
-	ExternalTimeout      time.Duration
-	AmoSyncInterval      time.Duration
-	RegistrationTokenTTL time.Duration
-	AmoWidgetSessionTTL  time.Duration
-	AmoCRMClientUUID     string
-	AmoCRMClientSecret   string
-	AmoCRMAudience       string
-	AmoCRMTokenMaxTTL    time.Duration
-	AmoCRMTokenClockSkew time.Duration
-	AmoCRMWidgetListURL  string
-	AmoCRMWidgetTimeout  time.Duration
-	AmoCRMWidgetCacheTTL time.Duration
-	AmoCRMWidgetListTZ   string
+	HTTPAddr               string
+	GRPCAddr               string
+	DatabaseURL            string
+	NATSURL                string
+	JWTPrivateKey          string
+	GatewayServiceToken    string
+	JWTIssuer              string
+	JWTAudience            string
+	AccessTTL              time.Duration
+	ShutdownTimeout        time.Duration
+	ExternalAPIURL         string
+	AmoAppName             string
+	AmoImportEnabled       bool
+	ExternalTimeout        time.Duration
+	AmoSyncInterval        time.Duration
+	RegistrationTokenTTL   time.Duration
+	AmoWidgetSessionTTL    time.Duration
+	AmoWidgetAllowUnsigned bool
+	AmoCRMClientUUID       string
+	AmoCRMClientSecret     string
+	AmoCRMAudience         string
+	AmoCRMTokenMaxTTL      time.Duration
+	AmoCRMTokenClockSkew   time.Duration
+	AmoCRMWidgetListURL    string
+	AmoCRMWidgetTimeout    time.Duration
+	AmoCRMWidgetCacheTTL   time.Duration
+	AmoCRMWidgetListTZ     string
 }
 
 func Load() (Config, error) {
@@ -109,6 +110,12 @@ func Load() (Config, error) {
 		config.AmoWidgetSessionTTL, err = time.ParseDuration(value)
 		if err != nil || config.AmoWidgetSessionTTL <= 0 {
 			return Config{}, fmt.Errorf("COMPANY_AMO_WIDGET_SESSION_TTL: %w", errInvalidDuration)
+		}
+	}
+	if value := strings.TrimSpace(os.Getenv("COMPANY_AMO_WIDGET_ALLOW_UNSIGNED")); value != "" {
+		config.AmoWidgetAllowUnsigned, err = strconv.ParseBool(value)
+		if err != nil {
+			return Config{}, fmt.Errorf("COMPANY_AMO_WIDGET_ALLOW_UNSIGNED: ожидается true или false")
 		}
 	}
 	if value := strings.TrimSpace(os.Getenv("AMOCRM_TOKEN_MAX_TTL")); value != "" {

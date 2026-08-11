@@ -89,6 +89,10 @@ func isPublic(method, path string) bool {
 		return true
 	case method == http.MethodPost && path == "/api/v1/public/company-registration-tokens/validate":
 		return true
+	case method == http.MethodPost && (path == "/api/v1/public/amocrm/widget-sessions" ||
+		path == "/api/v1/public/amocrm/widget-sessions/validate" ||
+		path == "/api/v1/auth/amocrm/complete"):
+		return true
 	case isBootstrapAuth(method, path):
 		return true
 	case method == http.MethodPost && path == "/api/v1/auth/sso/exchange":

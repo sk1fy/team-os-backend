@@ -51,7 +51,8 @@ func (s *Server) ExchangeAmoWidgetSession(
 		return nil, invalidRequest()
 	}
 	result, err := s.application.ExchangeAmoWidgetSession(ctx, application.AmoWidgetSessionInput{
-		Token: request.GetToken(), ExternalUserID: request.GetExternalUserId(), Email: request.GetEmail(),
+		Token: request.GetToken(), ExternalAccountID: request.GetExternalAccountId(),
+		ExternalUserID: request.GetExternalUserId(), Email: request.GetEmail(),
 		UserName: request.GetUserName(), CompanyName: request.GetCompanyName(),
 	})
 	if err != nil {
