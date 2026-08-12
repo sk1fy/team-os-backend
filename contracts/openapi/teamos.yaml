@@ -5688,31 +5688,19 @@ components:
           $ref: '#/components/schemas/OnboardingState'
 
     LoginInput:
-      oneOf:
-        - $ref: '#/components/schemas/LoginByIdentifierInput'
-        - $ref: '#/components/schemas/LoginByEmailInput'
-
-    LoginByIdentifierInput:
       type: object
       additionalProperties: false
-      required: [login, password]
+      required: [password]
+      minProperties: 2
+      description: >-
+        Данные для входа. Передайте `login` либо устаревшее поле `email`
+        вместе с `password`.
       properties:
         login:
           type: string
           minLength: 1
           maxLength: 320
           description: Логин TeamOS или email владельца/администратора.
-
-        password:
-          type: string
-          format: password
-          minLength: 8
-
-    LoginByEmailInput:
-      type: object
-      additionalProperties: false
-      required: [email, password]
-      properties:
         email:
           $ref: '#/components/schemas/Email'
           deprecated: true

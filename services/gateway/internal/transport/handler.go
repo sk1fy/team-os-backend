@@ -79,18 +79,18 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	if !decode(w, r, &input) {
 		return
 	}
-	login, password := "", ""
-	if identifierInput, err := input.AsLoginByIdentifierInput(); err == nil && strings.TrimSpace(identifierInput.Login) != "" {
-		login, password = identifierInput.Login, identifierInput.Password
-	} else if emailInput, emailErr := input.AsLoginByEmailInput(); emailErr == nil {
-		login, password = string(emailInput.Email), emailInput.Password
+	login := ""
+	if input.Login != nil {
+		login = *input.Login
+	} else if input.Email != nil {
+		login = string(*input.Email)
 	}
 	login = strings.TrimSpace(login)
 	if login == "" {
 		apierror.Write(w, apierror.BadRequest("Укажите логин"))
 		return
 	}
-	request := &companyv1.LoginRequest{Login: &login, Password: password}
+	request := &companyv1.LoginRequest{Login: &login, Password: input.Password}
 	if strings.Contains(login, "@") {
 		// Поле email сохраняем на время rolling-обновления: старая версия company
 		// ещё не знает поле login, но должна продолжать принимать email-вход.
