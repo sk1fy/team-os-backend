@@ -62,8 +62,8 @@ func TestEmployeeAccessManagementRolesAndLifecycle(t *testing.T) {
 		password := "employee-password"
 		if issued, err := service.SetPasswordAccess(
 			ctx, admin, targetUserID, SetPasswordAccessInput{Password: &password},
-		); err != nil || issued != password {
-			t.Fatalf("admin password access: password=%q err=%v", issued, err)
+		); err != nil || issued.Password != password || issued.Login == "" {
+			t.Fatalf("admin password access: access=%+v err=%v", issued, err)
 		}
 		assertAccessMode(t, ctx, service, admin, targetUserID, "password", "")
 		assertSessionRevoked(t, ctx, pool, sessionID)
@@ -76,7 +76,7 @@ func TestEmployeeAccessManagementRolesAndLifecycle(t *testing.T) {
 		}
 		assertAccessMode(t, ctx, service, admin, targetUserID, "link", firstLink.Token)
 		assertSessionRevoked(t, ctx, pool, sessionID)
-		assertAccessRows(t, ctx, pool, firstCompanyID, targetUserID, 0, 1)
+		assertAccessRows(t, ctx, pool, firstCompanyID, targetUserID, 1, 1)
 
 		secondLink, err := service.SetLinkAccess(ctx, admin, targetUserID)
 		if err != nil {
@@ -97,9 +97,34 @@ func TestEmployeeAccessManagementRolesAndLifecycle(t *testing.T) {
 		); err != nil {
 			t.Fatalf("admin switches link to password: %v", err)
 		}
+		assertAccessMode(t, ctx, service, admin, targetUserID, "link", secondLink.Token)
+		assertSessionRevoked(t, ctx, pool, sessionID)
+		assertAccessRows(t, ctx, pool, firstCompanyID, targetUserID, 1, 1)
+
+		sessionID = seedAccessSession(t, ctx, pool, firstCompanyID, targetUserID)
+		if err = service.RevokePasswordAccess(ctx, admin, targetUserID); err != nil {
+			t.Fatalf("admin revokes password access: %v", err)
+		}
+		assertAccessMode(t, ctx, service, admin, targetUserID, "link", secondLink.Token)
+		assertSessionRevoked(t, ctx, pool, sessionID)
+		assertAccessRows(t, ctx, pool, firstCompanyID, targetUserID, 0, 1)
+
+		if _, err = service.SetPasswordAccess(
+			ctx, admin, targetUserID, SetPasswordAccessInput{Password: &password},
+		); err != nil {
+			t.Fatalf("admin restores password access: %v", err)
+		}
+		sessionID = seedAccessSession(t, ctx, pool, firstCompanyID, targetUserID)
+		if err = service.RevokeLinkAccess(ctx, admin, targetUserID); err != nil {
+			t.Fatalf("admin revokes link access: %v", err)
+		}
 		assertAccessMode(t, ctx, service, admin, targetUserID, "password", "")
 		assertSessionRevoked(t, ctx, pool, sessionID)
 		assertAccessRows(t, ctx, pool, firstCompanyID, targetUserID, 1, 0)
+
+		if _, err = service.SetLinkAccess(ctx, admin, targetUserID); err != nil {
+			t.Fatalf("admin restores link access: %v", err)
+		}
 
 		sessionID = seedAccessSession(t, ctx, pool, firstCompanyID, targetUserID)
 		if err = service.RevokeAccess(ctx, admin, targetUserID); err != nil {
@@ -235,8 +260,8 @@ func companyAccessTestPool(t *testing.T, ctx context.Context) *pgxpool.Pool {
 		t.Fatal("не удалось определить путь к миграциям")
 	}
 	migrationsDir := filepath.Join(filepath.Dir(filename), "..", "..", "migrations")
-	initScripts := make([]string, 0, 13)
-	for migration := 1; migration <= 13; migration++ {
+	initScripts := make([]string, 0, 16)
+	for migration := 1; migration <= 16; migration++ {
 		initScripts = append(initScripts, filepath.Join(
 			migrationsDir, fmt.Sprintf("%06d_%s.up.sql", migration, accessMigrationName(migration)),
 		))
@@ -283,6 +308,9 @@ func accessMigrationName(migration int) string {
 		11: "legacy_amo_integrations",
 		12: "user_schedule_visibility",
 		13: "amo_group_organization",
+		14: "department_root",
+		15: "position_levels",
+		16: "user_logins",
 	}[migration]
 }
 

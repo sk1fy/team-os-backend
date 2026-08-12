@@ -246,7 +246,7 @@ team-os-backend/
 | `getCompany()` | `GET /api/v1/company` |
 | `updateCompany({name?, logoUrl?})` | `PATCH /api/v1/company` |
 | `getInviteByToken(token)` | `GET /api/v1/auth/invites/{token}` |
-| *новое: логин* | `POST /api/v1/auth/login` `{email, password}` → set-cookie refresh + `{accessToken, user}` |
+| *новое: логин* | `POST /api/v1/auth/login` `{login, password}` → set-cookie refresh + `{accessToken, user}`; `login` принимает `tm`-логин, а для владельца/администратора также email |
 | *новое: обновление токена* | `POST /api/v1/auth/refresh` (по httpOnly-cookie, с ротацией) |
 | *новое: выход* | `POST /api/v1/auth/logout` |
 | *новое: принятие инвайта* | `POST /api/v1/auth/invites/{token}/accept` `{firstName, lastName, password}` |
@@ -443,6 +443,10 @@ create table users (
   hired_at date,                                    -- стаж, годовщины 🎉
   vacation_allowance smallint,                      -- норма отпуска, дней/год
   created_at timestamptz
+);
+create table user_logins (
+  company_id uuid, user_id uuid primary key references users,
+  login text unique check (login ~ '^tm[0-9]{7}$')
 );
 create table credentials (user_id uuid pk references users, password_hash text, updated_at timestamptz);
 create table sessions (id uuid pk, user_id uuid, refresh_hash text, expires_at timestamptz, rotated_from uuid);

@@ -85,6 +85,7 @@ ORDER BY up.user_id;
 
 -- name: ListUsers :many
 SELECT u.*,
+       user_login.login,
        COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids,
        ARRAY(
            SELECT assignment.department_id
@@ -103,13 +104,16 @@ SELECT u.*,
            ELSE 'none'
        END::text AS access_mode
 FROM users u
+JOIN user_logins user_login
+  ON user_login.company_id = u.company_id AND user_login.user_id = u.id
 LEFT JOIN user_positions up ON up.user_id = u.id
 WHERE u.company_id = $1 AND u.external_deleted_at IS NULL
-GROUP BY u.id
+GROUP BY u.id, user_login.login
 ORDER BY u.created_at, u.id;
 
 -- name: GetUserWithPositions :one
 SELECT u.*,
+       user_login.login,
        COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids,
        ARRAY(
            SELECT assignment.department_id
@@ -128,9 +132,11 @@ SELECT u.*,
            ELSE 'none'
        END::text AS access_mode
 FROM users u
+JOIN user_logins user_login
+  ON user_login.company_id = u.company_id AND user_login.user_id = u.id
 LEFT JOIN user_positions up ON up.user_id = u.id
 WHERE u.company_id = $1 AND u.id = $2 AND u.external_deleted_at IS NULL
-GROUP BY u.id;
+GROUP BY u.id, user_login.login;
 
 -- name: LockAmoUserSync :exec
 SELECT pg_advisory_xact_lock(hashtextextended(sqlc.arg('company_id')::uuid::text, 0));

@@ -46,6 +46,10 @@ func userFromProto(value *companyv1.User) (api.User, error) {
 		Role: role, Status: status, PositionIds: positionIDs, DepartmentIds: &departmentIDs,
 		ShowInSchedule: value.GetShowInSchedule(), CreatedAt: createdAt,
 	}
+	if value.GetLogin() != "" {
+		login := value.GetLogin()
+		result.Login = &login
+	}
 	if value.GetRole() == companyv1.UserRole_USER_ROLE_EMPLOYEE {
 		sections := make([]api.EmployeeSection, 0, len(value.GetSectionAccess()))
 		for _, section := range value.GetSectionAccess() {
@@ -116,7 +120,21 @@ func employeeAccessFromProto(value *companyv1.UserAccess) (api.EmployeeAccess, e
 	if mode == nil {
 		return api.EmployeeAccess{}, errors.New("company returned invalid employee access mode")
 	}
-	result := api.EmployeeAccess{Mode: *mode, LinkToken: value.LinkToken}
+	result := api.EmployeeAccess{
+		Mode: *mode, LinkToken: value.LinkToken,
+	}
+	if value.PasswordEnabled != nil {
+		passwordEnabled := value.GetPasswordEnabled()
+		result.PasswordEnabled = &passwordEnabled
+	}
+	if value.LinkEnabled != nil {
+		linkEnabled := value.GetLinkEnabled()
+		result.LinkEnabled = &linkEnabled
+	}
+	if value.GetLogin() != "" {
+		login := value.GetLogin()
+		result.Login = &login
+	}
 	if value.GetLinkCreatedAt() != nil {
 		if !value.GetLinkCreatedAt().IsValid() {
 			return api.EmployeeAccess{}, errors.New("company returned invalid access link creation time")

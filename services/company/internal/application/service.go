@@ -355,6 +355,24 @@ func userFromDB(value db.User, positions []uuid.UUID) User {
 	}
 }
 
+func userFromDBWithLogin(
+	ctx context.Context,
+	queries *db.Queries,
+	value db.User,
+	positions []uuid.UUID,
+) (User, error) {
+	login, err := queries.GetUserLogin(ctx, db.GetUserLoginParams{
+		CompanyID: value.CompanyID,
+		UserID:    value.ID,
+	})
+	if err != nil {
+		return User{}, internal("Не удалось получить логин пользователя", err)
+	}
+	result := userFromDB(value, positions)
+	result.Login = login
+	return result, nil
+}
+
 func textValue(value pgtype.Text) string {
 	if !value.Valid {
 		return ""
@@ -364,7 +382,7 @@ func textValue(value pgtype.Text) string {
 
 func userEventSnapshot(user User, departmentIDs []uuid.UUID) map[string]any {
 	return map[string]any{
-		"userId": user.ID.String(), "email": user.Email,
+		"userId": user.ID.String(), "login": user.Login, "email": user.Email,
 		"firstName": user.FirstName, "lastName": user.LastName,
 		"role": orgRoleEventValue(user.Role), "status": orgStatusEventValue(user.Status),
 		"positionIds": stringsFromUUIDs(user.PositionIDs), "departmentIds": stringsFromUUIDs(departmentIDs),

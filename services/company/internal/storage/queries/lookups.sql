@@ -1,5 +1,6 @@
 -- name: GetUsersByIDs :many
 SELECT u.*,
+       user_login.login,
        COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids,
        ARRAY(
            SELECT assignment.department_id
@@ -12,13 +13,16 @@ SELECT u.*,
            ELSE 'none'
        END::text AS access_mode
 FROM users AS u
+JOIN user_logins AS user_login
+  ON user_login.company_id = u.company_id
+ AND user_login.user_id = u.id
 LEFT JOIN user_positions AS up
   ON up.company_id = u.company_id
  AND up.user_id = u.id
 WHERE u.company_id = sqlc.arg('company_id')
   AND u.external_deleted_at IS NULL
   AND u.id = ANY(sqlc.arg('user_ids')::uuid[])
-GROUP BY u.id
+GROUP BY u.id, user_login.login
 ORDER BY array_position(sqlc.arg('user_ids')::uuid[], u.id);
 
 -- name: ResolveReportUserScope :many

@@ -74,7 +74,7 @@ paths:
     post:
       tags: [Auth]
       operationId: login
-      summary: Войти по email и паролю
+      summary: Войти по логину или email и паролю
       security: []
       requestBody:
         required: true
@@ -1013,7 +1013,8 @@ paths:
       summary: Выдать сотруднику доступ по паролю
       description: >-
         Доступно владельцу (`owner`) и администратору (`admin`) своей компании для активного
-        сотрудника, кроме владельца. Удаляет ссылку доступа и завершает активные сессии сотрудника.
+        сотрудника, кроме владельца. Ссылка доступа сохраняется. Активные сессии сотрудника
+        завершаются.
       requestBody:
         required: false
         content:
@@ -1043,6 +1044,23 @@ paths:
           $ref: '#/components/responses/NotFound'
         default:
           $ref: '#/components/responses/Error'
+    delete:
+      tags: [Organization]
+      operationId: revokeUserPasswordAccess
+      summary: Отозвать вход сотрудника по логину и паролю
+      description: >-
+        Удаляет пароль и завершает активные сессии сотрудника. Ссылка доступа сохраняется.
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/Error'
 
   /api/v1/org/users/{id}/access/link:
     parameters:
@@ -1053,8 +1071,8 @@ paths:
       summary: Выдать сотруднику доступ по постоянной ссылке
       description: >-
         Доступно владельцу (`owner`) и администратору (`admin`) своей компании для активного
-        сотрудника, кроме владельца. Аннулирует прежнюю ссылку и пароль и завершает активные
-        сессии сотрудника.
+        сотрудника, кроме владельца. Аннулирует прежнюю ссылку, но сохраняет пароль, и завершает
+        активные сессии сотрудника.
       responses:
         '200':
           description: Новый токен ссылки доступа
@@ -1062,6 +1080,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/EmployeeLinkAccess'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags: [Organization]
+      operationId: revokeUserLinkAccess
+      summary: Отозвать вход сотрудника по ссылке
+      description: >-
+        Удаляет ссылку и завершает активные сессии сотрудника. Вход по логину и паролю сохраняется.
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
         '400':
           $ref: '#/components/responses/BadRequest'
         '403':
@@ -5142,6 +5177,11 @@ components:
       format: email
       pattern: '^[^@\s]+@[^@\s.]+(\.[^@\s.]+)+$'
       description: Email с полным доменным именем, включая доменную зону.
+    UserLogin:
+      type: string
+      pattern: '^tm[0-9]{7}$'
+      description: Уникальный логин TeamOS в формате `tm` и семи цифр.
+      example: tm8901912
     ClearablePhone:
       oneOf:
         - $ref: '#/components/schemas/Phone'
@@ -5287,6 +5327,8 @@ components:
       properties:
         id:
           $ref: '#/components/schemas/ID'
+        login:
+          $ref: '#/components/schemas/UserLogin'
         email:
           $ref: '#/components/schemas/Email'
         firstName:
@@ -5349,6 +5391,14 @@ components:
       properties:
         mode:
           $ref: '#/components/schemas/UserAccessMode'
+        login:
+          $ref: '#/components/schemas/UserLogin'
+        passwordEnabled:
+          type: boolean
+          description: Включён ли вход по логину и паролю.
+        linkEnabled:
+          type: boolean
+          description: Включён ли вход по постоянной ссылке.
         linkToken:
           type: string
           minLength: 1
@@ -5363,6 +5413,8 @@ components:
       additionalProperties: false
       required: [password]
       properties:
+        login:
+          $ref: '#/components/schemas/UserLogin'
         password:
           type: string
           minLength: 8
@@ -5636,12 +5688,35 @@ components:
           $ref: '#/components/schemas/OnboardingState'
 
     LoginInput:
+      oneOf:
+        - $ref: '#/components/schemas/LoginByIdentifierInput'
+        - $ref: '#/components/schemas/LoginByEmailInput'
+
+    LoginByIdentifierInput:
+      type: object
+      additionalProperties: false
+      required: [login, password]
+      properties:
+        login:
+          type: string
+          minLength: 1
+          maxLength: 320
+          description: Логин TeamOS или email владельца/администратора.
+
+        password:
+          type: string
+          format: password
+          minLength: 8
+
+    LoginByEmailInput:
       type: object
       additionalProperties: false
       required: [email, password]
       properties:
         email:
           $ref: '#/components/schemas/Email'
+          deprecated: true
+          description: Устаревшее поле для совместимости; используйте `login`.
         password:
           type: string
           format: password

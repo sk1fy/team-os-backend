@@ -141,7 +141,10 @@ func (s *Service) syncAmoUsersNow(ctx context.Context, actor Actor) error {
 				if departmentsErr != nil {
 					return internal("Не удалось получить отделы сотрудника", departmentsErr)
 				}
-				updatedUser := userFromDB(current, positionIDs)
+				updatedUser, loginErr := userFromDBWithLogin(ctx, queries, current, positionIDs)
+				if loginErr != nil {
+					return loginErr
+				}
 				if current.Role == "employee" {
 					updatedUser.SectionAccess = normalizedEmployeeSections(sections)
 				}
@@ -199,7 +202,10 @@ func (s *Service) syncAmoUsersNow(ctx context.Context, actor Actor) error {
 		if departmentID != nil {
 			departmentIDs = []uuid.UUID{*departmentID}
 		}
-		createdUser := userFromDB(row, nil)
+		createdUser, loginErr := userFromDBWithLogin(ctx, queries, row, nil)
+		if loginErr != nil {
+			return loginErr
+		}
 		createdUser.DepartmentIDs = departmentIDs
 		createdUser.SectionAccess = normalizedEmployeeSections(sections)
 		if err = s.emit(ctx, queries, actor.CompanyID, actor.UserID, "teamos.org.user.created.v1", map[string]any{

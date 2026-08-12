@@ -221,8 +221,12 @@ func (s *Service) provisionAmoWidgetSession(
 				return AmoWidgetSessionResult{}, err
 			}
 		}
+		createdUser, loginErr := userFromDBWithLogin(ctx, queries, user, nil)
+		if loginErr != nil {
+			return AmoWidgetSessionResult{}, loginErr
+		}
 		if err = s.emit(ctx, queries, company.ID, user.ID, "teamos.org.user.created.v1", map[string]any{
-			"user": userEventSnapshot(userFromDB(user, nil), nil),
+			"user": userEventSnapshot(createdUser, nil),
 		}); err != nil {
 			return AmoWidgetSessionResult{}, err
 		}

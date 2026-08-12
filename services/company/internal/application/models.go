@@ -28,6 +28,7 @@ type Company struct {
 type User struct {
 	ID                uuid.UUID
 	CompanyID         uuid.UUID
+	Login             string
 	Email             string
 	FirstName         string
 	LastName          string
@@ -74,9 +75,17 @@ type GetReportUserProfilesInput struct {
 }
 
 type EmployeeAccess struct {
-	Mode          string
-	LinkToken     *string
-	LinkCreatedAt *time.Time
+	Mode            string
+	Login           string
+	PasswordEnabled bool
+	LinkEnabled     bool
+	LinkToken       *string
+	LinkCreatedAt   *time.Time
+}
+
+type EmployeePasswordAccess struct {
+	Login    string
+	Password string
 }
 
 type EmployeeLinkAccess struct {
@@ -192,7 +201,7 @@ type AmoWidgetContinuation struct {
 }
 
 type LoginInput struct {
-	Email    string
+	Login    string
 	Password string
 }
 

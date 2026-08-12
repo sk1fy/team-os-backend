@@ -130,6 +130,7 @@ func TestImpersonateUserCreatesSessionWithoutChangingLoginMode(t *testing.T) {
 			now.Add(30*24*time.Hour), now, nil, nil, nil, nil, nil, nil,
 		))
 	expectAccessMode(mock, companyID, targetID, "password")
+	expectAccessLogin(mock, companyID, targetID, "tm7415540")
 	mock.ExpectQuery("SELECT department_id").
 		WithArgs(companyID, targetID).
 		WillReturnRows(pgxmock.NewRows([]string{"department_id"}))
@@ -157,7 +158,7 @@ func TestImpersonateUserCreatesSessionWithoutChangingLoginMode(t *testing.T) {
 		t.Fatalf("ImpersonateUser() error = %v", err)
 	}
 	if result.User.ID != targetID || result.User.Role != "partner" ||
-		result.User.AccessMode != "password" || result.AccessToken == "" ||
+		result.User.AccessMode != "password" || result.User.Login != "tm7415540" || result.AccessToken == "" ||
 		result.RefreshToken == "" {
 		t.Fatalf("ImpersonateUser() = %#v", result)
 	}

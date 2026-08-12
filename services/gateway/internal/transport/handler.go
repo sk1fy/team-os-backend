@@ -79,9 +79,24 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	if !decode(w, r, &input) {
 		return
 	}
-	response, err := h.company.Login(outgoingContext(r), &companyv1.LoginRequest{
-		Email: string(input.Email), Password: input.Password,
-	})
+	login, password := "", ""
+	if identifierInput, err := input.AsLoginByIdentifierInput(); err == nil && strings.TrimSpace(identifierInput.Login) != "" {
+		login, password = identifierInput.Login, identifierInput.Password
+	} else if emailInput, emailErr := input.AsLoginByEmailInput(); emailErr == nil {
+		login, password = string(emailInput.Email), emailInput.Password
+	}
+	login = strings.TrimSpace(login)
+	if login == "" {
+		apierror.Write(w, apierror.BadRequest("Укажите логин"))
+		return
+	}
+	request := &companyv1.LoginRequest{Login: &login, Password: password}
+	if strings.Contains(login, "@") {
+		// Поле email сохраняем на время rolling-обновления: старая версия company
+		// ещё не знает поле login, но должна продолжать принимать email-вход.
+		request.Email = login
+	}
+	response, err := h.company.Login(outgoingContext(r), request)
 	if err != nil {
 		h.writeRPCError(w, r, err)
 		return
@@ -541,7 +556,8 @@ func (h *Handler) SetUserPasswordAccess(w http.ResponseWriter, r *http.Request, 
 		h.writeRPCError(w, r, err)
 		return
 	}
-	writeJSON(w, http.StatusOK, api.EmployeePasswordAccess{Password: response.GetPassword()})
+	login := response.GetLogin()
+	writeJSON(w, http.StatusOK, api.EmployeePasswordAccess{Login: &login, Password: response.GetPassword()})
 }
 
 func (h *Handler) SetUserLinkAccess(w http.ResponseWriter, r *http.Request, id api.Id) {
@@ -576,6 +592,24 @@ func (h *Handler) accessLinkURL(r *http.Request, token string) string {
 
 func (h *Handler) RevokeUserAccess(w http.ResponseWriter, r *http.Request, id api.Id) {
 	_, err := h.company.RevokeUserAccess(outgoingContext(r), &companyv1.RevokeUserAccessRequest{Id: id.String()})
+	if err != nil {
+		h.writeRPCError(w, r, err)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *Handler) RevokeUserPasswordAccess(w http.ResponseWriter, r *http.Request, id api.Id) {
+	_, err := h.company.RevokeUserPasswordAccess(outgoingContext(r), &companyv1.RevokeUserPasswordAccessRequest{Id: id.String()})
+	if err != nil {
+		h.writeRPCError(w, r, err)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *Handler) RevokeUserLinkAccess(w http.ResponseWriter, r *http.Request, id api.Id) {
+	_, err := h.company.RevokeUserLinkAccess(outgoingContext(r), &companyv1.RevokeUserLinkAccessRequest{Id: id.String()})
 	if err != nil {
 		h.writeRPCError(w, r, err)
 		return

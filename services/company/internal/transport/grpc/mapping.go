@@ -30,6 +30,7 @@ func userToProto(value application.User) *companyv1.User {
 	}
 	return &companyv1.User{
 		Id:                value.ID.String(),
+		Login:             value.Login,
 		Email:             value.Email,
 		FirstName:         value.FirstName,
 		LastName:          value.LastName,
@@ -100,9 +101,14 @@ func userAccessModeToProto(value string) companyv1.UserAccessMode {
 }
 
 func employeeAccessToProto(value application.EmployeeAccess) *companyv1.UserAccess {
+	passwordEnabled := value.PasswordEnabled
+	linkEnabled := value.LinkEnabled
 	result := &companyv1.UserAccess{
-		Mode:      userAccessModeToProto(value.Mode),
-		LinkToken: cloneString(value.LinkToken),
+		Mode:            userAccessModeToProto(value.Mode),
+		Login:           value.Login,
+		PasswordEnabled: &passwordEnabled,
+		LinkEnabled:     &linkEnabled,
+		LinkToken:       cloneString(value.LinkToken),
 	}
 	if value.LinkCreatedAt != nil {
 		result.LinkCreatedAt = timestamppb.New(value.LinkCreatedAt.UTC())

@@ -130,8 +130,12 @@ func (s *Service) Register(ctx context.Context, input RegisterInput, meta Sessio
 	}); err != nil {
 		return AuthResult{}, err
 	}
+	registeredUser, err := userFromDBWithLogin(ctx, queries, user, nil)
+	if err != nil {
+		return AuthResult{}, err
+	}
 	if err = s.emit(ctx, queries, companyID, userID, "teamos.org.user.created.v1", map[string]any{
-		"user": userEventSnapshot(userFromDB(user, nil), nil),
+		"user": userEventSnapshot(registeredUser, nil),
 	}); err != nil {
 		return AuthResult{}, err
 	}
@@ -153,8 +157,8 @@ func (s *Service) Register(ctx context.Context, input RegisterInput, meta Sessio
 }
 
 func (s *Service) Login(ctx context.Context, input LoginInput, meta SessionMeta) (AuthResult, error) {
-	email, err := normalizeEmail(input.Email)
-	if err != nil {
+	login, valid := normalizeLoginIdentifier(input.Login)
+	if !valid {
 		releasePasswordSlot, slotErr := s.acquirePasswordSlot(ctx)
 		if slotErr != nil {
 			return AuthResult{}, internal("Не удалось выполнить вход", slotErr)
@@ -169,7 +173,7 @@ func (s *Service) Login(ctx context.Context, input LoginInput, meta SessionMeta)
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
 	queries := db.New(tx)
-	row, err := queries.GetUserForLogin(ctx, email)
+	row, err := queries.GetUserForLogin(ctx, login)
 	if err != nil {
 		releasePasswordSlot, slotErr := s.acquirePasswordSlot(ctx)
 		if slotErr != nil {
@@ -200,6 +204,26 @@ func (s *Service) Login(ctx context.Context, input LoginInput, meta SessionMeta)
 		return AuthResult{}, internal("Не удалось создать сессию", err)
 	}
 	return result, nil
+}
+
+func normalizeLoginIdentifier(value string) (string, bool) {
+	value = strings.ToLower(strings.TrimSpace(value))
+	if value == "" || len(value) > 320 {
+		return "", false
+	}
+	if strings.Contains(value, "@") {
+		email, err := normalizeEmail(value)
+		return email, err == nil
+	}
+	if len(value) != 9 || !strings.HasPrefix(value, "tm") {
+		return "", false
+	}
+	for _, digit := range value[2:] {
+		if digit < '0' || digit > '9' {
+			return "", false
+		}
+	}
+	return value, true
 }
 
 func (s *Service) Refresh(ctx context.Context, refreshToken string, meta SessionMeta) (AuthResult, error) {
@@ -433,7 +457,10 @@ func (s *Service) AcceptInvite(ctx context.Context, input AcceptInviteInput, met
 	if err != nil {
 		return AuthResult{}, internal("Не удалось получить отделы", err)
 	}
-	acceptedUser := userFromDB(user, positionIDs)
+	acceptedUser, err := userFromDBWithLogin(ctx, queries, user, positionIDs)
+	if err != nil {
+		return AuthResult{}, err
+	}
 	acceptedUser.SectionAccess = normalizedEmployeeSections(sectionAccess)
 	if err = s.emit(ctx, queries, user.CompanyID, user.ID, "teamos.org.user.updated.v1", map[string]any{
 		"user":          userEventSnapshot(acceptedUser, departmentIDs),
@@ -525,7 +552,10 @@ func (s *Service) createSessionWithID(
 	if err != nil {
 		return AuthResult{}, internal("Не удалось получить способ доступа", err)
 	}
-	resultUser := userFromDB(user, positionIDs)
+	resultUser, err := userFromDBWithLogin(ctx, queries, user, positionIDs)
+	if err != nil {
+		return AuthResult{}, err
+	}
 	directDepartmentIDs, err := queries.GetUserDirectDepartmentIDs(ctx, db.GetUserDirectDepartmentIDsParams{
 		CompanyID: user.CompanyID, UserID: user.ID,
 	})

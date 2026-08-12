@@ -192,6 +192,7 @@ func companyRegistrationTestPool(t *testing.T, ctx context.Context) *pgxpool.Poo
 		{10, "company_registration_tokens"},
 		// Миграцию 11 тест применяет после вставки legacy-компании, чтобы проверить backfill.
 		{12, "user_schedule_visibility"}, {13, "amo_group_organization"},
+		{14, "department_root"}, {15, "position_levels"}, {16, "user_logins"},
 	}
 	initScripts := make([]string, 0, len(migrations))
 	for _, migration := range migrations {

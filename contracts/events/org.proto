@@ -46,6 +46,7 @@ message OrgUserSnapshot {
   repeated string position_ids = 7;
   repeated string department_ids = 8;
   repeated OrgEmployeeSection section_access = 9;
+  string login = 10;
 }
 
 message OrgUserCreatedEvent {

@@ -660,6 +660,7 @@ func (q *Queries) GetSystemDepartment(ctx context.Context, companyID uuid.UUID) 
 
 const getUserWithPositions = `-- name: GetUserWithPositions :one
 SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name, u.avatar_source, u.external_deleted_at, u.show_in_schedule,
+       user_login.login,
        COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids,
        ARRAY(
            SELECT assignment.department_id
@@ -678,9 +679,11 @@ SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar
            ELSE 'none'
        END::text AS access_mode
 FROM users u
+JOIN user_logins user_login
+  ON user_login.company_id = u.company_id AND user_login.user_id = u.id
 LEFT JOIN user_positions up ON up.user_id = u.id
 WHERE u.company_id = $1 AND u.id = $2 AND u.external_deleted_at IS NULL
-GROUP BY u.id
+GROUP BY u.id, user_login.login
 `
 
 type GetUserWithPositionsParams struct {
@@ -710,6 +713,7 @@ type GetUserWithPositionsRow struct {
 	AvatarSource      pgtype.Text        `json:"avatar_source"`
 	ExternalDeletedAt pgtype.Timestamptz `json:"external_deleted_at"`
 	ShowInSchedule    bool               `json:"show_in_schedule"`
+	Login             string             `json:"login"`
 	PositionIds       []uuid.UUID        `json:"position_ids"`
 	DepartmentIds     []uuid.UUID        `json:"department_ids"`
 	SectionAccess     []string           `json:"section_access"`
@@ -741,6 +745,7 @@ func (q *Queries) GetUserWithPositions(ctx context.Context, arg GetUserWithPosit
 		&i.AvatarSource,
 		&i.ExternalDeletedAt,
 		&i.ShowInSchedule,
+		&i.Login,
 		&i.PositionIds,
 		&i.DepartmentIds,
 		&i.SectionAccess,
@@ -967,6 +972,7 @@ func (q *Queries) ListPositions(ctx context.Context, companyID uuid.UUID) ([]Pos
 
 const listUsers = `-- name: ListUsers :many
 SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name, u.avatar_source, u.external_deleted_at, u.show_in_schedule,
+       user_login.login,
        COALESCE(array_agg(up.position_id) FILTER (WHERE up.position_id IS NOT NULL), '{}')::uuid[] AS position_ids,
        ARRAY(
            SELECT assignment.department_id
@@ -985,9 +991,11 @@ SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar
            ELSE 'none'
        END::text AS access_mode
 FROM users u
+JOIN user_logins user_login
+  ON user_login.company_id = u.company_id AND user_login.user_id = u.id
 LEFT JOIN user_positions up ON up.user_id = u.id
 WHERE u.company_id = $1 AND u.external_deleted_at IS NULL
-GROUP BY u.id
+GROUP BY u.id, user_login.login
 ORDER BY u.created_at, u.id
 `
 
@@ -1013,6 +1021,7 @@ type ListUsersRow struct {
 	AvatarSource      pgtype.Text        `json:"avatar_source"`
 	ExternalDeletedAt pgtype.Timestamptz `json:"external_deleted_at"`
 	ShowInSchedule    bool               `json:"show_in_schedule"`
+	Login             string             `json:"login"`
 	PositionIds       []uuid.UUID        `json:"position_ids"`
 	DepartmentIds     []uuid.UUID        `json:"department_ids"`
 	SectionAccess     []string           `json:"section_access"`
@@ -1050,6 +1059,7 @@ func (q *Queries) ListUsers(ctx context.Context, companyID uuid.UUID) ([]ListUse
 			&i.AvatarSource,
 			&i.ExternalDeletedAt,
 			&i.ShowInSchedule,
+			&i.Login,
 			&i.PositionIds,
 			&i.DepartmentIds,
 			&i.SectionAccess,

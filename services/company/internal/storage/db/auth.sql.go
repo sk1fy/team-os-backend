@@ -504,6 +504,47 @@ func (q *Queries) GetUser(ctx context.Context, arg GetUserParams) (User, error) 
 	return i, err
 }
 
+const getUserAccessDetails = `-- name: GetUserAccessDetails :one
+SELECT
+    user_login.login,
+    EXISTS (
+        SELECT 1 FROM credentials credential
+        WHERE credential.company_id = u.company_id AND credential.user_id = u.id
+    ) AS password_enabled,
+    access.token AS link_token,
+    access.created_at AS link_created_at
+FROM users u
+JOIN user_logins user_login
+    ON user_login.company_id = u.company_id AND user_login.user_id = u.id
+LEFT JOIN access_links access
+    ON access.company_id = u.company_id AND access.user_id = u.id
+WHERE u.company_id = $1 AND u.id = $2
+`
+
+type GetUserAccessDetailsParams struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	UserID    uuid.UUID `json:"user_id"`
+}
+
+type GetUserAccessDetailsRow struct {
+	Login           string             `json:"login"`
+	PasswordEnabled bool               `json:"password_enabled"`
+	LinkToken       pgtype.Text        `json:"link_token"`
+	LinkCreatedAt   pgtype.Timestamptz `json:"link_created_at"`
+}
+
+func (q *Queries) GetUserAccessDetails(ctx context.Context, arg GetUserAccessDetailsParams) (GetUserAccessDetailsRow, error) {
+	row := q.db.QueryRow(ctx, getUserAccessDetails, arg.CompanyID, arg.UserID)
+	var i GetUserAccessDetailsRow
+	err := row.Scan(
+		&i.Login,
+		&i.PasswordEnabled,
+		&i.LinkToken,
+		&i.LinkCreatedAt,
+	)
+	return i, err
+}
+
 const getUserAccessMode = `-- name: GetUserAccessMode :one
 SELECT CASE
     WHEN EXISTS (
@@ -725,7 +766,16 @@ const getUserForLogin = `-- name: GetUserForLogin :one
 SELECT u.id, u.company_id, u.email, u.first_name, u.last_name, u.phone, u.avatar_url, u.role, u.status, u.birth_date, u.hired_at, u.vacation_allowance, u.created_at, u.updated_at, u.source, u.external_id, u.external_group_id, u.external_group_name, u.avatar_source, u.external_deleted_at, u.show_in_schedule, c.password_hash
 FROM users u
 JOIN credentials c ON c.user_id = u.id
-WHERE u.email = $1 AND u.external_deleted_at IS NULL
+JOIN user_logins user_login
+  ON user_login.company_id = u.company_id AND user_login.user_id = u.id
+WHERE (
+    user_login.login = $1
+    OR (
+        u.email = $1
+        AND u.role IN ('owner', 'admin')
+    )
+  )
+  AND u.external_deleted_at IS NULL
 FOR SHARE OF u
 `
 
@@ -734,8 +784,8 @@ type GetUserForLoginRow struct {
 	PasswordHash string `json:"password_hash"`
 }
 
-func (q *Queries) GetUserForLogin(ctx context.Context, email string) (GetUserForLoginRow, error) {
-	row := q.db.QueryRow(ctx, getUserForLogin, email)
+func (q *Queries) GetUserForLogin(ctx context.Context, loginIdentifier string) (GetUserForLoginRow, error) {
+	row := q.db.QueryRow(ctx, getUserForLogin, loginIdentifier)
 	var i GetUserForLoginRow
 	err := row.Scan(
 		&i.User.ID,
@@ -762,6 +812,23 @@ func (q *Queries) GetUserForLogin(ctx context.Context, email string) (GetUserFor
 		&i.PasswordHash,
 	)
 	return i, err
+}
+
+const getUserLogin = `-- name: GetUserLogin :one
+SELECT login FROM user_logins
+WHERE company_id = $1 AND user_id = $2
+`
+
+type GetUserLoginParams struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	UserID    uuid.UUID `json:"user_id"`
+}
+
+func (q *Queries) GetUserLogin(ctx context.Context, arg GetUserLoginParams) (string, error) {
+	row := q.db.QueryRow(ctx, getUserLogin, arg.CompanyID, arg.UserID)
+	var login string
+	err := row.Scan(&login)
+	return login, err
 }
 
 const getUserPositionIDs = `-- name: GetUserPositionIDs :many

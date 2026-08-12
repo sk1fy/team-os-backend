@@ -296,6 +296,13 @@ type UserExternalIdentity struct {
 	UpdatedAt         time.Time `json:"updated_at"`
 }
 
+type UserLogin struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	UserID    uuid.UUID `json:"user_id"`
+	Login     string    `json:"login"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
 type UserPosition struct {
 	CompanyID  uuid.UUID `json:"company_id"`
 	UserID     uuid.UUID `json:"user_id"`

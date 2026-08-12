@@ -56,7 +56,7 @@ func validation(message string) error {
 }
 
 func unauthenticated() error {
-	return &Error{Kind: ErrorUnauthenticated, Message: "Неверный email или пароль"}
+	return &Error{Kind: ErrorUnauthenticated, Message: "Неверный логин или пароль"}
 }
 
 func invalidAccessLink() error {

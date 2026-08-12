@@ -885,6 +885,7 @@ type User struct {
 	ShowInSchedule    bool                   `protobuf:"varint,17,opt,name=show_in_schedule,json=showInSchedule,proto3" json:"show_in_schedule,omitempty"`
 	// Direct department assignment; imported amoCRM users can have a department without a position.
 	DepartmentIds []string `protobuf:"bytes,18,rep,name=department_ids,json=departmentIds,proto3" json:"department_ids,omitempty"`
+	Login         string   `protobuf:"bytes,19,opt,name=login,proto3" json:"login,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1043,6 +1044,13 @@ func (x *User) GetDepartmentIds() []string {
 		return x.DepartmentIds
 	}
 	return nil
+}
+
+func (x *User) GetLogin() string {
+	if x != nil {
+		return x.Login
+	}
+	return ""
 }
 
 type Department struct {
@@ -1858,9 +1866,11 @@ func (x *ValidateCompanyRegistrationTokenResponse) GetExpiresAt() *timestamppb.T
 }
 
 type LoginRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Email         string                 `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
-	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Deprecated compatibility field. New clients send login.
+	Email         string  `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
+	Password      string  `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	Login         *string `protobuf:"bytes,3,opt,name=login,proto3,oneof" json:"login,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1905,6 +1915,13 @@ func (x *LoginRequest) GetEmail() string {
 func (x *LoginRequest) GetPassword() string {
 	if x != nil {
 		return x.Password
+	}
+	return ""
+}
+
+func (x *LoginRequest) GetLogin() string {
+	if x != nil && x.Login != nil {
+		return *x.Login
 	}
 	return ""
 }
@@ -5594,13 +5611,16 @@ func (*DeleteUserResponse) Descriptor() ([]byte, []int) {
 }
 
 type UserAccess struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Mode          UserAccessMode         `protobuf:"varint,1,opt,name=mode,proto3,enum=teamos.company.v1.UserAccessMode" json:"mode,omitempty"`
-	LinkToken     *string                `protobuf:"bytes,2,opt,name=link_token,json=linkToken,proto3,oneof" json:"link_token,omitempty"`
-	LinkCreatedAt *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=link_created_at,json=linkCreatedAt,proto3,oneof" json:"link_created_at,omitempty"`
-	LinkUrl       *string                `protobuf:"bytes,4,opt,name=link_url,json=linkUrl,proto3,oneof" json:"link_url,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	Mode            UserAccessMode         `protobuf:"varint,1,opt,name=mode,proto3,enum=teamos.company.v1.UserAccessMode" json:"mode,omitempty"`
+	LinkToken       *string                `protobuf:"bytes,2,opt,name=link_token,json=linkToken,proto3,oneof" json:"link_token,omitempty"`
+	LinkCreatedAt   *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=link_created_at,json=linkCreatedAt,proto3,oneof" json:"link_created_at,omitempty"`
+	LinkUrl         *string                `protobuf:"bytes,4,opt,name=link_url,json=linkUrl,proto3,oneof" json:"link_url,omitempty"`
+	Login           string                 `protobuf:"bytes,5,opt,name=login,proto3" json:"login,omitempty"`
+	PasswordEnabled *bool                  `protobuf:"varint,6,opt,name=password_enabled,json=passwordEnabled,proto3,oneof" json:"password_enabled,omitempty"`
+	LinkEnabled     *bool                  `protobuf:"varint,7,opt,name=link_enabled,json=linkEnabled,proto3,oneof" json:"link_enabled,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *UserAccess) Reset() {
@@ -5659,6 +5679,27 @@ func (x *UserAccess) GetLinkUrl() string {
 		return *x.LinkUrl
 	}
 	return ""
+}
+
+func (x *UserAccess) GetLogin() string {
+	if x != nil {
+		return x.Login
+	}
+	return ""
+}
+
+func (x *UserAccess) GetPasswordEnabled() bool {
+	if x != nil && x.PasswordEnabled != nil {
+		return *x.PasswordEnabled
+	}
+	return false
+}
+
+func (x *UserAccess) GetLinkEnabled() bool {
+	if x != nil && x.LinkEnabled != nil {
+		return *x.LinkEnabled
+	}
+	return false
 }
 
 type GetUserAccessRequest struct {
@@ -5804,6 +5845,7 @@ func (x *SetUserPasswordAccessRequest) GetPassword() string {
 type SetUserPasswordAccessResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Password      string                 `protobuf:"bytes,1,opt,name=password,proto3" json:"password,omitempty"`
+	Login         string                 `protobuf:"bytes,2,opt,name=login,proto3" json:"login,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -5841,6 +5883,13 @@ func (*SetUserPasswordAccessResponse) Descriptor() ([]byte, []int) {
 func (x *SetUserPasswordAccessResponse) GetPassword() string {
 	if x != nil {
 		return x.Password
+	}
+	return ""
+}
+
+func (x *SetUserPasswordAccessResponse) GetLogin() string {
+	if x != nil {
+		return x.Login
 	}
 	return ""
 }
@@ -6029,6 +6078,166 @@ func (*RevokeUserAccessResponse) Descriptor() ([]byte, []int) {
 	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{94}
 }
 
+type RevokeUserPasswordAccessRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RevokeUserPasswordAccessRequest) Reset() {
+	*x = RevokeUserPasswordAccessRequest{}
+	mi := &file_proto_company_v1_company_proto_msgTypes[95]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RevokeUserPasswordAccessRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RevokeUserPasswordAccessRequest) ProtoMessage() {}
+
+func (x *RevokeUserPasswordAccessRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_company_v1_company_proto_msgTypes[95]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RevokeUserPasswordAccessRequest.ProtoReflect.Descriptor instead.
+func (*RevokeUserPasswordAccessRequest) Descriptor() ([]byte, []int) {
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{95}
+}
+
+func (x *RevokeUserPasswordAccessRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+type RevokeUserPasswordAccessResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RevokeUserPasswordAccessResponse) Reset() {
+	*x = RevokeUserPasswordAccessResponse{}
+	mi := &file_proto_company_v1_company_proto_msgTypes[96]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RevokeUserPasswordAccessResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RevokeUserPasswordAccessResponse) ProtoMessage() {}
+
+func (x *RevokeUserPasswordAccessResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_company_v1_company_proto_msgTypes[96]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RevokeUserPasswordAccessResponse.ProtoReflect.Descriptor instead.
+func (*RevokeUserPasswordAccessResponse) Descriptor() ([]byte, []int) {
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{96}
+}
+
+type RevokeUserLinkAccessRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RevokeUserLinkAccessRequest) Reset() {
+	*x = RevokeUserLinkAccessRequest{}
+	mi := &file_proto_company_v1_company_proto_msgTypes[97]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RevokeUserLinkAccessRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RevokeUserLinkAccessRequest) ProtoMessage() {}
+
+func (x *RevokeUserLinkAccessRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_company_v1_company_proto_msgTypes[97]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RevokeUserLinkAccessRequest.ProtoReflect.Descriptor instead.
+func (*RevokeUserLinkAccessRequest) Descriptor() ([]byte, []int) {
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{97}
+}
+
+func (x *RevokeUserLinkAccessRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+type RevokeUserLinkAccessResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RevokeUserLinkAccessResponse) Reset() {
+	*x = RevokeUserLinkAccessResponse{}
+	mi := &file_proto_company_v1_company_proto_msgTypes[98]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RevokeUserLinkAccessResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RevokeUserLinkAccessResponse) ProtoMessage() {}
+
+func (x *RevokeUserLinkAccessResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_company_v1_company_proto_msgTypes[98]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RevokeUserLinkAccessResponse.ProtoReflect.Descriptor instead.
+func (*RevokeUserLinkAccessResponse) Descriptor() ([]byte, []int) {
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{98}
+}
+
 type GetInvitesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -6037,7 +6246,7 @@ type GetInvitesRequest struct {
 
 func (x *GetInvitesRequest) Reset() {
 	*x = GetInvitesRequest{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[95]
+	mi := &file_proto_company_v1_company_proto_msgTypes[99]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6049,7 +6258,7 @@ func (x *GetInvitesRequest) String() string {
 func (*GetInvitesRequest) ProtoMessage() {}
 
 func (x *GetInvitesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[95]
+	mi := &file_proto_company_v1_company_proto_msgTypes[99]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6062,7 +6271,7 @@ func (x *GetInvitesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetInvitesRequest.ProtoReflect.Descriptor instead.
 func (*GetInvitesRequest) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{95}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{99}
 }
 
 type GetInvitesResponse struct {
@@ -6074,7 +6283,7 @@ type GetInvitesResponse struct {
 
 func (x *GetInvitesResponse) Reset() {
 	*x = GetInvitesResponse{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[96]
+	mi := &file_proto_company_v1_company_proto_msgTypes[100]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6086,7 +6295,7 @@ func (x *GetInvitesResponse) String() string {
 func (*GetInvitesResponse) ProtoMessage() {}
 
 func (x *GetInvitesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[96]
+	mi := &file_proto_company_v1_company_proto_msgTypes[100]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6099,7 +6308,7 @@ func (x *GetInvitesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetInvitesResponse.ProtoReflect.Descriptor instead.
 func (*GetInvitesResponse) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{96}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{100}
 }
 
 func (x *GetInvitesResponse) GetInvites() []*Invite {
@@ -6121,7 +6330,7 @@ type InviteUserRequest struct {
 
 func (x *InviteUserRequest) Reset() {
 	*x = InviteUserRequest{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[97]
+	mi := &file_proto_company_v1_company_proto_msgTypes[101]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6133,7 +6342,7 @@ func (x *InviteUserRequest) String() string {
 func (*InviteUserRequest) ProtoMessage() {}
 
 func (x *InviteUserRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[97]
+	mi := &file_proto_company_v1_company_proto_msgTypes[101]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6146,7 +6355,7 @@ func (x *InviteUserRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InviteUserRequest.ProtoReflect.Descriptor instead.
 func (*InviteUserRequest) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{97}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{101}
 }
 
 func (x *InviteUserRequest) GetEmail() string {
@@ -6186,7 +6395,7 @@ type InviteUserResponse struct {
 
 func (x *InviteUserResponse) Reset() {
 	*x = InviteUserResponse{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[98]
+	mi := &file_proto_company_v1_company_proto_msgTypes[102]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6198,7 +6407,7 @@ func (x *InviteUserResponse) String() string {
 func (*InviteUserResponse) ProtoMessage() {}
 
 func (x *InviteUserResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[98]
+	mi := &file_proto_company_v1_company_proto_msgTypes[102]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6211,7 +6420,7 @@ func (x *InviteUserResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InviteUserResponse.ProtoReflect.Descriptor instead.
 func (*InviteUserResponse) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{98}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{102}
 }
 
 func (x *InviteUserResponse) GetInvite() *Invite {
@@ -6230,7 +6439,7 @@ type ResendInviteRequest struct {
 
 func (x *ResendInviteRequest) Reset() {
 	*x = ResendInviteRequest{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[99]
+	mi := &file_proto_company_v1_company_proto_msgTypes[103]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6242,7 +6451,7 @@ func (x *ResendInviteRequest) String() string {
 func (*ResendInviteRequest) ProtoMessage() {}
 
 func (x *ResendInviteRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[99]
+	mi := &file_proto_company_v1_company_proto_msgTypes[103]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6255,7 +6464,7 @@ func (x *ResendInviteRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResendInviteRequest.ProtoReflect.Descriptor instead.
 func (*ResendInviteRequest) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{99}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{103}
 }
 
 func (x *ResendInviteRequest) GetId() string {
@@ -6274,7 +6483,7 @@ type ResendInviteResponse struct {
 
 func (x *ResendInviteResponse) Reset() {
 	*x = ResendInviteResponse{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[100]
+	mi := &file_proto_company_v1_company_proto_msgTypes[104]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6286,7 +6495,7 @@ func (x *ResendInviteResponse) String() string {
 func (*ResendInviteResponse) ProtoMessage() {}
 
 func (x *ResendInviteResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[100]
+	mi := &file_proto_company_v1_company_proto_msgTypes[104]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6299,7 +6508,7 @@ func (x *ResendInviteResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResendInviteResponse.ProtoReflect.Descriptor instead.
 func (*ResendInviteResponse) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{100}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{104}
 }
 
 func (x *ResendInviteResponse) GetInvite() *Invite {
@@ -6318,7 +6527,7 @@ type RevokeInviteRequest struct {
 
 func (x *RevokeInviteRequest) Reset() {
 	*x = RevokeInviteRequest{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[101]
+	mi := &file_proto_company_v1_company_proto_msgTypes[105]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6330,7 +6539,7 @@ func (x *RevokeInviteRequest) String() string {
 func (*RevokeInviteRequest) ProtoMessage() {}
 
 func (x *RevokeInviteRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[101]
+	mi := &file_proto_company_v1_company_proto_msgTypes[105]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6343,7 +6552,7 @@ func (x *RevokeInviteRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RevokeInviteRequest.ProtoReflect.Descriptor instead.
 func (*RevokeInviteRequest) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{101}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{105}
 }
 
 func (x *RevokeInviteRequest) GetId() string {
@@ -6361,7 +6570,7 @@ type RevokeInviteResponse struct {
 
 func (x *RevokeInviteResponse) Reset() {
 	*x = RevokeInviteResponse{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[102]
+	mi := &file_proto_company_v1_company_proto_msgTypes[106]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6373,7 +6582,7 @@ func (x *RevokeInviteResponse) String() string {
 func (*RevokeInviteResponse) ProtoMessage() {}
 
 func (x *RevokeInviteResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[102]
+	mi := &file_proto_company_v1_company_proto_msgTypes[106]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6386,7 +6595,7 @@ func (x *RevokeInviteResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RevokeInviteResponse.ProtoReflect.Descriptor instead.
 func (*RevokeInviteResponse) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{102}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{106}
 }
 
 type GetUsersByIdsRequest struct {
@@ -6398,7 +6607,7 @@ type GetUsersByIdsRequest struct {
 
 func (x *GetUsersByIdsRequest) Reset() {
 	*x = GetUsersByIdsRequest{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[103]
+	mi := &file_proto_company_v1_company_proto_msgTypes[107]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6410,7 +6619,7 @@ func (x *GetUsersByIdsRequest) String() string {
 func (*GetUsersByIdsRequest) ProtoMessage() {}
 
 func (x *GetUsersByIdsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[103]
+	mi := &file_proto_company_v1_company_proto_msgTypes[107]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6423,7 +6632,7 @@ func (x *GetUsersByIdsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetUsersByIdsRequest.ProtoReflect.Descriptor instead.
 func (*GetUsersByIdsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{103}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{107}
 }
 
 func (x *GetUsersByIdsRequest) GetUserIds() []string {
@@ -6442,7 +6651,7 @@ type GetUsersByIdsResponse struct {
 
 func (x *GetUsersByIdsResponse) Reset() {
 	*x = GetUsersByIdsResponse{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[104]
+	mi := &file_proto_company_v1_company_proto_msgTypes[108]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6454,7 +6663,7 @@ func (x *GetUsersByIdsResponse) String() string {
 func (*GetUsersByIdsResponse) ProtoMessage() {}
 
 func (x *GetUsersByIdsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[104]
+	mi := &file_proto_company_v1_company_proto_msgTypes[108]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6467,7 +6676,7 @@ func (x *GetUsersByIdsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetUsersByIdsResponse.ProtoReflect.Descriptor instead.
 func (*GetUsersByIdsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{104}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{108}
 }
 
 func (x *GetUsersByIdsResponse) GetUsers() []*User {
@@ -6488,7 +6697,7 @@ type ResolveReportUserScopeRequest struct {
 
 func (x *ResolveReportUserScopeRequest) Reset() {
 	*x = ResolveReportUserScopeRequest{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[105]
+	mi := &file_proto_company_v1_company_proto_msgTypes[109]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6500,7 +6709,7 @@ func (x *ResolveReportUserScopeRequest) String() string {
 func (*ResolveReportUserScopeRequest) ProtoMessage() {}
 
 func (x *ResolveReportUserScopeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[105]
+	mi := &file_proto_company_v1_company_proto_msgTypes[109]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6513,7 +6722,7 @@ func (x *ResolveReportUserScopeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResolveReportUserScopeRequest.ProtoReflect.Descriptor instead.
 func (*ResolveReportUserScopeRequest) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{105}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{109}
 }
 
 func (x *ResolveReportUserScopeRequest) GetSearch() string {
@@ -6547,7 +6756,7 @@ type ResolveReportUserScopeResponse struct {
 
 func (x *ResolveReportUserScopeResponse) Reset() {
 	*x = ResolveReportUserScopeResponse{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[106]
+	mi := &file_proto_company_v1_company_proto_msgTypes[110]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6559,7 +6768,7 @@ func (x *ResolveReportUserScopeResponse) String() string {
 func (*ResolveReportUserScopeResponse) ProtoMessage() {}
 
 func (x *ResolveReportUserScopeResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[106]
+	mi := &file_proto_company_v1_company_proto_msgTypes[110]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6572,7 +6781,7 @@ func (x *ResolveReportUserScopeResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResolveReportUserScopeResponse.ProtoReflect.Descriptor instead.
 func (*ResolveReportUserScopeResponse) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{106}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{110}
 }
 
 func (x *ResolveReportUserScopeResponse) GetUserIds() []string {
@@ -6603,7 +6812,7 @@ type ReportUserProfile struct {
 
 func (x *ReportUserProfile) Reset() {
 	*x = ReportUserProfile{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[107]
+	mi := &file_proto_company_v1_company_proto_msgTypes[111]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6615,7 +6824,7 @@ func (x *ReportUserProfile) String() string {
 func (*ReportUserProfile) ProtoMessage() {}
 
 func (x *ReportUserProfile) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[107]
+	mi := &file_proto_company_v1_company_proto_msgTypes[111]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6628,7 +6837,7 @@ func (x *ReportUserProfile) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReportUserProfile.ProtoReflect.Descriptor instead.
 func (*ReportUserProfile) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{107}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{111}
 }
 
 func (x *ReportUserProfile) GetUserId() string {
@@ -6684,7 +6893,7 @@ type GetReportUserProfilesRequest struct {
 
 func (x *GetReportUserProfilesRequest) Reset() {
 	*x = GetReportUserProfilesRequest{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[108]
+	mi := &file_proto_company_v1_company_proto_msgTypes[112]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6696,7 +6905,7 @@ func (x *GetReportUserProfilesRequest) String() string {
 func (*GetReportUserProfilesRequest) ProtoMessage() {}
 
 func (x *GetReportUserProfilesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[108]
+	mi := &file_proto_company_v1_company_proto_msgTypes[112]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6709,7 +6918,7 @@ func (x *GetReportUserProfilesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetReportUserProfilesRequest.ProtoReflect.Descriptor instead.
 func (*GetReportUserProfilesRequest) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{108}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{112}
 }
 
 func (x *GetReportUserProfilesRequest) GetUserIds() []string {
@@ -6742,7 +6951,7 @@ type GetReportUserProfilesResponse struct {
 
 func (x *GetReportUserProfilesResponse) Reset() {
 	*x = GetReportUserProfilesResponse{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[109]
+	mi := &file_proto_company_v1_company_proto_msgTypes[113]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6754,7 +6963,7 @@ func (x *GetReportUserProfilesResponse) String() string {
 func (*GetReportUserProfilesResponse) ProtoMessage() {}
 
 func (x *GetReportUserProfilesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[109]
+	mi := &file_proto_company_v1_company_proto_msgTypes[113]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6767,7 +6976,7 @@ func (x *GetReportUserProfilesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetReportUserProfilesResponse.ProtoReflect.Descriptor instead.
 func (*GetReportUserProfilesResponse) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{109}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{113}
 }
 
 func (x *GetReportUserProfilesResponse) GetProfiles() []*ReportUserProfile {
@@ -6786,7 +6995,7 @@ type ResolvePositionUsersRequest struct {
 
 func (x *ResolvePositionUsersRequest) Reset() {
 	*x = ResolvePositionUsersRequest{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[110]
+	mi := &file_proto_company_v1_company_proto_msgTypes[114]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6798,7 +7007,7 @@ func (x *ResolvePositionUsersRequest) String() string {
 func (*ResolvePositionUsersRequest) ProtoMessage() {}
 
 func (x *ResolvePositionUsersRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[110]
+	mi := &file_proto_company_v1_company_proto_msgTypes[114]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6811,7 +7020,7 @@ func (x *ResolvePositionUsersRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResolvePositionUsersRequest.ProtoReflect.Descriptor instead.
 func (*ResolvePositionUsersRequest) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{110}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{114}
 }
 
 func (x *ResolvePositionUsersRequest) GetPositionId() string {
@@ -6830,7 +7039,7 @@ type ResolvePositionUsersResponse struct {
 
 func (x *ResolvePositionUsersResponse) Reset() {
 	*x = ResolvePositionUsersResponse{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[111]
+	mi := &file_proto_company_v1_company_proto_msgTypes[115]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6842,7 +7051,7 @@ func (x *ResolvePositionUsersResponse) String() string {
 func (*ResolvePositionUsersResponse) ProtoMessage() {}
 
 func (x *ResolvePositionUsersResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[111]
+	mi := &file_proto_company_v1_company_proto_msgTypes[115]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6855,7 +7064,7 @@ func (x *ResolvePositionUsersResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResolvePositionUsersResponse.ProtoReflect.Descriptor instead.
 func (*ResolvePositionUsersResponse) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{111}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{115}
 }
 
 func (x *ResolvePositionUsersResponse) GetUserIds() []string {
@@ -6875,7 +7084,7 @@ type ResolveDepartmentUsersRequest struct {
 
 func (x *ResolveDepartmentUsersRequest) Reset() {
 	*x = ResolveDepartmentUsersRequest{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[112]
+	mi := &file_proto_company_v1_company_proto_msgTypes[116]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6887,7 +7096,7 @@ func (x *ResolveDepartmentUsersRequest) String() string {
 func (*ResolveDepartmentUsersRequest) ProtoMessage() {}
 
 func (x *ResolveDepartmentUsersRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[112]
+	mi := &file_proto_company_v1_company_proto_msgTypes[116]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6900,7 +7109,7 @@ func (x *ResolveDepartmentUsersRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResolveDepartmentUsersRequest.ProtoReflect.Descriptor instead.
 func (*ResolveDepartmentUsersRequest) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{112}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{116}
 }
 
 func (x *ResolveDepartmentUsersRequest) GetDepartmentId() string {
@@ -6926,7 +7135,7 @@ type ResolveDepartmentUsersResponse struct {
 
 func (x *ResolveDepartmentUsersResponse) Reset() {
 	*x = ResolveDepartmentUsersResponse{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[113]
+	mi := &file_proto_company_v1_company_proto_msgTypes[117]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6938,7 +7147,7 @@ func (x *ResolveDepartmentUsersResponse) String() string {
 func (*ResolveDepartmentUsersResponse) ProtoMessage() {}
 
 func (x *ResolveDepartmentUsersResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[113]
+	mi := &file_proto_company_v1_company_proto_msgTypes[117]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6951,7 +7160,7 @@ func (x *ResolveDepartmentUsersResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResolveDepartmentUsersResponse.ProtoReflect.Descriptor instead.
 func (*ResolveDepartmentUsersResponse) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{113}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{117}
 }
 
 func (x *ResolveDepartmentUsersResponse) GetUserIds() []string {
@@ -6976,7 +7185,7 @@ type ScheduleTemplate struct {
 
 func (x *ScheduleTemplate) Reset() {
 	*x = ScheduleTemplate{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[114]
+	mi := &file_proto_company_v1_company_proto_msgTypes[118]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6988,7 +7197,7 @@ func (x *ScheduleTemplate) String() string {
 func (*ScheduleTemplate) ProtoMessage() {}
 
 func (x *ScheduleTemplate) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[114]
+	mi := &file_proto_company_v1_company_proto_msgTypes[118]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7001,7 +7210,7 @@ func (x *ScheduleTemplate) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ScheduleTemplate.ProtoReflect.Descriptor instead.
 func (*ScheduleTemplate) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{114}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{118}
 }
 
 func (x *ScheduleTemplate) GetType() string {
@@ -7063,7 +7272,7 @@ type UserSchedule struct {
 
 func (x *UserSchedule) Reset() {
 	*x = UserSchedule{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[115]
+	mi := &file_proto_company_v1_company_proto_msgTypes[119]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7075,7 +7284,7 @@ func (x *UserSchedule) String() string {
 func (*UserSchedule) ProtoMessage() {}
 
 func (x *UserSchedule) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[115]
+	mi := &file_proto_company_v1_company_proto_msgTypes[119]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7088,7 +7297,7 @@ func (x *UserSchedule) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserSchedule.ProtoReflect.Descriptor instead.
 func (*UserSchedule) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{115}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{119}
 }
 
 func (x *UserSchedule) GetUserId() string {
@@ -7120,7 +7329,7 @@ type ShiftException struct {
 
 func (x *ShiftException) Reset() {
 	*x = ShiftException{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[116]
+	mi := &file_proto_company_v1_company_proto_msgTypes[120]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7132,7 +7341,7 @@ func (x *ShiftException) String() string {
 func (*ShiftException) ProtoMessage() {}
 
 func (x *ShiftException) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[116]
+	mi := &file_proto_company_v1_company_proto_msgTypes[120]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7145,7 +7354,7 @@ func (x *ShiftException) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ShiftException.ProtoReflect.Descriptor instead.
 func (*ShiftException) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{116}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{120}
 }
 
 func (x *ShiftException) GetId() string {
@@ -7205,7 +7414,7 @@ type GetSchedulesRequest struct {
 
 func (x *GetSchedulesRequest) Reset() {
 	*x = GetSchedulesRequest{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[117]
+	mi := &file_proto_company_v1_company_proto_msgTypes[121]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7217,7 +7426,7 @@ func (x *GetSchedulesRequest) String() string {
 func (*GetSchedulesRequest) ProtoMessage() {}
 
 func (x *GetSchedulesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[117]
+	mi := &file_proto_company_v1_company_proto_msgTypes[121]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7230,7 +7439,7 @@ func (x *GetSchedulesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetSchedulesRequest.ProtoReflect.Descriptor instead.
 func (*GetSchedulesRequest) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{117}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{121}
 }
 
 type GetSchedulesResponse struct {
@@ -7242,7 +7451,7 @@ type GetSchedulesResponse struct {
 
 func (x *GetSchedulesResponse) Reset() {
 	*x = GetSchedulesResponse{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[118]
+	mi := &file_proto_company_v1_company_proto_msgTypes[122]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7254,7 +7463,7 @@ func (x *GetSchedulesResponse) String() string {
 func (*GetSchedulesResponse) ProtoMessage() {}
 
 func (x *GetSchedulesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[118]
+	mi := &file_proto_company_v1_company_proto_msgTypes[122]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7267,7 +7476,7 @@ func (x *GetSchedulesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetSchedulesResponse.ProtoReflect.Descriptor instead.
 func (*GetSchedulesResponse) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{118}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{122}
 }
 
 func (x *GetSchedulesResponse) GetSchedules() []*UserSchedule {
@@ -7287,7 +7496,7 @@ type SaveScheduleRequest struct {
 
 func (x *SaveScheduleRequest) Reset() {
 	*x = SaveScheduleRequest{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[119]
+	mi := &file_proto_company_v1_company_proto_msgTypes[123]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7299,7 +7508,7 @@ func (x *SaveScheduleRequest) String() string {
 func (*SaveScheduleRequest) ProtoMessage() {}
 
 func (x *SaveScheduleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[119]
+	mi := &file_proto_company_v1_company_proto_msgTypes[123]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7312,7 +7521,7 @@ func (x *SaveScheduleRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SaveScheduleRequest.ProtoReflect.Descriptor instead.
 func (*SaveScheduleRequest) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{119}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{123}
 }
 
 func (x *SaveScheduleRequest) GetUserId() string {
@@ -7338,7 +7547,7 @@ type SaveScheduleResponse struct {
 
 func (x *SaveScheduleResponse) Reset() {
 	*x = SaveScheduleResponse{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[120]
+	mi := &file_proto_company_v1_company_proto_msgTypes[124]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7350,7 +7559,7 @@ func (x *SaveScheduleResponse) String() string {
 func (*SaveScheduleResponse) ProtoMessage() {}
 
 func (x *SaveScheduleResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[120]
+	mi := &file_proto_company_v1_company_proto_msgTypes[124]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7363,7 +7572,7 @@ func (x *SaveScheduleResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SaveScheduleResponse.ProtoReflect.Descriptor instead.
 func (*SaveScheduleResponse) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{120}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{124}
 }
 
 func (x *SaveScheduleResponse) GetSchedule() *UserSchedule {
@@ -7383,7 +7592,7 @@ type UpdateUserCardRequest struct {
 
 func (x *UpdateUserCardRequest) Reset() {
 	*x = UpdateUserCardRequest{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[121]
+	mi := &file_proto_company_v1_company_proto_msgTypes[125]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7395,7 +7604,7 @@ func (x *UpdateUserCardRequest) String() string {
 func (*UpdateUserCardRequest) ProtoMessage() {}
 
 func (x *UpdateUserCardRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[121]
+	mi := &file_proto_company_v1_company_proto_msgTypes[125]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7408,7 +7617,7 @@ func (x *UpdateUserCardRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateUserCardRequest.ProtoReflect.Descriptor instead.
 func (*UpdateUserCardRequest) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{121}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{125}
 }
 
 func (x *UpdateUserCardRequest) GetUser() *UpdateUserRequest {
@@ -7435,7 +7644,7 @@ type UpdateUserCardResponse struct {
 
 func (x *UpdateUserCardResponse) Reset() {
 	*x = UpdateUserCardResponse{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[122]
+	mi := &file_proto_company_v1_company_proto_msgTypes[126]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7447,7 +7656,7 @@ func (x *UpdateUserCardResponse) String() string {
 func (*UpdateUserCardResponse) ProtoMessage() {}
 
 func (x *UpdateUserCardResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[122]
+	mi := &file_proto_company_v1_company_proto_msgTypes[126]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7460,7 +7669,7 @@ func (x *UpdateUserCardResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateUserCardResponse.ProtoReflect.Descriptor instead.
 func (*UpdateUserCardResponse) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{122}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{126}
 }
 
 func (x *UpdateUserCardResponse) GetUser() *User {
@@ -7486,7 +7695,7 @@ type GetShiftExceptionsRequest struct {
 
 func (x *GetShiftExceptionsRequest) Reset() {
 	*x = GetShiftExceptionsRequest{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[123]
+	mi := &file_proto_company_v1_company_proto_msgTypes[127]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7498,7 +7707,7 @@ func (x *GetShiftExceptionsRequest) String() string {
 func (*GetShiftExceptionsRequest) ProtoMessage() {}
 
 func (x *GetShiftExceptionsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[123]
+	mi := &file_proto_company_v1_company_proto_msgTypes[127]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7511,7 +7720,7 @@ func (x *GetShiftExceptionsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetShiftExceptionsRequest.ProtoReflect.Descriptor instead.
 func (*GetShiftExceptionsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{123}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{127}
 }
 
 func (x *GetShiftExceptionsRequest) GetMonth() string {
@@ -7530,7 +7739,7 @@ type GetShiftExceptionsResponse struct {
 
 func (x *GetShiftExceptionsResponse) Reset() {
 	*x = GetShiftExceptionsResponse{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[124]
+	mi := &file_proto_company_v1_company_proto_msgTypes[128]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7542,7 +7751,7 @@ func (x *GetShiftExceptionsResponse) String() string {
 func (*GetShiftExceptionsResponse) ProtoMessage() {}
 
 func (x *GetShiftExceptionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[124]
+	mi := &file_proto_company_v1_company_proto_msgTypes[128]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7555,7 +7764,7 @@ func (x *GetShiftExceptionsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetShiftExceptionsResponse.ProtoReflect.Descriptor instead.
 func (*GetShiftExceptionsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{124}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{128}
 }
 
 func (x *GetShiftExceptionsResponse) GetExceptions() []*ShiftException {
@@ -7579,7 +7788,7 @@ type SaveShiftExceptionInput struct {
 
 func (x *SaveShiftExceptionInput) Reset() {
 	*x = SaveShiftExceptionInput{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[125]
+	mi := &file_proto_company_v1_company_proto_msgTypes[129]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7591,7 +7800,7 @@ func (x *SaveShiftExceptionInput) String() string {
 func (*SaveShiftExceptionInput) ProtoMessage() {}
 
 func (x *SaveShiftExceptionInput) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[125]
+	mi := &file_proto_company_v1_company_proto_msgTypes[129]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7604,7 +7813,7 @@ func (x *SaveShiftExceptionInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SaveShiftExceptionInput.ProtoReflect.Descriptor instead.
 func (*SaveShiftExceptionInput) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{125}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{129}
 }
 
 func (x *SaveShiftExceptionInput) GetUserId() string {
@@ -7658,7 +7867,7 @@ type SaveShiftExceptionsRequest struct {
 
 func (x *SaveShiftExceptionsRequest) Reset() {
 	*x = SaveShiftExceptionsRequest{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[126]
+	mi := &file_proto_company_v1_company_proto_msgTypes[130]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7670,7 +7879,7 @@ func (x *SaveShiftExceptionsRequest) String() string {
 func (*SaveShiftExceptionsRequest) ProtoMessage() {}
 
 func (x *SaveShiftExceptionsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[126]
+	mi := &file_proto_company_v1_company_proto_msgTypes[130]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7683,7 +7892,7 @@ func (x *SaveShiftExceptionsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SaveShiftExceptionsRequest.ProtoReflect.Descriptor instead.
 func (*SaveShiftExceptionsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{126}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{130}
 }
 
 func (x *SaveShiftExceptionsRequest) GetExceptions() []*SaveShiftExceptionInput {
@@ -7702,7 +7911,7 @@ type SaveShiftExceptionsResponse struct {
 
 func (x *SaveShiftExceptionsResponse) Reset() {
 	*x = SaveShiftExceptionsResponse{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[127]
+	mi := &file_proto_company_v1_company_proto_msgTypes[131]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7714,7 +7923,7 @@ func (x *SaveShiftExceptionsResponse) String() string {
 func (*SaveShiftExceptionsResponse) ProtoMessage() {}
 
 func (x *SaveShiftExceptionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[127]
+	mi := &file_proto_company_v1_company_proto_msgTypes[131]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7727,7 +7936,7 @@ func (x *SaveShiftExceptionsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SaveShiftExceptionsResponse.ProtoReflect.Descriptor instead.
 func (*SaveShiftExceptionsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{127}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{131}
 }
 
 func (x *SaveShiftExceptionsResponse) GetExceptions() []*ShiftException {
@@ -7756,7 +7965,7 @@ type DistributionGroup struct {
 
 func (x *DistributionGroup) Reset() {
 	*x = DistributionGroup{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[128]
+	mi := &file_proto_company_v1_company_proto_msgTypes[132]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7768,7 +7977,7 @@ func (x *DistributionGroup) String() string {
 func (*DistributionGroup) ProtoMessage() {}
 
 func (x *DistributionGroup) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[128]
+	mi := &file_proto_company_v1_company_proto_msgTypes[132]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7781,7 +7990,7 @@ func (x *DistributionGroup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DistributionGroup.ProtoReflect.Descriptor instead.
 func (*DistributionGroup) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{128}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{132}
 }
 
 func (x *DistributionGroup) GetId() string {
@@ -7875,7 +8084,7 @@ type DistributionEvent struct {
 
 func (x *DistributionEvent) Reset() {
 	*x = DistributionEvent{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[129]
+	mi := &file_proto_company_v1_company_proto_msgTypes[133]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7887,7 +8096,7 @@ func (x *DistributionEvent) String() string {
 func (*DistributionEvent) ProtoMessage() {}
 
 func (x *DistributionEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[129]
+	mi := &file_proto_company_v1_company_proto_msgTypes[133]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7900,7 +8109,7 @@ func (x *DistributionEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DistributionEvent.ProtoReflect.Descriptor instead.
 func (*DistributionEvent) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{129}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{133}
 }
 
 func (x *DistributionEvent) GetId() string {
@@ -7953,7 +8162,7 @@ type GetDistributionGroupsRequest struct {
 
 func (x *GetDistributionGroupsRequest) Reset() {
 	*x = GetDistributionGroupsRequest{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[130]
+	mi := &file_proto_company_v1_company_proto_msgTypes[134]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7965,7 +8174,7 @@ func (x *GetDistributionGroupsRequest) String() string {
 func (*GetDistributionGroupsRequest) ProtoMessage() {}
 
 func (x *GetDistributionGroupsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[130]
+	mi := &file_proto_company_v1_company_proto_msgTypes[134]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7978,7 +8187,7 @@ func (x *GetDistributionGroupsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDistributionGroupsRequest.ProtoReflect.Descriptor instead.
 func (*GetDistributionGroupsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{130}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{134}
 }
 
 type GetDistributionGroupsResponse struct {
@@ -7990,7 +8199,7 @@ type GetDistributionGroupsResponse struct {
 
 func (x *GetDistributionGroupsResponse) Reset() {
 	*x = GetDistributionGroupsResponse{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[131]
+	mi := &file_proto_company_v1_company_proto_msgTypes[135]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8002,7 +8211,7 @@ func (x *GetDistributionGroupsResponse) String() string {
 func (*GetDistributionGroupsResponse) ProtoMessage() {}
 
 func (x *GetDistributionGroupsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[131]
+	mi := &file_proto_company_v1_company_proto_msgTypes[135]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8015,7 +8224,7 @@ func (x *GetDistributionGroupsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDistributionGroupsResponse.ProtoReflect.Descriptor instead.
 func (*GetDistributionGroupsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{131}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{135}
 }
 
 func (x *GetDistributionGroupsResponse) GetGroups() []*DistributionGroup {
@@ -8036,7 +8245,7 @@ type CreateDistributionGroupRequest struct {
 
 func (x *CreateDistributionGroupRequest) Reset() {
 	*x = CreateDistributionGroupRequest{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[132]
+	mi := &file_proto_company_v1_company_proto_msgTypes[136]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8048,7 +8257,7 @@ func (x *CreateDistributionGroupRequest) String() string {
 func (*CreateDistributionGroupRequest) ProtoMessage() {}
 
 func (x *CreateDistributionGroupRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[132]
+	mi := &file_proto_company_v1_company_proto_msgTypes[136]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8061,7 +8270,7 @@ func (x *CreateDistributionGroupRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateDistributionGroupRequest.ProtoReflect.Descriptor instead.
 func (*CreateDistributionGroupRequest) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{132}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{136}
 }
 
 func (x *CreateDistributionGroupRequest) GetName() string {
@@ -8094,7 +8303,7 @@ type CreateDistributionGroupResponse struct {
 
 func (x *CreateDistributionGroupResponse) Reset() {
 	*x = CreateDistributionGroupResponse{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[133]
+	mi := &file_proto_company_v1_company_proto_msgTypes[137]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8106,7 +8315,7 @@ func (x *CreateDistributionGroupResponse) String() string {
 func (*CreateDistributionGroupResponse) ProtoMessage() {}
 
 func (x *CreateDistributionGroupResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[133]
+	mi := &file_proto_company_v1_company_proto_msgTypes[137]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8119,7 +8328,7 @@ func (x *CreateDistributionGroupResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateDistributionGroupResponse.ProtoReflect.Descriptor instead.
 func (*CreateDistributionGroupResponse) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{133}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{137}
 }
 
 func (x *CreateDistributionGroupResponse) GetGroup() *DistributionGroup {
@@ -8150,7 +8359,7 @@ type UpdateDistributionGroupRequest struct {
 
 func (x *UpdateDistributionGroupRequest) Reset() {
 	*x = UpdateDistributionGroupRequest{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[134]
+	mi := &file_proto_company_v1_company_proto_msgTypes[138]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8162,7 +8371,7 @@ func (x *UpdateDistributionGroupRequest) String() string {
 func (*UpdateDistributionGroupRequest) ProtoMessage() {}
 
 func (x *UpdateDistributionGroupRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[134]
+	mi := &file_proto_company_v1_company_proto_msgTypes[138]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8175,7 +8384,7 @@ func (x *UpdateDistributionGroupRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateDistributionGroupRequest.ProtoReflect.Descriptor instead.
 func (*UpdateDistributionGroupRequest) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{134}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{138}
 }
 
 func (x *UpdateDistributionGroupRequest) GetId() string {
@@ -8278,7 +8487,7 @@ type UpdateDistributionGroupResponse struct {
 
 func (x *UpdateDistributionGroupResponse) Reset() {
 	*x = UpdateDistributionGroupResponse{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[135]
+	mi := &file_proto_company_v1_company_proto_msgTypes[139]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8290,7 +8499,7 @@ func (x *UpdateDistributionGroupResponse) String() string {
 func (*UpdateDistributionGroupResponse) ProtoMessage() {}
 
 func (x *UpdateDistributionGroupResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[135]
+	mi := &file_proto_company_v1_company_proto_msgTypes[139]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8303,7 +8512,7 @@ func (x *UpdateDistributionGroupResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateDistributionGroupResponse.ProtoReflect.Descriptor instead.
 func (*UpdateDistributionGroupResponse) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{135}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{139}
 }
 
 func (x *UpdateDistributionGroupResponse) GetGroup() *DistributionGroup {
@@ -8322,7 +8531,7 @@ type DeleteDistributionGroupRequest struct {
 
 func (x *DeleteDistributionGroupRequest) Reset() {
 	*x = DeleteDistributionGroupRequest{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[136]
+	mi := &file_proto_company_v1_company_proto_msgTypes[140]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8334,7 +8543,7 @@ func (x *DeleteDistributionGroupRequest) String() string {
 func (*DeleteDistributionGroupRequest) ProtoMessage() {}
 
 func (x *DeleteDistributionGroupRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[136]
+	mi := &file_proto_company_v1_company_proto_msgTypes[140]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8347,7 +8556,7 @@ func (x *DeleteDistributionGroupRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteDistributionGroupRequest.ProtoReflect.Descriptor instead.
 func (*DeleteDistributionGroupRequest) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{136}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{140}
 }
 
 func (x *DeleteDistributionGroupRequest) GetId() string {
@@ -8365,7 +8574,7 @@ type DeleteDistributionGroupResponse struct {
 
 func (x *DeleteDistributionGroupResponse) Reset() {
 	*x = DeleteDistributionGroupResponse{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[137]
+	mi := &file_proto_company_v1_company_proto_msgTypes[141]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8377,7 +8586,7 @@ func (x *DeleteDistributionGroupResponse) String() string {
 func (*DeleteDistributionGroupResponse) ProtoMessage() {}
 
 func (x *DeleteDistributionGroupResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[137]
+	mi := &file_proto_company_v1_company_proto_msgTypes[141]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8390,7 +8599,7 @@ func (x *DeleteDistributionGroupResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteDistributionGroupResponse.ProtoReflect.Descriptor instead.
 func (*DeleteDistributionGroupResponse) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{137}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{141}
 }
 
 type GetDistributionEventsRequest struct {
@@ -8402,7 +8611,7 @@ type GetDistributionEventsRequest struct {
 
 func (x *GetDistributionEventsRequest) Reset() {
 	*x = GetDistributionEventsRequest{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[138]
+	mi := &file_proto_company_v1_company_proto_msgTypes[142]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8414,7 +8623,7 @@ func (x *GetDistributionEventsRequest) String() string {
 func (*GetDistributionEventsRequest) ProtoMessage() {}
 
 func (x *GetDistributionEventsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[138]
+	mi := &file_proto_company_v1_company_proto_msgTypes[142]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8427,7 +8636,7 @@ func (x *GetDistributionEventsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDistributionEventsRequest.ProtoReflect.Descriptor instead.
 func (*GetDistributionEventsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{138}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{142}
 }
 
 func (x *GetDistributionEventsRequest) GetGroupId() string {
@@ -8446,7 +8655,7 @@ type GetDistributionEventsResponse struct {
 
 func (x *GetDistributionEventsResponse) Reset() {
 	*x = GetDistributionEventsResponse{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[139]
+	mi := &file_proto_company_v1_company_proto_msgTypes[143]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8458,7 +8667,7 @@ func (x *GetDistributionEventsResponse) String() string {
 func (*GetDistributionEventsResponse) ProtoMessage() {}
 
 func (x *GetDistributionEventsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[139]
+	mi := &file_proto_company_v1_company_proto_msgTypes[143]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8471,7 +8680,7 @@ func (x *GetDistributionEventsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDistributionEventsResponse.ProtoReflect.Descriptor instead.
 func (*GetDistributionEventsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{139}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{143}
 }
 
 func (x *GetDistributionEventsResponse) GetEvents() []*DistributionEvent {
@@ -8490,7 +8699,7 @@ type SimulateDistributionDealRequest struct {
 
 func (x *SimulateDistributionDealRequest) Reset() {
 	*x = SimulateDistributionDealRequest{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[140]
+	mi := &file_proto_company_v1_company_proto_msgTypes[144]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8502,7 +8711,7 @@ func (x *SimulateDistributionDealRequest) String() string {
 func (*SimulateDistributionDealRequest) ProtoMessage() {}
 
 func (x *SimulateDistributionDealRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[140]
+	mi := &file_proto_company_v1_company_proto_msgTypes[144]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8515,7 +8724,7 @@ func (x *SimulateDistributionDealRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SimulateDistributionDealRequest.ProtoReflect.Descriptor instead.
 func (*SimulateDistributionDealRequest) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{140}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{144}
 }
 
 func (x *SimulateDistributionDealRequest) GetGroupId() string {
@@ -8534,7 +8743,7 @@ type SimulateDistributionDealResponse struct {
 
 func (x *SimulateDistributionDealResponse) Reset() {
 	*x = SimulateDistributionDealResponse{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[141]
+	mi := &file_proto_company_v1_company_proto_msgTypes[145]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8546,7 +8755,7 @@ func (x *SimulateDistributionDealResponse) String() string {
 func (*SimulateDistributionDealResponse) ProtoMessage() {}
 
 func (x *SimulateDistributionDealResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[141]
+	mi := &file_proto_company_v1_company_proto_msgTypes[145]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8559,7 +8768,7 @@ func (x *SimulateDistributionDealResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SimulateDistributionDealResponse.ProtoReflect.Descriptor instead.
 func (*SimulateDistributionDealResponse) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{141}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{145}
 }
 
 func (x *SimulateDistributionDealResponse) GetEvent() *DistributionEvent {
@@ -8578,7 +8787,7 @@ type ResetDistributionEventsRequest struct {
 
 func (x *ResetDistributionEventsRequest) Reset() {
 	*x = ResetDistributionEventsRequest{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[142]
+	mi := &file_proto_company_v1_company_proto_msgTypes[146]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8590,7 +8799,7 @@ func (x *ResetDistributionEventsRequest) String() string {
 func (*ResetDistributionEventsRequest) ProtoMessage() {}
 
 func (x *ResetDistributionEventsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[142]
+	mi := &file_proto_company_v1_company_proto_msgTypes[146]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8603,7 +8812,7 @@ func (x *ResetDistributionEventsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResetDistributionEventsRequest.ProtoReflect.Descriptor instead.
 func (*ResetDistributionEventsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{142}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{146}
 }
 
 func (x *ResetDistributionEventsRequest) GetGroupId() string {
@@ -8621,7 +8830,7 @@ type ResetDistributionEventsResponse struct {
 
 func (x *ResetDistributionEventsResponse) Reset() {
 	*x = ResetDistributionEventsResponse{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[143]
+	mi := &file_proto_company_v1_company_proto_msgTypes[147]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8633,7 +8842,7 @@ func (x *ResetDistributionEventsResponse) String() string {
 func (*ResetDistributionEventsResponse) ProtoMessage() {}
 
 func (x *ResetDistributionEventsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[143]
+	mi := &file_proto_company_v1_company_proto_msgTypes[147]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8646,7 +8855,7 @@ func (x *ResetDistributionEventsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResetDistributionEventsResponse.ProtoReflect.Descriptor instead.
 func (*ResetDistributionEventsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{143}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{147}
 }
 
 type GetProvisionedCompanyStatusRequest struct {
@@ -8659,7 +8868,7 @@ type GetProvisionedCompanyStatusRequest struct {
 
 func (x *GetProvisionedCompanyStatusRequest) Reset() {
 	*x = GetProvisionedCompanyStatusRequest{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[144]
+	mi := &file_proto_company_v1_company_proto_msgTypes[148]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8671,7 +8880,7 @@ func (x *GetProvisionedCompanyStatusRequest) String() string {
 func (*GetProvisionedCompanyStatusRequest) ProtoMessage() {}
 
 func (x *GetProvisionedCompanyStatusRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[144]
+	mi := &file_proto_company_v1_company_proto_msgTypes[148]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8684,7 +8893,7 @@ func (x *GetProvisionedCompanyStatusRequest) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use GetProvisionedCompanyStatusRequest.ProtoReflect.Descriptor instead.
 func (*GetProvisionedCompanyStatusRequest) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{144}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{148}
 }
 
 func (x *GetProvisionedCompanyStatusRequest) GetProvider() string {
@@ -8712,7 +8921,7 @@ type GetProvisionedCompanyStatusResponse struct {
 
 func (x *GetProvisionedCompanyStatusResponse) Reset() {
 	*x = GetProvisionedCompanyStatusResponse{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[145]
+	mi := &file_proto_company_v1_company_proto_msgTypes[149]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8724,7 +8933,7 @@ func (x *GetProvisionedCompanyStatusResponse) String() string {
 func (*GetProvisionedCompanyStatusResponse) ProtoMessage() {}
 
 func (x *GetProvisionedCompanyStatusResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[145]
+	mi := &file_proto_company_v1_company_proto_msgTypes[149]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8737,7 +8946,7 @@ func (x *GetProvisionedCompanyStatusResponse) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use GetProvisionedCompanyStatusResponse.ProtoReflect.Descriptor instead.
 func (*GetProvisionedCompanyStatusResponse) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{145}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{149}
 }
 
 func (x *GetProvisionedCompanyStatusResponse) GetExists() bool {
@@ -8775,7 +8984,7 @@ type ExchangeAmoWidgetSessionRequest struct {
 
 func (x *ExchangeAmoWidgetSessionRequest) Reset() {
 	*x = ExchangeAmoWidgetSessionRequest{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[146]
+	mi := &file_proto_company_v1_company_proto_msgTypes[150]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8787,7 +8996,7 @@ func (x *ExchangeAmoWidgetSessionRequest) String() string {
 func (*ExchangeAmoWidgetSessionRequest) ProtoMessage() {}
 
 func (x *ExchangeAmoWidgetSessionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[146]
+	mi := &file_proto_company_v1_company_proto_msgTypes[150]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8800,7 +9009,7 @@ func (x *ExchangeAmoWidgetSessionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExchangeAmoWidgetSessionRequest.ProtoReflect.Descriptor instead.
 func (*ExchangeAmoWidgetSessionRequest) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{146}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{150}
 }
 
 func (x *ExchangeAmoWidgetSessionRequest) GetToken() string {
@@ -8861,7 +9070,7 @@ type ExchangeAmoWidgetSessionResponse struct {
 
 func (x *ExchangeAmoWidgetSessionResponse) Reset() {
 	*x = ExchangeAmoWidgetSessionResponse{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[147]
+	mi := &file_proto_company_v1_company_proto_msgTypes[151]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8873,7 +9082,7 @@ func (x *ExchangeAmoWidgetSessionResponse) String() string {
 func (*ExchangeAmoWidgetSessionResponse) ProtoMessage() {}
 
 func (x *ExchangeAmoWidgetSessionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[147]
+	mi := &file_proto_company_v1_company_proto_msgTypes[151]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8886,7 +9095,7 @@ func (x *ExchangeAmoWidgetSessionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExchangeAmoWidgetSessionResponse.ProtoReflect.Descriptor instead.
 func (*ExchangeAmoWidgetSessionResponse) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{147}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{151}
 }
 
 func (x *ExchangeAmoWidgetSessionResponse) GetAction() AmoWidgetSessionAction {
@@ -8954,7 +9163,7 @@ type ValidateAmoWidgetContinuationRequest struct {
 
 func (x *ValidateAmoWidgetContinuationRequest) Reset() {
 	*x = ValidateAmoWidgetContinuationRequest{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[148]
+	mi := &file_proto_company_v1_company_proto_msgTypes[152]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8966,7 +9175,7 @@ func (x *ValidateAmoWidgetContinuationRequest) String() string {
 func (*ValidateAmoWidgetContinuationRequest) ProtoMessage() {}
 
 func (x *ValidateAmoWidgetContinuationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[148]
+	mi := &file_proto_company_v1_company_proto_msgTypes[152]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8979,7 +9188,7 @@ func (x *ValidateAmoWidgetContinuationRequest) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use ValidateAmoWidgetContinuationRequest.ProtoReflect.Descriptor instead.
 func (*ValidateAmoWidgetContinuationRequest) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{148}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{152}
 }
 
 func (x *ValidateAmoWidgetContinuationRequest) GetSessionToken() string {
@@ -9001,7 +9210,7 @@ type ValidateAmoWidgetContinuationResponse struct {
 
 func (x *ValidateAmoWidgetContinuationResponse) Reset() {
 	*x = ValidateAmoWidgetContinuationResponse{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[149]
+	mi := &file_proto_company_v1_company_proto_msgTypes[153]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9013,7 +9222,7 @@ func (x *ValidateAmoWidgetContinuationResponse) String() string {
 func (*ValidateAmoWidgetContinuationResponse) ProtoMessage() {}
 
 func (x *ValidateAmoWidgetContinuationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[149]
+	mi := &file_proto_company_v1_company_proto_msgTypes[153]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9026,7 +9235,7 @@ func (x *ValidateAmoWidgetContinuationResponse) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use ValidateAmoWidgetContinuationResponse.ProtoReflect.Descriptor instead.
 func (*ValidateAmoWidgetContinuationResponse) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{149}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{153}
 }
 
 func (x *ValidateAmoWidgetContinuationResponse) GetEmail() string {
@@ -9067,7 +9276,7 @@ type CompleteAmoWidgetContinuationRequest struct {
 
 func (x *CompleteAmoWidgetContinuationRequest) Reset() {
 	*x = CompleteAmoWidgetContinuationRequest{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[150]
+	mi := &file_proto_company_v1_company_proto_msgTypes[154]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9079,7 +9288,7 @@ func (x *CompleteAmoWidgetContinuationRequest) String() string {
 func (*CompleteAmoWidgetContinuationRequest) ProtoMessage() {}
 
 func (x *CompleteAmoWidgetContinuationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[150]
+	mi := &file_proto_company_v1_company_proto_msgTypes[154]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9092,7 +9301,7 @@ func (x *CompleteAmoWidgetContinuationRequest) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use CompleteAmoWidgetContinuationRequest.ProtoReflect.Descriptor instead.
 func (*CompleteAmoWidgetContinuationRequest) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{150}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{154}
 }
 
 func (x *CompleteAmoWidgetContinuationRequest) GetSessionToken() string {
@@ -9118,7 +9327,7 @@ type CompleteAmoWidgetContinuationResponse struct {
 
 func (x *CompleteAmoWidgetContinuationResponse) Reset() {
 	*x = CompleteAmoWidgetContinuationResponse{}
-	mi := &file_proto_company_v1_company_proto_msgTypes[151]
+	mi := &file_proto_company_v1_company_proto_msgTypes[155]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9130,7 +9339,7 @@ func (x *CompleteAmoWidgetContinuationResponse) String() string {
 func (*CompleteAmoWidgetContinuationResponse) ProtoMessage() {}
 
 func (x *CompleteAmoWidgetContinuationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_company_v1_company_proto_msgTypes[151]
+	mi := &file_proto_company_v1_company_proto_msgTypes[155]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9143,7 +9352,7 @@ func (x *CompleteAmoWidgetContinuationResponse) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use CompleteAmoWidgetContinuationResponse.ProtoReflect.Descriptor instead.
 func (*CompleteAmoWidgetContinuationResponse) Descriptor() ([]byte, []int) {
-	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{151}
+	return file_proto_company_v1_company_proto_rawDescGZIP(), []int{155}
 }
 
 func (x *CompleteAmoWidgetContinuationResponse) GetSession() *AuthSession {
@@ -9168,7 +9377,7 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\x0eamo_account_id\x18\x06 \x01(\tH\x01R\famoAccountId\x88\x01\x01\x128\n" +
 	"\x06status\x18\a \x01(\x0e2 .teamos.company.v1.CompanyStatusR\x06statusB\v\n" +
 	"\t_logo_urlB\x11\n" +
-	"\x0f_amo_account_id\"\xc8\x06\n" +
+	"\x0f_amo_account_id\"\xde\x06\n" +
 	"\x04User\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x12\x1d\n" +
@@ -9193,7 +9402,8 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"accessMode\x12I\n" +
 	"\x0esection_access\x18\x10 \x03(\x0e2\".teamos.company.v1.EmployeeSectionR\rsectionAccess\x12(\n" +
 	"\x10show_in_schedule\x18\x11 \x01(\bR\x0eshowInSchedule\x12%\n" +
-	"\x0edepartment_ids\x18\x12 \x03(\tR\rdepartmentIdsB\r\n" +
+	"\x0edepartment_ids\x18\x12 \x03(\tR\rdepartmentIds\x12\x14\n" +
+	"\x05login\x18\x13 \x01(\tR\x05loginB\r\n" +
 	"\v_avatar_urlB\b\n" +
 	"\x06_phoneB\r\n" +
 	"\v_birth_dateB\v\n" +
@@ -9280,10 +9490,12 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\n" +
 	"expires_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampH\x01R\texpiresAt\x88\x01\x01B\x16\n" +
 	"\x14_external_account_idB\r\n" +
-	"\v_expires_at\"@\n" +
+	"\v_expires_at\"e\n" +
 	"\fLoginRequest\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\"I\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\x12\x19\n" +
+	"\x05login\x18\x03 \x01(\tH\x00R\x05login\x88\x01\x01B\b\n" +
+	"\x06_login\"I\n" +
 	"\rLoginResponse\x128\n" +
 	"\asession\x18\x01 \x01(\v2\x1e.teamos.company.v1.AuthSessionR\asession\"2\n" +
 	"\x1aLoginWithAccessLinkRequest\x12\x14\n" +
@@ -9560,17 +9772,22 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\x04user\x18\x01 \x01(\v2\x17.teamos.company.v1.UserR\x04user\"#\n" +
 	"\x11DeleteUserRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"\x14\n" +
-	"\x12DeleteUserResponse\"\x80\x02\n" +
+	"\x12DeleteUserResponse\"\x94\x03\n" +
 	"\n" +
 	"UserAccess\x125\n" +
 	"\x04mode\x18\x01 \x01(\x0e2!.teamos.company.v1.UserAccessModeR\x04mode\x12\"\n" +
 	"\n" +
 	"link_token\x18\x02 \x01(\tH\x00R\tlinkToken\x88\x01\x01\x12G\n" +
 	"\x0flink_created_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampH\x01R\rlinkCreatedAt\x88\x01\x01\x12\x1e\n" +
-	"\blink_url\x18\x04 \x01(\tH\x02R\alinkUrl\x88\x01\x01B\r\n" +
+	"\blink_url\x18\x04 \x01(\tH\x02R\alinkUrl\x88\x01\x01\x12\x14\n" +
+	"\x05login\x18\x05 \x01(\tR\x05login\x12.\n" +
+	"\x10password_enabled\x18\x06 \x01(\bH\x03R\x0fpasswordEnabled\x88\x01\x01\x12&\n" +
+	"\flink_enabled\x18\a \x01(\bH\x04R\vlinkEnabled\x88\x01\x01B\r\n" +
 	"\v_link_tokenB\x12\n" +
 	"\x10_link_created_atB\v\n" +
-	"\t_link_url\"&\n" +
+	"\t_link_urlB\x13\n" +
+	"\x11_password_enabledB\x0f\n" +
+	"\r_link_enabled\"&\n" +
 	"\x14GetUserAccessRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"N\n" +
 	"\x15GetUserAccessResponse\x125\n" +
@@ -9578,9 +9795,10 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\x1cSetUserPasswordAccessRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1f\n" +
 	"\bpassword\x18\x02 \x01(\tH\x00R\bpassword\x88\x01\x01B\v\n" +
-	"\t_password\";\n" +
+	"\t_password\"Q\n" +
 	"\x1dSetUserPasswordAccessResponse\x12\x1a\n" +
-	"\bpassword\x18\x01 \x01(\tR\bpassword\"*\n" +
+	"\bpassword\x18\x01 \x01(\tR\bpassword\x12\x14\n" +
+	"\x05login\x18\x02 \x01(\tR\x05login\"*\n" +
 	"\x18SetUserLinkAccessRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"\x99\x01\n" +
 	"\x19SetUserLinkAccessResponse\x12\x14\n" +
@@ -9591,7 +9809,13 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\t_link_url\")\n" +
 	"\x17RevokeUserAccessRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"\x1a\n" +
-	"\x18RevokeUserAccessResponse\"\x13\n" +
+	"\x18RevokeUserAccessResponse\"1\n" +
+	"\x1fRevokeUserPasswordAccessRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\"\n" +
+	" RevokeUserPasswordAccessResponse\"-\n" +
+	"\x1bRevokeUserLinkAccessRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\x1e\n" +
+	"\x1cRevokeUserLinkAccessResponse\"\x13\n" +
 	"\x11GetInvitesRequest\"I\n" +
 	"\x12GetInvitesResponse\x123\n" +
 	"\ainvites\x18\x01 \x03(\v2\x19.teamos.company.v1.InviteR\ainvites\"\xdb\x01\n" +
@@ -9928,7 +10152,7 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\x16AmoWidgetSessionAction\x12)\n" +
 	"%AMO_WIDGET_SESSION_ACTION_UNSPECIFIED\x10\x00\x12&\n" +
 	"\"AMO_WIDGET_SESSION_ACTION_REGISTER\x10\x01\x12#\n" +
-	"\x1fAMO_WIDGET_SESSION_ACTION_LOGIN\x10\x022\x8d:\n" +
+	"\x1fAMO_WIDGET_SESSION_ACTION_LOGIN\x10\x022\x8c<\n" +
 	"\x0eCompanyService\x12S\n" +
 	"\bRegister\x12\".teamos.company.v1.RegisterRequest\x1a#.teamos.company.v1.RegisterResponse\x12h\n" +
 	"\x0fCheckAmoAccount\x12).teamos.company.v1.CheckAmoAccountRequest\x1a*.teamos.company.v1.CheckAmoAccountResponse\x12\x92\x01\n" +
@@ -9979,7 +10203,9 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"DeleteUser\x12$.teamos.company.v1.DeleteUserRequest\x1a%.teamos.company.v1.DeleteUserResponse\x12b\n" +
 	"\rGetUserAccess\x12'.teamos.company.v1.GetUserAccessRequest\x1a(.teamos.company.v1.GetUserAccessResponse\x12z\n" +
 	"\x15SetUserPasswordAccess\x12/.teamos.company.v1.SetUserPasswordAccessRequest\x1a0.teamos.company.v1.SetUserPasswordAccessResponse\x12n\n" +
-	"\x11SetUserLinkAccess\x12+.teamos.company.v1.SetUserLinkAccessRequest\x1a,.teamos.company.v1.SetUserLinkAccessResponse\x12k\n" +
+	"\x11SetUserLinkAccess\x12+.teamos.company.v1.SetUserLinkAccessRequest\x1a,.teamos.company.v1.SetUserLinkAccessResponse\x12\x83\x01\n" +
+	"\x18RevokeUserPasswordAccess\x122.teamos.company.v1.RevokeUserPasswordAccessRequest\x1a3.teamos.company.v1.RevokeUserPasswordAccessResponse\x12w\n" +
+	"\x14RevokeUserLinkAccess\x12..teamos.company.v1.RevokeUserLinkAccessRequest\x1a/.teamos.company.v1.RevokeUserLinkAccessResponse\x12k\n" +
 	"\x10RevokeUserAccess\x12*.teamos.company.v1.RevokeUserAccessRequest\x1a+.teamos.company.v1.RevokeUserAccessResponse\x12Y\n" +
 	"\n" +
 	"GetInvites\x12$.teamos.company.v1.GetInvitesRequest\x1a%.teamos.company.v1.GetInvitesResponse\x12Y\n" +
@@ -10017,7 +10243,7 @@ func file_proto_company_v1_company_proto_rawDescGZIP() []byte {
 }
 
 var file_proto_company_v1_company_proto_enumTypes = make([]protoimpl.EnumInfo, 14)
-var file_proto_company_v1_company_proto_msgTypes = make([]protoimpl.MessageInfo, 152)
+var file_proto_company_v1_company_proto_msgTypes = make([]protoimpl.MessageInfo, 156)
 var file_proto_company_v1_company_proto_goTypes = []any{
 	(UserRole)(0),                                    // 0: teamos.company.v1.UserRole
 	(UserStatus)(0),                                  // 1: teamos.company.v1.UserStatus
@@ -10128,83 +10354,87 @@ var file_proto_company_v1_company_proto_goTypes = []any{
 	(*SetUserLinkAccessResponse)(nil),                // 106: teamos.company.v1.SetUserLinkAccessResponse
 	(*RevokeUserAccessRequest)(nil),                  // 107: teamos.company.v1.RevokeUserAccessRequest
 	(*RevokeUserAccessResponse)(nil),                 // 108: teamos.company.v1.RevokeUserAccessResponse
-	(*GetInvitesRequest)(nil),                        // 109: teamos.company.v1.GetInvitesRequest
-	(*GetInvitesResponse)(nil),                       // 110: teamos.company.v1.GetInvitesResponse
-	(*InviteUserRequest)(nil),                        // 111: teamos.company.v1.InviteUserRequest
-	(*InviteUserResponse)(nil),                       // 112: teamos.company.v1.InviteUserResponse
-	(*ResendInviteRequest)(nil),                      // 113: teamos.company.v1.ResendInviteRequest
-	(*ResendInviteResponse)(nil),                     // 114: teamos.company.v1.ResendInviteResponse
-	(*RevokeInviteRequest)(nil),                      // 115: teamos.company.v1.RevokeInviteRequest
-	(*RevokeInviteResponse)(nil),                     // 116: teamos.company.v1.RevokeInviteResponse
-	(*GetUsersByIdsRequest)(nil),                     // 117: teamos.company.v1.GetUsersByIdsRequest
-	(*GetUsersByIdsResponse)(nil),                    // 118: teamos.company.v1.GetUsersByIdsResponse
-	(*ResolveReportUserScopeRequest)(nil),            // 119: teamos.company.v1.ResolveReportUserScopeRequest
-	(*ResolveReportUserScopeResponse)(nil),           // 120: teamos.company.v1.ResolveReportUserScopeResponse
-	(*ReportUserProfile)(nil),                        // 121: teamos.company.v1.ReportUserProfile
-	(*GetReportUserProfilesRequest)(nil),             // 122: teamos.company.v1.GetReportUserProfilesRequest
-	(*GetReportUserProfilesResponse)(nil),            // 123: teamos.company.v1.GetReportUserProfilesResponse
-	(*ResolvePositionUsersRequest)(nil),              // 124: teamos.company.v1.ResolvePositionUsersRequest
-	(*ResolvePositionUsersResponse)(nil),             // 125: teamos.company.v1.ResolvePositionUsersResponse
-	(*ResolveDepartmentUsersRequest)(nil),            // 126: teamos.company.v1.ResolveDepartmentUsersRequest
-	(*ResolveDepartmentUsersResponse)(nil),           // 127: teamos.company.v1.ResolveDepartmentUsersResponse
-	(*ScheduleTemplate)(nil),                         // 128: teamos.company.v1.ScheduleTemplate
-	(*UserSchedule)(nil),                             // 129: teamos.company.v1.UserSchedule
-	(*ShiftException)(nil),                           // 130: teamos.company.v1.ShiftException
-	(*GetSchedulesRequest)(nil),                      // 131: teamos.company.v1.GetSchedulesRequest
-	(*GetSchedulesResponse)(nil),                     // 132: teamos.company.v1.GetSchedulesResponse
-	(*SaveScheduleRequest)(nil),                      // 133: teamos.company.v1.SaveScheduleRequest
-	(*SaveScheduleResponse)(nil),                     // 134: teamos.company.v1.SaveScheduleResponse
-	(*UpdateUserCardRequest)(nil),                    // 135: teamos.company.v1.UpdateUserCardRequest
-	(*UpdateUserCardResponse)(nil),                   // 136: teamos.company.v1.UpdateUserCardResponse
-	(*GetShiftExceptionsRequest)(nil),                // 137: teamos.company.v1.GetShiftExceptionsRequest
-	(*GetShiftExceptionsResponse)(nil),               // 138: teamos.company.v1.GetShiftExceptionsResponse
-	(*SaveShiftExceptionInput)(nil),                  // 139: teamos.company.v1.SaveShiftExceptionInput
-	(*SaveShiftExceptionsRequest)(nil),               // 140: teamos.company.v1.SaveShiftExceptionsRequest
-	(*SaveShiftExceptionsResponse)(nil),              // 141: teamos.company.v1.SaveShiftExceptionsResponse
-	(*DistributionGroup)(nil),                        // 142: teamos.company.v1.DistributionGroup
-	(*DistributionEvent)(nil),                        // 143: teamos.company.v1.DistributionEvent
-	(*GetDistributionGroupsRequest)(nil),             // 144: teamos.company.v1.GetDistributionGroupsRequest
-	(*GetDistributionGroupsResponse)(nil),            // 145: teamos.company.v1.GetDistributionGroupsResponse
-	(*CreateDistributionGroupRequest)(nil),           // 146: teamos.company.v1.CreateDistributionGroupRequest
-	(*CreateDistributionGroupResponse)(nil),          // 147: teamos.company.v1.CreateDistributionGroupResponse
-	(*UpdateDistributionGroupRequest)(nil),           // 148: teamos.company.v1.UpdateDistributionGroupRequest
-	(*UpdateDistributionGroupResponse)(nil),          // 149: teamos.company.v1.UpdateDistributionGroupResponse
-	(*DeleteDistributionGroupRequest)(nil),           // 150: teamos.company.v1.DeleteDistributionGroupRequest
-	(*DeleteDistributionGroupResponse)(nil),          // 151: teamos.company.v1.DeleteDistributionGroupResponse
-	(*GetDistributionEventsRequest)(nil),             // 152: teamos.company.v1.GetDistributionEventsRequest
-	(*GetDistributionEventsResponse)(nil),            // 153: teamos.company.v1.GetDistributionEventsResponse
-	(*SimulateDistributionDealRequest)(nil),          // 154: teamos.company.v1.SimulateDistributionDealRequest
-	(*SimulateDistributionDealResponse)(nil),         // 155: teamos.company.v1.SimulateDistributionDealResponse
-	(*ResetDistributionEventsRequest)(nil),           // 156: teamos.company.v1.ResetDistributionEventsRequest
-	(*ResetDistributionEventsResponse)(nil),          // 157: teamos.company.v1.ResetDistributionEventsResponse
-	(*GetProvisionedCompanyStatusRequest)(nil),       // 158: teamos.company.v1.GetProvisionedCompanyStatusRequest
-	(*GetProvisionedCompanyStatusResponse)(nil),      // 159: teamos.company.v1.GetProvisionedCompanyStatusResponse
-	(*ExchangeAmoWidgetSessionRequest)(nil),          // 160: teamos.company.v1.ExchangeAmoWidgetSessionRequest
-	(*ExchangeAmoWidgetSessionResponse)(nil),         // 161: teamos.company.v1.ExchangeAmoWidgetSessionResponse
-	(*ValidateAmoWidgetContinuationRequest)(nil),     // 162: teamos.company.v1.ValidateAmoWidgetContinuationRequest
-	(*ValidateAmoWidgetContinuationResponse)(nil),    // 163: teamos.company.v1.ValidateAmoWidgetContinuationResponse
-	(*CompleteAmoWidgetContinuationRequest)(nil),     // 164: teamos.company.v1.CompleteAmoWidgetContinuationRequest
-	(*CompleteAmoWidgetContinuationResponse)(nil),    // 165: teamos.company.v1.CompleteAmoWidgetContinuationResponse
-	(*timestamppb.Timestamp)(nil),                    // 166: google.protobuf.Timestamp
+	(*RevokeUserPasswordAccessRequest)(nil),          // 109: teamos.company.v1.RevokeUserPasswordAccessRequest
+	(*RevokeUserPasswordAccessResponse)(nil),         // 110: teamos.company.v1.RevokeUserPasswordAccessResponse
+	(*RevokeUserLinkAccessRequest)(nil),              // 111: teamos.company.v1.RevokeUserLinkAccessRequest
+	(*RevokeUserLinkAccessResponse)(nil),             // 112: teamos.company.v1.RevokeUserLinkAccessResponse
+	(*GetInvitesRequest)(nil),                        // 113: teamos.company.v1.GetInvitesRequest
+	(*GetInvitesResponse)(nil),                       // 114: teamos.company.v1.GetInvitesResponse
+	(*InviteUserRequest)(nil),                        // 115: teamos.company.v1.InviteUserRequest
+	(*InviteUserResponse)(nil),                       // 116: teamos.company.v1.InviteUserResponse
+	(*ResendInviteRequest)(nil),                      // 117: teamos.company.v1.ResendInviteRequest
+	(*ResendInviteResponse)(nil),                     // 118: teamos.company.v1.ResendInviteResponse
+	(*RevokeInviteRequest)(nil),                      // 119: teamos.company.v1.RevokeInviteRequest
+	(*RevokeInviteResponse)(nil),                     // 120: teamos.company.v1.RevokeInviteResponse
+	(*GetUsersByIdsRequest)(nil),                     // 121: teamos.company.v1.GetUsersByIdsRequest
+	(*GetUsersByIdsResponse)(nil),                    // 122: teamos.company.v1.GetUsersByIdsResponse
+	(*ResolveReportUserScopeRequest)(nil),            // 123: teamos.company.v1.ResolveReportUserScopeRequest
+	(*ResolveReportUserScopeResponse)(nil),           // 124: teamos.company.v1.ResolveReportUserScopeResponse
+	(*ReportUserProfile)(nil),                        // 125: teamos.company.v1.ReportUserProfile
+	(*GetReportUserProfilesRequest)(nil),             // 126: teamos.company.v1.GetReportUserProfilesRequest
+	(*GetReportUserProfilesResponse)(nil),            // 127: teamos.company.v1.GetReportUserProfilesResponse
+	(*ResolvePositionUsersRequest)(nil),              // 128: teamos.company.v1.ResolvePositionUsersRequest
+	(*ResolvePositionUsersResponse)(nil),             // 129: teamos.company.v1.ResolvePositionUsersResponse
+	(*ResolveDepartmentUsersRequest)(nil),            // 130: teamos.company.v1.ResolveDepartmentUsersRequest
+	(*ResolveDepartmentUsersResponse)(nil),           // 131: teamos.company.v1.ResolveDepartmentUsersResponse
+	(*ScheduleTemplate)(nil),                         // 132: teamos.company.v1.ScheduleTemplate
+	(*UserSchedule)(nil),                             // 133: teamos.company.v1.UserSchedule
+	(*ShiftException)(nil),                           // 134: teamos.company.v1.ShiftException
+	(*GetSchedulesRequest)(nil),                      // 135: teamos.company.v1.GetSchedulesRequest
+	(*GetSchedulesResponse)(nil),                     // 136: teamos.company.v1.GetSchedulesResponse
+	(*SaveScheduleRequest)(nil),                      // 137: teamos.company.v1.SaveScheduleRequest
+	(*SaveScheduleResponse)(nil),                     // 138: teamos.company.v1.SaveScheduleResponse
+	(*UpdateUserCardRequest)(nil),                    // 139: teamos.company.v1.UpdateUserCardRequest
+	(*UpdateUserCardResponse)(nil),                   // 140: teamos.company.v1.UpdateUserCardResponse
+	(*GetShiftExceptionsRequest)(nil),                // 141: teamos.company.v1.GetShiftExceptionsRequest
+	(*GetShiftExceptionsResponse)(nil),               // 142: teamos.company.v1.GetShiftExceptionsResponse
+	(*SaveShiftExceptionInput)(nil),                  // 143: teamos.company.v1.SaveShiftExceptionInput
+	(*SaveShiftExceptionsRequest)(nil),               // 144: teamos.company.v1.SaveShiftExceptionsRequest
+	(*SaveShiftExceptionsResponse)(nil),              // 145: teamos.company.v1.SaveShiftExceptionsResponse
+	(*DistributionGroup)(nil),                        // 146: teamos.company.v1.DistributionGroup
+	(*DistributionEvent)(nil),                        // 147: teamos.company.v1.DistributionEvent
+	(*GetDistributionGroupsRequest)(nil),             // 148: teamos.company.v1.GetDistributionGroupsRequest
+	(*GetDistributionGroupsResponse)(nil),            // 149: teamos.company.v1.GetDistributionGroupsResponse
+	(*CreateDistributionGroupRequest)(nil),           // 150: teamos.company.v1.CreateDistributionGroupRequest
+	(*CreateDistributionGroupResponse)(nil),          // 151: teamos.company.v1.CreateDistributionGroupResponse
+	(*UpdateDistributionGroupRequest)(nil),           // 152: teamos.company.v1.UpdateDistributionGroupRequest
+	(*UpdateDistributionGroupResponse)(nil),          // 153: teamos.company.v1.UpdateDistributionGroupResponse
+	(*DeleteDistributionGroupRequest)(nil),           // 154: teamos.company.v1.DeleteDistributionGroupRequest
+	(*DeleteDistributionGroupResponse)(nil),          // 155: teamos.company.v1.DeleteDistributionGroupResponse
+	(*GetDistributionEventsRequest)(nil),             // 156: teamos.company.v1.GetDistributionEventsRequest
+	(*GetDistributionEventsResponse)(nil),            // 157: teamos.company.v1.GetDistributionEventsResponse
+	(*SimulateDistributionDealRequest)(nil),          // 158: teamos.company.v1.SimulateDistributionDealRequest
+	(*SimulateDistributionDealResponse)(nil),         // 159: teamos.company.v1.SimulateDistributionDealResponse
+	(*ResetDistributionEventsRequest)(nil),           // 160: teamos.company.v1.ResetDistributionEventsRequest
+	(*ResetDistributionEventsResponse)(nil),          // 161: teamos.company.v1.ResetDistributionEventsResponse
+	(*GetProvisionedCompanyStatusRequest)(nil),       // 162: teamos.company.v1.GetProvisionedCompanyStatusRequest
+	(*GetProvisionedCompanyStatusResponse)(nil),      // 163: teamos.company.v1.GetProvisionedCompanyStatusResponse
+	(*ExchangeAmoWidgetSessionRequest)(nil),          // 164: teamos.company.v1.ExchangeAmoWidgetSessionRequest
+	(*ExchangeAmoWidgetSessionResponse)(nil),         // 165: teamos.company.v1.ExchangeAmoWidgetSessionResponse
+	(*ValidateAmoWidgetContinuationRequest)(nil),     // 166: teamos.company.v1.ValidateAmoWidgetContinuationRequest
+	(*ValidateAmoWidgetContinuationResponse)(nil),    // 167: teamos.company.v1.ValidateAmoWidgetContinuationResponse
+	(*CompleteAmoWidgetContinuationRequest)(nil),     // 168: teamos.company.v1.CompleteAmoWidgetContinuationRequest
+	(*CompleteAmoWidgetContinuationResponse)(nil),    // 169: teamos.company.v1.CompleteAmoWidgetContinuationResponse
+	(*timestamppb.Timestamp)(nil),                    // 170: google.protobuf.Timestamp
 }
 var file_proto_company_v1_company_proto_depIdxs = []int32{
-	166, // 0: teamos.company.v1.Company.created_at:type_name -> google.protobuf.Timestamp
+	170, // 0: teamos.company.v1.Company.created_at:type_name -> google.protobuf.Timestamp
 	6,   // 1: teamos.company.v1.Company.status:type_name -> teamos.company.v1.CompanyStatus
 	0,   // 2: teamos.company.v1.User.role:type_name -> teamos.company.v1.UserRole
 	1,   // 3: teamos.company.v1.User.status:type_name -> teamos.company.v1.UserStatus
-	166, // 4: teamos.company.v1.User.created_at:type_name -> google.protobuf.Timestamp
+	170, // 4: teamos.company.v1.User.created_at:type_name -> google.protobuf.Timestamp
 	2,   // 5: teamos.company.v1.User.source:type_name -> teamos.company.v1.UserSource
 	3,   // 6: teamos.company.v1.User.access_mode:type_name -> teamos.company.v1.UserAccessMode
 	4,   // 7: teamos.company.v1.User.section_access:type_name -> teamos.company.v1.EmployeeSection
 	0,   // 8: teamos.company.v1.Invite.role:type_name -> teamos.company.v1.UserRole
 	5,   // 9: teamos.company.v1.Invite.status:type_name -> teamos.company.v1.InviteStatus
-	166, // 10: teamos.company.v1.Invite.created_at:type_name -> google.protobuf.Timestamp
-	166, // 11: teamos.company.v1.AuthSession.refresh_expires_at:type_name -> google.protobuf.Timestamp
+	170, // 10: teamos.company.v1.Invite.created_at:type_name -> google.protobuf.Timestamp
+	170, // 11: teamos.company.v1.AuthSession.refresh_expires_at:type_name -> google.protobuf.Timestamp
 	15,  // 12: teamos.company.v1.AuthSession.user:type_name -> teamos.company.v1.User
 	19,  // 13: teamos.company.v1.RegisterResponse.session:type_name -> teamos.company.v1.AuthSession
-	166, // 14: teamos.company.v1.IssueCompanyRegistrationTokenResponse.expires_at:type_name -> google.protobuf.Timestamp
+	170, // 14: teamos.company.v1.IssueCompanyRegistrationTokenResponse.expires_at:type_name -> google.protobuf.Timestamp
 	9,   // 15: teamos.company.v1.ValidateCompanyRegistrationTokenResponse.state:type_name -> teamos.company.v1.CompanyRegistrationTokenState
-	166, // 16: teamos.company.v1.ValidateCompanyRegistrationTokenResponse.expires_at:type_name -> google.protobuf.Timestamp
+	170, // 16: teamos.company.v1.ValidateCompanyRegistrationTokenResponse.expires_at:type_name -> google.protobuf.Timestamp
 	19,  // 17: teamos.company.v1.LoginResponse.session:type_name -> teamos.company.v1.AuthSession
 	19,  // 18: teamos.company.v1.LoginWithAccessLinkResponse.session:type_name -> teamos.company.v1.AuthSession
 	19,  // 19: teamos.company.v1.ImpersonateUserResponse.session:type_name -> teamos.company.v1.AuthSession
@@ -10215,20 +10445,20 @@ var file_proto_company_v1_company_proto_depIdxs = []int32{
 	42,  // 24: teamos.company.v1.ProvisionCompanyRequest.admin:type_name -> teamos.company.v1.ProvisioningParticipant
 	6,   // 25: teamos.company.v1.ProvisionCompanyResponse.company_status:type_name -> teamos.company.v1.CompanyStatus
 	0,   // 26: teamos.company.v1.ProvisionCompanyResponse.initiator_role:type_name -> teamos.company.v1.UserRole
-	166, // 27: teamos.company.v1.ProvisionCompanyResponse.bootstrap_expires_at:type_name -> google.protobuf.Timestamp
+	170, // 27: teamos.company.v1.ProvisionCompanyResponse.bootstrap_expires_at:type_name -> google.protobuf.Timestamp
 	0,   // 28: teamos.company.v1.BootstrapParticipant.role:type_name -> teamos.company.v1.UserRole
 	1,   // 29: teamos.company.v1.BootstrapParticipant.status:type_name -> teamos.company.v1.UserStatus
 	6,   // 30: teamos.company.v1.BootstrapActivation.company_status:type_name -> teamos.company.v1.CompanyStatus
 	45,  // 31: teamos.company.v1.BootstrapActivation.user:type_name -> teamos.company.v1.BootstrapParticipant
-	166, // 32: teamos.company.v1.BootstrapActivation.expires_at:type_name -> google.protobuf.Timestamp
+	170, // 32: teamos.company.v1.BootstrapActivation.expires_at:type_name -> google.protobuf.Timestamp
 	7,   // 33: teamos.company.v1.BootstrapActivation.state:type_name -> teamos.company.v1.BootstrapActivationState
 	46,  // 34: teamos.company.v1.GetBootstrapActivationResponse.activation:type_name -> teamos.company.v1.BootstrapActivation
 	6,   // 35: teamos.company.v1.OnboardingState.company_status:type_name -> teamos.company.v1.CompanyStatus
 	45,  // 36: teamos.company.v1.OnboardingState.pending_user:type_name -> teamos.company.v1.BootstrapParticipant
-	166, // 37: teamos.company.v1.OnboardingState.expires_at:type_name -> google.protobuf.Timestamp
+	170, // 37: teamos.company.v1.OnboardingState.expires_at:type_name -> google.protobuf.Timestamp
 	19,  // 38: teamos.company.v1.CompleteBootstrapActivationResponse.session:type_name -> teamos.company.v1.AuthSession
 	50,  // 39: teamos.company.v1.CompleteBootstrapActivationResponse.onboarding:type_name -> teamos.company.v1.OnboardingState
-	166, // 40: teamos.company.v1.IssueSsoTokenResponse.expires_at:type_name -> google.protobuf.Timestamp
+	170, // 40: teamos.company.v1.IssueSsoTokenResponse.expires_at:type_name -> google.protobuf.Timestamp
 	8,   // 41: teamos.company.v1.IssueSsoTokenResponse.continuation_kind:type_name -> teamos.company.v1.ProvisioningContinuationKind
 	19,  // 42: teamos.company.v1.ExchangeSsoTokenResponse.session:type_name -> teamos.company.v1.AuthSession
 	50,  // 43: teamos.company.v1.GetOnboardingStatusResponse.onboarding:type_name -> teamos.company.v1.OnboardingState
@@ -10255,50 +10485,50 @@ var file_proto_company_v1_company_proto_depIdxs = []int32{
 	4,   // 64: teamos.company.v1.UpdateUserRequest.section_access:type_name -> teamos.company.v1.EmployeeSection
 	15,  // 65: teamos.company.v1.UpdateUserResponse.user:type_name -> teamos.company.v1.User
 	3,   // 66: teamos.company.v1.UserAccess.mode:type_name -> teamos.company.v1.UserAccessMode
-	166, // 67: teamos.company.v1.UserAccess.link_created_at:type_name -> google.protobuf.Timestamp
+	170, // 67: teamos.company.v1.UserAccess.link_created_at:type_name -> google.protobuf.Timestamp
 	100, // 68: teamos.company.v1.GetUserAccessResponse.access:type_name -> teamos.company.v1.UserAccess
-	166, // 69: teamos.company.v1.SetUserLinkAccessResponse.created_at:type_name -> google.protobuf.Timestamp
+	170, // 69: teamos.company.v1.SetUserLinkAccessResponse.created_at:type_name -> google.protobuf.Timestamp
 	18,  // 70: teamos.company.v1.GetInvitesResponse.invites:type_name -> teamos.company.v1.Invite
 	0,   // 71: teamos.company.v1.InviteUserRequest.role:type_name -> teamos.company.v1.UserRole
 	18,  // 72: teamos.company.v1.InviteUserResponse.invite:type_name -> teamos.company.v1.Invite
 	18,  // 73: teamos.company.v1.ResendInviteResponse.invite:type_name -> teamos.company.v1.Invite
 	15,  // 74: teamos.company.v1.GetUsersByIdsResponse.users:type_name -> teamos.company.v1.User
-	121, // 75: teamos.company.v1.GetReportUserProfilesResponse.profiles:type_name -> teamos.company.v1.ReportUserProfile
-	128, // 76: teamos.company.v1.UserSchedule.template:type_name -> teamos.company.v1.ScheduleTemplate
+	125, // 75: teamos.company.v1.GetReportUserProfilesResponse.profiles:type_name -> teamos.company.v1.ReportUserProfile
+	132, // 76: teamos.company.v1.UserSchedule.template:type_name -> teamos.company.v1.ScheduleTemplate
 	10,  // 77: teamos.company.v1.ShiftException.type:type_name -> teamos.company.v1.ShiftType
-	129, // 78: teamos.company.v1.GetSchedulesResponse.schedules:type_name -> teamos.company.v1.UserSchedule
-	128, // 79: teamos.company.v1.SaveScheduleRequest.template:type_name -> teamos.company.v1.ScheduleTemplate
-	129, // 80: teamos.company.v1.SaveScheduleResponse.schedule:type_name -> teamos.company.v1.UserSchedule
+	133, // 78: teamos.company.v1.GetSchedulesResponse.schedules:type_name -> teamos.company.v1.UserSchedule
+	132, // 79: teamos.company.v1.SaveScheduleRequest.template:type_name -> teamos.company.v1.ScheduleTemplate
+	133, // 80: teamos.company.v1.SaveScheduleResponse.schedule:type_name -> teamos.company.v1.UserSchedule
 	96,  // 81: teamos.company.v1.UpdateUserCardRequest.user:type_name -> teamos.company.v1.UpdateUserRequest
-	128, // 82: teamos.company.v1.UpdateUserCardRequest.template:type_name -> teamos.company.v1.ScheduleTemplate
+	132, // 82: teamos.company.v1.UpdateUserCardRequest.template:type_name -> teamos.company.v1.ScheduleTemplate
 	15,  // 83: teamos.company.v1.UpdateUserCardResponse.user:type_name -> teamos.company.v1.User
-	129, // 84: teamos.company.v1.UpdateUserCardResponse.schedule:type_name -> teamos.company.v1.UserSchedule
-	130, // 85: teamos.company.v1.GetShiftExceptionsResponse.exceptions:type_name -> teamos.company.v1.ShiftException
+	133, // 84: teamos.company.v1.UpdateUserCardResponse.schedule:type_name -> teamos.company.v1.UserSchedule
+	134, // 85: teamos.company.v1.GetShiftExceptionsResponse.exceptions:type_name -> teamos.company.v1.ShiftException
 	10,  // 86: teamos.company.v1.SaveShiftExceptionInput.type:type_name -> teamos.company.v1.ShiftType
-	139, // 87: teamos.company.v1.SaveShiftExceptionsRequest.exceptions:type_name -> teamos.company.v1.SaveShiftExceptionInput
-	130, // 88: teamos.company.v1.SaveShiftExceptionsResponse.exceptions:type_name -> teamos.company.v1.ShiftException
+	143, // 87: teamos.company.v1.SaveShiftExceptionsRequest.exceptions:type_name -> teamos.company.v1.SaveShiftExceptionInput
+	134, // 88: teamos.company.v1.SaveShiftExceptionsResponse.exceptions:type_name -> teamos.company.v1.ShiftException
 	11,  // 89: teamos.company.v1.DistributionGroup.algorithm:type_name -> teamos.company.v1.DistributionAlgorithm
-	166, // 90: teamos.company.v1.DistributionGroup.created_at:type_name -> google.protobuf.Timestamp
+	170, // 90: teamos.company.v1.DistributionGroup.created_at:type_name -> google.protobuf.Timestamp
 	12,  // 91: teamos.company.v1.DistributionEvent.status:type_name -> teamos.company.v1.DistributionEventStatus
-	166, // 92: teamos.company.v1.DistributionEvent.created_at:type_name -> google.protobuf.Timestamp
-	142, // 93: teamos.company.v1.GetDistributionGroupsResponse.groups:type_name -> teamos.company.v1.DistributionGroup
-	142, // 94: teamos.company.v1.CreateDistributionGroupResponse.group:type_name -> teamos.company.v1.DistributionGroup
+	170, // 92: teamos.company.v1.DistributionEvent.created_at:type_name -> google.protobuf.Timestamp
+	146, // 93: teamos.company.v1.GetDistributionGroupsResponse.groups:type_name -> teamos.company.v1.DistributionGroup
+	146, // 94: teamos.company.v1.CreateDistributionGroupResponse.group:type_name -> teamos.company.v1.DistributionGroup
 	11,  // 95: teamos.company.v1.UpdateDistributionGroupRequest.algorithm:type_name -> teamos.company.v1.DistributionAlgorithm
-	142, // 96: teamos.company.v1.UpdateDistributionGroupResponse.group:type_name -> teamos.company.v1.DistributionGroup
-	143, // 97: teamos.company.v1.GetDistributionEventsResponse.events:type_name -> teamos.company.v1.DistributionEvent
-	143, // 98: teamos.company.v1.SimulateDistributionDealResponse.event:type_name -> teamos.company.v1.DistributionEvent
+	146, // 96: teamos.company.v1.UpdateDistributionGroupResponse.group:type_name -> teamos.company.v1.DistributionGroup
+	147, // 97: teamos.company.v1.GetDistributionEventsResponse.events:type_name -> teamos.company.v1.DistributionEvent
+	147, // 98: teamos.company.v1.SimulateDistributionDealResponse.event:type_name -> teamos.company.v1.DistributionEvent
 	6,   // 99: teamos.company.v1.GetProvisionedCompanyStatusResponse.company_status:type_name -> teamos.company.v1.CompanyStatus
 	13,  // 100: teamos.company.v1.ExchangeAmoWidgetSessionResponse.action:type_name -> teamos.company.v1.AmoWidgetSessionAction
-	166, // 101: teamos.company.v1.ExchangeAmoWidgetSessionResponse.expires_at:type_name -> google.protobuf.Timestamp
-	166, // 102: teamos.company.v1.ValidateAmoWidgetContinuationResponse.expires_at:type_name -> google.protobuf.Timestamp
+	170, // 101: teamos.company.v1.ExchangeAmoWidgetSessionResponse.expires_at:type_name -> google.protobuf.Timestamp
+	170, // 102: teamos.company.v1.ValidateAmoWidgetContinuationResponse.expires_at:type_name -> google.protobuf.Timestamp
 	19,  // 103: teamos.company.v1.CompleteAmoWidgetContinuationResponse.session:type_name -> teamos.company.v1.AuthSession
 	20,  // 104: teamos.company.v1.CompanyService.Register:input_type -> teamos.company.v1.RegisterRequest
 	22,  // 105: teamos.company.v1.CompanyService.CheckAmoAccount:input_type -> teamos.company.v1.CheckAmoAccountRequest
 	24,  // 106: teamos.company.v1.CompanyService.IssueCompanyRegistrationToken:input_type -> teamos.company.v1.IssueCompanyRegistrationTokenRequest
 	26,  // 107: teamos.company.v1.CompanyService.ValidateCompanyRegistrationToken:input_type -> teamos.company.v1.ValidateCompanyRegistrationTokenRequest
-	160, // 108: teamos.company.v1.CompanyService.ExchangeAmoWidgetSession:input_type -> teamos.company.v1.ExchangeAmoWidgetSessionRequest
-	162, // 109: teamos.company.v1.CompanyService.ValidateAmoWidgetContinuation:input_type -> teamos.company.v1.ValidateAmoWidgetContinuationRequest
-	164, // 110: teamos.company.v1.CompanyService.CompleteAmoWidgetContinuation:input_type -> teamos.company.v1.CompleteAmoWidgetContinuationRequest
+	164, // 108: teamos.company.v1.CompanyService.ExchangeAmoWidgetSession:input_type -> teamos.company.v1.ExchangeAmoWidgetSessionRequest
+	166, // 109: teamos.company.v1.CompanyService.ValidateAmoWidgetContinuation:input_type -> teamos.company.v1.ValidateAmoWidgetContinuationRequest
+	168, // 110: teamos.company.v1.CompanyService.CompleteAmoWidgetContinuation:input_type -> teamos.company.v1.CompleteAmoWidgetContinuationRequest
 	28,  // 111: teamos.company.v1.CompanyService.Login:input_type -> teamos.company.v1.LoginRequest
 	30,  // 112: teamos.company.v1.CompanyService.LoginWithAccessLink:input_type -> teamos.company.v1.LoginWithAccessLinkRequest
 	32,  // 113: teamos.company.v1.CompanyService.ImpersonateUser:input_type -> teamos.company.v1.ImpersonateUserRequest
@@ -10307,7 +10537,7 @@ var file_proto_company_v1_company_proto_depIdxs = []int32{
 	38,  // 116: teamos.company.v1.CompanyService.GetInviteByToken:input_type -> teamos.company.v1.GetInviteByTokenRequest
 	40,  // 117: teamos.company.v1.CompanyService.AcceptInvite:input_type -> teamos.company.v1.AcceptInviteRequest
 	43,  // 118: teamos.company.v1.CompanyService.ProvisionCompany:input_type -> teamos.company.v1.ProvisionCompanyRequest
-	158, // 119: teamos.company.v1.CompanyService.GetProvisionedCompanyStatus:input_type -> teamos.company.v1.GetProvisionedCompanyStatusRequest
+	162, // 119: teamos.company.v1.CompanyService.GetProvisionedCompanyStatus:input_type -> teamos.company.v1.GetProvisionedCompanyStatusRequest
 	47,  // 120: teamos.company.v1.CompanyService.GetBootstrapActivation:input_type -> teamos.company.v1.GetBootstrapActivationRequest
 	49,  // 121: teamos.company.v1.CompanyService.CompleteBootstrapActivation:input_type -> teamos.company.v1.CompleteBootstrapActivationRequest
 	52,  // 122: teamos.company.v1.CompanyService.IssueSsoToken:input_type -> teamos.company.v1.IssueSsoTokenRequest
@@ -10333,101 +10563,105 @@ var file_proto_company_v1_company_proto_depIdxs = []int32{
 	92,  // 142: teamos.company.v1.CompanyService.GetUser:input_type -> teamos.company.v1.GetUserRequest
 	94,  // 143: teamos.company.v1.CompanyService.CreateUser:input_type -> teamos.company.v1.CreateUserRequest
 	96,  // 144: teamos.company.v1.CompanyService.UpdateUser:input_type -> teamos.company.v1.UpdateUserRequest
-	135, // 145: teamos.company.v1.CompanyService.UpdateUserCard:input_type -> teamos.company.v1.UpdateUserCardRequest
+	139, // 145: teamos.company.v1.CompanyService.UpdateUserCard:input_type -> teamos.company.v1.UpdateUserCardRequest
 	98,  // 146: teamos.company.v1.CompanyService.DeleteUser:input_type -> teamos.company.v1.DeleteUserRequest
 	101, // 147: teamos.company.v1.CompanyService.GetUserAccess:input_type -> teamos.company.v1.GetUserAccessRequest
 	103, // 148: teamos.company.v1.CompanyService.SetUserPasswordAccess:input_type -> teamos.company.v1.SetUserPasswordAccessRequest
 	105, // 149: teamos.company.v1.CompanyService.SetUserLinkAccess:input_type -> teamos.company.v1.SetUserLinkAccessRequest
-	107, // 150: teamos.company.v1.CompanyService.RevokeUserAccess:input_type -> teamos.company.v1.RevokeUserAccessRequest
-	109, // 151: teamos.company.v1.CompanyService.GetInvites:input_type -> teamos.company.v1.GetInvitesRequest
-	111, // 152: teamos.company.v1.CompanyService.InviteUser:input_type -> teamos.company.v1.InviteUserRequest
-	113, // 153: teamos.company.v1.CompanyService.ResendInvite:input_type -> teamos.company.v1.ResendInviteRequest
-	115, // 154: teamos.company.v1.CompanyService.RevokeInvite:input_type -> teamos.company.v1.RevokeInviteRequest
-	117, // 155: teamos.company.v1.CompanyService.GetUsersByIds:input_type -> teamos.company.v1.GetUsersByIdsRequest
-	119, // 156: teamos.company.v1.CompanyService.ResolveReportUserScope:input_type -> teamos.company.v1.ResolveReportUserScopeRequest
-	122, // 157: teamos.company.v1.CompanyService.GetReportUserProfiles:input_type -> teamos.company.v1.GetReportUserProfilesRequest
-	124, // 158: teamos.company.v1.CompanyService.ResolvePositionUsers:input_type -> teamos.company.v1.ResolvePositionUsersRequest
-	126, // 159: teamos.company.v1.CompanyService.ResolveDepartmentUsers:input_type -> teamos.company.v1.ResolveDepartmentUsersRequest
-	131, // 160: teamos.company.v1.CompanyService.GetSchedules:input_type -> teamos.company.v1.GetSchedulesRequest
-	133, // 161: teamos.company.v1.CompanyService.SaveSchedule:input_type -> teamos.company.v1.SaveScheduleRequest
-	137, // 162: teamos.company.v1.CompanyService.GetShiftExceptions:input_type -> teamos.company.v1.GetShiftExceptionsRequest
-	140, // 163: teamos.company.v1.CompanyService.SaveShiftExceptions:input_type -> teamos.company.v1.SaveShiftExceptionsRequest
-	144, // 164: teamos.company.v1.CompanyService.GetDistributionGroups:input_type -> teamos.company.v1.GetDistributionGroupsRequest
-	146, // 165: teamos.company.v1.CompanyService.CreateDistributionGroup:input_type -> teamos.company.v1.CreateDistributionGroupRequest
-	148, // 166: teamos.company.v1.CompanyService.UpdateDistributionGroup:input_type -> teamos.company.v1.UpdateDistributionGroupRequest
-	150, // 167: teamos.company.v1.CompanyService.DeleteDistributionGroup:input_type -> teamos.company.v1.DeleteDistributionGroupRequest
-	152, // 168: teamos.company.v1.CompanyService.GetDistributionEvents:input_type -> teamos.company.v1.GetDistributionEventsRequest
-	154, // 169: teamos.company.v1.CompanyService.SimulateDistributionDeal:input_type -> teamos.company.v1.SimulateDistributionDealRequest
-	156, // 170: teamos.company.v1.CompanyService.ResetDistributionEvents:input_type -> teamos.company.v1.ResetDistributionEventsRequest
-	21,  // 171: teamos.company.v1.CompanyService.Register:output_type -> teamos.company.v1.RegisterResponse
-	23,  // 172: teamos.company.v1.CompanyService.CheckAmoAccount:output_type -> teamos.company.v1.CheckAmoAccountResponse
-	25,  // 173: teamos.company.v1.CompanyService.IssueCompanyRegistrationToken:output_type -> teamos.company.v1.IssueCompanyRegistrationTokenResponse
-	27,  // 174: teamos.company.v1.CompanyService.ValidateCompanyRegistrationToken:output_type -> teamos.company.v1.ValidateCompanyRegistrationTokenResponse
-	161, // 175: teamos.company.v1.CompanyService.ExchangeAmoWidgetSession:output_type -> teamos.company.v1.ExchangeAmoWidgetSessionResponse
-	163, // 176: teamos.company.v1.CompanyService.ValidateAmoWidgetContinuation:output_type -> teamos.company.v1.ValidateAmoWidgetContinuationResponse
-	165, // 177: teamos.company.v1.CompanyService.CompleteAmoWidgetContinuation:output_type -> teamos.company.v1.CompleteAmoWidgetContinuationResponse
-	29,  // 178: teamos.company.v1.CompanyService.Login:output_type -> teamos.company.v1.LoginResponse
-	31,  // 179: teamos.company.v1.CompanyService.LoginWithAccessLink:output_type -> teamos.company.v1.LoginWithAccessLinkResponse
-	33,  // 180: teamos.company.v1.CompanyService.ImpersonateUser:output_type -> teamos.company.v1.ImpersonateUserResponse
-	35,  // 181: teamos.company.v1.CompanyService.Refresh:output_type -> teamos.company.v1.RefreshResponse
-	37,  // 182: teamos.company.v1.CompanyService.Logout:output_type -> teamos.company.v1.LogoutResponse
-	39,  // 183: teamos.company.v1.CompanyService.GetInviteByToken:output_type -> teamos.company.v1.GetInviteByTokenResponse
-	41,  // 184: teamos.company.v1.CompanyService.AcceptInvite:output_type -> teamos.company.v1.AcceptInviteResponse
-	44,  // 185: teamos.company.v1.CompanyService.ProvisionCompany:output_type -> teamos.company.v1.ProvisionCompanyResponse
-	159, // 186: teamos.company.v1.CompanyService.GetProvisionedCompanyStatus:output_type -> teamos.company.v1.GetProvisionedCompanyStatusResponse
-	48,  // 187: teamos.company.v1.CompanyService.GetBootstrapActivation:output_type -> teamos.company.v1.GetBootstrapActivationResponse
-	51,  // 188: teamos.company.v1.CompanyService.CompleteBootstrapActivation:output_type -> teamos.company.v1.CompleteBootstrapActivationResponse
-	53,  // 189: teamos.company.v1.CompanyService.IssueSsoToken:output_type -> teamos.company.v1.IssueSsoTokenResponse
-	55,  // 190: teamos.company.v1.CompanyService.ExchangeSsoToken:output_type -> teamos.company.v1.ExchangeSsoTokenResponse
-	57,  // 191: teamos.company.v1.CompanyService.GetOnboardingStatus:output_type -> teamos.company.v1.GetOnboardingStatusResponse
-	59,  // 192: teamos.company.v1.CompanyService.ReissueOnboardingActivation:output_type -> teamos.company.v1.ReissueOnboardingActivationResponse
-	61,  // 193: teamos.company.v1.CompanyService.GetCurrentUser:output_type -> teamos.company.v1.GetCurrentUserResponse
-	63,  // 194: teamos.company.v1.CompanyService.UpdateCurrentUser:output_type -> teamos.company.v1.UpdateCurrentUserResponse
-	65,  // 195: teamos.company.v1.CompanyService.GetCompany:output_type -> teamos.company.v1.GetCompanyResponse
-	67,  // 196: teamos.company.v1.CompanyService.UpdateCompany:output_type -> teamos.company.v1.UpdateCompanyResponse
-	69,  // 197: teamos.company.v1.CompanyService.GetDepartments:output_type -> teamos.company.v1.GetDepartmentsResponse
-	71,  // 198: teamos.company.v1.CompanyService.CreateDepartment:output_type -> teamos.company.v1.CreateDepartmentResponse
-	73,  // 199: teamos.company.v1.CompanyService.UpdateDepartment:output_type -> teamos.company.v1.UpdateDepartmentResponse
-	75,  // 200: teamos.company.v1.CompanyService.DeleteDepartment:output_type -> teamos.company.v1.DeleteDepartmentResponse
-	77,  // 201: teamos.company.v1.CompanyService.MoveDepartment:output_type -> teamos.company.v1.MoveDepartmentResponse
-	79,  // 202: teamos.company.v1.CompanyService.GetPositions:output_type -> teamos.company.v1.GetPositionsResponse
-	81,  // 203: teamos.company.v1.CompanyService.GetPosition:output_type -> teamos.company.v1.GetPositionResponse
-	83,  // 204: teamos.company.v1.CompanyService.CreatePosition:output_type -> teamos.company.v1.CreatePositionResponse
-	85,  // 205: teamos.company.v1.CompanyService.UpdatePosition:output_type -> teamos.company.v1.UpdatePositionResponse
-	87,  // 206: teamos.company.v1.CompanyService.DeletePosition:output_type -> teamos.company.v1.DeletePositionResponse
-	89,  // 207: teamos.company.v1.CompanyService.MovePosition:output_type -> teamos.company.v1.MovePositionResponse
-	91,  // 208: teamos.company.v1.CompanyService.GetUsers:output_type -> teamos.company.v1.GetUsersResponse
-	93,  // 209: teamos.company.v1.CompanyService.GetUser:output_type -> teamos.company.v1.GetUserResponse
-	95,  // 210: teamos.company.v1.CompanyService.CreateUser:output_type -> teamos.company.v1.CreateUserResponse
-	97,  // 211: teamos.company.v1.CompanyService.UpdateUser:output_type -> teamos.company.v1.UpdateUserResponse
-	136, // 212: teamos.company.v1.CompanyService.UpdateUserCard:output_type -> teamos.company.v1.UpdateUserCardResponse
-	99,  // 213: teamos.company.v1.CompanyService.DeleteUser:output_type -> teamos.company.v1.DeleteUserResponse
-	102, // 214: teamos.company.v1.CompanyService.GetUserAccess:output_type -> teamos.company.v1.GetUserAccessResponse
-	104, // 215: teamos.company.v1.CompanyService.SetUserPasswordAccess:output_type -> teamos.company.v1.SetUserPasswordAccessResponse
-	106, // 216: teamos.company.v1.CompanyService.SetUserLinkAccess:output_type -> teamos.company.v1.SetUserLinkAccessResponse
-	108, // 217: teamos.company.v1.CompanyService.RevokeUserAccess:output_type -> teamos.company.v1.RevokeUserAccessResponse
-	110, // 218: teamos.company.v1.CompanyService.GetInvites:output_type -> teamos.company.v1.GetInvitesResponse
-	112, // 219: teamos.company.v1.CompanyService.InviteUser:output_type -> teamos.company.v1.InviteUserResponse
-	114, // 220: teamos.company.v1.CompanyService.ResendInvite:output_type -> teamos.company.v1.ResendInviteResponse
-	116, // 221: teamos.company.v1.CompanyService.RevokeInvite:output_type -> teamos.company.v1.RevokeInviteResponse
-	118, // 222: teamos.company.v1.CompanyService.GetUsersByIds:output_type -> teamos.company.v1.GetUsersByIdsResponse
-	120, // 223: teamos.company.v1.CompanyService.ResolveReportUserScope:output_type -> teamos.company.v1.ResolveReportUserScopeResponse
-	123, // 224: teamos.company.v1.CompanyService.GetReportUserProfiles:output_type -> teamos.company.v1.GetReportUserProfilesResponse
-	125, // 225: teamos.company.v1.CompanyService.ResolvePositionUsers:output_type -> teamos.company.v1.ResolvePositionUsersResponse
-	127, // 226: teamos.company.v1.CompanyService.ResolveDepartmentUsers:output_type -> teamos.company.v1.ResolveDepartmentUsersResponse
-	132, // 227: teamos.company.v1.CompanyService.GetSchedules:output_type -> teamos.company.v1.GetSchedulesResponse
-	134, // 228: teamos.company.v1.CompanyService.SaveSchedule:output_type -> teamos.company.v1.SaveScheduleResponse
-	138, // 229: teamos.company.v1.CompanyService.GetShiftExceptions:output_type -> teamos.company.v1.GetShiftExceptionsResponse
-	141, // 230: teamos.company.v1.CompanyService.SaveShiftExceptions:output_type -> teamos.company.v1.SaveShiftExceptionsResponse
-	145, // 231: teamos.company.v1.CompanyService.GetDistributionGroups:output_type -> teamos.company.v1.GetDistributionGroupsResponse
-	147, // 232: teamos.company.v1.CompanyService.CreateDistributionGroup:output_type -> teamos.company.v1.CreateDistributionGroupResponse
-	149, // 233: teamos.company.v1.CompanyService.UpdateDistributionGroup:output_type -> teamos.company.v1.UpdateDistributionGroupResponse
-	151, // 234: teamos.company.v1.CompanyService.DeleteDistributionGroup:output_type -> teamos.company.v1.DeleteDistributionGroupResponse
-	153, // 235: teamos.company.v1.CompanyService.GetDistributionEvents:output_type -> teamos.company.v1.GetDistributionEventsResponse
-	155, // 236: teamos.company.v1.CompanyService.SimulateDistributionDeal:output_type -> teamos.company.v1.SimulateDistributionDealResponse
-	157, // 237: teamos.company.v1.CompanyService.ResetDistributionEvents:output_type -> teamos.company.v1.ResetDistributionEventsResponse
-	171, // [171:238] is the sub-list for method output_type
-	104, // [104:171] is the sub-list for method input_type
+	109, // 150: teamos.company.v1.CompanyService.RevokeUserPasswordAccess:input_type -> teamos.company.v1.RevokeUserPasswordAccessRequest
+	111, // 151: teamos.company.v1.CompanyService.RevokeUserLinkAccess:input_type -> teamos.company.v1.RevokeUserLinkAccessRequest
+	107, // 152: teamos.company.v1.CompanyService.RevokeUserAccess:input_type -> teamos.company.v1.RevokeUserAccessRequest
+	113, // 153: teamos.company.v1.CompanyService.GetInvites:input_type -> teamos.company.v1.GetInvitesRequest
+	115, // 154: teamos.company.v1.CompanyService.InviteUser:input_type -> teamos.company.v1.InviteUserRequest
+	117, // 155: teamos.company.v1.CompanyService.ResendInvite:input_type -> teamos.company.v1.ResendInviteRequest
+	119, // 156: teamos.company.v1.CompanyService.RevokeInvite:input_type -> teamos.company.v1.RevokeInviteRequest
+	121, // 157: teamos.company.v1.CompanyService.GetUsersByIds:input_type -> teamos.company.v1.GetUsersByIdsRequest
+	123, // 158: teamos.company.v1.CompanyService.ResolveReportUserScope:input_type -> teamos.company.v1.ResolveReportUserScopeRequest
+	126, // 159: teamos.company.v1.CompanyService.GetReportUserProfiles:input_type -> teamos.company.v1.GetReportUserProfilesRequest
+	128, // 160: teamos.company.v1.CompanyService.ResolvePositionUsers:input_type -> teamos.company.v1.ResolvePositionUsersRequest
+	130, // 161: teamos.company.v1.CompanyService.ResolveDepartmentUsers:input_type -> teamos.company.v1.ResolveDepartmentUsersRequest
+	135, // 162: teamos.company.v1.CompanyService.GetSchedules:input_type -> teamos.company.v1.GetSchedulesRequest
+	137, // 163: teamos.company.v1.CompanyService.SaveSchedule:input_type -> teamos.company.v1.SaveScheduleRequest
+	141, // 164: teamos.company.v1.CompanyService.GetShiftExceptions:input_type -> teamos.company.v1.GetShiftExceptionsRequest
+	144, // 165: teamos.company.v1.CompanyService.SaveShiftExceptions:input_type -> teamos.company.v1.SaveShiftExceptionsRequest
+	148, // 166: teamos.company.v1.CompanyService.GetDistributionGroups:input_type -> teamos.company.v1.GetDistributionGroupsRequest
+	150, // 167: teamos.company.v1.CompanyService.CreateDistributionGroup:input_type -> teamos.company.v1.CreateDistributionGroupRequest
+	152, // 168: teamos.company.v1.CompanyService.UpdateDistributionGroup:input_type -> teamos.company.v1.UpdateDistributionGroupRequest
+	154, // 169: teamos.company.v1.CompanyService.DeleteDistributionGroup:input_type -> teamos.company.v1.DeleteDistributionGroupRequest
+	156, // 170: teamos.company.v1.CompanyService.GetDistributionEvents:input_type -> teamos.company.v1.GetDistributionEventsRequest
+	158, // 171: teamos.company.v1.CompanyService.SimulateDistributionDeal:input_type -> teamos.company.v1.SimulateDistributionDealRequest
+	160, // 172: teamos.company.v1.CompanyService.ResetDistributionEvents:input_type -> teamos.company.v1.ResetDistributionEventsRequest
+	21,  // 173: teamos.company.v1.CompanyService.Register:output_type -> teamos.company.v1.RegisterResponse
+	23,  // 174: teamos.company.v1.CompanyService.CheckAmoAccount:output_type -> teamos.company.v1.CheckAmoAccountResponse
+	25,  // 175: teamos.company.v1.CompanyService.IssueCompanyRegistrationToken:output_type -> teamos.company.v1.IssueCompanyRegistrationTokenResponse
+	27,  // 176: teamos.company.v1.CompanyService.ValidateCompanyRegistrationToken:output_type -> teamos.company.v1.ValidateCompanyRegistrationTokenResponse
+	165, // 177: teamos.company.v1.CompanyService.ExchangeAmoWidgetSession:output_type -> teamos.company.v1.ExchangeAmoWidgetSessionResponse
+	167, // 178: teamos.company.v1.CompanyService.ValidateAmoWidgetContinuation:output_type -> teamos.company.v1.ValidateAmoWidgetContinuationResponse
+	169, // 179: teamos.company.v1.CompanyService.CompleteAmoWidgetContinuation:output_type -> teamos.company.v1.CompleteAmoWidgetContinuationResponse
+	29,  // 180: teamos.company.v1.CompanyService.Login:output_type -> teamos.company.v1.LoginResponse
+	31,  // 181: teamos.company.v1.CompanyService.LoginWithAccessLink:output_type -> teamos.company.v1.LoginWithAccessLinkResponse
+	33,  // 182: teamos.company.v1.CompanyService.ImpersonateUser:output_type -> teamos.company.v1.ImpersonateUserResponse
+	35,  // 183: teamos.company.v1.CompanyService.Refresh:output_type -> teamos.company.v1.RefreshResponse
+	37,  // 184: teamos.company.v1.CompanyService.Logout:output_type -> teamos.company.v1.LogoutResponse
+	39,  // 185: teamos.company.v1.CompanyService.GetInviteByToken:output_type -> teamos.company.v1.GetInviteByTokenResponse
+	41,  // 186: teamos.company.v1.CompanyService.AcceptInvite:output_type -> teamos.company.v1.AcceptInviteResponse
+	44,  // 187: teamos.company.v1.CompanyService.ProvisionCompany:output_type -> teamos.company.v1.ProvisionCompanyResponse
+	163, // 188: teamos.company.v1.CompanyService.GetProvisionedCompanyStatus:output_type -> teamos.company.v1.GetProvisionedCompanyStatusResponse
+	48,  // 189: teamos.company.v1.CompanyService.GetBootstrapActivation:output_type -> teamos.company.v1.GetBootstrapActivationResponse
+	51,  // 190: teamos.company.v1.CompanyService.CompleteBootstrapActivation:output_type -> teamos.company.v1.CompleteBootstrapActivationResponse
+	53,  // 191: teamos.company.v1.CompanyService.IssueSsoToken:output_type -> teamos.company.v1.IssueSsoTokenResponse
+	55,  // 192: teamos.company.v1.CompanyService.ExchangeSsoToken:output_type -> teamos.company.v1.ExchangeSsoTokenResponse
+	57,  // 193: teamos.company.v1.CompanyService.GetOnboardingStatus:output_type -> teamos.company.v1.GetOnboardingStatusResponse
+	59,  // 194: teamos.company.v1.CompanyService.ReissueOnboardingActivation:output_type -> teamos.company.v1.ReissueOnboardingActivationResponse
+	61,  // 195: teamos.company.v1.CompanyService.GetCurrentUser:output_type -> teamos.company.v1.GetCurrentUserResponse
+	63,  // 196: teamos.company.v1.CompanyService.UpdateCurrentUser:output_type -> teamos.company.v1.UpdateCurrentUserResponse
+	65,  // 197: teamos.company.v1.CompanyService.GetCompany:output_type -> teamos.company.v1.GetCompanyResponse
+	67,  // 198: teamos.company.v1.CompanyService.UpdateCompany:output_type -> teamos.company.v1.UpdateCompanyResponse
+	69,  // 199: teamos.company.v1.CompanyService.GetDepartments:output_type -> teamos.company.v1.GetDepartmentsResponse
+	71,  // 200: teamos.company.v1.CompanyService.CreateDepartment:output_type -> teamos.company.v1.CreateDepartmentResponse
+	73,  // 201: teamos.company.v1.CompanyService.UpdateDepartment:output_type -> teamos.company.v1.UpdateDepartmentResponse
+	75,  // 202: teamos.company.v1.CompanyService.DeleteDepartment:output_type -> teamos.company.v1.DeleteDepartmentResponse
+	77,  // 203: teamos.company.v1.CompanyService.MoveDepartment:output_type -> teamos.company.v1.MoveDepartmentResponse
+	79,  // 204: teamos.company.v1.CompanyService.GetPositions:output_type -> teamos.company.v1.GetPositionsResponse
+	81,  // 205: teamos.company.v1.CompanyService.GetPosition:output_type -> teamos.company.v1.GetPositionResponse
+	83,  // 206: teamos.company.v1.CompanyService.CreatePosition:output_type -> teamos.company.v1.CreatePositionResponse
+	85,  // 207: teamos.company.v1.CompanyService.UpdatePosition:output_type -> teamos.company.v1.UpdatePositionResponse
+	87,  // 208: teamos.company.v1.CompanyService.DeletePosition:output_type -> teamos.company.v1.DeletePositionResponse
+	89,  // 209: teamos.company.v1.CompanyService.MovePosition:output_type -> teamos.company.v1.MovePositionResponse
+	91,  // 210: teamos.company.v1.CompanyService.GetUsers:output_type -> teamos.company.v1.GetUsersResponse
+	93,  // 211: teamos.company.v1.CompanyService.GetUser:output_type -> teamos.company.v1.GetUserResponse
+	95,  // 212: teamos.company.v1.CompanyService.CreateUser:output_type -> teamos.company.v1.CreateUserResponse
+	97,  // 213: teamos.company.v1.CompanyService.UpdateUser:output_type -> teamos.company.v1.UpdateUserResponse
+	140, // 214: teamos.company.v1.CompanyService.UpdateUserCard:output_type -> teamos.company.v1.UpdateUserCardResponse
+	99,  // 215: teamos.company.v1.CompanyService.DeleteUser:output_type -> teamos.company.v1.DeleteUserResponse
+	102, // 216: teamos.company.v1.CompanyService.GetUserAccess:output_type -> teamos.company.v1.GetUserAccessResponse
+	104, // 217: teamos.company.v1.CompanyService.SetUserPasswordAccess:output_type -> teamos.company.v1.SetUserPasswordAccessResponse
+	106, // 218: teamos.company.v1.CompanyService.SetUserLinkAccess:output_type -> teamos.company.v1.SetUserLinkAccessResponse
+	110, // 219: teamos.company.v1.CompanyService.RevokeUserPasswordAccess:output_type -> teamos.company.v1.RevokeUserPasswordAccessResponse
+	112, // 220: teamos.company.v1.CompanyService.RevokeUserLinkAccess:output_type -> teamos.company.v1.RevokeUserLinkAccessResponse
+	108, // 221: teamos.company.v1.CompanyService.RevokeUserAccess:output_type -> teamos.company.v1.RevokeUserAccessResponse
+	114, // 222: teamos.company.v1.CompanyService.GetInvites:output_type -> teamos.company.v1.GetInvitesResponse
+	116, // 223: teamos.company.v1.CompanyService.InviteUser:output_type -> teamos.company.v1.InviteUserResponse
+	118, // 224: teamos.company.v1.CompanyService.ResendInvite:output_type -> teamos.company.v1.ResendInviteResponse
+	120, // 225: teamos.company.v1.CompanyService.RevokeInvite:output_type -> teamos.company.v1.RevokeInviteResponse
+	122, // 226: teamos.company.v1.CompanyService.GetUsersByIds:output_type -> teamos.company.v1.GetUsersByIdsResponse
+	124, // 227: teamos.company.v1.CompanyService.ResolveReportUserScope:output_type -> teamos.company.v1.ResolveReportUserScopeResponse
+	127, // 228: teamos.company.v1.CompanyService.GetReportUserProfiles:output_type -> teamos.company.v1.GetReportUserProfilesResponse
+	129, // 229: teamos.company.v1.CompanyService.ResolvePositionUsers:output_type -> teamos.company.v1.ResolvePositionUsersResponse
+	131, // 230: teamos.company.v1.CompanyService.ResolveDepartmentUsers:output_type -> teamos.company.v1.ResolveDepartmentUsersResponse
+	136, // 231: teamos.company.v1.CompanyService.GetSchedules:output_type -> teamos.company.v1.GetSchedulesResponse
+	138, // 232: teamos.company.v1.CompanyService.SaveSchedule:output_type -> teamos.company.v1.SaveScheduleResponse
+	142, // 233: teamos.company.v1.CompanyService.GetShiftExceptions:output_type -> teamos.company.v1.GetShiftExceptionsResponse
+	145, // 234: teamos.company.v1.CompanyService.SaveShiftExceptions:output_type -> teamos.company.v1.SaveShiftExceptionsResponse
+	149, // 235: teamos.company.v1.CompanyService.GetDistributionGroups:output_type -> teamos.company.v1.GetDistributionGroupsResponse
+	151, // 236: teamos.company.v1.CompanyService.CreateDistributionGroup:output_type -> teamos.company.v1.CreateDistributionGroupResponse
+	153, // 237: teamos.company.v1.CompanyService.UpdateDistributionGroup:output_type -> teamos.company.v1.UpdateDistributionGroupResponse
+	155, // 238: teamos.company.v1.CompanyService.DeleteDistributionGroup:output_type -> teamos.company.v1.DeleteDistributionGroupResponse
+	157, // 239: teamos.company.v1.CompanyService.GetDistributionEvents:output_type -> teamos.company.v1.GetDistributionEventsResponse
+	159, // 240: teamos.company.v1.CompanyService.SimulateDistributionDeal:output_type -> teamos.company.v1.SimulateDistributionDealResponse
+	161, // 241: teamos.company.v1.CompanyService.ResetDistributionEvents:output_type -> teamos.company.v1.ResetDistributionEventsResponse
+	173, // [173:242] is the sub-list for method output_type
+	104, // [104:173] is the sub-list for method input_type
 	104, // [104:104] is the sub-list for extension type_name
 	104, // [104:104] is the sub-list for extension extendee
 	0,   // [0:104] is the sub-list for field type_name
@@ -10445,6 +10679,7 @@ func file_proto_company_v1_company_proto_init() {
 	file_proto_company_v1_company_proto_msgTypes[4].OneofWrappers = []any{}
 	file_proto_company_v1_company_proto_msgTypes[6].OneofWrappers = []any{}
 	file_proto_company_v1_company_proto_msgTypes[13].OneofWrappers = []any{}
+	file_proto_company_v1_company_proto_msgTypes[14].OneofWrappers = []any{}
 	file_proto_company_v1_company_proto_msgTypes[26].OneofWrappers = []any{}
 	file_proto_company_v1_company_proto_msgTypes[36].OneofWrappers = []any{}
 	file_proto_company_v1_company_proto_msgTypes[48].OneofWrappers = []any{}
@@ -10459,26 +10694,26 @@ func file_proto_company_v1_company_proto_init() {
 	file_proto_company_v1_company_proto_msgTypes[86].OneofWrappers = []any{}
 	file_proto_company_v1_company_proto_msgTypes[89].OneofWrappers = []any{}
 	file_proto_company_v1_company_proto_msgTypes[92].OneofWrappers = []any{}
-	file_proto_company_v1_company_proto_msgTypes[97].OneofWrappers = []any{}
-	file_proto_company_v1_company_proto_msgTypes[105].OneofWrappers = []any{}
-	file_proto_company_v1_company_proto_msgTypes[107].OneofWrappers = []any{}
-	file_proto_company_v1_company_proto_msgTypes[108].OneofWrappers = []any{}
-	file_proto_company_v1_company_proto_msgTypes[114].OneofWrappers = []any{}
-	file_proto_company_v1_company_proto_msgTypes[116].OneofWrappers = []any{}
-	file_proto_company_v1_company_proto_msgTypes[125].OneofWrappers = []any{}
-	file_proto_company_v1_company_proto_msgTypes[128].OneofWrappers = []any{}
+	file_proto_company_v1_company_proto_msgTypes[101].OneofWrappers = []any{}
+	file_proto_company_v1_company_proto_msgTypes[109].OneofWrappers = []any{}
+	file_proto_company_v1_company_proto_msgTypes[111].OneofWrappers = []any{}
+	file_proto_company_v1_company_proto_msgTypes[112].OneofWrappers = []any{}
+	file_proto_company_v1_company_proto_msgTypes[118].OneofWrappers = []any{}
+	file_proto_company_v1_company_proto_msgTypes[120].OneofWrappers = []any{}
+	file_proto_company_v1_company_proto_msgTypes[129].OneofWrappers = []any{}
 	file_proto_company_v1_company_proto_msgTypes[132].OneofWrappers = []any{}
-	file_proto_company_v1_company_proto_msgTypes[134].OneofWrappers = []any{}
-	file_proto_company_v1_company_proto_msgTypes[145].OneofWrappers = []any{}
-	file_proto_company_v1_company_proto_msgTypes[146].OneofWrappers = []any{}
-	file_proto_company_v1_company_proto_msgTypes[147].OneofWrappers = []any{}
+	file_proto_company_v1_company_proto_msgTypes[136].OneofWrappers = []any{}
+	file_proto_company_v1_company_proto_msgTypes[138].OneofWrappers = []any{}
+	file_proto_company_v1_company_proto_msgTypes[149].OneofWrappers = []any{}
+	file_proto_company_v1_company_proto_msgTypes[150].OneofWrappers = []any{}
+	file_proto_company_v1_company_proto_msgTypes[151].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_company_v1_company_proto_rawDesc), len(file_proto_company_v1_company_proto_rawDesc)),
 			NumEnums:      14,
-			NumMessages:   152,
+			NumMessages:   156,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -91,6 +91,7 @@ func (s *Service) GetUsersByIDs(ctx context.Context, actor Actor, userIDs []uuid
 		result[index] = User{
 			ID:                row.ID,
 			CompanyID:         row.CompanyID,
+			Login:             row.Login,
 			Email:             row.Email,
 			FirstName:         row.FirstName,
 			LastName:          textValue(row.LastName),

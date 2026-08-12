@@ -13,6 +13,9 @@ sql:
       - migrations/000011_legacy_amo_integrations.up.sql
       - migrations/000012_user_schedule_visibility.up.sql
       - migrations/000013_amo_group_organization.up.sql
+      - migrations/000014_department_root.up.sql
+      - migrations/000015_position_levels.up.sql
+      - migrations/000016_user_logins.up.sql
     queries: internal/storage/queries
     gen:
       go:

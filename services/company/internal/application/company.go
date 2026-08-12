@@ -71,7 +71,10 @@ func (s *Service) UpdateCurrentUser(
 	if err != nil {
 		return User{}, internal("Не удалось получить прямой отдел", err)
 	}
-	result := userFromDB(user, positions)
+	result, err := userFromDBWithLogin(ctx, queries, user, positions)
+	if err != nil {
+		return User{}, err
+	}
 	result.DepartmentIDs = directDepartmentIDs
 	return result, nil
 }

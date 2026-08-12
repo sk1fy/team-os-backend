@@ -65,6 +65,8 @@ const (
 	CompanyService_GetUserAccess_FullMethodName                    = "/teamos.company.v1.CompanyService/GetUserAccess"
 	CompanyService_SetUserPasswordAccess_FullMethodName            = "/teamos.company.v1.CompanyService/SetUserPasswordAccess"
 	CompanyService_SetUserLinkAccess_FullMethodName                = "/teamos.company.v1.CompanyService/SetUserLinkAccess"
+	CompanyService_RevokeUserPasswordAccess_FullMethodName         = "/teamos.company.v1.CompanyService/RevokeUserPasswordAccess"
+	CompanyService_RevokeUserLinkAccess_FullMethodName             = "/teamos.company.v1.CompanyService/RevokeUserLinkAccess"
 	CompanyService_RevokeUserAccess_FullMethodName                 = "/teamos.company.v1.CompanyService/RevokeUserAccess"
 	CompanyService_GetInvites_FullMethodName                       = "/teamos.company.v1.CompanyService/GetInvites"
 	CompanyService_InviteUser_FullMethodName                       = "/teamos.company.v1.CompanyService/InviteUser"
@@ -142,6 +144,8 @@ type CompanyServiceClient interface {
 	GetUserAccess(ctx context.Context, in *GetUserAccessRequest, opts ...grpc.CallOption) (*GetUserAccessResponse, error)
 	SetUserPasswordAccess(ctx context.Context, in *SetUserPasswordAccessRequest, opts ...grpc.CallOption) (*SetUserPasswordAccessResponse, error)
 	SetUserLinkAccess(ctx context.Context, in *SetUserLinkAccessRequest, opts ...grpc.CallOption) (*SetUserLinkAccessResponse, error)
+	RevokeUserPasswordAccess(ctx context.Context, in *RevokeUserPasswordAccessRequest, opts ...grpc.CallOption) (*RevokeUserPasswordAccessResponse, error)
+	RevokeUserLinkAccess(ctx context.Context, in *RevokeUserLinkAccessRequest, opts ...grpc.CallOption) (*RevokeUserLinkAccessResponse, error)
 	RevokeUserAccess(ctx context.Context, in *RevokeUserAccessRequest, opts ...grpc.CallOption) (*RevokeUserAccessResponse, error)
 	GetInvites(ctx context.Context, in *GetInvitesRequest, opts ...grpc.CallOption) (*GetInvitesResponse, error)
 	InviteUser(ctx context.Context, in *InviteUserRequest, opts ...grpc.CallOption) (*InviteUserResponse, error)
@@ -633,6 +637,26 @@ func (c *companyServiceClient) SetUserLinkAccess(ctx context.Context, in *SetUse
 	return out, nil
 }
 
+func (c *companyServiceClient) RevokeUserPasswordAccess(ctx context.Context, in *RevokeUserPasswordAccessRequest, opts ...grpc.CallOption) (*RevokeUserPasswordAccessResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RevokeUserPasswordAccessResponse)
+	err := c.cc.Invoke(ctx, CompanyService_RevokeUserPasswordAccess_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) RevokeUserLinkAccess(ctx context.Context, in *RevokeUserLinkAccessRequest, opts ...grpc.CallOption) (*RevokeUserLinkAccessResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RevokeUserLinkAccessResponse)
+	err := c.cc.Invoke(ctx, CompanyService_RevokeUserLinkAccess_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *companyServiceClient) RevokeUserAccess(ctx context.Context, in *RevokeUserAccessRequest, opts ...grpc.CallOption) (*RevokeUserAccessResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(RevokeUserAccessResponse)
@@ -897,6 +921,8 @@ type CompanyServiceServer interface {
 	GetUserAccess(context.Context, *GetUserAccessRequest) (*GetUserAccessResponse, error)
 	SetUserPasswordAccess(context.Context, *SetUserPasswordAccessRequest) (*SetUserPasswordAccessResponse, error)
 	SetUserLinkAccess(context.Context, *SetUserLinkAccessRequest) (*SetUserLinkAccessResponse, error)
+	RevokeUserPasswordAccess(context.Context, *RevokeUserPasswordAccessRequest) (*RevokeUserPasswordAccessResponse, error)
+	RevokeUserLinkAccess(context.Context, *RevokeUserLinkAccessRequest) (*RevokeUserLinkAccessResponse, error)
 	RevokeUserAccess(context.Context, *RevokeUserAccessRequest) (*RevokeUserAccessResponse, error)
 	GetInvites(context.Context, *GetInvitesRequest) (*GetInvitesResponse, error)
 	InviteUser(context.Context, *InviteUserRequest) (*InviteUserResponse, error)
@@ -1065,6 +1091,12 @@ func (UnimplementedCompanyServiceServer) SetUserPasswordAccess(context.Context, 
 }
 func (UnimplementedCompanyServiceServer) SetUserLinkAccess(context.Context, *SetUserLinkAccessRequest) (*SetUserLinkAccessResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetUserLinkAccess not implemented")
+}
+func (UnimplementedCompanyServiceServer) RevokeUserPasswordAccess(context.Context, *RevokeUserPasswordAccessRequest) (*RevokeUserPasswordAccessResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RevokeUserPasswordAccess not implemented")
+}
+func (UnimplementedCompanyServiceServer) RevokeUserLinkAccess(context.Context, *RevokeUserLinkAccessRequest) (*RevokeUserLinkAccessResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RevokeUserLinkAccess not implemented")
 }
 func (UnimplementedCompanyServiceServer) RevokeUserAccess(context.Context, *RevokeUserAccessRequest) (*RevokeUserAccessResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RevokeUserAccess not implemented")
@@ -1978,6 +2010,42 @@ func _CompanyService_SetUserLinkAccess_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CompanyService_RevokeUserPasswordAccess_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RevokeUserPasswordAccessRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).RevokeUserPasswordAccess(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_RevokeUserPasswordAccess_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).RevokeUserPasswordAccess(ctx, req.(*RevokeUserPasswordAccessRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_RevokeUserLinkAccess_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RevokeUserLinkAccessRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).RevokeUserLinkAccess(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_RevokeUserLinkAccess_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).RevokeUserLinkAccess(ctx, req.(*RevokeUserLinkAccessRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _CompanyService_RevokeUserAccess_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RevokeUserAccessRequest)
 	if err := dec(in); err != nil {
@@ -2546,6 +2614,14 @@ var CompanyService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SetUserLinkAccess",
 			Handler:    _CompanyService_SetUserLinkAccess_Handler,
+		},
+		{
+			MethodName: "RevokeUserPasswordAccess",
+			Handler:    _CompanyService_RevokeUserPasswordAccess_Handler,
+		},
+		{
+			MethodName: "RevokeUserLinkAccess",
+			Handler:    _CompanyService_RevokeUserLinkAccess_Handler,
 		},
 		{
 			MethodName: "RevokeUserAccess",

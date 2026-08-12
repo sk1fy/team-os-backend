@@ -42,13 +42,26 @@ FOR UPDATE;
 SELECT sqlc.embed(u), c.password_hash
 FROM users u
 JOIN credentials c ON c.user_id = u.id
-WHERE u.email = $1 AND u.external_deleted_at IS NULL
+JOIN user_logins user_login
+  ON user_login.company_id = u.company_id AND user_login.user_id = u.id
+WHERE (
+    user_login.login = sqlc.arg('login_identifier')
+    OR (
+        u.email = sqlc.arg('login_identifier')
+        AND u.role IN ('owner', 'admin')
+    )
+  )
+  AND u.external_deleted_at IS NULL
 FOR SHARE OF u;
 
 -- name: GetUserByEmailForUpdate :one
 SELECT * FROM users
 WHERE email = $1 AND external_deleted_at IS NULL
 FOR UPDATE;
+
+-- name: GetUserLogin :one
+SELECT login FROM user_logins
+WHERE company_id = $1 AND user_id = $2;
 
 -- name: SetCredential :exec
 INSERT INTO credentials (company_id, user_id, password_hash)
@@ -98,6 +111,22 @@ SELECT CASE
     ) THEN 'password'
     ELSE 'none'
 END::text AS access_mode;
+
+-- name: GetUserAccessDetails :one
+SELECT
+    user_login.login,
+    EXISTS (
+        SELECT 1 FROM credentials credential
+        WHERE credential.company_id = u.company_id AND credential.user_id = u.id
+    ) AS password_enabled,
+    access.token AS link_token,
+    access.created_at AS link_created_at
+FROM users u
+JOIN user_logins user_login
+    ON user_login.company_id = u.company_id AND user_login.user_id = u.id
+LEFT JOIN access_links access
+    ON access.company_id = u.company_id AND access.user_id = u.id
+WHERE u.company_id = sqlc.arg('company_id') AND u.id = sqlc.arg('user_id');
 
 -- name: GetUserPositionIDs :many
 SELECT position_id

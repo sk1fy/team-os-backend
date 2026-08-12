@@ -244,6 +244,7 @@ type OrgUserSnapshot struct {
 	PositionIds   []string               `protobuf:"bytes,7,rep,name=position_ids,json=positionIds,proto3" json:"position_ids,omitempty"`
 	DepartmentIds []string               `protobuf:"bytes,8,rep,name=department_ids,json=departmentIds,proto3" json:"department_ids,omitempty"`
 	SectionAccess []OrgEmployeeSection   `protobuf:"varint,9,rep,packed,name=section_access,json=sectionAccess,proto3,enum=teamos.events.v1.OrgEmployeeSection" json:"section_access,omitempty"`
+	Login         string                 `protobuf:"bytes,10,opt,name=login,proto3" json:"login,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -339,6 +340,13 @@ func (x *OrgUserSnapshot) GetSectionAccess() []OrgEmployeeSection {
 		return x.SectionAccess
 	}
 	return nil
+}
+
+func (x *OrgUserSnapshot) GetLogin() string {
+	if x != nil {
+		return x.Login
+	}
+	return ""
 }
 
 type OrgUserCreatedEvent struct {
@@ -1228,7 +1236,7 @@ var File_events_org_proto protoreflect.FileDescriptor
 
 const file_events_org_proto_rawDesc = "" +
 	"\n" +
-	"\x10events/org.proto\x12\x10teamos.events.v1\x1a\x13events/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xff\x02\n" +
+	"\x10events/org.proto\x12\x10teamos.events.v1\x1a\x13events/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x95\x03\n" +
 	"\x0fOrgUserSnapshot\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x12\x1d\n" +
@@ -1239,7 +1247,9 @@ const file_events_org_proto_rawDesc = "" +
 	"\x06status\x18\x06 \x01(\x0e2\x1f.teamos.events.v1.OrgUserStatusR\x06status\x12!\n" +
 	"\fposition_ids\x18\a \x03(\tR\vpositionIds\x12%\n" +
 	"\x0edepartment_ids\x18\b \x03(\tR\rdepartmentIds\x12K\n" +
-	"\x0esection_access\x18\t \x03(\x0e2$.teamos.events.v1.OrgEmployeeSectionR\rsectionAccess\"\x95\x01\n" +
+	"\x0esection_access\x18\t \x03(\x0e2$.teamos.events.v1.OrgEmployeeSectionR\rsectionAccess\x12\x14\n" +
+	"\x05login\x18\n" +
+	" \x01(\tR\x05login\"\x95\x01\n" +
 	"\x13OrgUserCreatedEvent\x12;\n" +
 	"\bmetadata\x18\x01 \x01(\v2\x1f.teamos.events.v1.EventMetadataR\bmetadata\x12A\n" +
 	"\apayload\x18\x02 \x01(\v2'.teamos.events.v1.OrgUserCreatedPayloadR\apayload\"N\n" +

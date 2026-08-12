@@ -29,8 +29,12 @@ func (s *Server) Login(ctx context.Context, request *companyv1.LoginRequest) (*c
 	if request == nil {
 		return nil, invalidRequest()
 	}
+	login := request.Email
+	if request.Login != nil {
+		login = request.GetLogin()
+	}
 	result, err := s.application.Login(ctx, application.LoginInput{
-		Email: request.Email, Password: request.Password,
+		Login: login, Password: request.Password,
 	}, sessionMeta(ctx))
 	if err != nil {
 		return nil, transportError(err)

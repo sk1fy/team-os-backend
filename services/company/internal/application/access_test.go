@@ -74,7 +74,63 @@ func TestValidateAccessTarget(t *testing.T) {
 	}
 }
 
-func TestSetLinkAccessSwitchesModeAndRevokesSessions(t *testing.T) {
+func TestAccessActionUsesTargetMethodState(t *testing.T) {
+	if got := accessAction(false); got != "issued" {
+		t.Fatalf("accessAction(false) = %q, want issued", got)
+	}
+	if got := accessAction(true); got != "reissued" {
+		t.Fatalf("accessAction(true) = %q, want reissued", got)
+	}
+}
+
+func TestGetUserAccessReportsPasswordAndLinkIndependently(t *testing.T) {
+	mock := newAccessMock(t)
+	companyID, userID := uuid.New(), uuid.New()
+	now := time.Date(2026, time.August, 12, 10, 30, 0, 0, time.UTC)
+	actor := Actor{CompanyID: companyID, Role: "admin"}
+
+	expectAccessTarget(mock, companyID, userID, now)
+	mock.ExpectQuery("SELECT user_login.login").
+		WithArgs(companyID, userID).
+		WillReturnRows(pgxmock.NewRows([]string{
+			"login", "password_enabled", "link_token", "link_created_at",
+		}).AddRow("tm8901912", true, "link-token", now))
+
+	service := newAccessService(mock, now)
+	access, err := service.GetUserAccess(context.Background(), actor, userID)
+	if err != nil {
+		t.Fatalf("GetUserAccess() error = %v", err)
+	}
+	if access.Login != "tm8901912" || !access.PasswordEnabled || !access.LinkEnabled ||
+		access.Mode != "link" || access.LinkToken == nil || *access.LinkToken != "link-token" {
+		t.Fatalf("GetUserAccess() = %#v", access)
+	}
+	assertAccessExpectations(t, mock)
+}
+
+func TestRevokePasswordAccessPreservesLink(t *testing.T) {
+	mock := newAccessMock(t)
+	companyID, userID := uuid.New(), uuid.New()
+	now := time.Date(2026, time.August, 12, 10, 30, 0, 0, time.UTC)
+	actor := Actor{UserID: uuid.New(), CompanyID: companyID, Role: "owner"}
+
+	mock.ExpectBegin()
+	expectAccessTarget(mock, companyID, userID, now)
+	mock.ExpectExec("DELETE FROM credentials").
+		WithArgs(companyID, userID).
+		WillReturnResult(pgconn.NewCommandTag("DELETE 1"))
+	expectSessionRevocation(mock, userID, now)
+	expectAccessAudit(mock, actor, userID, "revoked", "password", now)
+	mock.ExpectCommit()
+
+	service := newAccessService(mock, now)
+	if err := service.RevokePasswordAccess(context.Background(), actor, userID); err != nil {
+		t.Fatalf("RevokePasswordAccess() error = %v", err)
+	}
+	assertAccessExpectations(t, mock)
+}
+
+func TestSetLinkAccessPreservesPasswordAndRevokesSessions(t *testing.T) {
 	mock := newAccessMock(t)
 	companyID, userID := uuid.New(), uuid.New()
 	now := time.Date(2026, time.July, 17, 10, 30, 0, 0, time.UTC)
@@ -82,16 +138,13 @@ func TestSetLinkAccessSwitchesModeAndRevokesSessions(t *testing.T) {
 
 	mock.ExpectBegin()
 	expectAccessTarget(mock, companyID, userID, now)
-	expectAccessMode(mock, companyID, userID, "password")
+	expectAccessDetails(mock, companyID, userID, true, nil, now)
 	mock.ExpectQuery("INSERT INTO access_links").
 		WithArgs(companyID, userID, pgxmock.AnyArg()).
 		WillReturnRows(pgxmock.NewRows([]string{"company_id", "user_id", "token", "created_at", "updated_at"}).
 			AddRow(companyID, userID, "new-link-token", now, now))
-	mock.ExpectExec("DELETE FROM credentials").
-		WithArgs(companyID, userID).
-		WillReturnResult(pgconn.NewCommandTag("DELETE 1"))
 	expectSessionRevocation(mock, userID, now)
-	expectAccessAudit(mock, actor, userID, "reissued", "link", now)
+	expectAccessAudit(mock, actor, userID, "issued", "link", now)
 	mock.ExpectCommit()
 
 	service := newAccessService(mock, now)
@@ -105,7 +158,7 @@ func TestSetLinkAccessSwitchesModeAndRevokesSessions(t *testing.T) {
 	assertAccessExpectations(t, mock)
 }
 
-func TestSetPasswordAccessSwitchesModeAndRevokesSessions(t *testing.T) {
+func TestSetPasswordAccessPreservesLinkAndRevokesSessions(t *testing.T) {
 	mock := newAccessMock(t)
 	companyID, userID := uuid.New(), uuid.New()
 	now := time.Date(2026, time.July, 17, 10, 30, 0, 0, time.UTC)
@@ -114,15 +167,14 @@ func TestSetPasswordAccessSwitchesModeAndRevokesSessions(t *testing.T) {
 
 	mock.ExpectBegin()
 	expectAccessTarget(mock, companyID, userID, now)
-	expectAccessMode(mock, companyID, userID, "link")
+	linkToken := "existing-link-token"
+	expectAccessDetails(mock, companyID, userID, false, &linkToken, now)
 	mock.ExpectExec("INSERT INTO credentials").
 		WithArgs(companyID, userID, pgxmock.AnyArg()).
 		WillReturnResult(pgconn.NewCommandTag("INSERT 0 1"))
-	mock.ExpectExec("DELETE FROM access_links").
-		WithArgs(companyID, userID).
-		WillReturnResult(pgconn.NewCommandTag("DELETE 1"))
 	expectSessionRevocation(mock, userID, now)
-	expectAccessAudit(mock, actor, userID, "reissued", "password", now)
+	expectAccessAudit(mock, actor, userID, "issued", "password", now)
+	expectAccessLogin(mock, companyID, userID, "tm8901912")
 	mock.ExpectCommit()
 
 	service := newAccessService(mock, now)
@@ -132,8 +184,8 @@ func TestSetPasswordAccessSwitchesModeAndRevokesSessions(t *testing.T) {
 	if err != nil {
 		t.Fatalf("SetPasswordAccess() error = %v", err)
 	}
-	if result != password {
-		t.Fatalf("SetPasswordAccess() password = %q, want %q", result, password)
+	if result.Password != password || result.Login != "tm8901912" {
+		t.Fatalf("SetPasswordAccess() = %#v", result)
 	}
 	assertAccessExpectations(t, mock)
 }
@@ -146,7 +198,8 @@ func TestRevokeAccessDeletesBothModesAndRevokesSessions(t *testing.T) {
 
 	mock.ExpectBegin()
 	expectAccessTarget(mock, companyID, userID, now)
-	expectAccessMode(mock, companyID, userID, "link")
+	linkToken := "existing-link-token"
+	expectAccessDetails(mock, companyID, userID, true, &linkToken, now)
 	mock.ExpectExec("DELETE FROM credentials").
 		WithArgs(companyID, userID).
 		WillReturnResult(pgconn.NewCommandTag("DELETE 1"))
@@ -154,6 +207,7 @@ func TestRevokeAccessDeletesBothModesAndRevokesSessions(t *testing.T) {
 		WithArgs(companyID, userID).
 		WillReturnResult(pgconn.NewCommandTag("DELETE 1"))
 	expectSessionRevocation(mock, userID, now)
+	expectAccessAudit(mock, actor, userID, "revoked", "password", now)
 	expectAccessAudit(mock, actor, userID, "revoked", "link", now)
 	mock.ExpectCommit()
 
@@ -210,6 +264,31 @@ func expectAccessTarget(mock pgxmock.PgxPoolIface, companyID, userID uuid.UUID, 
 			"employee", "active", nil, nil, nil, now, now, "local", nil, nil, nil, nil,
 			nil, true,
 		))
+}
+
+func expectAccessLogin(mock pgxmock.PgxPoolIface, companyID, userID uuid.UUID, login string) {
+	mock.ExpectQuery("SELECT login FROM user_logins").
+		WithArgs(companyID, userID).
+		WillReturnRows(pgxmock.NewRows([]string{"login"}).AddRow(login))
+}
+
+func expectAccessDetails(
+	mock pgxmock.PgxPoolIface,
+	companyID, userID uuid.UUID,
+	passwordEnabled bool,
+	linkToken *string,
+	now time.Time,
+) {
+	var token, createdAt any
+	if linkToken != nil {
+		token = *linkToken
+		createdAt = now
+	}
+	mock.ExpectQuery("SELECT user_login.login").
+		WithArgs(companyID, userID).
+		WillReturnRows(pgxmock.NewRows([]string{
+			"login", "password_enabled", "link_token", "link_created_at",
+		}).AddRow("tm8901912", passwordEnabled, token, createdAt))
 }
 
 func expectAccessMode(mock pgxmock.PgxPoolIface, companyID, userID uuid.UUID, mode string) {

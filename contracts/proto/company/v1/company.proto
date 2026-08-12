@@ -59,6 +59,8 @@ service CompanyService {
   rpc GetUserAccess(GetUserAccessRequest) returns (GetUserAccessResponse);
   rpc SetUserPasswordAccess(SetUserPasswordAccessRequest) returns (SetUserPasswordAccessResponse);
   rpc SetUserLinkAccess(SetUserLinkAccessRequest) returns (SetUserLinkAccessResponse);
+  rpc RevokeUserPasswordAccess(RevokeUserPasswordAccessRequest) returns (RevokeUserPasswordAccessResponse);
+  rpc RevokeUserLinkAccess(RevokeUserLinkAccessRequest) returns (RevokeUserLinkAccessResponse);
   rpc RevokeUserAccess(RevokeUserAccessRequest) returns (RevokeUserAccessResponse);
 
   rpc GetInvites(GetInvitesRequest) returns (GetInvitesResponse);
@@ -183,6 +185,7 @@ message User {
   bool show_in_schedule = 17;
   // Direct department assignment; imported amoCRM users can have a department without a position.
   repeated string department_ids = 18;
+  string login = 19;
 }
 
 message Department {
@@ -282,8 +285,10 @@ message ValidateCompanyRegistrationTokenResponse {
 }
 
 message LoginRequest {
+  // Deprecated compatibility field. New clients send login.
   string email = 1;
   string password = 2;
+  optional string login = 3;
 }
 
 message LoginResponse {
@@ -646,6 +651,9 @@ message UserAccess {
   optional string link_token = 2;
   optional google.protobuf.Timestamp link_created_at = 3;
   optional string link_url = 4;
+  string login = 5;
+  optional bool password_enabled = 6;
+  optional bool link_enabled = 7;
 }
 
 message GetUserAccessRequest {
@@ -663,6 +671,7 @@ message SetUserPasswordAccessRequest {
 
 message SetUserPasswordAccessResponse {
   string password = 1;
+  string login = 2;
 }
 
 message SetUserLinkAccessRequest {
@@ -680,6 +689,18 @@ message RevokeUserAccessRequest {
 }
 
 message RevokeUserAccessResponse {}
+
+message RevokeUserPasswordAccessRequest {
+  string id = 1;
+}
+
+message RevokeUserPasswordAccessResponse {}
+
+message RevokeUserLinkAccessRequest {
+  string id = 1;
+}
+
+message RevokeUserLinkAccessResponse {}
 
 message GetInvitesRequest {}
 

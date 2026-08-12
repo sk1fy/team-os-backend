@@ -39,13 +39,13 @@ func (s *Server) SetUserPasswordAccess(ctx context.Context, request *companyv1.S
 	if err != nil {
 		return nil, err
 	}
-	password, err := s.application.SetPasswordAccess(ctx, actor, userID, application.SetPasswordAccessInput{
+	access, err := s.application.SetPasswordAccess(ctx, actor, userID, application.SetPasswordAccessInput{
 		Password: request.Password,
 	})
 	if err != nil {
 		return nil, transportError(err)
 	}
-	return &companyv1.SetUserPasswordAccessResponse{Password: password}, nil
+	return &companyv1.SetUserPasswordAccessResponse{Login: access.Login, Password: access.Password}, nil
 }
 
 func (s *Server) SetUserLinkAccess(ctx context.Context, request *companyv1.SetUserLinkAccessRequest) (*companyv1.SetUserLinkAccessResponse, error) {
@@ -85,4 +85,40 @@ func (s *Server) RevokeUserAccess(ctx context.Context, request *companyv1.Revoke
 		return nil, transportError(err)
 	}
 	return &companyv1.RevokeUserAccessResponse{}, nil
+}
+
+func (s *Server) RevokeUserPasswordAccess(ctx context.Context, request *companyv1.RevokeUserPasswordAccessRequest) (*companyv1.RevokeUserPasswordAccessResponse, error) {
+	if request == nil {
+		return nil, invalidRequest()
+	}
+	actor, err := s.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	userID, err := parseUUID(request.Id, "сотрудника")
+	if err != nil {
+		return nil, err
+	}
+	if err = s.application.RevokePasswordAccess(ctx, actor, userID); err != nil {
+		return nil, transportError(err)
+	}
+	return &companyv1.RevokeUserPasswordAccessResponse{}, nil
+}
+
+func (s *Server) RevokeUserLinkAccess(ctx context.Context, request *companyv1.RevokeUserLinkAccessRequest) (*companyv1.RevokeUserLinkAccessResponse, error) {
+	if request == nil {
+		return nil, invalidRequest()
+	}
+	actor, err := s.actor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	userID, err := parseUUID(request.Id, "сотрудника")
+	if err != nil {
+		return nil, err
+	}
+	if err = s.application.RevokeLinkAccess(ctx, actor, userID); err != nil {
+		return nil, transportError(err)
+	}
+	return &companyv1.RevokeUserLinkAccessResponse{}, nil
 }

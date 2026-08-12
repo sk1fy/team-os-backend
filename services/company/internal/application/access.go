@@ -60,27 +60,27 @@ func (s *Service) GetUserAccess(ctx context.Context, actor Actor, userID uuid.UU
 	if _, err := accessTarget(ctx, queries, actor, userID); err != nil {
 		return EmployeeAccess{}, err
 	}
-	mode, err := queries.GetUserAccessMode(ctx, db.GetUserAccessModeParams{
+	details, err := queries.GetUserAccessDetails(ctx, db.GetUserAccessDetailsParams{
 		CompanyID: actor.CompanyID,
 		UserID:    userID,
 	})
 	if err != nil {
 		return EmployeeAccess{}, internal("Не удалось получить способ доступа сотрудника", err)
 	}
-	result := EmployeeAccess{Mode: mode}
-	if mode != "link" {
-		return result, nil
+	result := EmployeeAccess{
+		Mode: "none", Login: details.Login,
+		PasswordEnabled: details.PasswordEnabled,
+		LinkEnabled:     details.LinkToken.Valid,
 	}
-	link, err := queries.GetAccessLink(ctx, db.GetAccessLinkParams{CompanyID: actor.CompanyID, UserID: userID})
-	if isNoRows(err) {
-		return EmployeeAccess{Mode: "none"}, nil
+	if details.PasswordEnabled {
+		result.Mode = "password"
 	}
-	if err != nil {
-		return EmployeeAccess{}, internal("Не удалось получить ссылку доступа", err)
+	if details.LinkToken.Valid {
+		result.Mode = "link"
+		result.LinkToken = &details.LinkToken.String
+		createdAt := details.LinkCreatedAt.Time.UTC()
+		result.LinkCreatedAt = &createdAt
 	}
-	result.LinkToken = &link.Token
-	createdAt := link.CreatedAt.UTC()
-	result.LinkCreatedAt = &createdAt
 	return result, nil
 }
 
@@ -89,15 +89,15 @@ func (s *Service) SetPasswordAccess(
 	actor Actor,
 	userID uuid.UUID,
 	input SetPasswordAccessInput,
-) (string, error) {
+) (EmployeePasswordAccess, error) {
 	if err := requireEmployeeAccessManagement(actor); err != nil {
-		return "", err
+		return EmployeePasswordAccess{}, err
 	}
 	password := ""
 	if input.Password == nil {
 		generated, err := domainauth.GeneratePassword()
 		if err != nil {
-			return "", internal("Не удалось сгенерировать пароль", err)
+			return EmployeePasswordAccess{}, internal("Не удалось сгенерировать пароль", err)
 		}
 		password = generated
 	} else {
@@ -105,45 +105,53 @@ func (s *Service) SetPasswordAccess(
 	}
 	releasePasswordSlot, err := s.acquirePasswordSlot(ctx)
 	if err != nil {
-		return "", internal("Не удалось обработать пароль", err)
+		return EmployeePasswordAccess{}, internal("Не удалось обработать пароль", err)
 	}
 	passwordHash, err := domainauth.HashPassword(password)
 	releasePasswordSlot()
 	if err != nil {
-		return "", validation(err.Error())
+		return EmployeePasswordAccess{}, validation(err.Error())
 	}
 
 	tx, err := s.pool.Begin(ctx)
 	if err != nil {
-		return "", internal("Не удалось выдать доступ по паролю", err)
+		return EmployeePasswordAccess{}, internal("Не удалось выдать доступ по паролю", err)
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
 	queries := db.New(tx)
-	if _, err = accessTargetForUpdate(ctx, queries, actor, userID); err != nil {
-		return "", err
-	}
-	previousMode, err := queries.GetUserAccessMode(ctx, db.GetUserAccessModeParams{CompanyID: actor.CompanyID, UserID: userID})
+	user, err := accessTargetForUpdate(ctx, queries, actor, userID)
 	if err != nil {
-		return "", internal("Не удалось проверить текущий способ доступа", err)
+		return EmployeePasswordAccess{}, err
+	}
+	previousAccess, err := queries.GetUserAccessDetails(ctx, db.GetUserAccessDetailsParams{
+		CompanyID: actor.CompanyID,
+		UserID:    userID,
+	})
+	if err != nil {
+		return EmployeePasswordAccess{}, internal("Не удалось проверить текущий способ доступа", err)
 	}
 	if err = queries.SetCredential(ctx, db.SetCredentialParams{
 		CompanyID: actor.CompanyID, UserID: userID, PasswordHash: passwordHash,
 	}); err != nil {
-		return "", internal("Не удалось сохранить пароль", err)
-	}
-	if err = queries.DeleteAccessLink(ctx, db.DeleteAccessLinkParams{CompanyID: actor.CompanyID, UserID: userID}); err != nil {
-		return "", internal("Не удалось удалить ссылку доступа", err)
+		return EmployeePasswordAccess{}, internal("Не удалось сохранить пароль", err)
 	}
 	if err = revokeUserSessions(ctx, queries, userID, s.now().UTC()); err != nil {
-		return "", err
+		return EmployeePasswordAccess{}, err
 	}
-	if err = auditAccessChange(ctx, queries, actor, userID, accessAction(previousMode), "password", s.now().UTC()); err != nil {
-		return "", err
+	if err = auditAccessChange(ctx, queries, actor, userID, accessAction(previousAccess.PasswordEnabled), "password", s.now().UTC()); err != nil {
+		return EmployeePasswordAccess{}, err
+	}
+	login, err := queries.GetUserLogin(ctx, db.GetUserLoginParams{
+		CompanyID: actor.CompanyID,
+		UserID:    user.ID,
+	})
+	if err != nil {
+		return EmployeePasswordAccess{}, internal("Не удалось получить логин сотрудника", err)
 	}
 	if err = tx.Commit(ctx); err != nil {
-		return "", internal("Не удалось выдать доступ по паролю", err)
+		return EmployeePasswordAccess{}, internal("Не удалось выдать доступ по паролю", err)
 	}
-	return password, nil
+	return EmployeePasswordAccess{Login: login, Password: password}, nil
 }
 
 func (s *Service) SetLinkAccess(ctx context.Context, actor Actor, userID uuid.UUID) (EmployeeLinkAccess, error) {
@@ -163,7 +171,10 @@ func (s *Service) SetLinkAccess(ctx context.Context, actor Actor, userID uuid.UU
 	if _, err = accessTargetForUpdate(ctx, queries, actor, userID); err != nil {
 		return EmployeeLinkAccess{}, err
 	}
-	previousMode, err := queries.GetUserAccessMode(ctx, db.GetUserAccessModeParams{CompanyID: actor.CompanyID, UserID: userID})
+	previousAccess, err := queries.GetUserAccessDetails(ctx, db.GetUserAccessDetailsParams{
+		CompanyID: actor.CompanyID,
+		UserID:    userID,
+	})
 	if err != nil {
 		return EmployeeLinkAccess{}, internal("Не удалось проверить текущий способ доступа", err)
 	}
@@ -173,19 +184,60 @@ func (s *Service) SetLinkAccess(ctx context.Context, actor Actor, userID uuid.UU
 	if err != nil {
 		return EmployeeLinkAccess{}, internal("Не удалось сохранить ссылку доступа", err)
 	}
-	if err = queries.DeleteCredential(ctx, db.DeleteCredentialParams{CompanyID: actor.CompanyID, UserID: userID}); err != nil {
-		return EmployeeLinkAccess{}, internal("Не удалось удалить пароль", err)
-	}
 	if err = revokeUserSessions(ctx, queries, userID, s.now().UTC()); err != nil {
 		return EmployeeLinkAccess{}, err
 	}
-	if err = auditAccessChange(ctx, queries, actor, userID, accessAction(previousMode), "link", s.now().UTC()); err != nil {
+	if err = auditAccessChange(ctx, queries, actor, userID, accessAction(previousAccess.LinkToken.Valid), "link", s.now().UTC()); err != nil {
 		return EmployeeLinkAccess{}, err
 	}
 	if err = tx.Commit(ctx); err != nil {
 		return EmployeeLinkAccess{}, internal("Не удалось выдать доступ по ссылке", err)
 	}
 	return EmployeeLinkAccess{Token: link.Token, CreatedAt: link.CreatedAt.UTC()}, nil
+}
+
+func (s *Service) RevokePasswordAccess(ctx context.Context, actor Actor, userID uuid.UUID) error {
+	return s.revokeAccessMethod(ctx, actor, userID, "password")
+}
+
+func (s *Service) RevokeLinkAccess(ctx context.Context, actor Actor, userID uuid.UUID) error {
+	return s.revokeAccessMethod(ctx, actor, userID, "link")
+}
+
+func (s *Service) revokeAccessMethod(ctx context.Context, actor Actor, userID uuid.UUID, mode string) error {
+	if err := requireEmployeeAccessManagement(actor); err != nil {
+		return err
+	}
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return internal("Не удалось отозвать доступ", err)
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+	queries := db.New(tx)
+	if _, err = accessTargetForUpdate(ctx, queries, actor, userID); err != nil {
+		return err
+	}
+	switch mode {
+	case "password":
+		err = queries.DeleteCredential(ctx, db.DeleteCredentialParams{CompanyID: actor.CompanyID, UserID: userID})
+	case "link":
+		err = queries.DeleteAccessLink(ctx, db.DeleteAccessLinkParams{CompanyID: actor.CompanyID, UserID: userID})
+	default:
+		return validation("Некорректный способ доступа")
+	}
+	if err != nil {
+		return internal("Не удалось отозвать доступ", err)
+	}
+	if err = revokeUserSessions(ctx, queries, userID, s.now().UTC()); err != nil {
+		return err
+	}
+	if err = auditAccessChange(ctx, queries, actor, userID, "revoked", mode, s.now().UTC()); err != nil {
+		return err
+	}
+	if err = tx.Commit(ctx); err != nil {
+		return internal("Не удалось отозвать доступ", err)
+	}
+	return nil
 }
 
 func (s *Service) RevokeAccess(ctx context.Context, actor Actor, userID uuid.UUID) error {
@@ -201,7 +253,10 @@ func (s *Service) RevokeAccess(ctx context.Context, actor Actor, userID uuid.UUI
 	if _, err = accessTargetForUpdate(ctx, queries, actor, userID); err != nil {
 		return err
 	}
-	previousMode, err := queries.GetUserAccessMode(ctx, db.GetUserAccessModeParams{CompanyID: actor.CompanyID, UserID: userID})
+	previousAccess, err := queries.GetUserAccessDetails(ctx, db.GetUserAccessDetailsParams{
+		CompanyID: actor.CompanyID,
+		UserID:    userID,
+	})
 	if err != nil {
 		return internal("Не удалось проверить текущий способ доступа", err)
 	}
@@ -211,11 +266,27 @@ func (s *Service) RevokeAccess(ctx context.Context, actor Actor, userID uuid.UUI
 	if err = queries.DeleteAccessLink(ctx, db.DeleteAccessLinkParams{CompanyID: actor.CompanyID, UserID: userID}); err != nil {
 		return internal("Не удалось удалить ссылку доступа", err)
 	}
-	if err = revokeUserSessions(ctx, queries, userID, s.now().UTC()); err != nil {
+	revokedAt := s.now().UTC()
+	if err = revokeUserSessions(ctx, queries, userID, revokedAt); err != nil {
 		return err
 	}
-	if err = auditAccessChange(ctx, queries, actor, userID, "revoked", previousMode, s.now().UTC()); err != nil {
-		return err
+	audited := false
+	if previousAccess.PasswordEnabled {
+		if err = auditAccessChange(ctx, queries, actor, userID, "revoked", "password", revokedAt); err != nil {
+			return err
+		}
+		audited = true
+	}
+	if previousAccess.LinkToken.Valid {
+		if err = auditAccessChange(ctx, queries, actor, userID, "revoked", "link", revokedAt); err != nil {
+			return err
+		}
+		audited = true
+	}
+	if !audited {
+		if err = auditAccessChange(ctx, queries, actor, userID, "revoked", "none", revokedAt); err != nil {
+			return err
+		}
 	}
 	if err = tx.Commit(ctx); err != nil {
 		return internal("Не удалось отозвать доступ", err)
@@ -259,11 +330,11 @@ func revokeUserSessions(ctx context.Context, queries *db.Queries, userID uuid.UU
 	return nil
 }
 
-func accessAction(previousMode string) string {
-	if previousMode == "none" {
-		return "issued"
+func accessAction(previouslyEnabled bool) string {
+	if previouslyEnabled {
+		return "reissued"
 	}
-	return "reissued"
+	return "issued"
 }
 
 func auditAccessChange(
