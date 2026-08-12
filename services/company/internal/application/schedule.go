@@ -22,7 +22,7 @@ func (s *Service) ListSchedules(ctx context.Context, actor Actor) ([]UserSchedul
 	}
 	result := make([]UserSchedule, 0, len(rows))
 	for _, row := range rows {
-		if actor.Role == "employee" && row.UserID != actor.UserID {
+		if !canReadScheduleRow(actor, row.UserID) {
 			continue
 		}
 		value, mapErr := scheduleFromDB(row)
@@ -41,11 +41,8 @@ func canReadSchedule(actor Actor) bool {
 	return actor.Role == "employee" && actorHasSection(actor, "schedule")
 }
 
-func canReadOwnScheduleRow(actor Actor, userID uuid.UUID) bool {
-	if actor.Role != "employee" {
-		return true
-	}
-	return actor.UserID == userID
+func canReadScheduleRow(actor Actor, _ uuid.UUID) bool {
+	return canReadSchedule(actor)
 }
 
 func (s *Service) SaveSchedule(ctx context.Context, actor Actor, userID uuid.UUID, template ScheduleTemplate) (UserSchedule, error) {
@@ -128,7 +125,7 @@ func (s *Service) ListShiftExceptions(ctx context.Context, actor Actor, month st
 	}
 	result := make([]ShiftException, 0, len(rows))
 	for _, row := range rows {
-		if !canReadOwnScheduleRow(actor, row.UserID) {
+		if !canReadScheduleRow(actor, row.UserID) {
 			continue
 		}
 		result = append(result, exceptionFromDB(row))

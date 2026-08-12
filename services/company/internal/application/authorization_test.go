@@ -44,6 +44,18 @@ func TestScheduleReadCapabilities(t *testing.T) {
 	}
 }
 
+func TestEmployeeCanReadCoworkerScheduleRows(t *testing.T) {
+	actor := Actor{Role: "employee", UserID: uuid.New(), SectionAccess: []string{"schedule"}}
+	coworkerID := uuid.New()
+
+	if !canReadScheduleRow(actor, coworkerID) {
+		t.Fatal("employee with schedule grant cannot read coworker schedule")
+	}
+	if canReadScheduleRow(Actor{Role: "employee", SectionAccess: []string{"academy"}}, coworkerID) {
+		t.Fatal("employee without schedule grant can read coworker schedule")
+	}
+}
+
 func assertForbidden(t *testing.T, err error) {
 	t.Helper()
 	var applicationErr *Error
