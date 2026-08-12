@@ -52,21 +52,7 @@ jobs:
 
           if git cat-file -e "$BASE_SHA:contracts/openapi/teamos.yaml" 2>/dev/null; then
             git show "$BASE_SHA:contracts/openapi/teamos.yaml" > /tmp/teamos-base.yaml
-            if [[ "$BASE_SHA" == "91b429725c342ec5055be5413a369b39551c406f" ]]; then
-              # The previous commit described the compatible login request as a
-              # oneOf. Bridge that representation once while restoring the
-              # additive object schema accepted by the API before and after it.
-              cat > /tmp/oasdiff-login-schema-bridge.txt <<'EOF'
-          POST /api/v1/auth/login added the new required request property 'password'
-          POST /api/v1/auth/login removed '#/components/schemas/LoginByIdentifierInput, #/components/schemas/LoginByEmailInput' from the request body 'oneOf' list
-          POST /api/v1/auth/login the request's body type/format changed from ''/'' to 'object'/''
-          EOF
-              oasdiff breaking --fail-on ERR \
-                --err-ignore /tmp/oasdiff-login-schema-bridge.txt \
-                /tmp/teamos-base.yaml contracts/openapi/teamos.yaml
-            else
-              oasdiff breaking --fail-on ERR /tmp/teamos-base.yaml contracts/openapi/teamos.yaml
-            fi
+            oasdiff breaking --fail-on ERR /tmp/teamos-base.yaml contracts/openapi/teamos.yaml
           else
             echo "No OpenAPI baseline; breaking check skipped"
           fi
