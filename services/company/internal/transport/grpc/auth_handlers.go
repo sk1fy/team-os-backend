@@ -5,6 +5,7 @@ import (
 
 	companyv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v1"
 	"github.com/sk1fy/team-os-backend/services/company/internal/application"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func (s *Server) Register(ctx context.Context, request *companyv1.RegisterRequest) (*companyv1.RegisterResponse, error) {
@@ -12,12 +13,13 @@ func (s *Server) Register(ctx context.Context, request *companyv1.RegisterReques
 		return nil, invalidRequest()
 	}
 	result, err := s.application.Register(ctx, application.RegisterInput{
-		CompanyName:       request.CompanyName,
-		Email:             request.Email,
-		Password:          request.Password,
-		FirstName:         request.FirstName,
-		LastName:          request.LastName,
-		RegistrationToken: request.GetRegistrationToken(),
+		CompanyName:           request.CompanyName,
+		Email:                 request.Email,
+		Password:              request.Password,
+		FirstName:             request.FirstName,
+		LastName:              request.LastName,
+		RegistrationToken:     request.GetRegistrationToken(),
+		LoginReservationToken: request.GetLoginReservationToken(),
 	}, sessionMeta(ctx))
 	if err != nil {
 		return nil, transportError(err)
@@ -25,21 +27,50 @@ func (s *Server) Register(ctx context.Context, request *companyv1.RegisterReques
 	return &companyv1.RegisterResponse{Session: authSessionToProto(result)}, nil
 }
 
+func (s *Server) ReserveRegistrationLogin(
+	ctx context.Context,
+	request *companyv1.ReserveRegistrationLoginRequest,
+) (*companyv1.ReserveRegistrationLoginResponse, error) {
+	if request == nil {
+		return nil, invalidRequest()
+	}
+	result, err := s.application.ReserveRegistrationLogin(ctx)
+	if err != nil {
+		return nil, transportError(err)
+	}
+	return &companyv1.ReserveRegistrationLoginResponse{
+		Login: result.Login, ReservationToken: result.ReservationToken,
+		ExpiresAt: timestamppb.New(result.ExpiresAt),
+	}, nil
+}
+
 func (s *Server) Login(ctx context.Context, request *companyv1.LoginRequest) (*companyv1.LoginResponse, error) {
 	if request == nil {
 		return nil, invalidRequest()
 	}
-	login := request.Email
-	if request.Login != nil {
-		login = request.GetLogin()
-	}
 	result, err := s.application.Login(ctx, application.LoginInput{
-		Login: login, Password: request.Password,
+		Login: request.GetLogin(), Password: request.Password,
 	}, sessionMeta(ctx))
 	if err != nil {
 		return nil, transportError(err)
 	}
 	return &companyv1.LoginResponse{Session: authSessionToProto(result)}, nil
+}
+
+func (s *Server) LoginByLogin(
+	ctx context.Context,
+	request *companyv1.LoginByLoginRequest,
+) (*companyv1.LoginByLoginResponse, error) {
+	if request == nil {
+		return nil, invalidRequest()
+	}
+	result, err := s.application.Login(ctx, application.LoginInput{
+		Login: request.GetLogin(), Password: request.GetPassword(),
+	}, sessionMeta(ctx))
+	if err != nil {
+		return nil, transportError(err)
+	}
+	return &companyv1.LoginByLoginResponse{Session: authSessionToProto(result)}, nil
 }
 
 func (s *Server) LoginWithAccessLink(ctx context.Context, request *companyv1.LoginWithAccessLinkRequest) (*companyv1.LoginWithAccessLinkResponse, error) {

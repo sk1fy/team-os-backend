@@ -109,6 +109,8 @@ func TestLimiterProtectsPublicCompanyRegistrationChecks(t *testing.T) {
 		{http.MethodPost, "/api/v1/public/amocrm/widget-sessions/validate"},
 		{http.MethodPost, "/api/v1/auth/amocrm/complete"},
 		{http.MethodPost, "/api/v1/public/company-registration-tokens/validate"},
+		{http.MethodPost, "/api/v1/auth/registration-logins"},
+		{http.MethodPost, "/api/v2/auth/login"},
 	} {
 		limiter := New(1, time.Minute)
 		handler := limiter.Middleware(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {

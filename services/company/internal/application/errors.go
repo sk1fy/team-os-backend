@@ -21,6 +21,9 @@ const (
 	ErrorCodeRegistrationTokenExpired      = "REGISTRATION_TOKEN_EXPIRED"
 	ErrorCodeRegistrationTokenConsumed     = "REGISTRATION_TOKEN_CONSUMED"
 	ErrorCodeRegistrationTokenRevoked      = "REGISTRATION_TOKEN_REVOKED"
+	ErrorCodeLoginReservationInvalid       = "LOGIN_RESERVATION_INVALID"
+	ErrorCodeLoginReservationExpired       = "LOGIN_RESERVATION_EXPIRED"
+	ErrorCodeLoginReservationConsumed      = "LOGIN_RESERVATION_CONSUMED"
 	ErrorCodeAmoTokenInvalid               = "AMO_TOKEN_INVALID"
 	ErrorCodeWidgetNotInstalled            = "WIDGET_NOT_INSTALLED"
 	ErrorCodeWidgetNotPaid                 = "WIDGET_NOT_PAID"
@@ -81,6 +84,18 @@ func registrationTokenConsumed() error {
 
 func registrationTokenRevoked() error {
 	return coded(ErrorConflict, ErrorCodeRegistrationTokenRevoked, "Токен регистрации отозван")
+}
+
+func loginReservationInvalid() error {
+	return coded(ErrorValidation, ErrorCodeLoginReservationInvalid, "Резервация логина недействительна")
+}
+
+func loginReservationExpired() error {
+	return coded(ErrorValidation, ErrorCodeLoginReservationExpired, "Срок резервации логина истёк")
+}
+
+func loginReservationConsumed() error {
+	return coded(ErrorConflict, ErrorCodeLoginReservationConsumed, "Резервация логина уже использована")
 }
 
 func amoWidgetContinuationInvalid() error {

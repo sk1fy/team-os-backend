@@ -57,7 +57,7 @@ func main() {
 	var missing []string
 	matched := map[string]struct{}{}
 	for _, c := range calls {
-		fullPath := apiPrefix + c.Path
+		fullPath := contractPath(c.Path)
 		specKey, ok := matchSpec(fullPath, c.Method, specMethods)
 		if !ok {
 			missing = append(missing, fmt.Sprintf("%s:%d: %s %s", c.File, c.Line, c.Method, fullPath))
@@ -90,6 +90,13 @@ func main() {
 			fmt.Println("  " + key)
 		}
 	}
+}
+
+func contractPath(path string) string {
+	if strings.HasPrefix(path, "/api/") {
+		return path
+	}
+	return apiPrefix + path
 }
 
 // callPattern распознаёт вызов HTTP-хелпера с первой строкой-аргументом. Имя

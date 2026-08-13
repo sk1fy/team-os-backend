@@ -18,6 +18,7 @@ type Querier interface {
 	ActivateInvitedUser(ctx context.Context, arg ActivateInvitedUserParams) (User, error)
 	AmoAccountExists(ctx context.Context, arg AmoAccountExistsParams) (bool, error)
 	AmoWidgetUserHasPassword(ctx context.Context, arg AmoWidgetUserHasPasswordParams) (bool, error)
+	ApplyReservedUserLogin(ctx context.Context, arg ApplyReservedUserLoginParams) (string, error)
 	AssignAmoUserDepartment(ctx context.Context, arg AssignAmoUserDepartmentParams) (int64, error)
 	AssignUserPosition(ctx context.Context, arg AssignUserPositionParams) error
 	ClearAmoUserDepartment(ctx context.Context, arg ClearAmoUserDepartmentParams) (int64, error)
@@ -25,6 +26,7 @@ type Querier interface {
 	CompanyAmoAccountExists(ctx context.Context, externalAccountID string) (bool, error)
 	ConsumeAmoWidgetContinuation(ctx context.Context, arg ConsumeAmoWidgetContinuationParams) (SsoToken, error)
 	ConsumeCompanyRegistrationToken(ctx context.Context, arg ConsumeCompanyRegistrationTokenParams) (CompanyRegistrationToken, error)
+	ConsumeRegistrationLoginReservation(ctx context.Context, arg ConsumeRegistrationLoginReservationParams) (RegistrationLoginReservation, error)
 	CountDepartmentChildren(ctx context.Context, arg CountDepartmentChildrenParams) (int64, error)
 	CountDepartmentPositions(ctx context.Context, arg CountDepartmentPositionsParams) (int64, error)
 	CreateAmoUser(ctx context.Context, arg CreateAmoUserParams) (User, error)
@@ -41,6 +43,7 @@ type Querier interface {
 	CreateInvite(ctx context.Context, arg CreateInviteParams) (Invite, error)
 	CreateOutboxEvent(ctx context.Context, arg CreateOutboxEventParams) (Outbox, error)
 	CreatePosition(ctx context.Context, arg CreatePositionParams) (Position, error)
+	CreateRegistrationLoginReservation(ctx context.Context, arg CreateRegistrationLoginReservationParams) (RegistrationLoginReservation, error)
 	CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	CreateUserAdminAudit(ctx context.Context, arg CreateUserAdminAuditParams) error
@@ -54,6 +57,7 @@ type Querier interface {
 	DeleteLocalUser(ctx context.Context, arg DeleteLocalUserParams) (int64, error)
 	DeleteOldCompanyRegistrationTokens(ctx context.Context, before time.Time) (int64, error)
 	DeletePosition(ctx context.Context, arg DeletePositionParams) (int64, error)
+	DeleteStaleRegistrationLoginReservations(ctx context.Context, arg DeleteStaleRegistrationLoginReservationsParams) (int64, error)
 	DeleteUserPositions(ctx context.Context, arg DeleteUserPositionsParams) error
 	DisableUserInDistributionGroups(ctx context.Context, arg DisableUserInDistributionGroupsParams) error
 	FindAmoWidgetUserForUpdate(ctx context.Context, arg FindAmoWidgetUserForUpdateParams) (User, error)
@@ -76,6 +80,7 @@ type Querier interface {
 	GetInviteByTokenForUpdate(ctx context.Context, token string) (Invite, error)
 	GetPosition(ctx context.Context, arg GetPositionParams) (Position, error)
 	GetPositionUserIDs(ctx context.Context, arg GetPositionUserIDsParams) ([]uuid.UUID, error)
+	GetRegistrationLoginReservationForUpdate(ctx context.Context, tokenHash []byte) (RegistrationLoginReservation, error)
 	GetReportUserProfiles(ctx context.Context, arg GetReportUserProfilesParams) ([]GetReportUserProfilesRow, error)
 	GetSessionByHashForUpdate(ctx context.Context, refreshHash []byte) (Session, error)
 	GetSystemDepartment(ctx context.Context, companyID uuid.UUID) (Department, error)
@@ -83,11 +88,11 @@ type Querier interface {
 	GetUserAccessDetails(ctx context.Context, arg GetUserAccessDetailsParams) (GetUserAccessDetailsRow, error)
 	GetUserAccessMode(ctx context.Context, arg GetUserAccessModeParams) (string, error)
 	GetUserByAccessToken(ctx context.Context, token string) (User, error)
-	GetUserByEmailForUpdate(ctx context.Context, email string) (User, error)
+	GetUserByEmailForUpdate(ctx context.Context, arg GetUserByEmailForUpdateParams) (User, error)
 	GetUserDepartmentClaims(ctx context.Context, arg GetUserDepartmentClaimsParams) ([]uuid.UUID, error)
 	GetUserDirectDepartmentIDs(ctx context.Context, arg GetUserDirectDepartmentIDsParams) ([]uuid.UUID, error)
 	GetUserForAccessUpdate(ctx context.Context, arg GetUserForAccessUpdateParams) (User, error)
-	GetUserForLogin(ctx context.Context, loginIdentifier string) (GetUserForLoginRow, error)
+	GetUserForLogin(ctx context.Context, login string) (GetUserForLoginRow, error)
 	GetUserLogin(ctx context.Context, arg GetUserLoginParams) (string, error)
 	GetUserPositionIDs(ctx context.Context, arg GetUserPositionIDsParams) ([]uuid.UUID, error)
 	GetUserWithPositions(ctx context.Context, arg GetUserWithPositionsParams) (GetUserWithPositionsRow, error)

@@ -262,7 +262,7 @@ func TestAmoWidgetContinuationValidationAndCompletion(t *testing.T) {
 				t.Fatalf("session token=%q", request.GetSessionToken())
 			}
 			return &companyv1.ValidateAmoWidgetContinuationResponse{
-				Email: "admin@example.com", CompanyName: "Ракурс",
+				Email: "admin@example.com", Login: "tm1234567", CompanyName: "Ракурс",
 				RequiresPasswordSetup: true, ExpiresAt: timestamppb.New(expiresAt),
 			}, nil
 		},
@@ -277,7 +277,7 @@ func TestAmoWidgetContinuationValidationAndCompletion(t *testing.T) {
 	}
 	handler := newTestGateway(t, server)
 	validated := performRequest(handler, http.MethodPost, "/api/v1/public/amocrm/widget-sessions/validate", `{"sessionToken":"`+sessionToken+`"}`, nil)
-	if validated.Code != http.StatusOK || !strings.Contains(validated.Body.String(), `"email":"admin@example.com"`) {
+	if validated.Code != http.StatusOK || !strings.Contains(validated.Body.String(), `"login":"tm1234567"`) {
 		t.Fatalf("validation status=%d body=%s", validated.Code, validated.Body.String())
 	}
 	completed := performRequest(handler, http.MethodPost, "/api/v1/auth/amocrm/complete", `{"sessionToken":"`+sessionToken+`","password":"reliable-password"}`, nil)

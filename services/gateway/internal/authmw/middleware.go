@@ -79,9 +79,13 @@ func isPublic(method, path string) bool {
 		return true
 	case method == http.MethodPost && path == "/api/v1/auth/login":
 		return true
+	case method == http.MethodPost && path == "/api/v2/auth/login":
+		return true
 	case method == http.MethodPost && strings.HasPrefix(path, "/api/v1/auth/access-link/"):
 		return true
 	case method == http.MethodPost && path == "/api/v1/auth/register":
+		return true
+	case method == http.MethodPost && path == "/api/v1/auth/registration-logins":
 		return true
 	case method == http.MethodPost && path == "/api/v1/auth/refresh":
 		return true

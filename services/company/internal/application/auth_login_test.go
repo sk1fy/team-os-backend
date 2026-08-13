@@ -10,7 +10,7 @@ func TestNormalizeLoginIdentifier(t *testing.T) {
 		valid bool
 	}{
 		{name: "TeamOS login", input: " TM8901912 ", want: "tm8901912", valid: true},
-		{name: "email", input: " Owner@Example.com ", want: "owner@example.com", valid: true},
+		{name: "email is not a login", input: " Owner@Example.com ", valid: false},
 		{name: "short login", input: "tm123", valid: false},
 		{name: "letters in login", input: "tm123456a", valid: false},
 		{name: "empty", input: " ", valid: false},

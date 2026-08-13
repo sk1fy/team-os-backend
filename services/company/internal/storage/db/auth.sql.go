@@ -611,12 +611,19 @@ func (q *Queries) GetUserByAccessToken(ctx context.Context, token string) (User,
 
 const getUserByEmailForUpdate = `-- name: GetUserByEmailForUpdate :one
 SELECT id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source, external_deleted_at, show_in_schedule FROM users
-WHERE email = $1 AND external_deleted_at IS NULL
+WHERE company_id = $1
+  AND email = $2
+  AND external_deleted_at IS NULL
 FOR UPDATE
 `
 
-func (q *Queries) GetUserByEmailForUpdate(ctx context.Context, email string) (User, error) {
-	row := q.db.QueryRow(ctx, getUserByEmailForUpdate, email)
+type GetUserByEmailForUpdateParams struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	Email     string    `json:"email"`
+}
+
+func (q *Queries) GetUserByEmailForUpdate(ctx context.Context, arg GetUserByEmailForUpdateParams) (User, error) {
+	row := q.db.QueryRow(ctx, getUserByEmailForUpdate, arg.CompanyID, arg.Email)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -768,13 +775,7 @@ FROM users u
 JOIN credentials c ON c.user_id = u.id
 JOIN user_logins user_login
   ON user_login.company_id = u.company_id AND user_login.user_id = u.id
-WHERE (
-    user_login.login = $1
-    OR (
-        u.email = $1
-        AND u.role IN ('owner', 'admin')
-    )
-  )
+WHERE user_login.login = $1
   AND u.external_deleted_at IS NULL
 FOR SHARE OF u
 `
@@ -784,8 +785,8 @@ type GetUserForLoginRow struct {
 	PasswordHash string `json:"password_hash"`
 }
 
-func (q *Queries) GetUserForLogin(ctx context.Context, loginIdentifier string) (GetUserForLoginRow, error) {
-	row := q.db.QueryRow(ctx, getUserForLogin, loginIdentifier)
+func (q *Queries) GetUserForLogin(ctx context.Context, login string) (GetUserForLoginRow, error) {
+	row := q.db.QueryRow(ctx, getUserForLogin, login)
 	var i GetUserForLoginRow
 	err := row.Scan(
 		&i.User.ID,

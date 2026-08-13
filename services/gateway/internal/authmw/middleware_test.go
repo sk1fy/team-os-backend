@@ -143,6 +143,12 @@ func TestCompanyRegistrationChecksArePublic(t *testing.T) {
 	if !isPublic(http.MethodPost, "/api/v1/public/company-registration-tokens/validate") {
 		t.Fatal("company registration token validation must be public")
 	}
+	if !isPublic(http.MethodPost, "/api/v1/auth/registration-logins") {
+		t.Fatal("registration login reservation must be public")
+	}
+	if !isPublic(http.MethodPost, "/api/v2/auth/login") {
+		t.Fatal("v2 login must be public")
+	}
 	if isPublic(http.MethodPost, "/api/v1/public/amocrm/accounts/31355990/exists") {
 		t.Fatal("amoCRM account check only permits GET")
 	}

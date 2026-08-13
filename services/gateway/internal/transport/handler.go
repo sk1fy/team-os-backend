@@ -82,26 +82,51 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	login := ""
 	if input.Login != nil {
 		login = *input.Login
-	} else if input.Email != nil {
-		login = string(*input.Email)
 	}
 	login = strings.TrimSpace(login)
 	if login == "" {
 		apierror.Write(w, apierror.BadRequest("Укажите логин"))
 		return
 	}
-	request := &companyv1.LoginRequest{Login: &login, Password: input.Password}
-	if strings.Contains(login, "@") {
-		// Поле email сохраняем на время rolling-обновления: старая версия company
-		// ещё не знает поле login, но должна продолжать принимать email-вход.
-		request.Email = login
-	}
-	response, err := h.company.Login(outgoingContext(r), request)
+	response, err := h.company.Login(outgoingContext(r), &companyv1.LoginRequest{Login: &login, Password: input.Password})
 	if err != nil {
 		h.writeRPCError(w, r, err)
 		return
 	}
 	h.writeSession(w, r, http.StatusOK, response.GetSession())
+}
+
+func (h *Handler) LoginByLogin(w http.ResponseWriter, r *http.Request) {
+	var input api.LoginByLoginInput
+	if !decode(w, r, &input) {
+		return
+	}
+	response, err := h.company.LoginByLogin(outgoingContext(r), &companyv1.LoginByLoginRequest{
+		Login: string(input.Login), Password: input.Password,
+	})
+	if err != nil {
+		h.writeRPCError(w, r, err)
+		return
+	}
+	h.writeSession(w, r, http.StatusOK, response.GetSession())
+}
+
+func (h *Handler) ReserveRegistrationLogin(w http.ResponseWriter, r *http.Request) {
+	response, err := h.company.ReserveRegistrationLogin(
+		outgoingContext(r), &companyv1.ReserveRegistrationLoginRequest{},
+	)
+	if err != nil {
+		h.writeRPCError(w, r, err)
+		return
+	}
+	if response.GetExpiresAt() == nil || !response.GetExpiresAt().IsValid() {
+		h.writeConversionError(w, r, errors.New("company returned an invalid login reservation expiry"))
+		return
+	}
+	writeJSON(w, http.StatusCreated, api.RegistrationLoginReservationResponse{
+		Login: api.UserLogin(response.GetLogin()), ReservationToken: response.GetReservationToken(),
+		ExpiresAt: response.GetExpiresAt().AsTime(),
+	})
 }
 
 func (h *Handler) LoginWithAccessLink(w http.ResponseWriter, r *http.Request, token api.AccessLinkToken) {
@@ -137,7 +162,8 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 	response, err := h.company.Register(outgoingContext(r), &companyv1.RegisterRequest{
 		CompanyName: input.CompanyName, Email: string(input.Email), Password: input.Password,
 		FirstName: input.FirstName, LastName: input.LastName,
-		RegistrationToken: input.RegistrationToken,
+		RegistrationToken:     input.RegistrationToken,
+		LoginReservationToken: input.LoginReservationToken,
 	})
 	if err != nil {
 		h.writeRPCError(w, r, err)

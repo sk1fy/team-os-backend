@@ -23,6 +23,17 @@ func TestNormalizePath(t *testing.T) {
 	}
 }
 
+func TestContractPathPreservesExplicitAPIVersion(t *testing.T) {
+	for _, test := range []struct{ path, want string }{
+		{path: "/auth/login", want: "/api/v1/auth/login"},
+		{path: "/api/v2/auth/login", want: "/api/v2/auth/login"},
+	} {
+		if got := contractPath(test.path); got != test.want {
+			t.Errorf("contractPath(%q) = %q, want %q", test.path, got, test.want)
+		}
+	}
+}
+
 func TestMatchSpec(t *testing.T) {
 	spec := map[string]struct{}{
 		"GET /api/v1/org/users":              {},

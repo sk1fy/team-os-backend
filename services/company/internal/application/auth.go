@@ -45,6 +45,27 @@ func (s *Service) Register(ctx context.Context, input RegisterInput, meta Sessio
 	defer func() { _ = tx.Rollback(ctx) }()
 	queries := db.New(tx)
 	companyID, userID := uuid.New(), uuid.New()
+	now := s.now().UTC()
+	var loginReservation *db.RegistrationLoginReservation
+	if strings.TrimSpace(input.LoginReservationToken) != "" {
+		loginReservationToken, tokenErr := normalizeLoginReservationToken(input.LoginReservationToken)
+		if tokenErr != nil {
+			return AuthResult{}, tokenErr
+		}
+		row, lookupErr := queries.GetRegistrationLoginReservationForUpdate(
+			ctx, domainauth.HashOpaqueToken(loginReservationToken),
+		)
+		if isNoRows(lookupErr) {
+			return AuthResult{}, loginReservationInvalid()
+		}
+		if lookupErr != nil {
+			return AuthResult{}, internal("Не удалось проверить резервацию логина", lookupErr)
+		}
+		if stateErr := registrationLoginReservationError(row, now); stateErr != nil {
+			return AuthResult{}, stateErr
+		}
+		loginReservation = &row
+	}
 	registrationToken := strings.TrimSpace(input.RegistrationToken)
 	var registration *db.CompanyRegistrationToken
 	if registrationToken != "" {
@@ -114,6 +135,20 @@ func (s *Service) Register(ctx context.Context, input RegisterInput, meta Sessio
 	}
 	if err != nil {
 		return AuthResult{}, internal("Не удалось создать владельца", err)
+	}
+	if loginReservation != nil {
+		if _, err = queries.ApplyReservedUserLogin(ctx, db.ApplyReservedUserLoginParams{
+			Login: loginReservation.Login, CompanyID: companyID, UserID: userID,
+		}); err != nil {
+			return AuthResult{}, internal("Не удалось закрепить зарезервированный логин", err)
+		}
+		if _, err = queries.ConsumeRegistrationLoginReservation(ctx, db.ConsumeRegistrationLoginReservationParams{
+			ConsumedAt: pgTimestamp(now), ID: loginReservation.ID,
+		}); isNoRows(err) {
+			return AuthResult{}, loginReservationConsumed()
+		} else if err != nil {
+			return AuthResult{}, internal("Не удалось погасить резервацию логина", err)
+		}
 	}
 	if err = queries.SetCredential(ctx, db.SetCredentialParams{
 		CompanyID: companyID, UserID: userID, PasswordHash: passwordHash,
@@ -208,13 +243,6 @@ func (s *Service) Login(ctx context.Context, input LoginInput, meta SessionMeta)
 
 func normalizeLoginIdentifier(value string) (string, bool) {
 	value = strings.ToLower(strings.TrimSpace(value))
-	if value == "" || len(value) > 320 {
-		return "", false
-	}
-	if strings.Contains(value, "@") {
-		email, err := normalizeEmail(value)
-		return email, err == nil
-	}
 	if len(value) != 9 || !strings.HasPrefix(value, "tm") {
 		return "", false
 	}
@@ -390,7 +418,9 @@ func (s *Service) AcceptInvite(ctx context.Context, input AcceptInviteInput, met
 		return AuthResult{}, err
 	}
 
-	user, findErr := queries.GetUserByEmailForUpdate(ctx, email)
+	user, findErr := queries.GetUserByEmailForUpdate(ctx, db.GetUserByEmailForUpdateParams{
+		CompanyID: invite.CompanyID, Email: email,
+	})
 	if findErr != nil && !isNoRows(findErr) {
 		return AuthResult{}, internal("Не удалось проверить пользователя", findErr)
 	}

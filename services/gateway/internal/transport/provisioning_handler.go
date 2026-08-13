@@ -233,7 +233,7 @@ func (h *Handler) ValidateAmoWidgetContinuation(w http.ResponseWriter, r *http.R
 		return
 	}
 	writeJSON(w, http.StatusOK, api.AmoWidgetContinuationResponse{
-		Email: api.Email(response.GetEmail()), CompanyName: response.GetCompanyName(),
+		Email: api.Email(response.GetEmail()), Login: api.UserLogin(response.GetLogin()), CompanyName: response.GetCompanyName(),
 		RequiresPasswordSetup: response.GetRequiresPasswordSetup(),
 		ExpiresAt:             response.GetExpiresAt().AsTime(),
 	})

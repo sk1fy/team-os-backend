@@ -41,6 +41,8 @@ type stubCompanyServer struct {
 	companyv1.UnimplementedCompanyServiceServer
 
 	loginFn            func(context.Context, *companyv1.LoginRequest) (*companyv1.LoginResponse, error)
+	loginByLoginFn     func(context.Context, *companyv1.LoginByLoginRequest) (*companyv1.LoginByLoginResponse, error)
+	reserveLoginFn     func(context.Context, *companyv1.ReserveRegistrationLoginRequest) (*companyv1.ReserveRegistrationLoginResponse, error)
 	loginWithLinkFn    func(context.Context, *companyv1.LoginWithAccessLinkRequest) (*companyv1.LoginWithAccessLinkResponse, error)
 	impersonateUserFn  func(context.Context, *companyv1.ImpersonateUserRequest) (*companyv1.ImpersonateUserResponse, error)
 	registerFn         func(context.Context, *companyv1.RegisterRequest) (*companyv1.RegisterResponse, error)
@@ -544,6 +546,20 @@ func (s *stubCompanyServer) Login(ctx context.Context, request *companyv1.LoginR
 	return s.loginFn(ctx, request)
 }
 
+func (s *stubCompanyServer) LoginByLogin(ctx context.Context, request *companyv1.LoginByLoginRequest) (*companyv1.LoginByLoginResponse, error) {
+	if s.loginByLoginFn == nil {
+		return nil, status.Error(codes.Unimplemented, "unexpected LoginByLogin call")
+	}
+	return s.loginByLoginFn(ctx, request)
+}
+
+func (s *stubCompanyServer) ReserveRegistrationLogin(ctx context.Context, request *companyv1.ReserveRegistrationLoginRequest) (*companyv1.ReserveRegistrationLoginResponse, error) {
+	if s.reserveLoginFn == nil {
+		return nil, status.Error(codes.Unimplemented, "unexpected ReserveRegistrationLogin call")
+	}
+	return s.reserveLoginFn(ctx, request)
+}
+
 func (s *stubCompanyServer) Register(ctx context.Context, request *companyv1.RegisterRequest) (*companyv1.RegisterResponse, error) {
 	if s.registerFn == nil {
 		return nil, status.Error(codes.Unimplemented, "unexpected Register call")
@@ -582,7 +598,7 @@ func TestGatewayLoginBridgesJSONToGRPCAndSetsRefreshCookie(t *testing.T) {
 	}
 
 	recorder := serveGatewayRequest(t, server, http.MethodPost, "/api/v1/auth/login", `{
-		"email":"owner@example.com",
+		"login":"tm8901912",
 		"password":"secret-password"
 	}`, nil)
 
@@ -590,8 +606,7 @@ func TestGatewayLoginBridgesJSONToGRPCAndSetsRefreshCookie(t *testing.T) {
 		t.Fatalf("status = %d, want %d; body = %s", recorder.Code, http.StatusOK, recorder.Body.String())
 	}
 	request := <-requests
-	if request.GetLogin() != "owner@example.com" || request.GetEmail() != "owner@example.com" ||
-		request.GetPassword() != "secret-password" {
+	if request.GetLogin() != "tm8901912" || request.GetPassword() != "secret-password" {
 		t.Fatalf("Login RPC request = %#v", request)
 	}
 
@@ -639,8 +654,47 @@ func TestGatewayLoginUsesTeamOSLogin(t *testing.T) {
 	if recorder.Code != http.StatusOK {
 		t.Fatalf("status = %d; body = %s", recorder.Code, recorder.Body.String())
 	}
-	if request := <-requests; request.GetLogin() != "tm8901912" || request.GetEmail() != "" {
+	if request := <-requests; request.GetLogin() != "tm8901912" {
 		t.Fatalf("Login RPC request = %#v", request)
+	}
+}
+
+func TestGatewayV2LoginUsesOnlyTeamOSLogin(t *testing.T) {
+	server := &stubCompanyServer{
+		loginByLoginFn: func(_ context.Context, request *companyv1.LoginByLoginRequest) (*companyv1.LoginByLoginResponse, error) {
+			if request.GetLogin() != "tm8901912" || request.GetPassword() != "secret-password" {
+				t.Fatalf("LoginByLogin RPC request = %#v", request)
+			}
+			return &companyv1.LoginByLoginResponse{Session: testAuthSession("access-v2", "refresh-v2")}, nil
+		},
+	}
+	recorder := serveGatewayRequest(t, server, http.MethodPost, "/api/v2/auth/login", `{
+		"login":"tm8901912",
+		"password":"secret-password"
+	}`, nil)
+	if recorder.Code != http.StatusOK || decodeStringField(t, decodeObject(t, recorder), "accessToken") != "access-v2" {
+		t.Fatalf("status=%d body=%s", recorder.Code, recorder.Body.String())
+	}
+}
+
+func TestGatewayReservesRegistrationLogin(t *testing.T) {
+	expiresAt := time.Date(2026, time.August, 13, 12, 30, 0, 0, time.UTC)
+	server := &stubCompanyServer{
+		reserveLoginFn: func(_ context.Context, _ *companyv1.ReserveRegistrationLoginRequest) (*companyv1.ReserveRegistrationLoginResponse, error) {
+			return &companyv1.ReserveRegistrationLoginResponse{
+				Login: "tm1234567", ReservationToken: "reservation-token-abcdefghijklmnopqrstuvwxyz",
+				ExpiresAt: timestamppb.New(expiresAt),
+			}, nil
+		},
+	}
+	recorder := serveGatewayRequest(t, server, http.MethodPost, "/api/v1/auth/registration-logins", "", nil)
+	if recorder.Code != http.StatusCreated {
+		t.Fatalf("status=%d body=%s", recorder.Code, recorder.Body.String())
+	}
+	body := decodeObject(t, recorder)
+	if decodeStringField(t, body, "login") != "tm1234567" ||
+		decodeStringField(t, body, "reservationToken") != "reservation-token-abcdefghijklmnopqrstuvwxyz" {
+		t.Fatalf("reservation=%s", recorder.Body.String())
 	}
 }
 
@@ -654,6 +708,20 @@ func TestGatewayLoginRejectsMissingIdentifier(t *testing.T) {
 	}`, nil)
 	if recorder.Code != http.StatusBadRequest {
 		t.Fatalf("status = %d, want %d; body = %s", recorder.Code, http.StatusBadRequest, recorder.Body.String())
+	}
+}
+
+func TestGatewayLoginRejectsEmailIdentifier(t *testing.T) {
+	server := &stubCompanyServer{loginFn: func(_ context.Context, _ *companyv1.LoginRequest) (*companyv1.LoginResponse, error) {
+		t.Fatal("Login RPC must not be called for an email identifier")
+		return nil, nil
+	}}
+	recorder := serveGatewayRequest(t, server, http.MethodPost, "/api/v1/auth/login", `{
+		"email":"owner@example.com",
+		"password":"secret-password"
+	}`, nil)
+	if recorder.Code != http.StatusBadRequest {
+		t.Fatalf("status=%d body=%s", recorder.Code, recorder.Body.String())
 	}
 }
 
@@ -884,7 +952,8 @@ func TestGatewayRegisterReturnsCreated(t *testing.T) {
 		"password":"secret-password",
 		"firstName":"Ada",
 		"lastName":"Lovelace",
-		"registrationToken":"registration-token-abcdefghijklmnopqrstuvwxyz"
+		"registrationToken":"registration-token-abcdefghijklmnopqrstuvwxyz",
+		"loginReservationToken":"login-reservation-token-abcdefghijklmnopqrstuvwxyz"
 	}`, nil)
 
 	if recorder.Code != http.StatusCreated {
@@ -893,7 +962,8 @@ func TestGatewayRegisterReturnsCreated(t *testing.T) {
 	request := <-requests
 	if request.GetCompanyName() != "Acme" || request.GetEmail() != "owner@example.com" ||
 		request.GetPassword() != "secret-password" || request.GetFirstName() != "Ada" || request.GetLastName() != "Lovelace" ||
-		request.GetRegistrationToken() != "registration-token-abcdefghijklmnopqrstuvwxyz" {
+		request.GetRegistrationToken() != "registration-token-abcdefghijklmnopqrstuvwxyz" ||
+		request.GetLoginReservationToken() != "login-reservation-token-abcdefghijklmnopqrstuvwxyz" {
 		t.Fatalf("Register RPC request = %#v", request)
 	}
 	if got := responseCookie(t, recorder, refreshCookieName).Value; got != "refresh-register" {
@@ -954,7 +1024,7 @@ func TestGatewayMapsGRPCErrorsToPublicEnvelope(t *testing.T) {
 			}
 
 			recorder := serveGatewayRequest(t, server, http.MethodPost, "/api/v1/auth/login", `{
-				"email":"owner@example.com",
+				"login":"tm8901912",
 				"password":"secret-password"
 			}`, nil)
 
@@ -986,7 +1056,7 @@ func TestGatewayPreservesStableGRPCErrorCode(t *testing.T) {
 		return nil, rpcStatus.Err()
 	}}
 	recorder := serveGatewayRequest(t, server, http.MethodPost, "/api/v1/auth/login", `{
-		"email":"owner@example.com","password":"secret-password"
+		"login":"tm8901912","password":"secret-password"
 	}`, nil)
 	var envelope struct {
 		Error struct {

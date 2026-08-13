@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	CompanyService_Register_FullMethodName                         = "/teamos.company.v1.CompanyService/Register"
+	CompanyService_ReserveRegistrationLogin_FullMethodName         = "/teamos.company.v1.CompanyService/ReserveRegistrationLogin"
 	CompanyService_CheckAmoAccount_FullMethodName                  = "/teamos.company.v1.CompanyService/CheckAmoAccount"
 	CompanyService_IssueCompanyRegistrationToken_FullMethodName    = "/teamos.company.v1.CompanyService/IssueCompanyRegistrationToken"
 	CompanyService_ValidateCompanyRegistrationToken_FullMethodName = "/teamos.company.v1.CompanyService/ValidateCompanyRegistrationToken"
@@ -27,6 +28,7 @@ const (
 	CompanyService_ValidateAmoWidgetContinuation_FullMethodName    = "/teamos.company.v1.CompanyService/ValidateAmoWidgetContinuation"
 	CompanyService_CompleteAmoWidgetContinuation_FullMethodName    = "/teamos.company.v1.CompanyService/CompleteAmoWidgetContinuation"
 	CompanyService_Login_FullMethodName                            = "/teamos.company.v1.CompanyService/Login"
+	CompanyService_LoginByLogin_FullMethodName                     = "/teamos.company.v1.CompanyService/LoginByLogin"
 	CompanyService_LoginWithAccessLink_FullMethodName              = "/teamos.company.v1.CompanyService/LoginWithAccessLink"
 	CompanyService_ImpersonateUser_FullMethodName                  = "/teamos.company.v1.CompanyService/ImpersonateUser"
 	CompanyService_Refresh_FullMethodName                          = "/teamos.company.v1.CompanyService/Refresh"
@@ -99,6 +101,7 @@ const (
 // calls receive actor/company claims through gRPC metadata.
 type CompanyServiceClient interface {
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
+	ReserveRegistrationLogin(ctx context.Context, in *ReserveRegistrationLoginRequest, opts ...grpc.CallOption) (*ReserveRegistrationLoginResponse, error)
 	CheckAmoAccount(ctx context.Context, in *CheckAmoAccountRequest, opts ...grpc.CallOption) (*CheckAmoAccountResponse, error)
 	IssueCompanyRegistrationToken(ctx context.Context, in *IssueCompanyRegistrationTokenRequest, opts ...grpc.CallOption) (*IssueCompanyRegistrationTokenResponse, error)
 	ValidateCompanyRegistrationToken(ctx context.Context, in *ValidateCompanyRegistrationTokenRequest, opts ...grpc.CallOption) (*ValidateCompanyRegistrationTokenResponse, error)
@@ -106,6 +109,7 @@ type CompanyServiceClient interface {
 	ValidateAmoWidgetContinuation(ctx context.Context, in *ValidateAmoWidgetContinuationRequest, opts ...grpc.CallOption) (*ValidateAmoWidgetContinuationResponse, error)
 	CompleteAmoWidgetContinuation(ctx context.Context, in *CompleteAmoWidgetContinuationRequest, opts ...grpc.CallOption) (*CompleteAmoWidgetContinuationResponse, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
+	LoginByLogin(ctx context.Context, in *LoginByLoginRequest, opts ...grpc.CallOption) (*LoginByLoginResponse, error)
 	LoginWithAccessLink(ctx context.Context, in *LoginWithAccessLinkRequest, opts ...grpc.CallOption) (*LoginWithAccessLinkResponse, error)
 	ImpersonateUser(ctx context.Context, in *ImpersonateUserRequest, opts ...grpc.CallOption) (*ImpersonateUserResponse, error)
 	Refresh(ctx context.Context, in *RefreshRequest, opts ...grpc.CallOption) (*RefreshResponse, error)
@@ -187,6 +191,16 @@ func (c *companyServiceClient) Register(ctx context.Context, in *RegisterRequest
 	return out, nil
 }
 
+func (c *companyServiceClient) ReserveRegistrationLogin(ctx context.Context, in *ReserveRegistrationLoginRequest, opts ...grpc.CallOption) (*ReserveRegistrationLoginResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ReserveRegistrationLoginResponse)
+	err := c.cc.Invoke(ctx, CompanyService_ReserveRegistrationLogin_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *companyServiceClient) CheckAmoAccount(ctx context.Context, in *CheckAmoAccountRequest, opts ...grpc.CallOption) (*CheckAmoAccountResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CheckAmoAccountResponse)
@@ -251,6 +265,16 @@ func (c *companyServiceClient) Login(ctx context.Context, in *LoginRequest, opts
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(LoginResponse)
 	err := c.cc.Invoke(ctx, CompanyService_Login_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) LoginByLogin(ctx context.Context, in *LoginByLoginRequest, opts ...grpc.CallOption) (*LoginByLoginResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LoginByLoginResponse)
+	err := c.cc.Invoke(ctx, CompanyService_LoginByLogin_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -876,6 +900,7 @@ func (c *companyServiceClient) ResetDistributionEvents(ctx context.Context, in *
 // calls receive actor/company claims through gRPC metadata.
 type CompanyServiceServer interface {
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
+	ReserveRegistrationLogin(context.Context, *ReserveRegistrationLoginRequest) (*ReserveRegistrationLoginResponse, error)
 	CheckAmoAccount(context.Context, *CheckAmoAccountRequest) (*CheckAmoAccountResponse, error)
 	IssueCompanyRegistrationToken(context.Context, *IssueCompanyRegistrationTokenRequest) (*IssueCompanyRegistrationTokenResponse, error)
 	ValidateCompanyRegistrationToken(context.Context, *ValidateCompanyRegistrationTokenRequest) (*ValidateCompanyRegistrationTokenResponse, error)
@@ -883,6 +908,7 @@ type CompanyServiceServer interface {
 	ValidateAmoWidgetContinuation(context.Context, *ValidateAmoWidgetContinuationRequest) (*ValidateAmoWidgetContinuationResponse, error)
 	CompleteAmoWidgetContinuation(context.Context, *CompleteAmoWidgetContinuationRequest) (*CompleteAmoWidgetContinuationResponse, error)
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
+	LoginByLogin(context.Context, *LoginByLoginRequest) (*LoginByLoginResponse, error)
 	LoginWithAccessLink(context.Context, *LoginWithAccessLinkRequest) (*LoginWithAccessLinkResponse, error)
 	ImpersonateUser(context.Context, *ImpersonateUserRequest) (*ImpersonateUserResponse, error)
 	Refresh(context.Context, *RefreshRequest) (*RefreshResponse, error)
@@ -957,6 +983,9 @@ type UnimplementedCompanyServiceServer struct{}
 func (UnimplementedCompanyServiceServer) Register(context.Context, *RegisterRequest) (*RegisterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
 }
+func (UnimplementedCompanyServiceServer) ReserveRegistrationLogin(context.Context, *ReserveRegistrationLoginRequest) (*ReserveRegistrationLoginResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReserveRegistrationLogin not implemented")
+}
 func (UnimplementedCompanyServiceServer) CheckAmoAccount(context.Context, *CheckAmoAccountRequest) (*CheckAmoAccountResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CheckAmoAccount not implemented")
 }
@@ -977,6 +1006,9 @@ func (UnimplementedCompanyServiceServer) CompleteAmoWidgetContinuation(context.C
 }
 func (UnimplementedCompanyServiceServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
+}
+func (UnimplementedCompanyServiceServer) LoginByLogin(context.Context, *LoginByLoginRequest) (*LoginByLoginResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LoginByLogin not implemented")
 }
 func (UnimplementedCompanyServiceServer) LoginWithAccessLink(context.Context, *LoginWithAccessLinkRequest) (*LoginWithAccessLinkResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LoginWithAccessLink not implemented")
@@ -1200,6 +1232,24 @@ func _CompanyService_Register_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CompanyService_ReserveRegistrationLogin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReserveRegistrationLoginRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).ReserveRegistrationLogin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_ReserveRegistrationLogin_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).ReserveRegistrationLogin(ctx, req.(*ReserveRegistrationLoginRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _CompanyService_CheckAmoAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CheckAmoAccountRequest)
 	if err := dec(in); err != nil {
@@ -1322,6 +1372,24 @@ func _CompanyService_Login_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CompanyServiceServer).Login(ctx, req.(*LoginRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_LoginByLogin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoginByLoginRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).LoginByLogin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_LoginByLogin_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).LoginByLogin(ctx, req.(*LoginByLoginRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2436,6 +2504,10 @@ var CompanyService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _CompanyService_Register_Handler,
 		},
 		{
+			MethodName: "ReserveRegistrationLogin",
+			Handler:    _CompanyService_ReserveRegistrationLogin_Handler,
+		},
+		{
 			MethodName: "CheckAmoAccount",
 			Handler:    _CompanyService_CheckAmoAccount_Handler,
 		},
@@ -2462,6 +2534,10 @@ var CompanyService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Login",
 			Handler:    _CompanyService_Login_Handler,
+		},
+		{
+			MethodName: "LoginByLogin",
+			Handler:    _CompanyService_LoginByLogin_Handler,
 		},
 		{
 			MethodName: "LoginWithAccessLink",

@@ -97,7 +97,7 @@ func (s *Server) ValidateAmoWidgetContinuation(
 		return nil, transportError(err)
 	}
 	return &companyv1.ValidateAmoWidgetContinuationResponse{
-		Email: result.Email, CompanyName: result.CompanyName,
+		Email: result.Email, Login: result.Login, CompanyName: result.CompanyName,
 		RequiresPasswordSetup: result.RequiresPasswordSetup,
 		ExpiresAt:             timestamppb.New(result.ExpiresAt),
 	}, nil

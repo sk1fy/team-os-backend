@@ -177,3 +177,35 @@ func TestCleanupCompanyRegistrationTokensUsesRetention(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestReserveRegistrationLogin(t *testing.T) {
+	mock, err := pgxmock.NewPool()
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(mock.Close)
+	now := time.Date(2026, time.August, 13, 12, 0, 0, 0, time.UTC)
+	expiresAt := now.Add(registrationLoginReservationTTL)
+	mock.ExpectBeginTx(pgx.TxOptions{IsoLevel: pgx.ReadCommitted})
+	mock.ExpectExec("DELETE FROM registration_login_reservations").
+		WithArgs(now, pgTimestamp(now.Add(-registrationLoginReservationTTL))).
+		WillReturnResult(pgxmock.NewResult("DELETE", 2))
+	mock.ExpectQuery("INSERT INTO registration_login_reservations").
+		WithArgs(pgxmock.AnyArg(), pgxmock.AnyArg(), expiresAt, now).
+		WillReturnRows(pgxmock.NewRows([]string{
+			"id", "login", "token_hash", "expires_at", "consumed_at", "created_at",
+		}).AddRow(uuid.New(), "tm1234567", make([]byte, 32), expiresAt, pgtype.Timestamptz{}, now))
+	mock.ExpectCommit()
+
+	service := &Service{pool: mock, now: func() time.Time { return now }}
+	reservation, err := service.ReserveRegistrationLogin(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if reservation.Login != "tm1234567" || reservation.ReservationToken == "" || !reservation.ExpiresAt.Equal(expiresAt) {
+		t.Fatalf("reservation=%+v", reservation)
+	}
+	if err = mock.ExpectationsWereMet(); err != nil {
+		t.Fatal(err)
+	}
+}

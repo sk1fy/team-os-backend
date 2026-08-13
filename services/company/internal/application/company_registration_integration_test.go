@@ -122,6 +122,43 @@ func TestCompanyRegistrationTokenLifecycle(t *testing.T) {
 	_, err = service.IssueCompanyRegistrationToken(ctx, "rakurs", accountID)
 	assertCompanyRegistrationCode(t, err, ErrorCodeAmoAccountAlreadyExists)
 
+	loginReservation, err := service.ReserveRegistrationLogin(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	secondCompany, err := service.Register(ctx, RegisterInput{
+		CompanyName: "Вторая компания", Email: "owner@example.com", Password: "another-strong-password",
+		FirstName: "Иван", LastName: "Иванов", LoginReservationToken: loginReservation.ReservationToken,
+	}, SessionMeta{})
+	if err != nil {
+		t.Fatalf("регистрация одинакового email в другой компании: %v", err)
+	}
+	if secondCompany.User.CompanyID == registered.User.CompanyID || secondCompany.User.ID == registered.User.ID {
+		t.Fatalf("пользователи разных компаний пересеклись: first=%+v second=%+v", registered.User, secondCompany.User)
+	}
+	if secondCompany.User.Login != loginReservation.Login {
+		t.Fatalf("login=%q, want reserved %q", secondCompany.User.Login, loginReservation.Login)
+	}
+	var usersWithEmail, companiesWithEmail int
+	if err = pool.QueryRow(ctx, `
+		SELECT count(*), count(DISTINCT company_id) FROM users WHERE email = 'owner@example.com'
+	`).Scan(&usersWithEmail, &companiesWithEmail); err != nil {
+		t.Fatal(err)
+	}
+	if usersWithEmail != 2 || companiesWithEmail != 2 {
+		t.Fatalf("users=%d companies=%d, want 2 and 2", usersWithEmail, companiesWithEmail)
+	}
+	if _, err = service.Login(ctx, LoginInput{
+		Login: "owner@example.com", Password: "another-strong-password",
+	}, SessionMeta{}); err == nil {
+		t.Fatal("вход по email должен быть запрещён")
+	}
+	if _, err = service.Login(ctx, LoginInput{
+		Login: loginReservation.Login, Password: "another-strong-password",
+	}, SessionMeta{}); err != nil {
+		t.Fatalf("вход по зарезервированному логину: %v", err)
+	}
+
 	expiring, err := service.IssueCompanyRegistrationToken(ctx, "rakurs", "98765432")
 	if err != nil {
 		t.Fatal(err)
@@ -193,6 +230,7 @@ func companyRegistrationTestPool(t *testing.T, ctx context.Context) *pgxpool.Poo
 		// Миграцию 11 тест применяет после вставки legacy-компании, чтобы проверить backfill.
 		{12, "user_schedule_visibility"}, {13, "amo_group_organization"},
 		{14, "department_root"}, {15, "position_levels"}, {16, "user_logins"},
+		{17, "company_scoped_emails_and_login_reservations"},
 	}
 	initScripts := make([]string, 0, len(migrations))
 	for _, migration := range migrations {

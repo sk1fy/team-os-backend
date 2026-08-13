@@ -153,12 +153,19 @@ type SessionMeta struct {
 }
 
 type RegisterInput struct {
-	CompanyName       string
-	Email             string
-	Password          string
-	FirstName         string
-	LastName          string
-	RegistrationToken string
+	CompanyName           string
+	Email                 string
+	Password              string
+	FirstName             string
+	LastName              string
+	RegistrationToken     string
+	LoginReservationToken string
+}
+
+type RegistrationLoginReservation struct {
+	Login            string
+	ReservationToken string
+	ExpiresAt        time.Time
 }
 
 type CompanyRegistrationTokenResult struct {
@@ -179,6 +186,7 @@ type AmoWidgetSessionResult struct {
 	RegistrationToken     string
 	SessionToken          string
 	Email                 string
+	Login                 string
 	CompanyName           string
 	RequiresPasswordSetup bool
 	ExpiresAt             *time.Time
@@ -195,6 +203,7 @@ type AmoWidgetSessionInput struct {
 
 type AmoWidgetContinuation struct {
 	Email                 string
+	Login                 string
 	CompanyName           string
 	RequiresPasswordSetup bool
 	ExpiresAt             time.Time

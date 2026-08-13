@@ -257,6 +257,7 @@ SELECT token.id AS token_id,
        token.consumed_at,
        token.revoked_at,
        u.email,
+       user_login.login,
        company.name AS company_name,
        EXISTS (
            SELECT 1 FROM credentials AS credential
@@ -279,6 +280,9 @@ JOIN company_integrations AS integration
 JOIN users AS u
   ON u.company_id = token.company_id
  AND u.id = token.user_id
+JOIN user_logins AS user_login
+  ON user_login.company_id = u.company_id
+ AND user_login.user_id = u.id
 JOIN companies AS company ON company.id = token.company_id
 WHERE token.token_hash = $1
 `
@@ -289,6 +293,7 @@ type GetAmoWidgetContinuationRow struct {
 	ConsumedAt        pgtype.Timestamptz `json:"consumed_at"`
 	RevokedAt         pgtype.Timestamptz `json:"revoked_at"`
 	Email             string             `json:"email"`
+	Login             string             `json:"login"`
 	CompanyName       string             `json:"company_name"`
 	HasPassword       bool               `json:"has_password"`
 	UserStatus        string             `json:"user_status"`
@@ -307,6 +312,7 @@ func (q *Queries) GetAmoWidgetContinuation(ctx context.Context, tokenHash []byte
 		&i.ConsumedAt,
 		&i.RevokedAt,
 		&i.Email,
+		&i.Login,
 		&i.CompanyName,
 		&i.HasPassword,
 		&i.UserStatus,

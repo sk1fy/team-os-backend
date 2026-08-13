@@ -424,7 +424,7 @@ func (s *Service) ValidateAmoWidgetContinuation(
 		return AmoWidgetContinuation{}, err
 	}
 	return AmoWidgetContinuation{
-		Email: row.Email, CompanyName: row.CompanyName,
+		Email: row.Email, Login: row.Login, CompanyName: row.CompanyName,
 		RequiresPasswordSetup: !row.HasPassword, ExpiresAt: row.ExpiresAt,
 	}, nil
 }

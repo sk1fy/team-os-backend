@@ -915,7 +915,9 @@ func (s *Service) InviteUser(ctx context.Context, actor Actor, input InviteUserI
 		if err = domainorg.ValidateInviteEmail(*email, domainUsers); err != nil {
 			return Invite{}, validation(err.Error())
 		}
-		existing, findErr := queries.GetUserByEmailForUpdate(ctx, *email)
+		existing, findErr := queries.GetUserByEmailForUpdate(ctx, db.GetUserByEmailForUpdateParams{
+			CompanyID: actor.CompanyID, Email: *email,
+		})
 		if findErr == nil {
 			role, status := input.Role, "invited"
 			_, err = queries.UpdateUser(ctx, db.UpdateUserParams{
@@ -1042,7 +1044,9 @@ func (s *Service) RevokeInvite(ctx context.Context, actor Actor, id uuid.UUID) e
 		return internal("Не удалось отозвать приглашение", err)
 	}
 	if current.Email.Valid {
-		user, findErr := queries.GetUserByEmailForUpdate(ctx, current.Email.String)
+		user, findErr := queries.GetUserByEmailForUpdate(ctx, db.GetUserByEmailForUpdateParams{
+			CompanyID: actor.CompanyID, Email: current.Email.String,
+		})
 		if findErr == nil && user.CompanyID == actor.CompanyID && user.Status == "invited" {
 			status := "deactivated"
 			_, err = queries.UpdateUser(ctx, db.UpdateUserParams{

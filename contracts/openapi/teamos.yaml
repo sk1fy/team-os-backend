@@ -74,7 +74,8 @@ paths:
     post:
       tags: [Auth]
       operationId: login
-      summary: Войти по логину или email и паролю
+      summary: Устаревший вход по логину и паролю
+      deprecated: true
       security: []
       requestBody:
         required: true
@@ -82,6 +83,28 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/LoginInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/AuthSession'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v2/auth/login:
+    post:
+      tags: [Auth]
+      operationId: loginByLogin
+      summary: Войти по логину и паролю
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginByLoginInput'
       responses:
         '200':
           $ref: '#/components/responses/AuthSession'
@@ -185,6 +208,23 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '409':
           $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/auth/registration-logins:
+    post:
+      tags: [Auth]
+      operationId: reserveRegistrationLogin
+      summary: Зарезервировать логин для создаваемого владельца компании
+      description: >-
+        Выдаёт краткоживущую резервацию глобально уникального логина. Токен
+        передаётся в `RegisterInput.loginReservationToken` при завершении регистрации.
+      security: []
+      responses:
+        '201':
+          $ref: '#/components/responses/RegistrationLoginReservation'
+        '429':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -4358,6 +4398,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/AuthResponse'
+    RegistrationLoginReservation:
+      description: Логин временно зарезервирован для регистрации компании
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RegistrationLoginReservationResponse'
     AmoAccountAvailability:
       description: Признак наличия или активной резервации amoCRM Account ID
       content:
@@ -5693,18 +5739,30 @@ components:
       required: [password]
       minProperties: 2
       description: >-
-        Данные для входа. Передайте `login` либо устаревшее поле `email`
-        вместе с `password`.
+        Устаревшая форма запроса. Передавайте `login` вместе с `password`;
+        поле `email` сохранено только для декодирования старых клиентов и не используется для входа.
       properties:
         login:
           type: string
           minLength: 1
           maxLength: 320
-          description: Логин TeamOS или email владельца/администратора.
+          description: Логин TeamOS.
         email:
           $ref: '#/components/schemas/Email'
           deprecated: true
-          description: Устаревшее поле для совместимости; используйте `login`.
+          description: Устаревшее неиспользуемое поле; вход по email отключён.
+        password:
+          type: string
+          format: password
+          minLength: 8
+
+    LoginByLoginInput:
+      type: object
+      additionalProperties: false
+      required: [login, password]
+      properties:
+        login:
+          $ref: '#/components/schemas/UserLogin'
         password:
           type: string
           format: password
@@ -5743,6 +5801,24 @@ components:
           type: string
           minLength: 32
           maxLength: 512
+        loginReservationToken:
+          type: string
+          minLength: 32
+          maxLength: 512
+
+    RegistrationLoginReservationResponse:
+      type: object
+      additionalProperties: false
+      required: [login, reservationToken, expiresAt]
+      properties:
+        login:
+          $ref: '#/components/schemas/UserLogin'
+        reservationToken:
+          type: string
+          minLength: 32
+          maxLength: 512
+        expiresAt:
+          $ref: '#/components/schemas/ISODateTime'
 
     AmoAccountAvailabilityResponse:
       type: object
@@ -5840,10 +5916,12 @@ components:
     AmoWidgetContinuationResponse:
       type: object
       additionalProperties: false
-      required: [email, companyName, requiresPasswordSetup, expiresAt]
+      required: [email, login, companyName, requiresPasswordSetup, expiresAt]
       properties:
         email:
           $ref: '#/components/schemas/Email'
+        login:
+          $ref: '#/components/schemas/UserLogin'
         companyName:
           type: string
         requiresPasswordSetup:

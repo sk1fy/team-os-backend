@@ -16,6 +16,7 @@ sql:
       - migrations/000014_department_root.up.sql
       - migrations/000015_position_levels.up.sql
       - migrations/000016_user_logins.up.sql
+      - migrations/000017_company_scoped_emails_and_login_reservations.up.sql
     queries: internal/storage/queries
     gen:
       go:

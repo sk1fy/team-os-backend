@@ -44,19 +44,15 @@ FROM users u
 JOIN credentials c ON c.user_id = u.id
 JOIN user_logins user_login
   ON user_login.company_id = u.company_id AND user_login.user_id = u.id
-WHERE (
-    user_login.login = sqlc.arg('login_identifier')
-    OR (
-        u.email = sqlc.arg('login_identifier')
-        AND u.role IN ('owner', 'admin')
-    )
-  )
+WHERE user_login.login = sqlc.arg('login')
   AND u.external_deleted_at IS NULL
 FOR SHARE OF u;
 
 -- name: GetUserByEmailForUpdate :one
 SELECT * FROM users
-WHERE email = $1 AND external_deleted_at IS NULL
+WHERE company_id = sqlc.arg('company_id')
+  AND email = sqlc.arg('email')
+  AND external_deleted_at IS NULL
 FOR UPDATE;
 
 -- name: GetUserLogin :one

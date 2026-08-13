@@ -197,6 +197,64 @@ func TestEmployeeSectionsAndLifecycle(t *testing.T) {
 	assertDistributionDisabled(t, ctx, pool, companyID, amoUserID, true)
 }
 
+func TestAmoImportAllowsSameEmployeeInDifferentCompanies(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+	defer cancel()
+	pool := companyAccessTestPool(t, ctx)
+	now := time.Date(2026, time.August, 13, 14, 0, 0, 0, time.UTC)
+	email := "shared.employee@example.com"
+	service := &Service{
+		pool: pool, now: func() time.Time { return now },
+		externalUsers: staticExternalEmployees{{ID: "42", Name: "Общий Сотрудник", Email: &email}},
+	}
+
+	actors := make([]Actor, 0, 2)
+	for index, accountID := range []string{"11111111", "22222222"} {
+		companyID, ownerID := uuid.New(), uuid.New()
+		actor := Actor{UserID: ownerID, CompanyID: companyID, Role: "owner"}
+		seedAccessCompany(t, ctx, pool, companyID, ownerID, []accessTestUser{{
+			id: ownerID, role: "owner", status: "active",
+		}})
+		if _, err := pool.Exec(ctx, `UPDATE companies SET amo_account_id=$2 WHERE id=$1`, companyID, accountID); err != nil {
+			t.Fatal(err)
+		}
+		if err := service.syncAmoUsersNow(ctx, actor); err != nil {
+			t.Fatalf("импорт компании %d: %v", index+1, err)
+		}
+		actors = append(actors, actor)
+	}
+
+	var users, companies int
+	if err := pool.QueryRow(ctx, `
+		SELECT count(*), count(DISTINCT company_id)
+		FROM users
+		WHERE email=$1 AND source='amo' AND external_id='42'
+	`, email).Scan(&users, &companies); err != nil {
+		t.Fatal(err)
+	}
+	if users != 2 || companies != 2 {
+		t.Fatalf("imported users=%d companies=%d, want 2 and 2", users, companies)
+	}
+	for _, actor := range actors {
+		companyUsers, err := service.ListUsers(ctx, actor)
+		if err != nil {
+			t.Fatal(err)
+		}
+		matches := 0
+		for _, user := range companyUsers {
+			if user.Email == email {
+				matches++
+				if user.CompanyID != actor.CompanyID {
+					t.Fatalf("чужой сотрудник попал в компанию: user=%+v actor=%+v", user, actor)
+				}
+			}
+		}
+		if matches != 1 {
+			t.Fatalf("company=%s shared employees=%d, want 1", actor.CompanyID, matches)
+		}
+	}
+}
+
 func assertDistributionDisabled(
 	t *testing.T,
 	ctx context.Context,

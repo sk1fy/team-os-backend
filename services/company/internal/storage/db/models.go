@@ -198,6 +198,15 @@ type ProvisioningRequest struct {
 	ExpiresAt         time.Time `json:"expires_at"`
 }
 
+type RegistrationLoginReservation struct {
+	ID         uuid.UUID          `json:"id"`
+	Login      string             `json:"login"`
+	TokenHash  []byte             `json:"token_hash"`
+	ExpiresAt  time.Time          `json:"expires_at"`
+	ConsumedAt pgtype.Timestamptz `json:"consumed_at"`
+	CreatedAt  time.Time          `json:"created_at"`
+}
+
 type Session struct {
 	ID          uuid.UUID          `json:"id"`
 	CompanyID   uuid.UUID          `json:"company_id"`
