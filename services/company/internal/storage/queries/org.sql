@@ -225,10 +225,11 @@ RETURNING *;
 -- name: CreateAmoUser :one
 INSERT INTO users (
     id, company_id, email, first_name, last_name, avatar_url, avatar_source,
-    role, status, source, external_id, external_group_id, external_group_name
+    role, status, source, external_id, external_group_id, external_group_name,
+    show_in_schedule
 )
 VALUES ($1, $2, $3, $4, $5, $6, sqlc.narg('avatar_source'),
-    'employee', 'active', 'amo', $7, $8, $9)
+    'employee', 'active', 'amo', $7, $8, $9, false)
 RETURNING *;
 
 -- name: UpdateAmoUserGroup :execrows

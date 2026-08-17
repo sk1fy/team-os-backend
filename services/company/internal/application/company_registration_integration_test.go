@@ -101,6 +101,9 @@ func TestCompanyRegistrationTokenLifecycle(t *testing.T) {
 	if registered.User.Role != "owner" || registered.AccessToken == "" || registered.RefreshToken == "" {
 		t.Fatalf("registered=%+v", registered)
 	}
+	if registered.User.ShowInSchedule {
+		t.Fatal("new company owner must be inactive")
+	}
 	var amoAccountID string
 	var integrations, consumed int
 	if err = pool.QueryRow(ctx, `SELECT amo_account_id FROM companies WHERE id=$1`, registered.User.CompanyID).Scan(&amoAccountID); err != nil {

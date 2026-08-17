@@ -247,7 +247,7 @@ INSERT INTO users (
     id, company_id, email, first_name, last_name, phone, avatar_url,
     role, status, birth_date, hired_at, vacation_allowance, show_in_schedule
 )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $8 <> 'owner')
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, false)
 RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source, external_deleted_at, show_in_schedule
 `
 

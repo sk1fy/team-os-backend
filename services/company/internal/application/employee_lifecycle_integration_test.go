@@ -35,6 +35,9 @@ func TestEmployeeSectionsAndLifecycle(t *testing.T) {
 	if !employeeSectionsEqual(employee.SectionAccess, defaultEmployeeSections) {
 		t.Fatalf("default sections = %#v", employee.SectionAccess)
 	}
+	if employee.ShowInSchedule {
+		t.Fatal("new employee must be inactive")
+	}
 	colleague, err := service.CreateUser(ctx, owner, CreateUserInput{
 		FirstName: "Анна", Email: "anna.lifecycle@example.com", Role: "employee",
 	})

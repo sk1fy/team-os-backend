@@ -157,10 +157,11 @@ func (q *Queries) CountDepartmentPositions(ctx context.Context, arg CountDepartm
 const createAmoUser = `-- name: CreateAmoUser :one
 INSERT INTO users (
     id, company_id, email, first_name, last_name, avatar_url, avatar_source,
-    role, status, source, external_id, external_group_id, external_group_name
+    role, status, source, external_id, external_group_id, external_group_name,
+    show_in_schedule
 )
 VALUES ($1, $2, $3, $4, $5, $6, $10,
-    'employee', 'active', 'amo', $7, $8, $9)
+    'employee', 'active', 'amo', $7, $8, $9, false)
 RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source, external_deleted_at, show_in_schedule
 `
 
