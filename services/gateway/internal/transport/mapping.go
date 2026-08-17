@@ -46,6 +46,13 @@ func userFromProto(value *companyv1.User) (api.User, error) {
 		Role: role, Status: status, PositionIds: positionIDs, DepartmentIds: &departmentIDs,
 		ShowInSchedule: value.GetShowInSchedule(), CreatedAt: createdAt,
 	}
+	if value.GetLastLoginAt() != nil {
+		if !value.GetLastLoginAt().IsValid() {
+			return api.User{}, errors.New("company returned invalid last login time")
+		}
+		lastLoginAt := value.GetLastLoginAt().AsTime()
+		result.LastLoginAt = &lastLoginAt
+	}
 	if value.GetLogin() != "" {
 		login := value.GetLogin()
 		result.Login = &login

@@ -166,9 +166,9 @@ RETURNING *;
 
 -- name: CreateSession :one
 INSERT INTO sessions (
-    id, company_id, user_id, refresh_hash, expires_at, rotated_from, user_agent, ip_address
+    id, company_id, user_id, refresh_hash, expires_at, rotated_from, user_agent, ip_address, last_used_at
 )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, now())
 RETURNING *;
 
 -- name: GetSessionByHashForUpdate :one

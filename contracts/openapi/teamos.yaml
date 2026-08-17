@@ -5424,6 +5424,9 @@ components:
         showInSchedule:
           type: boolean
           description: Показывать пользователя в рабочем графике. Для владельца всегда false.
+        lastLoginAt:
+          description: Дата и время последнего успешного входа по паролю или постоянной ссылке.
+          $ref: '#/components/schemas/ISODateTime'
         createdAt:
           $ref: '#/components/schemas/ISODateTime'
 

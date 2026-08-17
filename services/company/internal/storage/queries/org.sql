@@ -102,7 +102,14 @@ SELECT u.*,
            WHEN EXISTS (SELECT 1 FROM access_links access WHERE access.company_id = u.company_id AND access.user_id = u.id) THEN 'link'
            WHEN EXISTS (SELECT 1 FROM credentials credential WHERE credential.company_id = u.company_id AND credential.user_id = u.id) THEN 'password'
            ELSE 'none'
-       END::text AS access_mode
+       END::text AS access_mode,
+       (
+           SELECT session.last_used_at
+           FROM sessions session
+           WHERE session.company_id = u.company_id AND session.user_id = u.id
+           ORDER BY session.created_at DESC
+           LIMIT 1
+       ) AS last_login_at
 FROM users u
 JOIN user_logins user_login
   ON user_login.company_id = u.company_id AND user_login.user_id = u.id
@@ -130,7 +137,14 @@ SELECT u.*,
            WHEN EXISTS (SELECT 1 FROM access_links access WHERE access.company_id = u.company_id AND access.user_id = u.id) THEN 'link'
            WHEN EXISTS (SELECT 1 FROM credentials credential WHERE credential.company_id = u.company_id AND credential.user_id = u.id) THEN 'password'
            ELSE 'none'
-       END::text AS access_mode
+       END::text AS access_mode,
+       (
+           SELECT session.last_used_at
+           FROM sessions session
+           WHERE session.company_id = u.company_id AND session.user_id = u.id
+           ORDER BY session.created_at DESC
+           LIMIT 1
+       ) AS last_login_at
 FROM users u
 JOIN user_logins user_login
   ON user_login.company_id = u.company_id AND user_login.user_id = u.id

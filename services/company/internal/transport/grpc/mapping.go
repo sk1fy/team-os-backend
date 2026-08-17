@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	companyv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v1"
@@ -47,8 +48,16 @@ func userToProto(value application.User) *companyv1.User {
 		CreatedAt:         timestamppb.New(value.CreatedAt.UTC()),
 		Source:            userSourceToProto(value.Source),
 		AccessMode:        userAccessModeToProto(value.AccessMode),
+		LastLoginAt:       timestampPointerToProto(value.LastLoginAt),
 		SectionAccess:     employeeSectionsToProto(value.SectionAccess),
 	}
+}
+
+func timestampPointerToProto(value *time.Time) *timestamppb.Timestamp {
+	if value == nil {
+		return nil
+	}
+	return timestamppb.New(value.UTC())
 }
 
 func employeeSectionsToProto(values []string) []companyv1.EmployeeSection {

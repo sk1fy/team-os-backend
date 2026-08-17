@@ -45,6 +45,7 @@ type User struct {
 	CreatedAt         time.Time
 	Source            string
 	AccessMode        string
+	LastLoginAt       *time.Time
 	SectionAccess     []string
 }
 

@@ -196,9 +196,9 @@ func (q *Queries) CreateOutboxEvent(ctx context.Context, arg CreateOutboxEventPa
 
 const createSession = `-- name: CreateSession :one
 INSERT INTO sessions (
-    id, company_id, user_id, refresh_hash, expires_at, rotated_from, user_agent, ip_address
+    id, company_id, user_id, refresh_hash, expires_at, rotated_from, user_agent, ip_address, last_used_at
 )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, now())
 RETURNING id, company_id, user_id, refresh_hash, expires_at, created_at, last_used_at, revoked_at, rotated_from, replaced_by, user_agent, ip_address
 `
 

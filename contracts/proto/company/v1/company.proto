@@ -188,6 +188,7 @@ message User {
   // Direct department assignment; imported amoCRM users can have a department without a position.
   repeated string department_ids = 18;
   string login = 19;
+  optional google.protobuf.Timestamp last_login_at = 20;
 }
 
 message Department {
