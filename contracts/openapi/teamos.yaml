@@ -5423,7 +5423,7 @@ components:
           maximum: 366
         showInSchedule:
           type: boolean
-          description: Показывать пользователя в рабочем графике. Для владельца всегда false.
+          description: Показывать пользователя в рабочем графике.
         lastLoginAt:
           description: Дата и время последнего успешного входа по паролю или постоянной ссылке.
           $ref: '#/components/schemas/ISODateTime'

@@ -108,3 +108,10 @@ func TestProtoOptionalOutputMapping(t *testing.T) {
 		t.Fatalf("position level = %#v", position.Level)
 	}
 }
+
+func TestOwnerScheduleVisibilityIsPreserved(t *testing.T) {
+	owner := userToProto(application.User{Role: "owner", ShowInSchedule: true})
+	if !owner.GetShowInSchedule() {
+		t.Fatal("owner schedule visibility was reset")
+	}
+}

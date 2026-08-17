@@ -104,7 +104,7 @@ func (s *Service) GetUsersByIDs(ctx context.Context, actor Actor, userIDs []uuid
 			BirthDate:         datePointer(row.BirthDate),
 			HiredAt:           datePointer(row.HiredAt),
 			VacationAllowance: int16Pointer(row.VacationAllowance),
-			ShowInSchedule:    row.Role != "owner" && row.ShowInSchedule,
+			ShowInSchedule:    row.ShowInSchedule,
 			CreatedAt:         row.CreatedAt,
 			Source:            row.Source,
 			AccessMode:        row.AccessMode,

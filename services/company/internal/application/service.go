@@ -349,7 +349,7 @@ func userFromDB(value db.User, positions []uuid.UUID) User {
 		BirthDate:         datePointer(value.BirthDate),
 		HiredAt:           datePointer(value.HiredAt),
 		VacationAllowance: int16Pointer(value.VacationAllowance),
-		ShowInSchedule:    value.Role != "owner" && value.ShowInSchedule,
+		ShowInSchedule:    value.ShowInSchedule,
 		CreatedAt:         value.CreatedAt,
 		Source:            value.Source,
 	}

@@ -1413,11 +1413,10 @@ SET first_name = COALESCE($1, first_name),
     hired_at = CASE WHEN $7::boolean THEN $8 ELSE hired_at END,
     vacation_allowance = CASE WHEN $9::boolean THEN $10 ELSE vacation_allowance END,
     show_in_schedule = CASE
-        WHEN COALESCE($11, role) = 'owner' THEN false
-        WHEN $12::boolean THEN $13::boolean
+        WHEN $11::boolean THEN $12::boolean
         ELSE show_in_schedule
     END,
-    role = COALESCE($11, role),
+    role = COALESCE($13, role),
     status = COALESCE($14, status),
     updated_at = now()
 WHERE company_id = $15 AND id = $16
@@ -1435,9 +1434,9 @@ type UpdateUserParams struct {
 	HiredAt           pgtype.Date `json:"hired_at"`
 	SetVacation       bool        `json:"set_vacation"`
 	VacationAllowance pgtype.Int2 `json:"vacation_allowance"`
-	Role              pgtype.Text `json:"role"`
 	SetShowInSchedule bool        `json:"set_show_in_schedule"`
 	ShowInSchedule    bool        `json:"show_in_schedule"`
+	Role              pgtype.Text `json:"role"`
 	Status            pgtype.Text `json:"status"`
 	CompanyID         uuid.UUID   `json:"company_id"`
 	ID                uuid.UUID   `json:"id"`
@@ -1455,9 +1454,9 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		arg.HiredAt,
 		arg.SetVacation,
 		arg.VacationAllowance,
-		arg.Role,
 		arg.SetShowInSchedule,
 		arg.ShowInSchedule,
+		arg.Role,
 		arg.Status,
 		arg.CompanyID,
 		arg.ID,
