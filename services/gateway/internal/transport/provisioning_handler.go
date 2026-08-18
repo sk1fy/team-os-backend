@@ -200,6 +200,8 @@ func (h *Handler) ExchangeAmoWidgetSession(w http.ResponseWriter, r *http.Reques
 		return
 	}
 	request := &companyv1.ExchangeAmoWidgetSessionRequest{Token: token}
+	request.IsAdmin = input.IsAdmin != nil && *input.IsAdmin
+	request.IsOwner = input.IsOwner != nil && *input.IsOwner
 	if input.Account != nil && input.Account.Id != nil {
 		accountID := strings.TrimSpace(*input.Account.Id)
 		if accountID != "" {
@@ -243,7 +245,7 @@ func (h *Handler) ExchangeAmoWidgetSession(w http.ResponseWriter, r *http.Reques
 	case companyv1.AmoWidgetSessionAction_AMO_WIDGET_SESSION_ACTION_LOGIN:
 		result.Action = api.Login
 	case companyv1.AmoWidgetSessionAction_AMO_WIDGET_SESSION_ACTION_REGISTER:
-		if response.SessionToken == nil && (response.RegistrationToken == nil || response.GetRegistrationToken() == "" ||
+		if response.AccessToken == nil && response.SessionToken == nil && (response.RegistrationToken == nil || response.GetRegistrationToken() == "" ||
 			response.ExpiresAt == nil || !response.ExpiresAt.IsValid()) {
 			h.writeConversionError(w, r, errors.New("company returned an invalid amoCRM widget registration session"))
 			return
@@ -276,6 +278,25 @@ func (h *Handler) ExchangeAmoWidgetSession(w http.ResponseWriter, r *http.Reques
 	}
 	if response.RequiresPasswordSetup != nil {
 		result.RequiresPasswordSetup = response.RequiresPasswordSetup
+	}
+	if response.AccessToken != nil {
+		if response.GetAccessToken() == "" {
+			h.writeConversionError(w, r, errors.New("company returned an invalid amoCRM access link"))
+			return
+		}
+		redirectURL := h.accessLinkURL(r, response.GetAccessToken())
+		result.RedirectUrl = &redirectURL
+		switch response.GetRole() {
+		case companyv1.UserRole_USER_ROLE_ADMIN:
+			role := api.UserRoleAdmin
+			result.Role = &role
+		case companyv1.UserRole_USER_ROLE_OWNER:
+			role := api.UserRoleOwner
+			result.Role = &role
+		default:
+			h.writeConversionError(w, r, errors.New("company returned an invalid amoCRM access role"))
+			return
+		}
 	}
 	if response.ExpiresAt != nil && response.ExpiresAt.IsValid() {
 		expiresAt := response.ExpiresAt.AsTime()

@@ -54,6 +54,7 @@ func (s *Server) ExchangeAmoWidgetSession(
 		Token: request.GetToken(), ExternalAccountID: request.GetExternalAccountId(),
 		ExternalUserID: request.GetExternalUserId(), Email: request.GetEmail(),
 		UserName: request.GetUserName(), CompanyName: request.GetCompanyName(),
+		IsAdmin: request.GetIsAdmin(), IsOwner: request.GetIsOwner(),
 	})
 	if err != nil {
 		return nil, transportError(err)
@@ -63,7 +64,7 @@ func (s *Server) ExchangeAmoWidgetSession(
 	case "login":
 		response.Action = companyv1.AmoWidgetSessionAction_AMO_WIDGET_SESSION_ACTION_LOGIN
 	case "register":
-		if result.RegistrationToken == "" && result.SessionToken == "" {
+		if result.RegistrationToken == "" && result.SessionToken == "" && result.AccessToken == "" {
 			return nil, status.Error(codes.Internal, "Внутренняя ошибка сервиса")
 		}
 		response.Action = companyv1.AmoWidgetSessionAction_AMO_WIDGET_SESSION_ACTION_REGISTER
@@ -81,6 +82,10 @@ func (s *Server) ExchangeAmoWidgetSession(
 	}
 	if result.ExpiresAt != nil {
 		response.ExpiresAt = timestamppb.New(*result.ExpiresAt)
+	}
+	if result.AccessToken != "" {
+		response.AccessToken = &result.AccessToken
+		response.Role = userRoleToProto(result.Role).Enum()
 	}
 	return response, nil
 }

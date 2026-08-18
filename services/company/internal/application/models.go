@@ -190,6 +190,8 @@ type AmoWidgetSessionResult struct {
 	Login                 string
 	CompanyName           string
 	RequiresPasswordSetup bool
+	AccessToken           string
+	Role                  string
 	ExpiresAt             *time.Time
 }
 
@@ -200,6 +202,8 @@ type AmoWidgetSessionInput struct {
 	Email             string
 	UserName          string
 	CompanyName       string
+	IsAdmin           bool
+	IsOwner           bool
 }
 
 type AmoAdminSessionInput struct {

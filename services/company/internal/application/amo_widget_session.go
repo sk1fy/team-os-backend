@@ -275,6 +275,24 @@ func (s *Service) ExchangeAmoWidgetSession(
 	if err != nil {
 		return AmoWidgetSessionResult{}, err
 	}
+	if input.IsAdmin || input.IsOwner {
+		desiredRole := "admin"
+		if input.IsOwner {
+			desiredRole = "owner"
+		}
+		adminSession, provisionErr := s.ProvisionAmoAdminSession(ctx, AmoAdminSessionInput{
+			Provider: amoWidgetProvider, ExternalAccountID: accountID,
+			ExternalUserID: externalUserID, Email: email,
+			UserName: input.UserName, CompanyName: companyName, DesiredRole: desiredRole,
+		})
+		if provisionErr != nil {
+			return AmoWidgetSessionResult{}, provisionErr
+		}
+		return AmoWidgetSessionResult{
+			Action: adminSession.Action, ExternalAccountID: adminSession.ExternalAccountID,
+			AccessToken: adminSession.AccessToken, Role: adminSession.Role,
+		}, nil
+	}
 	return s.provisionAmoWidgetSession(
 		ctx, accountID, externalUserID, email, firstName, lastName, companyName, false, true,
 	)

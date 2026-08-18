@@ -5883,6 +5883,12 @@ components:
           $ref: '#/components/schemas/AmoWidgetUserInput'
         account:
           $ref: '#/components/schemas/AmoWidgetAccountInput'
+        isAdmin:
+          type: boolean
+          description: Признак администратора из APP.constant("user_rights") amoCRM.
+        isOwner:
+          type: boolean
+          description: Признак владельца из APP.constant("user_rights") amoCRM.
 
     AmoWidgetUserInput:
       type: object
@@ -5943,6 +5949,11 @@ components:
           type: string
         requiresPasswordSetup:
           type: boolean
+        role:
+          $ref: '#/components/schemas/UserRole'
+        redirectUrl:
+          type: string
+          format: uri
         expiresAt:
           $ref: '#/components/schemas/ISODateTime'
 

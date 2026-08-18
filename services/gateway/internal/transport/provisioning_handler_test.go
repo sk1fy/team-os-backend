@@ -282,6 +282,38 @@ func TestExchangeAmoWidgetSessionForwardsCurrentAmoUserAndReturnsContinuation(t 
 	}
 }
 
+func TestExchangeAmoWidgetSessionForwardsRightsAndReturnsAccessLink(t *testing.T) {
+	const token = "amo-widget-token-abcdefghijklmnopqrstuvwxyz"
+	accountID, accessToken := "31355990", "amo-access-token_abcdefghijklmnopqrstuvwxyz"
+	role := companyv1.UserRole_USER_ROLE_OWNER
+	server := &provisioningCompanyServer{exchangeAmoWidgetSessionFn: func(
+		_ context.Context,
+		request *companyv1.ExchangeAmoWidgetSessionRequest,
+	) (*companyv1.ExchangeAmoWidgetSessionResponse, error) {
+		if request.GetToken() != token || request.GetExternalUserId() != "42" ||
+			!request.GetIsAdmin() || !request.GetIsOwner() {
+			t.Fatalf("request=%#v", request)
+		}
+		return &companyv1.ExchangeAmoWidgetSessionResponse{
+			Action:            companyv1.AmoWidgetSessionAction_AMO_WIDGET_SESSION_ACTION_LOGIN,
+			ExternalAccountId: &accountID, AccessToken: &accessToken, Role: &role,
+		}, nil
+	}}
+	request := httptest.NewRequestWithContext(
+		context.Background(), http.MethodPost, "/api/v1/public/amocrm/widget-sessions",
+		strings.NewReader(`{"user":{"id":"42","email":"admin@example.com"},"account":{"id":"31355990"},"isAdmin":true,"isOwner":true}`),
+	)
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("X-Auth-Token", token)
+	recorder := httptest.NewRecorder()
+	newTestGateway(t, server).ServeHTTP(recorder, request)
+	if recorder.Code != http.StatusOK ||
+		!strings.Contains(recorder.Body.String(), `"role":"owner"`) ||
+		!strings.Contains(recorder.Body.String(), `"redirectUrl":"https://app.example.test/access/amo-access-token_abcdefghijklmnopqrstuvwxyz"`) {
+		t.Fatalf("status=%d body=%s", recorder.Code, recorder.Body.String())
+	}
+}
+
 func TestExchangeAmoWidgetSessionAcceptsUnsignedProfile(t *testing.T) {
 	expiresAt := time.Date(2026, time.August, 10, 12, 10, 0, 0, time.UTC)
 	accountID, sessionToken := "31355990", "amo-continuation-token-abcdefghijklmnopqrstuvwxyz"
