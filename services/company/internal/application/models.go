@@ -225,6 +225,12 @@ type AmoAdminSessionResult struct {
 	AccessToken       string
 }
 
+type AmoSessionAccess struct {
+	Allowed     bool
+	Role        string
+	RedirectURL string
+}
+
 type AmoWidgetContinuation struct {
 	Email                 string
 	Login                 string

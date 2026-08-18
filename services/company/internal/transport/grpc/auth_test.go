@@ -75,6 +75,10 @@ func TestProtectedRPCRejectsRequestWithoutBearerBeforeApplicationCall(t *testing
 	if code := status.Code(err); code != codes.Unauthenticated {
 		t.Fatalf("code = %v, want %v; err = %v", code, codes.Unauthenticated, err)
 	}
+	_, err = server.CheckAmoSessionAccess(context.Background(), &companyv1.CheckAmoSessionAccessRequest{AmoAccountId: "31355990"})
+	if code := status.Code(err); code != codes.Unauthenticated {
+		t.Fatalf("amo session access code = %v, want %v; err = %v", code, codes.Unauthenticated, err)
+	}
 }
 
 func TestAuthorizeProvisioningAcceptsTrustedServiceKey(t *testing.T) {

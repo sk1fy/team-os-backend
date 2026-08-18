@@ -185,6 +185,16 @@ func TestAmoAdminSessionUsesServiceAuthentication(t *testing.T) {
 	}
 }
 
+func TestAmoSessionAccessRequiresBearerAuthentication(t *testing.T) {
+	const path = "/api/v1/amocrm/session-access"
+	if isPublic(http.MethodPost, path) {
+		t.Fatal("amoCRM session access must require a TeamOS Bearer token")
+	}
+	if isPublic(http.MethodGet, path) || isPublic(http.MethodPost, path+"/extra") {
+		t.Fatal("unexpected public amoCRM session access route")
+	}
+}
+
 func TestImpersonationRequiresInternalBearer(t *testing.T) {
 	if isPublic(http.MethodPost, "/api/v1/auth/impersonate") {
 		t.Fatal("impersonation must remain protected by the internal JWT")

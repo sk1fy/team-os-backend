@@ -19,6 +19,7 @@ service CompanyService {
   rpc ProvisionAmoAdminSession(ProvisionAmoAdminSessionRequest) returns (ProvisionAmoAdminSessionResponse);
   rpc ValidateAmoWidgetContinuation(ValidateAmoWidgetContinuationRequest) returns (ValidateAmoWidgetContinuationResponse);
   rpc CompleteAmoWidgetContinuation(CompleteAmoWidgetContinuationRequest) returns (CompleteAmoWidgetContinuationResponse);
+  rpc CheckAmoSessionAccess(CheckAmoSessionAccessRequest) returns (CheckAmoSessionAccessResponse);
   rpc Login(LoginRequest) returns (LoginResponse);
   rpc LoginByLogin(LoginByLoginRequest) returns (LoginByLoginResponse);
   rpc LoginWithAccessLink(LoginWithAccessLinkRequest) returns (LoginWithAccessLinkResponse);
@@ -1015,4 +1016,14 @@ message CompleteAmoWidgetContinuationRequest {
 
 message CompleteAmoWidgetContinuationResponse {
   AuthSession session = 1;
+}
+
+message CheckAmoSessionAccessRequest {
+  string amo_account_id = 1;
+}
+
+message CheckAmoSessionAccessResponse {
+  bool allowed = 1;
+  UserRole role = 2;
+  string redirect_url = 3;
 }

@@ -13,9 +13,6 @@
 ((.services.gateway.environment.GATEWAY_PROVISIONING_SERVICE_TOKEN | length) == 0 or
  (.services.gateway.environment.GATEWAY_PROVISIONING_SERVICE_TOKEN != .services.gateway.environment.GATEWAY_COMPANY_SERVICE_TOKEN)) and
 (.services.company.environment.COMPANY_GATEWAY_SERVICE_TOKEN == .services.gateway.environment.GATEWAY_COMPANY_SERVICE_TOKEN) and
-(.services.company.environment.AMOCRM_VERIFY_URL | startswith("https://")) and
-((.services.company.environment.AMOCRM_VERIFY_SERVICE_TOKEN | length) >= 32) and
-(.services.company.environment.AMOCRM_VERIFY_SERVICE_TOKEN != "development-amocrm-verifier-service-token-change-me") and
 (.services.notifications.environment.NOTIFICATIONS_EMAIL_PROVIDER == "smtp") and
 (.services.notifications.environment.NOTIFICATIONS_SMTP_HOST | length > 0) and
 (.services.notifications.environment.NOTIFICATIONS_SMTP_FROM | length > 0) and

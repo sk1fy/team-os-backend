@@ -209,119 +209,16 @@ func TestValidateCompanyRegistrationTokenIsPublicAndNoStore(t *testing.T) {
 	}
 }
 
-func TestExchangeAmoWidgetSessionAcceptsJSONToken(t *testing.T) {
-	const token = "amo-widget-token-abcdefghijklmnopqrstuvwxyz"
-	expiresAt := time.Date(2026, time.August, 10, 13, 0, 0, 0, time.UTC)
-	accountID, registrationToken := "31355990", "registration-token-abcdefghijklmnopqrstuvwxyz"
-	server := &provisioningCompanyServer{exchangeAmoWidgetSessionFn: func(_ context.Context, request *companyv1.ExchangeAmoWidgetSessionRequest) (*companyv1.ExchangeAmoWidgetSessionResponse, error) {
-		if request.GetToken() != token {
-			t.Fatalf("token=%q", request.GetToken())
-		}
-		return &companyv1.ExchangeAmoWidgetSessionResponse{
-			Action:            companyv1.AmoWidgetSessionAction_AMO_WIDGET_SESSION_ACTION_REGISTER,
-			ExternalAccountId: &accountID, RegistrationToken: &registrationToken, ExpiresAt: timestamppb.New(expiresAt),
-		}, nil
-	}}
-	recorder := performRequest(newTestGateway(t, server), http.MethodPost, "/api/v1/public/amocrm/widget-sessions", `{"token":"`+token+`"}`, nil)
-	if recorder.Code != http.StatusOK || !strings.Contains(recorder.Body.String(), `"action":"register"`) ||
-		!strings.Contains(recorder.Body.String(), `"amoAccountId":"31355990"`) {
+func TestExchangeAmoWidgetSessionIsRetired(t *testing.T) {
+	recorder := performRequest(
+		newTestGateway(t, &provisioningCompanyServer{}), http.MethodPost,
+		"/api/v1/public/amocrm/widget-sessions", `{}`, nil,
+	)
+	if recorder.Code != http.StatusGone || responseErrorCode(t, recorder) != "AMO_WIDGET_SESSION_RETIRED" {
 		t.Fatalf("status=%d body=%s", recorder.Code, recorder.Body.String())
 	}
 	if recorder.Header().Get("Cache-Control") != "private, no-store" {
 		t.Fatalf("Cache-Control=%q", recorder.Header().Get("Cache-Control"))
-	}
-}
-
-func TestExchangeAmoWidgetSessionAcceptsAuthorizedSDKHeader(t *testing.T) {
-	const token = "amo-widget-token-abcdefghijklmnopqrstuvwxyz"
-	accountID := "31355990"
-	server := &provisioningCompanyServer{exchangeAmoWidgetSessionFn: func(_ context.Context, request *companyv1.ExchangeAmoWidgetSessionRequest) (*companyv1.ExchangeAmoWidgetSessionResponse, error) {
-		if request.GetToken() != token {
-			t.Fatalf("token=%q", request.GetToken())
-		}
-		return &companyv1.ExchangeAmoWidgetSessionResponse{
-			Action: companyv1.AmoWidgetSessionAction_AMO_WIDGET_SESSION_ACTION_LOGIN, ExternalAccountId: &accountID,
-		}, nil
-	}}
-	request := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/api/v1/public/amocrm/widget-sessions", nil)
-	request.Header.Set("X-Auth-Token", token)
-	recorder := httptest.NewRecorder()
-	newTestGateway(t, server).ServeHTTP(recorder, request)
-	if recorder.Code != http.StatusOK || !strings.Contains(recorder.Body.String(), `"action":"login"`) {
-		t.Fatalf("status=%d body=%s", recorder.Code, recorder.Body.String())
-	}
-}
-
-func TestExchangeAmoWidgetSessionIgnoresBrowserProfile(t *testing.T) {
-	const token = "amo-widget-token-abcdefghijklmnopqrstuvwxyz"
-	expiresAt := time.Date(2026, time.August, 10, 12, 10, 0, 0, time.UTC)
-	accountID, sessionToken := "31355990", "amo-continuation-token-abcdefghijklmnopqrstuvwxyz"
-	email, companyName, setup := "admin@example.com", "Ракурс", true
-	server := &provisioningCompanyServer{exchangeAmoWidgetSessionFn: func(_ context.Context, request *companyv1.ExchangeAmoWidgetSessionRequest) (*companyv1.ExchangeAmoWidgetSessionResponse, error) {
-		if request.GetToken() != token || request.ExternalUserId != nil || request.Email != nil ||
-			request.UserName != nil || request.CompanyName != nil || request.ExternalAccountId != nil ||
-			request.GetIsAdmin() || request.GetIsOwner() {
-			t.Fatalf("request=%#v", request)
-		}
-		return &companyv1.ExchangeAmoWidgetSessionResponse{
-			Action:            companyv1.AmoWidgetSessionAction_AMO_WIDGET_SESSION_ACTION_REGISTER,
-			ExternalAccountId: &accountID, SessionToken: &sessionToken, Email: &email,
-			CompanyName: &companyName, RequiresPasswordSetup: &setup, ExpiresAt: timestamppb.New(expiresAt),
-		}, nil
-	}}
-	request := httptest.NewRequestWithContext(
-		context.Background(), http.MethodPost, "/api/v1/public/amocrm/widget-sessions",
-		strings.NewReader(`{"user":{"id":"42","email":"admin@example.com","name":"Иван Петров"},"account":{"name":"Ракурс"}}`),
-	)
-	request.Header.Set("Content-Type", "application/json")
-	request.Header.Set("X-Auth-Token", token)
-	recorder := httptest.NewRecorder()
-	newTestGateway(t, server).ServeHTTP(recorder, request)
-	if recorder.Code != http.StatusOK || !strings.Contains(recorder.Body.String(), `"sessionToken":"`+sessionToken+`"`) ||
-		!strings.Contains(recorder.Body.String(), `"requiresPasswordSetup":true`) {
-		t.Fatalf("status=%d body=%s", recorder.Code, recorder.Body.String())
-	}
-}
-
-func TestExchangeAmoWidgetSessionIgnoresBrowserRightsAndReturnsAccessLink(t *testing.T) {
-	const token = "amo-widget-token-abcdefghijklmnopqrstuvwxyz"
-	accountID, accessToken := "31355990", "amo-access-token_abcdefghijklmnopqrstuvwxyz"
-	role := companyv1.UserRole_USER_ROLE_OWNER
-	server := &provisioningCompanyServer{exchangeAmoWidgetSessionFn: func(
-		_ context.Context,
-		request *companyv1.ExchangeAmoWidgetSessionRequest,
-	) (*companyv1.ExchangeAmoWidgetSessionResponse, error) {
-		if request.GetToken() != token || request.ExternalUserId != nil || request.ExternalAccountId != nil ||
-			request.GetIsAdmin() || request.GetIsOwner() {
-			t.Fatalf("request=%#v", request)
-		}
-		return &companyv1.ExchangeAmoWidgetSessionResponse{
-			Action:            companyv1.AmoWidgetSessionAction_AMO_WIDGET_SESSION_ACTION_LOGIN,
-			ExternalAccountId: &accountID, AccessToken: &accessToken, Role: &role,
-		}, nil
-	}}
-	request := httptest.NewRequestWithContext(
-		context.Background(), http.MethodPost, "/api/v1/public/amocrm/widget-sessions",
-		strings.NewReader(`{"user":{"id":"42","email":"admin@example.com"},"account":{"id":"31355990"},"isAdmin":true,"isOwner":true}`),
-	)
-	request.Header.Set("Content-Type", "application/json")
-	request.Header.Set("X-Auth-Token", token)
-	recorder := httptest.NewRecorder()
-	newTestGateway(t, server).ServeHTTP(recorder, request)
-	if recorder.Code != http.StatusOK ||
-		!strings.Contains(recorder.Body.String(), `"role":"owner"`) ||
-		!strings.Contains(recorder.Body.String(), `"redirectUrl":"https://app.example.test/access/amo-access-token_abcdefghijklmnopqrstuvwxyz"`) {
-		t.Fatalf("status=%d body=%s", recorder.Code, recorder.Body.String())
-	}
-}
-
-func TestExchangeAmoWidgetSessionRejectsUnsignedBrowserProfile(t *testing.T) {
-	recorder := performRequest(
-		newTestGateway(t, &provisioningCompanyServer{}), http.MethodPost, "/api/v1/public/amocrm/widget-sessions",
-		`{"user":{"id":"42","email":"admin@example.com","name":"Иван Петров"},"account":{"id":"31355990","name":"Ракурс"}}`, nil,
-	)
-	if recorder.Code != http.StatusBadRequest {
-		t.Fatalf("status=%d body=%s", recorder.Code, recorder.Body.String())
 	}
 }
 
@@ -358,21 +255,6 @@ func TestAmoWidgetContinuationValidationAndCompletion(t *testing.T) {
 	}
 	if got := responseCookie(t, completed, refreshCookieName).Value; got != "amo-refresh" {
 		t.Fatalf("refresh cookie=%q", got)
-	}
-}
-
-func TestExchangeAmoWidgetSessionRejectsTwoTokenSources(t *testing.T) {
-	const token = "amo-widget-token-abcdefghijklmnopqrstuvwxyz"
-	request := httptest.NewRequestWithContext(
-		context.Background(), http.MethodPost, "/api/v1/public/amocrm/widget-sessions",
-		strings.NewReader(`{"token":"`+token+`"}`),
-	)
-	request.Header.Set("Content-Type", "application/json")
-	request.Header.Set("X-Auth-Token", token)
-	recorder := httptest.NewRecorder()
-	newTestGateway(t, &provisioningCompanyServer{}).ServeHTTP(recorder, request)
-	if recorder.Code != http.StatusBadRequest {
-		t.Fatalf("status=%d body=%s", recorder.Code, recorder.Body.String())
 	}
 }
 

@@ -28,6 +28,7 @@ const (
 	CompanyService_ProvisionAmoAdminSession_FullMethodName         = "/teamos.company.v1.CompanyService/ProvisionAmoAdminSession"
 	CompanyService_ValidateAmoWidgetContinuation_FullMethodName    = "/teamos.company.v1.CompanyService/ValidateAmoWidgetContinuation"
 	CompanyService_CompleteAmoWidgetContinuation_FullMethodName    = "/teamos.company.v1.CompanyService/CompleteAmoWidgetContinuation"
+	CompanyService_CheckAmoSessionAccess_FullMethodName            = "/teamos.company.v1.CompanyService/CheckAmoSessionAccess"
 	CompanyService_Login_FullMethodName                            = "/teamos.company.v1.CompanyService/Login"
 	CompanyService_LoginByLogin_FullMethodName                     = "/teamos.company.v1.CompanyService/LoginByLogin"
 	CompanyService_LoginWithAccessLink_FullMethodName              = "/teamos.company.v1.CompanyService/LoginWithAccessLink"
@@ -110,6 +111,7 @@ type CompanyServiceClient interface {
 	ProvisionAmoAdminSession(ctx context.Context, in *ProvisionAmoAdminSessionRequest, opts ...grpc.CallOption) (*ProvisionAmoAdminSessionResponse, error)
 	ValidateAmoWidgetContinuation(ctx context.Context, in *ValidateAmoWidgetContinuationRequest, opts ...grpc.CallOption) (*ValidateAmoWidgetContinuationResponse, error)
 	CompleteAmoWidgetContinuation(ctx context.Context, in *CompleteAmoWidgetContinuationRequest, opts ...grpc.CallOption) (*CompleteAmoWidgetContinuationResponse, error)
+	CheckAmoSessionAccess(ctx context.Context, in *CheckAmoSessionAccessRequest, opts ...grpc.CallOption) (*CheckAmoSessionAccessResponse, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	LoginByLogin(ctx context.Context, in *LoginByLoginRequest, opts ...grpc.CallOption) (*LoginByLoginResponse, error)
 	LoginWithAccessLink(ctx context.Context, in *LoginWithAccessLinkRequest, opts ...grpc.CallOption) (*LoginWithAccessLinkResponse, error)
@@ -267,6 +269,16 @@ func (c *companyServiceClient) CompleteAmoWidgetContinuation(ctx context.Context
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CompleteAmoWidgetContinuationResponse)
 	err := c.cc.Invoke(ctx, CompanyService_CompleteAmoWidgetContinuation_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) CheckAmoSessionAccess(ctx context.Context, in *CheckAmoSessionAccessRequest, opts ...grpc.CallOption) (*CheckAmoSessionAccessResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CheckAmoSessionAccessResponse)
+	err := c.cc.Invoke(ctx, CompanyService_CheckAmoSessionAccess_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -920,6 +932,7 @@ type CompanyServiceServer interface {
 	ProvisionAmoAdminSession(context.Context, *ProvisionAmoAdminSessionRequest) (*ProvisionAmoAdminSessionResponse, error)
 	ValidateAmoWidgetContinuation(context.Context, *ValidateAmoWidgetContinuationRequest) (*ValidateAmoWidgetContinuationResponse, error)
 	CompleteAmoWidgetContinuation(context.Context, *CompleteAmoWidgetContinuationRequest) (*CompleteAmoWidgetContinuationResponse, error)
+	CheckAmoSessionAccess(context.Context, *CheckAmoSessionAccessRequest) (*CheckAmoSessionAccessResponse, error)
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	LoginByLogin(context.Context, *LoginByLoginRequest) (*LoginByLoginResponse, error)
 	LoginWithAccessLink(context.Context, *LoginWithAccessLinkRequest) (*LoginWithAccessLinkResponse, error)
@@ -1019,6 +1032,9 @@ func (UnimplementedCompanyServiceServer) ValidateAmoWidgetContinuation(context.C
 }
 func (UnimplementedCompanyServiceServer) CompleteAmoWidgetContinuation(context.Context, *CompleteAmoWidgetContinuationRequest) (*CompleteAmoWidgetContinuationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CompleteAmoWidgetContinuation not implemented")
+}
+func (UnimplementedCompanyServiceServer) CheckAmoSessionAccess(context.Context, *CheckAmoSessionAccessRequest) (*CheckAmoSessionAccessResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckAmoSessionAccess not implemented")
 }
 func (UnimplementedCompanyServiceServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
@@ -1388,6 +1404,24 @@ func _CompanyService_CompleteAmoWidgetContinuation_Handler(srv interface{}, ctx 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CompanyServiceServer).CompleteAmoWidgetContinuation(ctx, req.(*CompleteAmoWidgetContinuationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_CheckAmoSessionAccess_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckAmoSessionAccessRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).CheckAmoSessionAccess(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_CheckAmoSessionAccess_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).CheckAmoSessionAccess(ctx, req.(*CheckAmoSessionAccessRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2568,6 +2602,10 @@ var CompanyService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CompleteAmoWidgetContinuation",
 			Handler:    _CompanyService_CompleteAmoWidgetContinuation_Handler,
+		},
+		{
+			MethodName: "CheckAmoSessionAccess",
+			Handler:    _CompanyService_CheckAmoSessionAccess_Handler,
 		},
 		{
 			MethodName: "Login",

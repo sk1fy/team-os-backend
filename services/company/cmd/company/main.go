@@ -18,7 +18,6 @@ import (
 	sharedauth "github.com/sk1fy/team-os-backend/pkg/auth"
 	"github.com/sk1fy/team-os-backend/pkg/eventbus"
 	"github.com/sk1fy/team-os-backend/pkg/httpx"
-	"github.com/sk1fy/team-os-backend/services/company/internal/amoverifier"
 	"github.com/sk1fy/team-os-backend/services/company/internal/application"
 	"github.com/sk1fy/team-os-backend/services/company/internal/config"
 	"github.com/sk1fy/team-os-backend/services/company/internal/consumers"
@@ -104,16 +103,6 @@ func run(logger *slog.Logger) error {
 		application.WithAmoWidgetSessionTTL(configuration.AmoWidgetSessionTTL),
 		application.WithLogger(logger),
 	}
-	amoWidgetVerifier, clientErr := amoverifier.NewClient(amoverifier.Config{
-		URL: configuration.AmoVerifyURL, ServiceToken: configuration.AmoVerifyServiceToken,
-		AppName: configuration.AmoAppName, Timeout: configuration.AmoVerifyTimeout,
-	})
-	if clientErr != nil {
-		return fmt.Errorf("initialize amoCRM token verifier client: %w", clientErr)
-	}
-	serviceOptions = append(serviceOptions,
-		application.WithAmoWidgetTokenVerifier(amoWidgetVerifier),
-	)
 	if configuration.AmoImportEnabled {
 		externalUsersClient, externalClientErr := externalusers.NewClient(externalusers.Config{
 			APIURL: configuration.ExternalAPIURL, AppName: configuration.AmoAppName,

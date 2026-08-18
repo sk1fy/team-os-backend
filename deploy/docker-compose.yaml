@@ -195,9 +195,6 @@ services:
       COMPANY_REGISTRATION_TOKEN_TTL: ${COMPANY_REGISTRATION_TOKEN_TTL:-1h}
       COMPANY_AMO_WIDGET_SESSION_TTL: ${COMPANY_AMO_WIDGET_SESSION_TTL:-10m}
       COMPANY_AMO_IMPORT_ENABLED: ${COMPANY_AMO_IMPORT_ENABLED:-false}
-      AMOCRM_VERIFY_URL: ${AMOCRM_VERIFY_URL:-https://widgets.rkrs.ru/api/internal/amocrm/verify-token}
-      AMOCRM_VERIFY_SERVICE_TOKEN: ${AMOCRM_VERIFY_SERVICE_TOKEN:-development-amocrm-verifier-service-token-change-me}
-      AMOCRM_VERIFY_TIMEOUT: ${AMOCRM_VERIFY_TIMEOUT:-5s}
     ports:
       - "8081:8081"
       - "127.0.0.1:9081:9081"

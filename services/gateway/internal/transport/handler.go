@@ -902,6 +902,10 @@ func (h *Handler) writeRPCError(w http.ResponseWriter, r *http.Request, err erro
 	write := func(publicError *apierror.Error) {
 		apierror.Write(w, publicError.WithCode(errorCode))
 	}
+	if errorCode == "AMO_SESSION_ACCESS_LOCKED" {
+		write(apierror.New(http.StatusLocked, message))
+		return
+	}
 	switch grpcStatus.Code() {
 	case codes.InvalidArgument, codes.FailedPrecondition, codes.OutOfRange:
 		write(apierror.BadRequest(message))

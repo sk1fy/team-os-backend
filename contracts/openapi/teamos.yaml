@@ -254,13 +254,11 @@ paths:
     post:
       tags: [Provisioning]
       operationId: exchangeAmoWidgetSession
+      deprecated: true
       summary: Подготовить создание компании или вход из виджета amoCRM
       description: |
-        Клиент TeamOS передаёт токен в JSON-теле. Официальный WEB SDK amoCRM
-        передаёт тот же токен в заголовке `X-Auth-Token`. Должен быть указан
-        ровно один источник токена. Gateway передаёт только токен в company-service,
-        который проверяет его одним служебным запросом в widgets-rkrs. Профиль,
-        аккаунт и права из JSON-тела не используются для авторизации или ролей.
+        Прежний публичный сценарий отключён. Вход из amoCRM выполняется только
+        через уже существующую Bearer-сессию TeamOS и `/api/v1/amocrm/session-access`.
       security: []
       parameters:
         - name: X-Auth-Token
@@ -288,6 +286,40 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '409':
           $ref: '#/components/responses/Conflict'
+        '410':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /api/v1/amocrm/session-access:
+    post:
+      tags: [Auth]
+      operationId: checkAmoSessionAccess
+      summary: Проверить переход из amoCRM по действующей сессии TeamOS
+      description: |
+        Пользователь определяется исключительно из Bearer-сессии TeamOS.
+        Browser-подсказки пользователя и прав не принимаются.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AmoSessionAccessInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/AmoSessionAccess'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '423':
+          $ref: '#/components/responses/Locked'
         default:
           $ref: '#/components/responses/Error'
 
@@ -4416,6 +4448,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
+    Locked:
+      description: Компания или интеграция временно заблокирована
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
     Error:
       description: Ошибка API
       content:
@@ -4449,6 +4487,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/AmoWidgetSessionResponse'
+    AmoSessionAccess:
+      description: Доступ к переходу из amoCRM подтверждён текущей сессией TeamOS
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AmoSessionAccessResponse'
     AmoAdminSession:
       description: Ссылка самостоятельного входа подтверждённого администратора amoCRM
       content:
@@ -5869,6 +5913,32 @@ components:
       properties:
         exists:
           type: boolean
+
+    AmoSessionAccessInput:
+      type: object
+      additionalProperties: false
+      required: [amoAccountId]
+      properties:
+        amoAccountId:
+          type: string
+          pattern: '^\d+$'
+          maxLength: 255
+
+    AmoSessionAccessResponse:
+      type: object
+      additionalProperties: false
+      required: [allowed, role, redirectUrl]
+      properties:
+        allowed:
+          type: boolean
+          const: true
+        role:
+          allOf:
+            - $ref: '#/components/schemas/UserRole'
+          description: В успешном ответе возвращается только `admin` или `owner`.
+        redirectUrl:
+          type: string
+          const: /schedule
 
     AmoWidgetSessionInput:
       type: object
