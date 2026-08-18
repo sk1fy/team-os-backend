@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/google/uuid"
 	companyv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v1"
 	"github.com/sk1fy/team-os-backend/pkg/apierror"
 	"github.com/sk1fy/team-os-backend/services/gateway/internal/api"
@@ -69,6 +70,76 @@ func (h *Handler) IssueCompanyRegistrationToken(w http.ResponseWriter, r *http.R
 	setPrivateNoStore(w)
 	writeJSON(w, http.StatusCreated, api.CompanyRegistrationTokenResponse{
 		RegistrationToken: response.GetToken(), ExpiresAt: response.GetExpiresAt().AsTime(),
+	})
+}
+
+func (h *Handler) ProvisionAmoAdminSession(w http.ResponseWriter, r *http.Request) {
+	if !h.requireProvisioningService(w, r) {
+		return
+	}
+	setPrivateNoStore(w)
+	var input api.ProvisionAmoAdminSessionInput
+	if !decode(w, r, &input) {
+		return
+	}
+	desiredRole := companyv1.UserRole_USER_ROLE_UNSPECIFIED
+	switch input.DesiredRole {
+	case api.UserRoleAdmin:
+		desiredRole = companyv1.UserRole_USER_ROLE_ADMIN
+	case api.UserRoleOwner:
+		desiredRole = companyv1.UserRole_USER_ROLE_OWNER
+	default:
+		apierror.Write(w, apierror.BadRequest("Роль пользователя amoCRM должна быть admin или owner"))
+		return
+	}
+	companyName := ""
+	if input.Account.Name != nil {
+		companyName = strings.TrimSpace(*input.Account.Name)
+	}
+	userName := ""
+	if input.User.Name != nil {
+		userName = strings.TrimSpace(*input.User.Name)
+	}
+	response, err := h.company.ProvisionAmoAdminSession(
+		h.provisioningContext(r),
+		&companyv1.ProvisionAmoAdminSessionRequest{
+			Provider: h.provisioningServiceProvider, ExternalAccountId: strings.TrimSpace(input.Account.Id),
+			ExternalUserId: strings.TrimSpace(input.User.Id), Email: string(input.User.Email),
+			UserName: userName, CompanyName: companyName, DesiredRole: desiredRole,
+		},
+	)
+	if err != nil {
+		h.writeRPCError(w, r, err)
+		return
+	}
+	companyID, companyErr := uuid.Parse(response.GetCompanyId())
+	userID, userErr := uuid.Parse(response.GetUserId())
+	if companyErr != nil || userErr != nil || response.GetExternalAccountId() == "" || response.GetAccessToken() == "" {
+		h.writeConversionError(w, r, errors.New("company returned an invalid amoCRM admin session"))
+		return
+	}
+	action := api.Login
+	statusCode := http.StatusOK
+	if response.GetAction() == companyv1.AmoWidgetSessionAction_AMO_WIDGET_SESSION_ACTION_REGISTER {
+		action = api.Register
+		statusCode = http.StatusCreated
+	} else if response.GetAction() != companyv1.AmoWidgetSessionAction_AMO_WIDGET_SESSION_ACTION_LOGIN {
+		h.writeConversionError(w, r, errors.New("company returned an invalid amoCRM admin session action"))
+		return
+	}
+	role := api.UserRole("")
+	switch response.GetRole() {
+	case companyv1.UserRole_USER_ROLE_ADMIN:
+		role = api.UserRoleAdmin
+	case companyv1.UserRole_USER_ROLE_OWNER:
+		role = api.UserRoleOwner
+	default:
+		h.writeConversionError(w, r, errors.New("company returned an invalid amoCRM admin role"))
+		return
+	}
+	writeJSON(w, statusCode, api.AmoAdminSessionResponse{
+		Action: action, AmoAccountId: response.GetExternalAccountId(), CompanyId: companyID,
+		UserId: userID, Role: role, RedirectUrl: h.accessLinkURL(r, response.GetAccessToken()),
 	})
 }
 

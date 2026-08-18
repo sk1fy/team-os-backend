@@ -175,6 +175,16 @@ func TestAmoWidgetSessionRoutesArePublic(t *testing.T) {
 	}
 }
 
+func TestAmoAdminSessionUsesServiceAuthentication(t *testing.T) {
+	const path = "/api/v1/provisioning/amocrm/admin-sessions"
+	if !isPublic(http.MethodPost, path) {
+		t.Fatal("service-auth route must bypass internal user JWT middleware")
+	}
+	if isPublic(http.MethodGet, path) || isPublic(http.MethodPost, path+"/extra") {
+		t.Fatal("only the exact POST service-auth route may bypass the user JWT middleware")
+	}
+}
+
 func TestImpersonationRequiresInternalBearer(t *testing.T) {
 	if isPublic(http.MethodPost, "/api/v1/auth/impersonate") {
 		t.Fatal("impersonation must remain protected by the internal JWT")

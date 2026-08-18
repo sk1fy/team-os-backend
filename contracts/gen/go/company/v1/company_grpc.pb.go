@@ -25,6 +25,7 @@ const (
 	CompanyService_IssueCompanyRegistrationToken_FullMethodName    = "/teamos.company.v1.CompanyService/IssueCompanyRegistrationToken"
 	CompanyService_ValidateCompanyRegistrationToken_FullMethodName = "/teamos.company.v1.CompanyService/ValidateCompanyRegistrationToken"
 	CompanyService_ExchangeAmoWidgetSession_FullMethodName         = "/teamos.company.v1.CompanyService/ExchangeAmoWidgetSession"
+	CompanyService_ProvisionAmoAdminSession_FullMethodName         = "/teamos.company.v1.CompanyService/ProvisionAmoAdminSession"
 	CompanyService_ValidateAmoWidgetContinuation_FullMethodName    = "/teamos.company.v1.CompanyService/ValidateAmoWidgetContinuation"
 	CompanyService_CompleteAmoWidgetContinuation_FullMethodName    = "/teamos.company.v1.CompanyService/CompleteAmoWidgetContinuation"
 	CompanyService_Login_FullMethodName                            = "/teamos.company.v1.CompanyService/Login"
@@ -106,6 +107,7 @@ type CompanyServiceClient interface {
 	IssueCompanyRegistrationToken(ctx context.Context, in *IssueCompanyRegistrationTokenRequest, opts ...grpc.CallOption) (*IssueCompanyRegistrationTokenResponse, error)
 	ValidateCompanyRegistrationToken(ctx context.Context, in *ValidateCompanyRegistrationTokenRequest, opts ...grpc.CallOption) (*ValidateCompanyRegistrationTokenResponse, error)
 	ExchangeAmoWidgetSession(ctx context.Context, in *ExchangeAmoWidgetSessionRequest, opts ...grpc.CallOption) (*ExchangeAmoWidgetSessionResponse, error)
+	ProvisionAmoAdminSession(ctx context.Context, in *ProvisionAmoAdminSessionRequest, opts ...grpc.CallOption) (*ProvisionAmoAdminSessionResponse, error)
 	ValidateAmoWidgetContinuation(ctx context.Context, in *ValidateAmoWidgetContinuationRequest, opts ...grpc.CallOption) (*ValidateAmoWidgetContinuationResponse, error)
 	CompleteAmoWidgetContinuation(ctx context.Context, in *CompleteAmoWidgetContinuationRequest, opts ...grpc.CallOption) (*CompleteAmoWidgetContinuationResponse, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
@@ -235,6 +237,16 @@ func (c *companyServiceClient) ExchangeAmoWidgetSession(ctx context.Context, in 
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ExchangeAmoWidgetSessionResponse)
 	err := c.cc.Invoke(ctx, CompanyService_ExchangeAmoWidgetSession_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) ProvisionAmoAdminSession(ctx context.Context, in *ProvisionAmoAdminSessionRequest, opts ...grpc.CallOption) (*ProvisionAmoAdminSessionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ProvisionAmoAdminSessionResponse)
+	err := c.cc.Invoke(ctx, CompanyService_ProvisionAmoAdminSession_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -905,6 +917,7 @@ type CompanyServiceServer interface {
 	IssueCompanyRegistrationToken(context.Context, *IssueCompanyRegistrationTokenRequest) (*IssueCompanyRegistrationTokenResponse, error)
 	ValidateCompanyRegistrationToken(context.Context, *ValidateCompanyRegistrationTokenRequest) (*ValidateCompanyRegistrationTokenResponse, error)
 	ExchangeAmoWidgetSession(context.Context, *ExchangeAmoWidgetSessionRequest) (*ExchangeAmoWidgetSessionResponse, error)
+	ProvisionAmoAdminSession(context.Context, *ProvisionAmoAdminSessionRequest) (*ProvisionAmoAdminSessionResponse, error)
 	ValidateAmoWidgetContinuation(context.Context, *ValidateAmoWidgetContinuationRequest) (*ValidateAmoWidgetContinuationResponse, error)
 	CompleteAmoWidgetContinuation(context.Context, *CompleteAmoWidgetContinuationRequest) (*CompleteAmoWidgetContinuationResponse, error)
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
@@ -997,6 +1010,9 @@ func (UnimplementedCompanyServiceServer) ValidateCompanyRegistrationToken(contex
 }
 func (UnimplementedCompanyServiceServer) ExchangeAmoWidgetSession(context.Context, *ExchangeAmoWidgetSessionRequest) (*ExchangeAmoWidgetSessionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExchangeAmoWidgetSession not implemented")
+}
+func (UnimplementedCompanyServiceServer) ProvisionAmoAdminSession(context.Context, *ProvisionAmoAdminSessionRequest) (*ProvisionAmoAdminSessionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProvisionAmoAdminSession not implemented")
 }
 func (UnimplementedCompanyServiceServer) ValidateAmoWidgetContinuation(context.Context, *ValidateAmoWidgetContinuationRequest) (*ValidateAmoWidgetContinuationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ValidateAmoWidgetContinuation not implemented")
@@ -1318,6 +1334,24 @@ func _CompanyService_ExchangeAmoWidgetSession_Handler(srv interface{}, ctx conte
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CompanyServiceServer).ExchangeAmoWidgetSession(ctx, req.(*ExchangeAmoWidgetSessionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_ProvisionAmoAdminSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ProvisionAmoAdminSessionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).ProvisionAmoAdminSession(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_ProvisionAmoAdminSession_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).ProvisionAmoAdminSession(ctx, req.(*ProvisionAmoAdminSessionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2522,6 +2556,10 @@ var CompanyService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ExchangeAmoWidgetSession",
 			Handler:    _CompanyService_ExchangeAmoWidgetSession_Handler,
+		},
+		{
+			MethodName: "ProvisionAmoAdminSession",
+			Handler:    _CompanyService_ProvisionAmoAdminSession_Handler,
 		},
 		{
 			MethodName: "ValidateAmoWidgetContinuation",

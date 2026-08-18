@@ -22,6 +22,7 @@ type provisioningCompanyServer struct {
 
 	checkAmoAccountFn                  func(context.Context, *companyv1.CheckAmoAccountRequest) (*companyv1.CheckAmoAccountResponse, error)
 	issueCompanyRegistrationTokenFn    func(context.Context, *companyv1.IssueCompanyRegistrationTokenRequest) (*companyv1.IssueCompanyRegistrationTokenResponse, error)
+	provisionAmoAdminSessionFn         func(context.Context, *companyv1.ProvisionAmoAdminSessionRequest) (*companyv1.ProvisionAmoAdminSessionResponse, error)
 	validateCompanyRegistrationTokenFn func(context.Context, *companyv1.ValidateCompanyRegistrationTokenRequest) (*companyv1.ValidateCompanyRegistrationTokenResponse, error)
 	exchangeAmoWidgetSessionFn         func(context.Context, *companyv1.ExchangeAmoWidgetSessionRequest) (*companyv1.ExchangeAmoWidgetSessionResponse, error)
 	validateAmoWidgetContinuationFn    func(context.Context, *companyv1.ValidateAmoWidgetContinuationRequest) (*companyv1.ValidateAmoWidgetContinuationResponse, error)
@@ -40,6 +41,13 @@ func (s *provisioningCompanyServer) IssueCompanyRegistrationToken(ctx context.Co
 		return nil, status.Error(codes.Unimplemented, "unexpected IssueCompanyRegistrationToken call")
 	}
 	return s.issueCompanyRegistrationTokenFn(ctx, request)
+}
+
+func (s *provisioningCompanyServer) ProvisionAmoAdminSession(ctx context.Context, request *companyv1.ProvisionAmoAdminSessionRequest) (*companyv1.ProvisionAmoAdminSessionResponse, error) {
+	if s.provisionAmoAdminSessionFn == nil {
+		return nil, status.Error(codes.Unimplemented, "unexpected ProvisionAmoAdminSession call")
+	}
+	return s.provisionAmoAdminSessionFn(ctx, request)
 }
 
 func (s *provisioningCompanyServer) ValidateCompanyRegistrationToken(ctx context.Context, request *companyv1.ValidateCompanyRegistrationTokenRequest) (*companyv1.ValidateCompanyRegistrationTokenResponse, error) {
@@ -129,6 +137,52 @@ func TestIssueCompanyRegistrationTokenAllowsMissingServiceAuthWhenEnabled(t *tes
 	recorder := performProvisioningRequest(handler, http.MethodPost, "/api/v1/provisioning/amocrm/registration-tokens", `{"amoAccountId":"31355990"}`, "")
 	if recorder.Code != http.StatusCreated || calls.Load() != 1 || !strings.Contains(recorder.Body.String(), `"registrationToken"`) {
 		t.Fatalf("status=%d calls=%d body=%s", recorder.Code, calls.Load(), recorder.Body.String())
+	}
+}
+
+func TestProvisionAmoAdminSessionRequiresServiceAuthAndReturnsAccessURL(t *testing.T) {
+	var calls atomic.Int32
+	server := &provisioningCompanyServer{provisionAmoAdminSessionFn: func(
+		ctx context.Context,
+		request *companyv1.ProvisionAmoAdminSessionRequest,
+	) (*companyv1.ProvisionAmoAdminSessionResponse, error) {
+		calls.Add(1)
+		if request.GetProvider() != testProvisioningProvider || request.GetExternalAccountId() != "31355990" ||
+			request.GetExternalUserId() != "10912522" || request.GetEmail() != "admin@example.com" ||
+			request.GetUserName() != "Иван Петров" || request.GetCompanyName() != "Ракурс" ||
+			request.GetDesiredRole() != companyv1.UserRole_USER_ROLE_OWNER {
+			t.Fatalf("request = %#v", request)
+		}
+		incoming, _ := metadata.FromIncomingContext(ctx)
+		if values := incoming.Get("x-teamos-service"); len(values) != 1 || values[0] != provisioningServiceMarker {
+			t.Fatalf("service metadata = %v", values)
+		}
+		return &companyv1.ProvisionAmoAdminSessionResponse{
+			Action:            companyv1.AmoWidgetSessionAction_AMO_WIDGET_SESSION_ACTION_REGISTER,
+			ExternalAccountId: "31355990", CompanyId: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+			UserId: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb", Role: companyv1.UserRole_USER_ROLE_OWNER,
+			AccessToken: "amo-admin-access-token_abcdefghijklmnopqrstuvwxyz",
+		}, nil
+	}}
+	handler := newTestGateway(t, server)
+	body := `{"account":{"id":"31355990","name":"Ракурс"},"user":{"id":"10912522","email":"admin@example.com","name":"Иван Петров"},"desiredRole":"owner"}`
+	unauthorized := performProvisioningRequest(
+		handler, http.MethodPost, "/api/v1/provisioning/amocrm/admin-sessions", body, "",
+	)
+	if unauthorized.Code != http.StatusUnauthorized || responseErrorCode(t, unauthorized) != "SERVICE_AUTH_INVALID" || calls.Load() != 0 {
+		t.Fatalf("unauthorized status=%d calls=%d body=%s", unauthorized.Code, calls.Load(), unauthorized.Body.String())
+	}
+	authorized := performProvisioningRequest(
+		handler, http.MethodPost, "/api/v1/provisioning/amocrm/admin-sessions", body,
+		"Service "+testProvisioningServiceToken,
+	)
+	if authorized.Code != http.StatusCreated || calls.Load() != 1 ||
+		!strings.Contains(authorized.Body.String(), `"role":"owner"`) ||
+		!strings.Contains(authorized.Body.String(), `"redirectUrl":"https://app.example.test/access/amo-admin-access-token_abcdefghijklmnopqrstuvwxyz"`) {
+		t.Fatalf("authorized status=%d calls=%d body=%s", authorized.Code, calls.Load(), authorized.Body.String())
+	}
+	if authorized.Header().Get("Cache-Control") != "private, no-store" {
+		t.Fatalf("Cache-Control = %q", authorized.Header().Get("Cache-Control"))
 	}
 }
 

@@ -134,7 +134,8 @@ func isBootstrapAuth(method, path string) bool {
 func isProvisioning(method, path string) bool {
 	return (method == http.MethodPost &&
 		(path == "/api/v1/provisioning/companies" || path == "/api/v1/provisioning/sessions" ||
-			path == "/api/v1/provisioning/amocrm/registration-tokens")) ||
+			path == "/api/v1/provisioning/amocrm/registration-tokens" ||
+			path == "/api/v1/provisioning/amocrm/admin-sessions")) ||
 		(method == http.MethodGet && path == "/api/v1/provisioning/companies/status")
 }
 

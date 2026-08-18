@@ -18,6 +18,237 @@ import (
 
 const amoWidgetProvider = "rakurs"
 
+func (s *Service) ProvisionAmoAdminSession(
+	ctx context.Context,
+	input AmoAdminSessionInput,
+) (AmoAdminSessionResult, error) {
+	provider, accountID, err := normalizeAmoAccount(input.Provider, input.ExternalAccountID)
+	if err != nil {
+		return AmoAdminSessionResult{}, err
+	}
+	externalUserID := strings.TrimSpace(input.ExternalUserID)
+	parsedUserID, parseErr := strconv.ParseInt(externalUserID, 10, 64)
+	if parseErr != nil || parsedUserID <= 0 || strconv.FormatInt(parsedUserID, 10) != externalUserID {
+		return AmoAdminSessionResult{}, validation("Некорректный ID пользователя amoCRM")
+	}
+	desiredRole := strings.TrimSpace(input.DesiredRole)
+	if desiredRole != "admin" && desiredRole != "owner" {
+		return AmoAdminSessionResult{}, validation("Роль пользователя amoCRM должна быть admin или owner")
+	}
+	email, firstName, lastName, companyName, err := normalizeAmoWidgetProfile(AmoWidgetSessionInput{
+		Email: input.Email, UserName: input.UserName, CompanyName: input.CompanyName,
+	}, accountID)
+	if err != nil {
+		return AmoAdminSessionResult{}, err
+	}
+
+	now := s.now().UTC()
+	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.ReadCommitted})
+	if err != nil {
+		return AmoAdminSessionResult{}, internal("Не удалось начать вход администратора amoCRM", err)
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+	queries := db.New(tx)
+	if err = queries.LockAmoAccount(ctx, db.LockAmoAccountParams{
+		Provider: provider, ExternalAccountID: accountID,
+	}); err != nil {
+		return AmoAdminSessionResult{}, internal("Не удалось заблокировать аккаунт amoCRM", err)
+	}
+	integration, company, companyCreated, err := s.getOrCreateAmoWidgetCompany(
+		ctx, queries, accountID, companyName, now, false,
+	)
+	if err != nil {
+		return AmoAdminSessionResult{}, err
+	}
+	if integration.Status != "active" || company.Status == "frozen" || company.Status == "suspended" {
+		return AmoAdminSessionResult{}, coded(
+			ErrorForbidden, ErrorCodeAmoWidgetSessionUnavailable, "Компания TeamOS временно недоступна",
+		)
+	}
+	user, _, userCreated, err := s.getOrCreateAmoWidgetUser(
+		ctx, queries, company.ID, integration.ID, accountID,
+		externalUserID, email, firstName, lastName, now,
+	)
+	if err != nil {
+		return AmoAdminSessionResult{}, err
+	}
+	previousRole := user.Role
+	previousOwnerID := company.OwnerID
+	roleChange := planAmoAdminRoleChange(user.ID, previousRole, desiredRole, previousOwnerID)
+	if roleChange.AssignOwner {
+		user, err = queries.PromoteAmoWidgetOwner(ctx, db.PromoteAmoWidgetOwnerParams{
+			UpdatedAt: now, CompanyID: company.ID, UserID: user.ID,
+		})
+		if err != nil {
+			return AmoAdminSessionResult{}, internal("Не удалось назначить владельца компании", err)
+		}
+		company, err = queries.SetCompanyOwner(ctx, db.SetCompanyOwnerParams{
+			ID: company.ID, OwnerID: uuid.NullUUID{UUID: user.ID, Valid: true},
+		})
+		if err != nil {
+			return AmoAdminSessionResult{}, internal("Не удалось назначить владельца компании", err)
+		}
+		if roleChange.PreviousOwnerID.Valid {
+			var demoted int64
+			if demoted, err = queries.DemotePreviousAmoWidgetOwner(ctx, db.DemotePreviousAmoWidgetOwnerParams{
+				UpdatedAt: now, CompanyID: company.ID, PreviousOwnerID: roleChange.PreviousOwnerID.UUID, NewOwnerID: user.ID,
+			}); err != nil {
+				return AmoAdminSessionResult{}, internal("Не удалось обновить прежнего владельца компании", err)
+			}
+			if err = revokeUserSessions(ctx, queries, roleChange.PreviousOwnerID.UUID, now); err != nil {
+				return AmoAdminSessionResult{}, err
+			}
+			if demoted > 0 {
+				previousOwner, ownerErr := queries.GetUser(ctx, db.GetUserParams{
+					CompanyID: company.ID, ID: roleChange.PreviousOwnerID.UUID,
+				})
+				if ownerErr != nil {
+					return AmoAdminSessionResult{}, internal("Не удалось получить прежнего владельца компании", ownerErr)
+				}
+				if err = s.emitAmoWidgetRoleChanged(ctx, queries, previousOwner, user.ID); err != nil {
+					return AmoAdminSessionResult{}, err
+				}
+			}
+		}
+	} else {
+		user, err = queries.PromoteAmoWidgetAdmin(ctx, db.PromoteAmoWidgetAdminParams{
+			UpdatedAt: now, CompanyID: company.ID, UserID: user.ID,
+		})
+		if err != nil {
+			return AmoAdminSessionResult{}, internal("Не удалось назначить администратора компании", err)
+		}
+	}
+	if previousRole != user.Role {
+		if err = replaceEmployeeSections(ctx, queries, company.ID, user.ID, nil, nil); err != nil {
+			return AmoAdminSessionResult{}, err
+		}
+		if err = revokeUserSessions(ctx, queries, user.ID, now); err != nil {
+			return AmoAdminSessionResult{}, err
+		}
+	}
+	if companyCreated {
+		ownerUserID := ""
+		if company.OwnerID.Valid {
+			ownerUserID = company.OwnerID.UUID.String()
+		}
+		if err = s.emit(ctx, queries, company.ID, user.ID, "teamos.company.company.created.v1", map[string]any{
+			"companyId": company.ID.String(), "name": company.Name, "ownerUserId": ownerUserID,
+		}); err != nil {
+			return AmoAdminSessionResult{}, err
+		}
+	}
+	if userCreated {
+		createdUser, loginErr := userFromDBWithLogin(ctx, queries, user, nil)
+		if loginErr != nil {
+			return AmoAdminSessionResult{}, loginErr
+		}
+		if err = s.emit(ctx, queries, company.ID, user.ID, "teamos.org.user.created.v1", map[string]any{
+			"user": userEventSnapshot(createdUser, nil),
+		}); err != nil {
+			return AmoAdminSessionResult{}, err
+		}
+	} else if previousRole != user.Role {
+		if err = s.emitAmoWidgetRoleChanged(ctx, queries, user, user.ID); err != nil {
+			return AmoAdminSessionResult{}, err
+		}
+	}
+	accessLink, err := ensureAmoWidgetAccessLink(ctx, queries, company.ID, user.ID)
+	if err != nil {
+		return AmoAdminSessionResult{}, err
+	}
+	if err = tx.Commit(ctx); err != nil {
+		return AmoAdminSessionResult{}, internal("Не удалось завершить вход администратора amoCRM", err)
+	}
+
+	if s.externalUsers != nil {
+		_ = s.syncAmoUsers(ctx, Actor{CompanyID: company.ID, UserID: user.ID, Role: user.Role})
+	}
+	action := "login"
+	if companyCreated {
+		action = "register"
+	}
+	return AmoAdminSessionResult{
+		Action: action, ExternalAccountID: accountID, CompanyID: company.ID,
+		UserID: user.ID, Role: user.Role, AccessToken: accessLink.Token,
+	}, nil
+}
+
+type amoAdminRoleChange struct {
+	TargetRole      string
+	AssignOwner     bool
+	PreviousOwnerID uuid.NullUUID
+}
+
+func planAmoAdminRoleChange(
+	userID uuid.UUID,
+	currentRole, desiredRole string,
+	currentOwnerID uuid.NullUUID,
+) amoAdminRoleChange {
+	if desiredRole == "owner" {
+		change := amoAdminRoleChange{TargetRole: "owner", AssignOwner: true}
+		if currentOwnerID.Valid && currentOwnerID.UUID != userID {
+			change.PreviousOwnerID = currentOwnerID
+		}
+		return change
+	}
+	if currentRole == "owner" {
+		return amoAdminRoleChange{TargetRole: "owner"}
+	}
+	return amoAdminRoleChange{TargetRole: "admin"}
+}
+
+func ensureAmoWidgetAccessLink(
+	ctx context.Context,
+	queries *db.Queries,
+	companyID, userID uuid.UUID,
+) (db.AccessLink, error) {
+	accessLink, err := queries.GetAccessLink(ctx, db.GetAccessLinkParams{CompanyID: companyID, UserID: userID})
+	if err == nil {
+		return accessLink, nil
+	}
+	if !isNoRows(err) {
+		return db.AccessLink{}, internal("Не удалось проверить ссылку доступа", err)
+	}
+	token, err := domainauth.NewAccessLinkToken()
+	if err != nil {
+		return db.AccessLink{}, internal("Не удалось создать ссылку доступа", err)
+	}
+	accessLink, err = queries.UpsertAccessLink(ctx, db.UpsertAccessLinkParams{
+		CompanyID: companyID, UserID: userID, Token: token,
+	})
+	if err != nil {
+		return db.AccessLink{}, internal("Не удалось сохранить ссылку доступа", err)
+	}
+	return accessLink, nil
+}
+
+func (s *Service) emitAmoWidgetRoleChanged(
+	ctx context.Context,
+	queries *db.Queries,
+	user db.User,
+	actorID uuid.UUID,
+) error {
+	positionIDs, err := queries.GetUserPositionIDs(ctx, db.GetUserPositionIDsParams{
+		CompanyID: user.CompanyID, UserID: user.ID,
+	})
+	if err != nil {
+		return internal("Не удалось получить должность пользователя", err)
+	}
+	departmentIDs, err := queries.GetUserDepartmentClaims(ctx, db.GetUserDepartmentClaimsParams{
+		CompanyID: user.CompanyID, UserID: user.ID,
+	})
+	if err != nil {
+		return internal("Не удалось получить отделы пользователя", err)
+	}
+	updatedUser, err := userFromDBWithLogin(ctx, queries, user, positionIDs)
+	if err != nil {
+		return err
+	}
+	return s.emit(ctx, queries, user.CompanyID, actorID, "teamos.org.user.updated.v1", map[string]any{
+		"user": userEventSnapshot(updatedUser, departmentIDs), "changedFields": []string{"role", "sectionAccess"},
+	})
+}
+
 func (s *Service) ExchangeAmoWidgetSession(
 	ctx context.Context,
 	input AmoWidgetSessionInput,
@@ -347,10 +578,8 @@ func (s *Service) getOrCreateAmoWidgetUser(
 		ExternalUserID: externalUserID,
 	})
 	if err == nil {
-		if identityRow.User.Status != "active" || identityRow.User.ExternalDeletedAt.Valid {
-			return db.User{}, db.UserExternalIdentity{}, false, coded(
-				ErrorForbidden, ErrorCodeAmoWidgetSessionUnavailable, "Учётная запись TeamOS отключена",
-			)
+		if stateErr := validateAmoWidgetUserState(identityRow.User); stateErr != nil {
+			return db.User{}, db.UserExternalIdentity{}, false, stateErr
 		}
 		externalIdentity, activateErr := queries.ActivateAmoWidgetIdentity(ctx, db.ActivateAmoWidgetIdentityParams{
 			VerifiedAt: now, CompanyID: companyID, IdentityID: identityRow.UserExternalIdentity.ID,
@@ -381,10 +610,8 @@ func (s *Service) getOrCreateAmoWidgetUser(
 	if err != nil {
 		return db.User{}, db.UserExternalIdentity{}, false, internal("Не удалось создать пользователя TeamOS", err)
 	}
-	if user.Status != "active" || user.ExternalDeletedAt.Valid {
-		return db.User{}, db.UserExternalIdentity{}, false, coded(
-			ErrorForbidden, ErrorCodeAmoWidgetSessionUnavailable, "Учётная запись TeamOS отключена",
-		)
+	if stateErr := validateAmoWidgetUserState(user); stateErr != nil {
+		return db.User{}, db.UserExternalIdentity{}, false, stateErr
 	}
 	externalIdentity, err := queries.CreateAmoWidgetIdentity(ctx, db.CreateAmoWidgetIdentityParams{
 		ID: uuid.New(), CompanyID: companyID, IntegrationID: integrationID, UserID: user.ID,
@@ -400,6 +627,17 @@ func (s *Service) getOrCreateAmoWidgetUser(
 		return db.User{}, db.UserExternalIdentity{}, false, internal("Не удалось сохранить пользователя amoCRM", err)
 	}
 	return user, externalIdentity, created, nil
+}
+
+func validateAmoWidgetUserState(user db.User) error {
+	if user.Status != "active" || user.ExternalDeletedAt.Valid {
+		return coded(
+			ErrorForbidden,
+			ErrorCodeAmoWidgetSessionUnavailable,
+			"Учётная запись TeamOS деактивирована администратором компании",
+		)
+	}
+	return nil
 }
 
 func (s *Service) ValidateAmoWidgetContinuation(

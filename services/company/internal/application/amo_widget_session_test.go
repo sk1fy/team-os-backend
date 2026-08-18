@@ -13,6 +13,7 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/pashagolub/pgxmock/v4"
 	"github.com/sk1fy/team-os-backend/services/company/internal/domain/amoauth"
+	"github.com/sk1fy/team-os-backend/services/company/internal/storage/db"
 )
 
 type fakeAmoWidgetVerifier struct {
@@ -96,6 +97,96 @@ func TestExchangeUnsignedAmoWidgetSessionValidatesIDs(t *testing.T) {
 		if _, err := service.ExchangeAmoWidgetSession(context.Background(), input); err == nil {
 			t.Fatalf("input=%#v must be rejected", input)
 		}
+	}
+}
+
+func TestProvisionAmoAdminSessionValidatesTrustedRole(t *testing.T) {
+	service := &Service{}
+	_, err := service.ProvisionAmoAdminSession(context.Background(), AmoAdminSessionInput{
+		Provider: "rakurs", ExternalAccountID: "31355990", ExternalUserID: "42",
+		Email: "admin@example.com", DesiredRole: "employee",
+	})
+	var applicationErr *Error
+	if !errors.As(err, &applicationErr) || applicationErr.Kind != ErrorValidation {
+		t.Fatalf("error=%v, want validation", err)
+	}
+}
+
+func TestPlanAmoAdminRoleChange(t *testing.T) {
+	userID, previousOwnerID := uuid.New(), uuid.New()
+	tests := []struct {
+		name         string
+		currentRole  string
+		desiredRole  string
+		currentOwner uuid.NullUUID
+		want         amoAdminRoleChange
+	}{
+		{
+			name: "first admin leaves company without owner", currentRole: "employee", desiredRole: "admin",
+			want: amoAdminRoleChange{TargetRole: "admin"},
+		},
+		{
+			name: "owner assertion transfers ownership", currentRole: "employee", desiredRole: "owner",
+			currentOwner: uuid.NullUUID{UUID: previousOwnerID, Valid: true},
+			want: amoAdminRoleChange{
+				TargetRole: "owner", AssignOwner: true,
+				PreviousOwnerID: uuid.NullUUID{UUID: previousOwnerID, Valid: true},
+			},
+		},
+		{
+			name: "admin assertion never demotes current owner", currentRole: "owner", desiredRole: "admin",
+			currentOwner: uuid.NullUUID{UUID: userID, Valid: true},
+			want:         amoAdminRoleChange{TargetRole: "owner"},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			if got := planAmoAdminRoleChange(userID, test.currentRole, test.desiredRole, test.currentOwner); got != test.want {
+				t.Fatalf("change=%#v, want %#v", got, test.want)
+			}
+		})
+	}
+}
+
+func TestValidateAmoWidgetUserStateRejectsCompanyDeactivation(t *testing.T) {
+	tests := []db.User{
+		{Status: "deactivated"},
+		{Status: "active", ExternalDeletedAt: pgTimestamp(time.Now().UTC())},
+	}
+	for _, user := range tests {
+		err := validateAmoWidgetUserState(user)
+		var applicationErr *Error
+		if !errors.As(err, &applicationErr) || applicationErr.Kind != ErrorForbidden ||
+			applicationErr.Code != ErrorCodeAmoWidgetSessionUnavailable {
+			t.Fatalf("error=%v, want forbidden deactivated TeamOS user", err)
+		}
+	}
+	if err := validateAmoWidgetUserState(db.User{Status: "active"}); err != nil {
+		t.Fatalf("active user error=%v", err)
+	}
+}
+
+func TestEnsureAmoWidgetAccessLinkReusesExistingToken(t *testing.T) {
+	mock, err := pgxmock.NewPool()
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(mock.Close)
+	companyID, userID := uuid.New(), uuid.New()
+	now := time.Date(2026, time.August, 18, 12, 0, 0, 0, time.UTC)
+	mock.ExpectQuery("SELECT company_id, user_id, token").
+		WithArgs(companyID, userID).
+		WillReturnRows(pgxmock.NewRows([]string{"company_id", "user_id", "token", "created_at", "updated_at"}).
+			AddRow(companyID, userID, "stable-access-token", now, now))
+	link, err := ensureAmoWidgetAccessLink(context.Background(), db.New(mock), companyID, userID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if link.Token != "stable-access-token" {
+		t.Fatalf("token=%q", link.Token)
+	}
+	if err = mock.ExpectationsWereMet(); err != nil {
+		t.Fatal(err)
 	}
 }
 

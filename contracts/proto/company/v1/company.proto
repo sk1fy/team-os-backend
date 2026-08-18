@@ -16,6 +16,7 @@ service CompanyService {
   rpc IssueCompanyRegistrationToken(IssueCompanyRegistrationTokenRequest) returns (IssueCompanyRegistrationTokenResponse);
   rpc ValidateCompanyRegistrationToken(ValidateCompanyRegistrationTokenRequest) returns (ValidateCompanyRegistrationTokenResponse);
   rpc ExchangeAmoWidgetSession(ExchangeAmoWidgetSessionRequest) returns (ExchangeAmoWidgetSessionResponse);
+  rpc ProvisionAmoAdminSession(ProvisionAmoAdminSessionRequest) returns (ProvisionAmoAdminSessionResponse);
   rpc ValidateAmoWidgetContinuation(ValidateAmoWidgetContinuationRequest) returns (ValidateAmoWidgetContinuationResponse);
   rpc CompleteAmoWidgetContinuation(CompleteAmoWidgetContinuationRequest) returns (CompleteAmoWidgetContinuationResponse);
   rpc Login(LoginRequest) returns (LoginResponse);
@@ -970,6 +971,25 @@ message ExchangeAmoWidgetSessionResponse {
   optional string email = 6;
   optional string company_name = 7;
   optional bool requires_password_setup = 8;
+}
+
+message ProvisionAmoAdminSessionRequest {
+  string provider = 1;
+  string external_account_id = 2;
+  string external_user_id = 3;
+  string email = 4;
+  string user_name = 5;
+  string company_name = 6;
+  UserRole desired_role = 7;
+}
+
+message ProvisionAmoAdminSessionResponse {
+  AmoWidgetSessionAction action = 1;
+  string external_account_id = 2;
+  string company_id = 3;
+  string user_id = 4;
+  UserRole role = 5;
+  string access_token = 6;
 }
 
 message ValidateAmoWidgetContinuationRequest {

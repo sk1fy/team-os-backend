@@ -536,6 +536,40 @@ paths:
         default:
           $ref: '#/components/responses/Error'
 
+  /api/v1/provisioning/amocrm/admin-sessions:
+    post:
+      tags: [Provisioning]
+      operationId: provisionAmoAdminSession
+      summary: Подготовить самостоятельный вход администратора amoCRM
+      description: |
+        Идемпотентно создаёт или находит компанию и пользователя amoCRM,
+        назначает подтверждённую служебным вызывающим роль администратора или
+        владельца и возвращает постоянную ссылку доступа TeamOS. Роль из
+        публичного браузерного запроса этим endpoint не принимается.
+      security:
+        - serviceAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProvisionAmoAdminSessionInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/AmoAdminSession'
+        '201':
+          $ref: '#/components/responses/AmoAdminSession'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/Error'
+
   /api/v1/provisioning/companies/status:
     get:
       tags: [Provisioning]
@@ -4416,6 +4450,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/AmoWidgetSessionResponse'
+    AmoAdminSession:
+      description: Ссылка самостоятельного входа подтверждённого администратора amoCRM
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AmoAdminSessionResponse'
     AmoWidgetContinuation:
       description: Данные одноразового продолжения входа из виджета amoCRM
       content:
@@ -5946,6 +5986,68 @@ components:
           format: password
           minLength: 8
           maxLength: 256
+
+    ProvisionAmoAdminSessionInput:
+      type: object
+      additionalProperties: false
+      required: [account, user, desiredRole]
+      properties:
+        account:
+          $ref: '#/components/schemas/AmoAdminSessionAccountInput'
+        user:
+          $ref: '#/components/schemas/AmoAdminSessionUserInput'
+        desiredRole:
+          allOf:
+            - $ref: '#/components/schemas/UserRole'
+          description: Допустимы только `admin` и `owner`.
+
+    AmoAdminSessionAccountInput:
+      type: object
+      additionalProperties: false
+      required: [id]
+      properties:
+        id:
+          type: string
+          pattern: '^\d+$'
+          maxLength: 255
+        name:
+          type: string
+          maxLength: 255
+
+    AmoAdminSessionUserInput:
+      type: object
+      additionalProperties: false
+      required: [id, email]
+      properties:
+        id:
+          type: string
+          pattern: '^\d+$'
+          maxLength: 255
+        email:
+          $ref: '#/components/schemas/Email'
+        name:
+          type: string
+          maxLength: 255
+
+    AmoAdminSessionResponse:
+      type: object
+      additionalProperties: false
+      required: [action, amoAccountId, companyId, userId, role, redirectUrl]
+      properties:
+        action:
+          $ref: '#/components/schemas/AmoWidgetSessionAction'
+        amoAccountId:
+          type: string
+          pattern: '^\d+$'
+        companyId:
+          $ref: '#/components/schemas/ID'
+        userId:
+          $ref: '#/components/schemas/ID'
+        role:
+          $ref: '#/components/schemas/UserRole'
+        redirectUrl:
+          type: string
+          format: uri
 
     IssueCompanyRegistrationTokenInput:
       type: object

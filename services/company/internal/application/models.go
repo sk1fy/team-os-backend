@@ -202,6 +202,25 @@ type AmoWidgetSessionInput struct {
 	CompanyName       string
 }
 
+type AmoAdminSessionInput struct {
+	Provider          string
+	ExternalAccountID string
+	ExternalUserID    string
+	Email             string
+	UserName          string
+	CompanyName       string
+	DesiredRole       string
+}
+
+type AmoAdminSessionResult struct {
+	Action            string
+	ExternalAccountID string
+	CompanyID         uuid.UUID
+	UserID            uuid.UUID
+	Role              string
+	AccessToken       string
+}
+
 type AmoWidgetContinuation struct {
 	Email                 string
 	Login                 string

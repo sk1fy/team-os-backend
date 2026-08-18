@@ -85,6 +85,41 @@ func (s *Server) ExchangeAmoWidgetSession(
 	return response, nil
 }
 
+func (s *Server) ProvisionAmoAdminSession(
+	ctx context.Context,
+	request *companyv1.ProvisionAmoAdminSessionRequest,
+) (*companyv1.ProvisionAmoAdminSessionResponse, error) {
+	if err := s.authorizeProvisioning(ctx); err != nil {
+		return nil, err
+	}
+	if request == nil {
+		return nil, invalidRequest()
+	}
+	desiredRole, err := userRoleFromProto(request.GetDesiredRole())
+	if err != nil || (desiredRole != "admin" && desiredRole != "owner") {
+		return nil, invalidArgument("Роль пользователя amoCRM должна быть admin или owner")
+	}
+	result, err := s.application.ProvisionAmoAdminSession(ctx, application.AmoAdminSessionInput{
+		Provider: request.GetProvider(), ExternalAccountID: request.GetExternalAccountId(),
+		ExternalUserID: request.GetExternalUserId(), Email: request.GetEmail(),
+		UserName: request.GetUserName(), CompanyName: request.GetCompanyName(), DesiredRole: desiredRole,
+	})
+	if err != nil {
+		return nil, transportError(err)
+	}
+	action := companyv1.AmoWidgetSessionAction_AMO_WIDGET_SESSION_ACTION_LOGIN
+	if result.Action == "register" {
+		action = companyv1.AmoWidgetSessionAction_AMO_WIDGET_SESSION_ACTION_REGISTER
+	} else if result.Action != "login" {
+		return nil, status.Error(codes.Internal, "Внутренняя ошибка сервиса")
+	}
+	return &companyv1.ProvisionAmoAdminSessionResponse{
+		Action: action, ExternalAccountId: result.ExternalAccountID,
+		CompanyId: result.CompanyID.String(), UserId: result.UserID.String(),
+		Role: userRoleToProto(result.Role), AccessToken: result.AccessToken,
+	}, nil
+}
+
 func (s *Server) ValidateAmoWidgetContinuation(
 	ctx context.Context,
 	request *companyv1.ValidateAmoWidgetContinuationRequest,
