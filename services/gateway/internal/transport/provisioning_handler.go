@@ -199,42 +199,13 @@ func (h *Handler) ExchangeAmoWidgetSession(w http.ResponseWriter, r *http.Reques
 		apierror.Write(w, apierror.BadRequest("Некорректный токен amoCRM"))
 		return
 	}
-	request := &companyv1.ExchangeAmoWidgetSessionRequest{Token: token}
-	request.IsAdmin = input.IsAdmin != nil && *input.IsAdmin
-	request.IsOwner = input.IsOwner != nil && *input.IsOwner
-	if input.Account != nil && input.Account.Id != nil {
-		accountID := strings.TrimSpace(*input.Account.Id)
-		if accountID != "" {
-			request.ExternalAccountId = &accountID
-		}
-	}
-	if token == "" && request.ExternalAccountId == nil {
-		apierror.Write(w, apierror.BadRequest("Не удалось определить аккаунт amoCRM"))
+	if token == "" {
+		apierror.Write(w, apierror.BadRequest("Не передан токен amoCRM"))
 		return
-	}
-	if input.User != nil {
-		request.ExternalUserId = &input.User.Id
-		email := string(input.User.Email)
-		request.Email = &email
-		if input.User.Name != nil {
-			request.UserName = input.User.Name
-		}
-	}
-	companyName := ""
-	if input.Account != nil {
-		if input.Account.Name != nil {
-			companyName = strings.TrimSpace(*input.Account.Name)
-		}
-		if companyName == "" && input.Account.Subdomain != nil {
-			companyName = strings.TrimSpace(*input.Account.Subdomain)
-		}
-	}
-	if companyName != "" {
-		request.CompanyName = &companyName
 	}
 	response, err := h.company.ExchangeAmoWidgetSession(
 		outgoingContext(r),
-		request,
+		&companyv1.ExchangeAmoWidgetSessionRequest{Token: token},
 	)
 	if err != nil {
 		h.writeRPCError(w, r, err)

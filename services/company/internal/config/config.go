@@ -10,64 +10,51 @@ import (
 )
 
 type Config struct {
-	HTTPAddr               string
-	GRPCAddr               string
-	DatabaseURL            string
-	NATSURL                string
-	JWTPrivateKey          string
-	GatewayServiceToken    string
-	JWTIssuer              string
-	JWTAudience            string
-	AccessTTL              time.Duration
-	ShutdownTimeout        time.Duration
-	ExternalAPIURL         string
-	AmoAppName             string
-	AmoImportEnabled       bool
-	ExternalTimeout        time.Duration
-	AmoSyncInterval        time.Duration
-	RegistrationTokenTTL   time.Duration
-	AmoWidgetSessionTTL    time.Duration
-	AmoWidgetAllowUnsigned bool
-	AmoCRMClientUUID       string
-	AmoCRMClientSecret     string
-	AmoCRMAudience         string
-	AmoCRMTokenMaxTTL      time.Duration
-	AmoCRMTokenClockSkew   time.Duration
-	AmoCRMWidgetListURL    string
-	AmoCRMWidgetTimeout    time.Duration
-	AmoCRMWidgetCacheTTL   time.Duration
-	AmoCRMWidgetListTZ     string
+	HTTPAddr              string
+	GRPCAddr              string
+	DatabaseURL           string
+	NATSURL               string
+	JWTPrivateKey         string
+	GatewayServiceToken   string
+	JWTIssuer             string
+	JWTAudience           string
+	AccessTTL             time.Duration
+	ShutdownTimeout       time.Duration
+	ExternalAPIURL        string
+	AmoAppName            string
+	AmoImportEnabled      bool
+	ExternalTimeout       time.Duration
+	AmoSyncInterval       time.Duration
+	RegistrationTokenTTL  time.Duration
+	AmoWidgetSessionTTL   time.Duration
+	AmoVerifyURL          string
+	AmoVerifyServiceToken string
+	AmoVerifyTimeout      time.Duration
 }
 
 func Load() (Config, error) {
 	var err error
 	config := Config{
-		HTTPAddr:             envOr("COMPANY_HTTP_ADDR", ":8081"),
-		GRPCAddr:             envOr("COMPANY_GRPC_ADDR", ":9081"),
-		DatabaseURL:          strings.TrimSpace(os.Getenv("COMPANY_DB_URL")),
-		NATSURL:              envOr("COMPANY_NATS_URL", "nats://localhost:4222"),
-		JWTPrivateKey:        strings.TrimSpace(os.Getenv("COMPANY_JWT_PRIVATE_KEY")),
-		GatewayServiceToken:  strings.TrimSpace(os.Getenv("COMPANY_GATEWAY_SERVICE_TOKEN")),
-		JWTIssuer:            envOr("COMPANY_JWT_ISSUER", "teamos-company"),
-		JWTAudience:          envOr("COMPANY_JWT_AUDIENCE", "teamos-api"),
-		AccessTTL:            15 * time.Minute,
-		ShutdownTimeout:      30 * time.Second,
-		ExternalAPIURL:       envOr("EXTERNAL_API_URL", "https://ssd.rkrs.ru/api/v1/rkrs_activity/getEmployee"),
-		AmoAppName:           envOr("APP_NAME", "rkrs_activity"),
-		AmoImportEnabled:     false,
-		ExternalTimeout:      10 * time.Second,
-		AmoSyncInterval:      5 * time.Minute,
-		RegistrationTokenTTL: time.Hour,
-		AmoWidgetSessionTTL:  10 * time.Minute,
-		AmoCRMClientUUID:     strings.TrimSpace(os.Getenv("AMOCRM_CLIENT_UUID")),
-		AmoCRMClientSecret:   strings.TrimSpace(os.Getenv("AMOCRM_CLIENT_SECRET")),
-		AmoCRMAudience:       strings.TrimSpace(os.Getenv("AMOCRM_AUTHORIZED_AUDIENCE")),
-		AmoCRMTokenMaxTTL:    time.Hour,
-		AmoCRMTokenClockSkew: 10 * time.Second,
-		AmoCRMWidgetListURL:  envOr("AMOCRM_WIDGET_LIST_URL", "https://ssd.rkrs.ru/widget/account_widget_list"),
-		AmoCRMWidgetTimeout:  10 * time.Second,
-		AmoCRMWidgetCacheTTL: 5 * time.Minute,
-		AmoCRMWidgetListTZ:   envOr("AMOCRM_WIDGET_LIST_TZ", "Europe/Moscow"),
+		HTTPAddr:              envOr("COMPANY_HTTP_ADDR", ":8081"),
+		GRPCAddr:              envOr("COMPANY_GRPC_ADDR", ":9081"),
+		DatabaseURL:           strings.TrimSpace(os.Getenv("COMPANY_DB_URL")),
+		NATSURL:               envOr("COMPANY_NATS_URL", "nats://localhost:4222"),
+		JWTPrivateKey:         strings.TrimSpace(os.Getenv("COMPANY_JWT_PRIVATE_KEY")),
+		GatewayServiceToken:   strings.TrimSpace(os.Getenv("COMPANY_GATEWAY_SERVICE_TOKEN")),
+		JWTIssuer:             envOr("COMPANY_JWT_ISSUER", "teamos-company"),
+		JWTAudience:           envOr("COMPANY_JWT_AUDIENCE", "teamos-api"),
+		AccessTTL:             15 * time.Minute,
+		ShutdownTimeout:       30 * time.Second,
+		ExternalAPIURL:        envOr("EXTERNAL_API_URL", "https://ssd.rkrs.ru/api/v1/rkrs_activity/getEmployee"),
+		AmoAppName:            envOr("APP_NAME", "rkrs_activity"),
+		AmoImportEnabled:      false,
+		ExternalTimeout:       10 * time.Second,
+		AmoSyncInterval:       5 * time.Minute,
+		RegistrationTokenTTL:  time.Hour,
+		AmoWidgetSessionTTL:   10 * time.Minute,
+		AmoVerifyURL:          envOr("AMOCRM_VERIFY_URL", "https://widgets.rkrs.ru/api/internal/amocrm/verify-token"),
+		AmoVerifyServiceToken: strings.TrimSpace(os.Getenv("AMOCRM_VERIFY_SERVICE_TOKEN")),
+		AmoVerifyTimeout:      5 * time.Second,
 	}
 	if value := strings.TrimSpace(os.Getenv("COMPANY_AMO_IMPORT_ENABLED")); value != "" {
 		config.AmoImportEnabled, err = strconv.ParseBool(value)
@@ -112,34 +99,10 @@ func Load() (Config, error) {
 			return Config{}, fmt.Errorf("COMPANY_AMO_WIDGET_SESSION_TTL: %w", errInvalidDuration)
 		}
 	}
-	if value := strings.TrimSpace(os.Getenv("COMPANY_AMO_WIDGET_ALLOW_UNSIGNED")); value != "" {
-		config.AmoWidgetAllowUnsigned, err = strconv.ParseBool(value)
-		if err != nil {
-			return Config{}, fmt.Errorf("COMPANY_AMO_WIDGET_ALLOW_UNSIGNED: ожидается true или false")
-		}
-	}
-	if value := strings.TrimSpace(os.Getenv("AMOCRM_TOKEN_MAX_TTL")); value != "" {
-		config.AmoCRMTokenMaxTTL, err = time.ParseDuration(value)
-		if err != nil || config.AmoCRMTokenMaxTTL <= 0 {
-			return Config{}, fmt.Errorf("AMOCRM_TOKEN_MAX_TTL: %w", errInvalidDuration)
-		}
-	}
-	if value := strings.TrimSpace(os.Getenv("AMOCRM_TOKEN_CLOCK_SKEW")); value != "" {
-		config.AmoCRMTokenClockSkew, err = time.ParseDuration(value)
-		if err != nil || config.AmoCRMTokenClockSkew < 0 {
-			return Config{}, fmt.Errorf("AMOCRM_TOKEN_CLOCK_SKEW: ожидается неотрицательная длительность")
-		}
-	}
-	if value := strings.TrimSpace(os.Getenv("AMOCRM_WIDGET_LIST_TIMEOUT")); value != "" {
-		config.AmoCRMWidgetTimeout, err = time.ParseDuration(value)
-		if err != nil || config.AmoCRMWidgetTimeout <= 0 {
-			return Config{}, fmt.Errorf("AMOCRM_WIDGET_LIST_TIMEOUT: %w", errInvalidDuration)
-		}
-	}
-	if value := strings.TrimSpace(os.Getenv("AMOCRM_WIDGET_LIST_CACHE_TTL")); value != "" {
-		config.AmoCRMWidgetCacheTTL, err = time.ParseDuration(value)
-		if err != nil || config.AmoCRMWidgetCacheTTL <= 0 {
-			return Config{}, fmt.Errorf("AMOCRM_WIDGET_LIST_CACHE_TTL: %w", errInvalidDuration)
+	if value := strings.TrimSpace(os.Getenv("AMOCRM_VERIFY_TIMEOUT")); value != "" {
+		config.AmoVerifyTimeout, err = time.ParseDuration(value)
+		if err != nil || config.AmoVerifyTimeout <= 0 {
+			return Config{}, fmt.Errorf("AMOCRM_VERIFY_TIMEOUT: %w", errInvalidDuration)
 		}
 	}
 	missing := make([]string, 0, 2)
@@ -157,6 +120,9 @@ func Load() (Config, error) {
 	}
 	if len(config.GatewayServiceToken) < 32 {
 		return Config{}, fmt.Errorf("COMPANY_GATEWAY_SERVICE_TOKEN: требуется не менее 32 символов")
+	}
+	if config.AmoVerifyServiceToken != "" && len(config.AmoVerifyServiceToken) < 32 {
+		return Config{}, fmt.Errorf("AMOCRM_VERIFY_SERVICE_TOKEN: требуется не менее 32 символов")
 	}
 	return config, nil
 }

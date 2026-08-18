@@ -258,10 +258,9 @@ paths:
       description: |
         Клиент TeamOS передаёт токен в JSON-теле. Официальный WEB SDK amoCRM
         передаёт тот же токен в заголовке `X-Auth-Token`. Должен быть указан
-        ровно один источник токена. Во временном unsigned-режиме токен можно
-        не передавать: тогда Account ID берётся из `account.id`, а endpoint
-        работает только как создание новой компании и возвращает конфликт,
-        если аккаунт amoCRM уже зарегистрирован.
+        ровно один источник токена. Gateway передаёт только токен в company-service,
+        который проверяет его одним служебным запросом в widgets-rkrs. Профиль,
+        аккаунт и права из JSON-тела не используются для авторизации или ролей.
       security: []
       parameters:
         - name: X-Auth-Token
@@ -5879,16 +5878,28 @@ components:
           type: string
           minLength: 32
           maxLength: 8192
+        appName:
+          type: string
+          maxLength: 255
+          deprecated: true
+          description: Подсказка браузера игнорируется; используется серверный APP_NAME.
+        companyName:
+          type: string
+          maxLength: 255
+          deprecated: true
+          description: Подсказка браузера игнорируется; имя берётся из проверенного ответа.
         user:
           $ref: '#/components/schemas/AmoWidgetUserInput'
         account:
           $ref: '#/components/schemas/AmoWidgetAccountInput'
         isAdmin:
           type: boolean
-          description: Признак администратора из APP.constant("user_rights") amoCRM.
+          deprecated: true
+          description: Браузерный признак игнорируется; права подтверждает widgets-rkrs.
         isOwner:
           type: boolean
-          description: Признак владельца из APP.constant("user_rights") amoCRM.
+          deprecated: true
+          description: Браузерный признак игнорируется; права подтверждает widgets-rkrs.
 
     AmoWidgetUserInput:
       type: object

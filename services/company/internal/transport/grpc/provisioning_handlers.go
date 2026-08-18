@@ -50,12 +50,7 @@ func (s *Server) ExchangeAmoWidgetSession(
 	if request == nil {
 		return nil, invalidRequest()
 	}
-	result, err := s.application.ExchangeAmoWidgetSession(ctx, application.AmoWidgetSessionInput{
-		Token: request.GetToken(), ExternalAccountID: request.GetExternalAccountId(),
-		ExternalUserID: request.GetExternalUserId(), Email: request.GetEmail(),
-		UserName: request.GetUserName(), CompanyName: request.GetCompanyName(),
-		IsAdmin: request.GetIsAdmin(), IsOwner: request.GetIsOwner(),
-	})
+	result, err := s.application.ExchangeAmoWidgetSession(ctx, application.AmoWidgetSessionInput{Token: request.GetToken()})
 	if err != nil {
 		return nil, transportError(err)
 	}

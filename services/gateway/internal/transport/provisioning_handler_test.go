@@ -252,14 +252,15 @@ func TestExchangeAmoWidgetSessionAcceptsAuthorizedSDKHeader(t *testing.T) {
 	}
 }
 
-func TestExchangeAmoWidgetSessionForwardsCurrentAmoUserAndReturnsContinuation(t *testing.T) {
+func TestExchangeAmoWidgetSessionIgnoresBrowserProfile(t *testing.T) {
 	const token = "amo-widget-token-abcdefghijklmnopqrstuvwxyz"
 	expiresAt := time.Date(2026, time.August, 10, 12, 10, 0, 0, time.UTC)
 	accountID, sessionToken := "31355990", "amo-continuation-token-abcdefghijklmnopqrstuvwxyz"
 	email, companyName, setup := "admin@example.com", "Ракурс", true
 	server := &provisioningCompanyServer{exchangeAmoWidgetSessionFn: func(_ context.Context, request *companyv1.ExchangeAmoWidgetSessionRequest) (*companyv1.ExchangeAmoWidgetSessionResponse, error) {
-		if request.GetToken() != token || request.GetExternalUserId() != "42" ||
-			request.GetEmail() != email || request.GetUserName() != "Иван Петров" || request.GetCompanyName() != companyName {
+		if request.GetToken() != token || request.ExternalUserId != nil || request.Email != nil ||
+			request.UserName != nil || request.CompanyName != nil || request.ExternalAccountId != nil ||
+			request.GetIsAdmin() || request.GetIsOwner() {
 			t.Fatalf("request=%#v", request)
 		}
 		return &companyv1.ExchangeAmoWidgetSessionResponse{
@@ -282,7 +283,7 @@ func TestExchangeAmoWidgetSessionForwardsCurrentAmoUserAndReturnsContinuation(t 
 	}
 }
 
-func TestExchangeAmoWidgetSessionForwardsRightsAndReturnsAccessLink(t *testing.T) {
+func TestExchangeAmoWidgetSessionIgnoresBrowserRightsAndReturnsAccessLink(t *testing.T) {
 	const token = "amo-widget-token-abcdefghijklmnopqrstuvwxyz"
 	accountID, accessToken := "31355990", "amo-access-token_abcdefghijklmnopqrstuvwxyz"
 	role := companyv1.UserRole_USER_ROLE_OWNER
@@ -290,8 +291,8 @@ func TestExchangeAmoWidgetSessionForwardsRightsAndReturnsAccessLink(t *testing.T
 		_ context.Context,
 		request *companyv1.ExchangeAmoWidgetSessionRequest,
 	) (*companyv1.ExchangeAmoWidgetSessionResponse, error) {
-		if request.GetToken() != token || request.GetExternalUserId() != "42" ||
-			!request.GetIsAdmin() || !request.GetIsOwner() {
+		if request.GetToken() != token || request.ExternalUserId != nil || request.ExternalAccountId != nil ||
+			request.GetIsAdmin() || request.GetIsOwner() {
 			t.Fatalf("request=%#v", request)
 		}
 		return &companyv1.ExchangeAmoWidgetSessionResponse{
@@ -314,27 +315,12 @@ func TestExchangeAmoWidgetSessionForwardsRightsAndReturnsAccessLink(t *testing.T
 	}
 }
 
-func TestExchangeAmoWidgetSessionAcceptsUnsignedProfile(t *testing.T) {
-	expiresAt := time.Date(2026, time.August, 10, 12, 10, 0, 0, time.UTC)
-	accountID, sessionToken := "31355990", "amo-continuation-token-abcdefghijklmnopqrstuvwxyz"
-	email, companyName, setup := "admin@example.com", "Ракурс", true
-	server := &provisioningCompanyServer{exchangeAmoWidgetSessionFn: func(_ context.Context, request *companyv1.ExchangeAmoWidgetSessionRequest) (*companyv1.ExchangeAmoWidgetSessionResponse, error) {
-		if request.GetToken() != "" || request.GetExternalAccountId() != accountID ||
-			request.GetExternalUserId() != "42" || request.GetEmail() != email ||
-			request.GetUserName() != "Иван Петров" || request.GetCompanyName() != companyName {
-			t.Fatalf("request=%#v", request)
-		}
-		return &companyv1.ExchangeAmoWidgetSessionResponse{
-			Action:            companyv1.AmoWidgetSessionAction_AMO_WIDGET_SESSION_ACTION_REGISTER,
-			ExternalAccountId: &accountID, SessionToken: &sessionToken, Email: &email,
-			CompanyName: &companyName, RequiresPasswordSetup: &setup, ExpiresAt: timestamppb.New(expiresAt),
-		}, nil
-	}}
+func TestExchangeAmoWidgetSessionRejectsUnsignedBrowserProfile(t *testing.T) {
 	recorder := performRequest(
-		newTestGateway(t, server), http.MethodPost, "/api/v1/public/amocrm/widget-sessions",
+		newTestGateway(t, &provisioningCompanyServer{}), http.MethodPost, "/api/v1/public/amocrm/widget-sessions",
 		`{"user":{"id":"42","email":"admin@example.com","name":"Иван Петров"},"account":{"id":"31355990","name":"Ракурс"}}`, nil,
 	)
-	if recorder.Code != http.StatusOK || !strings.Contains(recorder.Body.String(), `"sessionToken":"`+sessionToken+`"`) {
+	if recorder.Code != http.StatusBadRequest {
 		t.Fatalf("status=%d body=%s", recorder.Code, recorder.Body.String())
 	}
 }

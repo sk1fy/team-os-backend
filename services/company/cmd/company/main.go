@@ -18,14 +18,13 @@ import (
 	sharedauth "github.com/sk1fy/team-os-backend/pkg/auth"
 	"github.com/sk1fy/team-os-backend/pkg/eventbus"
 	"github.com/sk1fy/team-os-backend/pkg/httpx"
+	"github.com/sk1fy/team-os-backend/services/company/internal/amoverifier"
 	"github.com/sk1fy/team-os-backend/services/company/internal/application"
 	"github.com/sk1fy/team-os-backend/services/company/internal/config"
 	"github.com/sk1fy/team-os-backend/services/company/internal/consumers"
-	"github.com/sk1fy/team-os-backend/services/company/internal/domain/amoauth"
 	"github.com/sk1fy/team-os-backend/services/company/internal/externalusers"
 	"github.com/sk1fy/team-os-backend/services/company/internal/outbox"
 	companygrpc "github.com/sk1fy/team-os-backend/services/company/internal/transport/grpc"
-	"github.com/sk1fy/team-os-backend/services/company/internal/widgetentitlement"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
 	grpc_health_v1 "google.golang.org/grpc/health/grpc_health_v1"
@@ -103,25 +102,17 @@ func run(logger *slog.Logger) error {
 		application.WithAmoSyncInterval(configuration.AmoSyncInterval),
 		application.WithCompanyRegistrationTTL(configuration.RegistrationTokenTTL),
 		application.WithAmoWidgetSessionTTL(configuration.AmoWidgetSessionTTL),
-		application.WithAmoWidgetAllowUnsigned(configuration.AmoWidgetAllowUnsigned),
 		application.WithLogger(logger),
 	}
-	amoWidgetVerifier := amoauth.NewVerifier(amoauth.Config{
-		Secret: configuration.AmoCRMClientSecret, ClientUUID: configuration.AmoCRMClientUUID,
-		Audience: configuration.AmoCRMAudience, MaxTTL: configuration.AmoCRMTokenMaxTTL,
-		ClockSkew: configuration.AmoCRMTokenClockSkew,
-	})
-	widgetEntitlementClient, clientErr := widgetentitlement.NewClient(widgetentitlement.Config{
-		BaseURL: configuration.AmoCRMWidgetListURL, AppName: configuration.AmoAppName,
-		Timeout: configuration.AmoCRMWidgetTimeout, CacheTTL: configuration.AmoCRMWidgetCacheTTL,
-		Timezone: configuration.AmoCRMWidgetListTZ,
+	amoWidgetVerifier, clientErr := amoverifier.NewClient(amoverifier.Config{
+		URL: configuration.AmoVerifyURL, ServiceToken: configuration.AmoVerifyServiceToken,
+		AppName: configuration.AmoAppName, Timeout: configuration.AmoVerifyTimeout,
 	})
 	if clientErr != nil {
-		return fmt.Errorf("initialize amoCRM widget entitlement client: %w", clientErr)
+		return fmt.Errorf("initialize amoCRM token verifier client: %w", clientErr)
 	}
 	serviceOptions = append(serviceOptions,
 		application.WithAmoWidgetTokenVerifier(amoWidgetVerifier),
-		application.WithWidgetEntitlementProvider(widgetEntitlementClient),
 	)
 	if configuration.AmoImportEnabled {
 		externalUsersClient, externalClientErr := externalusers.NewClient(externalusers.Config{

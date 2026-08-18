@@ -253,71 +253,30 @@ func (s *Service) ExchangeAmoWidgetSession(
 	ctx context.Context,
 	input AmoWidgetSessionInput,
 ) (AmoWidgetSessionResult, error) {
-	if strings.TrimSpace(input.Token) == "" && s.amoWidgetAllowUnsigned {
-		return s.exchangeUnsignedAmoWidgetSession(ctx, input)
-	}
 	identity, accountID, err := s.verifyAmoWidgetAccess(ctx, input.Token)
 	if err != nil {
 		return AmoWidgetSessionResult{}, err
 	}
-	if strings.TrimSpace(input.ExternalUserID) == "" {
-		return s.exchangeLegacyAmoWidgetSession(ctx, accountID)
-	}
-	externalUserID := strings.TrimSpace(input.ExternalUserID)
-	if externalUserID != strconv.FormatInt(identity.UserID, 10) {
-		return AmoWidgetSessionResult{}, coded(
-			ErrorUnauthenticated,
-			ErrorCodeAmoWidgetUserMismatch,
-			"Пользователь amoCRM не совпадает с пользователем подписанного токена",
-		)
-	}
-	email, firstName, lastName, companyName, err := normalizeAmoWidgetProfile(input, accountID)
+	adminSession, err := s.ProvisionAmoAdminSession(ctx, verifiedAmoAdminSessionInput(identity, accountID))
 	if err != nil {
 		return AmoWidgetSessionResult{}, err
 	}
-	if input.IsAdmin || input.IsOwner {
-		desiredRole := "admin"
-		if input.IsOwner {
-			desiredRole = "owner"
-		}
-		adminSession, provisionErr := s.ProvisionAmoAdminSession(ctx, AmoAdminSessionInput{
-			Provider: amoWidgetProvider, ExternalAccountID: accountID,
-			ExternalUserID: externalUserID, Email: email,
-			UserName: input.UserName, CompanyName: companyName, DesiredRole: desiredRole,
-		})
-		if provisionErr != nil {
-			return AmoWidgetSessionResult{}, provisionErr
-		}
-		return AmoWidgetSessionResult{
-			Action: adminSession.Action, ExternalAccountID: adminSession.ExternalAccountID,
-			AccessToken: adminSession.AccessToken, Role: adminSession.Role,
-		}, nil
-	}
-	return s.provisionAmoWidgetSession(
-		ctx, accountID, externalUserID, email, firstName, lastName, companyName, false, true,
-	)
+	return AmoWidgetSessionResult{
+		Action: adminSession.Action, ExternalAccountID: adminSession.ExternalAccountID,
+		AccessToken: adminSession.AccessToken, Role: adminSession.Role,
+	}, nil
 }
 
-func (s *Service) exchangeUnsignedAmoWidgetSession(
-	ctx context.Context,
-	input AmoWidgetSessionInput,
-) (AmoWidgetSessionResult, error) {
-	_, accountID, err := normalizeAmoAccount(amoWidgetProvider, input.ExternalAccountID)
-	if err != nil {
-		return AmoWidgetSessionResult{}, err
+func verifiedAmoAdminSessionInput(identity amoauth.Identity, accountID string) AmoAdminSessionInput {
+	desiredRole := "admin"
+	if identity.IsOwner {
+		desiredRole = "owner"
 	}
-	externalUserID := strings.TrimSpace(input.ExternalUserID)
-	parsedUserID, parseErr := strconv.ParseInt(externalUserID, 10, 64)
-	if parseErr != nil || parsedUserID <= 0 || strconv.FormatInt(parsedUserID, 10) != externalUserID {
-		return AmoWidgetSessionResult{}, validation("Некорректный ID пользователя amoCRM")
+	return AmoAdminSessionInput{
+		Provider: amoWidgetProvider, ExternalAccountID: accountID,
+		ExternalUserID: strconv.FormatInt(identity.UserID, 10), Email: identity.UserEmail,
+		UserName: identity.UserName, CompanyName: identity.AccountName, DesiredRole: desiredRole,
 	}
-	email, firstName, lastName, companyName, err := normalizeAmoWidgetProfile(input, accountID)
-	if err != nil {
-		return AmoWidgetSessionResult{}, err
-	}
-	return s.provisionAmoWidgetSession(
-		ctx, accountID, externalUserID, email, firstName, lastName, companyName, true, true,
-	)
 }
 
 func normalizeAmoWidgetProfile(
@@ -343,15 +302,21 @@ func (s *Service) verifyAmoWidgetAccess(
 	ctx context.Context,
 	token string,
 ) (amoauth.Identity, string, error) {
-	if s.amoWidgetTokenVerifier == nil || s.widgetEntitlements == nil {
+	if s.amoWidgetTokenVerifier == nil {
 		return amoauth.Identity{}, "", coded(
 			ErrorUpstream, ErrorCodeAmoWidgetSessionUnavailable, "Вход через amoCRM временно недоступен",
 		)
 	}
-	identity, err := s.amoWidgetTokenVerifier.Verify(token)
-	if errors.Is(err, amoauth.ErrNotConfigured) {
+	identity, err := s.amoWidgetTokenVerifier.Verify(ctx, strings.TrimSpace(token))
+	if errors.Is(err, amoauth.ErrNotConfigured) || errors.Is(err, amoauth.ErrUnavailable) {
 		return amoauth.Identity{}, "", coded(
 			ErrorUpstream, ErrorCodeAmoWidgetSessionUnavailable, "Вход через amoCRM временно недоступен",
+		)
+	}
+	if errors.Is(err, amoauth.ErrForbidden) {
+		return amoauth.Identity{}, "", coded(
+			ErrorForbidden, ErrorCodeAmoWidgetSessionUnavailable,
+			"Пользователь amoCRM не имеет доступа администратора к TeamOS",
 		)
 	}
 	if err != nil {
@@ -367,21 +332,12 @@ func (s *Service) verifyAmoWidgetAccess(
 	logger.LogAttrs(ctx, slog.LevelInfo, "amoCRM widget session verified",
 		slog.String("amo_account_id", accountID),
 		slog.Int64("amo_user_id", identity.UserID),
+		slog.String("amo_jti", identity.JTI),
 	)
-	installed, paid, err := s.widgetEntitlements.Check(ctx, accountID)
-	if err != nil {
+	if !identity.IsAdmin {
 		return amoauth.Identity{}, "", coded(
-			ErrorUpstream, ErrorCodeAmoWidgetSessionUnavailable, "Не удалось проверить доступ к виджету amoCRM",
-		)
-	}
-	if !installed {
-		return amoauth.Identity{}, "", coded(
-			ErrorForbidden, ErrorCodeWidgetNotInstalled, "Виджет «Контроль активности» не установлен или выключен",
-		)
-	}
-	if !paid {
-		return amoauth.Identity{}, "", coded(
-			ErrorForbidden, ErrorCodeWidgetNotPaid, "Срок оплаты виджета «Контроль активности» истёк",
+			ErrorForbidden, ErrorCodeAmoWidgetSessionUnavailable,
+			"Пользователь amoCRM не имеет доступа администратора к TeamOS",
 		)
 	}
 	return identity, accountID, nil
