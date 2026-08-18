@@ -323,6 +323,44 @@ paths:
         default:
           $ref: '#/components/responses/Error'
 
+  /api/v1/public/amocrm/admin-self-login:
+    post:
+      tags: [Provisioning]
+      operationId: amoAdminSelfLogin
+      summary: Самостоятельный вход администратора amoCRM по browser assertion
+      description: |
+        Challenge подтверждает только ранее найденную привязку аккаунта и не
+        является доказательством личности или прав amoCRM. Список users —
+        осознанно доверяемое клиентское утверждение и используется только после
+        обязательного принудительного импорта сотрудников.
+      security:
+        - amoBrowserChallenge: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AmoAdminSelfLoginInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/AmoAdminSelfLogin'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
   /api/v1/public/amocrm/widget-sessions/validate:
     post:
       tags: [Provisioning]
@@ -4191,6 +4229,11 @@ components:
       in: header
       name: Authorization
       description: Служебная авторизация в формате `Service <credential>`.
+    amoBrowserChallenge:
+      type: http
+      scheme: bearer
+      bearerFormat: AMO_BROWSER_CHALLENGE
+      description: Короткоживущий одноразовый challenge для browser assertion amoCRM.
     refreshCookie:
       type: apiKey
       in: cookie
@@ -4493,6 +4536,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/AmoSessionAccessResponse'
+    AmoAdminSelfLogin:
+      description: Постоянная access-link текущего администратора amoCRM
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AmoAdminSelfLoginResponse'
     AmoAdminSession:
       description: Ссылка самостоятельного входа подтверждённого администратора amoCRM
       content:
@@ -5909,10 +5958,75 @@ components:
     AmoAccountAvailabilityResponse:
       type: object
       additionalProperties: false
-      required: [exists]
+      required: [exists, adminSelfLoginEligible]
       properties:
         exists:
           type: boolean
+        adminSelfLoginEligible:
+          type: boolean
+          description: >-
+            Сервер подтвердил активную компанию, совпадающую активную интеграцию amoCRM
+            и готовность принудительного импорта для самостоятельного входа администратора.
+        challengeToken:
+          type: string
+          minLength: 32
+          maxLength: 2048
+        tokenType:
+          type: string
+          const: Bearer
+        expiresIn:
+          type: integer
+          minimum: 1
+          maximum: 300
+
+    AmoAdminUserAssertion:
+      type: object
+      additionalProperties: false
+      required: [id, isAdmin, isActive]
+      properties:
+        id:
+          type: string
+          pattern: '^\d+$'
+          maxLength: 255
+        isAdmin:
+          type: boolean
+        isActive:
+          type: boolean
+
+    AmoAdminSelfLoginInput:
+      type: object
+      additionalProperties: false
+      required: [selfUserId, users]
+      properties:
+        selfUserId:
+          type: string
+          pattern: '^\d+$'
+          maxLength: 255
+        users:
+          type: array
+          minItems: 1
+          maxItems: 250
+          items:
+            $ref: '#/components/schemas/AmoAdminUserAssertion'
+
+    AmoAdminSelfLoginResponse:
+      type: object
+      additionalProperties: false
+      required: [allowed, action, role, redirectUrl]
+      properties:
+        allowed:
+          type: boolean
+          const: true
+        action:
+          type: string
+          const: login
+        role:
+          allOf:
+            - $ref: '#/components/schemas/UserRole'
+          description: В успешном ответе возвращается только `admin` или `owner`.
+        redirectUrl:
+          type: string
+          format: uri
 
     AmoSessionAccessInput:
       type: object

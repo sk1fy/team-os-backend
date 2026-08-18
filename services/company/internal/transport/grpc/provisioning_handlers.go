@@ -17,11 +17,13 @@ func (s *Server) CheckAmoAccount(
 	if request == nil {
 		return nil, invalidRequest()
 	}
-	exists, err := s.application.CheckAmoAccount(ctx, request.Provider, request.ExternalAccountId)
+	availability, err := s.application.CheckAmoAccount(ctx, request.Provider, request.ExternalAccountId)
 	if err != nil {
 		return nil, transportError(err)
 	}
-	return &companyv1.CheckAmoAccountResponse{Exists: exists}, nil
+	return &companyv1.CheckAmoAccountResponse{
+		Exists: availability.Exists, AdminSelfLoginEligible: availability.AdminSelfLoginEligible,
+	}, nil
 }
 
 func (s *Server) IssueCompanyRegistrationToken(

@@ -56,6 +56,18 @@ SELECT (
     )
 )::boolean;
 
+-- name: AmoAdminSelfLoginEligible :one
+SELECT EXISTS (
+    SELECT 1
+    FROM company_integrations AS integration
+    JOIN companies AS company ON company.id = integration.company_id
+    WHERE integration.provider = sqlc.arg('provider')
+      AND integration.external_account_id = sqlc.arg('external_account_id')
+      AND integration.status = 'active'
+      AND company.status = 'active'
+      AND company.amo_account_id = integration.external_account_id
+)::boolean;
+
 -- name: GetActiveCompanyRegistrationTokenForAccount :one
 SELECT *
 FROM company_registration_tokens AS registration_token

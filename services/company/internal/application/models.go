@@ -181,6 +181,11 @@ type CompanyRegistrationTokenValidation struct {
 	ExpiresAt         *time.Time
 }
 
+type AmoAccountAvailability struct {
+	Exists                 bool
+	AdminSelfLoginEligible bool
+}
+
 type AmoWidgetSessionResult struct {
 	Action                string
 	ExternalAccountID     string
@@ -229,6 +234,26 @@ type AmoSessionAccess struct {
 	Allowed     bool
 	Role        string
 	RedirectURL string
+}
+
+type AmoAdminUserAssertion struct {
+	ID       string
+	IsAdmin  bool
+	IsActive bool
+}
+
+type AmoAdminSelfLoginInput struct {
+	AmoAccountID string
+	SelfUserID   string
+	Users        []AmoAdminUserAssertion
+	RequestID    string
+}
+
+type AmoAdminSelfLoginResult struct {
+	Allowed     bool
+	Action      string
+	Role        string
+	AccessToken string
 }
 
 type AmoWidgetContinuation struct {

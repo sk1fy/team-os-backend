@@ -45,6 +45,8 @@ check-production-compose: ## Verify production ports and security overrides, inc
 	@FILES_S3_SECURE=true FILES_S3_PUBLIC_SECURE=false GATEWAY_COOKIE_SECURE=false \
 		COMPANY_GATEWAY_SERVICE_TOKEN=production-compose-check-company-token-0001 \
 		GATEWAY_COMPANY_SERVICE_TOKEN=production-compose-check-company-token-0001 \
+		AMO_BROWSER_ADMIN_ASSERTION_ENABLED=true \
+		AMO_BROWSER_CHALLENGE_SECRET=production-browser-challenge-secret-0001 \
 		GATEWAY_PROVISIONING_SERVICE_TOKEN=production-compose-check-provisioning-token-0001 \
 		GATEWAY_PROVISIONING_SERVICE_PROVIDER=rakurs \
 		ACADEMY_EXTERNAL_TOKEN_SECRET=production-compose-check-token-secret-0001 \

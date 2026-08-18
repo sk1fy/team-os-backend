@@ -135,6 +135,16 @@ func TestAuthorizeProvisioningRejectsMissingOrInvalidKey(t *testing.T) {
 	}
 }
 
+func TestAmoAdminSelfLoginRequiresGatewayServiceAuthentication(t *testing.T) {
+	server := NewServer(nil, nil, "gateway-service-token-at-least-32-bytes")
+	_, err := server.AmoAdminSelfLogin(context.Background(), &companyv1.AmoAdminSelfLoginRequest{
+		AmoAccountId: "31355990", SelfUserId: "101",
+	})
+	if status.Code(err) != codes.Unauthenticated {
+		t.Fatalf("code=%v error=%v", status.Code(err), err)
+	}
+}
+
 func TestSessionMetaUsesForwardedClientData(t *testing.T) {
 	ctx := metadata.NewIncomingContext(context.Background(), metadata.Pairs(
 		"x-user-agent", "TeamOS Browser/1.0",

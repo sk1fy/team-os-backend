@@ -37,6 +37,10 @@ const (
 	ErrorCodeAmoSessionAccessMismatch      = "AMO_SESSION_ACCESS_ACCOUNT_MISMATCH"
 	ErrorCodeAmoSessionAccessLocked        = "AMO_SESSION_ACCESS_LOCKED"
 	ErrorCodeAmoSessionAccessForbidden     = "AMO_SESSION_ACCESS_FORBIDDEN"
+	ErrorCodeAmoAdminAssertionInvalid      = "AMO_ADMIN_ASSERTION_INVALID"
+	ErrorCodeAmoAdminSelfLoginForbidden    = "AMO_ADMIN_SELF_LOGIN_FORBIDDEN"
+	ErrorCodeAmoAdminSelfLoginNotFound     = "AMO_ADMIN_SELF_LOGIN_NOT_FOUND"
+	ErrorCodeAmoAdminSelfLoginUnavailable  = "AMO_ADMIN_SELF_LOGIN_UNAVAILABLE"
 )
 
 // Error carries a stable user-facing Russian message independently of the

@@ -83,10 +83,11 @@ func TestCheckAmoAccountIsPublicAndForwardsConfiguredProvider(t *testing.T) {
 		if request.Provider != testProvisioningProvider || request.ExternalAccountId != "31355990" {
 			t.Fatalf("request = %#v", request)
 		}
-		return &companyv1.CheckAmoAccountResponse{Exists: true}, nil
+		return &companyv1.CheckAmoAccountResponse{Exists: true, AdminSelfLoginEligible: true}, nil
 	}}
 	recorder := performRequest(newTestGateway(t, server), http.MethodGet, "/api/v1/public/amocrm/accounts/31355990/exists", "", nil)
-	if recorder.Code != http.StatusOK || !strings.Contains(recorder.Body.String(), `"exists":true`) {
+	if recorder.Code != http.StatusOK || !strings.Contains(recorder.Body.String(), `"exists":true`) ||
+		!strings.Contains(recorder.Body.String(), `"adminSelfLoginEligible":false`) {
 		t.Fatalf("status=%d body=%s", recorder.Code, recorder.Body.String())
 	}
 	if recorder.Header().Get("Cache-Control") != "private, no-store" {

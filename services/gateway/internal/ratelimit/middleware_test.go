@@ -107,6 +107,7 @@ func TestLimiterProtectsPublicCompanyRegistrationChecks(t *testing.T) {
 		{http.MethodGet, "/api/v1/public/amocrm/accounts/31355990/exists"},
 		{http.MethodPost, "/api/v1/public/amocrm/widget-sessions"},
 		{http.MethodPost, "/api/v1/public/amocrm/widget-sessions/validate"},
+		{http.MethodPost, "/api/v1/public/amocrm/admin-self-login"},
 		{http.MethodPost, "/api/v1/auth/amocrm/complete"},
 		{http.MethodPost, "/api/v1/public/company-registration-tokens/validate"},
 		{http.MethodPost, "/api/v1/auth/registration-logins"},

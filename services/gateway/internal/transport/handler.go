@@ -19,6 +19,7 @@ import (
 	tasksv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/tasks/v1"
 	"github.com/sk1fy/team-os-backend/pkg/apierror"
 	"github.com/sk1fy/team-os-backend/pkg/httpx"
+	"github.com/sk1fy/team-os-backend/services/gateway/internal/amochallenge"
 	"github.com/sk1fy/team-os-backend/services/gateway/internal/api"
 	"github.com/sk1fy/team-os-backend/services/gateway/internal/authmw"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
@@ -48,7 +49,10 @@ type Handler struct {
 	provisioningAllowUnauthenticated bool
 	provisioningServiceProvider      string
 	companyServiceToken              string
+	amoChallenge                     *amochallenge.Manager
 }
+
+func (h *Handler) SetAmoChallengeManager(manager *amochallenge.Manager) { h.amoChallenge = manager }
 
 func (h *Handler) SetFilesClient(client filesv1.FilesServiceClient) { h.files = client }
 

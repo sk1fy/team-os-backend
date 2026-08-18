@@ -17,6 +17,7 @@ type Querier interface {
 	ActivateAmoWidgetIdentity(ctx context.Context, arg ActivateAmoWidgetIdentityParams) (UserExternalIdentity, error)
 	ActivateInvitedUser(ctx context.Context, arg ActivateInvitedUserParams) (User, error)
 	AmoAccountExists(ctx context.Context, arg AmoAccountExistsParams) (bool, error)
+	AmoAdminSelfLoginEligible(ctx context.Context, arg AmoAdminSelfLoginEligibleParams) (bool, error)
 	AmoWidgetUserHasPassword(ctx context.Context, arg AmoWidgetUserHasPasswordParams) (bool, error)
 	ApplyReservedUserLogin(ctx context.Context, arg ApplyReservedUserLoginParams) (string, error)
 	AssignAmoUserDepartment(ctx context.Context, arg AssignAmoUserDepartmentParams) (int64, error)

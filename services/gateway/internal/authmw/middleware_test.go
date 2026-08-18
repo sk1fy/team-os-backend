@@ -158,6 +158,7 @@ func TestAmoWidgetSessionRoutesArePublic(t *testing.T) {
 	for _, path := range []string{
 		"/api/v1/public/amocrm/widget-sessions",
 		"/api/v1/public/amocrm/widget-sessions/validate",
+		"/api/v1/public/amocrm/admin-self-login",
 		"/api/v1/auth/amocrm/complete",
 	} {
 		if !isPublic(http.MethodPost, path) {

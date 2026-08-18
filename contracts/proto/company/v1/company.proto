@@ -20,6 +20,7 @@ service CompanyService {
   rpc ValidateAmoWidgetContinuation(ValidateAmoWidgetContinuationRequest) returns (ValidateAmoWidgetContinuationResponse);
   rpc CompleteAmoWidgetContinuation(CompleteAmoWidgetContinuationRequest) returns (CompleteAmoWidgetContinuationResponse);
   rpc CheckAmoSessionAccess(CheckAmoSessionAccessRequest) returns (CheckAmoSessionAccessResponse);
+  rpc AmoAdminSelfLogin(AmoAdminSelfLoginRequest) returns (AmoAdminSelfLoginResponse);
   rpc Login(LoginRequest) returns (LoginResponse);
   rpc LoginByLogin(LoginByLoginRequest) returns (LoginByLoginResponse);
   rpc LoginWithAccessLink(LoginWithAccessLinkRequest) returns (LoginWithAccessLinkResponse);
@@ -275,6 +276,7 @@ message CheckAmoAccountRequest {
 
 message CheckAmoAccountResponse {
   bool exists = 1;
+  bool admin_self_login_eligible = 2;
 }
 
 message IssueCompanyRegistrationTokenRequest {
@@ -1026,4 +1028,23 @@ message CheckAmoSessionAccessResponse {
   bool allowed = 1;
   UserRole role = 2;
   string redirect_url = 3;
+}
+
+message AmoAdminUserAssertion {
+  string id = 1;
+  bool is_admin = 2;
+  bool is_active = 3;
+}
+
+message AmoAdminSelfLoginRequest {
+  string amo_account_id = 1;
+  string self_user_id = 2;
+  repeated AmoAdminUserAssertion users = 3;
+}
+
+message AmoAdminSelfLoginResponse {
+  bool allowed = 1;
+  AmoWidgetSessionAction action = 2;
+  UserRole role = 3;
+  string access_token = 4;
 }

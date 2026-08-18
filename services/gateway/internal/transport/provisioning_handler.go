@@ -42,7 +42,24 @@ func (h *Handler) CheckAmoAccount(w http.ResponseWriter, r *http.Request, amoAcc
 		return
 	}
 	setPrivateNoStore(w)
-	writeJSON(w, http.StatusOK, api.AmoAccountAvailabilityResponse{Exists: response.GetExists()})
+	eligible := response.GetExists() && response.GetAdminSelfLoginEligible() && h.amoChallenge != nil
+	result := api.AmoAccountAvailabilityResponse{
+		Exists: response.GetExists(), AdminSelfLoginEligible: eligible,
+	}
+	if eligible {
+		token, issueErr := h.amoChallenge.Issue(amoAccountID)
+		if issueErr != nil {
+			h.logger.ErrorContext(r.Context(), "issue amoCRM browser challenge", "error", issueErr)
+			h.writeConversionError(w, r, issueErr)
+			return
+		}
+		tokenType := "Bearer"
+		expiresIn := h.amoChallenge.TTLSeconds()
+		result.ChallengeToken = &token
+		result.TokenType = &tokenType
+		result.ExpiresIn = &expiresIn
+	}
+	writeJSON(w, http.StatusOK, result)
 }
 
 func (h *Handler) IssueCompanyRegistrationToken(w http.ResponseWriter, r *http.Request) {
@@ -311,7 +328,7 @@ func secureCredentialEqual(left, right string) bool {
 
 func (h *Handler) provisioningContext(r *http.Request) context.Context {
 	return metadata.AppendToOutgoingContext(
-		r.Context(),
+		outgoingContext(r),
 		"x-teamos-service", provisioningServiceMarker,
 		"x-teamos-service-token", h.companyServiceToken,
 		"x-teamos-provider", h.provisioningServiceProvider,
