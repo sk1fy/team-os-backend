@@ -82,7 +82,7 @@ func (h *Handler) ProvisionAmoAdminSession(w http.ResponseWriter, r *http.Reques
 	if !decode(w, r, &input) {
 		return
 	}
-	desiredRole := companyv1.UserRole_USER_ROLE_UNSPECIFIED
+	var desiredRole companyv1.UserRole
 	switch input.DesiredRole {
 	case api.UserRoleAdmin:
 		desiredRole = companyv1.UserRole_USER_ROLE_ADMIN

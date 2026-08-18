@@ -90,7 +90,7 @@ func (c *Client) Verify(ctx context.Context, token string) (amoauth.Identity, er
 	request.Header.Set("Accept", "application/json")
 	response, err := c.httpClient.Do(request)
 	if err != nil {
-		return amoauth.Identity{}, fmt.Errorf("%w: %v", amoauth.ErrUnavailable, err)
+		return amoauth.Identity{}, fmt.Errorf("%w: %w", amoauth.ErrUnavailable, err)
 	}
 	defer func() { _ = response.Body.Close() }()
 	switch response.StatusCode {
@@ -174,5 +174,5 @@ func parsePositiveID(value string) (int64, error) {
 }
 
 func malformedResponse(err error) error {
-	return fmt.Errorf("%w: некорректный ответ verifier: %v", amoauth.ErrUnavailable, err)
+	return fmt.Errorf("%w: некорректный ответ verifier: %w", amoauth.ErrUnavailable, err)
 }
