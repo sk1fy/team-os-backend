@@ -16,11 +16,8 @@ service CompanyService {
   rpc IssueCompanyRegistrationToken(IssueCompanyRegistrationTokenRequest) returns (IssueCompanyRegistrationTokenResponse);
   rpc ValidateCompanyRegistrationToken(ValidateCompanyRegistrationTokenRequest) returns (ValidateCompanyRegistrationTokenResponse);
   rpc ExchangeAmoWidgetSession(ExchangeAmoWidgetSessionRequest) returns (ExchangeAmoWidgetSessionResponse);
-  rpc ProvisionAmoAdminSession(ProvisionAmoAdminSessionRequest) returns (ProvisionAmoAdminSessionResponse);
   rpc ValidateAmoWidgetContinuation(ValidateAmoWidgetContinuationRequest) returns (ValidateAmoWidgetContinuationResponse);
   rpc CompleteAmoWidgetContinuation(CompleteAmoWidgetContinuationRequest) returns (CompleteAmoWidgetContinuationResponse);
-  rpc CheckAmoSessionAccess(CheckAmoSessionAccessRequest) returns (CheckAmoSessionAccessResponse);
-  rpc AmoAdminSelfLogin(AmoAdminSelfLoginRequest) returns (AmoAdminSelfLoginResponse);
   rpc Login(LoginRequest) returns (LoginResponse);
   rpc LoginByLogin(LoginByLoginRequest) returns (LoginByLoginResponse);
   rpc LoginWithAccessLink(LoginWithAccessLinkRequest) returns (LoginWithAccessLinkResponse);
@@ -276,7 +273,6 @@ message CheckAmoAccountRequest {
 
 message CheckAmoAccountResponse {
   bool exists = 1;
-  bool admin_self_login_eligible = 2;
 }
 
 message IssueCompanyRegistrationTokenRequest {
@@ -963,8 +959,6 @@ message ExchangeAmoWidgetSessionRequest {
   optional string user_name = 4;
   optional string company_name = 5;
   optional string external_account_id = 6;
-  bool is_admin = 7;
-  bool is_owner = 8;
 }
 
 message ExchangeAmoWidgetSessionResponse {
@@ -976,27 +970,6 @@ message ExchangeAmoWidgetSessionResponse {
   optional string email = 6;
   optional string company_name = 7;
   optional bool requires_password_setup = 8;
-  optional string access_token = 9;
-  optional UserRole role = 10;
-}
-
-message ProvisionAmoAdminSessionRequest {
-  string provider = 1;
-  string external_account_id = 2;
-  string external_user_id = 3;
-  string email = 4;
-  string user_name = 5;
-  string company_name = 6;
-  UserRole desired_role = 7;
-}
-
-message ProvisionAmoAdminSessionResponse {
-  AmoWidgetSessionAction action = 1;
-  string external_account_id = 2;
-  string company_id = 3;
-  string user_id = 4;
-  UserRole role = 5;
-  string access_token = 6;
 }
 
 message ValidateAmoWidgetContinuationRequest {
@@ -1018,33 +991,4 @@ message CompleteAmoWidgetContinuationRequest {
 
 message CompleteAmoWidgetContinuationResponse {
   AuthSession session = 1;
-}
-
-message CheckAmoSessionAccessRequest {
-  string amo_account_id = 1;
-}
-
-message CheckAmoSessionAccessResponse {
-  bool allowed = 1;
-  UserRole role = 2;
-  string redirect_url = 3;
-}
-
-message AmoAdminUserAssertion {
-  string id = 1;
-  bool is_admin = 2;
-  bool is_active = 3;
-}
-
-message AmoAdminSelfLoginRequest {
-  string amo_account_id = 1;
-  string self_user_id = 2;
-  repeated AmoAdminUserAssertion users = 3;
-}
-
-message AmoAdminSelfLoginResponse {
-  bool allowed = 1;
-  AmoWidgetSessionAction action = 2;
-  UserRole role = 3;
-  string access_token = 4;
 }

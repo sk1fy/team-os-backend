@@ -19,7 +19,6 @@ import (
 	tasksv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/tasks/v1"
 	"github.com/sk1fy/team-os-backend/pkg/apierror"
 	"github.com/sk1fy/team-os-backend/pkg/httpx"
-	"github.com/sk1fy/team-os-backend/services/gateway/internal/amochallenge"
 	"github.com/sk1fy/team-os-backend/services/gateway/internal/api"
 	"github.com/sk1fy/team-os-backend/services/gateway/internal/authmw"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
@@ -49,10 +48,7 @@ type Handler struct {
 	provisioningAllowUnauthenticated bool
 	provisioningServiceProvider      string
 	companyServiceToken              string
-	amoChallenge                     *amochallenge.Manager
 }
-
-func (h *Handler) SetAmoChallengeManager(manager *amochallenge.Manager) { h.amoChallenge = manager }
 
 func (h *Handler) SetFilesClient(client filesv1.FilesServiceClient) { h.files = client }
 
@@ -905,10 +901,6 @@ func (h *Handler) writeRPCError(w http.ResponseWriter, r *http.Request, err erro
 	errorCode := grpcErrorCode(grpcStatus)
 	write := func(publicError *apierror.Error) {
 		apierror.Write(w, publicError.WithCode(errorCode))
-	}
-	if errorCode == "AMO_SESSION_ACCESS_LOCKED" {
-		write(apierror.New(http.StatusLocked, message))
-		return
 	}
 	switch grpcStatus.Code() {
 	case codes.InvalidArgument, codes.FailedPrecondition, codes.OutOfRange:

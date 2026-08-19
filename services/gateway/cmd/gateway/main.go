@@ -21,7 +21,6 @@ import (
 	tasksv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/tasks/v1"
 	sharedauth "github.com/sk1fy/team-os-backend/pkg/auth"
 	"github.com/sk1fy/team-os-backend/pkg/httpx"
-	"github.com/sk1fy/team-os-backend/services/gateway/internal/amochallenge"
 	"github.com/sk1fy/team-os-backend/services/gateway/internal/api"
 	"github.com/sk1fy/team-os-backend/services/gateway/internal/authmw"
 	"github.com/sk1fy/team-os-backend/services/gateway/internal/config"
@@ -163,15 +162,6 @@ func run(logger *slog.Logger) error {
 	handler.SetProvisioningAllowUnauthenticated(configuration.ProvisioningAllowUnauthenticated)
 	handler.SetProvisioningServiceProvider(configuration.ProvisioningServiceProvider)
 	handler.SetCompanyServiceToken(configuration.CompanyServiceToken)
-	var challengeManager *amochallenge.Manager
-	if configuration.AmoBrowserAdminAssertionEnabled {
-		var challengeErr error
-		challengeManager, challengeErr = amochallenge.New(configuration.AmoBrowserChallengeSecret, 2*time.Minute)
-		if challengeErr != nil {
-			return challengeErr
-		}
-		handler.SetAmoChallengeManager(challengeManager)
-	}
 
 	router := chi.NewRouter()
 	router.Use(cors.Handler(cors.Options{
@@ -268,7 +258,7 @@ func run(logger *slog.Logger) error {
 	router.Group(func(apiRouter chi.Router) {
 		limiter := ratelimit.New(30, time.Minute, configuration.TrustedProxyCIDRs...).
 			WithProvisioningPrincipal(configuration.ProvisioningServiceToken, 600)
-		apiRouter.Use(limiter.Middleware, authmw.Middleware(verifier), amochallenge.Middleware(challengeManager))
+		apiRouter.Use(limiter.Middleware, authmw.Middleware(verifier))
 		api.HandlerWithOptions(handler, api.ChiServerOptions{
 			BaseRouter: apiRouter,
 			ErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {

@@ -25,11 +25,8 @@ const (
 	CompanyService_IssueCompanyRegistrationToken_FullMethodName    = "/teamos.company.v1.CompanyService/IssueCompanyRegistrationToken"
 	CompanyService_ValidateCompanyRegistrationToken_FullMethodName = "/teamos.company.v1.CompanyService/ValidateCompanyRegistrationToken"
 	CompanyService_ExchangeAmoWidgetSession_FullMethodName         = "/teamos.company.v1.CompanyService/ExchangeAmoWidgetSession"
-	CompanyService_ProvisionAmoAdminSession_FullMethodName         = "/teamos.company.v1.CompanyService/ProvisionAmoAdminSession"
 	CompanyService_ValidateAmoWidgetContinuation_FullMethodName    = "/teamos.company.v1.CompanyService/ValidateAmoWidgetContinuation"
 	CompanyService_CompleteAmoWidgetContinuation_FullMethodName    = "/teamos.company.v1.CompanyService/CompleteAmoWidgetContinuation"
-	CompanyService_CheckAmoSessionAccess_FullMethodName            = "/teamos.company.v1.CompanyService/CheckAmoSessionAccess"
-	CompanyService_AmoAdminSelfLogin_FullMethodName                = "/teamos.company.v1.CompanyService/AmoAdminSelfLogin"
 	CompanyService_Login_FullMethodName                            = "/teamos.company.v1.CompanyService/Login"
 	CompanyService_LoginByLogin_FullMethodName                     = "/teamos.company.v1.CompanyService/LoginByLogin"
 	CompanyService_LoginWithAccessLink_FullMethodName              = "/teamos.company.v1.CompanyService/LoginWithAccessLink"
@@ -109,11 +106,8 @@ type CompanyServiceClient interface {
 	IssueCompanyRegistrationToken(ctx context.Context, in *IssueCompanyRegistrationTokenRequest, opts ...grpc.CallOption) (*IssueCompanyRegistrationTokenResponse, error)
 	ValidateCompanyRegistrationToken(ctx context.Context, in *ValidateCompanyRegistrationTokenRequest, opts ...grpc.CallOption) (*ValidateCompanyRegistrationTokenResponse, error)
 	ExchangeAmoWidgetSession(ctx context.Context, in *ExchangeAmoWidgetSessionRequest, opts ...grpc.CallOption) (*ExchangeAmoWidgetSessionResponse, error)
-	ProvisionAmoAdminSession(ctx context.Context, in *ProvisionAmoAdminSessionRequest, opts ...grpc.CallOption) (*ProvisionAmoAdminSessionResponse, error)
 	ValidateAmoWidgetContinuation(ctx context.Context, in *ValidateAmoWidgetContinuationRequest, opts ...grpc.CallOption) (*ValidateAmoWidgetContinuationResponse, error)
 	CompleteAmoWidgetContinuation(ctx context.Context, in *CompleteAmoWidgetContinuationRequest, opts ...grpc.CallOption) (*CompleteAmoWidgetContinuationResponse, error)
-	CheckAmoSessionAccess(ctx context.Context, in *CheckAmoSessionAccessRequest, opts ...grpc.CallOption) (*CheckAmoSessionAccessResponse, error)
-	AmoAdminSelfLogin(ctx context.Context, in *AmoAdminSelfLoginRequest, opts ...grpc.CallOption) (*AmoAdminSelfLoginResponse, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	LoginByLogin(ctx context.Context, in *LoginByLoginRequest, opts ...grpc.CallOption) (*LoginByLoginResponse, error)
 	LoginWithAccessLink(ctx context.Context, in *LoginWithAccessLinkRequest, opts ...grpc.CallOption) (*LoginWithAccessLinkResponse, error)
@@ -247,16 +241,6 @@ func (c *companyServiceClient) ExchangeAmoWidgetSession(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *companyServiceClient) ProvisionAmoAdminSession(ctx context.Context, in *ProvisionAmoAdminSessionRequest, opts ...grpc.CallOption) (*ProvisionAmoAdminSessionResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ProvisionAmoAdminSessionResponse)
-	err := c.cc.Invoke(ctx, CompanyService_ProvisionAmoAdminSession_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *companyServiceClient) ValidateAmoWidgetContinuation(ctx context.Context, in *ValidateAmoWidgetContinuationRequest, opts ...grpc.CallOption) (*ValidateAmoWidgetContinuationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ValidateAmoWidgetContinuationResponse)
@@ -271,26 +255,6 @@ func (c *companyServiceClient) CompleteAmoWidgetContinuation(ctx context.Context
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CompleteAmoWidgetContinuationResponse)
 	err := c.cc.Invoke(ctx, CompanyService_CompleteAmoWidgetContinuation_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *companyServiceClient) CheckAmoSessionAccess(ctx context.Context, in *CheckAmoSessionAccessRequest, opts ...grpc.CallOption) (*CheckAmoSessionAccessResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CheckAmoSessionAccessResponse)
-	err := c.cc.Invoke(ctx, CompanyService_CheckAmoSessionAccess_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *companyServiceClient) AmoAdminSelfLogin(ctx context.Context, in *AmoAdminSelfLoginRequest, opts ...grpc.CallOption) (*AmoAdminSelfLoginResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(AmoAdminSelfLoginResponse)
-	err := c.cc.Invoke(ctx, CompanyService_AmoAdminSelfLogin_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -941,11 +905,8 @@ type CompanyServiceServer interface {
 	IssueCompanyRegistrationToken(context.Context, *IssueCompanyRegistrationTokenRequest) (*IssueCompanyRegistrationTokenResponse, error)
 	ValidateCompanyRegistrationToken(context.Context, *ValidateCompanyRegistrationTokenRequest) (*ValidateCompanyRegistrationTokenResponse, error)
 	ExchangeAmoWidgetSession(context.Context, *ExchangeAmoWidgetSessionRequest) (*ExchangeAmoWidgetSessionResponse, error)
-	ProvisionAmoAdminSession(context.Context, *ProvisionAmoAdminSessionRequest) (*ProvisionAmoAdminSessionResponse, error)
 	ValidateAmoWidgetContinuation(context.Context, *ValidateAmoWidgetContinuationRequest) (*ValidateAmoWidgetContinuationResponse, error)
 	CompleteAmoWidgetContinuation(context.Context, *CompleteAmoWidgetContinuationRequest) (*CompleteAmoWidgetContinuationResponse, error)
-	CheckAmoSessionAccess(context.Context, *CheckAmoSessionAccessRequest) (*CheckAmoSessionAccessResponse, error)
-	AmoAdminSelfLogin(context.Context, *AmoAdminSelfLoginRequest) (*AmoAdminSelfLoginResponse, error)
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	LoginByLogin(context.Context, *LoginByLoginRequest) (*LoginByLoginResponse, error)
 	LoginWithAccessLink(context.Context, *LoginWithAccessLinkRequest) (*LoginWithAccessLinkResponse, error)
@@ -1037,20 +998,11 @@ func (UnimplementedCompanyServiceServer) ValidateCompanyRegistrationToken(contex
 func (UnimplementedCompanyServiceServer) ExchangeAmoWidgetSession(context.Context, *ExchangeAmoWidgetSessionRequest) (*ExchangeAmoWidgetSessionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExchangeAmoWidgetSession not implemented")
 }
-func (UnimplementedCompanyServiceServer) ProvisionAmoAdminSession(context.Context, *ProvisionAmoAdminSessionRequest) (*ProvisionAmoAdminSessionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ProvisionAmoAdminSession not implemented")
-}
 func (UnimplementedCompanyServiceServer) ValidateAmoWidgetContinuation(context.Context, *ValidateAmoWidgetContinuationRequest) (*ValidateAmoWidgetContinuationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ValidateAmoWidgetContinuation not implemented")
 }
 func (UnimplementedCompanyServiceServer) CompleteAmoWidgetContinuation(context.Context, *CompleteAmoWidgetContinuationRequest) (*CompleteAmoWidgetContinuationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CompleteAmoWidgetContinuation not implemented")
-}
-func (UnimplementedCompanyServiceServer) CheckAmoSessionAccess(context.Context, *CheckAmoSessionAccessRequest) (*CheckAmoSessionAccessResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CheckAmoSessionAccess not implemented")
-}
-func (UnimplementedCompanyServiceServer) AmoAdminSelfLogin(context.Context, *AmoAdminSelfLoginRequest) (*AmoAdminSelfLoginResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AmoAdminSelfLogin not implemented")
 }
 func (UnimplementedCompanyServiceServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
@@ -1370,24 +1322,6 @@ func _CompanyService_ExchangeAmoWidgetSession_Handler(srv interface{}, ctx conte
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CompanyService_ProvisionAmoAdminSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ProvisionAmoAdminSessionRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CompanyServiceServer).ProvisionAmoAdminSession(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: CompanyService_ProvisionAmoAdminSession_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CompanyServiceServer).ProvisionAmoAdminSession(ctx, req.(*ProvisionAmoAdminSessionRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _CompanyService_ValidateAmoWidgetContinuation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ValidateAmoWidgetContinuationRequest)
 	if err := dec(in); err != nil {
@@ -1420,42 +1354,6 @@ func _CompanyService_CompleteAmoWidgetContinuation_Handler(srv interface{}, ctx 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CompanyServiceServer).CompleteAmoWidgetContinuation(ctx, req.(*CompleteAmoWidgetContinuationRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _CompanyService_CheckAmoSessionAccess_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CheckAmoSessionAccessRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CompanyServiceServer).CheckAmoSessionAccess(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: CompanyService_CheckAmoSessionAccess_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CompanyServiceServer).CheckAmoSessionAccess(ctx, req.(*CheckAmoSessionAccessRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _CompanyService_AmoAdminSelfLogin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AmoAdminSelfLoginRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CompanyServiceServer).AmoAdminSelfLogin(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: CompanyService_AmoAdminSelfLogin_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CompanyServiceServer).AmoAdminSelfLogin(ctx, req.(*AmoAdminSelfLoginRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2626,24 +2524,12 @@ var CompanyService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _CompanyService_ExchangeAmoWidgetSession_Handler,
 		},
 		{
-			MethodName: "ProvisionAmoAdminSession",
-			Handler:    _CompanyService_ProvisionAmoAdminSession_Handler,
-		},
-		{
 			MethodName: "ValidateAmoWidgetContinuation",
 			Handler:    _CompanyService_ValidateAmoWidgetContinuation_Handler,
 		},
 		{
 			MethodName: "CompleteAmoWidgetContinuation",
 			Handler:    _CompanyService_CompleteAmoWidgetContinuation_Handler,
-		},
-		{
-			MethodName: "CheckAmoSessionAccess",
-			Handler:    _CompanyService_CheckAmoSessionAccess_Handler,
-		},
-		{
-			MethodName: "AmoAdminSelfLogin",
-			Handler:    _CompanyService_AmoAdminSelfLogin_Handler,
 		},
 		{
 			MethodName: "Login",

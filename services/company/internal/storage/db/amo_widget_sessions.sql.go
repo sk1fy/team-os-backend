@@ -207,37 +207,6 @@ func (q *Queries) DeleteExpiredAmoWidgetContinuations(ctx context.Context, befor
 	return result.RowsAffected(), nil
 }
 
-const demotePreviousAmoWidgetOwner = `-- name: DemotePreviousAmoWidgetOwner :execrows
-UPDATE users
-SET role = 'admin',
-    show_in_schedule = false,
-    updated_at = $1
-WHERE company_id = $2
-  AND id = $3
-  AND id <> $4
-  AND role = 'owner'
-`
-
-type DemotePreviousAmoWidgetOwnerParams struct {
-	UpdatedAt       time.Time `json:"updated_at"`
-	CompanyID       uuid.UUID `json:"company_id"`
-	PreviousOwnerID uuid.UUID `json:"previous_owner_id"`
-	NewOwnerID      uuid.UUID `json:"new_owner_id"`
-}
-
-func (q *Queries) DemotePreviousAmoWidgetOwner(ctx context.Context, arg DemotePreviousAmoWidgetOwnerParams) (int64, error) {
-	result, err := q.db.Exec(ctx, demotePreviousAmoWidgetOwner,
-		arg.UpdatedAt,
-		arg.CompanyID,
-		arg.PreviousOwnerID,
-		arg.NewOwnerID,
-	)
-	if err != nil {
-		return 0, err
-	}
-	return result.RowsAffected(), nil
-}
-
 const findAmoWidgetUserForUpdate = `-- name: FindAmoWidgetUserForUpdate :one
 SELECT id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source, external_deleted_at, show_in_schedule
 FROM users
@@ -596,53 +565,6 @@ func (q *Queries) ListLegacyAmoWidgetCompaniesForUpdate(ctx context.Context, ext
 		return nil, err
 	}
 	return items, nil
-}
-
-const promoteAmoWidgetAdmin = `-- name: PromoteAmoWidgetAdmin :one
-UPDATE users
-SET role = CASE WHEN role = 'owner' THEN 'owner' ELSE 'admin' END,
-    status = 'active',
-    show_in_schedule = false,
-    updated_at = $1
-WHERE company_id = $2
-  AND id = $3
-  AND external_deleted_at IS NULL
-RETURNING id, company_id, email, first_name, last_name, phone, avatar_url, role, status, birth_date, hired_at, vacation_allowance, created_at, updated_at, source, external_id, external_group_id, external_group_name, avatar_source, external_deleted_at, show_in_schedule
-`
-
-type PromoteAmoWidgetAdminParams struct {
-	UpdatedAt time.Time `json:"updated_at"`
-	CompanyID uuid.UUID `json:"company_id"`
-	UserID    uuid.UUID `json:"user_id"`
-}
-
-func (q *Queries) PromoteAmoWidgetAdmin(ctx context.Context, arg PromoteAmoWidgetAdminParams) (User, error) {
-	row := q.db.QueryRow(ctx, promoteAmoWidgetAdmin, arg.UpdatedAt, arg.CompanyID, arg.UserID)
-	var i User
-	err := row.Scan(
-		&i.ID,
-		&i.CompanyID,
-		&i.Email,
-		&i.FirstName,
-		&i.LastName,
-		&i.Phone,
-		&i.AvatarUrl,
-		&i.Role,
-		&i.Status,
-		&i.BirthDate,
-		&i.HiredAt,
-		&i.VacationAllowance,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.Source,
-		&i.ExternalID,
-		&i.ExternalGroupID,
-		&i.ExternalGroupName,
-		&i.AvatarSource,
-		&i.ExternalDeletedAt,
-		&i.ShowInSchedule,
-	)
-	return i, err
 }
 
 const promoteAmoWidgetOwner = `-- name: PromoteAmoWidgetOwner :one

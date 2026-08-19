@@ -56,7 +56,9 @@ type Service struct {
 	amoSyncStates          map[uuid.UUID]*amoSyncState
 	companyRegistrationTTL time.Duration
 	amoWidgetSessionTTL    time.Duration
+	amoWidgetAllowUnsigned bool
 	amoWidgetTokenVerifier AmoWidgetTokenVerifier
+	widgetEntitlements     WidgetEntitlementProvider
 }
 
 // databasePool is the subset of pgxpool.Pool used by the application layer.
@@ -73,7 +75,11 @@ type ExternalEmployeeProvider interface {
 }
 
 type AmoWidgetTokenVerifier interface {
-	Verify(context.Context, string) (amoauth.Identity, error)
+	Verify(string) (amoauth.Identity, error)
+}
+
+type WidgetEntitlementProvider interface {
+	Check(context.Context, string) (installed bool, paid bool, err error)
 }
 
 type ServiceOption func(*Service)
@@ -116,9 +122,21 @@ func WithAmoWidgetSessionTTL(ttl time.Duration) ServiceOption {
 	}
 }
 
+func WithAmoWidgetAllowUnsigned(allow bool) ServiceOption {
+	return func(service *Service) {
+		service.amoWidgetAllowUnsigned = allow
+	}
+}
+
 func WithAmoWidgetTokenVerifier(verifier AmoWidgetTokenVerifier) ServiceOption {
 	return func(service *Service) {
 		service.amoWidgetTokenVerifier = verifier
+	}
+}
+
+func WithWidgetEntitlementProvider(provider WidgetEntitlementProvider) ServiceOption {
+	return func(service *Service) {
+		service.widgetEntitlements = provider
 	}
 }
 

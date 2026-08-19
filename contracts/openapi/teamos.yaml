@@ -254,11 +254,14 @@ paths:
     post:
       tags: [Provisioning]
       operationId: exchangeAmoWidgetSession
-      deprecated: true
       summary: Подготовить создание компании или вход из виджета amoCRM
       description: |
-        Прежний публичный сценарий отключён. Вход из amoCRM выполняется только
-        через уже существующую Bearer-сессию TeamOS и `/api/v1/amocrm/session-access`.
+        Клиент TeamOS передаёт токен в JSON-теле. Официальный WEB SDK amoCRM
+        передаёт тот же токен в заголовке `X-Auth-Token`. Должен быть указан
+        ровно один источник токена. Во временном unsigned-режиме токен можно
+        не передавать: тогда Account ID берётся из `account.id`, а endpoint
+        работает только как создание новой компании и возвращает конфликт,
+        если аккаунт amoCRM уже зарегистрирован.
       security: []
       parameters:
         - name: X-Auth-Token
@@ -286,78 +289,6 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '409':
           $ref: '#/components/responses/Conflict'
-        '410':
-          $ref: '#/components/responses/Error'
-        default:
-          $ref: '#/components/responses/Error'
-
-  /api/v1/amocrm/session-access:
-    post:
-      tags: [Auth]
-      operationId: checkAmoSessionAccess
-      summary: Проверить переход из amoCRM по действующей сессии TeamOS
-      description: |
-        Пользователь определяется исключительно из Bearer-сессии TeamOS.
-        Browser-подсказки пользователя и прав не принимаются.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AmoSessionAccessInput'
-      responses:
-        '200':
-          $ref: '#/components/responses/AmoSessionAccess'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '423':
-          $ref: '#/components/responses/Locked'
-        default:
-          $ref: '#/components/responses/Error'
-
-  /api/v1/public/amocrm/admin-self-login:
-    post:
-      tags: [Provisioning]
-      operationId: amoAdminSelfLogin
-      summary: Самостоятельный вход администратора amoCRM по browser assertion
-      description: |
-        Challenge подтверждает только ранее найденную привязку аккаунта и не
-        является доказательством личности или прав amoCRM. Список users —
-        осознанно доверяемое клиентское утверждение и используется только после
-        обязательного принудительного импорта сотрудников.
-      security:
-        - amoBrowserChallenge: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AmoAdminSelfLoginInput'
-      responses:
-        '200':
-          $ref: '#/components/responses/AmoAdminSelfLogin'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '429':
-          $ref: '#/components/responses/Error'
-        '503':
-          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
 
@@ -600,40 +531,6 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        default:
-          $ref: '#/components/responses/Error'
-
-  /api/v1/provisioning/amocrm/admin-sessions:
-    post:
-      tags: [Provisioning]
-      operationId: provisionAmoAdminSession
-      summary: Подготовить самостоятельный вход администратора amoCRM
-      description: |
-        Идемпотентно создаёт или находит компанию и пользователя amoCRM,
-        назначает подтверждённую служебным вызывающим роль администратора или
-        владельца и возвращает постоянную ссылку доступа TeamOS. Роль из
-        публичного браузерного запроса этим endpoint не принимается.
-      security:
-        - serviceAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ProvisionAmoAdminSessionInput'
-      responses:
-        '200':
-          $ref: '#/components/responses/AmoAdminSession'
-        '201':
-          $ref: '#/components/responses/AmoAdminSession'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
         '409':
           $ref: '#/components/responses/Conflict'
         default:
@@ -4229,11 +4126,6 @@ components:
       in: header
       name: Authorization
       description: Служебная авторизация в формате `Service <credential>`.
-    amoBrowserChallenge:
-      type: http
-      scheme: bearer
-      bearerFormat: AMO_BROWSER_CHALLENGE
-      description: Короткоживущий одноразовый challenge для browser assertion amoCRM.
     refreshCookie:
       type: apiKey
       in: cookie
@@ -4491,12 +4383,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
-    Locked:
-      description: Компания или интеграция временно заблокирована
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
     Error:
       description: Ошибка API
       content:
@@ -4530,24 +4416,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/AmoWidgetSessionResponse'
-    AmoSessionAccess:
-      description: Доступ к переходу из amoCRM подтверждён текущей сессией TeamOS
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/AmoSessionAccessResponse'
-    AmoAdminSelfLogin:
-      description: Постоянная access-link текущего администратора amoCRM
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/AmoAdminSelfLoginResponse'
-    AmoAdminSession:
-      description: Ссылка самостоятельного входа подтверждённого администратора amoCRM
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/AmoAdminSessionResponse'
     AmoWidgetContinuation:
       description: Данные одноразового продолжения входа из виджета amoCRM
       content:
@@ -5958,101 +5826,10 @@ components:
     AmoAccountAvailabilityResponse:
       type: object
       additionalProperties: false
-      required: [exists, adminSelfLoginEligible]
+      required: [exists]
       properties:
         exists:
           type: boolean
-        adminSelfLoginEligible:
-          type: boolean
-          description: >-
-            Сервер подтвердил активную компанию, совпадающую активную интеграцию amoCRM
-            и готовность принудительного импорта для самостоятельного входа администратора.
-        challengeToken:
-          type: string
-          minLength: 32
-          maxLength: 2048
-        tokenType:
-          type: string
-          const: Bearer
-        expiresIn:
-          type: integer
-          minimum: 1
-          maximum: 300
-
-    AmoAdminUserAssertion:
-      type: object
-      additionalProperties: false
-      required: [id, isAdmin, isActive]
-      properties:
-        id:
-          type: string
-          pattern: '^\d+$'
-          maxLength: 255
-        isAdmin:
-          type: boolean
-        isActive:
-          type: boolean
-
-    AmoAdminSelfLoginInput:
-      type: object
-      additionalProperties: false
-      required: [selfUserId, users]
-      properties:
-        selfUserId:
-          type: string
-          pattern: '^\d+$'
-          maxLength: 255
-        users:
-          type: array
-          minItems: 1
-          maxItems: 250
-          items:
-            $ref: '#/components/schemas/AmoAdminUserAssertion'
-
-    AmoAdminSelfLoginResponse:
-      type: object
-      additionalProperties: false
-      required: [allowed, action, role, redirectUrl]
-      properties:
-        allowed:
-          type: boolean
-          const: true
-        action:
-          type: string
-          const: login
-        role:
-          allOf:
-            - $ref: '#/components/schemas/UserRole'
-          description: В успешном ответе возвращается только `admin` или `owner`.
-        redirectUrl:
-          type: string
-          format: uri
-
-    AmoSessionAccessInput:
-      type: object
-      additionalProperties: false
-      required: [amoAccountId]
-      properties:
-        amoAccountId:
-          type: string
-          pattern: '^\d+$'
-          maxLength: 255
-
-    AmoSessionAccessResponse:
-      type: object
-      additionalProperties: false
-      required: [allowed, role, redirectUrl]
-      properties:
-        allowed:
-          type: boolean
-          const: true
-        role:
-          allOf:
-            - $ref: '#/components/schemas/UserRole'
-          description: В успешном ответе возвращается только `admin` или `owner`.
-        redirectUrl:
-          type: string
-          const: /schedule
 
     AmoWidgetSessionInput:
       type: object
@@ -6062,28 +5839,10 @@ components:
           type: string
           minLength: 32
           maxLength: 8192
-        appName:
-          type: string
-          maxLength: 255
-          deprecated: true
-          description: Подсказка браузера игнорируется; используется серверный APP_NAME.
-        companyName:
-          type: string
-          maxLength: 255
-          deprecated: true
-          description: Подсказка браузера игнорируется; имя берётся из проверенного ответа.
         user:
           $ref: '#/components/schemas/AmoWidgetUserInput'
         account:
           $ref: '#/components/schemas/AmoWidgetAccountInput'
-        isAdmin:
-          type: boolean
-          deprecated: true
-          description: Браузерный признак игнорируется; права подтверждает widgets-rkrs.
-        isOwner:
-          type: boolean
-          deprecated: true
-          description: Браузерный признак игнорируется; права подтверждает widgets-rkrs.
 
     AmoWidgetUserInput:
       type: object
@@ -6144,11 +5903,6 @@ components:
           type: string
         requiresPasswordSetup:
           type: boolean
-        role:
-          $ref: '#/components/schemas/UserRole'
-        redirectUrl:
-          type: string
-          format: uri
         expiresAt:
           $ref: '#/components/schemas/ISODateTime'
 
@@ -6192,68 +5946,6 @@ components:
           format: password
           minLength: 8
           maxLength: 256
-
-    ProvisionAmoAdminSessionInput:
-      type: object
-      additionalProperties: false
-      required: [account, user, desiredRole]
-      properties:
-        account:
-          $ref: '#/components/schemas/AmoAdminSessionAccountInput'
-        user:
-          $ref: '#/components/schemas/AmoAdminSessionUserInput'
-        desiredRole:
-          allOf:
-            - $ref: '#/components/schemas/UserRole'
-          description: Допустимы только `admin` и `owner`.
-
-    AmoAdminSessionAccountInput:
-      type: object
-      additionalProperties: false
-      required: [id]
-      properties:
-        id:
-          type: string
-          pattern: '^\d+$'
-          maxLength: 255
-        name:
-          type: string
-          maxLength: 255
-
-    AmoAdminSessionUserInput:
-      type: object
-      additionalProperties: false
-      required: [id, email]
-      properties:
-        id:
-          type: string
-          pattern: '^\d+$'
-          maxLength: 255
-        email:
-          $ref: '#/components/schemas/Email'
-        name:
-          type: string
-          maxLength: 255
-
-    AmoAdminSessionResponse:
-      type: object
-      additionalProperties: false
-      required: [action, amoAccountId, companyId, userId, role, redirectUrl]
-      properties:
-        action:
-          $ref: '#/components/schemas/AmoWidgetSessionAction'
-        amoAccountId:
-          type: string
-          pattern: '^\d+$'
-        companyId:
-          $ref: '#/components/schemas/ID'
-        userId:
-          $ref: '#/components/schemas/ID'
-        role:
-          $ref: '#/components/schemas/UserRole'
-        redirectUrl:
-          type: string
-          format: uri
 
     IssueCompanyRegistrationTokenInput:
       type: object

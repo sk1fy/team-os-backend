@@ -75,10 +75,6 @@ func TestProtectedRPCRejectsRequestWithoutBearerBeforeApplicationCall(t *testing
 	if code := status.Code(err); code != codes.Unauthenticated {
 		t.Fatalf("code = %v, want %v; err = %v", code, codes.Unauthenticated, err)
 	}
-	_, err = server.CheckAmoSessionAccess(context.Background(), &companyv1.CheckAmoSessionAccessRequest{AmoAccountId: "31355990"})
-	if code := status.Code(err); code != codes.Unauthenticated {
-		t.Fatalf("amo session access code = %v, want %v; err = %v", code, codes.Unauthenticated, err)
-	}
 }
 
 func TestAuthorizeProvisioningAcceptsTrustedServiceKey(t *testing.T) {
@@ -132,16 +128,6 @@ func TestAuthorizeProvisioningRejectsMissingOrInvalidKey(t *testing.T) {
 				t.Fatalf("code = %v, want %v", code, codes.Unauthenticated)
 			}
 		})
-	}
-}
-
-func TestAmoAdminSelfLoginRequiresGatewayServiceAuthentication(t *testing.T) {
-	server := NewServer(nil, nil, "gateway-service-token-at-least-32-bytes")
-	_, err := server.AmoAdminSelfLogin(context.Background(), &companyv1.AmoAdminSelfLoginRequest{
-		AmoAccountId: "31355990", SelfUserId: "101",
-	})
-	if status.Code(err) != codes.Unauthenticated {
-		t.Fatalf("code=%v error=%v", status.Code(err), err)
 	}
 }
 

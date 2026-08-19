@@ -158,7 +158,6 @@ func TestAmoWidgetSessionRoutesArePublic(t *testing.T) {
 	for _, path := range []string{
 		"/api/v1/public/amocrm/widget-sessions",
 		"/api/v1/public/amocrm/widget-sessions/validate",
-		"/api/v1/public/amocrm/admin-self-login",
 		"/api/v1/auth/amocrm/complete",
 	} {
 		if !isPublic(http.MethodPost, path) {
@@ -173,26 +172,6 @@ func TestAmoWidgetSessionRoutesArePublic(t *testing.T) {
 	}
 	if isPublic(http.MethodGet, "/api/v1/auth/amocrm/complete") {
 		t.Fatal("GET /api/v1/auth/amocrm/complete must remain protected")
-	}
-}
-
-func TestAmoAdminSessionUsesServiceAuthentication(t *testing.T) {
-	const path = "/api/v1/provisioning/amocrm/admin-sessions"
-	if !isPublic(http.MethodPost, path) {
-		t.Fatal("service-auth route must bypass internal user JWT middleware")
-	}
-	if isPublic(http.MethodGet, path) || isPublic(http.MethodPost, path+"/extra") {
-		t.Fatal("only the exact POST service-auth route may bypass the user JWT middleware")
-	}
-}
-
-func TestAmoSessionAccessRequiresBearerAuthentication(t *testing.T) {
-	const path = "/api/v1/amocrm/session-access"
-	if isPublic(http.MethodPost, path) {
-		t.Fatal("amoCRM session access must require a TeamOS Bearer token")
-	}
-	if isPublic(http.MethodGet, path) || isPublic(http.MethodPost, path+"/extra") {
-		t.Fatal("unexpected public amoCRM session access route")
 	}
 }
 

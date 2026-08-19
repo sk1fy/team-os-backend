@@ -45,27 +45,6 @@ WHERE company_id = sqlc.arg('company_id')
   AND external_deleted_at IS NULL
 RETURNING *;
 
--- name: PromoteAmoWidgetAdmin :one
-UPDATE users
-SET role = CASE WHEN role = 'owner' THEN 'owner' ELSE 'admin' END,
-    status = 'active',
-    show_in_schedule = false,
-    updated_at = sqlc.arg('updated_at')
-WHERE company_id = sqlc.arg('company_id')
-  AND id = sqlc.arg('user_id')
-  AND external_deleted_at IS NULL
-RETURNING *;
-
--- name: DemotePreviousAmoWidgetOwner :execrows
-UPDATE users
-SET role = 'admin',
-    show_in_schedule = false,
-    updated_at = sqlc.arg('updated_at')
-WHERE company_id = sqlc.arg('company_id')
-  AND id = sqlc.arg('previous_owner_id')
-  AND id <> sqlc.arg('new_owner_id')
-  AND role = 'owner';
-
 -- name: CreateAmoWidgetIdentity :one
 INSERT INTO user_external_identities (
     id, company_id, integration_id, user_id, provider, external_account_id,

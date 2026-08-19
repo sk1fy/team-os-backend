@@ -10,23 +10,33 @@ import (
 )
 
 type Config struct {
-	HTTPAddr             string
-	GRPCAddr             string
-	DatabaseURL          string
-	NATSURL              string
-	JWTPrivateKey        string
-	GatewayServiceToken  string
-	JWTIssuer            string
-	JWTAudience          string
-	AccessTTL            time.Duration
-	ShutdownTimeout      time.Duration
-	ExternalAPIURL       string
-	AmoAppName           string
-	AmoImportEnabled     bool
-	ExternalTimeout      time.Duration
-	AmoSyncInterval      time.Duration
-	RegistrationTokenTTL time.Duration
-	AmoWidgetSessionTTL  time.Duration
+	HTTPAddr               string
+	GRPCAddr               string
+	DatabaseURL            string
+	NATSURL                string
+	JWTPrivateKey          string
+	GatewayServiceToken    string
+	JWTIssuer              string
+	JWTAudience            string
+	AccessTTL              time.Duration
+	ShutdownTimeout        time.Duration
+	ExternalAPIURL         string
+	AmoAppName             string
+	AmoImportEnabled       bool
+	ExternalTimeout        time.Duration
+	AmoSyncInterval        time.Duration
+	RegistrationTokenTTL   time.Duration
+	AmoWidgetSessionTTL    time.Duration
+	AmoWidgetAllowUnsigned bool
+	AmoCRMClientUUID       string
+	AmoCRMClientSecret     string
+	AmoCRMAudience         string
+	AmoCRMTokenMaxTTL      time.Duration
+	AmoCRMTokenClockSkew   time.Duration
+	AmoCRMWidgetListURL    string
+	AmoCRMWidgetTimeout    time.Duration
+	AmoCRMWidgetCacheTTL   time.Duration
+	AmoCRMWidgetListTZ     string
 }
 
 func Load() (Config, error) {
@@ -49,6 +59,15 @@ func Load() (Config, error) {
 		AmoSyncInterval:      5 * time.Minute,
 		RegistrationTokenTTL: time.Hour,
 		AmoWidgetSessionTTL:  10 * time.Minute,
+		AmoCRMClientUUID:     strings.TrimSpace(os.Getenv("AMOCRM_CLIENT_UUID")),
+		AmoCRMClientSecret:   strings.TrimSpace(os.Getenv("AMOCRM_CLIENT_SECRET")),
+		AmoCRMAudience:       strings.TrimSpace(os.Getenv("AMOCRM_AUTHORIZED_AUDIENCE")),
+		AmoCRMTokenMaxTTL:    time.Hour,
+		AmoCRMTokenClockSkew: 10 * time.Second,
+		AmoCRMWidgetListURL:  envOr("AMOCRM_WIDGET_LIST_URL", "https://ssd.rkrs.ru/widget/account_widget_list"),
+		AmoCRMWidgetTimeout:  10 * time.Second,
+		AmoCRMWidgetCacheTTL: 5 * time.Minute,
+		AmoCRMWidgetListTZ:   envOr("AMOCRM_WIDGET_LIST_TZ", "Europe/Moscow"),
 	}
 	if value := strings.TrimSpace(os.Getenv("COMPANY_AMO_IMPORT_ENABLED")); value != "" {
 		config.AmoImportEnabled, err = strconv.ParseBool(value)
@@ -91,6 +110,36 @@ func Load() (Config, error) {
 		config.AmoWidgetSessionTTL, err = time.ParseDuration(value)
 		if err != nil || config.AmoWidgetSessionTTL <= 0 {
 			return Config{}, fmt.Errorf("COMPANY_AMO_WIDGET_SESSION_TTL: %w", errInvalidDuration)
+		}
+	}
+	if value := strings.TrimSpace(os.Getenv("COMPANY_AMO_WIDGET_ALLOW_UNSIGNED")); value != "" {
+		config.AmoWidgetAllowUnsigned, err = strconv.ParseBool(value)
+		if err != nil {
+			return Config{}, fmt.Errorf("COMPANY_AMO_WIDGET_ALLOW_UNSIGNED: ожидается true или false")
+		}
+	}
+	if value := strings.TrimSpace(os.Getenv("AMOCRM_TOKEN_MAX_TTL")); value != "" {
+		config.AmoCRMTokenMaxTTL, err = time.ParseDuration(value)
+		if err != nil || config.AmoCRMTokenMaxTTL <= 0 {
+			return Config{}, fmt.Errorf("AMOCRM_TOKEN_MAX_TTL: %w", errInvalidDuration)
+		}
+	}
+	if value := strings.TrimSpace(os.Getenv("AMOCRM_TOKEN_CLOCK_SKEW")); value != "" {
+		config.AmoCRMTokenClockSkew, err = time.ParseDuration(value)
+		if err != nil || config.AmoCRMTokenClockSkew < 0 {
+			return Config{}, fmt.Errorf("AMOCRM_TOKEN_CLOCK_SKEW: ожидается неотрицательная длительность")
+		}
+	}
+	if value := strings.TrimSpace(os.Getenv("AMOCRM_WIDGET_LIST_TIMEOUT")); value != "" {
+		config.AmoCRMWidgetTimeout, err = time.ParseDuration(value)
+		if err != nil || config.AmoCRMWidgetTimeout <= 0 {
+			return Config{}, fmt.Errorf("AMOCRM_WIDGET_LIST_TIMEOUT: %w", errInvalidDuration)
+		}
+	}
+	if value := strings.TrimSpace(os.Getenv("AMOCRM_WIDGET_LIST_CACHE_TTL")); value != "" {
+		config.AmoCRMWidgetCacheTTL, err = time.ParseDuration(value)
+		if err != nil || config.AmoCRMWidgetCacheTTL <= 0 {
+			return Config{}, fmt.Errorf("AMOCRM_WIDGET_LIST_CACHE_TTL: %w", errInvalidDuration)
 		}
 	}
 	missing := make([]string, 0, 2)

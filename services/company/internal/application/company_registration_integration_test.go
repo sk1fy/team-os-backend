@@ -44,9 +44,9 @@ func TestCompanyRegistrationTokenLifecycle(t *testing.T) {
 	if legacyIntegrations != 0 {
 		t.Fatalf("legacy integrations=%d, want 0", legacyIntegrations)
 	}
-	availability, err := service.CheckAmoAccount(ctx, "rakurs", "31355990")
-	if err != nil || !availability.Exists {
-		t.Fatalf("legacy availability=%+v error=%v", availability, err)
+	exists, err := service.CheckAmoAccount(ctx, "rakurs", "31355990")
+	if err != nil || !exists {
+		t.Fatalf("legacy exists=%v error=%v", exists, err)
 	}
 	_, err = service.IssueCompanyRegistrationToken(ctx, "rakurs", "31355990")
 	assertCompanyRegistrationCode(t, err, ErrorCodeAmoAccountAlreadyExists)
@@ -72,24 +72,19 @@ func TestCompanyRegistrationTokenLifecycle(t *testing.T) {
 	if legacyIntegrations != 1 {
 		t.Fatalf("backfilled legacy integrations=%d, want 1", legacyIntegrations)
 	}
-	service.externalUsers = staticExternalEmployees{}
-	availability, err = service.CheckAmoAccount(ctx, "rakurs", "31355990")
-	if err != nil || !availability.Exists || !availability.AdminSelfLoginEligible {
-		t.Fatalf("active integration availability=%+v error=%v", availability, err)
-	}
 
 	const accountID = "42424242"
-	availability, err = service.CheckAmoAccount(ctx, "rakurs", accountID)
-	if err != nil || availability.Exists {
-		t.Fatalf("initial availability=%+v error=%v", availability, err)
+	exists, err = service.CheckAmoAccount(ctx, "rakurs", accountID)
+	if err != nil || exists {
+		t.Fatalf("initial exists=%v error=%v", exists, err)
 	}
 	issued, err := service.IssueCompanyRegistrationToken(ctx, "rakurs", accountID)
 	if err != nil {
 		t.Fatal(err)
 	}
-	availability, err = service.CheckAmoAccount(ctx, "rakurs", accountID)
-	if err != nil || !availability.Exists || availability.AdminSelfLoginEligible {
-		t.Fatalf("reserved availability=%+v error=%v", availability, err)
+	exists, err = service.CheckAmoAccount(ctx, "rakurs", accountID)
+	if err != nil || !exists {
+		t.Fatalf("reserved exists=%v error=%v", exists, err)
 	}
 	validation, err := service.ValidateCompanyRegistrationToken(ctx, issued.Token)
 	if err != nil || !validation.Valid || validation.State != "valid" {

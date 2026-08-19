@@ -51,31 +51,6 @@ func (q *Queries) AmoAccountExists(ctx context.Context, arg AmoAccountExistsPara
 	return column_1, err
 }
 
-const amoAdminSelfLoginEligible = `-- name: AmoAdminSelfLoginEligible :one
-SELECT EXISTS (
-    SELECT 1
-    FROM company_integrations AS integration
-    JOIN companies AS company ON company.id = integration.company_id
-    WHERE integration.provider = $1
-      AND integration.external_account_id = $2
-      AND integration.status = 'active'
-      AND company.status = 'active'
-      AND company.amo_account_id = integration.external_account_id
-)::boolean
-`
-
-type AmoAdminSelfLoginEligibleParams struct {
-	Provider          string `json:"provider"`
-	ExternalAccountID string `json:"external_account_id"`
-}
-
-func (q *Queries) AmoAdminSelfLoginEligible(ctx context.Context, arg AmoAdminSelfLoginEligibleParams) (bool, error) {
-	row := q.db.QueryRow(ctx, amoAdminSelfLoginEligible, arg.Provider, arg.ExternalAccountID)
-	var column_1 bool
-	err := row.Scan(&column_1)
-	return column_1, err
-}
-
 const companyAmoAccountExists = `-- name: CompanyAmoAccountExists :one
 SELECT EXISTS (
     SELECT 1

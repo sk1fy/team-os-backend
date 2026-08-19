@@ -73,55 +73,15 @@ func TestCheckAmoAccountFindsLegacyCompany(t *testing.T) {
 		WillReturnRows(pgxmock.NewRows([]string{"exists"}).AddRow(true))
 
 	service := &Service{pool: mock, now: func() time.Time { return now }}
-	availability, err := service.CheckAmoAccount(context.Background(), "rakurs", "31355990")
+	exists, err := service.CheckAmoAccount(context.Background(), "rakurs", "31355990")
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !availability.Exists || availability.AdminSelfLoginEligible {
-		t.Fatalf("legacy availability=%#v", availability)
+	if !exists {
+		t.Fatal("legacy amoCRM Account ID должен существовать")
 	}
 	if err = mock.ExpectationsWereMet(); err != nil {
 		t.Fatal(err)
-	}
-}
-
-func TestCheckAmoAccountSeparatesReservationFromAdminSelfLoginEligibility(t *testing.T) {
-	for _, test := range []struct {
-		name         string
-		eligible     bool
-		wantEligible bool
-	}{
-		{name: "reservation only", eligible: false, wantEligible: false},
-		{name: "active company integration", eligible: true, wantEligible: true},
-	} {
-		t.Run(test.name, func(t *testing.T) {
-			mock, err := pgxmock.NewPool()
-			if err != nil {
-				t.Fatal(err)
-			}
-			t.Cleanup(mock.Close)
-			now := time.Date(2026, time.August, 19, 12, 0, 0, 0, time.UTC)
-			mock.ExpectQuery("FROM companies AS company").
-				WithArgs("31355990", "rakurs", now).
-				WillReturnRows(pgxmock.NewRows([]string{"exists"}).AddRow(true))
-			mock.ExpectQuery("JOIN companies AS company").
-				WithArgs("rakurs", "31355990").
-				WillReturnRows(pgxmock.NewRows([]string{"exists"}).AddRow(test.eligible))
-
-			service := &Service{
-				pool: mock, now: func() time.Time { return now }, externalUsers: staticExternalEmployees{},
-			}
-			availability, err := service.CheckAmoAccount(context.Background(), "rakurs", "31355990")
-			if err != nil {
-				t.Fatal(err)
-			}
-			if !availability.Exists || availability.AdminSelfLoginEligible != test.wantEligible {
-				t.Fatalf("availability=%#v", availability)
-			}
-			if err = mock.ExpectationsWereMet(); err != nil {
-				t.Fatal(err)
-			}
-		})
 	}
 }
 
