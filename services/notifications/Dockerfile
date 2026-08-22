@@ -1,4 +1,4 @@
-FROM golang:1.25.13 AS build
+FROM golang:1.26.6 AS build
 WORKDIR /src
 COPY . .
 RUN cd services/notifications && GOWORK=off go build -o /out/notifications ./cmd/notifications
