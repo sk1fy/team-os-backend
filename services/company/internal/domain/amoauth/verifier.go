@@ -19,15 +19,22 @@ const maxTokenLength = 8192
 var (
 	ErrNotConfigured = errors.New("проверка входа через amoCRM не настроена")
 	ErrInvalidToken  = errors.New("некорректный токен amoCRM")
+	ErrForbidden     = errors.New("пользователь amoCRM не имеет доступа")
+	ErrUnavailable   = errors.New("сервис проверки amoCRM недоступен")
 )
 
 type Identity struct {
-	AccountID  int64
-	UserID     int64
-	ClientUUID string
-	JTI        string
-	ExpiresAt  time.Time
-	Issuer     string
+	AccountID   int64
+	AccountName string
+	UserID      int64
+	UserEmail   string
+	UserName    string
+	IsAdmin     bool
+	IsOwner     bool
+	ClientUUID  string
+	JTI         string
+	ExpiresAt   time.Time
+	Issuer      string
 }
 
 type Config struct {

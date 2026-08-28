@@ -15,11 +15,15 @@ func TestLoad(t *testing.T) {
 	t.Setenv("GATEWAY_COMPANY_SERVICE_TOKEN", "gateway-company-test-secret-0000001")
 	t.Setenv("GATEWAY_CORS_ORIGINS", "http://localhost:5173, https://team.example")
 	t.Setenv("GATEWAY_COOKIE_SECURE", "true")
+	t.Setenv("AMO_BROWSER_ADMIN_ASSERTION_ENABLED", "true")
+	t.Setenv("AMO_BROWSER_CHALLENGE_SECRET", "browser-challenge-secret-at-least-32-bytes")
 	config, err := Load()
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !config.CookieSecure || len(config.CORSOrigins) != 2 || config.CompanyGRPCAddr != "company:9081" || config.TasksGRPCAddr != "tasks:9083" || config.AcademyGRPCAddr != "academy:9084" || config.NotificationsGRPCAddr != "notifications:9085" || config.FilesGRPCAddr != "files:9086" || config.ProvisioningServiceToken != "gateway-provisioning-test-secret-0001" || config.ProvisioningServiceProvider != "rakurs" || config.CompanyServiceToken != "gateway-company-test-secret-0000001" {
+	if !config.CookieSecure || !config.AmoBrowserAdminAssertionEnabled ||
+		config.AmoBrowserChallengeSecret != "browser-challenge-secret-at-least-32-bytes" ||
+		len(config.CORSOrigins) != 2 || config.CompanyGRPCAddr != "company:9081" || config.TasksGRPCAddr != "tasks:9083" || config.AcademyGRPCAddr != "academy:9084" || config.NotificationsGRPCAddr != "notifications:9085" || config.FilesGRPCAddr != "files:9086" || config.ProvisioningServiceToken != "gateway-provisioning-test-secret-0001" || config.ProvisioningServiceProvider != "rakurs" || config.CompanyServiceToken != "gateway-company-test-secret-0000001" {
 		t.Fatalf("unexpected config: %#v", config)
 	}
 }
@@ -68,6 +72,13 @@ func TestLoadRejectsInvalidProvisioningUnauthenticatedFlag(t *testing.T) {
 
 	if _, err := Load(); err == nil {
 		t.Fatal("Load() expected an error for an invalid unauthenticated provisioning flag")
+	}
+}
+
+func TestLoadRejectsInvalidAmoBrowserAssertionFlag(t *testing.T) {
+	t.Setenv("AMO_BROWSER_ADMIN_ASSERTION_ENABLED", "sometimes")
+	if _, err := Load(); err == nil {
+		t.Fatal("Load() expected an error for an invalid amo browser assertion flag")
 	}
 }
 

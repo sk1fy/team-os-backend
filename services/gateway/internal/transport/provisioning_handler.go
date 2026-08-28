@@ -8,8 +8,10 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/google/uuid"
 	companyv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v1"
 	"github.com/sk1fy/team-os-backend/pkg/apierror"
+	"github.com/sk1fy/team-os-backend/services/gateway/internal/amochallenge"
 	"github.com/sk1fy/team-os-backend/services/gateway/internal/api"
 	"google.golang.org/grpc/metadata"
 )
@@ -41,7 +43,30 @@ func (h *Handler) CheckAmoAccount(w http.ResponseWriter, r *http.Request, amoAcc
 		return
 	}
 	setPrivateNoStore(w)
-	writeJSON(w, http.StatusOK, api.AmoAccountAvailabilityResponse{Exists: response.GetExists()})
+	eligible := response.GetExists() && response.GetAdminSelfLoginEligible() && h.amoChallenge != nil
+	result := api.AmoAccountAvailabilityResponse{
+		Exists: response.GetExists(), AdminSelfLoginEligible: eligible,
+	}
+	challengePurpose := ""
+	if eligible {
+		challengePurpose = amochallenge.PurposeAdminSelfLogin
+	} else if !response.GetExists() && h.amoChallenge != nil {
+		challengePurpose = amochallenge.PurposeCompanyBootstrap
+	}
+	if challengePurpose != "" {
+		token, issueErr := h.amoChallenge.IssueForPurpose(amoAccountID, challengePurpose)
+		if issueErr != nil {
+			h.logger.ErrorContext(r.Context(), "issue amoCRM browser challenge", "error", issueErr)
+			h.writeConversionError(w, r, issueErr)
+			return
+		}
+		tokenType := "Bearer"
+		expiresIn := h.amoChallenge.TTLSeconds()
+		result.ChallengeToken = &token
+		result.TokenType = &tokenType
+		result.ExpiresIn = &expiresIn
+	}
+	writeJSON(w, http.StatusOK, result)
 }
 
 func (h *Handler) IssueCompanyRegistrationToken(w http.ResponseWriter, r *http.Request) {
@@ -69,6 +94,76 @@ func (h *Handler) IssueCompanyRegistrationToken(w http.ResponseWriter, r *http.R
 	setPrivateNoStore(w)
 	writeJSON(w, http.StatusCreated, api.CompanyRegistrationTokenResponse{
 		RegistrationToken: response.GetToken(), ExpiresAt: response.GetExpiresAt().AsTime(),
+	})
+}
+
+func (h *Handler) ProvisionAmoAdminSession(w http.ResponseWriter, r *http.Request) {
+	if !h.requireProvisioningService(w, r) {
+		return
+	}
+	setPrivateNoStore(w)
+	var input api.ProvisionAmoAdminSessionInput
+	if !decode(w, r, &input) {
+		return
+	}
+	var desiredRole companyv1.UserRole
+	switch input.DesiredRole {
+	case api.UserRoleAdmin:
+		desiredRole = companyv1.UserRole_USER_ROLE_ADMIN
+	case api.UserRoleOwner:
+		desiredRole = companyv1.UserRole_USER_ROLE_OWNER
+	default:
+		apierror.Write(w, apierror.BadRequest("Роль пользователя amoCRM должна быть admin или owner"))
+		return
+	}
+	companyName := ""
+	if input.Account.Name != nil {
+		companyName = strings.TrimSpace(*input.Account.Name)
+	}
+	userName := ""
+	if input.User.Name != nil {
+		userName = strings.TrimSpace(*input.User.Name)
+	}
+	response, err := h.company.ProvisionAmoAdminSession(
+		h.provisioningContext(r),
+		&companyv1.ProvisionAmoAdminSessionRequest{
+			Provider: h.provisioningServiceProvider, ExternalAccountId: strings.TrimSpace(input.Account.Id),
+			ExternalUserId: strings.TrimSpace(input.User.Id), Email: string(input.User.Email),
+			UserName: userName, CompanyName: companyName, DesiredRole: desiredRole,
+		},
+	)
+	if err != nil {
+		h.writeRPCError(w, r, err)
+		return
+	}
+	companyID, companyErr := uuid.Parse(response.GetCompanyId())
+	userID, userErr := uuid.Parse(response.GetUserId())
+	if companyErr != nil || userErr != nil || response.GetExternalAccountId() == "" || response.GetAccessToken() == "" {
+		h.writeConversionError(w, r, errors.New("company returned an invalid amoCRM admin session"))
+		return
+	}
+	action := api.Login
+	statusCode := http.StatusOK
+	if response.GetAction() == companyv1.AmoWidgetSessionAction_AMO_WIDGET_SESSION_ACTION_REGISTER {
+		action = api.Register
+		statusCode = http.StatusCreated
+	} else if response.GetAction() != companyv1.AmoWidgetSessionAction_AMO_WIDGET_SESSION_ACTION_LOGIN {
+		h.writeConversionError(w, r, errors.New("company returned an invalid amoCRM admin session action"))
+		return
+	}
+	role := api.UserRole("")
+	switch response.GetRole() {
+	case companyv1.UserRole_USER_ROLE_ADMIN:
+		role = api.UserRoleAdmin
+	case companyv1.UserRole_USER_ROLE_OWNER:
+		role = api.UserRoleOwner
+	default:
+		h.writeConversionError(w, r, errors.New("company returned an invalid amoCRM admin role"))
+		return
+	}
+	writeJSON(w, statusCode, api.AmoAdminSessionResponse{
+		Action: action, AmoAccountId: response.GetExternalAccountId(), CompanyId: companyID,
+		UserId: userID, Role: role, RedirectUrl: h.accessLinkURL(r, response.GetAccessToken()),
 	})
 }
 
@@ -102,115 +197,9 @@ func (h *Handler) ValidateCompanyRegistrationToken(w http.ResponseWriter, r *htt
 	writeJSON(w, http.StatusOK, result)
 }
 
-func (h *Handler) ExchangeAmoWidgetSession(w http.ResponseWriter, r *http.Request, params api.ExchangeAmoWidgetSessionParams) {
+func (h *Handler) ExchangeAmoWidgetSession(w http.ResponseWriter, _ *http.Request, _ api.ExchangeAmoWidgetSessionParams) {
 	setPrivateNoStore(w)
-	var input api.AmoWidgetSessionInput
-	if !decodeOptional(w, r, &input) {
-		return
-	}
-	headerToken := strings.TrimSpace(r.Header.Get("X-Auth-Token"))
-	if params.XAuthToken != nil {
-		headerToken = strings.TrimSpace(*params.XAuthToken)
-	}
-	bodyToken := ""
-	if input.Token != nil {
-		bodyToken = strings.TrimSpace(*input.Token)
-	}
-	if headerToken != "" && bodyToken != "" {
-		apierror.Write(w, apierror.BadRequest("Передайте токен amoCRM только одним способом"))
-		return
-	}
-	token := bodyToken
-	if token == "" {
-		token = headerToken
-	}
-	if token != "" && (len(token) < 32 || len(token) > 8192) {
-		apierror.Write(w, apierror.BadRequest("Некорректный токен amoCRM"))
-		return
-	}
-	request := &companyv1.ExchangeAmoWidgetSessionRequest{Token: token}
-	if input.Account != nil && input.Account.Id != nil {
-		accountID := strings.TrimSpace(*input.Account.Id)
-		if accountID != "" {
-			request.ExternalAccountId = &accountID
-		}
-	}
-	if token == "" && request.ExternalAccountId == nil {
-		apierror.Write(w, apierror.BadRequest("Не удалось определить аккаунт amoCRM"))
-		return
-	}
-	if input.User != nil {
-		request.ExternalUserId = &input.User.Id
-		email := string(input.User.Email)
-		request.Email = &email
-		if input.User.Name != nil {
-			request.UserName = input.User.Name
-		}
-	}
-	companyName := ""
-	if input.Account != nil {
-		if input.Account.Name != nil {
-			companyName = strings.TrimSpace(*input.Account.Name)
-		}
-		if companyName == "" && input.Account.Subdomain != nil {
-			companyName = strings.TrimSpace(*input.Account.Subdomain)
-		}
-	}
-	if companyName != "" {
-		request.CompanyName = &companyName
-	}
-	response, err := h.company.ExchangeAmoWidgetSession(
-		outgoingContext(r),
-		request,
-	)
-	if err != nil {
-		h.writeRPCError(w, r, err)
-		return
-	}
-	result := api.AmoWidgetSessionResponse{}
-	switch response.GetAction() {
-	case companyv1.AmoWidgetSessionAction_AMO_WIDGET_SESSION_ACTION_LOGIN:
-		result.Action = api.Login
-	case companyv1.AmoWidgetSessionAction_AMO_WIDGET_SESSION_ACTION_REGISTER:
-		if response.SessionToken == nil && (response.RegistrationToken == nil || response.GetRegistrationToken() == "" ||
-			response.ExpiresAt == nil || !response.ExpiresAt.IsValid()) {
-			h.writeConversionError(w, r, errors.New("company returned an invalid amoCRM widget registration session"))
-			return
-		}
-		result.Action = api.Register
-		if response.RegistrationToken != nil {
-			result.RegistrationToken = response.RegistrationToken
-		}
-	default:
-		h.writeConversionError(w, r, errors.New("company returned an invalid amoCRM widget session action"))
-		return
-	}
-	if response.ExternalAccountId != nil {
-		result.AmoAccountId = response.ExternalAccountId
-	}
-	if response.SessionToken != nil {
-		if response.GetSessionToken() == "" || response.GetEmail() == "" || response.GetCompanyName() == "" ||
-			response.ExpiresAt == nil || !response.ExpiresAt.IsValid() {
-			h.writeConversionError(w, r, errors.New("company returned an invalid amoCRM widget continuation"))
-			return
-		}
-		result.SessionToken = response.SessionToken
-	}
-	if response.Email != nil {
-		email := api.Email(response.GetEmail())
-		result.Email = &email
-	}
-	if response.CompanyName != nil {
-		result.CompanyName = response.CompanyName
-	}
-	if response.RequiresPasswordSetup != nil {
-		result.RequiresPasswordSetup = response.RequiresPasswordSetup
-	}
-	if response.ExpiresAt != nil && response.ExpiresAt.IsValid() {
-		expiresAt := response.ExpiresAt.AsTime()
-		result.ExpiresAt = &expiresAt
-	}
-	writeJSON(w, http.StatusOK, result)
+	apierror.Write(w, apierror.New(http.StatusGone, "Прежний вход через виджет amoCRM отключён").WithCode("AMO_WIDGET_SESSION_RETIRED"))
 }
 
 func (h *Handler) ValidateAmoWidgetContinuation(w http.ResponseWriter, r *http.Request) {
@@ -346,7 +335,7 @@ func secureCredentialEqual(left, right string) bool {
 
 func (h *Handler) provisioningContext(r *http.Request) context.Context {
 	return metadata.AppendToOutgoingContext(
-		r.Context(),
+		outgoingContext(r),
 		"x-teamos-service", provisioningServiceMarker,
 		"x-teamos-service-token", h.companyServiceToken,
 		"x-teamos-provider", h.provisioningServiceProvider,

@@ -17,6 +17,7 @@ type Querier interface {
 	ActivateAmoWidgetIdentity(ctx context.Context, arg ActivateAmoWidgetIdentityParams) (UserExternalIdentity, error)
 	ActivateInvitedUser(ctx context.Context, arg ActivateInvitedUserParams) (User, error)
 	AmoAccountExists(ctx context.Context, arg AmoAccountExistsParams) (bool, error)
+	AmoAdminSelfLoginEligible(ctx context.Context, arg AmoAdminSelfLoginEligibleParams) (bool, error)
 	AmoWidgetUserHasPassword(ctx context.Context, arg AmoWidgetUserHasPasswordParams) (bool, error)
 	ApplyReservedUserLogin(ctx context.Context, arg ApplyReservedUserLoginParams) (string, error)
 	AssignAmoUserDepartment(ctx context.Context, arg AssignAmoUserDepartmentParams) (int64, error)
@@ -59,6 +60,7 @@ type Querier interface {
 	DeletePosition(ctx context.Context, arg DeletePositionParams) (int64, error)
 	DeleteStaleRegistrationLoginReservations(ctx context.Context, arg DeleteStaleRegistrationLoginReservationsParams) (int64, error)
 	DeleteUserPositions(ctx context.Context, arg DeleteUserPositionsParams) error
+	DemotePreviousAmoWidgetOwner(ctx context.Context, arg DemotePreviousAmoWidgetOwnerParams) (int64, error)
 	DisableUserInDistributionGroups(ctx context.Context, arg DisableUserInDistributionGroupsParams) error
 	FindAmoWidgetUserForUpdate(ctx context.Context, arg FindAmoWidgetUserForUpdateParams) (User, error)
 	FindUserForAmoSync(ctx context.Context, arg FindUserForAmoSyncParams) (User, error)
@@ -114,6 +116,7 @@ type Querier interface {
 	LockAmoUserSync(ctx context.Context, companyID uuid.UUID) error
 	MarkAmoUserExternallyDeleted(ctx context.Context, arg MarkAmoUserExternallyDeletedParams) (User, error)
 	MoveDepartment(ctx context.Context, arg MoveDepartmentParams) (Department, error)
+	PromoteAmoWidgetAdmin(ctx context.Context, arg PromoteAmoWidgetAdminParams) (User, error)
 	PromoteAmoWidgetOwner(ctx context.Context, arg PromoteAmoWidgetOwnerParams) (User, error)
 	ReassignUserInvites(ctx context.Context, arg ReassignUserInvitesParams) error
 	RemoveUserFromDistributionGroups(ctx context.Context, arg RemoveUserFromDistributionGroupsParams) error
@@ -128,6 +131,7 @@ type Querier interface {
 	RevokeInvite(ctx context.Context, arg RevokeInviteParams) (Invite, error)
 	RevokeSessionByHash(ctx context.Context, arg RevokeSessionByHashParams) (int64, error)
 	RotateSession(ctx context.Context, arg RotateSessionParams) (int64, error)
+	SetAmoBootstrapUserState(ctx context.Context, arg SetAmoBootstrapUserStateParams) (User, error)
 	SetCompanyOwner(ctx context.Context, arg SetCompanyOwnerParams) (Company, error)
 	SetCredential(ctx context.Context, arg SetCredentialParams) error
 	UpdateAmoUserGroup(ctx context.Context, arg UpdateAmoUserGroupParams) (int64, error)

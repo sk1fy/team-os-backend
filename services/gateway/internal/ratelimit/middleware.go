@@ -84,6 +84,8 @@ func rateLimitedPath(method, path string) bool {
 		strings.HasPrefix(path, "/api/v2/auth/") ||
 		isProvisioningPath(method, path) ||
 		(method == http.MethodPost && strings.HasPrefix(path, "/api/v1/public/amocrm/widget-sessions")) ||
+		(method == http.MethodPost && path == "/api/v1/public/amocrm/admin-self-login") ||
+		(method == http.MethodPost && path == "/api/v1/public/amocrm/company-bootstrap") ||
 		(method == http.MethodGet && strings.HasPrefix(path, "/api/v1/public/amocrm/")) ||
 		(method == http.MethodPost && path == "/api/v1/public/company-registration-tokens/validate") ||
 		(method == http.MethodPost && strings.HasPrefix(path, "/api/v1/public/academy/"))

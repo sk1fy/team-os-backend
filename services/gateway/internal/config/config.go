@@ -32,6 +32,8 @@ type Config struct {
 	CookieSecure                     bool
 	ShutdownTimeout                  time.Duration
 	TrustedProxyCIDRs                []netip.Prefix
+	AmoBrowserAdminAssertionEnabled  bool
+	AmoBrowserChallengeSecret        string
 }
 
 func Load() (Config, error) {
@@ -52,6 +54,7 @@ func Load() (Config, error) {
 		CORSOrigins:                 splitList(envOr("GATEWAY_CORS_ORIGINS", "http://localhost:5173,https://*.amocrm.ru,https://*.amocrm.com")),
 		PublicAppURL:                envOr("GATEWAY_PUBLIC_APP_URL", "http://localhost:5173"),
 		ShutdownTimeout:             30 * time.Second,
+		AmoBrowserChallengeSecret:   strings.TrimSpace(os.Getenv("AMO_BROWSER_CHALLENGE_SECRET")),
 	}
 	publicAppURL, parseErr := url.Parse(config.PublicAppURL)
 	if parseErr != nil || (publicAppURL.Scheme != "http" && publicAppURL.Scheme != "https") || publicAppURL.Host == "" || publicAppURL.User != nil {
@@ -69,6 +72,12 @@ func Load() (Config, error) {
 		config.CookieSecure, err = strconv.ParseBool(value)
 		if err != nil {
 			return Config{}, fmt.Errorf("GATEWAY_COOKIE_SECURE: %w", err)
+		}
+	}
+	if value := strings.TrimSpace(os.Getenv("AMO_BROWSER_ADMIN_ASSERTION_ENABLED")); value != "" {
+		config.AmoBrowserAdminAssertionEnabled, err = strconv.ParseBool(value)
+		if err != nil {
+			return Config{}, fmt.Errorf("AMO_BROWSER_ADMIN_ASSERTION_ENABLED: %w", err)
 		}
 	}
 	if value := strings.TrimSpace(os.Getenv("GATEWAY_SHUTDOWN_TIMEOUT")); value != "" {
@@ -120,6 +129,14 @@ func Load() (Config, error) {
 	}
 	if config.ProvisioningServiceToken == config.CompanyServiceToken {
 		return Config{}, errors.New("GATEWAY_PROVISIONING_SERVICE_TOKEN и GATEWAY_COMPANY_SERVICE_TOKEN должны различаться")
+	}
+	if config.AmoBrowserAdminAssertionEnabled && len(config.AmoBrowserChallengeSecret) < 32 {
+		return Config{}, errors.New("AMO_BROWSER_CHALLENGE_SECRET: требуется не менее 32 байтов")
+	}
+	if config.AmoBrowserAdminAssertionEnabled &&
+		(config.AmoBrowserChallengeSecret == config.ProvisioningServiceToken ||
+			config.AmoBrowserChallengeSecret == config.CompanyServiceToken) {
+		return Config{}, errors.New("AMO_BROWSER_CHALLENGE_SECRET должен отличаться от служебных токенов")
 	}
 	return config, nil
 }

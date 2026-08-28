@@ -181,6 +181,11 @@ type CompanyRegistrationTokenValidation struct {
 	ExpiresAt         *time.Time
 }
 
+type AmoAccountAvailability struct {
+	Exists                 bool
+	AdminSelfLoginEligible bool
+}
+
 type AmoWidgetSessionResult struct {
 	Action                string
 	ExternalAccountID     string
@@ -190,6 +195,8 @@ type AmoWidgetSessionResult struct {
 	Login                 string
 	CompanyName           string
 	RequiresPasswordSetup bool
+	AccessToken           string
+	Role                  string
 	ExpiresAt             *time.Time
 }
 
@@ -200,6 +207,78 @@ type AmoWidgetSessionInput struct {
 	Email             string
 	UserName          string
 	CompanyName       string
+	IsAdmin           bool
+	IsOwner           bool
+}
+
+type AmoAdminSessionInput struct {
+	Provider          string
+	ExternalAccountID string
+	ExternalUserID    string
+	Email             string
+	UserName          string
+	CompanyName       string
+	DesiredRole       string
+}
+
+type AmoAdminSessionResult struct {
+	Action            string
+	ExternalAccountID string
+	CompanyID         uuid.UUID
+	UserID            uuid.UUID
+	Role              string
+	AccessToken       string
+}
+
+type AmoSessionAccess struct {
+	Allowed     bool
+	Role        string
+	RedirectURL string
+}
+
+type AmoAdminUserAssertion struct {
+	ID       string
+	IsAdmin  bool
+	IsActive bool
+}
+
+type AmoAdminSelfLoginInput struct {
+	AmoAccountID string
+	SelfUserID   string
+	Users        []AmoAdminUserAssertion
+	RequestID    string
+}
+
+type AmoAdminSelfLoginResult struct {
+	Allowed     bool
+	Action      string
+	Role        string
+	AccessToken string
+}
+
+type AmoCompanyBootstrapUser struct {
+	ID       string
+	Email    string
+	Name     string
+	IsAdmin  bool
+	IsActive bool
+}
+
+type AmoCompanyBootstrapInput struct {
+	AmoAccountID string
+	CompanyName  string
+	Subdomain    string
+	SelfUserID   string
+	Users        []AmoCompanyBootstrapUser
+	RequestID    string
+}
+
+type AmoCompanyBootstrapResult struct {
+	Action      string
+	CompanyID   uuid.UUID
+	UserID      uuid.UUID
+	Role        string
+	AccessToken string
 }
 
 type AmoWidgetContinuation struct {

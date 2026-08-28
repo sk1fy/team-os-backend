@@ -12,18 +12,33 @@ import (
 	"github.com/sk1fy/team-os-backend/services/company/internal/storage/db"
 )
 
-func (s *Service) CheckAmoAccount(ctx context.Context, provider, externalAccountID string) (bool, error) {
+func (s *Service) CheckAmoAccount(
+	ctx context.Context,
+	provider, externalAccountID string,
+) (AmoAccountAvailability, error) {
 	provider, externalAccountID, err := normalizeAmoAccount(provider, externalAccountID)
 	if err != nil {
-		return false, err
+		return AmoAccountAvailability{}, err
 	}
-	exists, err := db.New(s.pool).AmoAccountExists(ctx, db.AmoAccountExistsParams{
+	queries := db.New(s.pool)
+	exists, err := queries.AmoAccountExists(ctx, db.AmoAccountExistsParams{
 		Provider: provider, ExternalAccountID: externalAccountID, Now: s.now().UTC(),
 	})
 	if err != nil {
-		return false, internal("Не удалось проверить аккаунт amoCRM", err)
+		return AmoAccountAvailability{}, internal("Не удалось проверить аккаунт amoCRM", err)
 	}
-	return exists, nil
+	availability := AmoAccountAvailability{Exists: exists}
+	if !exists || s.externalUsers == nil {
+		return availability, nil
+	}
+	availability.AdminSelfLoginEligible, err = queries.AmoAdminSelfLoginEligible(
+		ctx,
+		db.AmoAdminSelfLoginEligibleParams{Provider: provider, ExternalAccountID: externalAccountID},
+	)
+	if err != nil {
+		return AmoAccountAvailability{}, internal("Не удалось проверить готовность входа через amoCRM", err)
+	}
+	return availability, nil
 }
 
 func (s *Service) IssueCompanyRegistrationToken(

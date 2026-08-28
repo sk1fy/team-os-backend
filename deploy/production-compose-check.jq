@@ -13,6 +13,12 @@
 ((.services.gateway.environment.GATEWAY_PROVISIONING_SERVICE_TOKEN | length) == 0 or
  (.services.gateway.environment.GATEWAY_PROVISIONING_SERVICE_TOKEN != .services.gateway.environment.GATEWAY_COMPANY_SERVICE_TOKEN)) and
 (.services.company.environment.COMPANY_GATEWAY_SERVICE_TOKEN == .services.gateway.environment.GATEWAY_COMPANY_SERVICE_TOKEN) and
+((.services.gateway.environment.AMO_BROWSER_ADMIN_ASSERTION_ENABLED == "false") or
+ ((.services.gateway.environment.AMO_BROWSER_ADMIN_ASSERTION_ENABLED == "true") and
+  ((.services.gateway.environment.AMO_BROWSER_CHALLENGE_SECRET | length) >= 32) and
+  (.services.gateway.environment.AMO_BROWSER_CHALLENGE_SECRET != "development-browser-challenge-secret-change-me") and
+  (.services.gateway.environment.AMO_BROWSER_CHALLENGE_SECRET != .services.gateway.environment.GATEWAY_PROVISIONING_SERVICE_TOKEN) and
+  (.services.gateway.environment.AMO_BROWSER_CHALLENGE_SECRET != .services.gateway.environment.GATEWAY_COMPANY_SERVICE_TOKEN))) and
 (.services.notifications.environment.NOTIFICATIONS_EMAIL_PROVIDER == "smtp") and
 (.services.notifications.environment.NOTIFICATIONS_SMTP_HOST | length > 0) and
 (.services.notifications.environment.NOTIFICATIONS_SMTP_FROM | length > 0) and
