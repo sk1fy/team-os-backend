@@ -13,7 +13,7 @@ func TestNormalizeAmoBootstrapUsersAssignsServerRoles(t *testing.T) {
 		t.Fatal(err)
 	}
 	wantRoles := []string{"owner", "admin", "employee", "employee"}
-	wantStatuses := []string{"active", "active", "active", "inactive"}
+	wantStatuses := []string{"active", "active", "active", "deactivated"}
 	for index := range users {
 		if users[index].role != wantRoles[index] || users[index].status != wantStatuses[index] {
 			t.Fatalf("user[%d]=%#v", index, users[index])

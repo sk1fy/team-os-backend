@@ -170,7 +170,7 @@ func normalizeAmoBootstrapUsers(
 		if value.IsAdmin {
 			role = "admin"
 		}
-		status := "inactive"
+		status := "deactivated"
 		if value.IsActive {
 			status = "active"
 		}

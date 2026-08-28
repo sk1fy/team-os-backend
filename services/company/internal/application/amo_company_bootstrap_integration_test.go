@@ -45,7 +45,7 @@ func TestBootstrapAmoCompanyCreatesUsersWithServerRoles(t *testing.T) {
 		{"101", "owner", "active"},
 		{"102", "admin", "active"},
 		{"103", "employee", "active"},
-		{"104", "employee", "inactive"},
+		{"104", "employee", "deactivated"},
 	}
 	index := 0
 	for rows.Next() {
