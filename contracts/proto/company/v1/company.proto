@@ -327,6 +327,7 @@ message LoginWithAccessLinkRequest {
 
 message LoginWithAccessLinkResponse {
   AuthSession session = 1;
+  optional string entry_context = 2;
 }
 
 message ImpersonateUserRequest {

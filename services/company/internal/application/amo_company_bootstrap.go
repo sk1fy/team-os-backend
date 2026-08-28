@@ -6,6 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/sk1fy/team-os-backend/services/company/internal/storage/db"
 )
 
@@ -120,6 +121,14 @@ func (s *Service) BootstrapAmoCompany(
 	link, err := ensureAmoWidgetAccessLink(ctx, queries, company.ID, owner.ID)
 	if err != nil {
 		return AmoCompanyBootstrapResult{}, err
+	}
+	link, err = queries.SetAccessLinkEntryContext(ctx, db.SetAccessLinkEntryContextParams{
+		CompanyID:    company.ID,
+		UserID:       owner.ID,
+		EntryContext: pgtype.Text{String: "company_created", Valid: true},
+	})
+	if err != nil {
+		return AmoCompanyBootstrapResult{}, internal("Не удалось подготовить приветствие новой компании", err)
 	}
 	if err = createUserAdminAudit(
 		ctx, queries, company.ID, &owner.ID, nil, "system", "amo_company_bootstrap",

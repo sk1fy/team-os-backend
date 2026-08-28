@@ -166,8 +166,10 @@ func TestEnsureAmoWidgetAccessLinkReusesExistingToken(t *testing.T) {
 	now := time.Date(2026, time.August, 18, 12, 0, 0, 0, time.UTC)
 	mock.ExpectQuery("SELECT company_id, user_id, token").
 		WithArgs(companyID, userID).
-		WillReturnRows(pgxmock.NewRows([]string{"company_id", "user_id", "token", "created_at", "updated_at"}).
-			AddRow(companyID, userID, "stable-access-token", now, now))
+		WillReturnRows(pgxmock.NewRows([]string{
+			"company_id", "user_id", "token", "created_at", "updated_at",
+			"entry_context", "entry_context_consumed_at",
+		}).AddRow(companyID, userID, "stable-access-token", now, now, nil, nil))
 	link, err := ensureAmoWidgetAccessLink(context.Background(), db.New(mock), companyID, userID)
 	if err != nil {
 		t.Fatal(err)

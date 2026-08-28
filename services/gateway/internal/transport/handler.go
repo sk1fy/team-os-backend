@@ -139,7 +139,21 @@ func (h *Handler) LoginWithAccessLink(w http.ResponseWriter, r *http.Request, to
 		h.writeRPCError(w, r, err)
 		return
 	}
-	h.writeSession(w, r, http.StatusOK, response.GetSession())
+	setPrivateNoStore(w)
+	entryContext := response.GetEntryContext()
+	if entryContext != "" && entryContext != string(api.CompanyCreated) {
+		h.writeConversionError(w, r, errors.New("company returned an invalid entry context"))
+		return
+	}
+	prepared, ok := h.prepareSession(w, r, response.GetSession())
+	if !ok {
+		return
+	}
+	if entryContext != "" {
+		converted := api.EntryContext(entryContext)
+		prepared.EntryContext = &converted
+	}
+	writeJSON(w, http.StatusOK, prepared)
 }
 
 func (h *Handler) ImpersonateUser(w http.ResponseWriter, r *http.Request) {

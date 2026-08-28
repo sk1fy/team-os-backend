@@ -148,6 +148,11 @@ type AuthResult struct {
 	User             User
 }
 
+type AccessLinkAuthResult struct {
+	Session      AuthResult
+	EntryContext string
+}
+
 type SessionMeta struct {
 	UserAgent string
 	IPAddress string

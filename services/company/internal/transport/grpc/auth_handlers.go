@@ -81,7 +81,11 @@ func (s *Server) LoginWithAccessLink(ctx context.Context, request *companyv1.Log
 	if err != nil {
 		return nil, transportError(err)
 	}
-	return &companyv1.LoginWithAccessLinkResponse{Session: authSessionToProto(result)}, nil
+	response := &companyv1.LoginWithAccessLinkResponse{Session: authSessionToProto(result.Session)}
+	if result.EntryContext != "" {
+		response.EntryContext = &result.EntryContext
+	}
+	return response, nil
 }
 
 func (s *Server) ImpersonateUser(ctx context.Context, request *companyv1.ImpersonateUserRequest) (*companyv1.ImpersonateUserResponse, error) {

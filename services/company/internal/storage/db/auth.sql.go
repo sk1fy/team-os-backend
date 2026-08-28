@@ -95,6 +95,27 @@ func (q *Queries) ActivateInvitedUser(ctx context.Context, arg ActivateInvitedUs
 	return i, err
 }
 
+const consumeAccessLinkEntryContext = `-- name: ConsumeAccessLinkEntryContext :one
+UPDATE access_links
+SET entry_context_consumed_at = $2, updated_at = now()
+WHERE token = $1
+  AND entry_context IS NOT NULL
+  AND entry_context_consumed_at IS NULL
+RETURNING entry_context
+`
+
+type ConsumeAccessLinkEntryContextParams struct {
+	Token                  string             `json:"token"`
+	EntryContextConsumedAt pgtype.Timestamptz `json:"entry_context_consumed_at"`
+}
+
+func (q *Queries) ConsumeAccessLinkEntryContext(ctx context.Context, arg ConsumeAccessLinkEntryContextParams) (pgtype.Text, error) {
+	row := q.db.QueryRow(ctx, consumeAccessLinkEntryContext, arg.Token, arg.EntryContextConsumedAt)
+	var entry_context pgtype.Text
+	err := row.Scan(&entry_context)
+	return entry_context, err
+}
+
 const createCompany = `-- name: CreateCompany :one
 INSERT INTO companies (id, name, logo_url)
 VALUES ($1, $2, $3)
@@ -349,7 +370,7 @@ func (q *Queries) DeleteExpiredSessions(ctx context.Context, expiresAt time.Time
 }
 
 const getAccessLink = `-- name: GetAccessLink :one
-SELECT company_id, user_id, token, created_at, updated_at FROM access_links WHERE company_id = $1 AND user_id = $2
+SELECT company_id, user_id, token, created_at, updated_at, entry_context, entry_context_consumed_at FROM access_links WHERE company_id = $1 AND user_id = $2
 `
 
 type GetAccessLinkParams struct {
@@ -366,6 +387,8 @@ func (q *Queries) GetAccessLink(ctx context.Context, arg GetAccessLinkParams) (A
 		&i.Token,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.EntryContext,
+		&i.EntryContextConsumedAt,
 	)
 	return i, err
 }
@@ -577,7 +600,7 @@ FROM users u
 JOIN access_links access ON access.user_id = u.id AND access.company_id = u.company_id
 WHERE access.token = $1 AND u.status = 'active'
   AND u.external_deleted_at IS NULL
-FOR SHARE OF u, access
+FOR SHARE OF u
 `
 
 func (q *Queries) GetUserByAccessToken(ctx context.Context, token string) (User, error) {
@@ -918,6 +941,34 @@ func (q *Queries) RotateSession(ctx context.Context, arg RotateSessionParams) (i
 	return result.RowsAffected(), nil
 }
 
+const setAccessLinkEntryContext = `-- name: SetAccessLinkEntryContext :one
+UPDATE access_links
+SET entry_context = $3, entry_context_consumed_at = NULL, updated_at = now()
+WHERE company_id = $1 AND user_id = $2
+RETURNING company_id, user_id, token, created_at, updated_at, entry_context, entry_context_consumed_at
+`
+
+type SetAccessLinkEntryContextParams struct {
+	CompanyID    uuid.UUID   `json:"company_id"`
+	UserID       uuid.UUID   `json:"user_id"`
+	EntryContext pgtype.Text `json:"entry_context"`
+}
+
+func (q *Queries) SetAccessLinkEntryContext(ctx context.Context, arg SetAccessLinkEntryContextParams) (AccessLink, error) {
+	row := q.db.QueryRow(ctx, setAccessLinkEntryContext, arg.CompanyID, arg.UserID, arg.EntryContext)
+	var i AccessLink
+	err := row.Scan(
+		&i.CompanyID,
+		&i.UserID,
+		&i.Token,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.EntryContext,
+		&i.EntryContextConsumedAt,
+	)
+	return i, err
+}
+
 const setCompanyOwner = `-- name: SetCompanyOwner :one
 UPDATE companies
 SET owner_id = $2, updated_at = now()
@@ -1068,7 +1119,7 @@ INSERT INTO access_links (company_id, user_id, token)
 VALUES ($1, $2, $3)
 ON CONFLICT (user_id) DO UPDATE
 SET token = EXCLUDED.token, created_at = now(), updated_at = now()
-RETURNING company_id, user_id, token, created_at, updated_at
+RETURNING company_id, user_id, token, created_at, updated_at, entry_context, entry_context_consumed_at
 `
 
 type UpsertAccessLinkParams struct {
@@ -1086,6 +1137,8 @@ func (q *Queries) UpsertAccessLink(ctx context.Context, arg UpsertAccessLinkPara
 		&i.Token,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.EntryContext,
+		&i.EntryContextConsumedAt,
 	)
 	return i, err
 }

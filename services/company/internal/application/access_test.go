@@ -2,6 +2,8 @@ package application
 
 import (
 	"context"
+	"crypto/ed25519"
+	"crypto/rand"
 	"errors"
 	"testing"
 	"time"
@@ -11,6 +13,7 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/pashagolub/pgxmock/v4"
+	sharedauth "github.com/sk1fy/team-os-backend/pkg/auth"
 	"github.com/sk1fy/team-os-backend/services/company/internal/storage/db"
 )
 
@@ -141,8 +144,10 @@ func TestSetLinkAccessPreservesPasswordAndRevokesSessions(t *testing.T) {
 	expectAccessDetails(mock, companyID, userID, true, nil, now)
 	mock.ExpectQuery("INSERT INTO access_links").
 		WithArgs(companyID, userID, pgxmock.AnyArg()).
-		WillReturnRows(pgxmock.NewRows([]string{"company_id", "user_id", "token", "created_at", "updated_at"}).
-			AddRow(companyID, userID, "new-link-token", now, now))
+		WillReturnRows(pgxmock.NewRows([]string{
+			"company_id", "user_id", "token", "created_at", "updated_at",
+			"entry_context", "entry_context_consumed_at",
+		}).AddRow(companyID, userID, "new-link-token", now, now, nil, nil))
 	expectSessionRevocation(mock, userID, now)
 	expectAccessAudit(mock, actor, userID, "issued", "link", now)
 	mock.ExpectCommit()
@@ -236,6 +241,156 @@ func TestLoginWithRevokedAccessLinkIsRejected(t *testing.T) {
 		t.Fatalf("LoginWithAccessLink() message = %q", applicationError.Message)
 	}
 	assertAccessExpectations(t, mock)
+}
+
+func TestLoginWithAccessLinkDoesNotConsumeEntryContextWhenSessionCreationFails(t *testing.T) {
+	mock := newAccessMock(t)
+	companyID, userID := uuid.New(), uuid.New()
+	now := time.Date(2026, time.August, 28, 12, 0, 0, 0, time.UTC)
+
+	mock.ExpectBegin()
+	mock.ExpectQuery("FROM users u.+JOIN access_links").
+		WithArgs("bootstrap-link-token").
+		WillReturnRows(pgxmock.NewRows(accessUserColumns).AddRow(
+			userID, companyID, "owner@example.com", "Иван", "Иванов", nil, nil,
+			"owner", "active", nil, nil, nil, now, now, "amocrm", "101", nil, nil, nil,
+			nil, true,
+		))
+	mock.ExpectQuery("SELECT position_id").
+		WithArgs(companyID, userID).
+		WillReturnRows(pgxmock.NewRows([]string{"position_id"}))
+	mock.ExpectQuery("WITH RECURSIVE direct_departments").
+		WithArgs(companyID, userID).
+		WillReturnRows(pgxmock.NewRows([]string{"id"}))
+	mock.ExpectQuery("SELECT section").
+		WithArgs(companyID, userID).
+		WillReturnRows(pgxmock.NewRows([]string{"section"}))
+	mock.ExpectQuery("INSERT INTO sessions").
+		WithArgs(
+			pgxmock.AnyArg(), companyID, userID, pgxmock.AnyArg(), pgxmock.AnyArg(),
+			uuid.NullUUID{}, pgtype.Text{}, pgxmock.AnyArg(),
+		).
+		WillReturnError(errors.New("session insert failed"))
+	mock.ExpectRollback()
+
+	_, privateKey, err := ed25519.GenerateKey(rand.Reader)
+	if err != nil {
+		t.Fatal(err)
+	}
+	service := &Service{
+		pool: mock, now: func() time.Time { return now }, refreshTTL: 24 * time.Hour,
+		issuer: sharedauth.NewTokenIssuer(privateKey, "teamos-company", "teamos-api", 15*time.Minute),
+	}
+	if _, err = service.LoginWithAccessLink(context.Background(), "bootstrap-link-token", SessionMeta{}); err == nil {
+		t.Fatal("expected session creation error")
+	}
+	assertAccessExpectations(t, mock)
+}
+
+func TestLoginWithAccessLinkReturnsEntryContextOnlyOnce(t *testing.T) {
+	mock := newAccessMock(t)
+	companyID, userID := uuid.New(), uuid.New()
+	now := time.Date(2026, time.August, 28, 12, 0, 0, 0, time.UTC)
+	expectSuccessfulAccessLinkLogin(mock, "bootstrap-link-token", companyID, userID, now, "company_created")
+	expectSuccessfulAccessLinkLogin(mock, "bootstrap-link-token", companyID, userID, now, "")
+	service := newAccessLinkLoginService(t, mock, now)
+
+	first, err := service.LoginWithAccessLink(context.Background(), "bootstrap-link-token", SessionMeta{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if first.EntryContext != "company_created" {
+		t.Fatalf("first entry context=%q", first.EntryContext)
+	}
+	second, err := service.LoginWithAccessLink(context.Background(), "bootstrap-link-token", SessionMeta{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if second.EntryContext != "" {
+		t.Fatalf("second entry context=%q, want empty", second.EntryContext)
+	}
+	assertAccessExpectations(t, mock)
+}
+
+func TestLoginWithOrdinaryAccessLinkHasNoEntryContext(t *testing.T) {
+	mock := newAccessMock(t)
+	companyID, userID := uuid.New(), uuid.New()
+	now := time.Date(2026, time.August, 28, 12, 0, 0, 0, time.UTC)
+	expectSuccessfulAccessLinkLogin(mock, "ordinary-link-token", companyID, userID, now, "")
+	service := newAccessLinkLoginService(t, mock, now)
+
+	result, err := service.LoginWithAccessLink(context.Background(), "ordinary-link-token", SessionMeta{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.EntryContext != "" {
+		t.Fatalf("entry context=%q, want empty", result.EntryContext)
+	}
+	assertAccessExpectations(t, mock)
+}
+
+func expectSuccessfulAccessLinkLogin(
+	mock pgxmock.PgxPoolIface,
+	token string,
+	companyID uuid.UUID,
+	userID uuid.UUID,
+	now time.Time,
+	entryContext string,
+) {
+	mock.ExpectBegin()
+	mock.ExpectQuery("FROM users u.+JOIN access_links").
+		WithArgs(token).
+		WillReturnRows(pgxmock.NewRows(accessUserColumns).AddRow(
+			userID, companyID, "owner@example.com", "Иван", "Иванов", nil, nil,
+			"owner", "active", nil, nil, nil, now, now, "amocrm", "101", nil, nil, nil,
+			nil, true,
+		))
+	mock.ExpectQuery("SELECT position_id").
+		WithArgs(companyID, userID).
+		WillReturnRows(pgxmock.NewRows([]string{"position_id"}))
+	mock.ExpectQuery("WITH RECURSIVE direct_departments").
+		WithArgs(companyID, userID).
+		WillReturnRows(pgxmock.NewRows([]string{"id"}))
+	mock.ExpectQuery("SELECT section").
+		WithArgs(companyID, userID).
+		WillReturnRows(pgxmock.NewRows([]string{"section"}))
+	mock.ExpectQuery("INSERT INTO sessions").
+		WithArgs(
+			pgxmock.AnyArg(), companyID, userID, pgxmock.AnyArg(), pgxmock.AnyArg(),
+			uuid.NullUUID{}, pgtype.Text{}, pgxmock.AnyArg(),
+		).
+		WillReturnRows(pgxmock.NewRows([]string{
+			"id", "company_id", "user_id", "refresh_hash", "expires_at", "created_at",
+			"last_used_at", "revoked_at", "rotated_from", "replaced_by", "user_agent", "ip_address",
+		}).AddRow(
+			uuid.New(), companyID, userID, []byte("refresh-hash"),
+			now.Add(24*time.Hour), now, nil, nil, nil, nil, nil, nil,
+		))
+	expectAccessMode(mock, companyID, userID, "link")
+	expectAccessLogin(mock, companyID, userID, "tm1234567")
+	mock.ExpectQuery("SELECT department_id").
+		WithArgs(companyID, userID).
+		WillReturnRows(pgxmock.NewRows([]string{"department_id"}))
+	consume := mock.ExpectQuery("UPDATE access_links").
+		WithArgs(token, pgtype.Timestamptz{Time: now, Valid: true})
+	if entryContext == "" {
+		consume.WillReturnError(pgx.ErrNoRows)
+	} else {
+		consume.WillReturnRows(pgxmock.NewRows([]string{"entry_context"}).AddRow(entryContext))
+	}
+	mock.ExpectCommit()
+}
+
+func newAccessLinkLoginService(t *testing.T, mock databasePool, now time.Time) *Service {
+	t.Helper()
+	_, privateKey, err := ed25519.GenerateKey(rand.Reader)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return &Service{
+		pool: mock, now: func() time.Time { return now }, refreshTTL: 24 * time.Hour,
+		issuer: sharedauth.NewTokenIssuer(privateKey, "teamos-company", "teamos-api", 15*time.Minute),
+	}
 }
 
 func newAccessMock(t *testing.T) pgxmock.PgxPoolIface {

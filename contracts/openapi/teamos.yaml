@@ -5893,6 +5893,13 @@ components:
           description: JWT access-токен со сроком жизни 15 минут.
         user:
           $ref: '#/components/schemas/User'
+        entryContext:
+          $ref: '#/components/schemas/EntryContext'
+
+    EntryContext:
+      type: string
+      enum: [company_created]
+      description: Одноразовый контекст первого входа после создания компании.
 
     BootstrapAuthResponse:
       type: object

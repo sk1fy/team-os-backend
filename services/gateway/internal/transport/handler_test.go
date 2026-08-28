@@ -729,7 +729,10 @@ func TestGatewayLoginWithAccessLinkSetsRefreshCookie(t *testing.T) {
 	requests := make(chan *companyv1.LoginWithAccessLinkRequest, 1)
 	server := &stubCompanyServer{loginWithLinkFn: func(_ context.Context, request *companyv1.LoginWithAccessLinkRequest) (*companyv1.LoginWithAccessLinkResponse, error) {
 		requests <- request
-		return &companyv1.LoginWithAccessLinkResponse{Session: testAuthSession("access-link", "refresh-link")}, nil
+		entryContext := "company_created"
+		return &companyv1.LoginWithAccessLinkResponse{
+			Session: testAuthSession("access-link", "refresh-link"), EntryContext: &entryContext,
+		}, nil
 	}}
 
 	recorder := serveGatewayRequest(t, server, http.MethodPost, "/api/v1/auth/access-link/link-token", "", nil)
@@ -742,8 +745,29 @@ func TestGatewayLoginWithAccessLinkSetsRefreshCookie(t *testing.T) {
 	if got := responseCookie(t, recorder, refreshCookieName).Value; got != "refresh-link" {
 		t.Fatalf("refresh cookie = %q", got)
 	}
-	if got := decodeStringField(t, decodeObject(t, recorder), "accessToken"); got != "access-link" {
+	body := decodeObject(t, recorder)
+	if got := decodeStringField(t, body, "accessToken"); got != "access-link" {
 		t.Fatalf("access token = %q", got)
+	}
+	if got := decodeStringField(t, body, "entryContext"); got != "company_created" {
+		t.Fatalf("entry context = %q", got)
+	}
+}
+
+func TestGatewayLoginWithAccessLinkRejectsUnknownEntryContextBeforeSettingCookie(t *testing.T) {
+	server := &stubCompanyServer{loginWithLinkFn: func(_ context.Context, _ *companyv1.LoginWithAccessLinkRequest) (*companyv1.LoginWithAccessLinkResponse, error) {
+		entryContext := "unknown"
+		return &companyv1.LoginWithAccessLinkResponse{
+			Session: testAuthSession("access-link", "refresh-link"), EntryContext: &entryContext,
+		}, nil
+	}}
+
+	recorder := serveGatewayRequest(t, server, http.MethodPost, "/api/v1/auth/access-link/link-token", "", nil)
+	if recorder.Code != http.StatusInternalServerError {
+		t.Fatalf("status = %d; body = %s", recorder.Code, recorder.Body.String())
+	}
+	if cookies := recorder.Result().Cookies(); len(cookies) != 0 {
+		t.Fatalf("unexpected cookies: %#v", cookies)
 	}
 }
 

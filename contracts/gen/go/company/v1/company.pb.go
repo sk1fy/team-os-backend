@@ -2236,6 +2236,7 @@ func (x *LoginWithAccessLinkRequest) GetToken() string {
 type LoginWithAccessLinkResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Session       *AuthSession           `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
+	EntryContext  *string                `protobuf:"bytes,2,opt,name=entry_context,json=entryContext,proto3,oneof" json:"entry_context,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2275,6 +2276,13 @@ func (x *LoginWithAccessLinkResponse) GetSession() *AuthSession {
 		return x.Session
 	}
 	return nil
+}
+
+func (x *LoginWithAccessLinkResponse) GetEntryContext() string {
+	if x != nil && x.EntryContext != nil {
+		return *x.EntryContext
+	}
+	return ""
 }
 
 type ImpersonateUserRequest struct {
@@ -10470,9 +10478,11 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\x14LoginByLoginResponse\x128\n" +
 	"\asession\x18\x01 \x01(\v2\x1e.teamos.company.v1.AuthSessionR\asession\"2\n" +
 	"\x1aLoginWithAccessLinkRequest\x12\x14\n" +
-	"\x05token\x18\x01 \x01(\tR\x05token\"W\n" +
+	"\x05token\x18\x01 \x01(\tR\x05token\"\x93\x01\n" +
 	"\x1bLoginWithAccessLinkResponse\x128\n" +
-	"\asession\x18\x01 \x01(\v2\x1e.teamos.company.v1.AuthSessionR\asession\"1\n" +
+	"\asession\x18\x01 \x01(\v2\x1e.teamos.company.v1.AuthSessionR\asession\x12(\n" +
+	"\rentry_context\x18\x02 \x01(\tH\x00R\fentryContext\x88\x01\x01B\x10\n" +
+	"\x0e_entry_context\"1\n" +
 	"\x16ImpersonateUserRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\"S\n" +
 	"\x17ImpersonateUserResponse\x128\n" +
@@ -11761,6 +11771,7 @@ func file_proto_company_v1_company_proto_init() {
 	file_proto_company_v1_company_proto_msgTypes[6].OneofWrappers = []any{}
 	file_proto_company_v1_company_proto_msgTypes[15].OneofWrappers = []any{}
 	file_proto_company_v1_company_proto_msgTypes[16].OneofWrappers = []any{}
+	file_proto_company_v1_company_proto_msgTypes[21].OneofWrappers = []any{}
 	file_proto_company_v1_company_proto_msgTypes[30].OneofWrappers = []any{}
 	file_proto_company_v1_company_proto_msgTypes[40].OneofWrappers = []any{}
 	file_proto_company_v1_company_proto_msgTypes[52].OneofWrappers = []any{}

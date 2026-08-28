@@ -25,6 +25,7 @@ type Querier interface {
 	ClearAmoUserDepartment(ctx context.Context, arg ClearAmoUserDepartmentParams) (int64, error)
 	ClearAmoUserTombstone(ctx context.Context, arg ClearAmoUserTombstoneParams) (User, error)
 	CompanyAmoAccountExists(ctx context.Context, externalAccountID string) (bool, error)
+	ConsumeAccessLinkEntryContext(ctx context.Context, arg ConsumeAccessLinkEntryContextParams) (pgtype.Text, error)
 	ConsumeAmoWidgetContinuation(ctx context.Context, arg ConsumeAmoWidgetContinuationParams) (SsoToken, error)
 	ConsumeCompanyRegistrationToken(ctx context.Context, arg ConsumeCompanyRegistrationTokenParams) (CompanyRegistrationToken, error)
 	ConsumeRegistrationLoginReservation(ctx context.Context, arg ConsumeRegistrationLoginReservationParams) (RegistrationLoginReservation, error)
@@ -131,6 +132,7 @@ type Querier interface {
 	RevokeInvite(ctx context.Context, arg RevokeInviteParams) (Invite, error)
 	RevokeSessionByHash(ctx context.Context, arg RevokeSessionByHashParams) (int64, error)
 	RotateSession(ctx context.Context, arg RotateSessionParams) (int64, error)
+	SetAccessLinkEntryContext(ctx context.Context, arg SetAccessLinkEntryContextParams) (AccessLink, error)
 	SetAmoBootstrapUserState(ctx context.Context, arg SetAmoBootstrapUserStateParams) (User, error)
 	SetCompanyOwner(ctx context.Context, arg SetCompanyOwnerParams) (Company, error)
 	SetCredential(ctx context.Context, arg SetCredentialParams) error

@@ -294,31 +294,46 @@ func (s *Service) RevokeAccess(ctx context.Context, actor Actor, userID uuid.UUI
 	return nil
 }
 
-func (s *Service) LoginWithAccessLink(ctx context.Context, token string, meta SessionMeta) (AuthResult, error) {
+func (s *Service) LoginWithAccessLink(ctx context.Context, token string, meta SessionMeta) (AccessLinkAuthResult, error) {
 	if strings.TrimSpace(token) == "" {
-		return AuthResult{}, invalidAccessLink()
+		return AccessLinkAuthResult{}, invalidAccessLink()
 	}
 	tx, err := s.pool.Begin(ctx)
 	if err != nil {
-		return AuthResult{}, internal("Не удалось выполнить вход", err)
+		return AccessLinkAuthResult{}, internal("Не удалось выполнить вход", err)
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
 	queries := db.New(tx)
 	user, err := queries.GetUserByAccessToken(ctx, token)
 	if isNoRows(err) {
-		return AuthResult{}, invalidAccessLink()
+		return AccessLinkAuthResult{}, invalidAccessLink()
 	}
 	if err != nil {
-		return AuthResult{}, internal("Не удалось проверить ссылку доступа", err)
+		return AccessLinkAuthResult{}, internal("Не удалось проверить ссылку доступа", err)
 	}
-	result, err := s.createSession(ctx, queries, user, meta, uuid.NullUUID{})
+	session, err := s.createSession(ctx, queries, user, meta, uuid.NullUUID{})
 	if err != nil {
-		return AuthResult{}, err
+		return AccessLinkAuthResult{}, err
+	}
+	entryContext := ""
+	consumedContext, consumeErr := queries.ConsumeAccessLinkEntryContext(
+		ctx,
+		db.ConsumeAccessLinkEntryContextParams{
+			Token: token,
+			EntryContextConsumedAt: pgtype.Timestamptz{
+				Time: s.now().UTC(), Valid: true,
+			},
+		},
+	)
+	if consumeErr == nil {
+		entryContext = consumedContext.String
+	} else if !isNoRows(consumeErr) {
+		return AccessLinkAuthResult{}, internal("Не удалось завершить вход по ссылке доступа", consumeErr)
 	}
 	if err = tx.Commit(ctx); err != nil {
-		return AuthResult{}, internal("Не удалось создать сессию", err)
+		return AccessLinkAuthResult{}, internal("Не удалось создать сессию", err)
 	}
-	return result, nil
+	return AccessLinkAuthResult{Session: session, EntryContext: entryContext}, nil
 }
 
 func revokeUserSessions(ctx context.Context, queries *db.Queries, userID uuid.UUID, revokedAt time.Time) error {

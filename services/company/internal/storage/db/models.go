@@ -13,11 +13,13 @@ import (
 )
 
 type AccessLink struct {
-	CompanyID uuid.UUID `json:"company_id"`
-	UserID    uuid.UUID `json:"user_id"`
-	Token     string    `json:"token"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	CompanyID              uuid.UUID          `json:"company_id"`
+	UserID                 uuid.UUID          `json:"user_id"`
+	Token                  string             `json:"token"`
+	CreatedAt              time.Time          `json:"created_at"`
+	UpdatedAt              time.Time          `json:"updated_at"`
+	EntryContext           pgtype.Text        `json:"entry_context"`
+	EntryContextConsumedAt pgtype.Timestamptz `json:"entry_context_consumed_at"`
 }
 
 type BootstrapActivation struct {

@@ -78,6 +78,20 @@ RETURNING *;
 -- name: GetAccessLink :one
 SELECT * FROM access_links WHERE company_id = $1 AND user_id = $2;
 
+-- name: SetAccessLinkEntryContext :one
+UPDATE access_links
+SET entry_context = $3, entry_context_consumed_at = NULL, updated_at = now()
+WHERE company_id = $1 AND user_id = $2
+RETURNING *;
+
+-- name: ConsumeAccessLinkEntryContext :one
+UPDATE access_links
+SET entry_context_consumed_at = $2, updated_at = now()
+WHERE token = $1
+  AND entry_context IS NOT NULL
+  AND entry_context_consumed_at IS NULL
+RETURNING entry_context;
+
 -- name: DeleteAccessLink :exec
 DELETE FROM access_links WHERE company_id = $1 AND user_id = $2;
 
@@ -93,7 +107,7 @@ FROM users u
 JOIN access_links access ON access.user_id = u.id AND access.company_id = u.company_id
 WHERE access.token = $1 AND u.status = 'active'
   AND u.external_deleted_at IS NULL
-FOR SHARE OF u, access;
+FOR SHARE OF u;
 
 -- name: GetUserAccessMode :one
 SELECT CASE
