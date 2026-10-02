@@ -18,12 +18,13 @@ import (
 )
 
 type testStore struct {
-	grant  bool
-	nonces map[uuid.UUID]bool
+	grant      bool
+	capability string
+	nonces     map[uuid.UUID]bool
 }
 
-func (s *testStore) GetDistributionServiceGrant(context.Context, db.GetDistributionServiceGrantParams) (bool, error) {
-	return s.grant, nil
+func (s *testStore) GetDistributionServiceGrant(_ context.Context, p db.GetDistributionServiceGrantParams) (bool, error) {
+	return s.grant && (s.capability == "" || s.capability == p.Capability), nil
 }
 func (s *testStore) ClaimDistributionNonce(_ context.Context, p db.ClaimDistributionNonceParams) (int64, error) {
 	if s.nonces[p.Nonce] {
@@ -80,5 +81,50 @@ func TestWidgetCallbackSignatureReplayAndGrant(t *testing.T) {
 	h.ServeHTTP(w, makeReq())
 	if w.Code != 403 || svc.calls != 1 {
 		t.Fatalf("grant %d calls %d", w.Code, svc.calls)
+	}
+}
+
+func (s *testService) ValidateDistributionDecision(_ context.Context, in application.DistributionDecisionValidationInput) (application.DistributionDecisionValidation, error) {
+	s.calls++
+	return application.DistributionDecisionValidation{OperationID: in.OperationID, DecisionID: in.DecisionID, WorkerFence: in.WorkerFence, Reason: "decision_not_ready", ValidUntil: time.Now()}, nil
+}
+
+func TestDecisionCallbackRequiresDistinctGrantAndNeverFabricatesAllow(t *testing.T) {
+	now := time.Now()
+	secret := strings.Repeat("s", 32)
+	scope := corebridge.Scope{CompanyID: uuid.New(), BindingID: uuid.New(), BindingRevision: 1, InstallationID: uuid.New(), IntegrationID: uuid.New(), AccountID: "2"}
+	input := application.DistributionDecisionValidationInput{Actor: application.DistributionDecisionActor{Kind: "system"}, Scope: scope, OperationID: uuid.New(), DecisionID: uuid.New(), EpisodeID: uuid.New(), RuleID: uuid.New(), GroupID: uuid.New(), RuleRevision: 1, AvailabilityRevision: 1, ClaimRevision: 1, WorkerFence: 1, TargetEmployeeID: uuid.New(), TargetResponsibleUserID: "3", LeadID: "4", DecisionKind: "assign", ValidUntil: now.Add(5 * time.Second)}
+	body, _ := json.Marshal(input)
+	store := &testStore{grant: true, capability: "widget-access", nonces: map[uuid.UUID]bool{}}
+	service := &testService{}
+	handler := &Handler{Keys: map[string]string{"core": secret}, Store: store, Service: service, Now: func() time.Time { return now }}
+	request := func() *http.Request {
+		r := httptest.NewRequestWithContext(context.Background(), "POST", "https://company.example/internal/v1/distribution/validate-decision", bytes.NewReader(body))
+		corebridge.Sign(r, "core", secret, scope, body, now)
+		return r
+	}
+	w := httptest.NewRecorder()
+	handler.ServeHTTP(w, request())
+	if w.Code != 403 || service.calls != 0 {
+		t.Fatalf("widget grant crossed boundary %d", w.Code)
+	}
+	store.capability = "decision-validation"
+	r := request()
+	headers := r.Header.Clone()
+	w = httptest.NewRecorder()
+	handler.ServeHTTP(w, r)
+	var response application.DistributionDecisionValidation
+	if err := json.Unmarshal(w.Body.Bytes(), &response); err != nil {
+		t.Fatal(err)
+	}
+	if w.Code != 200 || response.Allowed || response.OperationID != input.OperationID || response.DecisionID != input.DecisionID || response.WorkerFence != input.WorkerFence || response.Reason != "decision_not_ready" {
+		t.Fatalf("fabricated decision %d %+v", w.Code, response)
+	}
+	r = request()
+	r.Header = headers
+	w = httptest.NewRecorder()
+	handler.ServeHTTP(w, r)
+	if w.Code != 401 {
+		t.Fatalf("replayed decision validation %d", w.Code)
 	}
 }

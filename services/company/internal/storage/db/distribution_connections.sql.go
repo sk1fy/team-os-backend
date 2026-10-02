@@ -262,17 +262,23 @@ func (q *Queries) GetDistributionMappingSnapshot(ctx context.Context, arg GetDis
 }
 
 const getDistributionServiceGrant = `-- name: GetDistributionServiceGrant :one
-SELECT active FROM distribution_service_grants WHERE key_id=$1 AND company_id=$2 AND installation_id=$3 AND capability='widget-access'
+SELECT active FROM distribution_service_grants WHERE key_id=$1 AND company_id=$2 AND installation_id=$3 AND capability=$4
 `
 
 type GetDistributionServiceGrantParams struct {
 	KeyID          string    `json:"key_id"`
 	CompanyID      uuid.UUID `json:"company_id"`
 	InstallationID uuid.UUID `json:"installation_id"`
+	Capability     string    `json:"capability"`
 }
 
 func (q *Queries) GetDistributionServiceGrant(ctx context.Context, arg GetDistributionServiceGrantParams) (bool, error) {
-	row := q.db.QueryRow(ctx, getDistributionServiceGrant, arg.KeyID, arg.CompanyID, arg.InstallationID)
+	row := q.db.QueryRow(ctx, getDistributionServiceGrant,
+		arg.KeyID,
+		arg.CompanyID,
+		arg.InstallationID,
+		arg.Capability,
+	)
 	var active bool
 	err := row.Scan(&active)
 	return active, err

@@ -20,6 +20,7 @@ sql:
       - migrations/000018_default_users_inactive.up.sql
       - migrations/000021_access_link_entry_context.up.sql
       - migrations/000022_distribution_connections.up.sql
+      - migrations/000023_distribution_decision_validation.up.sql
     queries: internal/storage/queries
     gen:
       go:

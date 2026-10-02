@@ -261,10 +261,10 @@ func companyAccessTestPool(t *testing.T, ctx context.Context) *pgxpool.Pool {
 		t.Fatal("не удалось определить путь к миграциям")
 	}
 	migrationsDir := filepath.Join(filepath.Dir(filename), "..", "..", "migrations")
-	initScripts := make([]string, 0, 22)
+	initScripts := make([]string, 0, 23)
 
 	temporary := t.TempDir()
-	for migration := 1; migration <= 22; migration++ {
+	for migration := 1; migration <= 23; migration++ {
 		name := fmt.Sprintf("%06d_%s.up.sql", migration, accessMigrationName(migration))
 		source, err := os.ReadFile(filepath.Join(migrationsDir, name))
 		if err != nil {
@@ -330,6 +330,7 @@ func accessMigrationName(migration int) string {
 		20: "amo_company_bootstrap_audit",
 		21: "access_link_entry_context",
 		22: "distribution_connections",
+		23: "distribution_decision_validation",
 	}[migration]
 }
 

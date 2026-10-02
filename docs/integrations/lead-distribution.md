@@ -43,3 +43,27 @@ Core виджет проверяет amoCRM JWT и актуальные CRM пр
 `make gen`, `make check-contract`, Go тесты Company/Gateway и профильная PostgreSQL integration suite проверяют реальные миграции, duplicate/concurrent link, UUID-preserving повторный импорт, tenant rejection, mapping lifecycle/tombstone/history, partial freshness, durable mirror retry, employee ACL, concurrent section revoke, service grant/signature/nonce replay, revoke/rebind. Colima требует DOCKER_HOST с адресом существующего Docker context и TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock. Тестовая БД изолирована и удаляется тестом.
 
 Живые OAuth/reauth/диагностика на amoCRM тестовом аккаунте требуют предоставленного тестового account/integration/installation; локальные проверки не считаются этой приёмкой.
+
+## РС-04: граница проверки business decision
+
+Private `POST /internal/v1/distribution/validate-decision` использует отдельную capability `decision-validation` (migration 000023). Grant `widget-access` её не разрешает. Scope, HMAC, durable nonce, active exact binding и verified current target mapping проверяются сервером. Контракт — [distribution-internal.yaml](../../contracts/openapi/distribution-internal.yaml).
+
+Ответ возвращает exact operationId/decisionId/workerFence и **allowed=false**. Для валидного scope причина `decision_not_ready`: authoritative rule/episode/decision registry, доступность по графику и отмена принадлежат РС-06 и ещё не реализованы. Проверка одного mapping не заменяет эти business preconditions. Реальный Core worker должен остановиться до PATCH; положительные контролируемые test fixtures проверяют исполнителя, но не означают готовность автоматического распределения в production.
+
+После реализации владельцем очереди полного registry этот endpoint сможет выпускать короткий allow-token (максимум 5 секунд) только после сверки всех business revisions, episode/rule/claim/cancellation и текущего target. Без такой реализации этапная интеграционная приёмка 04.3 остаётся зависимой от РС-06; не включать реальное выполнение через заглушку, флаг или admin-only обход.
+
+Выдача capability производится отдельно оператором с правом администрирования Company DB. Ни привязка установки, ни наличие widget-access, ни знание ключа не создают этот grant автоматически. Использовать параметризованный запрос с заранее проверенными keyId/companyId/bindingId; ключевой secret остаётся только в серверном окружении:
+
+```sql
+INSERT INTO distribution_service_grants(key_id, company_id, installation_id, capability)
+SELECT $1, b.company_id, b.installation_id, 'decision-validation'
+FROM distribution_bindings b
+JOIN companies c ON c.id = b.company_id
+WHERE b.company_id = $2 AND b.id = $3 AND b.state = 'active' AND c.status = 'active'
+ON CONFLICT(key_id, company_id, installation_id, capability)
+DO UPDATE SET active = true;
+```
+
+Нулевой результат не разрешает другой scope. Отзыв — `UPDATE distribution_service_grants SET active=false WHERE key_id=$1 AND company_id=$2 AND installation_id=$3 AND capability='decision-validation'`. Ротация создаёт отдельный grant нового keyId и отзывает старый; права widget-access не расширяются.
+
+Для пользовательского решения callback получает подписанный Core actor `{kind:'user', teamosUserId, crmUserId}`: Company перечитывает active сотрудника, distribution section и точное verified CRM mapping. Обычный employee разрешён этой проверкой; owner/admin роль не требуется. Core отдельно проверяет live CRM ресурсный ACL. Actor `system` не содержит пользовательских identity, но также не получает allow без registry. `operator` и смешанные/неполные principals отклоняются. Срок исходного decision обязателен, уже истёкший или превышающий 15 минут decision не принимается.

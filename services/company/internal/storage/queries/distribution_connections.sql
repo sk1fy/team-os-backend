@@ -31,7 +31,7 @@ INSERT INTO distribution_service_nonces(key_id,nonce,expires_at) VALUES($1,$2,$3
 DELETE FROM distribution_service_nonces WHERE expires_at < now();
 
 -- name: GetDistributionServiceGrant :one
-SELECT active FROM distribution_service_grants WHERE key_id=$1 AND company_id=$2 AND installation_id=$3 AND capability='widget-access';
+SELECT active FROM distribution_service_grants WHERE key_id=$1 AND company_id=$2 AND installation_id=$3 AND capability=$4;
 -- name: RevokeDistributionBinding :one
 UPDATE distribution_bindings SET state='revoked',revision=revision+1,updated_at=now() WHERE company_id=$1 AND id=$2 AND state <> 'revoked' RETURNING *;
 

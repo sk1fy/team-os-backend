@@ -25,6 +25,7 @@ type Store interface {
 }
 type Service interface {
 	DistributionWidgetAccess(context.Context, application.DistributionWidgetAccessInput) (application.DistributionWidgetAccess, error)
+	ValidateDistributionDecision(context.Context, application.DistributionDecisionValidationInput) (application.DistributionDecisionValidation, error)
 }
 type Handler struct {
 	Keys    map[string]string
@@ -40,7 +41,14 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(code)
 		_ = json.NewEncoder(w).Encode(map[string]any{"error": map[string]any{"message": "Межсервисный доступ не подтверждён", "status": code}})
 	}
-	if r.Method != "POST" || r.URL.Path != "/internal/v1/distribution/widget-access" {
+	capability := ""
+	switch r.URL.Path {
+	case "/internal/v1/distribution/widget-access":
+		capability = "widget-access"
+	case "/internal/v1/distribution/validate-decision":
+		capability = "decision-validation"
+	}
+	if r.Method != "POST" || capability == "" {
 		fail(404)
 		return
 	}
@@ -88,7 +96,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		fail(401)
 		return
 	}
-	granted, e := h.Store.GetDistributionServiceGrant(r.Context(), db.GetDistributionServiceGrantParams{KeyID: kid, CompanyID: company, InstallationID: installation})
+	granted, e := h.Store.GetDistributionServiceGrant(r.Context(), db.GetDistributionServiceGrantParams{KeyID: kid, CompanyID: company, InstallationID: installation, Capability: capability})
 	if e != nil || !granted {
 		fail(403)
 		return
@@ -102,9 +110,33 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		fail(401)
 		return
 	}
-	var in application.DistributionWidgetAccessInput
+
 	d := json.NewDecoder(bytes.NewReader(body))
 	d.DisallowUnknownFields()
+	if capability == "decision-validation" {
+		var in application.DistributionDecisionValidationInput
+		if e = d.Decode(&in); e != nil {
+			fail(400)
+			return
+		}
+		var trailing any
+		if e = d.Decode(&trailing); !errors.Is(e, io.EOF) {
+			fail(400)
+			return
+		}
+		if in.CompanyID != company || in.InstallationID != installation {
+			fail(403)
+			return
+		}
+		out, err := h.Service.ValidateDistributionDecision(r.Context(), in)
+		if err != nil {
+			fail(503)
+			return
+		}
+		_ = json.NewEncoder(w).Encode(out)
+		return
+	}
+	var in application.DistributionWidgetAccessInput
 	if e = d.Decode(&in); e != nil {
 		fail(400)
 		return

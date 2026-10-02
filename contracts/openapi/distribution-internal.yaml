@@ -1,0 +1,158 @@
+openapi: 3.1.0
+info:
+  title: TeamOS Company private distribution callbacks
+  version: 0.2.0
+  description: >-
+    Private HTTPS boundary owned by Company, not mounted in Gateway. HMAC-SHA256
+    signs keyId, method, RequestURI, company UUID, installation UUID, Unix timestamp,
+    UUID nonce and lowercase SHA256(raw body), newline-separated. Timestamp ±60s,
+    persistent nonce and exact company/install/capability grants are required.
+    Stage 04 decision validation always denies until stage 06 provides the authoritative
+    business decision registry. Binding and employee mapping alone never grant a PATCH.
+  license:
+    name: Proprietary
+    identifier: LicenseRef-Proprietary
+servers:
+  - url: https://company.internal.example.invalid
+security:
+  - signedService: []
+paths:
+  /internal/v1/distribution/widget-access:
+    post:
+      operationId: checkDistributionWidgetAccess
+      summary: Проверить TeamOS company/mapping/section для проверенного Core CRM principal
+      x-capability: widget-access
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/WidgetAccessInput' }
+      responses:
+        '200':
+          description: Проверенный локальный доступ; CRM ACL проверяется отдельно в Core
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/WidgetAccess' }
+        '401': { $ref: '#/components/responses/Failure' }
+        '403': { $ref: '#/components/responses/Failure' }
+        '503': { $ref: '#/components/responses/Failure' }
+        default: { $ref: '#/components/responses/Failure' }
+  /internal/v1/distribution/validate-decision:
+    post:
+      operationId: validateDistributionDecision
+      summary: Свежая проверка business decision перед конкретной попыткой эффекта
+      x-capability: decision-validation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/DecisionValidationInput' }
+      responses:
+        '200':
+          description: >-
+            Текущая реализация allowed=false, decision_not_ready при валидном scope.
+            Будущий allow-token требует exact operation/decision/fence и срока максимум 5 секунд.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DecisionValidation' }
+        '401': { $ref: '#/components/responses/Failure' }
+        '403': { $ref: '#/components/responses/Failure' }
+        '503': { $ref: '#/components/responses/Failure' }
+        default: { $ref: '#/components/responses/Failure' }
+components:
+  securitySchemes:
+    signedService:
+      type: apiKey
+      in: header
+      name: X-Distribution-Signature
+      description: Requires signed Key-Id/Company/Installation/Timestamp/Nonce headers and a scoped grant
+  responses:
+    Failure:
+      description: Запрос отклонён либо policy недоступна; effect запрещён
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [error]
+            properties:
+              error:
+                type: object
+                required: [message, status]
+                properties:
+                  message: { type: string }
+                  status: { type: integer }
+  schemas:
+    ID: { type: string, format: uuid }
+    CRMID:
+      type: string
+      pattern: '^[1-9][0-9]{0,18}$'
+      description: Canonical positive decimal, semantic maximum 9223372036854775807
+    Revision: { type: integer, format: int64, minimum: 1, maximum: 9007199254740991 }
+    Scope:
+      type: object
+      required: [companyId, bindingId, bindingRevision, installationId, integrationId, accountId]
+      properties:
+        companyId: { $ref: '#/components/schemas/ID' }
+        bindingId: { $ref: '#/components/schemas/ID' }
+        bindingRevision: { $ref: '#/components/schemas/Revision' }
+        installationId: { $ref: '#/components/schemas/ID' }
+        integrationId: { $ref: '#/components/schemas/ID' }
+        accountId: { $ref: '#/components/schemas/CRMID' }
+    WidgetAccessInput:
+      allOf:
+        - { $ref: '#/components/schemas/Scope' }
+        - type: object
+          required: [userId]
+          properties:
+            userId: { $ref: '#/components/schemas/CRMID' }
+            leadId: { $ref: '#/components/schemas/CRMID' }
+    WidgetAccess:
+      type: object
+      required: [allowed, employeeId, reason]
+      properties:
+        allowed: { type: boolean }
+        employeeId: { $ref: '#/components/schemas/ID' }
+        reason: { type: string }
+    DecisionActor:
+      type: object
+      additionalProperties: false
+      required: [kind]
+      properties:
+        kind: { type: string, enum: [system, user] }
+        teamosUserId: { $ref: '#/components/schemas/ID' }
+        crmUserId: { $ref: '#/components/schemas/CRMID' }
+        operatorId: { $ref: '#/components/schemas/ID', description: Неподдерживаемый principal отклоняется }
+      description: User требует обе проверенные identity; system запрещает identity поля; operator запрещён
+    DecisionValidationInput:
+      allOf:
+        - { $ref: '#/components/schemas/Scope' }
+        - type: object
+          required: [operationId, decisionId, episodeId, ruleId, groupId, ruleRevision, availabilityRevision, claimRevision, workerFence, targetEmployeeId, targetResponsibleUserId, leadId, decisionKind, validUntil, actor]
+          properties:
+            actor: { $ref: '#/components/schemas/DecisionActor' }
+            operationId: { $ref: '#/components/schemas/ID' }
+            decisionId: { $ref: '#/components/schemas/ID' }
+            episodeId: { $ref: '#/components/schemas/ID' }
+            ruleId: { $ref: '#/components/schemas/ID' }
+            groupId: { $ref: '#/components/schemas/ID' }
+            ruleRevision: { $ref: '#/components/schemas/Revision' }
+            availabilityRevision: { $ref: '#/components/schemas/Revision' }
+            claimRevision: { $ref: '#/components/schemas/Revision' }
+            workerFence: { $ref: '#/components/schemas/Revision' }
+            targetEmployeeId: { $ref: '#/components/schemas/ID' }
+            targetResponsibleUserId: { $ref: '#/components/schemas/CRMID' }
+            leadId: { $ref: '#/components/schemas/CRMID' }
+            decisionKind: { type: string, enum: [assign, keep] }
+            validUntil: { type: string, format: date-time }
+    DecisionValidation:
+      type: object
+      required: [allowed, operationId, decisionId, workerFence, validUntil, reason]
+      properties:
+        allowed: { type: boolean }
+        operationId: { $ref: '#/components/schemas/ID' }
+        decisionId: { $ref: '#/components/schemas/ID' }
+        workerFence: { type: integer, format: int64 }
+        validUntil: { type: string, format: date-time }
+        reason:
+          type: string
+          enum: [decision_not_ready, decision_expired, invalid_decision, binding_unavailable, company_unavailable, mapping_unavailable, actor_unavailable]

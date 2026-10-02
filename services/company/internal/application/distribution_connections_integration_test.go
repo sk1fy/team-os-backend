@@ -166,6 +166,24 @@ func TestDistributionConnectionMappingLifecycle(t *testing.T) {
 	if e != nil || !access.Allowed || access.EmployeeID != employee.UserID {
 		t.Fatalf("widget %+v %v", access, e)
 	}
+
+	decision := DistributionDecisionValidationInput{Actor: DistributionDecisionActor{Kind: "system"}, Scope: bindingScope(b), OperationID: uuid.New(), DecisionID: uuid.New(), EpisodeID: uuid.New(), RuleID: uuid.New(), GroupID: uuid.New(), RuleRevision: 1, AvailabilityRevision: 1, ClaimRevision: 1, WorkerFence: 1, TargetEmployeeID: employee.UserID, TargetResponsibleUserID: "42", LeadID: "7", DecisionKind: "assign", ValidUntil: time.Now().Add(5 * time.Second)}
+	validation, err := svc.ValidateDistributionDecision(ctx, decision)
+	if err != nil || validation.Allowed || validation.Reason != "decision_not_ready" {
+		t.Fatalf("missing business registry granted %+v %v", validation, err)
+	}
+	if _, err = pool.Exec(ctx, "INSERT INTO distribution_service_grants(key_id,company_id,installation_id,capability) VALUES('core',$1,$2,'widget-access')", company, b.InstallationID); err != nil {
+		t.Fatal(err)
+	}
+	if _, err = db.New(pool).GetDistributionServiceGrant(ctx, db.GetDistributionServiceGrantParams{KeyID: "core", CompanyID: company, InstallationID: b.InstallationID, Capability: "decision-validation"}); !isNoRows(err) {
+		t.Fatalf("widget grant authorized decision %v", err)
+	}
+	if _, err = pool.Exec(ctx, "INSERT INTO distribution_service_grants(key_id,company_id,installation_id,capability) VALUES('core',$1,$2,'decision-validation')", company, b.InstallationID); err != nil {
+		t.Fatal(err)
+	}
+	if granted, err := db.New(pool).GetDistributionServiceGrant(ctx, db.GetDistributionServiceGrantParams{KeyID: "core", CompanyID: company, InstallationID: b.InstallationID, Capability: "decision-validation"}); err != nil || !granted {
+		t.Fatalf("decision grant missing %v", err)
+	}
 	perm, e := svc.DistributionLeadPermission(ctx, employee, connection.BindingID, "7")
 	if e != nil || !perm.CanViewLead {
 		t.Fatalf("ordinary employee %+v %v", perm, e)
