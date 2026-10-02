@@ -42,6 +42,7 @@ type amoSyncState struct {
 }
 
 type Service struct {
+	deliveryCore           DistributionDeliveryCore
 	distributionCore       DistributionCore
 	pool                   databasePool
 	issuer                 *sharedauth.TokenIssuer

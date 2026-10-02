@@ -111,7 +111,7 @@ func run(logger *slog.Logger) error {
 		if e != nil {
 			return e
 		}
-		serviceOptions = append(serviceOptions, application.WithDistributionCore(client))
+		serviceOptions = append(serviceOptions, application.WithDistributionCore(client), application.WithDistributionDeliveryCore(client))
 	}
 	if configuration.AmoImportEnabled {
 		externalUsersClient, externalClientErr := externalusers.NewClient(externalusers.Config{
@@ -130,6 +130,9 @@ func run(logger *slog.Logger) error {
 
 	consumerContext, consumerCancel := context.WithCancel(context.Background())
 	defer consumerCancel()
+	if configuration.DistributionCoreURL != "" {
+		go service.RunDistributionDelivery(consumerContext)
+	}
 	if err = consumers.Start(consumerContext, bus, pool, logger); err != nil {
 		return fmt.Errorf("start academy consumers: %w", err)
 	}
@@ -156,6 +159,8 @@ func run(logger *slog.Logger) error {
 		callbacks := &distributionhttp.Handler{Keys: configuration.DistributionKeys, Store: db.New(pool), Service: service}
 		httpRouter.Handle("POST /internal/v1/distribution/widget-access", callbacks)
 		httpRouter.Handle("POST /internal/v1/distribution/validate-decision", callbacks)
+		httpRouter.Handle("POST /internal/v1/distribution/events", callbacks)
+		httpRouter.Handle("POST /internal/v1/distribution/results", callbacks)
 	}
 	httpRouter.Handle("GET /metrics", httpx.MetricsHandler())
 	httpRouter.Handle("GET /readyz", httpx.Readyz(map[string]httpx.ReadinessCheck{

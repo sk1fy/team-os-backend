@@ -131,11 +131,26 @@ func (c *Client) call(ctx context.Context, method, path string, s Scope, in, out
 	if !confirmed {
 		return &Error{resp.StatusCode}
 	}
+
 	if out != nil {
-		if e = json.NewDecoder(io.LimitReader(resp.Body, 4<<20)).Decode(out); e != nil {
+		raw, readErr := io.ReadAll(io.LimitReader(resp.Body, (4<<20)+1))
+		if readErr != nil || len(raw) > 4<<20 {
+			return errors.New("Некорректный или слишком большой ответ Core")
+		}
+		decoder := json.NewDecoder(bytes.NewReader(raw))
+		switch out.(type) {
+		case *LeadObservation, *Operation:
+			decoder.DisallowUnknownFields()
+		}
+		if decoder.Decode(out) != nil {
 			return errors.New("Некорректный ответ Core")
 		}
+		var trailing any
+		if err := decoder.Decode(&trailing); !errors.Is(err, io.EOF) {
+			return errors.New("Лишние данные в ответе Core")
+		}
 	}
+
 	return nil
 }
 func (c *Client) Confirm(ctx context.Context, in Confirmation) (Binding, error) {

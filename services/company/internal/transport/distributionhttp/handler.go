@@ -27,6 +27,10 @@ type Service interface {
 	DistributionWidgetAccess(context.Context, application.DistributionWidgetAccessInput) (application.DistributionWidgetAccess, error)
 	ValidateDistributionDecision(context.Context, application.DistributionDecisionValidationInput) (application.DistributionDecisionValidation, error)
 }
+type DeliveryService interface {
+	ReceiveDistributionEvent(context.Context, application.DistributionEventEnvelope) (application.DistributionDeliveryReceipt, error)
+	ReceiveDistributionResult(context.Context, application.DistributionResultEnvelope) (application.DistributionDeliveryReceipt, error)
+}
 type Handler struct {
 	Keys    map[string]string
 	Store   Store
@@ -45,6 +49,10 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch r.URL.Path {
 	case "/internal/v1/distribution/widget-access":
 		capability = "widget-access"
+	case "/internal/v1/distribution/events":
+		capability = "event-delivery"
+	case "/internal/v1/distribution/results":
+		capability = "result-delivery"
 	case "/internal/v1/distribution/validate-decision":
 		capability = "decision-validation"
 	}
@@ -85,7 +93,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		fail(401)
 		return
 	}
-	body, e := io.ReadAll(http.MaxBytesReader(w, r.Body, 16384))
+	body, e := io.ReadAll(http.MaxBytesReader(w, r.Body, 262144))
 	if e != nil {
 		fail(400)
 		return
@@ -113,6 +121,60 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	d := json.NewDecoder(bytes.NewReader(body))
 	d.DisallowUnknownFields()
+	if capability == "event-delivery" || capability == "result-delivery" {
+		svc, ok := h.Service.(DeliveryService)
+		if !ok {
+			fail(503)
+			return
+		}
+		var scope corebridge.Scope
+		var receipt application.DistributionDeliveryReceipt
+		var err error
+		var event application.DistributionEventEnvelope
+		var result application.DistributionResultEnvelope
+		if capability == "event-delivery" {
+			err = d.Decode(&event)
+			scope = event.Scope
+		} else {
+			err = d.Decode(&result)
+			scope = result.Scope
+		}
+		var trailing any
+		if err != nil || !errors.Is(d.Decode(&trailing), io.EOF) {
+			fail(400)
+			return
+		}
+		if scope.CompanyID != company || scope.InstallationID != installation {
+			fail(403)
+			return
+		}
+		if capability == "event-delivery" {
+			receipt, err = svc.ReceiveDistributionEvent(r.Context(), event)
+		} else {
+			receipt, err = svc.ReceiveDistributionResult(r.Context(), result)
+		}
+		if err != nil {
+			status := 503
+			var app *application.Error
+			if errors.As(err, &app) {
+				switch app.Kind {
+				case application.ErrorValidation:
+					status = 400
+				case application.ErrorForbidden:
+					status = 403
+				case application.ErrorConflict:
+					status = 409
+				case application.ErrorNotFound:
+					status = 404
+				}
+			}
+			fail(status)
+			return
+		}
+		w.WriteHeader(http.StatusAccepted)
+		_ = json.NewEncoder(w).Encode(receipt)
+		return
+	}
 	if capability == "decision-validation" {
 		var in application.DistributionDecisionValidationInput
 		if e = d.Decode(&in); e != nil {
