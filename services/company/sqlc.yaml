@@ -22,6 +22,7 @@ sql:
       - migrations/000022_distribution_connections.up.sql
       - migrations/000023_distribution_decision_validation.up.sql
       - migrations/000024_distribution_delivery.up.sql
+      - migrations/000025_distribution_queue.up.sql
     queries: internal/storage/queries
     gen:
       go:

@@ -10,6 +10,8 @@ option go_package = "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v
 // few services that need synchronous organization lookups. Authenticated
 // calls receive actor/company claims through gRPC metadata.
 service CompanyService {
+  rpc ReadDistributionRuntime(ReadDistributionRuntimeRequest) returns (ReadDistributionRuntimeResponse);
+  rpc WriteDistributionRuntime(WriteDistributionRuntimeRequest) returns (WriteDistributionRuntimeResponse);
   rpc SyncDistributionMappings(SyncDistributionMappingsRequest) returns (SyncDistributionMappingsResponse);
   rpc ReconcileDistributionEmployeeMappings(ReconcileDistributionEmployeeMappingsRequest) returns (ReconcileDistributionEmployeeMappingsResponse);
   rpc RevokeDistributionConnection(RevokeDistributionConnectionRequest) returns (RevokeDistributionConnectionResponse);
@@ -1123,3 +1125,9 @@ message GetDistributionEmployeeMappingsResponse { repeated DistributionEmployeeM
 message SetDistributionEmployeeMappingResponse { DistributionEmployeeMapping mapping = 1; }
 
 message CheckDistributionLeadPermissionResponse { string user_id = 1; bool can_view_lead = 2; string reason = 3; google.protobuf.Timestamp checked_at = 4; }
+
+// The application owns the scope and JSON payload validation. Gateway exposes typed REST DTOs.
+message ReadDistributionRuntimeRequest { string kind = 1; string id = 2; int32 limit = 3; int32 offset = 4; }
+message WriteDistributionRuntimeRequest { string kind = 1; string id = 2; bytes payload = 3; }
+message ReadDistributionRuntimeResponse { bytes payload = 1; }
+message WriteDistributionRuntimeResponse { bytes payload = 1; }

@@ -53,6 +53,12 @@ func (s *Service) RegisterDistributionOperationMirror(ctx context.Context, actor
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
 	q := db.New(tx)
+	if e = q.EnsureDistributionAvailabilityVersion(ctx, current.Scope.CompanyID); e != nil {
+		return e
+	}
+	if _, e = q.LockDistributionAvailabilityVersion(ctx, current.Scope.CompanyID); e != nil {
+		return e
+	}
 	if e = s.deliveryScope(ctx, q, current.Scope); e != nil {
 		return e
 	}
@@ -83,6 +89,12 @@ func (s *Service) RegisterDistributionOperationMirror(ctx context.Context, actor
 	return tx.Commit(ctx)
 }
 func (s *Service) applyOperationResult(ctx context.Context, q *db.Queries, op corebridge.Operation) error {
+	if e := q.EnsureDistributionAvailabilityVersion(ctx, op.Scope.CompanyID); e != nil {
+		return e
+	}
+	if _, e := q.LockDistributionAvailabilityVersion(ctx, op.Scope.CompanyID); e != nil {
+		return e
+	}
 	mirror, e := q.GetDistributionOperationMirror(ctx, op.OperationID)
 	if e != nil {
 		if isNoRows(e) {
@@ -121,9 +133,18 @@ func (s *Service) applyOperationResult(ctx context.Context, q *db.Queries, op co
 			return internal("Не удалось обновить mirror", e)
 		}
 	}
-	// No cursor, claim or current-entry mutation: old-operation results are
-	// historical mirror updates, never proof to release a newer operation.
-	return nil
+	row, e := q.GetDistributionQueueByOperation(ctx, nullID(op.OperationID))
+	if isNoRows(e) {
+		return nil
+	}
+	if e != nil {
+		return e
+	}
+	row, e = q.LockDistributionQueue(ctx, row.ID)
+	if e != nil {
+		return e
+	}
+	return s.settleRuntimeOperation(ctx, q, row, op)
 }
 func (s *Service) ProcessDistributionDelivery(ctx context.Context) (bool, error) {
 	token := uuid.NullUUID{UUID: uuid.New(), Valid: true}
@@ -309,7 +330,11 @@ func (s *Service) processDistributionEvent(ctx context.Context, row db.Distribut
 		} else if in.Event.Kind == "lead.created" && in.Event.SourceEvidence != nil && in.Event.SourceEvidence.PipelineID != nil && in.Event.SourceEvidence.StatusID != nil && *in.Event.SourceEvidence.PipelineID == observed.Snapshot.PipelineID && *in.Event.SourceEvidence.StatusID == observed.Snapshot.StatusID {
 			evidence, state = "created_in_stage", "checking"
 		}
-		if e = q.CreateDistributionObservedEntry(ctx, db.CreateDistributionObservedEntryParams{ID: id, CompanyID: scope.CompanyID, AccountID: scope.AccountID, LeadID: in.Event.LeadID, BindingID: scope.BindingID, BindingRevision: scope.BindingRevision, Sequence: sequence, PipelineID: observed.Snapshot.PipelineID, StatusID: observed.Snapshot.StatusID, EntryEventID: in.EventID, Evidence: evidence, State: state}); e != nil {
+		if in.SourceOccurredAt == nil {
+			state = "needs_configuration"
+			evidence = "source_time_unknown"
+		}
+		if e = q.CreateDistributionObservedEntry(ctx, db.CreateDistributionObservedEntryParams{ID: id, CompanyID: scope.CompanyID, AccountID: scope.AccountID, LeadID: in.Event.LeadID, BindingID: scope.BindingID, BindingRevision: scope.BindingRevision, Sequence: sequence, PipelineID: observed.Snapshot.PipelineID, StatusID: observed.Snapshot.StatusID, EntryEventID: in.EventID, Evidence: evidence, State: state, SourceReceivedAt: pgtype.Timestamptz{Time: in.ReceivedAt, Valid: true}, SourceOccurredAt: optionalDeliveryTime(in.SourceOccurredAt)}); e != nil {
 			return e
 		}
 	}
@@ -372,4 +397,11 @@ func (s *Service) ReconcileDistributionOperations(ctx context.Context, limit int
 		}
 	}
 	return reconcileErr
+}
+
+func optionalDeliveryTime(v *time.Time) pgtype.Timestamptz {
+	if v == nil {
+		return pgtype.Timestamptz{}
+	}
+	return pgtype.Timestamptz{Time: v.UTC(), Valid: true}
 }

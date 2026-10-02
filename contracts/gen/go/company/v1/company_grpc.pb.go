@@ -19,6 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
+	CompanyService_ReadDistributionRuntime_FullMethodName               = "/teamos.company.v1.CompanyService/ReadDistributionRuntime"
+	CompanyService_WriteDistributionRuntime_FullMethodName              = "/teamos.company.v1.CompanyService/WriteDistributionRuntime"
 	CompanyService_SyncDistributionMappings_FullMethodName              = "/teamos.company.v1.CompanyService/SyncDistributionMappings"
 	CompanyService_ReconcileDistributionEmployeeMappings_FullMethodName = "/teamos.company.v1.CompanyService/ReconcileDistributionEmployeeMappings"
 	CompanyService_RevokeDistributionConnection_FullMethodName          = "/teamos.company.v1.CompanyService/RevokeDistributionConnection"
@@ -113,6 +115,8 @@ const (
 // few services that need synchronous organization lookups. Authenticated
 // calls receive actor/company claims through gRPC metadata.
 type CompanyServiceClient interface {
+	ReadDistributionRuntime(ctx context.Context, in *ReadDistributionRuntimeRequest, opts ...grpc.CallOption) (*ReadDistributionRuntimeResponse, error)
+	WriteDistributionRuntime(ctx context.Context, in *WriteDistributionRuntimeRequest, opts ...grpc.CallOption) (*WriteDistributionRuntimeResponse, error)
 	SyncDistributionMappings(ctx context.Context, in *SyncDistributionMappingsRequest, opts ...grpc.CallOption) (*SyncDistributionMappingsResponse, error)
 	ReconcileDistributionEmployeeMappings(ctx context.Context, in *ReconcileDistributionEmployeeMappingsRequest, opts ...grpc.CallOption) (*ReconcileDistributionEmployeeMappingsResponse, error)
 	RevokeDistributionConnection(ctx context.Context, in *RevokeDistributionConnectionRequest, opts ...grpc.CallOption) (*RevokeDistributionConnectionResponse, error)
@@ -205,6 +209,26 @@ type companyServiceClient struct {
 
 func NewCompanyServiceClient(cc grpc.ClientConnInterface) CompanyServiceClient {
 	return &companyServiceClient{cc}
+}
+
+func (c *companyServiceClient) ReadDistributionRuntime(ctx context.Context, in *ReadDistributionRuntimeRequest, opts ...grpc.CallOption) (*ReadDistributionRuntimeResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ReadDistributionRuntimeResponse)
+	err := c.cc.Invoke(ctx, CompanyService_ReadDistributionRuntime_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) WriteDistributionRuntime(ctx context.Context, in *WriteDistributionRuntimeRequest, opts ...grpc.CallOption) (*WriteDistributionRuntimeResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(WriteDistributionRuntimeResponse)
+	err := c.cc.Invoke(ctx, CompanyService_WriteDistributionRuntime_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *companyServiceClient) SyncDistributionMappings(ctx context.Context, in *SyncDistributionMappingsRequest, opts ...grpc.CallOption) (*SyncDistributionMappingsResponse, error) {
@@ -1055,6 +1079,8 @@ func (c *companyServiceClient) ResetDistributionEvents(ctx context.Context, in *
 // few services that need synchronous organization lookups. Authenticated
 // calls receive actor/company claims through gRPC metadata.
 type CompanyServiceServer interface {
+	ReadDistributionRuntime(context.Context, *ReadDistributionRuntimeRequest) (*ReadDistributionRuntimeResponse, error)
+	WriteDistributionRuntime(context.Context, *WriteDistributionRuntimeRequest) (*WriteDistributionRuntimeResponse, error)
 	SyncDistributionMappings(context.Context, *SyncDistributionMappingsRequest) (*SyncDistributionMappingsResponse, error)
 	ReconcileDistributionEmployeeMappings(context.Context, *ReconcileDistributionEmployeeMappingsRequest) (*ReconcileDistributionEmployeeMappingsResponse, error)
 	RevokeDistributionConnection(context.Context, *RevokeDistributionConnectionRequest) (*RevokeDistributionConnectionResponse, error)
@@ -1149,6 +1175,12 @@ type CompanyServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedCompanyServiceServer struct{}
 
+func (UnimplementedCompanyServiceServer) ReadDistributionRuntime(context.Context, *ReadDistributionRuntimeRequest) (*ReadDistributionRuntimeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReadDistributionRuntime not implemented")
+}
+func (UnimplementedCompanyServiceServer) WriteDistributionRuntime(context.Context, *WriteDistributionRuntimeRequest) (*WriteDistributionRuntimeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WriteDistributionRuntime not implemented")
+}
 func (UnimplementedCompanyServiceServer) SyncDistributionMappings(context.Context, *SyncDistributionMappingsRequest) (*SyncDistributionMappingsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SyncDistributionMappings not implemented")
 }
@@ -1420,6 +1452,42 @@ func RegisterCompanyServiceServer(s grpc.ServiceRegistrar, srv CompanyServiceSer
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&CompanyService_ServiceDesc, srv)
+}
+
+func _CompanyService_ReadDistributionRuntime_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReadDistributionRuntimeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).ReadDistributionRuntime(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_ReadDistributionRuntime_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).ReadDistributionRuntime(ctx, req.(*ReadDistributionRuntimeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_WriteDistributionRuntime_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(WriteDistributionRuntimeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).WriteDistributionRuntime(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_WriteDistributionRuntime_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).WriteDistributionRuntime(ctx, req.(*WriteDistributionRuntimeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _CompanyService_SyncDistributionMappings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -2941,6 +3009,14 @@ var CompanyService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "teamos.company.v1.CompanyService",
 	HandlerType: (*CompanyServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "ReadDistributionRuntime",
+			Handler:    _CompanyService_ReadDistributionRuntime_Handler,
+		},
+		{
+			MethodName: "WriteDistributionRuntime",
+			Handler:    _CompanyService_WriteDistributionRuntime_Handler,
+		},
 		{
 			MethodName: "SyncDistributionMappings",
 			Handler:    _CompanyService_SyncDistributionMappings_Handler,

@@ -97,6 +97,12 @@ type Department struct {
 	ExternalID           pgtype.Text   `json:"external_id"`
 }
 
+type DistributionAvailabilityVersion struct {
+	CompanyID         uuid.UUID `json:"company_id"`
+	Revision          int64     `json:"revision"`
+	ProcessedRevision int64     `json:"processed_revision"`
+}
+
 type DistributionBinding struct {
 	ID                 uuid.UUID     `json:"id"`
 	CompanyID          uuid.UUID     `json:"company_id"`
@@ -124,6 +130,16 @@ type DistributionBindingVersion struct {
 	AccountID      string    `json:"account_id"`
 	State          string    `json:"state"`
 	CreatedAt      time.Time `json:"created_at"`
+}
+
+type DistributionControlRequest struct {
+	Key                   uuid.UUID `json:"key"`
+	QueueID               uuid.UUID `json:"queue_id"`
+	OperationID           uuid.UUID `json:"operation_id"`
+	Action                string    `json:"action"`
+	ExpectedResultVersion int64     `json:"expected_result_version"`
+	Payload               []byte    `json:"payload"`
+	CreatedAt             time.Time `json:"created_at"`
 }
 
 type DistributionDeliveryInbox struct {
@@ -198,6 +214,21 @@ type DistributionGroup struct {
 	UpdatedAt         time.Time   `json:"updated_at"`
 }
 
+type DistributionGroupClaim struct {
+	CompanyID   uuid.UUID     `json:"company_id"`
+	GroupID     uuid.UUID     `json:"group_id"`
+	QueueID     uuid.NullUUID `json:"queue_id"`
+	CursorOrder []uuid.UUID   `json:"cursor_order"`
+	CursorNext  int32         `json:"cursor_next"`
+	Revision    int64         `json:"revision"`
+}
+
+type DistributionLeadClaim struct {
+	AccountID string    `json:"account_id"`
+	LeadID    string    `json:"lead_id"`
+	QueueID   uuid.UUID `json:"queue_id"`
+}
+
 type DistributionLeadHead struct {
 	AccountID           string             `json:"account_id"`
 	LeadID              string             `json:"lead_id"`
@@ -254,6 +285,8 @@ type DistributionObservedEntry struct {
 	CancellationReason pgtype.Text        `json:"cancellation_reason"`
 	CreatedAt          time.Time          `json:"created_at"`
 	FinishedAt         pgtype.Timestamptz `json:"finished_at"`
+	SourceReceivedAt   pgtype.Timestamptz `json:"source_received_at"`
+	SourceOccurredAt   pgtype.Timestamptz `json:"source_occurred_at"`
 }
 
 type DistributionOperationMirror struct {
@@ -292,6 +325,63 @@ type DistributionOperationMirrorVersion struct {
 	CreatedAt     time.Time `json:"created_at"`
 }
 
+type DistributionQueue struct {
+	ID                uuid.UUID          `json:"id"`
+	CompanyID         uuid.UUID          `json:"company_id"`
+	EntryID           uuid.UUID          `json:"entry_id"`
+	RuleID            uuid.UUID          `json:"rule_id"`
+	GroupID           uuid.UUID          `json:"group_id"`
+	AccountID         string             `json:"account_id"`
+	LeadID            string             `json:"lead_id"`
+	State             string             `json:"state"`
+	Reason            string             `json:"reason"`
+	NextAttemptAt     time.Time          `json:"next_attempt_at"`
+	LeaseToken        uuid.NullUUID      `json:"lease_token"`
+	LeaseUntil        pgtype.Timestamptz `json:"lease_until"`
+	OperationID       uuid.NullUUID      `json:"operation_id"`
+	DecisionID        uuid.NullUUID      `json:"decision_id"`
+	Command           []byte             `json:"command"`
+	IdempotencyKey    uuid.NullUUID      `json:"idempotency_key"`
+	CancelKey         uuid.NullUUID      `json:"cancel_key"`
+	ReconcileKey      uuid.NullUUID      `json:"reconcile_key"`
+	CancelRequested   bool               `json:"cancel_requested"`
+	Settled           bool               `json:"settled"`
+	AvailabilityHash  []byte             `json:"availability_hash"`
+	WakeRevision      int64              `json:"wake_revision"`
+	ClaimRevision     int64              `json:"claim_revision"`
+	SelectionOrder    []uuid.UUID        `json:"selection_order"`
+	PlannedEmployeeID uuid.NullUUID      `json:"planned_employee_id"`
+	PlannedAt         pgtype.Timestamptz `json:"planned_at"`
+	CreatedAt         time.Time          `json:"created_at"`
+	UpdatedAt         time.Time          `json:"updated_at"`
+}
+
+type DistributionQueueHistory struct {
+	ID        int64     `json:"id"`
+	QueueID   uuid.UUID `json:"queue_id"`
+	State     string    `json:"state"`
+	Reason    string    `json:"reason"`
+	Payload   []byte    `json:"payload"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+type DistributionRule struct {
+	ID                uuid.UUID          `json:"id"`
+	CompanyID         uuid.UUID          `json:"company_id"`
+	BindingID         uuid.UUID          `json:"binding_id"`
+	BindingRevision   int64              `json:"binding_revision"`
+	AccountID         string             `json:"account_id"`
+	PipelineID        string             `json:"pipeline_id"`
+	StatusID          string             `json:"status_id"`
+	GroupID           uuid.UUID          `json:"group_id"`
+	Active            bool               `json:"active"`
+	KeepCurrent       bool               `json:"keep_current"`
+	FirstActivationAt pgtype.Timestamptz `json:"first_activation_at"`
+	Revision          int64              `json:"revision"`
+	CreatedAt         time.Time          `json:"created_at"`
+	UpdatedAt         time.Time          `json:"updated_at"`
+}
+
 type DistributionServiceGrant struct {
 	KeyID          string    `json:"key_id"`
 	CompanyID      uuid.UUID `json:"company_id"`
@@ -304,6 +394,12 @@ type DistributionServiceNonce struct {
 	KeyID     string    `json:"key_id"`
 	Nonce     uuid.UUID `json:"nonce"`
 	ExpiresAt time.Time `json:"expires_at"`
+}
+
+type DistributionSetting struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	Timezone  string    `json:"timezone"`
+	Revision  int64     `json:"revision"`
 }
 
 type EmployeeAccessAudit struct {

@@ -1,0 +1,276 @@
+package application
+
+import (
+	"bytes"
+	"context"
+	"encoding/json"
+	"errors"
+
+	"github.com/google/uuid"
+
+	"io"
+	"time"
+
+	"github.com/sk1fy/team-os-backend/services/company/internal/storage/db"
+)
+
+type distributionRuleDTO struct {
+	ID                     uuid.UUID `json:"id"`
+	BindingID              uuid.UUID `json:"bindingId"`
+	BindingRevision        int64     `json:"bindingRevision"`
+	AccountID              string    `json:"accountId"`
+	PipelineID             string    `json:"pipelineId"`
+	StatusID               string    `json:"statusId"`
+	GroupID                uuid.UUID `json:"groupId"`
+	Active                 bool      `json:"active"`
+	KeepCurrentResponsible bool      `json:"keepCurrentResponsible"`
+	Revision               int64     `json:"revision"`
+	CreatedAt              time.Time `json:"createdAt"`
+	UpdatedAt              time.Time `json:"updatedAt"`
+}
+
+func ruleDTO(r db.DistributionRule) distributionRuleDTO {
+	return distributionRuleDTO{r.ID, r.BindingID, r.BindingRevision, r.AccountID, r.PipelineID, r.StatusID, r.GroupID, r.Active, r.KeepCurrent, r.Revision, r.CreatedAt, r.UpdatedAt}
+}
+func (s *Service) DistributionRuntimeRead(ctx context.Context, actor Actor, kind string, id uuid.UUID, limit, offset int32) (json.RawMessage, error) {
+	if _, e := s.distributionActor(ctx, actor, false); e != nil {
+		return nil, e
+	}
+	if limit == 0 {
+		limit = 50
+	}
+	if limit < 1 || limit > 100 || offset < 0 || offset > 100000 {
+		return nil, validation("Некорректная страница")
+	}
+	q := db.New(s.pool)
+	var out any
+	switch kind {
+	case "settings":
+		v, e := q.GetDistributionSettings(ctx, actor.CompanyID)
+		if isNoRows(e) {
+			return nil, notFound("Часовой пояс")
+		}
+		if e != nil {
+			return nil, e
+		}
+		out = map[string]any{"timezone": v.Timezone, "revision": v.Revision}
+	case "rules":
+		rows, e := q.ListDistributionRules(ctx, db.ListDistributionRulesParams{CompanyID: actor.CompanyID, Limit: limit, Offset: offset})
+		if e != nil {
+			return nil, e
+		}
+		items := make([]distributionRuleDTO, 0, len(rows))
+		for _, r := range rows {
+			items = append(items, ruleDTO(r))
+		}
+		out = map[string]any{"items": items}
+	case "availability":
+		r, e := q.GetDistributionRule(ctx, db.GetDistributionRuleParams{CompanyID: actor.CompanyID, ID: id})
+		if isNoRows(e) {
+			return nil, notFound("Правило")
+		}
+		if e != nil {
+			return nil, e
+		}
+		items, e := s.GetDistributionAvailability(ctx, actor, r.GroupID, id)
+		if e != nil {
+			return nil, e
+		}
+		out = map[string]any{"ruleId": id, "groupId": r.GroupID, "checkedAt": s.now(), "employees": items}
+	case "queue":
+		permissionCtx, cancelPermission := context.WithTimeout(ctx, 3*time.Second)
+		defer cancelPermission()
+		rows, e := q.ListDistributionQueue(ctx, db.ListDistributionQueueParams{CompanyID: actor.CompanyID, Limit: limit, Offset: offset})
+		if e != nil {
+			return nil, e
+		}
+		items := make([]any, 0, len(rows))
+		for _, r := range rows {
+			var op, employee *uuid.UUID
+			var planned *time.Time
+			if r.OperationID.Valid {
+				v := r.OperationID.UUID
+				op = &v
+			}
+			if r.PlannedEmployeeID.Valid {
+				v := r.PlannedEmployeeID.UUID
+				employee = &v
+			}
+			if r.PlannedAt.Valid {
+				v := r.PlannedAt.Time
+				planned = &v
+			}
+			items = append(items, map[string]any{"id": r.ID, "entryId": r.EntryID, "ruleId": r.RuleID, "groupId": r.GroupID, "accountId": r.AccountID, "leadId": s.visibleDistributionLead(permissionCtx, actor, r), "state": r.State, "reason": r.Reason, "nextAttemptAt": r.NextAttemptAt, "operationId": op, "plannedEmployeeId": employee, "plannedAt": planned, "createdAt": r.CreatedAt})
+		}
+		out = map[string]any{"items": items, "limit": limit, "offset": offset}
+	case "history":
+		row, e := q.LockDistributionQueue(ctx, id)
+		if isNoRows(e) || e == nil && row.CompanyID != actor.CompanyID {
+			return nil, notFound("Сделка очереди")
+		}
+		if e != nil {
+			return nil, e
+		}
+		rows, e := q.ListDistributionQueueHistory(ctx, db.ListDistributionQueueHistoryParams{CompanyID: actor.CompanyID, ID: id, Limit: limit, Offset: offset})
+		if e != nil {
+			return nil, e
+		}
+		items := make([]any, 0, len(rows))
+		for _, r := range rows {
+			items = append(items, map[string]any{"id": r.ID, "state": r.State, "reason": r.Reason, "createdAt": r.CreatedAt, "payload": map[string]any{}})
+		}
+		out = map[string]any{"items": items, "limit": limit, "offset": offset}
+	default:
+		return nil, validation("Неизвестная операция")
+	}
+	return json.Marshal(out)
+}
+func decodeRuntime(raw json.RawMessage, out any) error {
+	d := json.NewDecoder(bytes.NewReader(raw))
+	d.DisallowUnknownFields()
+	if d.Decode(out) != nil {
+		return validation("Некорректные параметры")
+	}
+	var extra any
+	if !errors.Is(d.Decode(&extra), io.EOF) {
+		return validation("Лишние параметры")
+	}
+	return nil
+}
+func (s *Service) DistributionRuntimeWrite(ctx context.Context, actor Actor, kind string, id uuid.UUID, raw json.RawMessage) (json.RawMessage, error) {
+	if _, e := s.distributionActor(ctx, actor, true); e != nil {
+		return nil, e
+	}
+	switch kind {
+	case "settings":
+		var in struct {
+			Timezone string `json:"timezone"`
+		}
+		if e := decodeRuntime(raw, &in); e != nil {
+			return nil, e
+		}
+		v, e := s.SaveDistributionTimezone(ctx, actor, in.Timezone)
+		if e != nil {
+			return nil, e
+		}
+		return json.Marshal(map[string]any{"timezone": v.Timezone, "revision": v.Revision})
+	case "rules":
+		var in struct {
+			BindingID       uuid.UUID `json:"bindingId"`
+			BindingRevision int64     `json:"bindingRevision"`
+			GroupID         uuid.UUID `json:"groupId"`
+			PipelineID      string    `json:"pipelineId"`
+			StatusID        string    `json:"statusId"`
+			Active          *bool     `json:"active"`
+			Keep            *bool     `json:"keepCurrentResponsible"`
+		}
+		if e := decodeRuntime(raw, &in); e != nil {
+			return nil, e
+		}
+		b, e := db.New(s.pool).GetDistributionBinding(ctx, db.GetDistributionBindingParams{CompanyID: actor.CompanyID, ID: in.BindingID})
+		if isNoRows(e) {
+			return nil, notFound("Связь")
+		}
+		if e != nil {
+			return nil, e
+		}
+		active := false
+		keep := true
+		if in.Active != nil {
+			active = *in.Active
+		}
+		if in.Keep != nil {
+			keep = *in.Keep
+		}
+		r, e := s.CreateDistributionRuntimeRule(ctx, actor, db.CreateDistributionRuleParams{CompanyID: actor.CompanyID, BindingID: in.BindingID, BindingRevision: in.BindingRevision, AccountID: b.AccountID, GroupID: in.GroupID, PipelineID: in.PipelineID, StatusID: in.StatusID, Active: active, KeepCurrent: keep})
+		if e != nil {
+			return nil, e
+		}
+		return json.Marshal(ruleDTO(r))
+	case "rule":
+		var in struct {
+			ExpectedRevision int64 `json:"expectedRevision"`
+			Active           *bool `json:"active"`
+			Keep             *bool `json:"keepCurrentResponsible"`
+		}
+		if e := decodeRuntime(raw, &in); e != nil {
+			return nil, e
+		}
+		tx, e := s.pool.Begin(ctx)
+		if e != nil {
+			return nil, e
+		}
+		defer func() { _ = tx.Rollback(ctx) }()
+		q := db.New(tx)
+		if e = q.EnsureDistributionAvailabilityVersion(ctx, actor.CompanyID); e != nil {
+			return nil, e
+		}
+		if _, e = q.LockDistributionAvailabilityVersion(ctx, actor.CompanyID); e != nil {
+			return nil, e
+		}
+		old, e := q.GetDistributionRule(ctx, db.GetDistributionRuleParams{CompanyID: actor.CompanyID, ID: id})
+		if isNoRows(e) {
+			return nil, notFound("Правило")
+		}
+		if e != nil {
+			return nil, e
+		}
+		if in.Active == nil || in.Keep == nil || !safeRevision(in.ExpectedRevision) {
+			return nil, validation("Укажите текущую версию и настройки правила")
+		}
+		if *in.Active && !old.Active {
+			busy, e := q.DistributionPointHasUnfinishedOperation(ctx, db.DistributionPointHasUnfinishedOperationParams{AccountID: old.AccountID, PipelineID: old.PipelineID, StatusID: old.StatusID})
+			if e != nil {
+				return nil, e
+			}
+			if busy {
+				return nil, conflict("Сначала завершите сверку операций этапа")
+			}
+		}
+		if *in.Active {
+			b, e := q.GetDistributionBinding(ctx, db.GetDistributionBindingParams{CompanyID: actor.CompanyID, ID: old.BindingID})
+			if e != nil {
+				return nil, e
+			}
+			if b.State != "active" || b.Revision != old.BindingRevision {
+				return nil, validation("Связь недоступна")
+			}
+		}
+		r, e := q.UpdateDistributionRule(ctx, db.UpdateDistributionRuleParams{CompanyID: actor.CompanyID, ID: id, Active: *in.Active, KeepCurrent: *in.Keep, Revision: in.ExpectedRevision})
+		if isNoRows(e) {
+			return nil, conflict("Правило изменилось: обновите данные")
+		}
+		if isUniqueViolation(e) {
+			return nil, conflict("Для этого этапа уже есть активное правило")
+		}
+		if e != nil {
+			return nil, e
+		}
+		if e = tx.Commit(ctx); e != nil {
+			return nil, e
+		}
+		return json.Marshal(ruleDTO(r))
+	default:
+		return nil, validation("Неизвестная операция")
+	}
+}
+
+func (s *Service) visibleDistributionLead(ctx context.Context, actor Actor, row db.DistributionQueue) *string {
+	if s.distributionCore == nil {
+		return nil
+	}
+	r, e := db.New(s.pool).GetDistributionRule(ctx, db.GetDistributionRuleParams{CompanyID: actor.CompanyID, ID: row.RuleID})
+	if e != nil {
+		return nil
+	}
+	b, e := db.New(s.pool).GetDistributionBinding(ctx, db.GetDistributionBindingParams{CompanyID: actor.CompanyID, ID: r.BindingID})
+	if e != nil || b.Revision != r.BindingRevision || b.AccountID != row.AccountID {
+		return nil
+	}
+	permission, e := s.DistributionLeadPermission(ctx, actor, r.BindingID, row.LeadID)
+	if e != nil || !permission.CanViewLead {
+		return nil
+	}
+	lead := row.LeadID
+	return &lead
+}

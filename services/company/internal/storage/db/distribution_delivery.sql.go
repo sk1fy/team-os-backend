@@ -176,22 +176,24 @@ func (q *Queries) CreateDistributionMirrorVersion(ctx context.Context, arg Creat
 }
 
 const createDistributionObservedEntry = `-- name: CreateDistributionObservedEntry :exec
-INSERT INTO distribution_observed_entries(id,company_id,account_id,lead_id,binding_id,binding_revision,sequence,pipeline_id,status_id,entry_event_id,evidence,state) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
+INSERT INTO distribution_observed_entries(id,company_id,account_id,lead_id,binding_id,binding_revision,sequence,pipeline_id,status_id,entry_event_id,evidence,state,source_received_at,source_occurred_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
 `
 
 type CreateDistributionObservedEntryParams struct {
-	ID              uuid.UUID `json:"id"`
-	CompanyID       uuid.UUID `json:"company_id"`
-	AccountID       string    `json:"account_id"`
-	LeadID          string    `json:"lead_id"`
-	BindingID       uuid.UUID `json:"binding_id"`
-	BindingRevision int64     `json:"binding_revision"`
-	Sequence        int64     `json:"sequence"`
-	PipelineID      string    `json:"pipeline_id"`
-	StatusID        string    `json:"status_id"`
-	EntryEventID    uuid.UUID `json:"entry_event_id"`
-	Evidence        string    `json:"evidence"`
-	State           string    `json:"state"`
+	ID               uuid.UUID          `json:"id"`
+	CompanyID        uuid.UUID          `json:"company_id"`
+	AccountID        string             `json:"account_id"`
+	LeadID           string             `json:"lead_id"`
+	BindingID        uuid.UUID          `json:"binding_id"`
+	BindingRevision  int64              `json:"binding_revision"`
+	Sequence         int64              `json:"sequence"`
+	PipelineID       string             `json:"pipeline_id"`
+	StatusID         string             `json:"status_id"`
+	EntryEventID     uuid.UUID          `json:"entry_event_id"`
+	Evidence         string             `json:"evidence"`
+	State            string             `json:"state"`
+	SourceReceivedAt pgtype.Timestamptz `json:"source_received_at"`
+	SourceOccurredAt pgtype.Timestamptz `json:"source_occurred_at"`
 }
 
 func (q *Queries) CreateDistributionObservedEntry(ctx context.Context, arg CreateDistributionObservedEntryParams) error {
@@ -208,6 +210,8 @@ func (q *Queries) CreateDistributionObservedEntry(ctx context.Context, arg Creat
 		arg.EntryEventID,
 		arg.Evidence,
 		arg.State,
+		arg.SourceReceivedAt,
+		arg.SourceOccurredAt,
 	)
 	return err
 }

@@ -1,6 +1,6 @@
 # Подключение распределения через Core — РС-03
 
-Реализован серверный слой подключений, идентичностей, справочников и прав. Назначение ответственных, бизнес-очередь и графики будут реализованы следующими этапами. Существующие distribution CRUD/simulate и legacy provider остаются совместимыми.
+Реализован серверный слой подключений, идентичностей, справочников и прав; следующие разделы фиксируют дополнения РС-04–РС-06. Существующие distribution CRUD/simulate и legacy provider остаются совместимыми.
 
 ## Владельцы и подтверждение
 
@@ -44,7 +44,7 @@ Core виджет проверяет amoCRM JWT и актуальные CRM пр
 
 Живые OAuth/reauth/диагностика на amoCRM тестовом аккаунте требуют предоставленного тестового account/integration/installation; локальные проверки не считаются этой приёмкой.
 
-## РС-04: граница проверки business decision
+## РС-04: историческая граница проверки business decision (до РС-06)
 
 Private `POST /internal/v1/distribution/validate-decision` использует отдельную capability `decision-validation` (migration 000023). Grant `widget-access` её не разрешает. Scope, HMAC, durable nonce, active exact binding и verified current target mapping проверяются сервером. Контракт — [distribution-internal.yaml](../../contracts/openapi/distribution-internal.yaml).
 
@@ -91,3 +91,127 @@ Lead head — наблюдаемое актуальное состояние acc
 Dedup результата использует operationId+resultVersion и canonical Operation hash: pull и push с другими envelope timestamps/messageId совпадают по семантике. Hash полного envelope отдельно защищает messageId. Frozen результаты РС-04 без leadId допускаются как legacy pending; leadId добавляется в semantic Operation исключительно из зарегистрированного immutable Core mirror. Исторический envelope не переписывается, snapshot не является источником полномочий на leadId. Меньшая версия сохраняет историю и не регрессирует latest mirror. Изменение содержания той же версии — conflict. Terminal/releasable требует согласованных effect/evidence/outcome; наблюдение само по себе не доказывает авторство PATCH. Mirror никогда не освобождает current entry, claim или cursor: правила соответствующего эффекта принадлежат РС-06. validate-decision продолжает отвечать decision_not_ready.
 
 Проверки РС-05: реальные PostgreSQL migrations 1–24, signed capability/nonce/tenant receiver, commit-before-ACK и lost ACK, restart, semantic duplicate/conflict, выход/повторный вход/observed_missing, перестановка live GET, pending result до регистрации, pull/push version dedup и исторический GET после revoke. Live amoCRM отсутствует; production сделки не изменялись.
+
+## РС-06: authoritative очередь, графики и решения
+
+Migration 000025 добавляет company settings, реальные правила, сохраняемую очередь,
+отдельные group/account+lead claims, подтверждённый cursor, immutable history и
+сохраняемые control requests. Legacy `distribution_events` и simulate не являются
+источниками cursor и не создают реальные CRM-команды.
+
+Публичный канонический REST (`contracts/openapi/teamos.yaml`) содержит settings,
+rules, availability, queue и history. Gateway/Company protobuf и REST адаптеры
+генерируются стандартным `make gen`. Настройки и правила изменяют текущие
+owner/admin, чтение требует текущего distribution section. Company берётся из
+проверенной сессии. CRM leadId в очереди nullable: он появляется только после
+проверки текущего verified employee mapping и живого Core resource permission;
+owner TeamOS не получает CRM права автоматически. Общий бюджет проверки страницы
+— три секунды; недоступные/непроверенные элементы получают `leadId:null`. AccountId
+— существующая метаинформация подключения. Публичная history отдаёт безопасные
+state/reason/time и `payload:{}`; frozen commands, исходные/подтверждённые CRM
+snapshot и приватные control bodies доступны серверу, не раскрываются этим API.
+
+IANA timezone задаётся явно; `Local` и отсутствующий пояс не превращаются в UTC.
+Чистая schedule availability проверяет текущую и предыдущую локальные даты,
+`[start,end)`, ночные хвосты, рабочие overrides и nonwork exceptions, которые
+обрывают вчерашний хвост в начале своей даты. Шаблонный выходной хвост не обрывает.
+Нулевая смена, malformed legacy data и gap/fold DST endpoints исключают интервал.
+Недельные/циклические графики считаются по гражданским календарным датам.
+Ближайший старт ищется не далее 35 локальных дней; отсутствие результата имеет
+явную причину, а не обещание бесконечного ожидания. Активность TeamOS, внешнее
+удаление, disabled membership, exact account mapping/ACK и полный свежий Core
+справочник CRM пользователей дают отдельные причины недоступности через API.
+
+Одно активное правило account/pipeline/status защищено глобальным unique index.
+Первая активация сохраняет watermark: старые наблюдаемые сделки автоматически не
+импортируются. Пауза и редактирование watermark не сбрасывают; новые подходящие
+входы существовавшего правила сохраняются и при паузе. При нескольких исторических
+правилах новый вход детерминированно выбирает активное, затем последнее ранее
+активированное paused правило. Уже сохранённая очередь владельца не меняет.
+Активация/перенос точки блокируется, пока её операции не получили выясненный исход.
+Только доказанные `created_in_stage`/`observed_transition` entries допускаются в
+очередь; snapshot reconciliation и ambiguous reentry не выдумывают новый вход.
+
+Серверный цикл каждые пять секунд обрабатывает bounded inbox, затем не более 20
+queue steps и зарегистрированные mirrors. Admission ограничен 200 entries;
+пересчёт dirty availability — 20 компаний/200 queue rows за проход, с persisted
+revision, поэтому wake не теряется между порциями. `next_attempt_at`, причины,
+leases и история хранятся в PostgreSQL. Изменение графика/исключений, сотрудника,
+группы, сопоставления, правила, timezone или binding/company status записывает
+revision до commit. Ожидание ночной смены переживает перезапуск и не зависит от
+открытого браузера. При отсутствии пригодного сотрудника/известной ближайшей смены
+состояние требует настройки; bounded retry сохраняет элемент для пересчёта.
+
+Порядок группы устойчив по createdAt+UUID: leased внешний GET старшего элемента
+не позволяет младшему его обогнать. Группы независимы. Group claim и глобальный
+account+lead claim сохраняются до доказанного результата, включая новый вход и
+повторное подключение. Сеть выполняется без SQL locks; любой записывающий поздний
+worker проверяет свой актуальный lease. Frozen assignment/operation/key и исходное
+состояние фиксируются до POST. Потерянный ACK приводит к GET и повтору той же
+операции/тела/key; GET404 не разрешает создать другое назначение.
+
+Private validate-decision теперь проверяет реальный registry. Совпадают точные
+operation/decision/episode/rule/group/scope/revisions/recipient/kind/expiry; затем
+перечитываются authoritative active company/binding/mapping, membership/schedule,
+rule, head/current entry и claims. Grant привязан к Core worker fence и действует
+не более пяти секунд, до конца смены и expiry решения. Внешняя race после grant
+не обещает CRM CAS. Без registry endpoint продолжает отвечать decision_not_ready.
+РС-04 historical deny seam заменён этой реальной проверкой, без admin-only bypass.
+
+Keep доступного владельца включён по умолчанию, аудируется и cursor не расходует.
+При keep=false выбранный тот же владелец подтверждается `no_change/already_target`
+и расходует один turn без PATCH. Cursor меняется лишь в той же транзакции с
+подтверждённым результатом и settlement once; selection order сохраняет следующую
+границу даже после удаления последнего выбранного участника. Неуспешный turn не
+двигает cursor. Постоянные pre-send errors закрывают ошибочный элемент и освобождают
+group, позволяя следующему; только явные source/decision/recipient/policy причины
+и отмена без попытки разрешают новый расчёт того же entry.
+
+Первый валидный Core GET регистрирует mirror из собственного frozen command даже
+для unfinished операции; push/pull используют прежний version dedup. Business
+settlement применяется только для совпавшей текущей операции и валидного terminal
+evidence, атомарно с результатом. Historical или дублирующий результат не
+освобождает новый claim. Для sent/unknown отмена сохраняется и сверяется до
+выясненного исхода. Control request body/key/expectedResultVersion записываются
+до HTTP; UUID ключа определяется persisted base+action+version, повтор читает
+сохранённое тело. Старый delayed control не проходит Core version CAS. Unknown
+без надёжного ACK удерживает guards: GET target, таймер и ручная пауза их не
+освобождают. Durable ACK с последующим подтверждением может завершиться через
+reconcile без повторного PATCH.
+
+Локальные проверки включают pure calendar/table cases, PostgreSQL lease/FIFO/wake/
+immutable history/point ownership/privacy, night wait → restart → real registry →
+confirmed settlement, полную Company application suite и подписанный HTTP.
+Отдельная парная acceptance запускает реальные Core HTTP/Store/worker и TeamOS
+PG/registry/подписанный callback с контролируемым CRM transport; это не live amoCRM.
+Живой OAuth/E2E РС-03.1.2 остаётся незавершённым. UI, виджет и production включение
+относятся к следующим этапам; никаких production CRM изменений эти проверки не
+выполняют.
+
+При rolling upgrade старый РС-05 writer может сохранить entry без новых
+sourceReceived/sourceOccurred timestamps. Такой entry не допускается к
+автоматическому назначению даже если локально создан после активации правила:
+оба доверенных времени должны быть известны и не раньше initial watermark.
+Новый writer сохраняет provenance из подписанного сообщения; неизвестное время
+оставляет `source_time_unknown / needs_configuration`. Известное старое событие,
+доставленное/обработанное позднее, также не обходит cutoff. Timestamp применяется
+лишь как консервативная граница первой активации, а не идентичность эпизода.
+
+Проверки текущего РС-06: `make gen`, `make test`, `make check-contract` (включая
+199 вызовов фронтенда) пройдены; Company lint — 0 issues. Полная PG application
+suite — 70.298 s, signed transport — 8.616 s до последнего cutoff delta. Текущая
+профильная PG suite с race detector после строгого known-source cutoff и
+immutable control requests — 10.390 s / 5.083 s; отдельный current delta profile
+night/lease/200-row wake/история/права/cutoff — 5.521 s. Проверка двух соединений
+покрывает schedule writer, ожидающий revision, и чтение committed schedule;
+порционный wake для 205 новых entries сохраняется между проходами. Night profile
+также проверяет точный повтор control body/key после reload, отдельный key для
+следующей resultVersion и запрет изменения frozen body, permanent pre-send
+failure не блокирует следующую готовую сделку.
+
+Финальный парный Core↔TeamOS профиль с действительными HTTP/HMAC/nonce/grants,
+двумя PG базами и controlled CRM прошёл после strict cutoff: Team 22.84 s, Core
+44.79 s. Девять сценариев охватывают assignment/restart, keep/no cursor,
+already_target/один turn без PATCH, concurrency, настоящий five-second grant
+expiry перед dispatch и новое решение, CRM inactivity, ручную смену владельца,
+durable ACK+reconcile без второго PATCH и unknown с удержанием claims.

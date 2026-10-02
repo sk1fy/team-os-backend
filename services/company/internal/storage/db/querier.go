@@ -18,6 +18,8 @@ type Querier interface {
 	ActivateAmoWidgetIdentity(ctx context.Context, arg ActivateAmoWidgetIdentityParams) (UserExternalIdentity, error)
 	ActivateDistributionBinding(ctx context.Context, arg ActivateDistributionBindingParams) (DistributionBinding, error)
 	ActivateInvitedUser(ctx context.Context, arg ActivateInvitedUserParams) (User, error)
+	AddDistributionQueueHistory(ctx context.Context, arg AddDistributionQueueHistoryParams) error
+	AdmitDistributionEntries(ctx context.Context) (int64, error)
 	AmoAccountExists(ctx context.Context, arg AmoAccountExistsParams) (bool, error)
 	AmoAdminSelfLoginEligible(ctx context.Context, arg AmoAdminSelfLoginEligibleParams) (bool, error)
 	AmoWidgetUserHasPassword(ctx context.Context, arg AmoWidgetUserHasPasswordParams) (bool, error)
@@ -27,6 +29,7 @@ type Querier interface {
 	CancelDistributionObservedEntry(ctx context.Context, arg CancelDistributionObservedEntryParams) error
 	ClaimDistributionDelivery(ctx context.Context, leaseToken uuid.NullUUID) (DistributionDeliveryInbox, error)
 	ClaimDistributionNonce(ctx context.Context, arg ClaimDistributionNonceParams) (int64, error)
+	ClaimDistributionQueue(ctx context.Context, leaseToken uuid.NullUUID) (DistributionQueue, error)
 	CleanupDistributionNonces(ctx context.Context) error
 	ClearAmoUserDepartment(ctx context.Context, arg ClearAmoUserDepartmentParams) (int64, error)
 	ClearAmoUserTombstone(ctx context.Context, arg ClearAmoUserTombstoneParams) (User, error)
@@ -34,6 +37,7 @@ type Querier interface {
 	ConsumeAccessLinkEntryContext(ctx context.Context, arg ConsumeAccessLinkEntryContextParams) (pgtype.Text, error)
 	ConsumeAmoWidgetContinuation(ctx context.Context, arg ConsumeAmoWidgetContinuationParams) (SsoToken, error)
 	ConsumeCompanyRegistrationToken(ctx context.Context, arg ConsumeCompanyRegistrationTokenParams) (CompanyRegistrationToken, error)
+	ConsumeDistributionAvailabilityWake(ctx context.Context) (int64, error)
 	ConsumeRegistrationLoginReservation(ctx context.Context, arg ConsumeRegistrationLoginReservationParams) (RegistrationLoginReservation, error)
 	CountDepartmentChildren(ctx context.Context, arg CountDepartmentChildrenParams) (int64, error)
 	CountDepartmentPositions(ctx context.Context, arg CountDepartmentPositionsParams) (int64, error)
@@ -46,12 +50,14 @@ type Querier interface {
 	CreateCompanyRegistrationToken(ctx context.Context, arg CreateCompanyRegistrationTokenParams) (CompanyRegistrationToken, error)
 	CreateDepartment(ctx context.Context, arg CreateDepartmentParams) (Department, error)
 	CreateDistributionBinding(ctx context.Context, arg CreateDistributionBindingParams) (DistributionBinding, error)
+	CreateDistributionControlRequest(ctx context.Context, arg CreateDistributionControlRequestParams) error
 	CreateDistributionDelivery(ctx context.Context, arg CreateDistributionDeliveryParams) (DistributionDeliveryInbox, error)
 	CreateDistributionEvent(ctx context.Context, arg CreateDistributionEventParams) (DistributionEvent, error)
 	CreateDistributionEventReceipt(ctx context.Context, arg CreateDistributionEventReceiptParams) error
 	CreateDistributionGroup(ctx context.Context, arg CreateDistributionGroupParams) (DistributionGroup, error)
 	CreateDistributionMirrorVersion(ctx context.Context, arg CreateDistributionMirrorVersionParams) error
 	CreateDistributionObservedEntry(ctx context.Context, arg CreateDistributionObservedEntryParams) error
+	CreateDistributionRule(ctx context.Context, arg CreateDistributionRuleParams) (DistributionRule, error)
 	CreateEmployeeAccessAudit(ctx context.Context, arg CreateEmployeeAccessAuditParams) error
 	CreateInvite(ctx context.Context, arg CreateInviteParams) (Invite, error)
 	CreateOutboxEvent(ctx context.Context, arg CreateOutboxEventParams) (Outbox, error)
@@ -76,7 +82,12 @@ type Querier interface {
 	DemotePreviousAmoWidgetOwner(ctx context.Context, arg DemotePreviousAmoWidgetOwnerParams) (int64, error)
 	DisableUserInDistributionGroups(ctx context.Context, arg DisableUserInDistributionGroupsParams) error
 	DistributionDeliveryDiagnostics(ctx context.Context) (DistributionDeliveryDiagnosticsRow, error)
+	DistributionMemberExceptions(ctx context.Context, arg DistributionMemberExceptionsParams) ([]ShiftException, error)
+	DistributionMemberInputs(ctx context.Context, arg DistributionMemberInputsParams) ([]DistributionMemberInputsRow, error)
+	DistributionPointHasUnfinishedOperation(ctx context.Context, arg DistributionPointHasUnfinishedOperationParams) (bool, error)
 	DueDistributionOperationMirrors(ctx context.Context, limit int32) ([]DistributionOperationMirror, error)
+	EnsureDistributionAvailabilityVersion(ctx context.Context, companyID uuid.UUID) error
+	EnsureDistributionGroupClaim(ctx context.Context, arg EnsureDistributionGroupClaimParams) error
 	EnsureDistributionLeadHead(ctx context.Context, arg EnsureDistributionLeadHeadParams) error
 	FindAmoWidgetUserForUpdate(ctx context.Context, arg FindAmoWidgetUserForUpdateParams) (User, error)
 	FindUserForAmoSync(ctx context.Context, arg FindUserForAmoSyncParams) (User, error)
@@ -94,15 +105,21 @@ type Querier interface {
 	GetDepartment(ctx context.Context, arg GetDepartmentParams) (Department, error)
 	GetDistributionBinding(ctx context.Context, arg GetDistributionBindingParams) (DistributionBinding, error)
 	GetDistributionBindingVersion(ctx context.Context, arg GetDistributionBindingVersionParams) (DistributionBindingVersion, error)
+	GetDistributionControlRequest(ctx context.Context, arg GetDistributionControlRequestParams) (DistributionControlRequest, error)
 	GetDistributionDelivery(ctx context.Context, arg GetDistributionDeliveryParams) (DistributionDeliveryInbox, error)
 	GetDistributionEventReceipt(ctx context.Context, arg GetDistributionEventReceiptParams) (DistributionEventReceipt, error)
 	GetDistributionGroup(ctx context.Context, arg GetDistributionGroupParams) (DistributionGroup, error)
 	GetDistributionGroupForUpdate(ctx context.Context, arg GetDistributionGroupForUpdateParams) (DistributionGroup, error)
+	GetDistributionLeadClaim(ctx context.Context, arg GetDistributionLeadClaimParams) (DistributionLeadClaim, error)
 	GetDistributionMappingByCRM(ctx context.Context, arg GetDistributionMappingByCRMParams) (GetDistributionMappingByCRMRow, error)
 	GetDistributionMappingSnapshot(ctx context.Context, arg GetDistributionMappingSnapshotParams) ([]byte, error)
 	GetDistributionMirrorVersion(ctx context.Context, arg GetDistributionMirrorVersionParams) (DistributionOperationMirrorVersion, error)
+	GetDistributionObservedEntry(ctx context.Context, id uuid.UUID) (DistributionObservedEntry, error)
 	GetDistributionOperationMirror(ctx context.Context, operationID uuid.UUID) (DistributionOperationMirror, error)
+	GetDistributionQueueByOperation(ctx context.Context, operationID uuid.NullUUID) (DistributionQueue, error)
+	GetDistributionRule(ctx context.Context, arg GetDistributionRuleParams) (DistributionRule, error)
 	GetDistributionServiceGrant(ctx context.Context, arg GetDistributionServiceGrantParams) (bool, error)
+	GetDistributionSettings(ctx context.Context, companyID uuid.UUID) (DistributionSetting, error)
 	GetInvite(ctx context.Context, arg GetInviteParams) (Invite, error)
 	GetInviteByToken(ctx context.Context, token string) (Invite, error)
 	GetInviteByTokenForUpdate(ctx context.Context, token string) (Invite, error)
@@ -134,6 +151,9 @@ type Querier interface {
 	ListDistributionGroupsContainingUserForUpdate(ctx context.Context, arg ListDistributionGroupsContainingUserForUpdateParams) ([]DistributionGroup, error)
 	ListDistributionIdentityCandidates(ctx context.Context, arg ListDistributionIdentityCandidatesParams) ([]ListDistributionIdentityCandidatesRow, error)
 	ListDistributionMappings(ctx context.Context, arg ListDistributionMappingsParams) ([]DistributionEmployeeMapping, error)
+	ListDistributionQueue(ctx context.Context, arg ListDistributionQueueParams) ([]DistributionQueue, error)
+	ListDistributionQueueHistory(ctx context.Context, arg ListDistributionQueueHistoryParams) ([]DistributionQueueHistory, error)
+	ListDistributionRules(ctx context.Context, arg ListDistributionRulesParams) ([]DistributionRule, error)
 	ListEmployeeSectionAccess(ctx context.Context, arg ListEmployeeSectionAccessParams) ([]string, error)
 	ListInvites(ctx context.Context, companyID uuid.UUID) ([]Invite, error)
 	ListLegacyAmoWidgetCompaniesForUpdate(ctx context.Context, externalAccountID pgtype.Text) ([]Company, error)
@@ -143,9 +163,13 @@ type Querier interface {
 	ListUsers(ctx context.Context, companyID uuid.UUID) ([]ListUsersRow, error)
 	LockAmoAccount(ctx context.Context, arg LockAmoAccountParams) error
 	LockAmoUserSync(ctx context.Context, companyID uuid.UUID) error
+	LockDistributionAvailabilityVersion(ctx context.Context, companyID uuid.UUID) (DistributionAvailabilityVersion, error)
 	LockDistributionCompany(ctx context.Context, id uuid.UUID) (uuid.UUID, error)
 	LockDistributionDeliveryLease(ctx context.Context, arg LockDistributionDeliveryLeaseParams) (DistributionDeliveryInbox, error)
+	LockDistributionGroupClaim(ctx context.Context, arg LockDistributionGroupClaimParams) (DistributionGroupClaim, error)
 	LockDistributionLeadHead(ctx context.Context, arg LockDistributionLeadHeadParams) (DistributionLeadHead, error)
+	LockDistributionQueue(ctx context.Context, id uuid.UUID) (DistributionQueue, error)
+	LockDistributionQueueLease(ctx context.Context, arg LockDistributionQueueLeaseParams) (DistributionQueue, error)
 	MarkAmoUserExternallyDeleted(ctx context.Context, arg MarkAmoUserExternallyDeletedParams) (User, error)
 	MoveDepartment(ctx context.Context, arg MoveDepartmentParams) (Department, error)
 	NextDistributionMappingRevision(ctx context.Context, arg NextDistributionMappingRevisionParams) (int64, error)
@@ -156,10 +180,15 @@ type Querier interface {
 	ReassignUserInvites(ctx context.Context, arg ReassignUserInvitesParams) error
 	RecordDistributionBindingVersion(ctx context.Context, arg RecordDistributionBindingVersionParams) error
 	RegisterDistributionOperationMirror(ctx context.Context, arg RegisterDistributionOperationMirrorParams) error
+	ReleaseDistributionGroupClaim(ctx context.Context, arg ReleaseDistributionGroupClaimParams) error
+	ReleaseDistributionLeadClaim(ctx context.Context, queueID uuid.UUID) error
 	RemoveUserFromDistributionGroups(ctx context.Context, arg RemoveUserFromDistributionGroupsParams) error
 	ResendInvite(ctx context.Context, arg ResendInviteParams) (Invite, error)
+	ReserveDistributionGroupClaim(ctx context.Context, arg ReserveDistributionGroupClaimParams) error
+	ReserveDistributionLeadClaim(ctx context.Context, arg ReserveDistributionLeadClaimParams) (int64, error)
 	ReserveDistributionMirrorReconcile(ctx context.Context, operationID uuid.UUID) (int64, error)
 	ResetDistributionEvents(ctx context.Context, arg ResetDistributionEventsParams) (int64, error)
+	ResetDistributionQueueDecision(ctx context.Context, arg ResetDistributionQueueDecisionParams) error
 	ResolveDepartmentUserIDs(ctx context.Context, arg ResolveDepartmentUserIDsParams) ([]uuid.UUID, error)
 	ResolvePositionUserIDs(ctx context.Context, arg ResolvePositionUserIDsParams) ([]uuid.UUID, error)
 	ResolveReportUserScope(ctx context.Context, arg ResolveReportUserScopeParams) ([]ResolveReportUserScopeRow, error)
@@ -172,12 +201,15 @@ type Querier interface {
 	RevokeInvite(ctx context.Context, arg RevokeInviteParams) (Invite, error)
 	RevokeSessionByHash(ctx context.Context, arg RevokeSessionByHashParams) (int64, error)
 	RotateSession(ctx context.Context, arg RotateSessionParams) (int64, error)
+	SaveDistributionQueueDecision(ctx context.Context, arg SaveDistributionQueueDecisionParams) error
+	SaveDistributionSettings(ctx context.Context, arg SaveDistributionSettingsParams) (DistributionSetting, error)
 	SetAccessLinkEntryContext(ctx context.Context, arg SetAccessLinkEntryContextParams) (AccessLink, error)
 	SetAmoBootstrapUserState(ctx context.Context, arg SetAmoBootstrapUserStateParams) (User, error)
 	SetCompanyOwner(ctx context.Context, arg SetCompanyOwnerParams) (Company, error)
 	SetCredential(ctx context.Context, arg SetCredentialParams) error
 	SetDistributionDeliveryGeneration(ctx context.Context, arg SetDistributionDeliveryGenerationParams) error
 	SetDistributionMappingState(ctx context.Context, arg SetDistributionMappingStateParams) error
+	SettleDistributionQueue(ctx context.Context, arg SettleDistributionQueueParams) (int64, error)
 	StoreDistributionMappingSnapshot(ctx context.Context, arg StoreDistributionMappingSnapshotParams) error
 	UpdateAmoUserGroup(ctx context.Context, arg UpdateAmoUserGroupParams) (int64, error)
 	UpdateCompany(ctx context.Context, arg UpdateCompanyParams) (Company, error)
@@ -186,6 +218,8 @@ type Querier interface {
 	UpdateDistributionGroup(ctx context.Context, arg UpdateDistributionGroupParams) (DistributionGroup, error)
 	UpdateDistributionLeadHead(ctx context.Context, arg UpdateDistributionLeadHeadParams) error
 	UpdateDistributionOperationMirror(ctx context.Context, arg UpdateDistributionOperationMirrorParams) error
+	UpdateDistributionQueueState(ctx context.Context, arg UpdateDistributionQueueStateParams) error
+	UpdateDistributionRule(ctx context.Context, arg UpdateDistributionRuleParams) (DistributionRule, error)
 	UpdatePosition(ctx context.Context, arg UpdatePositionParams) (Position, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 	UpsertAccessLink(ctx context.Context, arg UpsertAccessLinkParams) (AccessLink, error)

@@ -29,7 +29,7 @@ UPDATE distribution_delivery_inbox SET observation_generation=$3 WHERE receipt_i
 -- name: UpdateDistributionLeadHead :exec
 UPDATE distribution_lead_heads SET binding_id=$4,binding_revision=$5,applied_generation=$6,observation_revision=$7,last_sequence=$8,snapshot=$9,deleted=$10,current_entry_id=$11,observed_at=$12,absent=$13,absence_reason=$14,updated_at=now() WHERE account_id=$1 AND lead_id=$2 AND company_id=$3;
 -- name: CreateDistributionObservedEntry :exec
-INSERT INTO distribution_observed_entries(id,company_id,account_id,lead_id,binding_id,binding_revision,sequence,pipeline_id,status_id,entry_event_id,evidence,state) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12);
+INSERT INTO distribution_observed_entries(id,company_id,account_id,lead_id,binding_id,binding_revision,sequence,pipeline_id,status_id,entry_event_id,evidence,state,source_received_at,source_occurred_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14);
 -- name: CancelDistributionObservedEntry :exec
 UPDATE distribution_observed_entries SET state='cancelled',cancellation_reason=$2,finished_at=now() WHERE id=$1 AND state<>'cancelled';
 -- name: GetDistributionOperationMirror :one

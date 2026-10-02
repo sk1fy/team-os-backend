@@ -132,7 +132,5 @@ func (s *Service) ValidateDistributionDecision(ctx context.Context, in Distribut
 		deny.Reason = "mapping_unavailable"
 		return deny, nil
 	}
-	// Binding and mapping are necessary, never sufficient. No business decision
-	// store currently proves ownership/revisions/schedule/cancellation/episode.
-	return deny, nil
+	return s.validateRegisteredDistributionDecision(ctx, in, deny, b)
 }
