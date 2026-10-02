@@ -74,3 +74,22 @@ func TestLoadRejectsShortGatewayServiceToken(t *testing.T) {
 		t.Fatal("Load() expected an error for a short gateway service token")
 	}
 }
+
+func TestDistributionConfigRequiresHTTPSAndRotatableKeys(t *testing.T) {
+	t.Setenv("COMPANY_DB_URL", "postgres://localhost/company")
+	t.Setenv("COMPANY_JWT_PRIVATE_KEY", "private-key")
+	t.Setenv("COMPANY_GATEWAY_SERVICE_TOKEN", "gateway-service-token-at-least-32-bytes")
+	t.Setenv("COMPANY_DISTRIBUTION_SERVICE_KEYS", `{"old":"old-distribution-secret-at-least-32-bytes","new":"new-distribution-secret-at-least-32-bytes"}`)
+	t.Setenv("COMPANY_DISTRIBUTION_KEY_ID", "new")
+	t.Setenv("COMPANY_DISTRIBUTION_CORE_URL", "https://core.example.invalid")
+	c, e := Load()
+	if e != nil || len(c.DistributionKeys) != 2 || c.DistributionKeyID != "new" {
+		t.Fatalf("configuration %v", e)
+	}
+	for _, bad := range []string{"http://core.example.invalid", "https://user:password@core.example.invalid", "https://core.example.invalid?secret=yes"} {
+		t.Setenv("COMPANY_DISTRIBUTION_CORE_URL", bad)
+		if _, e = Load(); e == nil {
+			t.Fatal("accepted unsafe URL")
+		}
+	}
+}

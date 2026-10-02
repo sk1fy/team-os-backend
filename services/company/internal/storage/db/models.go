@@ -97,6 +97,47 @@ type Department struct {
 	ExternalID           pgtype.Text   `json:"external_id"`
 }
 
+type DistributionBinding struct {
+	ID                 uuid.UUID     `json:"id"`
+	CompanyID          uuid.UUID     `json:"company_id"`
+	Revision           int64         `json:"revision"`
+	InstallationID     uuid.UUID     `json:"installation_id"`
+	IntegrationID      uuid.UUID     `json:"integration_id"`
+	AccountID          string        `json:"account_id"`
+	State              string        `json:"state"`
+	MappingRevision    int64         `json:"mapping_revision"`
+	MappingAckRevision int64         `json:"mapping_ack_revision"`
+	IntentID           uuid.UUID     `json:"intent_id"`
+	InitiatedBy        uuid.NullUUID `json:"initiated_by"`
+	InitiatorSnapshot  uuid.UUID     `json:"initiator_snapshot"`
+	ExpiresAt          time.Time     `json:"expires_at"`
+	CreatedAt          time.Time     `json:"created_at"`
+	UpdatedAt          time.Time     `json:"updated_at"`
+}
+
+type DistributionBindingVersion struct {
+	CompanyID      uuid.UUID `json:"company_id"`
+	BindingID      uuid.UUID `json:"binding_id"`
+	Revision       int64     `json:"revision"`
+	InstallationID uuid.UUID `json:"installation_id"`
+	IntegrationID  uuid.UUID `json:"integration_id"`
+	AccountID      string    `json:"account_id"`
+	State          string    `json:"state"`
+	CreatedAt      time.Time `json:"created_at"`
+}
+
+type DistributionEmployeeMapping struct {
+	ID             uuid.UUID     `json:"id"`
+	CompanyID      uuid.UUID     `json:"company_id"`
+	BindingID      uuid.UUID     `json:"binding_id"`
+	UserID         uuid.NullUUID `json:"user_id"`
+	UserIDSnapshot uuid.UUID     `json:"user_id_snapshot"`
+	CrmUserID      string        `json:"crm_user_id"`
+	State          string        `json:"state"`
+	Revision       int64         `json:"revision"`
+	VerifiedAt     time.Time     `json:"verified_at"`
+}
+
 type DistributionEvent struct {
 	ID         uuid.UUID `json:"id"`
 	CompanyID  uuid.UUID `json:"company_id"`
@@ -121,6 +162,41 @@ type DistributionGroup struct {
 	UnclaimedMinutes  int32       `json:"unclaimed_minutes"`
 	CreatedAt         time.Time   `json:"created_at"`
 	UpdatedAt         time.Time   `json:"updated_at"`
+}
+
+type DistributionMappingSnapshot struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	BindingID uuid.UUID `json:"binding_id"`
+	Revision  int64     `json:"revision"`
+	Payload   []byte    `json:"payload"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+type DistributionMappingVersion struct {
+	CompanyID      uuid.UUID     `json:"company_id"`
+	MappingID      uuid.UUID     `json:"mapping_id"`
+	Revision       int64         `json:"revision"`
+	BindingID      uuid.UUID     `json:"binding_id"`
+	UserID         uuid.NullUUID `json:"user_id"`
+	UserIDSnapshot uuid.UUID     `json:"user_id_snapshot"`
+	CrmUserID      string        `json:"crm_user_id"`
+	State          string        `json:"state"`
+	VerifiedAt     time.Time     `json:"verified_at"`
+	CreatedAt      time.Time     `json:"created_at"`
+}
+
+type DistributionServiceGrant struct {
+	KeyID          string    `json:"key_id"`
+	CompanyID      uuid.UUID `json:"company_id"`
+	InstallationID uuid.UUID `json:"installation_id"`
+	Capability     string    `json:"capability"`
+	Active         bool      `json:"active"`
+}
+
+type DistributionServiceNonce struct {
+	KeyID     string    `json:"key_id"`
+	Nonce     uuid.UUID `json:"nonce"`
+	ExpiresAt time.Time `json:"expires_at"`
 }
 
 type EmployeeAccessAudit struct {

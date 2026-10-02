@@ -1,0 +1,10 @@
+DROP TABLE distribution_mapping_snapshots;
+DROP TABLE distribution_service_grants;
+DROP TABLE distribution_service_nonces;
+DROP TRIGGER distribution_user_status ON users;
+DROP FUNCTION distribution_user_unavailable();
+DROP TRIGGER distribution_mapping_tombstone ON distribution_employee_mappings;
+DROP FUNCTION distribution_mapping_tombstone();
+DROP TRIGGER distribution_mapping_audit ON distribution_employee_mappings;
+DROP FUNCTION distribution_mapping_history();
+DROP TABLE distribution_mapping_versions, distribution_employee_mappings, distribution_binding_versions, distribution_bindings;

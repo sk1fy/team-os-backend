@@ -10,6 +10,16 @@ option go_package = "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v
 // few services that need synchronous organization lookups. Authenticated
 // calls receive actor/company claims through gRPC metadata.
 service CompanyService {
+  rpc SyncDistributionMappings(SyncDistributionMappingsRequest) returns (SyncDistributionMappingsResponse);
+  rpc ReconcileDistributionEmployeeMappings(ReconcileDistributionEmployeeMappingsRequest) returns (ReconcileDistributionEmployeeMappingsResponse);
+  rpc RevokeDistributionConnection(RevokeDistributionConnectionRequest) returns (RevokeDistributionConnectionResponse);
+  rpc GetDistributionConnections(GetDistributionConnectionsRequest) returns (GetDistributionConnectionsResponse);
+  rpc LinkDistributionConnection(LinkDistributionConnectionRequest) returns (LinkDistributionConnectionResponse);
+  rpc GetDistributionReferences(GetDistributionReferencesRequest) returns (GetDistributionReferencesResponse);
+  rpc GetDistributionEmployeeMappings(GetDistributionEmployeeMappingsRequest) returns (GetDistributionEmployeeMappingsResponse);
+  rpc SetDistributionEmployeeMapping(SetDistributionEmployeeMappingRequest) returns (SetDistributionEmployeeMappingResponse);
+  rpc CheckDistributionLeadPermission(CheckDistributionLeadPermissionRequest) returns (CheckDistributionLeadPermissionResponse);
+
   rpc Register(RegisterRequest) returns (RegisterResponse);
   rpc ReserveRegistrationLogin(ReserveRegistrationLoginRequest) returns (ReserveRegistrationLoginResponse);
   rpc CheckAmoAccount(CheckAmoAccountRequest) returns (CheckAmoAccountResponse);
@@ -1074,3 +1084,42 @@ message BootstrapAmoCompanyResponse {
   UserRole role = 4;
   string access_token = 5;
 }
+
+message GetDistributionConnectionsRequest {}
+message DistributionConnection {
+ string binding_id = 1; uint64 revision = 2; string installation_id = 3; string integration_id = 4; string account_id = 5; string state = 6; string intent_id = 7; google.protobuf.Timestamp expires_at = 8; uint64 mapping_revision = 9; uint64 mapping_ack_revision = 10;
+}
+message GetDistributionConnectionsResponse { repeated DistributionConnection connections = 1; }
+message LinkDistributionConnectionRequest { string installation_id = 1; string integration_id = 2; string account_id = 3; string intent_id = 4; string widget_token = 5; }
+message DistributionCRMUser { string id = 1; string name = 2; bool is_active = 3; optional string group_id = 4; }
+message DistributionCRMStatus { string id = 1; string name = 2; }
+message DistributionCRMPipeline { string id = 1; string name = 2; repeated DistributionCRMStatus statuses = 3; }
+message DistributionEmployeeMapping { string id = 1; optional string user_id = 2; string user_id_snapshot = 3; string crm_user_id = 4; string state = 5; uint64 revision = 6; google.protobuf.Timestamp verified_at = 7; }
+message SetDistributionEmployeeMappingRequest { string binding_id = 1; string user_id = 2; string crm_user_id = 3; }
+message CheckDistributionLeadPermissionRequest { string binding_id = 1; string lead_id = 2; }
+
+message RevokeDistributionConnectionResponse {}
+
+message SyncDistributionMappingsRequest { string binding_id = 1; }
+
+message SyncDistributionMappingsResponse {}
+
+message ReconcileDistributionEmployeeMappingsRequest { string binding_id = 1; }
+
+message ReconcileDistributionEmployeeMappingsResponse {}
+
+message RevokeDistributionConnectionRequest { string binding_id = 1; }
+
+message LinkDistributionConnectionResponse { DistributionConnection connection = 1; }
+
+message GetDistributionReferencesRequest { string binding_id = 1; }
+
+message GetDistributionReferencesResponse { repeated DistributionCRMUser users = 1; repeated DistributionCRMPipeline pipelines = 2; google.protobuf.Timestamp fetched_at = 3; google.protobuf.Timestamp fresh_until = 4; string state = 5; }
+
+message GetDistributionEmployeeMappingsRequest { string binding_id = 1; }
+
+message GetDistributionEmployeeMappingsResponse { repeated DistributionEmployeeMapping mappings = 1; }
+
+message SetDistributionEmployeeMappingResponse { DistributionEmployeeMapping mapping = 1; }
+
+message CheckDistributionLeadPermissionResponse { string user_id = 1; bool can_view_lead = 2; string reason = 3; google.protobuf.Timestamp checked_at = 4; }

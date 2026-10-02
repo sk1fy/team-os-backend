@@ -42,6 +42,7 @@ type amoSyncState struct {
 }
 
 type Service struct {
+	distributionCore       DistributionCore
 	pool                   databasePool
 	issuer                 *sharedauth.TokenIssuer
 	refreshTTL             time.Duration

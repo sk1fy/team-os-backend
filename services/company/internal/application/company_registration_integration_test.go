@@ -239,13 +239,24 @@ func companyRegistrationTestPool(t *testing.T, ctx context.Context) *pgxpool.Poo
 		{12, "user_schedule_visibility"}, {13, "amo_group_organization"},
 		{14, "department_root"}, {15, "position_levels"}, {16, "user_logins"},
 		{17, "company_scoped_emails_and_login_reservations"},
+		{18, "default_users_inactive"}, {19, "amo_admin_self_login_audit"}, {20, "amo_company_bootstrap_audit"}, {21, "access_link_entry_context"}, {22, "distribution_connections"},
 	}
 	initScripts := make([]string, 0, len(migrations))
+
+	temporary := t.TempDir()
 	for _, migration := range migrations {
-		initScripts = append(initScripts, filepath.Join(
-			migrationsDir, fmt.Sprintf("%06d_%s.up.sql", migration.version, migration.name),
-		))
+		name := fmt.Sprintf("%06d_%s.up.sql", migration.version, migration.name)
+		source, err := os.ReadFile(filepath.Join(migrationsDir, name))
+		if err != nil {
+			t.Fatal(err)
+		}
+		target := filepath.Join(temporary, name)
+		if err = os.WriteFile(target, append(append([]byte("BEGIN;\n"), source...), []byte("\nCOMMIT;\n")...), 0600); err != nil {
+			t.Fatal(err)
+		}
+		initScripts = append(initScripts, target)
 	}
+
 	container, err := postgres.Run(ctx, "postgres:16-alpine",
 		postgres.WithDatabase("company"), postgres.WithUsername("company"), postgres.WithPassword("company"),
 		postgres.WithInitScripts(initScripts...), postgres.BasicWaitStrategies(),

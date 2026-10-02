@@ -38,6 +38,150 @@ security:
   - bearerAuth: []
 
 paths:
+  /api/v1/distribution/connections/{bindingId}/mappings/sync:
+    post:
+      tags: [Distribution]
+      operationId: syncDistributionMappings
+      summary: Повторно доставить текущий снимок без изменения версии; только owner/admin
+      parameters:
+        - { name: bindingId, in: path, required: true, schema: { $ref: '#/components/schemas/ID' } }
+      responses:
+        '204': { description: Снимок подтверждён Core }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        default: { $ref: '#/components/responses/Error' }
+  /api/v1/distribution/connections/{bindingId}/mappings/reconcile:
+    post:
+      tags: [Distribution]
+      operationId: reconcileDistributionEmployeeMappings
+      summary: Переиспользовать существующие CRM ID и сверить удалённые элементы; только owner/admin
+      parameters:
+        - { name: bindingId, in: path, required: true, schema: { $ref: '#/components/schemas/ID' } }
+      responses:
+        '204': { description: Сотрудники сверены и снимок подтверждён Core }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        default: { $ref: '#/components/responses/Error' }
+  /api/v1/distribution/connections/{bindingId}/revoke:
+    post:
+      tags: [Distribution]
+      operationId: revokeDistributionConnection
+      summary: Отозвать связь, включая незавершенное намерение; только owner/admin
+      parameters:
+        - { name: bindingId, in: path, required: true, schema: { $ref: '#/components/schemas/ID' } }
+      responses:
+        '204': { description: Связь отозвана }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        default: { $ref: '#/components/responses/Error' }
+  /api/v1/distribution/connections:
+    get:
+      tags: [Distribution]
+      operationId: getDistributionConnections
+      summary: Подключения текущей компании
+      responses:
+        '200':
+          description: Подключения
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/DistributionConnection' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        default: { $ref: '#/components/responses/Error' }
+  /api/v1/distribution/connections/link-intents:
+    post:
+      tags: [Distribution]
+      operationId: linkDistributionConnection
+      summary: Подтвердить связь owner/admin TeamOS и проверенного CRM-администратора
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/DistributionLinkInput' }
+      responses:
+        '200':
+          description: Подтвержденная связь; повтор intentId восстанавливает результат
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DistributionConnection' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        default: { $ref: '#/components/responses/Error' }
+  /api/v1/distribution/references:
+    get:
+      tags: [Distribution]
+      operationId: getDistributionReferences
+      summary: Полный свежий снимок пользователей, воронок и этапов через Core
+      parameters:
+        - { name: bindingId, in: query, required: true, schema: { $ref: '#/components/schemas/ID' } }
+      responses:
+        '200':
+          description: Полный снимок; частичные или устаревшие источники возвращают ошибку
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DistributionReferences' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        default: { $ref: '#/components/responses/Error' }
+  /api/v1/distribution/connections/{bindingId}/mappings:
+    parameters:
+      - { name: bindingId, in: path, required: true, schema: { $ref: '#/components/schemas/ID' } }
+    get:
+      tags: [Distribution]
+      operationId: getDistributionEmployeeMappings
+      summary: Сопоставления сотрудников компании
+      responses:
+        '200':
+          description: Сопоставления
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/DistributionEmployeeMapping' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        default: { $ref: '#/components/responses/Error' }
+    put:
+      tags: [Distribution]
+      operationId: setDistributionEmployeeMapping
+      summary: Сопоставить существующего сотрудника с amoCRM; только owner/admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/DistributionMappingInput' }
+      responses:
+        '200':
+          description: Сохраненное сопоставление
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DistributionEmployeeMapping' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        default: { $ref: '#/components/responses/Error' }
+  /api/v1/distribution/connections/{bindingId}/lead-permission:
+    post:
+      tags: [Distribution]
+      operationId: checkDistributionLeadPermission
+      summary: Проверить текущие права CRM для текущего сотрудника
+      parameters:
+        - { name: bindingId, in: path, required: true, schema: { $ref: '#/components/schemas/ID' } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/DistributionPermissionInput' }
+      responses:
+        '200':
+          description: Проверенные права
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DistributionLeadPermission' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        default: { $ref: '#/components/responses/Error' }
   /api/v1/auth/me:
     get:
       tags: [Auth]
@@ -5349,6 +5493,106 @@ components:
             $ref: '#/components/schemas/FileDownload'
 
   schemas:
+    DistributionConnection:
+      type: object
+      required: [bindingId, revision, installationId, integrationId, accountId, state, intentId, expiresAt, mappingRevision, mappingAckRevision]
+      properties:
+        bindingId: { $ref: '#/components/schemas/ID' }
+        revision: { type: integer, format: int64, minimum: 1, maximum: 9007199254740991 }
+        installationId: { $ref: '#/components/schemas/ID' }
+        integrationId: { $ref: '#/components/schemas/ID' }
+        accountId: { $ref: '#/components/schemas/DistributionCRMID' }
+        state: { type: string, enum: [pending, active, revoked], x-enum-varnames: [DistributionConnectionPending, DistributionConnectionActive, DistributionConnectionRevoked] }
+        intentId: { $ref: '#/components/schemas/ID' }
+        expiresAt: { type: string, format: date-time }
+        mappingRevision: { type: integer, format: int64, minimum: 0, maximum: 9007199254740991 }
+        mappingAckRevision: { type: integer, format: int64, minimum: 0, maximum: 9007199254740991, description: Меньше mappingRevision означает ожидание подтверждения Core; доступ к сделкам закрыт }
+
+    DistributionLinkInput:
+      type: object
+      additionalProperties: false
+      required: [installationId, integrationId, accountId, intentId]
+      properties:
+        installationId: { $ref: '#/components/schemas/ID' }
+        integrationId: { $ref: '#/components/schemas/ID' }
+        accountId: { $ref: '#/components/schemas/DistributionCRMID' }
+        intentId: { $ref: '#/components/schemas/ID' }
+        widgetToken: { type: string, maxLength: 8192, writeOnly: true }
+    DistributionCRMID:
+      type: string
+      pattern: '^[1-9][0-9]{0,18}$'
+      description: Канонический decimal ID, максимум 9223372036854775807 проверяется сервером
+    DistributionCRMUser:
+      type: object
+      required: [id, name, isActive, groupId]
+      properties:
+        id: { $ref: '#/components/schemas/DistributionCRMID' }
+        name: { type: string }
+        isActive: { type: boolean }
+        groupId:
+          type: [string, 'null']
+          x-go-type: '*string'
+          x-go-type-skip-optional-pointer: true
+    DistributionCRMStatus:
+      type: object
+      required: [id, name]
+      properties:
+        id: { $ref: '#/components/schemas/DistributionCRMID' }
+        name: { type: string }
+    DistributionCRMPipeline:
+      type: object
+      required: [id, name, statuses]
+      properties:
+        id: { $ref: '#/components/schemas/DistributionCRMID' }
+        name: { type: string }
+        statuses:
+          type: array
+          items: { $ref: '#/components/schemas/DistributionCRMStatus' }
+    DistributionReferences:
+      type: object
+      required: [users, pipelines, fetchedAt, freshUntil, state]
+      properties:
+        users:
+          type: array
+          items: { $ref: '#/components/schemas/DistributionCRMUser' }
+        pipelines:
+          type: array
+          items: { $ref: '#/components/schemas/DistributionCRMPipeline' }
+        fetchedAt: { type: string, format: date-time }
+        freshUntil: { type: string, format: date-time }
+        state: { type: string, enum: [fresh] }
+    DistributionEmployeeMapping:
+      type: object
+      required: [id, userIdSnapshot, crmUserId, state, revision, verifiedAt]
+      properties:
+        id: { $ref: '#/components/schemas/ID' }
+        userId: { $ref: '#/components/schemas/ID' }
+        userIdSnapshot: { $ref: '#/components/schemas/ID' }
+        crmUserId: { $ref: '#/components/schemas/DistributionCRMID' }
+        state: { type: string, enum: [verified, unavailable, ambiguous], x-enum-varnames: [DistributionMappingVerified, DistributionMappingUnavailable, DistributionMappingAmbiguous] }
+        revision: { type: integer, format: int64, minimum: 1, maximum: 9007199254740991 }
+        verifiedAt: { type: string, format: date-time }
+    DistributionMappingInput:
+      type: object
+      additionalProperties: false
+      required: [userId, crmUserId]
+      properties:
+        userId: { $ref: '#/components/schemas/ID' }
+        crmUserId: { $ref: '#/components/schemas/DistributionCRMID' }
+    DistributionPermissionInput:
+      type: object
+      additionalProperties: false
+      required: [leadId]
+      properties:
+        leadId: { $ref: '#/components/schemas/DistributionCRMID' }
+    DistributionLeadPermission:
+      type: object
+      required: [userId, canViewLead, reason, checkedAt]
+      properties:
+        userId: { $ref: '#/components/schemas/DistributionCRMID' }
+        canViewLead: { type: boolean }
+        reason: { type: string }
+        checkedAt: { type: string, format: date-time }
     ID:
       type: string
       format: uuid

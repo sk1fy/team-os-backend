@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
 	"path/filepath"
 	"runtime"
 	"testing"
@@ -260,12 +261,24 @@ func companyAccessTestPool(t *testing.T, ctx context.Context) *pgxpool.Pool {
 		t.Fatal("не удалось определить путь к миграциям")
 	}
 	migrationsDir := filepath.Join(filepath.Dir(filename), "..", "..", "migrations")
-	initScripts := make([]string, 0, 21)
-	for migration := 1; migration <= 21; migration++ {
-		initScripts = append(initScripts, filepath.Join(
-			migrationsDir, fmt.Sprintf("%06d_%s.up.sql", migration, accessMigrationName(migration)),
-		))
+	initScripts := make([]string, 0, 22)
+
+	temporary := t.TempDir()
+	for migration := 1; migration <= 22; migration++ {
+		name := fmt.Sprintf("%06d_%s.up.sql", migration, accessMigrationName(migration))
+		source, err := os.ReadFile(filepath.Join(migrationsDir, name))
+		if err != nil {
+			t.Fatal(err)
+		}
+		target := filepath.Join(temporary, name)
+		// Production golang-migrate runs each migration transactionally; psql init
+		// scripts need an explicit transaction for the existing migration 16 lock.
+		if err = os.WriteFile(target, append(append([]byte("BEGIN;\n"), source...), []byte("\nCOMMIT;\n")...), 0600); err != nil {
+			t.Fatal(err)
+		}
+		initScripts = append(initScripts, target)
 	}
+
 	container, err := postgres.Run(ctx, "postgres:16-alpine",
 		postgres.WithDatabase("company"),
 		postgres.WithUsername("company"),
@@ -316,6 +329,7 @@ func accessMigrationName(migration int) string {
 		19: "amo_admin_self_login_audit",
 		20: "amo_company_bootstrap_audit",
 		21: "access_link_entry_context",
+		22: "distribution_connections",
 	}[migration]
 }
 
