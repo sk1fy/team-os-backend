@@ -31,10 +31,12 @@ type Querier interface {
 	ClaimDistributionDelivery(ctx context.Context, leaseToken uuid.NullUUID) (DistributionDeliveryInbox, error)
 	ClaimDistributionNonce(ctx context.Context, arg ClaimDistributionNonceParams) (int64, error)
 	ClaimDistributionQueue(ctx context.Context, leaseToken uuid.NullUUID) (DistributionQueue, error)
+	ClaimDistributionWidgetRequest(ctx context.Context, arg ClaimDistributionWidgetRequestParams) (int64, error)
 	CleanupDistributionNonces(ctx context.Context) error
 	ClearAmoUserDepartment(ctx context.Context, arg ClearAmoUserDepartmentParams) (int64, error)
 	ClearAmoUserTombstone(ctx context.Context, arg ClearAmoUserTombstoneParams) (User, error)
 	CompanyAmoAccountExists(ctx context.Context, externalAccountID string) (bool, error)
+	CompleteDistributionWidgetRequest(ctx context.Context, arg CompleteDistributionWidgetRequestParams) (int64, error)
 	ConsumeAccessLinkEntryContext(ctx context.Context, arg ConsumeAccessLinkEntryContextParams) (pgtype.Text, error)
 	ConsumeAmoWidgetContinuation(ctx context.Context, arg ConsumeAmoWidgetContinuationParams) (SsoToken, error)
 	ConsumeCompanyRegistrationToken(ctx context.Context, arg ConsumeCompanyRegistrationTokenParams) (CompanyRegistrationToken, error)
@@ -89,6 +91,7 @@ type Querier interface {
 	DistributionMemberInputs(ctx context.Context, arg DistributionMemberInputsParams) ([]DistributionMemberInputsRow, error)
 	DistributionPointHasUnfinishedOperation(ctx context.Context, arg DistributionPointHasUnfinishedOperationParams) (bool, error)
 	DistributionRuleHasQueue(ctx context.Context, arg DistributionRuleHasQueueParams) (bool, error)
+	DistributionWidgetGroupOtherBinding(ctx context.Context, arg DistributionWidgetGroupOtherBindingParams) (bool, error)
 	DueDistributionOperationMirrors(ctx context.Context, limit int32) ([]DistributionOperationMirror, error)
 	EnsureDistributionAvailabilityVersion(ctx context.Context, companyID uuid.UUID) error
 	EnsureDistributionGroupClaim(ctx context.Context, arg EnsureDistributionGroupClaimParams) error
@@ -125,6 +128,7 @@ type Querier interface {
 	GetDistributionServiceGrant(ctx context.Context, arg GetDistributionServiceGrantParams) (bool, error)
 	GetDistributionSettings(ctx context.Context, companyID uuid.UUID) (DistributionSetting, error)
 	GetDistributionUIAction(ctx context.Context, arg GetDistributionUIActionParams) (DistributionUiAction, error)
+	GetDistributionWidgetRequest(ctx context.Context, arg GetDistributionWidgetRequestParams) (DistributionWidgetRequest, error)
 	GetInvite(ctx context.Context, arg GetInviteParams) (Invite, error)
 	GetInviteByToken(ctx context.Context, token string) (Invite, error)
 	GetInviteByTokenForUpdate(ctx context.Context, token string) (Invite, error)
@@ -161,6 +165,9 @@ type Querier interface {
 	ListDistributionQueueHistory(ctx context.Context, arg ListDistributionQueueHistoryParams) ([]DistributionQueueHistory, error)
 	ListDistributionRules(ctx context.Context, arg ListDistributionRulesParams) ([]DistributionRule, error)
 	ListDistributionSummaryCandidates(ctx context.Context, arg ListDistributionSummaryCandidatesParams) ([]DistributionQueue, error)
+	ListDistributionWidgetEmployees(ctx context.Context, arg ListDistributionWidgetEmployeesParams) ([]ListDistributionWidgetEmployeesRow, error)
+	ListDistributionWidgetLeadQueue(ctx context.Context, arg ListDistributionWidgetLeadQueueParams) ([]DistributionQueue, error)
+	ListDistributionWidgetRules(ctx context.Context, arg ListDistributionWidgetRulesParams) ([]DistributionRule, error)
 	ListEmployeeSectionAccess(ctx context.Context, arg ListEmployeeSectionAccessParams) ([]string, error)
 	ListInvites(ctx context.Context, companyID uuid.UUID) ([]Invite, error)
 	ListLegacyAmoWidgetCompaniesForUpdate(ctx context.Context, externalAccountID pgtype.Text) ([]Company, error)

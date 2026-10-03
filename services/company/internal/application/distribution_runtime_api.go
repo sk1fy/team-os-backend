@@ -256,6 +256,9 @@ func (s *Service) DistributionRuntimeWrite(ctx context.Context, actor Actor, kin
 		if _, e = q.LockDistributionAvailabilityVersion(ctx, actor.CompanyID); e != nil {
 			return nil, e
 		}
+		if e = s.checkWidgetMutation(ctx); e != nil {
+			return nil, e
+		}
 		if _, e = s.distributionActor(ctx, actor, true); e != nil {
 			return nil, e
 		}

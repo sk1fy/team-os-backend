@@ -412,6 +412,19 @@ type DistributionUiAction struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
+type DistributionWidgetRequest struct {
+	CompanyID    uuid.UUID   `json:"company_id"`
+	RequestID    uuid.UUID   `json:"request_id"`
+	BindingID    uuid.UUID   `json:"binding_id"`
+	EmployeeID   uuid.UUID   `json:"employee_id"`
+	RequestHash  []byte      `json:"request_hash"`
+	State        string      `json:"state"`
+	Response     []byte      `json:"response"`
+	ErrorKind    pgtype.Text `json:"error_kind"`
+	ErrorMessage pgtype.Text `json:"error_message"`
+	CreatedAt    time.Time   `json:"created_at"`
+}
+
 type EmployeeAccessAudit struct {
 	ID           uuid.UUID     `json:"id"`
 	CompanyID    uuid.UUID     `json:"company_id"`

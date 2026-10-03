@@ -193,6 +193,9 @@ func (s *Service) CreateDistributionRuntimeRule(ctx context.Context, actor Actor
 	if _, e = q.LockDistributionAvailabilityVersion(ctx, actor.CompanyID); e != nil {
 		return db.DistributionRule{}, e
 	}
+	if e = s.checkWidgetMutation(ctx); e != nil {
+		return db.DistributionRule{}, e
+	}
 	if _, e = s.distributionActor(ctx, actor, true); e != nil {
 		return db.DistributionRule{}, e
 	}

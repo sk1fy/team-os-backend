@@ -85,6 +85,55 @@ func TestSignedDecisionValidationPostgresScopeAndLifecycle(t *testing.T) {
 	secret := strings.Repeat("s", 32)
 	handler := &Handler{Keys: map[string]string{"core": secret}, Store: db.New(pool), Service: service}
 	scope := corebridge.Scope{CompanyID: company, BindingID: binding, BindingRevision: 1, InstallationID: installation, IntegrationID: integration, AccountID: "123"}
+	widgetIn := application.DistributionWidgetRuntimeInput{Scope: scope, UserID: "42", PrincipalExpiresAt: time.Now().Add(time.Minute), Kind: "groups"}
+	widgetCall := func(in application.DistributionWidgetRuntimeInput, headers http.Header) (int, []byte, http.Header) {
+		t.Helper()
+		raw, _ := json.Marshal(in)
+		req := httptest.NewRequestWithContext(ctx, "POST", "https://company.internal.example/internal/v1/distribution/widget-runtime", bytes.NewReader(raw))
+		corebridge.Sign(req, "core", secret, in.Scope, raw, time.Now())
+		if headers != nil {
+			req.Header = headers.Clone()
+		}
+		w := httptest.NewRecorder()
+		handler.ServeHTTP(w, req)
+		return w.Code, w.Body.Bytes(), req.Header.Clone()
+	}
+	if status, _, _ := widgetCall(widgetIn, nil); status != 403 {
+		t.Fatalf("widget runtime grant %d", status)
+	}
+	exec("INSERT INTO distribution_service_grants(key_id,company_id,installation_id,capability) VALUES('core',$1,$2,'widget-runtime')", company, installation)
+	status, _, widgetHeaders := widgetCall(widgetIn, nil)
+	if status != 200 {
+		t.Fatalf("actual signed widget read %d", status)
+	}
+	if status, _, _ := widgetCall(widgetIn, widgetHeaders); status != 401 {
+		t.Fatalf("widget nonce replay %d", status)
+	}
+	widgetIn.Scope.AccountID = "124"
+	if status, _, _ := widgetCall(widgetIn, nil); status != 403 {
+		t.Fatalf("widget wrong binding %d", status)
+	}
+	widgetIn.Scope.AccountID = "123"
+	widgetGroup, widgetRule := uuid.New(), uuid.New()
+	exec("INSERT INTO distribution_groups(id,company_id,name,algorithm,member_ids) VALUES($1,$2,'Shared signed','round_robin',$3)", widgetGroup, company, []uuid.UUID{employee})
+	exec("INSERT INTO distribution_rules(id,company_id,binding_id,binding_revision,account_id,pipeline_id,status_id,group_id) VALUES($1,$2,$3,1,'123','20','30',$4)", widgetRule, company, binding, widgetGroup)
+	widgetIn.Write = true
+	widgetIn.Kind = "rule"
+	widgetIn.ID = widgetRule
+	widgetIn.RequestID = uuid.New()
+	widgetIn.Payload = json.RawMessage(`{"expectedRevision":1,"active":false,"keepCurrentResponsible":false}`)
+	if status, _, _ := widgetCall(widgetIn, nil); status != 403 {
+		t.Fatalf("employee write %d", status)
+	}
+	exec("UPDATE users SET role='owner' WHERE id=$1", employee)
+	if status, body, _ := widgetCall(widgetIn, nil); status != 200 || !bytes.Contains(body, []byte(`"revision":2`)) {
+		t.Fatalf("signed shared mutation %d %s", status, body)
+	}
+	widgetIn.PrincipalExpiresAt = time.Now().Add(2 * time.Minute)
+	if status, body, _ := widgetCall(widgetIn, nil); status != 200 || !bytes.Contains(body, []byte(`"revision": 2`)) {
+		t.Fatalf("signed receipt replay with new JWT %d %s", status, body)
+	}
+	exec("UPDATE users SET role='employee' WHERE id=$1", employee)
 	now := time.Now().UTC()
 	envelope := application.DistributionEventEnvelope{SchemaVersion: 1, MessageID: uuid.New(), Scope: scope, EventID: uuid.New(), CorrelationID: uuid.New(), ReceivedAt: now, EmittedAt: now, Event: application.DistributionCRMEvent{Kind: "lead.snapshot_reconciled", LeadID: "7", ObservationRevision: 1}}
 	delivery := func(in application.DistributionEventEnvelope, headers http.Header) (int, application.DistributionDeliveryReceipt, http.Header) {

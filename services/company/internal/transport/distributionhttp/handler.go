@@ -47,6 +47,8 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	capability := ""
 	switch r.URL.Path {
+	case "/internal/v1/distribution/widget-runtime":
+		capability = "widget-runtime"
 	case "/internal/v1/distribution/widget-access":
 		capability = "widget-access"
 	case "/internal/v1/distribution/events":
@@ -121,6 +123,10 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	d := json.NewDecoder(bytes.NewReader(body))
 	d.DisallowUnknownFields()
+	if capability == "widget-runtime" {
+		h.widgetRuntime(w, r, d, company, installation)
+		return
+	}
 	if capability == "event-delivery" || capability == "result-delivery" {
 		svc, ok := h.Service.(DeliveryService)
 		if !ok {

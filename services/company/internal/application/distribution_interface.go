@@ -360,6 +360,9 @@ func (s *Service) DistributionQueueAction(ctx context.Context, actor Actor, id u
 		return nil, e
 	}
 
+	if e = s.checkWidgetMutation(ctx); e != nil {
+		return nil, e
+	}
 	if _, e = s.distributionActor(ctx, actor, true); e != nil {
 		return nil, e
 	}
@@ -485,6 +488,9 @@ func (s *Service) ConfigureDistributionGroup(ctx context.Context, actor Actor, i
 		return nil, e
 	}
 	if _, e = q.LockDistributionAvailabilityVersion(ctx, actor.CompanyID); e != nil {
+		return nil, e
+	}
+	if e = s.checkWidgetMutation(ctx); e != nil {
 		return nil, e
 	}
 	if _, e = s.distributionActor(ctx, actor, true); e != nil {

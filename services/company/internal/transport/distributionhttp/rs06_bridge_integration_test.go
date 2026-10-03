@@ -8,7 +8,9 @@ import (
 	"encoding/json"
 	"encoding/pem"
 	"fmt"
+	"io"
 	"net"
+	"net/http"
 	"net/http/httptest"
 	"os"
 	"path/filepath"
@@ -70,7 +72,7 @@ func TestRS06ActualCoreTeamSignedBridge(t *testing.T) {
 	for i, id := range []uuid.UUID{core.Employee, core.Employee3} {
 		exec(`INSERT INTO distribution_employee_mappings(id,company_id,binding_id,user_id,user_id_snapshot,crm_user_id,state,verified_at) VALUES($1,$2,$3,$4,$4,$5,'verified',clock_timestamp())`, uuid.New(), company, core.Scope.BindingID, id, strconv.Itoa(i+2))
 	}
-	for _, capability := range []string{"decision-validation", "event-delivery", "result-delivery"} {
+	for _, capability := range []string{"decision-validation", "event-delivery", "result-delivery", "widget-access", "widget-runtime"} {
 		exec(`INSERT INTO distribution_service_grants(key_id,company_id,installation_id,capability) VALUES($1,$2,$3,$4)`, core.KeyID, company, core.Scope.InstallationID, capability)
 	}
 	client, err := corebridge.New(core.URL, core.KeyID, core.Secret)
@@ -123,6 +125,57 @@ func TestRS06ActualCoreTeamSignedBridge(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	t.Run("rs08_actual_sdk_widget_shared_rules", func(t *testing.T) {
+		widgetGroup, widgetRule := uuid.New(), uuid.New()
+		exec(`INSERT INTO distribution_groups(id,company_id,name,member_ids) VALUES($1,$2,'RS08 widget shared',$3)`, widgetGroup, company, []uuid.UUID{core.Employee})
+		exec(`INSERT INTO distribution_rules(id,company_id,binding_id,binding_revision,account_id,pipeline_id,status_id,group_id) VALUES($1,$2,$3,1,$4,'20','31',$5)`, widgetRule, company, core.Scope.BindingID, core.Scope.AccountID, widgetGroup)
+		callWidget := func(method, path string, body any, want int) []byte {
+			t.Helper()
+			time.Sleep(220 * time.Millisecond)
+			token := control(map[string]any{"action": "widget_token"}).WidgetToken
+			if token == "" {
+				t.Fatal("no synthetic SDK token")
+			}
+			raw, _ := json.Marshal(body)
+			req, e := http.NewRequestWithContext(ctx, method, core.URL+path, bytes.NewReader(raw))
+			if e != nil {
+				t.Fatal(e)
+			}
+			req.Header.Set("Origin", "https://test.amocrm.ru")
+			req.Header.Set("X-Auth-Token", token)
+			req.Header.Set("Content-Type", "application/json")
+			response, e := (&http.Client{Timeout: 3 * time.Second}).Do(req)
+			if e != nil {
+				t.Fatal(e)
+			}
+			defer response.Body.Close()
+			result, e := io.ReadAll(response.Body)
+			if e != nil || response.StatusCode != want {
+				t.Fatalf("widget %s status%d want%d body%s err%v", path, response.StatusCode, want, result, e)
+			}
+			return result
+		}
+		base := "/api/v1/widget/distribution/"
+		bootstrap := callWidget("GET", base+"bootstrap", nil, 200)
+		if !bytes.Contains(bootstrap, []byte(`"canManage":true`)) {
+			t.Fatal("both server roles not verified", string(bootstrap))
+		}
+		read := callWidget("POST", base+"runtime", map[string]any{"kind": "rules"}, 200)
+		if !bytes.Contains(read, []byte(widgetRule.String())) {
+			t.Fatal("shared rule absent")
+		}
+		write := map[string]any{"kind": "rule", "id": widgetRule, "write": true, "requestId": uuid.New(), "payload": map[string]any{"expectedRevision": 1, "active": false, "keepCurrentResponsible": false}}
+		callWidget("POST", base+"runtime", write, 200)
+		callWidget("POST", base+"runtime", write, 200)
+		var revision int64
+		if e := pool.QueryRow(ctx, "SELECT revision FROM distribution_rules WHERE id=$1", widgetRule).Scan(&revision); e != nil || revision != 2 {
+			t.Fatalf("single shared revision %d %v", revision, e)
+		}
+		callWidget("POST", base+"runtime", map[string]any{"kind": "rules", "companyId": uuid.New()}, 400)
+		exec("UPDATE users SET role='employee' WHERE id=$1", core.Employee)
+		callWidget("POST", base+"runtime", write, 403)
+		exec("UPDATE users SET role='owner' WHERE id=$1", core.Employee)
+	})
 	// No timestamp spoofing: the real entry is observed after actual activation.
 	eventRevision := int64(1000)
 	created := func(id, ownerID int64, mode string) {
@@ -334,10 +387,11 @@ func TestRS06ActualCoreTeamSignedBridge(t *testing.T) {
 }
 
 type rs06BridgeReply struct {
-	Error      string                `json:"error"`
-	Operation  *corebridge.Operation `json:"operation"`
-	PatchCalls int                   `json:"patchCalls"`
-	NoJob      bool                  `json:"noJob"`
+	WidgetToken string                `json:"widgetToken"`
+	Error       string                `json:"error"`
+	Operation   *corebridge.Operation `json:"operation"`
+	PatchCalls  int                   `json:"patchCalls"`
+	NoJob       bool                  `json:"noJob"`
 }
 
 func rs06WriteBridge(t *testing.T, dir, name string, value any) {

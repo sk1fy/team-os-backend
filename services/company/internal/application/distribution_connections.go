@@ -468,6 +468,7 @@ type DistributionWidgetAccess struct {
 	Allowed    bool      `json:"allowed"`
 	EmployeeID uuid.UUID `json:"employeeId"`
 	Reason     string    `json:"reason"`
+	CanManage  bool      `json:"canManage"`
 }
 
 // DistributionWidgetAccess accepts a verified CRM principal only from the authenticated Core transport.
@@ -508,7 +509,7 @@ func (s *Service) DistributionWidgetAccess(ctx context.Context, in DistributionW
 	if e != nil || current.State != "active" || current.MappingRevision != current.MappingAckRevision || bindingScope(current) != in.Scope {
 		return deny, nil
 	}
-	return DistributionWidgetAccess{Allowed: true, EmployeeID: m.UserID.UUID, Reason: "allowed"}, nil
+	return DistributionWidgetAccess{Allowed: true, EmployeeID: m.UserID.UUID, Reason: "allowed", CanManage: actor.Role == "owner" || actor.Role == "admin"}, nil
 }
 
 // SyncDistributionMappings retries the latest durable snapshot without changing
