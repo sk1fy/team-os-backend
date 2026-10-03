@@ -8186,6 +8186,7 @@ type DistributionGroup struct {
 	DealLimit         uint32                 `protobuf:"varint,9,opt,name=deal_limit,json=dealLimit,proto3" json:"deal_limit,omitempty"`
 	UnclaimedMinutes  uint32                 `protobuf:"varint,10,opt,name=unclaimed_minutes,json=unclaimedMinutes,proto3" json:"unclaimed_minutes,omitempty"`
 	CreatedAt         *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	Revision          int64                  `protobuf:"varint,12,opt,name=revision,proto3" json:"revision,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
@@ -8295,6 +8296,13 @@ func (x *DistributionGroup) GetCreatedAt() *timestamppb.Timestamp {
 		return x.CreatedAt
 	}
 	return nil
+}
+
+func (x *DistributionGroup) GetRevision() int64 {
+	if x != nil {
+		return x.Revision
+	}
+	return 0
 }
 
 type DistributionEvent struct {
@@ -11592,6 +11600,10 @@ type ReadDistributionRuntimeRequest struct {
 	Id            string                 `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
 	Limit         int32                  `protobuf:"varint,3,opt,name=limit,proto3" json:"limit,omitempty"`
 	Offset        int32                  `protobuf:"varint,4,opt,name=offset,proto3" json:"offset,omitempty"`
+	Tab           string                 `protobuf:"bytes,5,opt,name=tab,proto3" json:"tab,omitempty"`
+	GroupId       string                 `protobuf:"bytes,6,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
+	From          string                 `protobuf:"bytes,7,opt,name=from,proto3" json:"from,omitempty"`
+	To            string                 `protobuf:"bytes,8,opt,name=to,proto3" json:"to,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -11652,6 +11664,34 @@ func (x *ReadDistributionRuntimeRequest) GetOffset() int32 {
 		return x.Offset
 	}
 	return 0
+}
+
+func (x *ReadDistributionRuntimeRequest) GetTab() string {
+	if x != nil {
+		return x.Tab
+	}
+	return ""
+}
+
+func (x *ReadDistributionRuntimeRequest) GetGroupId() string {
+	if x != nil {
+		return x.GroupId
+	}
+	return ""
+}
+
+func (x *ReadDistributionRuntimeRequest) GetFrom() string {
+	if x != nil {
+		return x.From
+	}
+	return ""
+}
+
+func (x *ReadDistributionRuntimeRequest) GetTo() string {
+	if x != nil {
+		return x.To
+	}
+	return ""
 }
 
 type WriteDistributionRuntimeRequest struct {
@@ -12401,7 +12441,7 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\x1bSaveShiftExceptionsResponse\x12A\n" +
 	"\n" +
 	"exceptions\x18\x01 \x03(\v2!.teamos.company.v1.ShiftExceptionR\n" +
-	"exceptions\"\xbc\x03\n" +
+	"exceptions\"\xd8\x03\n" +
 	"\x11DistributionGroup\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12%\n" +
@@ -12417,7 +12457,8 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\x11unclaimed_minutes\x18\n" +
 	" \x01(\rR\x10unclaimedMinutes\x129\n" +
 	"\n" +
-	"created_at\x18\v \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAtB\x0e\n" +
+	"created_at\x18\v \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12\x1a\n" +
+	"\brevision\x18\f \x01(\x03R\brevisionB\x0e\n" +
 	"\f_description\"\xf7\x01\n" +
 	"\x11DistributionEvent\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x19\n" +
@@ -12693,12 +12734,16 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\rcan_view_lead\x18\x02 \x01(\bR\vcanViewLead\x12\x16\n" +
 	"\x06reason\x18\x03 \x01(\tR\x06reason\x129\n" +
 	"\n" +
-	"checked_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tcheckedAt\"r\n" +
+	"checked_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tcheckedAt\"\xc3\x01\n" +
 	"\x1eReadDistributionRuntimeRequest\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\x12\x14\n" +
 	"\x05limit\x18\x03 \x01(\x05R\x05limit\x12\x16\n" +
-	"\x06offset\x18\x04 \x01(\x05R\x06offset\"_\n" +
+	"\x06offset\x18\x04 \x01(\x05R\x06offset\x12\x10\n" +
+	"\x03tab\x18\x05 \x01(\tR\x03tab\x12\x19\n" +
+	"\bgroup_id\x18\x06 \x01(\tR\agroupId\x12\x12\n" +
+	"\x04from\x18\a \x01(\tR\x04from\x12\x0e\n" +
+	"\x02to\x18\b \x01(\tR\x02to\"_\n" +
 	"\x1fWriteDistributionRuntimeRequest\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\x12\x18\n" +

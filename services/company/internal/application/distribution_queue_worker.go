@@ -253,7 +253,7 @@ func (s *Service) resumeDistributionAssignment(ctx context.Context, core Distrib
 	if e != nil {
 		return e
 	}
-	if !deny.Allowed && !op.ResolutionEvidence.GuardReleasable && op.CancelRequestedAt == nil {
+	if (!deny.Allowed || row.CancelRequested) && !op.ResolutionEvidence.GuardReleasable && op.CancelRequestedAt == nil {
 		cancelled, ce := s.controlRuntimeOperation(ctx, core, row, a.Scope, op, "cancel")
 		if ce == nil {
 			op = cancelled
@@ -351,7 +351,7 @@ func (s *Service) settleRuntimeOperation(ctx context.Context, q *db.Queries, row
 			retry = true
 		}
 	}
-	retry = retry && op.ExternalEffectState == "no_attempt" && entry.State == "checking"
+	retry = retry && !row.CancelRequested && op.ExternalEffectState == "no_attempt" && entry.State == "checking"
 	if retry {
 		state, reason = "waiting", "decision_recalculation"
 	}

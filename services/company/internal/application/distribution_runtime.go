@@ -193,6 +193,9 @@ func (s *Service) CreateDistributionRuntimeRule(ctx context.Context, actor Actor
 	if _, e = q.LockDistributionAvailabilityVersion(ctx, actor.CompanyID); e != nil {
 		return db.DistributionRule{}, e
 	}
+	if _, e = s.distributionActor(ctx, actor, true); e != nil {
+		return db.DistributionRule{}, e
+	}
 	current, e := q.GetDistributionBinding(ctx, db.GetDistributionBindingParams{CompanyID: actor.CompanyID, ID: input.BindingID})
 	if e != nil {
 		return db.DistributionRule{}, e
@@ -211,6 +214,13 @@ func (s *Service) CreateDistributionRuntimeRule(ctx context.Context, actor Actor
 		if busy {
 			return db.DistributionRule{}, conflict("Сначала завершите сверку операций этапа")
 		}
+	}
+	exists, e := q.DistributionGroupHasRule(ctx, db.DistributionGroupHasRuleParams{CompanyID: actor.CompanyID, GroupID: input.GroupID})
+	if e != nil {
+		return db.DistributionRule{}, e
+	}
+	if exists {
+		return db.DistributionRule{}, conflict("У группы уже есть правило; для новой точки создайте отдельную группу")
 	}
 	r, e := q.CreateDistributionRule(ctx, input)
 	if isUniqueViolation(e) {

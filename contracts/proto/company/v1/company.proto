@@ -913,6 +913,7 @@ message DistributionGroup {
   uint32 deal_limit = 9;
   uint32 unclaimed_minutes = 10;
   google.protobuf.Timestamp created_at = 11;
+  int64 revision = 12;
 }
 
 message DistributionEvent {
@@ -1127,7 +1128,7 @@ message SetDistributionEmployeeMappingResponse { DistributionEmployeeMapping map
 message CheckDistributionLeadPermissionResponse { string user_id = 1; bool can_view_lead = 2; string reason = 3; google.protobuf.Timestamp checked_at = 4; }
 
 // The application owns the scope and JSON payload validation. Gateway exposes typed REST DTOs.
-message ReadDistributionRuntimeRequest { string kind = 1; string id = 2; int32 limit = 3; int32 offset = 4; }
+message ReadDistributionRuntimeRequest { string kind = 1; string id = 2; int32 limit = 3; int32 offset = 4; string tab = 5; string group_id = 6; string from = 7; string to = 8; }
 message WriteDistributionRuntimeRequest { string kind = 1; string id = 2; bytes payload = 3; }
 message ReadDistributionRuntimeResponse { bytes payload = 1; }
 message WriteDistributionRuntimeResponse { bytes payload = 1; }

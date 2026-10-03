@@ -11,6 +11,7 @@ import (
 	"io"
 	"time"
 
+	"github.com/sk1fy/team-os-backend/services/company/internal/corebridge"
 	"github.com/sk1fy/team-os-backend/services/company/internal/storage/db"
 )
 
@@ -142,6 +143,10 @@ func (s *Service) DistributionRuntimeWrite(ctx context.Context, actor Actor, kin
 		return nil, e
 	}
 	switch kind {
+	case "action":
+		return s.DistributionQueueAction(ctx, actor, id, raw)
+	case "group":
+		return s.ConfigureDistributionGroup(ctx, actor, id, raw)
 	case "settings":
 		var in struct {
 			Timezone string `json:"timezone"`
@@ -189,12 +194,55 @@ func (s *Service) DistributionRuntimeWrite(ctx context.Context, actor Actor, kin
 		return json.Marshal(ruleDTO(r))
 	case "rule":
 		var in struct {
-			ExpectedRevision int64 `json:"expectedRevision"`
-			Active           *bool `json:"active"`
-			Keep             *bool `json:"keepCurrentResponsible"`
+			ExpectedRevision int64   `json:"expectedRevision"`
+			PipelineID       *string `json:"pipelineId"`
+			StatusID         *string `json:"statusId"`
+			Active           *bool   `json:"active"`
+			Keep             *bool   `json:"keepCurrentResponsible"`
 		}
 		if e := decodeRuntime(raw, &in); e != nil {
 			return nil, e
+		}
+		initial, e := db.New(s.pool).GetDistributionRule(ctx, db.GetDistributionRuleParams{CompanyID: actor.CompanyID, ID: id})
+		if isNoRows(e) {
+			return nil, notFound("Правило")
+		}
+		if e != nil {
+			return nil, e
+		}
+		pipeline, status := initial.PipelineID, initial.StatusID
+		if in.PipelineID != nil {
+			pipeline = *in.PipelineID
+		}
+		if in.StatusID != nil {
+			status = *in.StatusID
+		}
+		changed := pipeline != initial.PipelineID || status != initial.StatusID
+		var refs corebridge.References
+		var binding db.DistributionBinding
+		if changed {
+			if !validCRMID(pipeline) || !validCRMID(status) {
+				return nil, validation("Укажите корректный этап amoCRM")
+			}
+			binding, e = db.New(s.pool).GetDistributionBinding(ctx, db.GetDistributionBindingParams{CompanyID: actor.CompanyID, ID: initial.BindingID})
+			if e != nil {
+				return nil, e
+			}
+			refs, e = s.readDistributionReferences(ctx, bindingScope(binding))
+			if e != nil {
+				return nil, e
+			}
+			found := false
+			for _, p := range refs.Pipelines {
+				for _, st := range p.Statuses {
+					if p.ID == pipeline && st.ID == status {
+						found = true
+					}
+				}
+			}
+			if !found {
+				return nil, validation("Этап amoCRM недоступен")
+			}
 		}
 		tx, e := s.pool.Begin(ctx)
 		if e != nil {
@@ -208,6 +256,9 @@ func (s *Service) DistributionRuntimeWrite(ctx context.Context, actor Actor, kin
 		if _, e = q.LockDistributionAvailabilityVersion(ctx, actor.CompanyID); e != nil {
 			return nil, e
 		}
+		if _, e = s.distributionActor(ctx, actor, true); e != nil {
+			return nil, e
+		}
 		old, e := q.GetDistributionRule(ctx, db.GetDistributionRuleParams{CompanyID: actor.CompanyID, ID: id})
 		if isNoRows(e) {
 			return nil, notFound("Правило")
@@ -215,11 +266,30 @@ func (s *Service) DistributionRuntimeWrite(ctx context.Context, actor Actor, kin
 		if e != nil {
 			return nil, e
 		}
+		if old.Revision != initial.Revision {
+			return nil, conflict("Правило изменилось: обновите данные")
+		}
+		if changed {
+			used, e := q.DistributionRuleHasQueue(ctx, db.DistributionRuleHasQueueParams{CompanyID: actor.CompanyID, RuleID: id})
+			if e != nil {
+				return nil, e
+			}
+			if used {
+				return nil, conflict("Правило уже использовалось: приостановите его и создайте новую группу для другого этапа")
+			}
+			current, e := q.GetDistributionBinding(ctx, db.GetDistributionBindingParams{CompanyID: actor.CompanyID, ID: old.BindingID})
+			if e != nil {
+				return nil, e
+			}
+			if current.State != "active" || bindingScope(current) != bindingScope(binding) || current.MappingRevision != binding.MappingRevision || current.MappingRevision != current.MappingAckRevision || !refs.FreshUntil.After(s.now()) {
+				return nil, conflict("Связь или справочник изменились")
+			}
+		}
 		if in.Active == nil || in.Keep == nil || !safeRevision(in.ExpectedRevision) {
 			return nil, validation("Укажите текущую версию и настройки правила")
 		}
-		if *in.Active && !old.Active {
-			busy, e := q.DistributionPointHasUnfinishedOperation(ctx, db.DistributionPointHasUnfinishedOperationParams{AccountID: old.AccountID, PipelineID: old.PipelineID, StatusID: old.StatusID})
+		if *in.Active && (!old.Active || changed) {
+			busy, e := q.DistributionPointHasUnfinishedOperation(ctx, db.DistributionPointHasUnfinishedOperationParams{AccountID: old.AccountID, PipelineID: pipeline, StatusID: status})
 			if e != nil {
 				return nil, e
 			}
@@ -236,7 +306,7 @@ func (s *Service) DistributionRuntimeWrite(ctx context.Context, actor Actor, kin
 				return nil, validation("Связь недоступна")
 			}
 		}
-		r, e := q.UpdateDistributionRule(ctx, db.UpdateDistributionRuleParams{CompanyID: actor.CompanyID, ID: id, Active: *in.Active, KeepCurrent: *in.Keep, Revision: in.ExpectedRevision})
+		r, e := q.UpdateDistributionRulePoint(ctx, db.UpdateDistributionRulePointParams{CompanyID: actor.CompanyID, ID: id, PipelineID: pipeline, StatusID: status, Active: *in.Active, KeepCurrent: *in.Keep, Revision: in.ExpectedRevision})
 		if isNoRows(e) {
 			return nil, conflict("Правило изменилось: обновите данные")
 		}

@@ -212,6 +212,7 @@ type DistributionGroup struct {
 	UnclaimedMinutes  int32       `json:"unclaimed_minutes"`
 	CreatedAt         time.Time   `json:"created_at"`
 	UpdatedAt         time.Time   `json:"updated_at"`
+	Revision          int64       `json:"revision"`
 }
 
 type DistributionGroupClaim struct {
@@ -400,6 +401,15 @@ type DistributionSetting struct {
 	CompanyID uuid.UUID `json:"company_id"`
 	Timezone  string    `json:"timezone"`
 	Revision  int64     `json:"revision"`
+}
+
+type DistributionUiAction struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	RequestID uuid.UUID `json:"request_id"`
+	QueueID   uuid.UUID `json:"queue_id"`
+	ActorID   uuid.UUID `json:"actor_id"`
+	Payload   []byte    `json:"payload"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type EmployeeAccessAudit struct {

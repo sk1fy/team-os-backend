@@ -437,6 +437,7 @@ type SaveShiftExceptionInput struct {
 }
 
 type DistributionGroup struct {
+	Revision          int64
 	ID                uuid.UUID
 	Name              string
 	Description       *string

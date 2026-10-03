@@ -18,6 +18,8 @@ type LeadSnapshot struct {
 	ObservedAt        time.Time  `json:"observedAt"`
 }
 type LeadObservation struct {
+	LeadName            *string       `json:"leadName,omitempty"`
+	LeadURL             *string       `json:"leadUrl,omitempty"`
 	Absent              bool          `json:"absent"`
 	AbsenceReason       *string       `json:"absenceReason"`
 	Scope               Scope         `json:"scope"`

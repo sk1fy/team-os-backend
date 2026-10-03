@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/google/uuid"
 	v "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v1"
@@ -128,7 +129,25 @@ func (h *Handler) GetDistributionQueue(w http.ResponseWriter, r *http.Request, p
 	if !ok {
 		return
 	}
-	h.readRuntime(w, r, "queue", uuid.Nil, l, o, &api.DistributionRuntimeQueue{})
+	request := &v.ReadDistributionRuntimeRequest{Kind: "queue", Limit: l, Offset: o}
+	if p.Tab != nil {
+		request.Tab = string(*p.Tab)
+	}
+	if p.GroupId != nil {
+		request.GroupId = p.GroupId.String()
+	}
+	if p.From != nil {
+		request.From = p.From.Format(time.RFC3339Nano)
+	}
+	if p.To != nil {
+		request.To = p.To.Format(time.RFC3339Nano)
+	}
+	out, e := h.company.ReadDistributionRuntime(outgoingContext(r), request)
+	if e != nil {
+		h.writeRPCError(w, r, e)
+		return
+	}
+	runtimeOutput(w, out, &api.DistributionRuntimeQueue{})
 }
 func (h *Handler) GetDistributionQueueHistory(w http.ResponseWriter, r *http.Request, id api.ID, p api.GetDistributionQueueHistoryParams) {
 	l, o, ok := runtimePage(w, p.Limit, p.Offset)
@@ -136,4 +155,34 @@ func (h *Handler) GetDistributionQueueHistory(w http.ResponseWriter, r *http.Req
 		return
 	}
 	h.readRuntime(w, r, "history", id, l, o, &api.DistributionRuntimeHistory{})
+}
+
+func (h *Handler) GetDistributionSummary(w http.ResponseWriter, r *http.Request, p api.GetDistributionSummaryParams) {
+	request := &v.ReadDistributionRuntimeRequest{Kind: "summary"}
+	if p.GroupId != nil {
+		request.GroupId = p.GroupId.String()
+	}
+	out, e := h.company.ReadDistributionRuntime(outgoingContext(r), request)
+	if e != nil {
+		h.writeRPCError(w, r, e)
+		return
+	}
+	runtimeOutput(w, out, &api.DistributionRuntimeSummary{})
+}
+func (h *Handler) GetDistributionQueueItem(w http.ResponseWriter, r *http.Request, id api.ID) {
+	h.readRuntime(w, r, "detail", id, 0, 0, &api.DistributionRuntimeQueueItem{})
+}
+func (h *Handler) ActOnDistributionQueue(w http.ResponseWriter, r *http.Request, id api.ID) {
+	var in api.DistributionQueueActionInput
+	if !runtimeDecode(w, r, &in, "action", "requestId", "expectedUpdatedAt") {
+		return
+	}
+	h.writeRuntime(w, r, "action", id, in, &api.DistributionRuntimeQueueItem{})
+}
+func (h *Handler) ConfigureDistributionGroup(w http.ResponseWriter, r *http.Request, id api.ID) {
+	var in api.DistributionGroupConfigurationInput
+	if !runtimeDecode(w, r, &in, "expectedRevision", "name", "memberIds", "disabledMemberIds", "active", "algorithm") {
+		return
+	}
+	h.writeRuntime(w, r, "group", id, in, &api.DealDistributionGroup{})
 }

@@ -215,3 +215,7 @@ failure не блокирует следующую готовую сделку.
 already_target/один turn без PATCH, concurrency, настоящий five-second grant
 expiry перед dispatch и новое решение, CRM inactivity, ручную смену владельца,
 durable ACK+reconcile без второго PATCH и unknown с удержанием claims.
+
+## Рабочий интерфейс РС-07
+
+Контракт ручных действий, privacy показателей, миграция 26 и варианты изолированного тестового стенда: [lead-distribution-interface.md](lead-distribution-interface.md).

@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/google/uuid"
 	v "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v1"
@@ -101,5 +102,47 @@ func TestRuntimeQueuePreservesPermissionRedaction(t *testing.T) {
 	runtimeOutput(w, &v.ReadDistributionRuntimeResponse{Payload: []byte(raw)}, &api.DistributionRuntimeQueue{})
 	if w.Code != 200 || !strings.Contains(w.Body.String(), `"leadId":null`) {
 		t.Fatal(w.Code, w.Body.String())
+	}
+}
+
+func TestRuntimeQueueFiltersAreForwardedWithoutLosingPrecision(t *testing.T) {
+	group := uuid.New()
+	tab := api.GetDistributionQueueParamsTab("errors")
+	from := time.Date(2026, 10, 3, 0, 0, 0, 123456000, time.UTC)
+	to := from.Add(time.Hour)
+	h := &Handler{company: runtimeClient{read: func(r *v.ReadDistributionRuntimeRequest) (*v.ReadDistributionRuntimeResponse, error) {
+		if r.Kind != "queue" || r.GroupId != group.String() || r.Tab != "errors" || r.From != from.Format(time.RFC3339Nano) || r.To != to.Format(time.RFC3339Nano) {
+			t.Fatal(r)
+		}
+		return nil, status.Error(codes.PermissionDenied, "Недостаточно прав")
+	}}}
+	w := httptest.NewRecorder()
+	h.GetDistributionQueue(w, httptest.NewRequest("GET", "/", nil), api.GetDistributionQueueParams{Tab: &tab, GroupId: &group, From: &from, To: &to})
+	if w.Code != 403 {
+		t.Fatal(w.Code, w.Body)
+	}
+}
+func TestRuntimeActionRequiresIdentityAndPropagatesConflict(t *testing.T) {
+	id, key := uuid.New(), uuid.New()
+	calls := 0
+	h := &Handler{company: runtimeClient{write: func(r *v.WriteDistributionRuntimeRequest) (*v.WriteDistributionRuntimeResponse, error) {
+		calls++
+		var in api.DistributionQueueActionInput
+		if json.Unmarshal(r.Payload, &in) != nil || r.Kind != "action" || r.Id != id.String() || in.RequestId != key || in.Action != "cancel" {
+			t.Fatal(r)
+		}
+		return nil, status.Error(codes.Aborted, "Сделка изменилась")
+	}}}
+	for _, body := range []string{`{"action":"cancel"}`, `{"action":"cancel","requestId":null,"expectedUpdatedAt":"2026-10-03T00:00:00Z"}`, `{"action":"cancel","requestId":"` + key.String() + `","expectedUpdatedAt":null}`, `{"action":"cancel","requestId":"` + key.String() + `","expectedUpdatedAt":"2026-10-03T00:00:00Z","extra":1}`} {
+		w := httptest.NewRecorder()
+		h.ActOnDistributionQueue(w, httptest.NewRequest("POST", "/", strings.NewReader(body)), id)
+		if w.Code != 400 {
+			t.Fatal(w.Code, w.Body)
+		}
+	}
+	w := httptest.NewRecorder()
+	h.ActOnDistributionQueue(w, httptest.NewRequest("POST", "/", strings.NewReader(`{"action":"cancel","requestId":"`+key.String()+`","expectedUpdatedAt":"2026-10-03T00:00:00Z"}`)), id)
+	if w.Code != 409 || calls != 1 {
+		t.Fatal(w.Code, calls, w.Body)
 	}
 }

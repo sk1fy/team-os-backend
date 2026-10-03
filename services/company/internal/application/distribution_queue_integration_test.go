@@ -111,8 +111,12 @@ func TestDistributionQueueDurableOrderLeaseWakeHistory(t *testing.T) {
 	// A newer active rule deterministically owns new entries; old paused queues
 	// retain their original immutable rule identity.
 	exec("UPDATE distribution_rules SET active=false WHERE id=$1", rule)
+	replacementGroup, e := s.CreateDistributionGroup(ctx, owner, CreateDistributionGroupInput{Name: "Replacement point owner", MemberIDs: []uuid.UUID{employee}})
+	if e != nil {
+		t.Fatal(e)
+	}
 	nextRule := uuid.New()
-	exec("INSERT INTO distribution_rules(id,company_id,binding_id,binding_revision,account_id,pipeline_id,status_id,group_id,active,first_activation_at) VALUES($1,$2,$3,1,'123','20','30',$4,true,clock_timestamp())", nextRule, company, b.BindingID, group.ID)
+	exec("INSERT INTO distribution_rules(id,company_id,binding_id,binding_revision,account_id,pipeline_id,status_id,group_id,active,first_activation_at) VALUES($1,$2,$3,1,'123','20','30',$4,true,clock_timestamp())", nextRule, company, b.BindingID, replacementGroup.ID)
 	fresh := add("13")
 	if _, e = q.AdmitDistributionEntries(ctx); e != nil {
 		t.Fatal(e)

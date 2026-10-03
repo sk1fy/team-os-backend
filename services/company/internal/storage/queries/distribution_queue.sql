@@ -77,3 +77,33 @@ SELECT EXISTS(SELECT 1 FROM distribution_queue q JOIN distribution_rules r ON r.
 SELECT * FROM distribution_control_requests WHERE operation_id=$1 AND action=$2 AND expected_result_version=$3;
 -- name: CreateDistributionControlRequest :exec
 INSERT INTO distribution_control_requests(key,queue_id,operation_id,action,expected_result_version,payload) VALUES($1,$2,$3,$4,$5,$6) ON CONFLICT DO NOTHING;
+
+-- name: ListDistributionQueueFiltered :many
+SELECT * FROM distribution_queue WHERE company_id=sqlc.arg(company_id)
+AND (sqlc.narg(group_id)::uuid IS NULL OR group_id=sqlc.narg(group_id))
+AND (sqlc.narg(from_time)::timestamptz IS NULL OR created_at>=sqlc.narg(from_time))
+AND (sqlc.narg(to_time)::timestamptz IS NULL OR created_at<sqlc.narg(to_time))
+AND (sqlc.arg(tab)::text='' OR CASE sqlc.arg(tab)::text WHEN 'waiting' THEN state='waiting' WHEN 'assigning' THEN state IN('dispatching','uncertain') WHEN 'completed' THEN state IN('confirmed','kept') WHEN 'errors' THEN state IN('requires_configuration','failed') WHEN 'cancelled' THEN state='cancelled' ELSE false END)
+ORDER BY created_at DESC,id DESC LIMIT sqlc.arg(page_limit) OFFSET sqlc.arg(page_offset);
+-- name: GetDistributionUIAction :one
+SELECT * FROM distribution_ui_actions WHERE company_id=$1 AND request_id=$2;
+-- name: SaveDistributionUIAction :exec
+INSERT INTO distribution_ui_actions(company_id,request_id,queue_id,actor_id,payload) VALUES($1,$2,$3,$4,$5);
+-- name: WakeDistributionQueueUI :exec
+UPDATE distribution_queue SET next_attempt_at=clock_timestamp(),cancel_requested=$2,updated_at=clock_timestamp() WHERE id=$1;
+-- name: CancelUndispatchedDistributionQueueUI :exec
+UPDATE distribution_queue SET state='cancelled',reason='user_cancelled',settled=true,cancel_requested=true,updated_at=clock_timestamp() WHERE id=$1 AND operation_id IS NULL;
+-- name: RetryDistributionQueueUI :exec
+UPDATE distribution_queue SET operation_id=NULL,decision_id=NULL,command=NULL,idempotency_key=NULL,cancel_key=NULL,reconcile_key=NULL,availability_hash=NULL,planned_employee_id=NULL,planned_at=NULL,selection_order='{}',cancel_requested=false,state='waiting',reason='user_retry',settled=false,next_attempt_at=clock_timestamp(),lease_token=NULL,lease_until=NULL,updated_at=clock_timestamp() WHERE id=$1;
+-- name: UpdateDistributionGroupConfiguration :one
+UPDATE distribution_groups SET name=$3,member_ids=$4,disabled_member_ids=$5,active=$6,algorithm='round_robin',updated_at=clock_timestamp() WHERE company_id=$1 AND id=$2 AND revision=$7 RETURNING *;
+-- name: ListDistributionSummaryCandidates :many
+SELECT * FROM distribution_queue WHERE company_id=sqlc.arg(company_id) AND (sqlc.narg(group_id)::uuid IS NULL OR group_id=sqlc.narg(group_id)) AND (NOT settled OR state='failed' OR (state IN('confirmed','kept') AND updated_at >= sqlc.arg(day_start) AND updated_at < sqlc.arg(day_end))) ORDER BY created_at,id LIMIT 101;
+-- name: DistributionRuleHasQueue :one
+SELECT EXISTS(SELECT 1 FROM distribution_queue WHERE company_id=$1 AND rule_id=$2) AS used;
+-- name: DistributionGroupHasUnfinishedOperation :one
+SELECT EXISTS(SELECT 1 FROM distribution_queue WHERE company_id=$1 AND group_id=$2 AND operation_id IS NOT NULL AND NOT settled) AS busy;
+-- name: UpdateDistributionRulePoint :one
+UPDATE distribution_rules SET pipeline_id=$3,status_id=$4,active=$5,keep_current=$6,first_activation_at=CASE WHEN (pipeline_id,status_id) IS DISTINCT FROM ($3,$4) THEN CASE WHEN $5 THEN clock_timestamp() ELSE NULL END WHEN $5 THEN COALESCE(first_activation_at,clock_timestamp()) ELSE first_activation_at END,revision=revision+1,updated_at=clock_timestamp() WHERE company_id=$1 AND id=$2 AND revision=$7 RETURNING *;
+-- name: DistributionGroupHasRule :one
+SELECT EXISTS(SELECT 1 FROM distribution_rules WHERE company_id=$1 AND group_id=$2) AS used;
