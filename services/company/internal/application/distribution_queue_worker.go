@@ -97,6 +97,8 @@ func (s *Service) ProcessDistributionQueue(ctx context.Context) (bool, error) {
 	case entry.State == "needs_configuration":
 		reason = "ambiguous_reentry"
 		state = "requires_configuration"
+	case r.ExecutionMode != "live" || r.ExecutionEpoch != row.ExecutionEpoch:
+		reason = "execution_mode_changed"
 	case !r.Active || !g.Active:
 		reason = "group_paused"
 	case b.State != "active" || bindingScope(b) != observed.Scope:
@@ -122,16 +124,6 @@ func (s *Service) ProcessDistributionQueue(ctx context.Context) (bool, error) {
 	if e != nil {
 		return true, e
 	}
-	selected := uuid.Nil
-	kind := "assign"
-	if r.KeepCurrent {
-		for _, a := range available {
-			if a.Available && a.CRMUserID != nil && *a.CRMUserID == observed.Snapshot.ResponsibleUserID {
-				selected = a.EmployeeID
-				kind = "keep"
-			}
-		}
-	}
 	if e = q.EnsureDistributionGroupClaim(ctx, db.EnsureDistributionGroupClaimParams{CompanyID: row.CompanyID, GroupID: row.GroupID}); e != nil {
 		return true, e
 	}
@@ -145,35 +137,18 @@ func (s *Service) ProcessDistributionQueue(ctx context.Context) (bool, error) {
 		}
 		return true, tx.Commit(ctx)
 	}
-	if selected == uuid.Nil {
-		for _, id := range nextMemberOrder(g.MemberIds, claim.CursorOrder, int(claim.CursorNext)) {
-			for _, a := range available {
-				if a.EmployeeID == id && a.Available {
-					selected = id
-					break
-				}
-			}
-			if selected != uuid.Nil {
-				break
-			}
-		}
-	}
+	plan := chooseDistributionPlan(observed.Snapshot.ResponsibleUserID, r.KeepCurrent, available, g.MemberIds, claim.CursorOrder, int(claim.CursorNext))
+	selected, kind := plan.Employee, plan.Kind
 	if selected == uuid.Nil {
 		next := s.now().Add(time.Minute)
-		var shift *time.Time
-		for _, a := range available {
-			if a.NextShift != nil && (shift == nil || a.NextShift.Before(*shift)) {
-				shift = a.NextShift
-			}
+		if plan.Next != nil {
+			next = *plan.Next
 		}
-		if shift != nil {
-			next = *shift
+		state := "waiting"
+		if plan.Kind == "requires_configuration" {
+			state = "requires_configuration"
 		}
-		state, reason := "waiting", "no_available_members"
-		if shift == nil {
-			state, reason = "requires_configuration", "no_valid_members_within_horizon"
-		}
-		if e = s.queueState(ctx, q, row, state, reason, next, false); e != nil {
+		if e = s.queueState(ctx, q, row, state, plan.Reason, next, false); e != nil {
 			return true, e
 		}
 		return true, tx.Commit(ctx)
@@ -238,6 +213,13 @@ func (s *Service) resumeDistributionAssignment(ctx context.Context, core Distrib
 	op, e := core.Operation(ctx, a.Scope, a.Command.OperationID)
 	var remote *corebridge.Error
 	if errors.As(e, &remote) && remote.Status == 404 {
+		allowed, gateErr := s.distributionAssignmentAdmissionGate(ctx, row, a)
+		if gateErr != nil {
+			return gateErr
+		}
+		if !allowed {
+			return nil
+		}
 		_, e = core.Assign(ctx, a, row.IdempotencyKey.UUID)
 		if e == nil {
 			op, e = core.Operation(ctx, a.Scope, a.Command.OperationID)
@@ -396,4 +378,55 @@ func (s *Service) registerRuntimeMirror(ctx context.Context, q *db.Queries, row 
 		return e
 	}
 	return q.WakeDistributionResultInbox(ctx, op.OperationID.String())
+}
+
+// A negative lookup cannot retire a frozen command: an earlier admission may
+// still arrive. Keep the same identity/claims and gate every fresh admission.
+func (s *Service) distributionAssignmentAdmissionGate(ctx context.Context, row db.DistributionQueue, a corebridge.Assignment) (bool, error) {
+	tx, e := s.pool.Begin(ctx)
+	if e != nil {
+		return false, e
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+	q := db.New(tx)
+	if e = q.EnsureDistributionAvailabilityVersion(ctx, row.CompanyID); e != nil {
+		return false, e
+	}
+	if _, e = q.LockDistributionAvailabilityVersion(ctx, row.CompanyID); e != nil {
+		return false, e
+	}
+	current, e := q.LockDistributionQueueLease(ctx, db.LockDistributionQueueLeaseParams{ID: row.ID, LeaseToken: row.LeaseToken})
+	if e != nil {
+		return false, e
+	}
+	r, e := q.GetDistributionRule(ctx, db.GetDistributionRuleParams{CompanyID: row.CompanyID, ID: row.RuleID})
+	if e != nil {
+		return false, e
+	}
+	g, e := q.GetDistributionGroup(ctx, db.GetDistributionGroupParams{CompanyID: row.CompanyID, ID: row.GroupID})
+	if e != nil {
+		return false, e
+	}
+	reason, state := "", "waiting"
+	switch {
+	case current.OperationID != row.OperationID || current.Settled:
+		reason = "decision_changed"
+	case r.ExecutionMode != "live" || r.ExecutionEpoch != current.ExecutionEpoch:
+		reason = "execution_mode_changed"
+	case !r.Active || !g.Active:
+		reason = "group_paused"
+	case !a.Command.ValidUntil.After(s.now()):
+		reason = "expired_never_admitted"
+		state = "requires_configuration"
+	}
+	if reason != "" {
+		if e = s.queueState(ctx, q, current, state, reason, s.now().Add(time.Minute), current.CancelRequested); e != nil {
+			return false, e
+		}
+		return false, tx.Commit(ctx)
+	}
+	if _, e = q.LockDistributionQueueLease(ctx, db.LockDistributionQueueLeaseParams{ID: row.ID, LeaseToken: row.LeaseToken}); e != nil {
+		return false, e
+	}
+	return true, tx.Commit(ctx)
 }

@@ -216,6 +216,51 @@ paths:
         '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         default: { $ref: '#/components/responses/Error' }
+  /api/v1/distribution/rules/{ruleId}/observations:
+    get:
+      tags:
+      - Distribution
+      operationId: getDistributionObservations
+      summary: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0440\u0435\u0437\u0443\
+        \u043B\u044C\u0442\u0430\u0442\u044B \u043D\u0430\u0431\u043B\u044E\u0434\u0435\
+        \u043D\u0438\u044F \u0431\u0435\u0437 \u043D\u0430\u0437\u043D\u0430\u0447\u0435\
+        \u043D\u0438\u044F"
+      parameters:
+      - name: ruleId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 100
+      - name: offset
+        in: query
+        schema:
+          type: integer
+          format: int32
+          minimum: 0
+          maximum: 100000
+      responses:
+        '200':
+          description: "\u0422\u043E\u043B\u044C\u043A\u043E \u0441\u0434\u0435\u043B\
+            \u043A\u0438 \u0441 \u043F\u043E\u0434\u0442\u0432\u0435\u0440\u0436\u0434\
+            \u0451\u043D\u043D\u044B\u043C \u0434\u043E\u0441\u0442\u0443\u043F\u043E\
+            \u043C"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DistributionRuntimeObservations'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        default:
+          $ref: '#/components/responses/Error'
   /api/v1/distribution/queue:
     get:
       tags: [Distribution]
@@ -5756,11 +5801,109 @@ components:
       required: [timezone]
       properties:
         timezone: { type: string, minLength: 1, maxLength: 100 }
+    DistributionObservation:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - ruleId
+      - groupId
+      - entryId
+      - eventId
+      - executionEpoch
+      - ruleRevision
+      - availabilityRevision
+      - observationRevision
+      - checkedAt
+      - decisionKind
+      - reason
+      - leadId
+      - currentResponsibleUserId
+      - plannedEmployeeId
+      - plannedResponsibleUserId
+      - nextShiftAt
+      properties:
+        bindingRevision: {type: integer, format: int64}
+        sourceOccurredAt: {anyOf: [{type: string, format: date-time}, {type: "null"}], x-go-type: "*time.Time", x-go-type-skip-optional-pointer: true}
+        sourceReceivedAt: {anyOf: [{type: string, format: date-time}, {type: "null"}], x-go-type: "*time.Time", x-go-type-skip-optional-pointer: true}
+        crmObservedAt: {type: string, format: date-time}
+        id:
+          $ref: '#/components/schemas/ID'
+        ruleId:
+          $ref: '#/components/schemas/ID'
+        groupId:
+          $ref: '#/components/schemas/ID'
+        entryId:
+          $ref: '#/components/schemas/ID'
+        eventId:
+          $ref: '#/components/schemas/ID'
+        executionEpoch:
+          type: integer
+          format: int64
+        ruleRevision:
+          type: integer
+          format: int64
+        availabilityRevision:
+          type: integer
+          format: int64
+        observationRevision:
+          type: integer
+          format: int64
+        checkedAt:
+          type: string
+          format: date-time
+        decisionKind:
+          type: string
+          enum:
+          - assign
+          - keep
+          - wait
+          - requires_configuration
+          - skipped
+        reason:
+          type: string
+        leadId:
+          $ref: '#/components/schemas/DistributionCRMID'
+        currentResponsibleUserId:
+          anyOf: [{type: string}, {type: "null"}]
+          x-go-type: "*string"
+        plannedEmployeeId:
+          anyOf: [{type: string, format: uuid}, {type: "null"}]
+          x-go-type: "*string"
+        plannedResponsibleUserId:
+          anyOf: [{type: string}, {type: "null"}]
+          x-go-type: "*string"
+        nextShiftAt:
+          anyOf: [{type: string, format: date-time}, {type: "null"}]
+          x-go-type: "*time.Time"
+    DistributionRuntimeObservations:
+      type: object
+      additionalProperties: false
+      required:
+      - items
+      - limit
+      - offset
+      properties:
+        hasMore: {type: boolean}
+        checkedAt: {type: string, format: date-time}
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/DistributionObservation'
+        limit:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
     DistributionRuntimeRule:
       type: object
       additionalProperties: false
       required: [id, bindingId, bindingRevision, accountId, pipelineId, statusId, groupId, active, keepCurrentResponsible, revision, createdAt, updatedAt]
       properties:
+        executionMode: {type: string, enum: [live, observe]}
+        executionEpoch: {type: integer, format: int64, minimum: 1, maximum: 9007199254740991}
+        liveStartedAt: {anyOf: [{type: string, format: date-time}, {type: "null"}], x-go-type: "*time.Time", x-go-type-skip-optional-pointer: true}
         id: { $ref: '#/components/schemas/ID' }
         bindingId: { $ref: '#/components/schemas/ID' }
         bindingRevision: { type: integer, format: int64, minimum: 1, maximum: 9007199254740991 }
@@ -5778,6 +5921,7 @@ components:
       additionalProperties: false
       required: [bindingId, bindingRevision, groupId, pipelineId, statusId]
       properties:
+        executionMode: {type: string, enum: [live, observe], default: live}
         bindingId: { $ref: '#/components/schemas/ID' }
         bindingRevision: { type: integer, format: int64, minimum: 1, maximum: 9007199254740991 }
         groupId: { $ref: '#/components/schemas/ID' }
@@ -5790,6 +5934,7 @@ components:
       additionalProperties: false
       required: [expectedRevision, active, keepCurrentResponsible]
       properties:
+        executionMode: {type: string, enum: [live, observe]}
         pipelineId: { $ref: '#/components/schemas/DistributionCRMID' }
         statusId: { $ref: '#/components/schemas/DistributionCRMID' }
         expectedRevision: { type: integer, format: int64, minimum: 1, maximum: 9007199254740991 }

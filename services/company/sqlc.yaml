@@ -25,6 +25,7 @@ sql:
       - migrations/000025_distribution_queue.up.sql
       - migrations/000026_distribution_interface.up.sql
       - migrations/000027_distribution_widget_requests.up.sql
+      - migrations/000028_distribution_observation.up.sql
     queries: internal/storage/queries
     gen:
       go:

@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"encoding/pem"
+	"errors"
 	"fmt"
 	"io"
 	"net"
@@ -17,6 +18,7 @@ import (
 	"runtime"
 	"strconv"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -88,8 +90,10 @@ func TestRS06ActualCoreTeamSignedBridge(t *testing.T) {
 		return svc
 	}
 	svc := newService()
-	team := httptest.NewUnstartedServer(&Handler{Keys: map[string]string{core.KeyID: core.Secret}, Store: db.New(pool), Service: svc})
-	listener, err := net.Listen("tcp", "0.0.0.0:0")
+	var handler atomic.Pointer[Handler]
+	handler.Store(&Handler{Keys: map[string]string{core.KeyID: core.Secret}, Store: db.New(pool), Service: svc})
+	team := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { handler.Load().ServeHTTP(w, r) }))
+	listener, err := (&net.ListenConfig{}).Listen(ctx, "tcp", "0.0.0.0:0")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -148,7 +152,7 @@ func TestRS06ActualCoreTeamSignedBridge(t *testing.T) {
 			if e != nil {
 				t.Fatal(e)
 			}
-			defer response.Body.Close()
+			defer func() { _ = response.Body.Close() }()
 			result, e := io.ReadAll(response.Body)
 			if e != nil || response.StatusCode != want {
 				t.Fatalf("widget %s status%d want%d body%s err%v", path, response.StatusCode, want, result, e)
@@ -186,12 +190,19 @@ func TestRS06ActualCoreTeamSignedBridge(t *testing.T) {
 		p, st := "20", "30"
 		event := application.DistributionEventEnvelope{SchemaVersion: 1, MessageID: uuid.New(), Scope: core.Scope, EventID: uuid.New(), SourceOccurredAt: &now, ReceivedAt: now, EmittedAt: now, CorrelationID: uuid.New(), Event: application.DistributionCRMEvent{Kind: "lead.created", LeadID: strconv.FormatInt(id, 10), ObservationRevision: eventRevision, SourceEvidence: &application.DistributionSourceEvidence{PipelineID: &p, StatusID: &st}}}
 		raw, _ := json.Marshal(event)
-		request := httptest.NewRequestWithContext(ctx, "POST", teamURL+"/internal/v1/distribution/events", bytes.NewReader(raw))
+		request, err := http.NewRequestWithContext(ctx, "POST", teamURL+"/internal/v1/distribution/events", bytes.NewReader(raw))
+		if err != nil {
+			t.Fatal(err)
+		}
 		corebridge.Sign(request, core.KeyID, core.Secret, core.Scope, raw, time.Now())
-		out := httptest.NewRecorder()
-		team.Config.Handler.ServeHTTP(out, request)
-		if out.Code != 202 {
-			t.Fatalf("signed event ACK %d %s", out.Code, out.Body.String())
+		response, err := team.Client().Do(request)
+		if err != nil {
+			t.Fatal(err)
+		}
+		body, _ := io.ReadAll(response.Body)
+		_ = response.Body.Close()
+		if response.StatusCode != 202 {
+			t.Fatalf("signed event ACK %d %s", response.StatusCode, body)
 		}
 		if found, err := svc.ProcessDistributionDelivery(ctx); !found || err != nil {
 			t.Fatalf("real event processing %v %v", found, err)
@@ -205,12 +216,19 @@ func TestRS06ActualCoreTeamSignedBridge(t *testing.T) {
 		p, old, st := "20", "30", "31"
 		event := application.DistributionEventEnvelope{SchemaVersion: 1, MessageID: uuid.New(), Scope: core.Scope, EventID: uuid.New(), SourceOccurredAt: &now, ReceivedAt: now, EmittedAt: now, CorrelationID: uuid.New(), Event: application.DistributionCRMEvent{Kind: "lead.status_changed", LeadID: strconv.FormatInt(id, 10), ObservationRevision: eventRevision, SourceEvidence: &application.DistributionSourceEvidence{PipelineID: &p, StatusID: &st, OldPipelineID: &p, OldStatusID: &old}}}
 		raw, _ := json.Marshal(event)
-		request := httptest.NewRequestWithContext(ctx, "POST", teamURL+"/internal/v1/distribution/events", bytes.NewReader(raw))
+		request, err := http.NewRequestWithContext(ctx, "POST", teamURL+"/internal/v1/distribution/events", bytes.NewReader(raw))
+		if err != nil {
+			t.Fatal(err)
+		}
 		corebridge.Sign(request, core.KeyID, core.Secret, core.Scope, raw, time.Now())
-		out := httptest.NewRecorder()
-		team.Config.Handler.ServeHTTP(out, request)
-		if out.Code != 202 {
-			t.Fatalf("signed exit ACK %d %s", out.Code, out.Body.String())
+		response, err := team.Client().Do(request)
+		if err != nil {
+			t.Fatal(err)
+		}
+		body, _ := io.ReadAll(response.Body)
+		_ = response.Body.Close()
+		if response.StatusCode != 202 {
+			t.Fatalf("signed exit ACK %d %s", response.StatusCode, body)
 		}
 		if found, err := svc.ProcessDistributionDelivery(ctx); !found || err != nil {
 			t.Fatalf("signed exit processing %v %v", found, err)
@@ -238,7 +256,7 @@ func TestRS06ActualCoreTeamSignedBridge(t *testing.T) {
 			t.Fatalf("cursor %d want%d %v", got, want, err)
 		}
 	}
-	tick := func(wantState string, wantCalls int) {
+	tick := func(t *testing.T, wantState string, wantCalls int) {
 		t.Helper()
 		reply := control(map[string]any{"action": "tick"})
 		if reply.Error != "" || reply.Operation == nil || reply.Operation.State != wantState || reply.PatchCalls != wantCalls {
@@ -248,7 +266,7 @@ func TestRS06ActualCoreTeamSignedBridge(t *testing.T) {
 	t.Run("actual_assignment_and_durable_restart", func(t *testing.T) {
 		created(10, 1, "")
 		process()
-		tick("succeeded", 1)
+		tick(t, "succeeded", 1)
 		settle()
 		state(10, "confirmed")
 		cursor(1)
@@ -258,7 +276,7 @@ func TestRS06ActualCoreTeamSignedBridge(t *testing.T) {
 	t.Run("keep_has_no_patch_and_no_turn", func(t *testing.T) {
 		created(11, 3, "")
 		process()
-		tick("no_change", 1)
+		tick(t, "no_change", 1)
 		settle()
 		state(11, "kept")
 		cursor(1)
@@ -267,7 +285,7 @@ func TestRS06ActualCoreTeamSignedBridge(t *testing.T) {
 	t.Run("same_owner_assign_confirms_exactly_one_turn", func(t *testing.T) {
 		created(12, 3, "")
 		process()
-		tick("no_change", 1)
+		tick(t, "no_change", 1)
 		settle()
 		state(12, "confirmed")
 		cursor(0)
@@ -292,13 +310,13 @@ func TestRS06ActualCoreTeamSignedBridge(t *testing.T) {
 		if err := pool.QueryRow(ctx, `SELECT count(*) FROM distribution_queue WHERE lead_id IN('13','14') AND operation_id IS NOT NULL`).Scan(&commands); err != nil || commands != 1 {
 			t.Fatal("two simultaneous business commands", commands, err)
 		}
-		tick("succeeded", 2)
+		tick(t, "succeeded", 2)
 		settle()
 		state(13, "confirmed")
 		cursor(1)
 		due()
 		process()
-		tick("succeeded", 3)
+		tick(t, "succeeded", 3)
 		settle()
 		state(14, "confirmed")
 		cursor(0)
@@ -320,7 +338,7 @@ func TestRS06ActualCoreTeamSignedBridge(t *testing.T) {
 			t.Fatal("expired grant advanced result", operation, err)
 		}
 		control(map[string]any{"action": "job_ready"})
-		tick("succeeded", 4)
+		tick(t, "succeeded", 4)
 		settle()
 		state(15, "confirmed")
 		cursor(1)
@@ -329,7 +347,7 @@ func TestRS06ActualCoreTeamSignedBridge(t *testing.T) {
 		created(17, 1, "")
 		process()
 		control(map[string]any{"action": "recipient", "userId": 3, "active": false})
-		tick("rejected", 4)
+		tick(t, "rejected", 4)
 		cursor(1)
 		control(map[string]any{"action": "recipient", "userId": 3, "active": true})
 		exited(17, 1)
@@ -344,7 +362,7 @@ func TestRS06ActualCoreTeamSignedBridge(t *testing.T) {
 		created(18, 1, "")
 		process()
 		control(map[string]any{"action": "crm", "leadId": 18, "pipelineId": 20, "statusId": 30, "responsibleUserId": 2, "updatedAt": 101})
-		tick("conflict", 4)
+		tick(t, "conflict", 4)
 		cursor(1)
 		exited(18, 2)
 		settle()
@@ -357,7 +375,7 @@ func TestRS06ActualCoreTeamSignedBridge(t *testing.T) {
 	t.Run("durable_ack_reconciles_without_second_patch", func(t *testing.T) {
 		created(16, 1, "observe_failure")
 		process()
-		tick("confirming", 5)
+		tick(t, "confirming", 5)
 		control(map[string]any{"action": "crm", "leadId": 16, "pipelineId": 20, "statusId": 30, "responsibleUserId": 3, "updatedAt": 101, "mode": ""})
 		settle()
 		state(16, "confirmed")
@@ -369,7 +387,7 @@ func TestRS06ActualCoreTeamSignedBridge(t *testing.T) {
 	t.Run("unknown_outcome_holds_group_and_lead_after_restart", func(t *testing.T) {
 		created(20, 1, "timeout_applied")
 		process()
-		tick("outcome_unknown", 6)
+		tick(t, "outcome_unknown", 6)
 		settle()
 		state(20, "uncertain")
 		cursor(0)
@@ -384,14 +402,245 @@ func TestRS06ActualCoreTeamSignedBridge(t *testing.T) {
 			t.Fatal("unknown outcome repeatedPATCH", reply)
 		}
 	})
+
+	t.Run("rs10_observation_scope_has_zero_effects_and_fresh_enable_boundary", func(t *testing.T) {
+		exec(`UPDATE distribution_queue SET next_attempt_at=clock_timestamp()+interval '1 hour' WHERE group_id=$1`, group)
+		observeGroup, e := svc.CreateDistributionGroup(ctx, owner, application.CreateDistributionGroupInput{Name: "RS10 read-only observation", MemberIDs: []uuid.UUID{core.Employee}})
+		if e != nil {
+			t.Fatal(e)
+		}
+		observedRule, e := svc.CreateDistributionRuntimeRule(ctx, owner, db.CreateDistributionRuleParams{CompanyID: company, BindingID: core.Scope.BindingID, BindingRevision: 1, AccountID: core.Scope.AccountID, PipelineID: "20", StatusID: "31", GroupID: observeGroup.ID, Active: true, KeepCurrent: true, ExecutionMode: "observe"})
+		if e != nil {
+			t.Fatal(e)
+		}
+		control(map[string]any{"action": "pause"})
+		baseline := control(map[string]any{"action": "stats"})
+		event31 := func(id int64) application.DistributionEventEnvelope {
+			t.Helper()
+			control(map[string]any{"action": "crm", "leadId": id, "pipelineId": 20, "statusId": 31, "responsibleUserId": 1, "updatedAt": time.Now().Unix()})
+			now := time.Now().UTC()
+			p, st := "20", "31"
+			eventRevision++
+			event := application.DistributionEventEnvelope{SchemaVersion: 1, MessageID: uuid.New(), Scope: core.Scope, EventID: uuid.New(), SourceOccurredAt: &now, ReceivedAt: now, EmittedAt: now, CorrelationID: uuid.New(), Event: application.DistributionCRMEvent{Kind: "lead.created", LeadID: strconv.FormatInt(id, 10), ObservationRevision: eventRevision, SourceEvidence: &application.DistributionSourceEvidence{PipelineID: &p, StatusID: &st}}}
+			raw, _ := json.Marshal(event)
+			request, e := http.NewRequestWithContext(ctx, "POST", teamURL+"/internal/v1/distribution/events", bytes.NewReader(raw))
+			if e != nil {
+				t.Fatal(e)
+			}
+			corebridge.Sign(request, core.KeyID, core.Secret, core.Scope, raw, time.Now())
+			response, e := team.Client().Do(request)
+			if e != nil {
+				t.Fatal(e)
+			}
+			_ = response.Body.Close()
+			if response.StatusCode != 202 {
+				t.Fatal("event ingress rejected", response.StatusCode)
+			}
+			if found, e := svc.ProcessDistributionDelivery(ctx); !found || e != nil {
+				t.Fatal(found, e)
+			}
+			return event
+		}
+		event := event31(90)
+		if found, e := svc.ProcessDistributionObservation(ctx); !found || e != nil {
+			t.Fatal(found, e)
+		}
+		if _, e := svc.ReceiveDistributionEvent(ctx, event); e != nil {
+			t.Fatal(e)
+		}
+		if found, e := svc.ProcessDistributionObservation(ctx); found || e != nil {
+			t.Fatal("replayed observation executed", found, e)
+		}
+		process()
+		after := control(map[string]any{"action": "stats"})
+		if after.PatchCalls != baseline.PatchCalls || after.Operations != baseline.Operations || after.Guards != baseline.Guards || after.AssignmentJobs != baseline.AssignmentJobs {
+			t.Fatal("observation mutated Core", baseline, after)
+		}
+		var plans, queues, claims int
+		if e := pool.QueryRow(ctx, `SELECT (SELECT count(*) FROM distribution_observations WHERE rule_id=$1),(SELECT count(*) FROM distribution_queue WHERE rule_id=$1),(SELECT count(*) FROM distribution_group_claims WHERE group_id=$2)`, observedRule.ID, observeGroup.ID).Scan(&plans, &queues, &claims); e != nil || plans != 1 || queues != 0 || claims != 0 {
+			t.Fatal("observation mutated business queue", plans, queues, claims, e)
+		}
+		raw, e := svc.DistributionObservations(ctx, owner, observedRule.ID, 25, 0)
+		if e != nil {
+			t.Fatal(e)
+		}
+		var page struct {
+			Items []application.DistributionObservation
+		}
+		if e = json.Unmarshal(raw, &page); e != nil || len(page.Items) != 1 || page.Items[0].DecisionKind != "assign" {
+			t.Fatal(string(raw), e)
+		}
+		token := control(map[string]any{"action": "widget_token"}).WidgetToken
+		body, _ := json.Marshal(map[string]any{"kind": "lead", "leadId": "90"})
+		request, e := http.NewRequestWithContext(ctx, "POST", core.URL+"/api/v1/widget/distribution/runtime", bytes.NewReader(body))
+		if e != nil {
+			t.Fatal(e)
+		}
+		request.Header.Set("Origin", "https://test.amocrm.ru")
+		request.Header.Set("X-Auth-Token", token)
+		request.Header.Set("Content-Type", "application/json")
+		response, e := (&http.Client{Timeout: 3 * time.Second}).Do(request)
+		if e != nil {
+			t.Fatal(e)
+		}
+		wire, _ := io.ReadAll(response.Body)
+		_ = response.Body.Close()
+		if response.StatusCode != 200 {
+			t.Fatalf("actual widget observation status%d %s", response.StatusCode, wire)
+		}
+		var card struct {
+			Latest *application.DistributionObservation `json:"latestObservation"`
+			Items  []any
+		}
+		if e = json.Unmarshal(wire, &card); e != nil || card.Latest == nil || card.Latest.ID != page.Items[0].ID || len(card.Items) != 0 {
+			t.Fatal("widget/Team observation disagree", string(wire), e)
+		}
+		// Offline operator coordinator fixture: actual legacy deployment remains
+		// unobserved. The wrapper may call the real owner API only after stop/drain.
+		writers := &rs10WriterFixture{legacyRunning: true}
+		enable := func() error {
+			var err error
+			raw, err = svc.DistributionRuntimeWrite(ctx, owner, "rule", observedRule.ID, []byte(`{"expectedRevision":1,"active":true,"keepCurrentResponsible":true,"executionMode":"live"}`))
+			return err
+		}
+		if err := writers.enableNew(enable); err == nil {
+			t.Fatal("enabled new writer while legacy was running")
+		}
+		writers.legacyRunning = false
+		writers.oldPending = 1
+		writers.oldUnknown = true
+		if err := writers.enableNew(enable); err == nil {
+			t.Fatal("enabled while legacy effect remained unresolved")
+		}
+		writers.oldPending = 0
+		writers.oldUnknown = false
+		if err := writers.enableNew(enable); err != nil {
+			t.Fatal(err)
+		}
+		if err := writers.returnLegacy(); err == nil {
+			t.Fatal("returned legacy while new writer remained enabled")
+		}
+		writers.newRunning = false
+		writers.newUnknown = true
+		if err := writers.returnLegacy(); err == nil {
+			t.Fatal("returned legacy before unknown new effects were settled")
+		}
+
+		if n, e := db.New(pool).AdmitDistributionEntries(ctx); e != nil || n != 0 {
+			t.Fatal("old observation drained after enable", n, e)
+		}
+		control(map[string]any{"action": "resume"})
+		// CRM source precision is seconds; use the actual next wall second after
+		// the live boundary rather than inventing a future source timestamp.
+		time.Sleep(time.Until(time.Now().Truncate(time.Second).Add(time.Second)) + 10*time.Millisecond)
+		event31(91)
+		admitted := false
+		for n := 0; n < 10; n++ {
+			process()
+			if e = pool.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM distribution_queue WHERE rule_id=$1 AND lead_id='91' AND operation_id IS NOT NULL)`, observedRule.ID).Scan(&admitted); e != nil {
+				t.Fatal(e)
+			}
+			if admitted {
+				break
+			}
+		}
+		if !admitted {
+			t.Fatal("fresh live scope never received its own scheduler turn")
+		}
+		tick(t, "succeeded", baseline.PatchCalls+1)
+		exec(`UPDATE distribution_queue SET next_attempt_at=clock_timestamp() WHERE rule_id=$1 AND lead_id='91'`, observedRule.ID)
+		var confirmed string
+		for n := 0; n < 10; n++ {
+			process()
+			if e = pool.QueryRow(ctx, `SELECT state FROM distribution_queue WHERE rule_id=$1 AND lead_id='91'`, observedRule.ID).Scan(&confirmed); e != nil {
+				t.Fatal(e)
+			}
+			if confirmed == "confirmed" {
+				break
+			}
+		}
+		if e = pool.QueryRow(ctx, `SELECT state FROM distribution_queue WHERE rule_id=$1 AND lead_id='91'`, observedRule.ID).Scan(&confirmed); e != nil || confirmed != "confirmed" {
+			t.Fatal(confirmed, e)
+		}
+	})
+	t.Run("rs10_actual_two_owner_backup_restore_reconnect_preserves_unknown", func(t *testing.T) {
+		control(map[string]any{"action": "pause"})
+		var primary db.DistributionRule
+		primary, e := db.New(pool).GetDistributionRule(ctx, db.GetDistributionRuleParams{CompanyID: company, ID: rule.ID})
+		if e != nil {
+			t.Fatal(e)
+		}
+		payload, _ := json.Marshal(map[string]any{"expectedRevision": primary.Revision, "active": false, "keepCurrentResponsible": primary.KeepCurrent})
+		if _, e = svc.DistributionRuntimeWrite(ctx, owner, "rule", rule.ID, payload); e != nil {
+			t.Fatal(e)
+		}
+		var identity struct {
+			ContainerID string `json:"containerID"`
+		}
+		rs06ReadBridge(t, ctx, dir, "team-owner-container.json", &identity)
+		backup := func(number int, action string) {
+			t.Helper()
+			rs06WriteBridge(t, dir, fmt.Sprintf("backup-request-%d.json", number), map[string]any{"action": action, "teamContainerID": identity.ContainerID})
+			var result struct {
+				OK     bool   `json:"ok"`
+				Owners int    `json:"owners"`
+				Error  string `json:"error"`
+			}
+			rs06ReadBridge(t, ctx, dir, fmt.Sprintf("backup-reply-%d.json", number), &result)
+			if !result.OK || result.Owners != 2 {
+				t.Fatal("two-owner backup coordinator failed", action, result.Error)
+			}
+		}
+		before := control(map[string]any{"action": "stats"})
+		var unknownID uuid.UUID
+		var cursorBefore int32
+		if e = pool.QueryRow(ctx, `SELECT operation_id FROM distribution_queue WHERE lead_id='20'`).Scan(&unknownID); e != nil {
+			t.Fatal(e)
+		}
+		if e = pool.QueryRow(ctx, `SELECT cursor_next FROM distribution_group_claims WHERE group_id=$1`, group).Scan(&cursorBefore); e != nil {
+			t.Fatal(e)
+		}
+		backup(1, "backup")
+		backup(2, "restore")
+		pool.Reset()
+		svc = newService()
+		handler.Store(&Handler{Keys: map[string]string{core.KeyID: core.Secret}, Store: db.New(pool), Service: svc})
+		control(map[string]any{"action": "reconnect"})
+		after := control(map[string]any{"action": "stats"})
+		op, oe := client.Operation(ctx, core.Scope, unknownID)
+		if oe != nil || op.State != "outcome_unknown" || op.ResolutionEvidence.GuardReleasable {
+			t.Fatal("restore retired unknown proof", op.State, oe)
+		}
+		if before.Operations != after.Operations || before.Guards != after.Guards || before.AssignmentJobs != after.AssignmentJobs || before.PatchCalls != after.PatchCalls {
+			t.Fatal("restore changed Core durable identities", before, after)
+		}
+		var restoredID uuid.UUID
+		var cursorAfter int32
+		if e = pool.QueryRow(ctx, `SELECT operation_id FROM distribution_queue WHERE lead_id='20'`).Scan(&restoredID); e != nil || restoredID != unknownID {
+			t.Fatal("restore lost frozen operation", e)
+		}
+		if e = pool.QueryRow(ctx, `SELECT cursor_next FROM distribution_group_claims WHERE group_id=$1`, group).Scan(&cursorAfter); e != nil || cursorAfter != cursorBefore {
+			t.Fatal("restore changed RR", e)
+		}
+		due()
+		process()
+		state(20, "uncertain")
+		if reply := control(map[string]any{"action": "tick"}); reply.PatchCalls != before.PatchCalls {
+			t.Fatal("restore/reconnect repeated PATCH", reply)
+		}
+	})
+
 }
 
 type rs06BridgeReply struct {
-	WidgetToken string                `json:"widgetToken"`
-	Error       string                `json:"error"`
-	Operation   *corebridge.Operation `json:"operation"`
-	PatchCalls  int                   `json:"patchCalls"`
-	NoJob       bool                  `json:"noJob"`
+	WidgetToken    string                `json:"widgetToken"`
+	Error          string                `json:"error"`
+	Operation      *corebridge.Operation `json:"operation"`
+	PatchCalls     int                   `json:"patchCalls"`
+	Operations     int                   `json:"operations"`
+	Guards         int                   `json:"guards"`
+	AssignmentJobs int                   `json:"assignmentJobs"`
+	NoJob          bool                  `json:"noJob"`
 }
 
 func rs06WriteBridge(t *testing.T, dir, name string, value any) {
@@ -445,7 +694,7 @@ func rs06BridgePool(t *testing.T, ctx context.Context) *pgxpool.Pool {
 		}
 		scripts = append(scripts, target)
 	}
-	container, err := postgres.Run(ctx, "postgres:16-alpine", postgres.WithDatabase("company"), postgres.WithUsername("company"), postgres.WithPassword("company"), postgres.WithInitScripts(scripts...), postgres.BasicWaitStrategies())
+	container, err := postgres.Run(ctx, "postgres:16-alpine", testcontainers.WithLabels(map[string]string{"rkrs.distribution.bridge_run": os.Getenv("DISTRIBUTION_BRIDGE_RUN_ID")}), postgres.WithDatabase("company"), postgres.WithUsername("company"), postgres.WithPassword("company"), postgres.WithInitScripts(scripts...), postgres.BasicWaitStrategies())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -454,6 +703,9 @@ func rs06BridgePool(t *testing.T, ctx context.Context) *pgxpool.Pool {
 			t.Error(err)
 		}
 	})
+	if dir := os.Getenv("DISTRIBUTION_BRIDGE_DIR"); dir != "" {
+		rs06WriteBridge(t, dir, "team-owner-container.json", map[string]any{"containerID": container.GetContainerID()})
+	}
 	dsn, err := container.ConnectionString(ctx, "sslmode=disable")
 	if err != nil {
 		t.Fatal(err)
@@ -464,4 +716,30 @@ func rs06BridgePool(t *testing.T, ctx context.Context) *pgxpool.Pool {
 	}
 	t.Cleanup(pool.Close)
 	return pool
+}
+
+// This fixture exercises the offline stop/drain procedure. It neither queries
+// nor controls rakurs-ssd, and is never an authorization bypass in runtime.
+type rs10WriterFixture struct {
+	legacyRunning, newRunning bool
+	oldPending                int
+	oldUnknown, newUnknown    bool
+}
+
+func (w *rs10WriterFixture) enableNew(enable func() error) error {
+	if w.legacyRunning || w.oldPending > 0 || w.oldUnknown {
+		return errors.New("legacy writer is not stopped and drained")
+	}
+	if err := enable(); err != nil {
+		return err
+	}
+	w.newRunning = true
+	return nil
+}
+func (w *rs10WriterFixture) returnLegacy() error {
+	if w.newRunning || w.newUnknown {
+		return errors.New("new writer or unknown effects prevent return")
+	}
+	w.legacyRunning = true
+	return nil
 }

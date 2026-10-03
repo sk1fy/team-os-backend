@@ -149,6 +149,12 @@ func (s *Service) CreateDistributionRuntimeRule(ctx context.Context, actor Actor
 	if _, e := s.distributionActor(ctx, actor, true); e != nil {
 		return db.DistributionRule{}, e
 	}
+	if input.ExecutionMode == "" {
+		input.ExecutionMode = "live"
+	}
+	if input.ExecutionMode != "live" && input.ExecutionMode != "observe" {
+		return db.DistributionRule{}, validation("Неизвестный режим распределения")
+	}
 	input.CompanyID = actor.CompanyID
 	input.ID = uuid.New()
 	q := db.New(s.pool)

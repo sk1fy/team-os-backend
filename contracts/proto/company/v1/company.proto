@@ -1128,6 +1128,8 @@ message SetDistributionEmployeeMappingResponse { DistributionEmployeeMapping map
 message CheckDistributionLeadPermissionResponse { string user_id = 1; bool can_view_lead = 2; string reason = 3; google.protobuf.Timestamp checked_at = 4; }
 
 // The application owns the scope and JSON payload validation. Gateway exposes typed REST DTOs.
+// kind=observations reads immutable plans for id=rule UUID. rule writes accept
+// executionMode=observe|live; active=false keeps default execution disabled.
 message ReadDistributionRuntimeRequest { string kind = 1; string id = 2; int32 limit = 3; int32 offset = 4; string tab = 5; string group_id = 6; string from = 7; string to = 8; }
 message WriteDistributionRuntimeRequest { string kind = 1; string id = 2; bytes payload = 3; }
 message ReadDistributionRuntimeResponse { bytes payload = 1; }

@@ -145,7 +145,7 @@ func (q *Queries) ListDistributionWidgetEmployees(ctx context.Context, arg ListD
 }
 
 const listDistributionWidgetLeadQueue = `-- name: ListDistributionWidgetLeadQueue :many
-SELECT q.id, q.company_id, q.entry_id, q.rule_id, q.group_id, q.account_id, q.lead_id, q.state, q.reason, q.next_attempt_at, q.lease_token, q.lease_until, q.operation_id, q.decision_id, q.command, q.idempotency_key, q.cancel_key, q.reconcile_key, q.cancel_requested, q.settled, q.availability_hash, q.wake_revision, q.claim_revision, q.selection_order, q.planned_employee_id, q.planned_at, q.created_at, q.updated_at FROM distribution_queue q JOIN distribution_rules r ON r.id=q.rule_id WHERE q.company_id=$1 AND r.binding_id=$2 AND r.binding_revision=$3 AND q.lead_id=$4 ORDER BY q.created_at DESC,q.id LIMIT $5 OFFSET $6
+SELECT q.id, q.company_id, q.entry_id, q.rule_id, q.group_id, q.account_id, q.lead_id, q.state, q.reason, q.next_attempt_at, q.lease_token, q.lease_until, q.operation_id, q.decision_id, q.command, q.idempotency_key, q.cancel_key, q.reconcile_key, q.cancel_requested, q.settled, q.availability_hash, q.wake_revision, q.claim_revision, q.selection_order, q.planned_employee_id, q.planned_at, q.created_at, q.updated_at, q.execution_epoch FROM distribution_queue q JOIN distribution_rules r ON r.id=q.rule_id WHERE q.company_id=$1 AND r.binding_id=$2 AND r.binding_revision=$3 AND q.lead_id=$4 ORDER BY q.created_at DESC,q.id LIMIT $5 OFFSET $6
 `
 
 type ListDistributionWidgetLeadQueueParams struct {
@@ -202,6 +202,7 @@ func (q *Queries) ListDistributionWidgetLeadQueue(ctx context.Context, arg ListD
 			&i.PlannedAt,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.ExecutionEpoch,
 		); err != nil {
 			return nil, err
 		}
@@ -214,7 +215,7 @@ func (q *Queries) ListDistributionWidgetLeadQueue(ctx context.Context, arg ListD
 }
 
 const listDistributionWidgetRules = `-- name: ListDistributionWidgetRules :many
-SELECT id, company_id, binding_id, binding_revision, account_id, pipeline_id, status_id, group_id, active, keep_current, first_activation_at, revision, created_at, updated_at FROM distribution_rules WHERE company_id=$1 AND binding_id=$2 AND binding_revision=$3 ORDER BY created_at,id LIMIT $4 OFFSET $5
+SELECT id, company_id, binding_id, binding_revision, account_id, pipeline_id, status_id, group_id, active, keep_current, first_activation_at, revision, created_at, updated_at, execution_mode, execution_epoch, live_started_at FROM distribution_rules WHERE company_id=$1 AND binding_id=$2 AND binding_revision=$3 ORDER BY created_at,id LIMIT $4 OFFSET $5
 `
 
 type ListDistributionWidgetRulesParams struct {
@@ -255,6 +256,9 @@ func (q *Queries) ListDistributionWidgetRules(ctx context.Context, arg ListDistr
 			&i.Revision,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.ExecutionMode,
+			&i.ExecutionEpoch,
+			&i.LiveStartedAt,
 		); err != nil {
 			return nil, err
 		}

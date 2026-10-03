@@ -343,6 +343,16 @@ func (s *Service) processDistributionEvent(ctx context.Context, row db.Distribut
 	if e = q.UpdateDistributionLeadHead(ctx, db.UpdateDistributionLeadHeadParams{AccountID: scope.AccountID, LeadID: in.Event.LeadID, CompanyID: scope.CompanyID, BindingID: scope.BindingID, BindingRevision: scope.BindingRevision, AppliedGeneration: generation, ObservationRevision: observed.ObservationRevision, LastSequence: sequence, Snapshot: raw, Deleted: observed.Deleted, Absent: observed.Absent, AbsenceReason: pgText(observed.AbsenceReason), CurrentEntryID: entry, ObservedAt: pgtype.Timestamptz{Time: observed.ObservedAt.UTC(), Valid: true}}); e != nil {
 		return e
 	}
+	observationEntry := entry
+	if !observationEntry.Valid && head.CurrentEntryID.Valid {
+		observationEntry = head.CurrentEntryID
+	}
+	if observationEntry.Valid {
+		if e = q.ScheduleDistributionObservation(ctx, db.ScheduleDistributionObservationParams{ID: observationEntry.UUID, EventID: in.EventID}); e != nil {
+			return e
+		}
+	}
+
 	if _, e = q.LockDistributionDeliveryLease(ctx, db.LockDistributionDeliveryLeaseParams{ReceiptID: row.ReceiptID, LeaseToken: row.LeaseToken}); e != nil {
 		return e
 	}

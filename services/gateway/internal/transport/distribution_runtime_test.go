@@ -117,7 +117,7 @@ func TestRuntimeQueueFiltersAreForwardedWithoutLosingPrecision(t *testing.T) {
 		return nil, status.Error(codes.PermissionDenied, "Недостаточно прав")
 	}}}
 	w := httptest.NewRecorder()
-	h.GetDistributionQueue(w, httptest.NewRequest("GET", "/", nil), api.GetDistributionQueueParams{Tab: &tab, GroupId: &group, From: &from, To: &to})
+	h.GetDistributionQueue(w, httptest.NewRequestWithContext(context.Background(), "GET", "/", nil), api.GetDistributionQueueParams{Tab: &tab, GroupId: &group, From: &from, To: &to})
 	if w.Code != 403 {
 		t.Fatal(w.Code, w.Body)
 	}
@@ -135,13 +135,13 @@ func TestRuntimeActionRequiresIdentityAndPropagatesConflict(t *testing.T) {
 	}}}
 	for _, body := range []string{`{"action":"cancel"}`, `{"action":"cancel","requestId":null,"expectedUpdatedAt":"2026-10-03T00:00:00Z"}`, `{"action":"cancel","requestId":"` + key.String() + `","expectedUpdatedAt":null}`, `{"action":"cancel","requestId":"` + key.String() + `","expectedUpdatedAt":"2026-10-03T00:00:00Z","extra":1}`} {
 		w := httptest.NewRecorder()
-		h.ActOnDistributionQueue(w, httptest.NewRequest("POST", "/", strings.NewReader(body)), id)
+		h.ActOnDistributionQueue(w, httptest.NewRequestWithContext(context.Background(), "POST", "/", strings.NewReader(body)), id)
 		if w.Code != 400 {
 			t.Fatal(w.Code, w.Body)
 		}
 	}
 	w := httptest.NewRecorder()
-	h.ActOnDistributionQueue(w, httptest.NewRequest("POST", "/", strings.NewReader(`{"action":"cancel","requestId":"`+key.String()+`","expectedUpdatedAt":"2026-10-03T00:00:00Z"}`)), id)
+	h.ActOnDistributionQueue(w, httptest.NewRequestWithContext(context.Background(), "POST", "/", strings.NewReader(`{"action":"cancel","requestId":"`+key.String()+`","expectedUpdatedAt":"2026-10-03T00:00:00Z"}`)), id)
 	if w.Code != 409 || calls != 1 {
 		t.Fatal(w.Code, calls, w.Body)
 	}

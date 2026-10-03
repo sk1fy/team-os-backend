@@ -270,6 +270,42 @@ type DistributionMappingVersion struct {
 	CreatedAt      time.Time     `json:"created_at"`
 }
 
+type DistributionObservation struct {
+	ID              uuid.UUID `json:"id"`
+	CompanyID       uuid.UUID `json:"company_id"`
+	RuleID          uuid.UUID `json:"rule_id"`
+	GroupID         uuid.UUID `json:"group_id"`
+	ExecutionEpoch  int64     `json:"execution_epoch"`
+	EntryID         uuid.UUID `json:"entry_id"`
+	EventID         uuid.UUID `json:"event_id"`
+	BindingID       uuid.UUID `json:"binding_id"`
+	BindingRevision int64     `json:"binding_revision"`
+	AccountID       string    `json:"account_id"`
+	LeadID          string    `json:"lead_id"`
+	Payload         []byte    `json:"payload"`
+	CreatedAt       time.Time `json:"created_at"`
+}
+
+type DistributionObservationJob struct {
+	ID              uuid.UUID          `json:"id"`
+	CompanyID       uuid.UUID          `json:"company_id"`
+	RuleID          uuid.UUID          `json:"rule_id"`
+	ExecutionEpoch  int64              `json:"execution_epoch"`
+	EntryID         uuid.UUID          `json:"entry_id"`
+	EventID         uuid.UUID          `json:"event_id"`
+	BindingID       uuid.UUID          `json:"binding_id"`
+	BindingRevision int64              `json:"binding_revision"`
+	AccountID       string             `json:"account_id"`
+	LeadID          string             `json:"lead_id"`
+	State           string             `json:"state"`
+	Attempts        int32              `json:"attempts"`
+	NextAttemptAt   time.Time          `json:"next_attempt_at"`
+	LeaseToken      uuid.NullUUID      `json:"lease_token"`
+	LeaseUntil      pgtype.Timestamptz `json:"lease_until"`
+	CreatedAt       time.Time          `json:"created_at"`
+	UpdatedAt       time.Time          `json:"updated_at"`
+}
+
 type DistributionObservedEntry struct {
 	ID                 uuid.UUID          `json:"id"`
 	CompanyID          uuid.UUID          `json:"company_id"`
@@ -355,6 +391,7 @@ type DistributionQueue struct {
 	PlannedAt         pgtype.Timestamptz `json:"planned_at"`
 	CreatedAt         time.Time          `json:"created_at"`
 	UpdatedAt         time.Time          `json:"updated_at"`
+	ExecutionEpoch    int64              `json:"execution_epoch"`
 }
 
 type DistributionQueueHistory struct {
@@ -381,6 +418,9 @@ type DistributionRule struct {
 	Revision          int64              `json:"revision"`
 	CreatedAt         time.Time          `json:"created_at"`
 	UpdatedAt         time.Time          `json:"updated_at"`
+	ExecutionMode     string             `json:"execution_mode"`
+	ExecutionEpoch    int64              `json:"execution_epoch"`
+	LiveStartedAt     pgtype.Timestamptz `json:"live_started_at"`
 }
 
 type DistributionServiceGrant struct {

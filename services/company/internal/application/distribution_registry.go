@@ -75,6 +75,10 @@ func (s *Service) validateRegisteredDistributionDecision(ctx context.Context, in
 		deny.Reason = "company_unavailable"
 		return deny, nil
 	}
+	if r.ExecutionMode != "live" || r.ExecutionEpoch != row.ExecutionEpoch {
+		deny.Reason = "execution_mode_changed"
+		return deny, nil
+	}
 	if b.State != "active" || bindingScope(b) != in.Scope || b.MappingAckRevision != b.MappingRevision || !r.Active || !g.Active || r.Revision != c.RuleRevision || version.Revision != c.AvailabilityRevision {
 		deny.Reason = "decision_stale"
 		return deny, nil

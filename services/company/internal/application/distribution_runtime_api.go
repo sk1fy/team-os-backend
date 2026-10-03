@@ -16,22 +16,29 @@ import (
 )
 
 type distributionRuleDTO struct {
-	ID                     uuid.UUID `json:"id"`
-	BindingID              uuid.UUID `json:"bindingId"`
-	BindingRevision        int64     `json:"bindingRevision"`
-	AccountID              string    `json:"accountId"`
-	PipelineID             string    `json:"pipelineId"`
-	StatusID               string    `json:"statusId"`
-	GroupID                uuid.UUID `json:"groupId"`
-	Active                 bool      `json:"active"`
-	KeepCurrentResponsible bool      `json:"keepCurrentResponsible"`
-	Revision               int64     `json:"revision"`
-	CreatedAt              time.Time `json:"createdAt"`
-	UpdatedAt              time.Time `json:"updatedAt"`
+	ExecutionMode          string     `json:"executionMode"`
+	ExecutionEpoch         int64      `json:"executionEpoch"`
+	LiveStartedAt          *time.Time `json:"liveStartedAt"`
+	ID                     uuid.UUID  `json:"id"`
+	BindingID              uuid.UUID  `json:"bindingId"`
+	BindingRevision        int64      `json:"bindingRevision"`
+	AccountID              string     `json:"accountId"`
+	PipelineID             string     `json:"pipelineId"`
+	StatusID               string     `json:"statusId"`
+	GroupID                uuid.UUID  `json:"groupId"`
+	Active                 bool       `json:"active"`
+	KeepCurrentResponsible bool       `json:"keepCurrentResponsible"`
+	Revision               int64      `json:"revision"`
+	CreatedAt              time.Time  `json:"createdAt"`
+	UpdatedAt              time.Time  `json:"updatedAt"`
 }
 
 func ruleDTO(r db.DistributionRule) distributionRuleDTO {
-	return distributionRuleDTO{r.ID, r.BindingID, r.BindingRevision, r.AccountID, r.PipelineID, r.StatusID, r.GroupID, r.Active, r.KeepCurrent, r.Revision, r.CreatedAt, r.UpdatedAt}
+	var live *time.Time
+	if r.LiveStartedAt.Valid {
+		live = &r.LiveStartedAt.Time
+	}
+	return distributionRuleDTO{r.ExecutionMode, r.ExecutionEpoch, live, r.ID, r.BindingID, r.BindingRevision, r.AccountID, r.PipelineID, r.StatusID, r.GroupID, r.Active, r.KeepCurrent, r.Revision, r.CreatedAt, r.UpdatedAt}
 }
 func (s *Service) DistributionRuntimeRead(ctx context.Context, actor Actor, kind string, id uuid.UUID, limit, offset int32) (json.RawMessage, error) {
 	if _, e := s.distributionActor(ctx, actor, false); e != nil {
@@ -65,6 +72,8 @@ func (s *Service) DistributionRuntimeRead(ctx context.Context, actor Actor, kind
 			items = append(items, ruleDTO(r))
 		}
 		out = map[string]any{"items": items}
+	case "observations":
+		return s.DistributionObservations(ctx, actor, id, limit, offset)
 	case "availability":
 		r, e := q.GetDistributionRule(ctx, db.GetDistributionRuleParams{CompanyID: actor.CompanyID, ID: id})
 		if isNoRows(e) {
@@ -162,6 +171,7 @@ func (s *Service) DistributionRuntimeWrite(ctx context.Context, actor Actor, kin
 	case "rules":
 		var in struct {
 			BindingID       uuid.UUID `json:"bindingId"`
+			ExecutionMode   *string   `json:"executionMode"`
 			BindingRevision int64     `json:"bindingRevision"`
 			GroupID         uuid.UUID `json:"groupId"`
 			PipelineID      string    `json:"pipelineId"`
@@ -187,7 +197,14 @@ func (s *Service) DistributionRuntimeWrite(ctx context.Context, actor Actor, kin
 		if in.Keep != nil {
 			keep = *in.Keep
 		}
-		r, e := s.CreateDistributionRuntimeRule(ctx, actor, db.CreateDistributionRuleParams{CompanyID: actor.CompanyID, BindingID: in.BindingID, BindingRevision: in.BindingRevision, AccountID: b.AccountID, GroupID: in.GroupID, PipelineID: in.PipelineID, StatusID: in.StatusID, Active: active, KeepCurrent: keep})
+		mode := "live"
+		if in.ExecutionMode != nil {
+			mode = *in.ExecutionMode
+		}
+		if mode != "live" && mode != "observe" {
+			return nil, validation("Неизвестный режим распределения")
+		}
+		r, e := s.CreateDistributionRuntimeRule(ctx, actor, db.CreateDistributionRuleParams{CompanyID: actor.CompanyID, BindingID: in.BindingID, BindingRevision: in.BindingRevision, AccountID: b.AccountID, GroupID: in.GroupID, PipelineID: in.PipelineID, StatusID: in.StatusID, Active: active, KeepCurrent: keep, ExecutionMode: mode})
 		if e != nil {
 			return nil, e
 		}
@@ -195,6 +212,7 @@ func (s *Service) DistributionRuntimeWrite(ctx context.Context, actor Actor, kin
 	case "rule":
 		var in struct {
 			ExpectedRevision int64   `json:"expectedRevision"`
+			ExecutionMode    *string `json:"executionMode"`
 			PipelineID       *string `json:"pipelineId"`
 			StatusID         *string `json:"statusId"`
 			Active           *bool   `json:"active"`
@@ -262,7 +280,7 @@ func (s *Service) DistributionRuntimeWrite(ctx context.Context, actor Actor, kin
 		if _, e = s.distributionActor(ctx, actor, true); e != nil {
 			return nil, e
 		}
-		old, e := q.GetDistributionRule(ctx, db.GetDistributionRuleParams{CompanyID: actor.CompanyID, ID: id})
+		old, e := q.LockDistributionRule(ctx, db.LockDistributionRuleParams{CompanyID: actor.CompanyID, ID: id})
 		if isNoRows(e) {
 			return nil, notFound("Правило")
 		}
@@ -272,12 +290,36 @@ func (s *Service) DistributionRuntimeWrite(ctx context.Context, actor Actor, kin
 		if old.Revision != initial.Revision {
 			return nil, conflict("Правило изменилось: обновите данные")
 		}
+		if in.ExecutionMode != nil {
+			if *in.ExecutionMode != "live" && *in.ExecutionMode != "observe" {
+				return nil, validation("Неизвестный режим распределения")
+			}
+			if old.ExecutionMode != *in.ExecutionMode {
+				if old.ExecutionEpoch >= 9007199254740991 {
+					return nil, conflict("Достигнут предел версий режима")
+				}
+				busy, err := q.DistributionRuleUnsettled(ctx, db.DistributionRuleUnsettledParams{CompanyID: actor.CompanyID, RuleID: id})
+				if err != nil {
+					return nil, err
+				}
+				if busy {
+					return nil, conflict("Сначала завершите или отмените все ожидающие сделки правила")
+				}
+				if err = q.UpdateDistributionExecutionMode(ctx, db.UpdateDistributionExecutionModeParams{CompanyID: actor.CompanyID, ID: id, ExecutionMode: *in.ExecutionMode}); err != nil {
+					return nil, err
+				}
+			}
+		}
 		if changed {
 			used, e := q.DistributionRuleHasQueue(ctx, db.DistributionRuleHasQueueParams{CompanyID: actor.CompanyID, RuleID: id})
 			if e != nil {
 				return nil, e
 			}
-			if used {
+			observedUsed, err := q.DistributionRuleHasObservation(ctx, db.DistributionRuleHasObservationParams{CompanyID: actor.CompanyID, RuleID: id})
+			if err != nil {
+				return nil, err
+			}
+			if used || observedUsed {
 				return nil, conflict("Правило уже использовалось: приостановите его и создайте новую группу для другого этапа")
 			}
 			current, e := q.GetDistributionBinding(ctx, db.GetDistributionBindingParams{CompanyID: actor.CompanyID, ID: old.BindingID})

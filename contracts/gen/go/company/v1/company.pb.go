@@ -11594,6 +11594,8 @@ func (x *CheckDistributionLeadPermissionResponse) GetCheckedAt() *timestamppb.Ti
 }
 
 // The application owns the scope and JSON payload validation. Gateway exposes typed REST DTOs.
+// kind=observations reads immutable plans for id=rule UUID. rule writes accept
+// executionMode=observe|live; active=false keeps default execution disabled.
 type ReadDistributionRuntimeRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Kind          string                 `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`

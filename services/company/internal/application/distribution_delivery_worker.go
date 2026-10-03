@@ -31,6 +31,17 @@ func (s *Service) RunDistributionDelivery(ctx context.Context) {
 		}
 		for n := 0; n < 20; n++ {
 			work, cancel := context.WithTimeout(ctx, 20*time.Second)
+			found, e := s.ProcessDistributionObservation(work)
+			cancel()
+			if e != nil && s.logger != nil {
+				s.logger.Warn("distribution observation deferred", "error", e)
+			}
+			if !found || ctx.Err() != nil {
+				break
+			}
+		}
+		for n := 0; n < 20; n++ {
+			work, cancel := context.WithTimeout(ctx, 20*time.Second)
 			found, e := s.ProcessDistributionQueue(work)
 			cancel()
 			if e != nil && s.logger != nil {

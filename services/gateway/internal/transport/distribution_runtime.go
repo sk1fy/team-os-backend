@@ -186,3 +186,11 @@ func (h *Handler) ConfigureDistributionGroup(w http.ResponseWriter, r *http.Requ
 	}
 	h.writeRuntime(w, r, "group", id, in, &api.DealDistributionGroup{})
 }
+
+func (h *Handler) GetDistributionObservations(w http.ResponseWriter, r *http.Request, id api.ID, p api.GetDistributionObservationsParams) {
+	l, o, ok := runtimePage(w, p.Limit, p.Offset)
+	if !ok {
+		return
+	}
+	h.readRuntime(w, r, "observations", id, l, o, &api.DistributionRuntimeObservations{})
+}

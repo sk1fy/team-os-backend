@@ -7,15 +7,19 @@ SELECT * FROM distribution_rules WHERE company_id=$1 ORDER BY created_at,id LIMI
 -- name: GetDistributionRule :one
 SELECT * FROM distribution_rules WHERE company_id=$1 AND id=$2;
 -- name: CreateDistributionRule :one
-INSERT INTO distribution_rules(id,company_id,binding_id,binding_revision,account_id,pipeline_id,status_id,group_id,active,keep_current,first_activation_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,CASE WHEN $9 THEN clock_timestamp() ELSE NULL END) RETURNING *;
+INSERT INTO distribution_rules(id,company_id,binding_id,binding_revision,account_id,pipeline_id,status_id,group_id,active,keep_current,first_activation_at,live_started_at,execution_mode) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,CASE WHEN $9 THEN clock_timestamp() ELSE NULL END,CASE WHEN $9 AND COALESCE(NULLIF(sqlc.arg(execution_mode)::text,''),'live')='live' THEN clock_timestamp() ELSE NULL END,COALESCE(NULLIF(sqlc.arg(execution_mode)::text,''),'live')) RETURNING *;
 -- name: UpdateDistributionRule :one
-UPDATE distribution_rules SET active=$3,keep_current=$4,first_activation_at=CASE WHEN $3 THEN COALESCE(first_activation_at,clock_timestamp()) ELSE first_activation_at END,revision=revision+1,updated_at=clock_timestamp() WHERE company_id=$1 AND id=$2 AND revision=$5 RETURNING *;
+UPDATE distribution_rules SET active=$3,keep_current=$4,live_started_at=CASE WHEN $3 AND execution_mode='live' THEN COALESCE(live_started_at,clock_timestamp()) ELSE live_started_at END,first_activation_at=CASE WHEN $3 THEN COALESCE(first_activation_at,clock_timestamp()) ELSE first_activation_at END,revision=revision+1,updated_at=clock_timestamp() WHERE company_id=$1 AND id=$2 AND revision=$5 RETURNING *;
 -- name: AdmitDistributionEntries :execrows
-INSERT INTO distribution_queue(id,company_id,entry_id,rule_id,group_id,account_id,lead_id)
-SELECT gen_random_uuid(),chosen.company_id,chosen.id,chosen.rule_id,chosen.group_id,chosen.account_id,chosen.lead_id FROM (
-SELECT DISTINCT ON(e.id) e.id,e.company_id,e.account_id,e.lead_id,e.created_at,r.id AS rule_id,r.group_id
-FROM distribution_observed_entries e JOIN distribution_rules r ON r.company_id=e.company_id AND r.binding_id=e.binding_id AND r.binding_revision=e.binding_revision AND r.account_id=e.account_id AND r.pipeline_id=e.pipeline_id AND r.status_id=e.status_id
-WHERE e.state='checking' AND e.evidence IN('created_in_stage','observed_transition') AND r.first_activation_at IS NOT NULL AND e.created_at>=r.first_activation_at AND e.source_received_at>=r.first_activation_at AND e.source_occurred_at>=r.first_activation_at AND NOT EXISTS(SELECT 1 FROM distribution_queue q WHERE q.entry_id=e.id)
+WITH live_rules AS MATERIALIZED (
+ SELECT r.* FROM distribution_rules r WHERE r.execution_mode='live' AND EXISTS(SELECT 1 FROM distribution_observed_entries e WHERE e.company_id=r.company_id AND e.binding_id=r.binding_id AND e.binding_revision=r.binding_revision AND e.account_id=r.account_id AND e.pipeline_id=r.pipeline_id AND e.status_id=r.status_id AND e.state='checking' AND e.source_received_at>=r.live_started_at AND e.source_occurred_at>=r.live_started_at AND e.created_at>=r.live_started_at AND NOT EXISTS(SELECT 1 FROM distribution_queue q WHERE q.entry_id=e.id))
+ ORDER BY r.created_at,r.id LIMIT 200 FOR SHARE SKIP LOCKED
+)
+INSERT INTO distribution_queue(id,company_id,entry_id,rule_id,group_id,account_id,lead_id,execution_epoch)
+SELECT gen_random_uuid(),chosen.company_id,chosen.id,chosen.rule_id,chosen.group_id,chosen.account_id,chosen.lead_id,chosen.execution_epoch FROM (
+SELECT DISTINCT ON(e.id) e.id,e.company_id,e.account_id,e.lead_id,e.created_at,r.id AS rule_id,r.group_id,r.execution_epoch
+FROM distribution_observed_entries e JOIN live_rules r ON r.company_id=e.company_id AND r.binding_id=e.binding_id AND r.binding_revision=e.binding_revision AND r.account_id=e.account_id AND r.pipeline_id=e.pipeline_id AND r.status_id=e.status_id
+WHERE r.execution_mode='live' AND e.state='checking' AND e.evidence IN('created_in_stage','observed_transition') AND r.first_activation_at IS NOT NULL AND e.created_at>=r.first_activation_at AND e.source_received_at>=r.first_activation_at AND e.source_occurred_at>=r.first_activation_at AND r.live_started_at IS NOT NULL AND e.created_at>=r.live_started_at AND e.source_received_at>=r.live_started_at AND e.source_occurred_at>=r.live_started_at AND NOT EXISTS(SELECT 1 FROM distribution_queue q WHERE q.entry_id=e.id)
 ORDER BY e.id,r.active DESC,r.first_activation_at DESC,r.id
 ) chosen ORDER BY chosen.created_at,chosen.id LIMIT 200
 ON CONFLICT(entry_id) DO NOTHING;
@@ -104,6 +108,6 @@ SELECT EXISTS(SELECT 1 FROM distribution_queue WHERE company_id=$1 AND rule_id=$
 -- name: DistributionGroupHasUnfinishedOperation :one
 SELECT EXISTS(SELECT 1 FROM distribution_queue WHERE company_id=$1 AND group_id=$2 AND operation_id IS NOT NULL AND NOT settled) AS busy;
 -- name: UpdateDistributionRulePoint :one
-UPDATE distribution_rules SET pipeline_id=$3,status_id=$4,active=$5,keep_current=$6,first_activation_at=CASE WHEN (pipeline_id,status_id) IS DISTINCT FROM ($3,$4) THEN CASE WHEN $5 THEN clock_timestamp() ELSE NULL END WHEN $5 THEN COALESCE(first_activation_at,clock_timestamp()) ELSE first_activation_at END,revision=revision+1,updated_at=clock_timestamp() WHERE company_id=$1 AND id=$2 AND revision=$7 RETURNING *;
+UPDATE distribution_rules SET pipeline_id=$3,status_id=$4,active=$5,keep_current=$6,live_started_at=CASE WHEN (pipeline_id,status_id) IS DISTINCT FROM ($3,$4) THEN CASE WHEN $5 AND execution_mode='live' THEN clock_timestamp() ELSE NULL END WHEN $5 AND execution_mode='live' THEN COALESCE(live_started_at,clock_timestamp()) ELSE live_started_at END,first_activation_at=CASE WHEN (pipeline_id,status_id) IS DISTINCT FROM ($3,$4) THEN CASE WHEN $5 THEN clock_timestamp() ELSE NULL END WHEN $5 THEN COALESCE(first_activation_at,clock_timestamp()) ELSE first_activation_at END,revision=revision+1,updated_at=clock_timestamp() WHERE company_id=$1 AND id=$2 AND revision=$7 RETURNING *;
 -- name: DistributionGroupHasRule :one
 SELECT EXISTS(SELECT 1 FROM distribution_rules WHERE company_id=$1 AND group_id=$2) AS used;

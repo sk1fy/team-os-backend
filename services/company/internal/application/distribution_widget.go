@@ -43,7 +43,7 @@ func (s *Service) widgetRuntimeActor(ctx context.Context, in DistributionWidgetR
 func (s *Service) widgetRuntimeResource(ctx context.Context, in DistributionWidgetRuntimeInput) error {
 	q := db.New(s.pool)
 	switch in.Kind {
-	case "rule", "availability":
+	case "rule", "availability", "observations":
 		r, e := q.GetDistributionRule(ctx, db.GetDistributionRuleParams{CompanyID: in.CompanyID, ID: in.ID})
 		if e != nil {
 			return notFound("Правило")
@@ -100,6 +100,8 @@ func (s *Service) DistributionWidgetRuntime(ctx context.Context, in Distribution
 	q := db.New(s.pool)
 	if !in.Write {
 		switch in.Kind {
+		case "observations":
+			return s.DistributionObservations(ctx, actor, in.ID, in.Limit, in.Offset)
 		case "references":
 			refs, e := s.readDistributionReferences(ctx, in.Scope)
 			if e != nil {
@@ -159,7 +161,15 @@ func (s *Service) DistributionWidgetRuntime(ctx context.Context, in Distribution
 				}
 				items = append(items, detail)
 			}
-			return json.Marshal(map[string]any{"items": items, "checkedAt": s.now()})
+			actual, e := s.widgetCurrentLead(ctx, actor, in.Scope, in.LeadID)
+			if e != nil {
+				return nil, e
+			}
+			latest, e := s.latestLeadObservation(ctx, actor, in.Scope, in.LeadID)
+			if e != nil {
+				return nil, e
+			}
+			return json.Marshal(map[string]any{"items": items, "checkedAt": s.now(), "latestObservation": latest, "currentLead": actual})
 		default:
 			return nil, validation("Неизвестная операция чтения")
 		}

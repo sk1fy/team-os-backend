@@ -30,11 +30,11 @@ func (s *Server) ReadDistributionRuntime(ctx context.Context, r *v.ReadDistribut
 		return nil, invalidRequest()
 	}
 	switch r.Kind {
-	case "settings", "rules", "availability", "queue", "history", "detail", "summary":
+	case "settings", "rules", "availability", "queue", "history", "detail", "summary", "observations":
 	default:
 		return nil, invalidRequest()
 	}
-	id, e := runtimeID(r.Id, r.Kind == "availability" || r.Kind == "history" || r.Kind == "detail")
+	id, e := runtimeID(r.Id, r.Kind == "availability" || r.Kind == "history" || r.Kind == "detail" || r.Kind == "observations")
 	if e != nil {
 		return nil, e
 	}
