@@ -120,3 +120,18 @@ pull `minio/minio:RELEASE.2025-04-22T22-12-26Z`. Тот же image pin суще�
 на main; PostgreSQL миграции и сам smoke в этом job не запускались. Official
 Quay mirror не предоставил ни этот tag, ни прежний digest. Это отдельная
 проблема CI-инфраструктуры, не результат выполнения очереди распределения.
+
+Восстановление E2E изолировано в `deploy/docker-compose.ci.yaml` и
+`deploy/ci/minio.Dockerfile`: сборка того же официального release из commit
+`0d7408fc9969caf07de6a8c3a84f9fbb10a6739e`, с проверкой SHA-256 архива до
+компиляции, неизменным upstream go.sum и pinned multiarch builder/runtime.
+Go 1.25.14 используется только для этого CI fixture; основной backend остаётся
+на Go 1.25.13. Dev/production image pin, версия MinIO и S3 API не изменены.
+См. [инструкцию smoke](../../tests/e2e/README.md).
+
+Проверки fixture: final Docker build PASS; `minio --version` подтверждает
+исходные release/commit и Go 1.25.14; live/ready health endpoints — HTTP 200;
+CI Compose config и `make check-production-compose` — PASS. Дополнительная
+cross-build проверка того же source на Go 1.25.13 также прошла. Временный
+health-контейнер остановлен и удалён. Полный smoke после этого выполняется в
+GitHub CI, не подменяется проверкой health.
