@@ -58,6 +58,15 @@ func (c *Client) Assign(ctx context.Context, a Assignment, key uuid.UUID) (Assig
 	}
 	return out, e
 }
+
+// ExpireAssignment fences the original frozen intent at Core. A negative GET
+// alone cannot prove that an earlier admission will not arrive after it.
+func (c *Client) ExpireAssignment(ctx context.Context, a Assignment, key uuid.UUID) (Operation, error) {
+	var out Operation
+	e := c.assignmentCall(ctx, "/internal/v1/distribution/assignments/expire", a.Scope, key, a, 200, &out)
+	return out, e
+}
+
 func (c *Client) CancelAssignment(ctx context.Context, s Scope, id, key uuid.UUID, version int64) (Operation, error) {
 	var out Operation
 	e := c.assignmentCall(ctx, "/internal/v1/distribution/operations/"+id.String()+"/cancel", s, key, struct {

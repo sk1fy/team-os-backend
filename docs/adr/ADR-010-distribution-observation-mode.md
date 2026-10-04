@@ -37,8 +37,14 @@ fresh currentLead, независимо от исторического план
 Кандидат наблюдения не резервируется и может повторяться в нескольких планах.
 Source precision seconds не доказывает вход после microsecond floor в ту же
 секунду. Старый frozen intent не удаляется на Core404: поздний admission всё ещё
-возможен. Expired never-admitted требует operator inspection/отдельного negative
-admission протокола. Down28 запрещён при использованных observation identities.
+возможен. С ревью 2026-10-04 истёкший intent восстанавливается через Core
+`POST /internal/v1/distribution/assignments/expire` с исходными body и
+Idempotency-Key. Core сериализует запрос с admission и возвращает существующую
+операцию либо сохраняет terminal no-attempt результат. Только проверенный
+результат с `guardReleasable=true` освобождает claims; неизвестный эффект
+существующей операции сохраняется. Старый Core без endpoint, ошибка сети,
+несовпадение identity или отказ доступа сохраняют frozen intent и оба claims.
+Down28 запрещён при использованных observation identities.
 
 Живой legacy cutover, настоящий OAuth/SDK и серверный пилот не подтверждены
 локальными fixtures. Процедура и матрица находятся в `amocrm-pro`:

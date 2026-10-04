@@ -17,6 +17,7 @@ import (
 type DistributionAssignmentCore interface {
 	DistributionDeliveryCore
 	Assign(context.Context, corebridge.Assignment, uuid.UUID) (corebridge.AssignmentReceipt, error)
+	ExpireAssignment(context.Context, corebridge.Assignment, uuid.UUID) (corebridge.Operation, error)
 	CancelAssignment(context.Context, corebridge.Scope, uuid.UUID, uuid.UUID, int64) (corebridge.Operation, error)
 	ReconcileAssignment(context.Context, corebridge.Scope, uuid.UUID, uuid.UUID, int64) (corebridge.Operation, error)
 	ControlAssignment(context.Context, corebridge.Scope, uuid.UUID, uuid.UUID, string, json.RawMessage) (corebridge.Operation, error)

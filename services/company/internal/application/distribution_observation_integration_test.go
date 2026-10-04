@@ -5,6 +5,7 @@ package application
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"testing"
 	"time"
 
@@ -135,11 +136,13 @@ func TestDistributionObservationIsolationDedupPrivacyAndEnableBoundary(t *testin
 		t.Fatal("mode flip ignored unsettled live queue")
 	}
 
-	// A negative lookup must not erase an in-flight-capable frozen identity.
+	// Lost admission response leaves the frozen identity durable without a
+	// registered Core operation. A 404 alone cannot release either claim.
+	crm.assignError = errors.New("lost admission response")
 	if found, e := service.ProcessDistributionQueue(ctx); !found || e != nil {
 		t.Fatal("live fixture did not freeze a decision", found, e)
 	}
-	row, e := q.GetDistributionQueueByOperation(ctx, nullID(crm.operation.OperationID))
+	row, e := q.GetDistributionQueueByOperation(ctx, nullID(crm.assignment.Command.OperationID))
 	if e != nil {
 		t.Fatal(e)
 	}
@@ -148,14 +151,14 @@ func TestDistributionObservationIsolationDedupPrivacyAndEnableBoundary(t *testin
 	if e = json.Unmarshal(row.Command, &command); e != nil {
 		t.Fatal(e)
 	}
-	crm.operation = corebridge.Operation{} // exact 404 may race a late admission.
+	crm.expireError = &corebridge.Error{Status: 404} // rolling deployment with older Core.
 	service.now = func() time.Time { return command.Command.ValidUntil.Add(time.Second) }
 	exec(`UPDATE distribution_queue SET next_attempt_at=clock_timestamp() WHERE id=$1`, row.ID)
 	if found, e := service.ProcessDistributionQueue(ctx); !found || e != nil {
 		t.Fatal(found, e)
 	}
 	current, e := q.LockDistributionQueue(ctx, row.ID)
-	if e != nil || current.Reason != "expired_never_admitted" || current.State != "requires_configuration" || current.OperationID != frozenOperation || current.IdempotencyKey != frozenKey || crm.calls != 1 {
+	if e != nil || current.Reason != "operation_unavailable" || current.State != "uncertain" || current.OperationID != frozenOperation || current.IdempotencyKey != frozenKey || crm.calls != 1 || crm.expireKey != frozenKey.UUID {
 		t.Fatal("expired negative lookup changed frozen intent", current, e, crm.calls)
 	}
 	var held int
@@ -172,6 +175,45 @@ func TestDistributionObservationIsolationDedupPrivacyAndEnableBoundary(t *testin
 	current, e = q.LockDistributionQueue(ctx, row.ID)
 	if e != nil || current.Reason != "group_paused" || current.OperationID != frozenOperation || crm.calls != 1 {
 		t.Fatal("paused admission sent or retired a frozen command", current, e)
+	}
+	// The same command can now be fenced at Core after expiry even while the
+	// group is paused. The terminal no-attempt evidence retires both claims,
+	// leaves the round-robin cursor untouched and allows future recalculation.
+	crm.expireError = nil
+	crm.expireResponseError = errors.New("lost expiry response after commit")
+	service.now = func() time.Time { return command.Command.ValidUntil.Add(time.Second) }
+	exec(`UPDATE distribution_queue SET next_attempt_at=clock_timestamp() WHERE id=$1`, row.ID)
+	if found, e := service.ProcessDistributionQueue(ctx); !found || e != nil {
+		t.Fatal("expiry recovery", found, e)
+	}
+	current, e = q.LockDistributionQueue(ctx, row.ID)
+	if e != nil || current.State != "uncertain" || current.OperationID != frozenOperation || current.IdempotencyKey != frozenKey {
+		t.Fatal("lost expiry response retired unproven intent", current, e)
+	}
+	if e = pool.QueryRow(ctx, `SELECT count(*) FROM distribution_lead_claims WHERE queue_id=$1`, row.ID).Scan(&held); e != nil || held != 1 {
+		t.Fatal("lost expiry response released claim", held, e)
+	}
+	// A new process discovers the committed terminal result via GET; it does
+	// not need to repeat Assign or mint a replacement operation identity.
+	service = &Service{pool: pool, now: service.now, distributionCore: links, deliveryCore: crm}
+	exec(`UPDATE distribution_queue SET next_attempt_at=clock_timestamp() WHERE id=$1`, row.ID)
+	if found, e := service.ProcessDistributionQueue(ctx); !found || e != nil {
+		t.Fatal("restart after lost expiry response", found, e)
+	}
+	current, e = q.LockDistributionQueue(ctx, row.ID)
+	if e != nil || current.Reason != "decision_recalculation" || current.State != "waiting" || current.OperationID.Valid || crm.calls != 1 || crm.expireCalls != 2 || crm.expireKey != frozenKey.UUID {
+		t.Fatal("durable expiry did not recalculate safely", current, e)
+	}
+	if e = pool.QueryRow(ctx, `SELECT count(*) FROM distribution_lead_claims WHERE queue_id=$1`, row.ID).Scan(&held); e != nil || held != 0 {
+		t.Fatal("proven no-attempt retained lead claim", held, e)
+	}
+	claim, e := q.LockDistributionGroupClaim(ctx, db.LockDistributionGroupClaimParams{CompanyID: company, GroupID: group.ID})
+	if e != nil || claim.QueueID.Valid || claim.CursorNext != 0 {
+		t.Fatal("proven no-attempt retained group claim or advanced cursor", claim, e)
+	}
+	mirror, e := q.GetDistributionOperationMirror(ctx, frozenOperation.UUID)
+	if e != nil || mirror.State != "rejected" || mirror.Unfinished {
+		t.Fatal("expiry evidence was not persisted", mirror, e)
 	}
 
 }

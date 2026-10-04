@@ -16,10 +16,15 @@ import (
 
 type nightCore struct {
 	*fakeDistributionCore
-	now        func() time.Time
-	assignment corebridge.Assignment
-	operation  corebridge.Operation
-	calls      int
+	now                 func() time.Time
+	assignment          corebridge.Assignment
+	operation           corebridge.Operation
+	calls               int
+	expireCalls         int
+	expireError         error
+	expireResponseError error
+	expireKey           uuid.UUID
+	assignError         error
 }
 
 func (f *nightCore) ReadLead(_ context.Context, s corebridge.Scope, id string) (corebridge.LeadObservation, error) {
@@ -35,10 +40,37 @@ func (f *nightCore) Operation(_ context.Context, _ corebridge.Scope, id uuid.UUI
 func (f *nightCore) Assign(_ context.Context, a corebridge.Assignment, _ uuid.UUID) (corebridge.AssignmentReceipt, error) {
 	f.calls++
 	f.assignment = a
+	if f.assignError != nil {
+		return corebridge.AssignmentReceipt{}, f.assignError
+	}
+	f.operation = nightOperation(a, f.now())
+	return corebridge.AssignmentReceipt{OperationID: a.Command.OperationID, AcceptedAt: f.operation.AcceptedAt, State: "queued", ResultVersion: 1}, nil
+}
+
+func nightOperation(a corebridge.Assignment, now time.Time) corebridge.Operation {
 	c := a.Command
-	now := f.now()
-	f.operation = corebridge.Operation{LeadID: c.ExpectedSnapshot.LeadID, OperationID: c.OperationID, Scope: a.Scope, EpisodeID: c.EpisodeID, DecisionID: c.DecisionID, RuleID: c.RuleID, GroupID: c.GroupID, RuleRevision: c.RuleRevision, AvailabilityRevision: c.AvailabilityRevision, ClaimRevision: c.ClaimRevision, EventID: a.EventID, CorrelationID: a.CorrelationID, TargetResponsibleUserID: c.TargetResponsibleUserID, State: "queued", ExternalEffectState: "no_attempt", ResultVersion: 1, ResolutionEvidence: corebridge.OperationEvidence{Kind: "no_request_sent", ObservedAt: now}, AcceptedAt: now, UpdatedAt: now}
-	return corebridge.AssignmentReceipt{OperationID: c.OperationID, AcceptedAt: now, State: "queued", ResultVersion: 1}, nil
+	return corebridge.Operation{LeadID: c.ExpectedSnapshot.LeadID, OperationID: c.OperationID, Scope: a.Scope, EpisodeID: c.EpisodeID, DecisionID: c.DecisionID, RuleID: c.RuleID, GroupID: c.GroupID, RuleRevision: c.RuleRevision, AvailabilityRevision: c.AvailabilityRevision, ClaimRevision: c.ClaimRevision, EventID: a.EventID, CorrelationID: a.CorrelationID, TargetResponsibleUserID: c.TargetResponsibleUserID, State: "queued", ExternalEffectState: "no_attempt", ResultVersion: 1, ResolutionEvidence: corebridge.OperationEvidence{Kind: "no_request_sent", ObservedAt: now}, AcceptedAt: now, UpdatedAt: now}
+}
+
+func (f *nightCore) ExpireAssignment(_ context.Context, a corebridge.Assignment, key uuid.UUID) (corebridge.Operation, error) {
+	f.expireCalls++
+	f.expireKey = key
+	if f.expireError != nil {
+		return corebridge.Operation{}, f.expireError
+	}
+	if f.operation.OperationID == a.Command.OperationID {
+		return f.operation, nil
+	}
+	f.operation = nightOperation(a, f.now())
+	f.operation.State = "rejected"
+	rejected := "rejected"
+	f.operation.Outcome = &rejected
+	f.operation.Error = &corebridge.OperationError{Code: "decision_expired", Message: "Срок решения истёк", Terminal: true}
+	f.operation.ResolutionEvidence.GuardReleasable = true
+	if f.expireResponseError != nil {
+		return corebridge.Operation{}, f.expireResponseError
+	}
+	return f.operation, nil
 }
 func (f *nightCore) CancelAssignment(_ context.Context, _ corebridge.Scope, id, key uuid.UUID, _ int64) (corebridge.Operation, error) {
 	return f.operation, nil

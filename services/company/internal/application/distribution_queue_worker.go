@@ -213,16 +213,23 @@ func (s *Service) resumeDistributionAssignment(ctx context.Context, core Distrib
 	op, e := core.Operation(ctx, a.Scope, a.Command.OperationID)
 	var remote *corebridge.Error
 	if errors.As(e, &remote) && remote.Status == 404 {
-		allowed, gateErr := s.distributionAssignmentAdmissionGate(ctx, row, a)
-		if gateErr != nil {
-			return gateErr
-		}
-		if !allowed {
-			return nil
-		}
-		_, e = core.Assign(ctx, a, row.IdempotencyKey.UUID)
-		if e == nil {
-			op, e = core.Operation(ctx, a.Scope, a.Command.OperationID)
+		if !a.Command.ValidUntil.After(s.now()) {
+			// Core serializes this exact frozen intent with admission, persisting
+			// either the existing operation or a terminal no-attempt tombstone.
+			// Never infer safety from 404, expiry, pause or cancellation alone.
+			op, e = core.ExpireAssignment(ctx, a, row.IdempotencyKey.UUID)
+		} else {
+			allowed, gateErr := s.distributionAssignmentAdmissionGate(ctx, row, a)
+			if gateErr != nil {
+				return gateErr
+			}
+			if !allowed {
+				return nil
+			}
+			_, e = core.Assign(ctx, a, row.IdempotencyKey.UUID)
+			if e == nil {
+				op, e = core.Operation(ctx, a.Scope, a.Command.OperationID)
+			}
 		}
 	}
 	if e != nil {
