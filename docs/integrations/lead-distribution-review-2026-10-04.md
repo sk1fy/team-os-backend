@@ -82,8 +82,9 @@ claims. Cursor не продвигается. Если эпизод ещё ак�
 - Добавлен paired сценарий
   `expired_missing_admission_is_fenced_before_claim_release`: настоящие
   Core↔TeamOS handlers/HMAC и две PostgreSQL, terminal result, late POST,
-  exact expiry replay, сохранённый cursor и следующий ход группы. Полный запуск
-  выполняется совместно из Core через `make distribution-team-bridge-test`.
+  exact expiry replay, сохранённый cursor и следующий ход группы. Финальный запуск
+  `make distribution-team-bridge-test` — PASS: 13 сценариев, настоящий
+  Core↔TeamOS HTTP/HMAC, две PostgreSQL и согласованный backup/restore.
 
 ## Совместимость и ограничения
 
