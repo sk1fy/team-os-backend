@@ -283,14 +283,18 @@ func TestRS06ActualCoreTeamSignedBridge(t *testing.T) {
 			t.Fatal(e)
 		}
 		// Simulate a process restored with a committed frozen command whose POST
-		// never reached Core. Cancellation preserves its IDs until remote proof.
+		// never reached Core. The active episode must be recalculated after proof.
 		exec(`INSERT INTO distribution_lead_heads(account_id,lead_id,company_id,binding_id,binding_revision,current_entry_id) VALUES($1,'9',$2,$3,1,$4)`, core.Scope.AccountID, company, core.Scope.BindingID, entry)
 		exec(`INSERT INTO distribution_observed_entries(id,company_id,account_id,lead_id,binding_id,binding_revision,sequence,pipeline_id,status_id,entry_event_id,evidence,state,source_received_at,source_occurred_at) VALUES($1,$2,$3,'9',$4,1,1,'20','30',$5,'created_in_stage','checking',$6,$6)`, entry, company, core.Scope.AccountID, core.Scope.BindingID, a.EventID, a.ReceivedAt)
-		exec(`INSERT INTO distribution_queue(id,company_id,entry_id,rule_id,group_id,account_id,lead_id,state,operation_id,decision_id,command,idempotency_key,cancel_key,reconcile_key,availability_hash,planned_employee_id,selection_order,cancel_requested) VALUES($1,$2,$3,$4,$5,$6,'9','uncertain',$7,$8,$9,$10,$11,$12,decode(repeat('00',32),'hex'),$13,$14,true)`, queue, company, entry, rule.ID, group, core.Scope.AccountID, a.Command.OperationID, a.Command.DecisionID, raw, key, uuid.New(), uuid.New(), core.Employee, []uuid.UUID{core.Employee, core.Employee3})
+		exec(`INSERT INTO distribution_queue(id,company_id,entry_id,rule_id,group_id,account_id,lead_id,state,operation_id,decision_id,command,idempotency_key,cancel_key,reconcile_key,availability_hash,planned_employee_id,selection_order) VALUES($1,$2,$3,$4,$5,$6,'9','uncertain',$7,$8,$9,$10,$11,$12,decode(repeat('00',32),'hex'),$13,$14)`, queue, company, entry, rule.ID, group, core.Scope.AccountID, a.Command.OperationID, a.Command.DecisionID, raw, key, uuid.New(), uuid.New(), core.Employee, []uuid.UUID{core.Employee, core.Employee3})
 		exec(`INSERT INTO distribution_group_claims(company_id,group_id,queue_id) VALUES($1,$2,$3)`, company, group, queue)
 		exec(`INSERT INTO distribution_lead_claims(account_id,lead_id,queue_id) VALUES($1,'9',$2)`, core.Scope.AccountID, queue)
 		process()
-		state(9, "failed")
+		state(9, "waiting")
+		recovered, e := db.New(pool).LockDistributionQueue(ctx, queue)
+		if e != nil || recovered.Reason != "decision_recalculation" || recovered.OperationID.Valid || recovered.Command != nil || recovered.Settled {
+			t.Fatal("terminal expiry did not restore an active episode", recovered, e)
+		}
 		cursor(0)
 		var held int
 		if e = pool.QueryRow(ctx, `SELECT (SELECT count(*) FROM distribution_lead_claims WHERE queue_id=$1)+(SELECT count(*) FROM distribution_group_claims WHERE queue_id=$1)`, queue).Scan(&held); e != nil || held != 0 {
@@ -313,6 +317,9 @@ func TestRS06ActualCoreTeamSignedBridge(t *testing.T) {
 		if after.Operations != before.Operations+1 || after.Guards != before.Guards || after.AssignmentJobs != before.AssignmentJobs+1 || after.PatchCalls != before.PatchCalls {
 			t.Fatal("expiry or late replay changed durable identities or sent PATCH", before, after)
 		}
+		// Retire the now-undispatched fixture waiting row so the following cases
+		// can use the same group. This cannot discard an unresolved operation.
+		exec(`UPDATE distribution_queue SET state='cancelled',reason='user_cancelled',settled=true,cancel_requested=true WHERE id=$1 AND operation_id IS NULL`, queue)
 	})
 	t.Run("actual_assignment_and_durable_restart", func(t *testing.T) {
 		created(10, 1, "")
