@@ -105,7 +105,7 @@ fmt: ## Format Go code in every module.
 	@set -e; for module in $(MODULE_DIRS); do (cd "$$module" && $(GO) fmt ./...); done
 
 check-contract: ## Validate contracts and compare with the frontend when the sync tool exists.
-	@npx --yes @redocly/cli@1.34.2 lint contracts/openapi/teamos.yaml
+	@npx --yes @redocly/cli@1.34.2 lint contracts/openapi/teamos.yaml contracts/openapi/distribution-internal.yaml
 	@cd contracts && buf lint && buf build
 	@if [[ -d tools/sync-contract ]]; then \
 		FRONTEND_DIR="$(FRONTEND_DIR)" $(GO) run ./tools/sync-contract; \

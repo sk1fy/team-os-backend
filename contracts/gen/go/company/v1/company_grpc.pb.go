@@ -19,81 +19,92 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	CompanyService_Register_FullMethodName                         = "/teamos.company.v1.CompanyService/Register"
-	CompanyService_ReserveRegistrationLogin_FullMethodName         = "/teamos.company.v1.CompanyService/ReserveRegistrationLogin"
-	CompanyService_CheckAmoAccount_FullMethodName                  = "/teamos.company.v1.CompanyService/CheckAmoAccount"
-	CompanyService_IssueCompanyRegistrationToken_FullMethodName    = "/teamos.company.v1.CompanyService/IssueCompanyRegistrationToken"
-	CompanyService_ValidateCompanyRegistrationToken_FullMethodName = "/teamos.company.v1.CompanyService/ValidateCompanyRegistrationToken"
-	CompanyService_ExchangeAmoWidgetSession_FullMethodName         = "/teamos.company.v1.CompanyService/ExchangeAmoWidgetSession"
-	CompanyService_ProvisionAmoAdminSession_FullMethodName         = "/teamos.company.v1.CompanyService/ProvisionAmoAdminSession"
-	CompanyService_ValidateAmoWidgetContinuation_FullMethodName    = "/teamos.company.v1.CompanyService/ValidateAmoWidgetContinuation"
-	CompanyService_CompleteAmoWidgetContinuation_FullMethodName    = "/teamos.company.v1.CompanyService/CompleteAmoWidgetContinuation"
-	CompanyService_CheckAmoSessionAccess_FullMethodName            = "/teamos.company.v1.CompanyService/CheckAmoSessionAccess"
-	CompanyService_AmoAdminSelfLogin_FullMethodName                = "/teamos.company.v1.CompanyService/AmoAdminSelfLogin"
-	CompanyService_BootstrapAmoCompany_FullMethodName              = "/teamos.company.v1.CompanyService/BootstrapAmoCompany"
-	CompanyService_Login_FullMethodName                            = "/teamos.company.v1.CompanyService/Login"
-	CompanyService_LoginByLogin_FullMethodName                     = "/teamos.company.v1.CompanyService/LoginByLogin"
-	CompanyService_LoginWithAccessLink_FullMethodName              = "/teamos.company.v1.CompanyService/LoginWithAccessLink"
-	CompanyService_ImpersonateUser_FullMethodName                  = "/teamos.company.v1.CompanyService/ImpersonateUser"
-	CompanyService_Refresh_FullMethodName                          = "/teamos.company.v1.CompanyService/Refresh"
-	CompanyService_Logout_FullMethodName                           = "/teamos.company.v1.CompanyService/Logout"
-	CompanyService_GetInviteByToken_FullMethodName                 = "/teamos.company.v1.CompanyService/GetInviteByToken"
-	CompanyService_AcceptInvite_FullMethodName                     = "/teamos.company.v1.CompanyService/AcceptInvite"
-	CompanyService_ProvisionCompany_FullMethodName                 = "/teamos.company.v1.CompanyService/ProvisionCompany"
-	CompanyService_GetProvisionedCompanyStatus_FullMethodName      = "/teamos.company.v1.CompanyService/GetProvisionedCompanyStatus"
-	CompanyService_GetBootstrapActivation_FullMethodName           = "/teamos.company.v1.CompanyService/GetBootstrapActivation"
-	CompanyService_CompleteBootstrapActivation_FullMethodName      = "/teamos.company.v1.CompanyService/CompleteBootstrapActivation"
-	CompanyService_IssueSsoToken_FullMethodName                    = "/teamos.company.v1.CompanyService/IssueSsoToken"
-	CompanyService_ExchangeSsoToken_FullMethodName                 = "/teamos.company.v1.CompanyService/ExchangeSsoToken"
-	CompanyService_GetOnboardingStatus_FullMethodName              = "/teamos.company.v1.CompanyService/GetOnboardingStatus"
-	CompanyService_ReissueOnboardingActivation_FullMethodName      = "/teamos.company.v1.CompanyService/ReissueOnboardingActivation"
-	CompanyService_GetCurrentUser_FullMethodName                   = "/teamos.company.v1.CompanyService/GetCurrentUser"
-	CompanyService_UpdateCurrentUser_FullMethodName                = "/teamos.company.v1.CompanyService/UpdateCurrentUser"
-	CompanyService_GetCompany_FullMethodName                       = "/teamos.company.v1.CompanyService/GetCompany"
-	CompanyService_UpdateCompany_FullMethodName                    = "/teamos.company.v1.CompanyService/UpdateCompany"
-	CompanyService_GetDepartments_FullMethodName                   = "/teamos.company.v1.CompanyService/GetDepartments"
-	CompanyService_CreateDepartment_FullMethodName                 = "/teamos.company.v1.CompanyService/CreateDepartment"
-	CompanyService_UpdateDepartment_FullMethodName                 = "/teamos.company.v1.CompanyService/UpdateDepartment"
-	CompanyService_DeleteDepartment_FullMethodName                 = "/teamos.company.v1.CompanyService/DeleteDepartment"
-	CompanyService_MoveDepartment_FullMethodName                   = "/teamos.company.v1.CompanyService/MoveDepartment"
-	CompanyService_GetPositions_FullMethodName                     = "/teamos.company.v1.CompanyService/GetPositions"
-	CompanyService_GetPosition_FullMethodName                      = "/teamos.company.v1.CompanyService/GetPosition"
-	CompanyService_CreatePosition_FullMethodName                   = "/teamos.company.v1.CompanyService/CreatePosition"
-	CompanyService_UpdatePosition_FullMethodName                   = "/teamos.company.v1.CompanyService/UpdatePosition"
-	CompanyService_DeletePosition_FullMethodName                   = "/teamos.company.v1.CompanyService/DeletePosition"
-	CompanyService_MovePosition_FullMethodName                     = "/teamos.company.v1.CompanyService/MovePosition"
-	CompanyService_GetUsers_FullMethodName                         = "/teamos.company.v1.CompanyService/GetUsers"
-	CompanyService_GetUser_FullMethodName                          = "/teamos.company.v1.CompanyService/GetUser"
-	CompanyService_CreateUser_FullMethodName                       = "/teamos.company.v1.CompanyService/CreateUser"
-	CompanyService_UpdateUser_FullMethodName                       = "/teamos.company.v1.CompanyService/UpdateUser"
-	CompanyService_UpdateUserCard_FullMethodName                   = "/teamos.company.v1.CompanyService/UpdateUserCard"
-	CompanyService_DeleteUser_FullMethodName                       = "/teamos.company.v1.CompanyService/DeleteUser"
-	CompanyService_GetUserAccess_FullMethodName                    = "/teamos.company.v1.CompanyService/GetUserAccess"
-	CompanyService_SetUserPasswordAccess_FullMethodName            = "/teamos.company.v1.CompanyService/SetUserPasswordAccess"
-	CompanyService_SetUserLinkAccess_FullMethodName                = "/teamos.company.v1.CompanyService/SetUserLinkAccess"
-	CompanyService_RevokeUserPasswordAccess_FullMethodName         = "/teamos.company.v1.CompanyService/RevokeUserPasswordAccess"
-	CompanyService_RevokeUserLinkAccess_FullMethodName             = "/teamos.company.v1.CompanyService/RevokeUserLinkAccess"
-	CompanyService_RevokeUserAccess_FullMethodName                 = "/teamos.company.v1.CompanyService/RevokeUserAccess"
-	CompanyService_GetInvites_FullMethodName                       = "/teamos.company.v1.CompanyService/GetInvites"
-	CompanyService_InviteUser_FullMethodName                       = "/teamos.company.v1.CompanyService/InviteUser"
-	CompanyService_ResendInvite_FullMethodName                     = "/teamos.company.v1.CompanyService/ResendInvite"
-	CompanyService_RevokeInvite_FullMethodName                     = "/teamos.company.v1.CompanyService/RevokeInvite"
-	CompanyService_GetUsersByIds_FullMethodName                    = "/teamos.company.v1.CompanyService/GetUsersByIds"
-	CompanyService_ResolveReportUserScope_FullMethodName           = "/teamos.company.v1.CompanyService/ResolveReportUserScope"
-	CompanyService_GetReportUserProfiles_FullMethodName            = "/teamos.company.v1.CompanyService/GetReportUserProfiles"
-	CompanyService_ResolvePositionUsers_FullMethodName             = "/teamos.company.v1.CompanyService/ResolvePositionUsers"
-	CompanyService_ResolveDepartmentUsers_FullMethodName           = "/teamos.company.v1.CompanyService/ResolveDepartmentUsers"
-	CompanyService_GetSchedules_FullMethodName                     = "/teamos.company.v1.CompanyService/GetSchedules"
-	CompanyService_SaveSchedule_FullMethodName                     = "/teamos.company.v1.CompanyService/SaveSchedule"
-	CompanyService_GetShiftExceptions_FullMethodName               = "/teamos.company.v1.CompanyService/GetShiftExceptions"
-	CompanyService_SaveShiftExceptions_FullMethodName              = "/teamos.company.v1.CompanyService/SaveShiftExceptions"
-	CompanyService_GetDistributionGroups_FullMethodName            = "/teamos.company.v1.CompanyService/GetDistributionGroups"
-	CompanyService_CreateDistributionGroup_FullMethodName          = "/teamos.company.v1.CompanyService/CreateDistributionGroup"
-	CompanyService_UpdateDistributionGroup_FullMethodName          = "/teamos.company.v1.CompanyService/UpdateDistributionGroup"
-	CompanyService_DeleteDistributionGroup_FullMethodName          = "/teamos.company.v1.CompanyService/DeleteDistributionGroup"
-	CompanyService_GetDistributionEvents_FullMethodName            = "/teamos.company.v1.CompanyService/GetDistributionEvents"
-	CompanyService_SimulateDistributionDeal_FullMethodName         = "/teamos.company.v1.CompanyService/SimulateDistributionDeal"
-	CompanyService_ResetDistributionEvents_FullMethodName          = "/teamos.company.v1.CompanyService/ResetDistributionEvents"
+	CompanyService_ReadDistributionRuntime_FullMethodName               = "/teamos.company.v1.CompanyService/ReadDistributionRuntime"
+	CompanyService_WriteDistributionRuntime_FullMethodName              = "/teamos.company.v1.CompanyService/WriteDistributionRuntime"
+	CompanyService_SyncDistributionMappings_FullMethodName              = "/teamos.company.v1.CompanyService/SyncDistributionMappings"
+	CompanyService_ReconcileDistributionEmployeeMappings_FullMethodName = "/teamos.company.v1.CompanyService/ReconcileDistributionEmployeeMappings"
+	CompanyService_RevokeDistributionConnection_FullMethodName          = "/teamos.company.v1.CompanyService/RevokeDistributionConnection"
+	CompanyService_GetDistributionConnections_FullMethodName            = "/teamos.company.v1.CompanyService/GetDistributionConnections"
+	CompanyService_LinkDistributionConnection_FullMethodName            = "/teamos.company.v1.CompanyService/LinkDistributionConnection"
+	CompanyService_GetDistributionReferences_FullMethodName             = "/teamos.company.v1.CompanyService/GetDistributionReferences"
+	CompanyService_GetDistributionEmployeeMappings_FullMethodName       = "/teamos.company.v1.CompanyService/GetDistributionEmployeeMappings"
+	CompanyService_SetDistributionEmployeeMapping_FullMethodName        = "/teamos.company.v1.CompanyService/SetDistributionEmployeeMapping"
+	CompanyService_CheckDistributionLeadPermission_FullMethodName       = "/teamos.company.v1.CompanyService/CheckDistributionLeadPermission"
+	CompanyService_Register_FullMethodName                              = "/teamos.company.v1.CompanyService/Register"
+	CompanyService_ReserveRegistrationLogin_FullMethodName              = "/teamos.company.v1.CompanyService/ReserveRegistrationLogin"
+	CompanyService_CheckAmoAccount_FullMethodName                       = "/teamos.company.v1.CompanyService/CheckAmoAccount"
+	CompanyService_IssueCompanyRegistrationToken_FullMethodName         = "/teamos.company.v1.CompanyService/IssueCompanyRegistrationToken"
+	CompanyService_ValidateCompanyRegistrationToken_FullMethodName      = "/teamos.company.v1.CompanyService/ValidateCompanyRegistrationToken"
+	CompanyService_ExchangeAmoWidgetSession_FullMethodName              = "/teamos.company.v1.CompanyService/ExchangeAmoWidgetSession"
+	CompanyService_ProvisionAmoAdminSession_FullMethodName              = "/teamos.company.v1.CompanyService/ProvisionAmoAdminSession"
+	CompanyService_ValidateAmoWidgetContinuation_FullMethodName         = "/teamos.company.v1.CompanyService/ValidateAmoWidgetContinuation"
+	CompanyService_CompleteAmoWidgetContinuation_FullMethodName         = "/teamos.company.v1.CompanyService/CompleteAmoWidgetContinuation"
+	CompanyService_CheckAmoSessionAccess_FullMethodName                 = "/teamos.company.v1.CompanyService/CheckAmoSessionAccess"
+	CompanyService_AmoAdminSelfLogin_FullMethodName                     = "/teamos.company.v1.CompanyService/AmoAdminSelfLogin"
+	CompanyService_BootstrapAmoCompany_FullMethodName                   = "/teamos.company.v1.CompanyService/BootstrapAmoCompany"
+	CompanyService_Login_FullMethodName                                 = "/teamos.company.v1.CompanyService/Login"
+	CompanyService_LoginByLogin_FullMethodName                          = "/teamos.company.v1.CompanyService/LoginByLogin"
+	CompanyService_LoginWithAccessLink_FullMethodName                   = "/teamos.company.v1.CompanyService/LoginWithAccessLink"
+	CompanyService_ImpersonateUser_FullMethodName                       = "/teamos.company.v1.CompanyService/ImpersonateUser"
+	CompanyService_Refresh_FullMethodName                               = "/teamos.company.v1.CompanyService/Refresh"
+	CompanyService_Logout_FullMethodName                                = "/teamos.company.v1.CompanyService/Logout"
+	CompanyService_GetInviteByToken_FullMethodName                      = "/teamos.company.v1.CompanyService/GetInviteByToken"
+	CompanyService_AcceptInvite_FullMethodName                          = "/teamos.company.v1.CompanyService/AcceptInvite"
+	CompanyService_ProvisionCompany_FullMethodName                      = "/teamos.company.v1.CompanyService/ProvisionCompany"
+	CompanyService_GetProvisionedCompanyStatus_FullMethodName           = "/teamos.company.v1.CompanyService/GetProvisionedCompanyStatus"
+	CompanyService_GetBootstrapActivation_FullMethodName                = "/teamos.company.v1.CompanyService/GetBootstrapActivation"
+	CompanyService_CompleteBootstrapActivation_FullMethodName           = "/teamos.company.v1.CompanyService/CompleteBootstrapActivation"
+	CompanyService_IssueSsoToken_FullMethodName                         = "/teamos.company.v1.CompanyService/IssueSsoToken"
+	CompanyService_ExchangeSsoToken_FullMethodName                      = "/teamos.company.v1.CompanyService/ExchangeSsoToken"
+	CompanyService_GetOnboardingStatus_FullMethodName                   = "/teamos.company.v1.CompanyService/GetOnboardingStatus"
+	CompanyService_ReissueOnboardingActivation_FullMethodName           = "/teamos.company.v1.CompanyService/ReissueOnboardingActivation"
+	CompanyService_GetCurrentUser_FullMethodName                        = "/teamos.company.v1.CompanyService/GetCurrentUser"
+	CompanyService_UpdateCurrentUser_FullMethodName                     = "/teamos.company.v1.CompanyService/UpdateCurrentUser"
+	CompanyService_GetCompany_FullMethodName                            = "/teamos.company.v1.CompanyService/GetCompany"
+	CompanyService_UpdateCompany_FullMethodName                         = "/teamos.company.v1.CompanyService/UpdateCompany"
+	CompanyService_GetDepartments_FullMethodName                        = "/teamos.company.v1.CompanyService/GetDepartments"
+	CompanyService_CreateDepartment_FullMethodName                      = "/teamos.company.v1.CompanyService/CreateDepartment"
+	CompanyService_UpdateDepartment_FullMethodName                      = "/teamos.company.v1.CompanyService/UpdateDepartment"
+	CompanyService_DeleteDepartment_FullMethodName                      = "/teamos.company.v1.CompanyService/DeleteDepartment"
+	CompanyService_MoveDepartment_FullMethodName                        = "/teamos.company.v1.CompanyService/MoveDepartment"
+	CompanyService_GetPositions_FullMethodName                          = "/teamos.company.v1.CompanyService/GetPositions"
+	CompanyService_GetPosition_FullMethodName                           = "/teamos.company.v1.CompanyService/GetPosition"
+	CompanyService_CreatePosition_FullMethodName                        = "/teamos.company.v1.CompanyService/CreatePosition"
+	CompanyService_UpdatePosition_FullMethodName                        = "/teamos.company.v1.CompanyService/UpdatePosition"
+	CompanyService_DeletePosition_FullMethodName                        = "/teamos.company.v1.CompanyService/DeletePosition"
+	CompanyService_MovePosition_FullMethodName                          = "/teamos.company.v1.CompanyService/MovePosition"
+	CompanyService_GetUsers_FullMethodName                              = "/teamos.company.v1.CompanyService/GetUsers"
+	CompanyService_GetUser_FullMethodName                               = "/teamos.company.v1.CompanyService/GetUser"
+	CompanyService_CreateUser_FullMethodName                            = "/teamos.company.v1.CompanyService/CreateUser"
+	CompanyService_UpdateUser_FullMethodName                            = "/teamos.company.v1.CompanyService/UpdateUser"
+	CompanyService_UpdateUserCard_FullMethodName                        = "/teamos.company.v1.CompanyService/UpdateUserCard"
+	CompanyService_DeleteUser_FullMethodName                            = "/teamos.company.v1.CompanyService/DeleteUser"
+	CompanyService_GetUserAccess_FullMethodName                         = "/teamos.company.v1.CompanyService/GetUserAccess"
+	CompanyService_SetUserPasswordAccess_FullMethodName                 = "/teamos.company.v1.CompanyService/SetUserPasswordAccess"
+	CompanyService_SetUserLinkAccess_FullMethodName                     = "/teamos.company.v1.CompanyService/SetUserLinkAccess"
+	CompanyService_RevokeUserPasswordAccess_FullMethodName              = "/teamos.company.v1.CompanyService/RevokeUserPasswordAccess"
+	CompanyService_RevokeUserLinkAccess_FullMethodName                  = "/teamos.company.v1.CompanyService/RevokeUserLinkAccess"
+	CompanyService_RevokeUserAccess_FullMethodName                      = "/teamos.company.v1.CompanyService/RevokeUserAccess"
+	CompanyService_GetInvites_FullMethodName                            = "/teamos.company.v1.CompanyService/GetInvites"
+	CompanyService_InviteUser_FullMethodName                            = "/teamos.company.v1.CompanyService/InviteUser"
+	CompanyService_ResendInvite_FullMethodName                          = "/teamos.company.v1.CompanyService/ResendInvite"
+	CompanyService_RevokeInvite_FullMethodName                          = "/teamos.company.v1.CompanyService/RevokeInvite"
+	CompanyService_GetUsersByIds_FullMethodName                         = "/teamos.company.v1.CompanyService/GetUsersByIds"
+	CompanyService_ResolveReportUserScope_FullMethodName                = "/teamos.company.v1.CompanyService/ResolveReportUserScope"
+	CompanyService_GetReportUserProfiles_FullMethodName                 = "/teamos.company.v1.CompanyService/GetReportUserProfiles"
+	CompanyService_ResolvePositionUsers_FullMethodName                  = "/teamos.company.v1.CompanyService/ResolvePositionUsers"
+	CompanyService_ResolveDepartmentUsers_FullMethodName                = "/teamos.company.v1.CompanyService/ResolveDepartmentUsers"
+	CompanyService_GetSchedules_FullMethodName                          = "/teamos.company.v1.CompanyService/GetSchedules"
+	CompanyService_SaveSchedule_FullMethodName                          = "/teamos.company.v1.CompanyService/SaveSchedule"
+	CompanyService_GetShiftExceptions_FullMethodName                    = "/teamos.company.v1.CompanyService/GetShiftExceptions"
+	CompanyService_SaveShiftExceptions_FullMethodName                   = "/teamos.company.v1.CompanyService/SaveShiftExceptions"
+	CompanyService_GetDistributionGroups_FullMethodName                 = "/teamos.company.v1.CompanyService/GetDistributionGroups"
+	CompanyService_CreateDistributionGroup_FullMethodName               = "/teamos.company.v1.CompanyService/CreateDistributionGroup"
+	CompanyService_UpdateDistributionGroup_FullMethodName               = "/teamos.company.v1.CompanyService/UpdateDistributionGroup"
+	CompanyService_DeleteDistributionGroup_FullMethodName               = "/teamos.company.v1.CompanyService/DeleteDistributionGroup"
+	CompanyService_GetDistributionEvents_FullMethodName                 = "/teamos.company.v1.CompanyService/GetDistributionEvents"
+	CompanyService_SimulateDistributionDeal_FullMethodName              = "/teamos.company.v1.CompanyService/SimulateDistributionDeal"
+	CompanyService_ResetDistributionEvents_FullMethodName               = "/teamos.company.v1.CompanyService/ResetDistributionEvents"
 )
 
 // CompanyServiceClient is the client API for CompanyService service.
@@ -104,6 +115,17 @@ const (
 // few services that need synchronous organization lookups. Authenticated
 // calls receive actor/company claims through gRPC metadata.
 type CompanyServiceClient interface {
+	ReadDistributionRuntime(ctx context.Context, in *ReadDistributionRuntimeRequest, opts ...grpc.CallOption) (*ReadDistributionRuntimeResponse, error)
+	WriteDistributionRuntime(ctx context.Context, in *WriteDistributionRuntimeRequest, opts ...grpc.CallOption) (*WriteDistributionRuntimeResponse, error)
+	SyncDistributionMappings(ctx context.Context, in *SyncDistributionMappingsRequest, opts ...grpc.CallOption) (*SyncDistributionMappingsResponse, error)
+	ReconcileDistributionEmployeeMappings(ctx context.Context, in *ReconcileDistributionEmployeeMappingsRequest, opts ...grpc.CallOption) (*ReconcileDistributionEmployeeMappingsResponse, error)
+	RevokeDistributionConnection(ctx context.Context, in *RevokeDistributionConnectionRequest, opts ...grpc.CallOption) (*RevokeDistributionConnectionResponse, error)
+	GetDistributionConnections(ctx context.Context, in *GetDistributionConnectionsRequest, opts ...grpc.CallOption) (*GetDistributionConnectionsResponse, error)
+	LinkDistributionConnection(ctx context.Context, in *LinkDistributionConnectionRequest, opts ...grpc.CallOption) (*LinkDistributionConnectionResponse, error)
+	GetDistributionReferences(ctx context.Context, in *GetDistributionReferencesRequest, opts ...grpc.CallOption) (*GetDistributionReferencesResponse, error)
+	GetDistributionEmployeeMappings(ctx context.Context, in *GetDistributionEmployeeMappingsRequest, opts ...grpc.CallOption) (*GetDistributionEmployeeMappingsResponse, error)
+	SetDistributionEmployeeMapping(ctx context.Context, in *SetDistributionEmployeeMappingRequest, opts ...grpc.CallOption) (*SetDistributionEmployeeMappingResponse, error)
+	CheckDistributionLeadPermission(ctx context.Context, in *CheckDistributionLeadPermissionRequest, opts ...grpc.CallOption) (*CheckDistributionLeadPermissionResponse, error)
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
 	ReserveRegistrationLogin(ctx context.Context, in *ReserveRegistrationLoginRequest, opts ...grpc.CallOption) (*ReserveRegistrationLoginResponse, error)
 	CheckAmoAccount(ctx context.Context, in *CheckAmoAccountRequest, opts ...grpc.CallOption) (*CheckAmoAccountResponse, error)
@@ -187,6 +209,116 @@ type companyServiceClient struct {
 
 func NewCompanyServiceClient(cc grpc.ClientConnInterface) CompanyServiceClient {
 	return &companyServiceClient{cc}
+}
+
+func (c *companyServiceClient) ReadDistributionRuntime(ctx context.Context, in *ReadDistributionRuntimeRequest, opts ...grpc.CallOption) (*ReadDistributionRuntimeResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ReadDistributionRuntimeResponse)
+	err := c.cc.Invoke(ctx, CompanyService_ReadDistributionRuntime_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) WriteDistributionRuntime(ctx context.Context, in *WriteDistributionRuntimeRequest, opts ...grpc.CallOption) (*WriteDistributionRuntimeResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(WriteDistributionRuntimeResponse)
+	err := c.cc.Invoke(ctx, CompanyService_WriteDistributionRuntime_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) SyncDistributionMappings(ctx context.Context, in *SyncDistributionMappingsRequest, opts ...grpc.CallOption) (*SyncDistributionMappingsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SyncDistributionMappingsResponse)
+	err := c.cc.Invoke(ctx, CompanyService_SyncDistributionMappings_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) ReconcileDistributionEmployeeMappings(ctx context.Context, in *ReconcileDistributionEmployeeMappingsRequest, opts ...grpc.CallOption) (*ReconcileDistributionEmployeeMappingsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ReconcileDistributionEmployeeMappingsResponse)
+	err := c.cc.Invoke(ctx, CompanyService_ReconcileDistributionEmployeeMappings_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) RevokeDistributionConnection(ctx context.Context, in *RevokeDistributionConnectionRequest, opts ...grpc.CallOption) (*RevokeDistributionConnectionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RevokeDistributionConnectionResponse)
+	err := c.cc.Invoke(ctx, CompanyService_RevokeDistributionConnection_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) GetDistributionConnections(ctx context.Context, in *GetDistributionConnectionsRequest, opts ...grpc.CallOption) (*GetDistributionConnectionsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetDistributionConnectionsResponse)
+	err := c.cc.Invoke(ctx, CompanyService_GetDistributionConnections_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) LinkDistributionConnection(ctx context.Context, in *LinkDistributionConnectionRequest, opts ...grpc.CallOption) (*LinkDistributionConnectionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LinkDistributionConnectionResponse)
+	err := c.cc.Invoke(ctx, CompanyService_LinkDistributionConnection_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) GetDistributionReferences(ctx context.Context, in *GetDistributionReferencesRequest, opts ...grpc.CallOption) (*GetDistributionReferencesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetDistributionReferencesResponse)
+	err := c.cc.Invoke(ctx, CompanyService_GetDistributionReferences_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) GetDistributionEmployeeMappings(ctx context.Context, in *GetDistributionEmployeeMappingsRequest, opts ...grpc.CallOption) (*GetDistributionEmployeeMappingsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetDistributionEmployeeMappingsResponse)
+	err := c.cc.Invoke(ctx, CompanyService_GetDistributionEmployeeMappings_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) SetDistributionEmployeeMapping(ctx context.Context, in *SetDistributionEmployeeMappingRequest, opts ...grpc.CallOption) (*SetDistributionEmployeeMappingResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SetDistributionEmployeeMappingResponse)
+	err := c.cc.Invoke(ctx, CompanyService_SetDistributionEmployeeMapping_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) CheckDistributionLeadPermission(ctx context.Context, in *CheckDistributionLeadPermissionRequest, opts ...grpc.CallOption) (*CheckDistributionLeadPermissionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CheckDistributionLeadPermissionResponse)
+	err := c.cc.Invoke(ctx, CompanyService_CheckDistributionLeadPermission_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *companyServiceClient) Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error) {
@@ -947,6 +1079,17 @@ func (c *companyServiceClient) ResetDistributionEvents(ctx context.Context, in *
 // few services that need synchronous organization lookups. Authenticated
 // calls receive actor/company claims through gRPC metadata.
 type CompanyServiceServer interface {
+	ReadDistributionRuntime(context.Context, *ReadDistributionRuntimeRequest) (*ReadDistributionRuntimeResponse, error)
+	WriteDistributionRuntime(context.Context, *WriteDistributionRuntimeRequest) (*WriteDistributionRuntimeResponse, error)
+	SyncDistributionMappings(context.Context, *SyncDistributionMappingsRequest) (*SyncDistributionMappingsResponse, error)
+	ReconcileDistributionEmployeeMappings(context.Context, *ReconcileDistributionEmployeeMappingsRequest) (*ReconcileDistributionEmployeeMappingsResponse, error)
+	RevokeDistributionConnection(context.Context, *RevokeDistributionConnectionRequest) (*RevokeDistributionConnectionResponse, error)
+	GetDistributionConnections(context.Context, *GetDistributionConnectionsRequest) (*GetDistributionConnectionsResponse, error)
+	LinkDistributionConnection(context.Context, *LinkDistributionConnectionRequest) (*LinkDistributionConnectionResponse, error)
+	GetDistributionReferences(context.Context, *GetDistributionReferencesRequest) (*GetDistributionReferencesResponse, error)
+	GetDistributionEmployeeMappings(context.Context, *GetDistributionEmployeeMappingsRequest) (*GetDistributionEmployeeMappingsResponse, error)
+	SetDistributionEmployeeMapping(context.Context, *SetDistributionEmployeeMappingRequest) (*SetDistributionEmployeeMappingResponse, error)
+	CheckDistributionLeadPermission(context.Context, *CheckDistributionLeadPermissionRequest) (*CheckDistributionLeadPermissionResponse, error)
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
 	ReserveRegistrationLogin(context.Context, *ReserveRegistrationLoginRequest) (*ReserveRegistrationLoginResponse, error)
 	CheckAmoAccount(context.Context, *CheckAmoAccountRequest) (*CheckAmoAccountResponse, error)
@@ -1032,6 +1175,39 @@ type CompanyServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedCompanyServiceServer struct{}
 
+func (UnimplementedCompanyServiceServer) ReadDistributionRuntime(context.Context, *ReadDistributionRuntimeRequest) (*ReadDistributionRuntimeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReadDistributionRuntime not implemented")
+}
+func (UnimplementedCompanyServiceServer) WriteDistributionRuntime(context.Context, *WriteDistributionRuntimeRequest) (*WriteDistributionRuntimeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WriteDistributionRuntime not implemented")
+}
+func (UnimplementedCompanyServiceServer) SyncDistributionMappings(context.Context, *SyncDistributionMappingsRequest) (*SyncDistributionMappingsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SyncDistributionMappings not implemented")
+}
+func (UnimplementedCompanyServiceServer) ReconcileDistributionEmployeeMappings(context.Context, *ReconcileDistributionEmployeeMappingsRequest) (*ReconcileDistributionEmployeeMappingsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReconcileDistributionEmployeeMappings not implemented")
+}
+func (UnimplementedCompanyServiceServer) RevokeDistributionConnection(context.Context, *RevokeDistributionConnectionRequest) (*RevokeDistributionConnectionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RevokeDistributionConnection not implemented")
+}
+func (UnimplementedCompanyServiceServer) GetDistributionConnections(context.Context, *GetDistributionConnectionsRequest) (*GetDistributionConnectionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDistributionConnections not implemented")
+}
+func (UnimplementedCompanyServiceServer) LinkDistributionConnection(context.Context, *LinkDistributionConnectionRequest) (*LinkDistributionConnectionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LinkDistributionConnection not implemented")
+}
+func (UnimplementedCompanyServiceServer) GetDistributionReferences(context.Context, *GetDistributionReferencesRequest) (*GetDistributionReferencesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDistributionReferences not implemented")
+}
+func (UnimplementedCompanyServiceServer) GetDistributionEmployeeMappings(context.Context, *GetDistributionEmployeeMappingsRequest) (*GetDistributionEmployeeMappingsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDistributionEmployeeMappings not implemented")
+}
+func (UnimplementedCompanyServiceServer) SetDistributionEmployeeMapping(context.Context, *SetDistributionEmployeeMappingRequest) (*SetDistributionEmployeeMappingResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetDistributionEmployeeMapping not implemented")
+}
+func (UnimplementedCompanyServiceServer) CheckDistributionLeadPermission(context.Context, *CheckDistributionLeadPermissionRequest) (*CheckDistributionLeadPermissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckDistributionLeadPermission not implemented")
+}
 func (UnimplementedCompanyServiceServer) Register(context.Context, *RegisterRequest) (*RegisterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
 }
@@ -1276,6 +1452,204 @@ func RegisterCompanyServiceServer(s grpc.ServiceRegistrar, srv CompanyServiceSer
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&CompanyService_ServiceDesc, srv)
+}
+
+func _CompanyService_ReadDistributionRuntime_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReadDistributionRuntimeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).ReadDistributionRuntime(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_ReadDistributionRuntime_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).ReadDistributionRuntime(ctx, req.(*ReadDistributionRuntimeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_WriteDistributionRuntime_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(WriteDistributionRuntimeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).WriteDistributionRuntime(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_WriteDistributionRuntime_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).WriteDistributionRuntime(ctx, req.(*WriteDistributionRuntimeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_SyncDistributionMappings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SyncDistributionMappingsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).SyncDistributionMappings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_SyncDistributionMappings_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).SyncDistributionMappings(ctx, req.(*SyncDistributionMappingsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_ReconcileDistributionEmployeeMappings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReconcileDistributionEmployeeMappingsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).ReconcileDistributionEmployeeMappings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_ReconcileDistributionEmployeeMappings_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).ReconcileDistributionEmployeeMappings(ctx, req.(*ReconcileDistributionEmployeeMappingsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_RevokeDistributionConnection_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RevokeDistributionConnectionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).RevokeDistributionConnection(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_RevokeDistributionConnection_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).RevokeDistributionConnection(ctx, req.(*RevokeDistributionConnectionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_GetDistributionConnections_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetDistributionConnectionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).GetDistributionConnections(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_GetDistributionConnections_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).GetDistributionConnections(ctx, req.(*GetDistributionConnectionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_LinkDistributionConnection_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LinkDistributionConnectionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).LinkDistributionConnection(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_LinkDistributionConnection_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).LinkDistributionConnection(ctx, req.(*LinkDistributionConnectionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_GetDistributionReferences_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetDistributionReferencesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).GetDistributionReferences(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_GetDistributionReferences_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).GetDistributionReferences(ctx, req.(*GetDistributionReferencesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_GetDistributionEmployeeMappings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetDistributionEmployeeMappingsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).GetDistributionEmployeeMappings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_GetDistributionEmployeeMappings_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).GetDistributionEmployeeMappings(ctx, req.(*GetDistributionEmployeeMappingsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_SetDistributionEmployeeMapping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetDistributionEmployeeMappingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).SetDistributionEmployeeMapping(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_SetDistributionEmployeeMapping_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).SetDistributionEmployeeMapping(ctx, req.(*SetDistributionEmployeeMappingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_CheckDistributionLeadPermission_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckDistributionLeadPermissionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).CheckDistributionLeadPermission(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_CheckDistributionLeadPermission_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).CheckDistributionLeadPermission(ctx, req.(*CheckDistributionLeadPermissionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _CompanyService_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -2635,6 +3009,50 @@ var CompanyService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "teamos.company.v1.CompanyService",
 	HandlerType: (*CompanyServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "ReadDistributionRuntime",
+			Handler:    _CompanyService_ReadDistributionRuntime_Handler,
+		},
+		{
+			MethodName: "WriteDistributionRuntime",
+			Handler:    _CompanyService_WriteDistributionRuntime_Handler,
+		},
+		{
+			MethodName: "SyncDistributionMappings",
+			Handler:    _CompanyService_SyncDistributionMappings_Handler,
+		},
+		{
+			MethodName: "ReconcileDistributionEmployeeMappings",
+			Handler:    _CompanyService_ReconcileDistributionEmployeeMappings_Handler,
+		},
+		{
+			MethodName: "RevokeDistributionConnection",
+			Handler:    _CompanyService_RevokeDistributionConnection_Handler,
+		},
+		{
+			MethodName: "GetDistributionConnections",
+			Handler:    _CompanyService_GetDistributionConnections_Handler,
+		},
+		{
+			MethodName: "LinkDistributionConnection",
+			Handler:    _CompanyService_LinkDistributionConnection_Handler,
+		},
+		{
+			MethodName: "GetDistributionReferences",
+			Handler:    _CompanyService_GetDistributionReferences_Handler,
+		},
+		{
+			MethodName: "GetDistributionEmployeeMappings",
+			Handler:    _CompanyService_GetDistributionEmployeeMappings_Handler,
+		},
+		{
+			MethodName: "SetDistributionEmployeeMapping",
+			Handler:    _CompanyService_SetDistributionEmployeeMapping_Handler,
+		},
+		{
+			MethodName: "CheckDistributionLeadPermission",
+			Handler:    _CompanyService_CheckDistributionLeadPermission_Handler,
+		},
 		{
 			MethodName: "Register",
 			Handler:    _CompanyService_Register_Handler,

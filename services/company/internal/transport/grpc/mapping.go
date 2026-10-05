@@ -539,7 +539,7 @@ func distributionEventStatusToProto(value string) companyv1.DistributionEventSta
 	}
 }
 func distributionGroupToProto(value application.DistributionGroup) *companyv1.DistributionGroup {
-	return &companyv1.DistributionGroup{Id: value.ID.String(), Name: value.Name, Description: cloneString(value.Description), Active: value.Active, Algorithm: distributionAlgorithmToProto(value.Algorithm), MemberIds: uuidStrings(value.MemberIDs), DisabledMemberIds: uuidStrings(value.DisabledMemberIDs), Source: value.Source, DealLimit: uint32(value.DealLimit), UnclaimedMinutes: uint32(value.UnclaimedMinutes), CreatedAt: timestamppb.New(value.CreatedAt.UTC())}
+	return &companyv1.DistributionGroup{Revision: value.Revision, Id: value.ID.String(), Name: value.Name, Description: cloneString(value.Description), Active: value.Active, Algorithm: distributionAlgorithmToProto(value.Algorithm), MemberIds: uuidStrings(value.MemberIDs), DisabledMemberIds: uuidStrings(value.DisabledMemberIDs), Source: value.Source, DealLimit: uint32(value.DealLimit), UnclaimedMinutes: uint32(value.UnclaimedMinutes), CreatedAt: timestamppb.New(value.CreatedAt.UTC())}
 }
 func distributionGroupsToProto(values []application.DistributionGroup) []*companyv1.DistributionGroup {
 	result := make([]*companyv1.DistributionGroup, len(values))

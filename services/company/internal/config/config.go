@@ -1,8 +1,10 @@
 package config
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -10,6 +12,9 @@ import (
 )
 
 type Config struct {
+	DistributionCoreURL  string
+	DistributionKeyID    string
+	DistributionKeys     map[string]string
 	HTTPAddr             string
 	GRPCAddr             string
 	DatabaseURL          string
@@ -91,6 +96,24 @@ func Load() (Config, error) {
 		config.AmoWidgetSessionTTL, err = time.ParseDuration(value)
 		if err != nil || config.AmoWidgetSessionTTL <= 0 {
 			return Config{}, fmt.Errorf("COMPANY_AMO_WIDGET_SESSION_TTL: %w", errInvalidDuration)
+		}
+	}
+	config.DistributionCoreURL = strings.TrimSpace(os.Getenv("COMPANY_DISTRIBUTION_CORE_URL"))
+	config.DistributionKeyID = strings.TrimSpace(os.Getenv("COMPANY_DISTRIBUTION_KEY_ID"))
+	if raw := strings.TrimSpace(os.Getenv("COMPANY_DISTRIBUTION_SERVICE_KEYS")); raw != "" {
+		if json.Unmarshal([]byte(raw), &config.DistributionKeys) != nil || len(config.DistributionKeys) == 0 {
+			return Config{}, errors.New("COMPANY_DISTRIBUTION_SERVICE_KEYS: ожидается непустая карта ключей")
+		}
+		for id, secret := range config.DistributionKeys {
+			if id == "" || len(secret) < 32 {
+				return Config{}, errors.New("COMPANY_DISTRIBUTION_SERVICE_KEYS: ID и ключ не прошли проверку")
+			}
+		}
+	}
+	if config.DistributionCoreURL != "" || config.DistributionKeyID != "" {
+		u, e := url.Parse(config.DistributionCoreURL)
+		if e != nil || u.Scheme != "https" || u.Host == "" || u.User != nil || u.RawQuery != "" || u.Fragment != "" || len(config.DistributionKeys[config.DistributionKeyID]) < 32 {
+			return Config{}, errors.New("COMPANY_DISTRIBUTION_CORE_URL/KEY_ID: требуется HTTPS и настроенный серверный ключ")
 		}
 	}
 	missing := make([]string, 0, 2)

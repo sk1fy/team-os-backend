@@ -68,3 +68,5 @@ API доступен на `http://localhost:8080`. Все команды — `ma
   запускается с override `deploy/docker-compose.prod.yaml`, закрывающим внешние порты.
 - [test-services.md](test-services.md) — post-deploy runbook.
 - `make observability-up` — Prometheus, Grafana, Loki, Tempo.
+
+- [Подключение распределения через Core](docs/integrations/lead-distribution.md) — РС-03: связи, CRM ID, справочники, доступ и серверные ключи.

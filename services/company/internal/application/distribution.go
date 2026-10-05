@@ -240,7 +240,7 @@ func (s *Service) validateDistributionMembers(ctx context.Context, companyID uui
 	return nil
 }
 func distributionGroupFromDB(row db.DistributionGroup) DistributionGroup {
-	return DistributionGroup{ID: row.ID, Name: row.Name, Description: textPointer(row.Description), Active: row.Active, Algorithm: row.Algorithm, MemberIDs: append([]uuid.UUID(nil), row.MemberIds...), DisabledMemberIDs: append([]uuid.UUID(nil), row.DisabledMemberIds...), Source: row.Source, DealLimit: row.DealLimit, UnclaimedMinutes: row.UnclaimedMinutes, CreatedAt: row.CreatedAt}
+	return DistributionGroup{Revision: row.Revision, ID: row.ID, Name: row.Name, Description: textPointer(row.Description), Active: row.Active, Algorithm: row.Algorithm, MemberIDs: append([]uuid.UUID(nil), row.MemberIds...), DisabledMemberIDs: append([]uuid.UUID(nil), row.DisabledMemberIds...), Source: row.Source, DealLimit: row.DealLimit, UnclaimedMinutes: row.UnclaimedMinutes, CreatedAt: row.CreatedAt}
 }
 func distributionEventFromDB(row db.DistributionEvent) DistributionEvent {
 	return DistributionEvent{ID: row.ID, GroupID: row.GroupID, DealNumber: row.DealNumber, UserID: row.UserID, Status: row.Status, CreatedAt: row.CreatedAt}

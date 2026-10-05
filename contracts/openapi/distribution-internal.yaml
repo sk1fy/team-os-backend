@@ -1,0 +1,952 @@
+openapi: 3.1.0
+info:
+  title: TeamOS Company private distribution callbacks
+  version: 0.3.0
+  description: >-
+    Private HTTPS boundary owned by Company, not mounted in Gateway. HMAC-SHA256
+    signs keyId, method, RequestURI, company UUID, installation UUID, Unix timestamp,
+    UUID nonce and lowercase SHA256(raw body), newline-separated. Timestamp ±60s,
+    persistent nonce and exact company/install/capability grants are required.
+    Stage 04 decision validation always denies until stage 06 provides the authoritative
+    business decision registry. Binding and employee mapping alone never grant a PATCH.
+  license:
+    name: Proprietary
+    identifier: LicenseRef-Proprietary
+servers:
+  - url: https://company.internal.example.invalid
+security:
+  - signedService: []
+paths:
+  /internal/v1/distribution/widget-access:
+    post:
+      operationId: checkDistributionWidgetAccess
+      summary: Проверить TeamOS company/mapping/section для проверенного Core CRM principal
+      x-capability: widget-access
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/WidgetAccessInput' }
+      responses:
+        '200':
+          description: Проверенный локальный доступ; CRM ACL проверяется отдельно в Core
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/WidgetAccess' }
+        '401': { $ref: '#/components/responses/Failure' }
+        '403': { $ref: '#/components/responses/Failure' }
+        '503': { $ref: '#/components/responses/Failure' }
+        default: { $ref: '#/components/responses/Failure' }
+  /internal/v1/distribution/validate-decision:
+    post:
+      operationId: validateDistributionDecision
+      summary: Свежая проверка business decision перед конкретной попыткой эффекта
+      x-capability: decision-validation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/DecisionValidationInput' }
+      responses:
+        '200':
+          description: >-
+            Текущая реализация allowed=false, decision_not_ready при валидном scope.
+            Будущий allow-token требует exact operation/decision/fence и срока максимум 5 секунд.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DecisionValidation' }
+        '401': { $ref: '#/components/responses/Failure' }
+        '403': { $ref: '#/components/responses/Failure' }
+        '503': { $ref: '#/components/responses/Failure' }
+        default: { $ref: '#/components/responses/Failure' }
+  /internal/v1/distribution/events:
+    post:
+      operationId: receiveDistributionEvent
+      summary: Durable commit before delivery ACK
+      x-capability: event-delivery
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/EventEnvelope' }
+      responses:
+        '202':
+          description: Committed immutable receipt; processing may remain pending
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DeliveryReceipt' }
+        '400': { $ref: '#/components/responses/Failure' }
+        '401': { $ref: '#/components/responses/Failure' }
+        '403': { $ref: '#/components/responses/Failure' }
+        '409': { $ref: '#/components/responses/Failure' }
+        '503': { $ref: '#/components/responses/Failure' }
+        default: { $ref: '#/components/responses/Failure' }
+  /internal/v1/distribution/results:
+    post:
+      operationId: receiveDistributionResult
+      summary: Durable commit before delivery ACK
+      x-capability: result-delivery
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ResultEnvelope' }
+      responses:
+        '202':
+          description: Committed immutable receipt; processing may remain pending
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DeliveryReceipt' }
+        '400': { $ref: '#/components/responses/Failure' }
+        '401': { $ref: '#/components/responses/Failure' }
+        '403': { $ref: '#/components/responses/Failure' }
+        '409': { $ref: '#/components/responses/Failure' }
+        '503': { $ref: '#/components/responses/Failure' }
+        default: { $ref: '#/components/responses/Failure' }
+components:
+  securitySchemes:
+    signedService:
+      type: apiKey
+      in: header
+      name: X-Distribution-Signature
+      description: Requires signed Key-Id/Company/Installation/Timestamp/Nonce headers and a scoped grant
+  responses:
+    Failure:
+      description: Запрос отклонён либо policy недоступна; effect запрещён
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [error]
+            properties:
+              error:
+                type: object
+                required: [message, status]
+                properties:
+                  message: { type: string }
+                  status: { type: integer }
+  schemas:
+    ID: { type: string, format: uuid }
+    CRMID:
+      type: string
+      pattern: '^[1-9][0-9]{0,18}$'
+      description: Canonical positive decimal, semantic maximum 9223372036854775807
+    Revision: { type: integer, format: int64, minimum: 1, maximum: 9007199254740991 }
+    Scope:
+      type: object
+      required: [companyId, bindingId, bindingRevision, installationId, integrationId, accountId]
+      properties:
+        companyId: { $ref: '#/components/schemas/ID' }
+        bindingId: { $ref: '#/components/schemas/ID' }
+        bindingRevision: { $ref: '#/components/schemas/Revision' }
+        installationId: { $ref: '#/components/schemas/ID' }
+        integrationId: { $ref: '#/components/schemas/ID' }
+        accountId: { $ref: '#/components/schemas/CRMID' }
+    WidgetAccessInput:
+      allOf:
+        - { $ref: '#/components/schemas/Scope' }
+        - type: object
+          required: [userId]
+          properties:
+            userId: { $ref: '#/components/schemas/CRMID' }
+            leadId: { $ref: '#/components/schemas/CRMID' }
+    WidgetAccess:
+      type: object
+      required: [allowed, employeeId, reason]
+      properties:
+        allowed: { type: boolean }
+        employeeId: { $ref: '#/components/schemas/ID' }
+        reason: { type: string }
+    DecisionActor:
+      type: object
+      additionalProperties: false
+      required: [kind]
+      properties:
+        kind: { type: string, enum: [system, user] }
+        teamosUserId: { $ref: '#/components/schemas/ID' }
+        crmUserId: { $ref: '#/components/schemas/CRMID' }
+        operatorId: { $ref: '#/components/schemas/ID', description: Неподдерживаемый principal отклоняется }
+      description: User требует обе проверенные identity; system запрещает identity поля; operator запрещён
+    DecisionValidationInput:
+      allOf:
+        - { $ref: '#/components/schemas/Scope' }
+        - type: object
+          required: [operationId, decisionId, episodeId, ruleId, groupId, ruleRevision, availabilityRevision, claimRevision, workerFence, targetEmployeeId, targetResponsibleUserId, leadId, decisionKind, validUntil, actor]
+          properties:
+            actor: { $ref: '#/components/schemas/DecisionActor' }
+            operationId: { $ref: '#/components/schemas/ID' }
+            decisionId: { $ref: '#/components/schemas/ID' }
+            episodeId: { $ref: '#/components/schemas/ID' }
+            ruleId: { $ref: '#/components/schemas/ID' }
+            groupId: { $ref: '#/components/schemas/ID' }
+            ruleRevision: { $ref: '#/components/schemas/Revision' }
+            availabilityRevision: { $ref: '#/components/schemas/Revision' }
+            claimRevision: { $ref: '#/components/schemas/Revision' }
+            workerFence: { $ref: '#/components/schemas/Revision' }
+            targetEmployeeId: { $ref: '#/components/schemas/ID' }
+            targetResponsibleUserId: { $ref: '#/components/schemas/CRMID' }
+            leadId: { $ref: '#/components/schemas/CRMID' }
+            decisionKind: { type: string, enum: [assign, keep] }
+            validUntil: { type: string, format: date-time }
+    DecisionValidation:
+      type: object
+      required: [allowed, operationId, decisionId, workerFence, validUntil, reason]
+      properties:
+        allowed: { type: boolean }
+        operationId: { $ref: '#/components/schemas/ID' }
+        decisionId: { $ref: '#/components/schemas/ID' }
+        workerFence: { type: integer, format: int64 }
+        validUntil: { type: string, format: date-time }
+        reason:
+          type: string
+          enum: [decision_not_ready, decision_expired, invalid_decision, binding_unavailable, company_unavailable, mapping_unavailable, actor_unavailable]
+
+    CrmId:
+      type: string
+      pattern: ^[1-9][0-9]*$
+      maxLength: 19
+      description: Положительный CRM ID как decimal string; без float-конверсии и ведущих
+        нулей. Semantic bound <=9223372036854775807 обязателен в приложении и fixtures;
+        regex не доказывает upper bound.
+    DeliveryReceipt:
+      type: object
+      additionalProperties: false
+      properties:
+        messageId:
+          $ref: '#/components/schemas/Id'
+        receiptId:
+          $ref: '#/components/schemas/Id'
+        acceptedAt:
+          $ref: '#/components/schemas/Timestamp'
+        disposition:
+          enum:
+          - accepted
+          - duplicate
+      required:
+      - messageId
+      - receiptId
+      - acceptedAt
+      - disposition
+    ErrorCode:
+      type: string
+      enum:
+      - validation_failed
+      - unauthenticated
+      - permission_denied
+      - resource_not_found
+      - binding_not_active
+      - binding_mismatch
+      - mapping_required
+      - capability_revoked
+      - unsupported_algorithm
+      - stage_already_owned
+      - revision_conflict
+      - idempotency_conflict
+      - operation_unresolved
+      - invalid_transition
+      - cursor_invalid
+      - cursor_expired
+      - source_unavailable
+      - policy_unavailable
+      - reauth_required
+      - rate_limited
+      - internal_error
+      - distribution_rule_managed
+    EventEnvelope:
+      type: object
+      additionalProperties: false
+      properties:
+        scope:
+          $ref: '#/components/schemas/Scope'
+        messageId:
+          $ref: '#/components/schemas/Id'
+        eventId:
+          $ref: '#/components/schemas/Id'
+        receivedAt:
+          $ref: '#/components/schemas/Timestamp'
+        emittedAt:
+          $ref: '#/components/schemas/Timestamp'
+        correlationId:
+          $ref: '#/components/schemas/Id'
+        event:
+          $ref: '#/components/schemas/SourceEvent'
+        schemaVersion:
+          const: 1
+        sourceEventId:
+          type:
+          - string
+          - 'null'
+        sourceOccurredAt:
+          anyOf:
+          - $ref: '#/components/schemas/Timestamp'
+          - type: 'null'
+        causationId:
+          anyOf:
+          - $ref: '#/components/schemas/Id'
+          - type: 'null'
+      required:
+      - scope
+      - messageId
+      - eventId
+      - receivedAt
+      - emittedAt
+      - correlationId
+      - event
+      - schemaVersion
+      - sourceEventId
+      - sourceOccurredAt
+      - causationId
+    ExternalEffectState:
+      type: string
+      enum:
+      - no_attempt
+      - in_flight
+      - unknown
+      - settled
+    Id:
+      type: string
+      format: uuid
+    LeadSnapshot:
+      type: object
+      properties:
+        leadId:
+          $ref: '#/components/schemas/CrmId'
+        pipelineId:
+          $ref: '#/components/schemas/CrmId'
+        statusId:
+          $ref: '#/components/schemas/CrmId'
+        responsibleUserId:
+          anyOf:
+          - $ref: '#/components/schemas/CrmId'
+          - type: 'null'
+        sourceUpdatedAt:
+          anyOf:
+          - $ref: '#/components/schemas/Timestamp'
+          - type: 'null'
+        observedAt:
+          $ref: '#/components/schemas/Timestamp'
+      required:
+      - leadId
+      - pipelineId
+      - statusId
+      - responsibleUserId
+      - observedAt
+      additionalProperties: false
+    Operation:
+      type: object
+      properties:
+        operationId:
+          $ref: '#/components/schemas/Id'
+        scope:
+          $ref: '#/components/schemas/Scope'
+        episodeId:
+          $ref: '#/components/schemas/Id'
+        decisionId:
+          $ref: '#/components/schemas/Id'
+        ruleId:
+          $ref: '#/components/schemas/Id'
+        ruleRevision:
+          $ref: '#/components/schemas/Revision'
+        eventId:
+          $ref: '#/components/schemas/Id'
+        correlationId:
+          $ref: '#/components/schemas/Id'
+        state:
+          $ref: '#/components/schemas/OperationState'
+        externalEffectState:
+          $ref: '#/components/schemas/ExternalEffectState'
+        outcome:
+          anyOf:
+          - $ref: '#/components/schemas/OperationOutcome'
+          - type: 'null'
+        resultVersion:
+          $ref: '#/components/schemas/Revision'
+        confirmedSnapshot:
+          anyOf:
+          - $ref: '#/components/schemas/LeadSnapshot'
+          - type: 'null'
+        resolutionEvidence:
+          anyOf:
+          - $ref: '#/components/schemas/ResolutionEvidence'
+          - type: 'null'
+        error:
+          anyOf:
+          - $ref: '#/components/schemas/OperationError'
+          - type: 'null'
+        acceptedAt:
+          $ref: '#/components/schemas/Timestamp'
+        updatedAt:
+          $ref: '#/components/schemas/Timestamp'
+        groupId:
+          $ref: '#/components/schemas/Id'
+        availabilityRevision:
+          $ref: '#/components/schemas/Revision'
+        claimRevision:
+          $ref: '#/components/schemas/Revision'
+        cancelRequestedAt:
+          anyOf:
+          - $ref: '#/components/schemas/Timestamp'
+          - type: 'null'
+        targetResponsibleUserId:
+          $ref: '#/components/schemas/CrmId'
+        leadId:
+          $ref: '#/components/schemas/CrmId'
+      required:
+      - operationId
+      - scope
+      - episodeId
+      - decisionId
+      - ruleId
+      - ruleRevision
+      - eventId
+      - correlationId
+      - state
+      - externalEffectState
+      - outcome
+      - resultVersion
+      - confirmedSnapshot
+      - resolutionEvidence
+      - error
+      - acceptedAt
+      - updatedAt
+      - groupId
+      - availabilityRevision
+      - claimRevision
+      - targetResponsibleUserId
+      - leadId
+      additionalProperties: false
+      description: 'succeeded/no_change требуют confirmedSnapshot. no_change+kept не расходует
+        round-robin; no_change+already_target расходует. Терминальные состояния запрещены
+        при unknown/in_flight: тогда сохраняется outcome_unknown/confirming и cancelRequested,
+        guard удерживается.'
+      allOf:
+      - if:
+          properties:
+            state:
+              const: succeeded
+        then:
+          properties:
+            externalEffectState:
+              const: settled
+            outcome:
+              const: assigned
+            confirmedSnapshot:
+              $ref: '#/components/schemas/LeadSnapshot'
+            resolutionEvidence:
+              $ref: '#/components/schemas/ResolutionEvidence'
+      - if:
+          properties:
+            state:
+              const: no_change
+        then:
+          properties:
+            externalEffectState:
+              enum:
+              - no_attempt
+              - settled
+            outcome:
+              enum:
+              - kept
+              - already_target
+            confirmedSnapshot:
+              $ref: '#/components/schemas/LeadSnapshot'
+            resolutionEvidence:
+              $ref: '#/components/schemas/ResolutionEvidence'
+      - if:
+          properties:
+            state:
+              const: outcome_unknown
+        then:
+          properties:
+            externalEffectState:
+              const: unknown
+      - if:
+          properties:
+            externalEffectState:
+              enum:
+              - in_flight
+              - unknown
+        then:
+          properties:
+            resolutionEvidence:
+              anyOf:
+              - allOf:
+                - $ref: '#/components/schemas/ResolutionEvidence'
+                - properties:
+                    guardReleasable:
+                      const: false
+              - type: 'null'
+      - if:
+          properties:
+            state:
+              enum:
+              - rejected
+              - cancelled
+              - conflict
+        then:
+          properties:
+            externalEffectState:
+              enum:
+              - no_attempt
+              - settled
+            resolutionEvidence:
+              $ref: '#/components/schemas/ResolutionEvidence'
+            outcome:
+              enum:
+              - source_changed
+              - cancelled
+              - rejected
+              - conflict
+      - if:
+          properties:
+            state:
+              enum:
+              - succeeded
+              - no_change
+              - rejected
+              - cancelled
+              - conflict
+        then:
+          properties:
+            resolutionEvidence:
+              allOf:
+              - $ref: '#/components/schemas/ResolutionEvidence'
+              - properties:
+                  guardReleasable:
+                    const: true
+                  kind:
+                    enum:
+                    - no_request_sent
+                    - response_and_observation
+                    - operator_reconciliation
+      - if:
+          properties:
+            state:
+              const: succeeded
+        then:
+          properties:
+            resolutionEvidence:
+              properties:
+                kind:
+                  enum:
+                  - response_and_observation
+                  - operator_reconciliation
+      - if:
+          properties:
+            state:
+              const: no_change
+        then:
+          properties:
+            resolutionEvidence:
+              properties:
+                kind:
+                  const: no_request_sent
+    OperationError:
+      type: object
+      properties:
+        code:
+          $ref: '#/components/schemas/ErrorCode'
+        message:
+          type: string
+          maxLength: 1000
+        retryable:
+          type: boolean
+        terminal:
+          type: boolean
+        retryAfterSeconds:
+          anyOf:
+          - type: integer
+            minimum: 0
+            maximum: 86400
+          - type: 'null'
+      required:
+      - code
+      - message
+      - retryable
+      - terminal
+      - retryAfterSeconds
+      additionalProperties: false
+    OperationOutcome:
+      type: string
+      enum:
+      - assigned
+      - kept
+      - already_target
+      - source_changed
+      - cancelled
+      - rejected
+      - conflict
+    OperationState:
+      type: string
+      enum:
+      - queued
+      - prechecking
+      - applying
+      - outcome_unknown
+      - confirming
+      - succeeded
+      - no_change
+      - rejected
+      - cancelled
+      - conflict
+    ResolutionEvidence:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+          - no_request_sent
+          - response_and_observation
+          - observed_state_only
+          - operator_reconciliation
+        observedAt:
+          $ref: '#/components/schemas/Timestamp'
+        guardReleasable:
+          type: boolean
+        explanation:
+          type: string
+          maxLength: 1000
+      required:
+      - kind
+      - observedAt
+      - guardReleasable
+      - explanation
+      additionalProperties: false
+      description: observed_state_only не снимает late-PATCH uncertainty. settled+outcome
+        описывают результат раздельно; claim release требует evidence.
+      allOf:
+      - if:
+          properties:
+            kind:
+              const: observed_state_only
+        then:
+          properties:
+            guardReleasable:
+              const: false
+    ResultEnvelope:
+      type: object
+      properties:
+        schemaVersion:
+          type: integer
+          const: 1
+        messageId:
+          $ref: '#/components/schemas/Id'
+        scope:
+          $ref: '#/components/schemas/Scope'
+        eventId:
+          $ref: '#/components/schemas/Id'
+        sourceEventId:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 255
+          - type: 'null'
+        sourceOccurredAt:
+          anyOf:
+          - $ref: '#/components/schemas/Timestamp'
+          - type: 'null'
+        receivedAt:
+          $ref: '#/components/schemas/Timestamp'
+        emittedAt:
+          $ref: '#/components/schemas/Timestamp'
+        correlationId:
+          $ref: '#/components/schemas/Id'
+        causationId:
+          anyOf:
+          - $ref: '#/components/schemas/Id'
+          - type: 'null'
+        result:
+          $ref: '#/components/schemas/LegacyResultOperation'
+      required:
+      - schemaVersion
+      - messageId
+      - scope
+      - eventId
+      - sourceEventId
+      - sourceOccurredAt
+      - receivedAt
+      - emittedAt
+      - correlationId
+      - causationId
+      - result
+      additionalProperties: false
+    SourceEvent:
+      type: object
+      additionalProperties: false
+      properties:
+        kind:
+          enum:
+          - lead.created
+          - lead.status_changed
+          - lead.responsible_changed
+          - lead.deleted
+          - lead.snapshot_reconciled
+        leadId:
+          $ref: '#/components/schemas/CrmId'
+        entryFingerprint:
+          type: 'null'
+        before:
+          anyOf:
+          - $ref: '#/components/schemas/LeadSnapshot'
+          - type: 'null'
+        after:
+          anyOf:
+          - $ref: '#/components/schemas/LeadSnapshot'
+          - type: 'null'
+        observationRevision:
+          $ref: '#/components/schemas/Revision'
+        sourceEvidence:
+          anyOf:
+          - $ref: '#/components/schemas/SourceEvidence'
+          - type: 'null'
+      required:
+      - kind
+      - leadId
+      - entryFingerprint
+      - before
+      - after
+      - observationRevision
+      - sourceEvidence
+    SourceEvidence:
+      type: object
+      additionalProperties: false
+      properties:
+        pipelineId:
+          anyOf:
+          - $ref: '#/components/schemas/CrmId'
+          - type: 'null'
+        statusId:
+          anyOf:
+          - $ref: '#/components/schemas/CrmId'
+          - type: 'null'
+        oldPipelineId:
+          anyOf:
+          - $ref: '#/components/schemas/CrmId'
+          - type: 'null'
+        oldStatusId:
+          anyOf:
+          - $ref: '#/components/schemas/CrmId'
+          - type: 'null'
+        responsibleUserId:
+          anyOf:
+          - $ref: '#/components/schemas/CrmId'
+          - type: 'null'
+      required:
+      - pipelineId
+      - statusId
+      - oldPipelineId
+      - oldStatusId
+      - responsibleUserId
+    Timestamp:
+      type: string
+      format: date-time
+      description: RFC3339 UTC с Z; время наблюдения не равно времени факта источника.
+
+    LegacyResultOperation:
+      type: object
+      properties:
+        operationId:
+          $ref: '#/components/schemas/Id'
+        scope:
+          $ref: '#/components/schemas/Scope'
+        episodeId:
+          $ref: '#/components/schemas/Id'
+        decisionId:
+          $ref: '#/components/schemas/Id'
+        ruleId:
+          $ref: '#/components/schemas/Id'
+        ruleRevision:
+          $ref: '#/components/schemas/Revision'
+        eventId:
+          $ref: '#/components/schemas/Id'
+        correlationId:
+          $ref: '#/components/schemas/Id'
+        state:
+          $ref: '#/components/schemas/OperationState'
+        externalEffectState:
+          $ref: '#/components/schemas/ExternalEffectState'
+        outcome:
+          anyOf:
+          - $ref: '#/components/schemas/OperationOutcome'
+          - type: 'null'
+        resultVersion:
+          $ref: '#/components/schemas/Revision'
+        confirmedSnapshot:
+          anyOf:
+          - $ref: '#/components/schemas/LeadSnapshot'
+          - type: 'null'
+        resolutionEvidence:
+          anyOf:
+          - $ref: '#/components/schemas/ResolutionEvidence'
+          - type: 'null'
+        error:
+          anyOf:
+          - $ref: '#/components/schemas/OperationError'
+          - type: 'null'
+        acceptedAt:
+          $ref: '#/components/schemas/Timestamp'
+        updatedAt:
+          $ref: '#/components/schemas/Timestamp'
+        groupId:
+          $ref: '#/components/schemas/Id'
+        availabilityRevision:
+          $ref: '#/components/schemas/Revision'
+        claimRevision:
+          $ref: '#/components/schemas/Revision'
+        cancelRequestedAt:
+          anyOf:
+          - $ref: '#/components/schemas/Timestamp'
+          - type: 'null'
+        targetResponsibleUserId:
+          $ref: '#/components/schemas/CrmId'
+        leadId:
+          $ref: '#/components/schemas/CrmId'
+      required:
+      - operationId
+      - scope
+      - episodeId
+      - decisionId
+      - ruleId
+      - ruleRevision
+      - eventId
+      - correlationId
+      - state
+      - externalEffectState
+      - outcome
+      - resultVersion
+      - confirmedSnapshot
+      - resolutionEvidence
+      - error
+      - acceptedAt
+      - updatedAt
+      - groupId
+      - availabilityRevision
+      - claimRevision
+      - targetResponsibleUserId
+      additionalProperties: false
+      description: 'succeeded/no_change требуют confirmedSnapshot. no_change+kept не расходует
+        round-robin; no_change+already_target расходует. Терминальные состояния запрещены
+        при unknown/in_flight: тогда сохраняется outcome_unknown/confirming и cancelRequested,
+        guard удерживается.'
+      allOf:
+      - if:
+          properties:
+            state:
+              const: succeeded
+        then:
+          properties:
+            externalEffectState:
+              const: settled
+            outcome:
+              const: assigned
+            confirmedSnapshot:
+              $ref: '#/components/schemas/LeadSnapshot'
+            resolutionEvidence:
+              $ref: '#/components/schemas/ResolutionEvidence'
+      - if:
+          properties:
+            state:
+              const: no_change
+        then:
+          properties:
+            externalEffectState:
+              enum:
+              - no_attempt
+              - settled
+            outcome:
+              enum:
+              - kept
+              - already_target
+            confirmedSnapshot:
+              $ref: '#/components/schemas/LeadSnapshot'
+            resolutionEvidence:
+              $ref: '#/components/schemas/ResolutionEvidence'
+      - if:
+          properties:
+            state:
+              const: outcome_unknown
+        then:
+          properties:
+            externalEffectState:
+              const: unknown
+      - if:
+          properties:
+            externalEffectState:
+              enum:
+              - in_flight
+              - unknown
+        then:
+          properties:
+            resolutionEvidence:
+              anyOf:
+              - allOf:
+                - $ref: '#/components/schemas/ResolutionEvidence'
+                - properties:
+                    guardReleasable:
+                      const: false
+              - type: 'null'
+      - if:
+          properties:
+            state:
+              enum:
+              - rejected
+              - cancelled
+              - conflict
+        then:
+          properties:
+            externalEffectState:
+              enum:
+              - no_attempt
+              - settled
+            resolutionEvidence:
+              $ref: '#/components/schemas/ResolutionEvidence'
+            outcome:
+              enum:
+              - source_changed
+              - cancelled
+              - rejected
+              - conflict
+      - if:
+          properties:
+            state:
+              enum:
+              - succeeded
+              - no_change
+              - rejected
+              - cancelled
+              - conflict
+        then:
+          properties:
+            resolutionEvidence:
+              allOf:
+              - $ref: '#/components/schemas/ResolutionEvidence'
+              - properties:
+                  guardReleasable:
+                    const: true
+                  kind:
+                    enum:
+                    - no_request_sent
+                    - response_and_observation
+                    - operator_reconciliation
+      - if:
+          properties:
+            state:
+              const: succeeded
+        then:
+          properties:
+            resolutionEvidence:
+              properties:
+                kind:
+                  enum:
+                  - response_and_observation
+                  - operator_reconciliation
+      - if:
+          properties:
+            state:
+              const: no_change
+        then:
+          properties:
+            resolutionEvidence:
+              properties:
+                kind:
+                  const: no_request_sent

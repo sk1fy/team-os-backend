@@ -38,6 +38,412 @@ security:
   - bearerAuth: []
 
 paths:
+  /api/v1/distribution/summary:
+    get:
+      tags: [Distribution]
+      operationId: getDistributionSummary
+      summary: Показатели только доступных CRM сделок; неизвестные значения null
+      parameters:
+        - { name: groupId, in: query, schema: { $ref: '#/components/schemas/ID' } }
+      responses:
+        '200':
+          description: Текущие данные компании
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DistributionRuntimeSummary' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        default: { $ref: '#/components/responses/Error' }
+  /api/v1/distribution/queue/{queueId}:
+    get:
+      tags: [Distribution]
+      operationId: getDistributionQueueItem
+      summary: Детали сделки после текущей проверки прав CRM
+      parameters:
+        - { name: queueId, in: path, required: true, schema: { $ref: '#/components/schemas/ID' } }
+      responses:
+        '200':
+          description: Текущие данные компании
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DistributionRuntimeQueueItem' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        default: { $ref: '#/components/responses/Error' }
+  /api/v1/distribution/queue/{queueId}/actions:
+    post:
+      tags: [Distribution]
+      operationId: actOnDistributionQueue
+      summary: Поставить идемпотентное действие в очередь; результат назначения подтверждает worker
+      parameters:
+        - { name: queueId, in: path, required: true, schema: { $ref: '#/components/schemas/ID' } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/DistributionQueueActionInput' }
+      responses:
+        '200':
+          description: Текущие данные компании
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DistributionRuntimeQueueItem' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        default: { $ref: '#/components/responses/Error' }
+  /api/v1/distribution/groups/{groupId}/configuration:
+    put:
+      tags: [Distribution]
+      operationId: configureDistributionGroup
+      summary: Настройки группы с проверкой версии; только owner/admin
+      parameters:
+        - { name: groupId, in: path, required: true, schema: { $ref: '#/components/schemas/ID' } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/DistributionGroupConfigurationInput' }
+      responses:
+        '200':
+          description: Текущие данные компании
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DealDistributionGroup' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        default: { $ref: '#/components/responses/Error' }
+  /api/v1/distribution/settings:
+    get:
+      tags: [Distribution]
+      operationId: getDistributionSettings
+      summary: Получить часовой пояс компании
+      responses:
+        '200':
+          description: Результат текущей компании
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DistributionRuntimeSettings' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        default: { $ref: '#/components/responses/Error' }
+    put:
+      tags: [Distribution]
+      operationId: setDistributionSettings
+      summary: Сохранить часовой пояс компании; только owner/admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/DistributionTimezoneInput' }
+      responses:
+        '200':
+          description: Результат текущей компании
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DistributionRuntimeSettings' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        default: { $ref: '#/components/responses/Error' }
+  /api/v1/distribution/rules:
+    get:
+      tags: [Distribution]
+      operationId: getDistributionRules
+      summary: Получить правила текущей компании
+      parameters:
+        - { name: limit, in: query, schema: { type: integer, format: int32, minimum: 1, maximum: 100, default: 50 } }
+        - { name: offset, in: query, schema: { type: integer, format: int32, minimum: 0, maximum: 100000, default: 0 } }
+      responses:
+        '200':
+          description: Результат текущей компании
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DistributionRuntimeRules' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        default: { $ref: '#/components/responses/Error' }
+    post:
+      tags: [Distribution]
+      operationId: createDistributionRule
+      summary: Создать правило; только owner/admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/DistributionRuleCreateInput' }
+      responses:
+        '200':
+          description: Результат текущей компании
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DistributionRuntimeRule' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        default: { $ref: '#/components/responses/Error' }
+  /api/v1/distribution/rules/{ruleId}:
+    put:
+      tags: [Distribution]
+      operationId: updateDistributionRule
+      summary: Обновить правило по версии; только owner/admin
+      parameters:
+        - { name: ruleId, in: path, required: true, schema: { $ref: '#/components/schemas/ID' } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/DistributionRuleUpdateInput' }
+      responses:
+        '200':
+          description: Результат текущей компании
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DistributionRuntimeRule' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        default: { $ref: '#/components/responses/Error' }
+  /api/v1/distribution/rules/{ruleId}/availability:
+    get:
+      tags: [Distribution]
+      operationId: getDistributionAvailability
+      summary: Проверить доступность участников правила
+      parameters:
+        - { name: ruleId, in: path, required: true, schema: { $ref: '#/components/schemas/ID' } }
+      responses:
+        '200':
+          description: Результат текущей компании
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DistributionRuntimeAvailability' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        default: { $ref: '#/components/responses/Error' }
+  /api/v1/distribution/rules/{ruleId}/observations:
+    get:
+      tags:
+      - Distribution
+      operationId: getDistributionObservations
+      summary: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0440\u0435\u0437\u0443\
+        \u043B\u044C\u0442\u0430\u0442\u044B \u043D\u0430\u0431\u043B\u044E\u0434\u0435\
+        \u043D\u0438\u044F \u0431\u0435\u0437 \u043D\u0430\u0437\u043D\u0430\u0447\u0435\
+        \u043D\u0438\u044F"
+      parameters:
+      - name: ruleId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 100
+      - name: offset
+        in: query
+        schema:
+          type: integer
+          format: int32
+          minimum: 0
+          maximum: 100000
+      responses:
+        '200':
+          description: "\u0422\u043E\u043B\u044C\u043A\u043E \u0441\u0434\u0435\u043B\
+            \u043A\u0438 \u0441 \u043F\u043E\u0434\u0442\u0432\u0435\u0440\u0436\u0434\
+            \u0451\u043D\u043D\u044B\u043C \u0434\u043E\u0441\u0442\u0443\u043F\u043E\
+            \u043C"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DistributionRuntimeObservations'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        default:
+          $ref: '#/components/responses/Error'
+  /api/v1/distribution/queue:
+    get:
+      tags: [Distribution]
+      operationId: getDistributionQueue
+      summary: Получить сохранённую очередь распределения
+      parameters:
+        - { name: limit, in: query, schema: { type: integer, format: int32, minimum: 1, maximum: 100, default: 50 } }
+        - { name: offset, in: query, schema: { type: integer, format: int32, minimum: 0, maximum: 100000, default: 0 } }
+        - { name: tab, in: query, schema: { type: string, enum: [waiting, assigning, completed, errors, cancelled] } }
+        - { name: groupId, in: query, schema: { $ref: '#/components/schemas/ID' } }
+        - { name: from, in: query, schema: { type: string, format: date-time } }
+        - { name: to, in: query, schema: { type: string, format: date-time } }
+      responses:
+        '200':
+          description: Результат текущей компании
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DistributionRuntimeQueue' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        default: { $ref: '#/components/responses/Error' }
+  /api/v1/distribution/queue/{queueId}/history:
+    get:
+      tags: [Distribution]
+      operationId: getDistributionQueueHistory
+      summary: Получить сохранённую очередь распределенияHistory
+      parameters:
+        - { name: queueId, in: path, required: true, schema: { $ref: '#/components/schemas/ID' } }
+        - { name: limit, in: query, schema: { type: integer, format: int32, minimum: 1, maximum: 100, default: 50 } }
+        - { name: offset, in: query, schema: { type: integer, format: int32, minimum: 0, maximum: 100000, default: 0 } }
+      responses:
+        '200':
+          description: Результат текущей компании
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DistributionRuntimeHistory' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        default: { $ref: '#/components/responses/Error' }
+  /api/v1/distribution/connections/{bindingId}/mappings/sync:
+    post:
+      tags: [Distribution]
+      operationId: syncDistributionMappings
+      summary: Повторно доставить текущий снимок без изменения версии; только owner/admin
+      parameters:
+        - { name: bindingId, in: path, required: true, schema: { $ref: '#/components/schemas/ID' } }
+      responses:
+        '204': { description: Снимок подтверждён Core }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        default: { $ref: '#/components/responses/Error' }
+  /api/v1/distribution/connections/{bindingId}/mappings/reconcile:
+    post:
+      tags: [Distribution]
+      operationId: reconcileDistributionEmployeeMappings
+      summary: Переиспользовать существующие CRM ID и сверить удалённые элементы; только owner/admin
+      parameters:
+        - { name: bindingId, in: path, required: true, schema: { $ref: '#/components/schemas/ID' } }
+      responses:
+        '204': { description: Сотрудники сверены и снимок подтверждён Core }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        default: { $ref: '#/components/responses/Error' }
+  /api/v1/distribution/connections/{bindingId}/revoke:
+    post:
+      tags: [Distribution]
+      operationId: revokeDistributionConnection
+      summary: Отозвать связь, включая незавершенное намерение; только owner/admin
+      parameters:
+        - { name: bindingId, in: path, required: true, schema: { $ref: '#/components/schemas/ID' } }
+      responses:
+        '204': { description: Связь отозвана }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        default: { $ref: '#/components/responses/Error' }
+  /api/v1/distribution/connections:
+    get:
+      tags: [Distribution]
+      operationId: getDistributionConnections
+      summary: Подключения текущей компании
+      responses:
+        '200':
+          description: Подключения
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/DistributionConnection' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        default: { $ref: '#/components/responses/Error' }
+  /api/v1/distribution/connections/link-intents:
+    post:
+      tags: [Distribution]
+      operationId: linkDistributionConnection
+      summary: Подтвердить связь owner/admin TeamOS и проверенного CRM-администратора
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/DistributionLinkInput' }
+      responses:
+        '200':
+          description: Подтвержденная связь; повтор intentId восстанавливает результат
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DistributionConnection' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        default: { $ref: '#/components/responses/Error' }
+  /api/v1/distribution/references:
+    get:
+      tags: [Distribution]
+      operationId: getDistributionReferences
+      summary: Полный свежий снимок пользователей, воронок и этапов через Core
+      parameters:
+        - { name: bindingId, in: query, required: true, schema: { $ref: '#/components/schemas/ID' } }
+      responses:
+        '200':
+          description: Полный снимок; частичные или устаревшие источники возвращают ошибку
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DistributionReferences' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        default: { $ref: '#/components/responses/Error' }
+  /api/v1/distribution/connections/{bindingId}/mappings:
+    parameters:
+      - { name: bindingId, in: path, required: true, schema: { $ref: '#/components/schemas/ID' } }
+    get:
+      tags: [Distribution]
+      operationId: getDistributionEmployeeMappings
+      summary: Сопоставления сотрудников компании
+      responses:
+        '200':
+          description: Сопоставления
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/DistributionEmployeeMapping' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        default: { $ref: '#/components/responses/Error' }
+    put:
+      tags: [Distribution]
+      operationId: setDistributionEmployeeMapping
+      summary: Сопоставить существующего сотрудника с amoCRM; только owner/admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/DistributionMappingInput' }
+      responses:
+        '200':
+          description: Сохраненное сопоставление
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DistributionEmployeeMapping' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        default: { $ref: '#/components/responses/Error' }
+  /api/v1/distribution/connections/{bindingId}/lead-permission:
+    post:
+      tags: [Distribution]
+      operationId: checkDistributionLeadPermission
+      summary: Проверить текущие права CRM для текущего сотрудника
+      parameters:
+        - { name: bindingId, in: path, required: true, schema: { $ref: '#/components/schemas/ID' } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/DistributionPermissionInput' }
+      responses:
+        '200':
+          description: Проверенные права
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DistributionLeadPermission' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        default: { $ref: '#/components/responses/Error' }
   /api/v1/auth/me:
     get:
       tags: [Auth]
@@ -5349,6 +5755,403 @@ components:
             $ref: '#/components/schemas/FileDownload'
 
   schemas:
+    DistributionRuntimeSummary:
+      type: object
+      additionalProperties: false
+      required: [timezone, checkedAt, metricsAvailable, waiting, assigning, errors, confirmedToday, keptToday]
+      properties:
+        metricsReason: { type: string }
+        timezone: { type: [string, 'null'], x-go-type: '*string', x-go-type-skip-optional-pointer: true }
+        checkedAt: { type: string, format: date-time }
+        metricsAvailable: { type: boolean }
+        waiting: { type: [integer, 'null'], format: int64, x-go-type: '*int64', x-go-type-skip-optional-pointer: true }
+        assigning: { type: [integer, 'null'], format: int64, x-go-type: '*int64', x-go-type-skip-optional-pointer: true }
+        errors: { type: [integer, 'null'], format: int64, x-go-type: '*int64', x-go-type-skip-optional-pointer: true }
+        confirmedToday: { type: [integer, 'null'], format: int64, x-go-type: '*int64', x-go-type-skip-optional-pointer: true }
+        keptToday: { type: [integer, 'null'], format: int64, x-go-type: '*int64', x-go-type-skip-optional-pointer: true }
+    DistributionQueueActionInput:
+      type: object
+      additionalProperties: false
+      required: [action, requestId, expectedUpdatedAt]
+      properties:
+        action: { type: string, enum: [recalculate, check, retry, cancel] }
+        requestId: { $ref: '#/components/schemas/ID' }
+        expectedUpdatedAt: { type: string, format: date-time }
+    DistributionGroupConfigurationInput:
+      type: object
+      additionalProperties: false
+      required: [expectedRevision, name, memberIds, disabledMemberIds, active, algorithm]
+      properties:
+        expectedRevision: { type: integer, format: int64, minimum: 1, maximum: 9007199254740991 }
+        name: { type: string, minLength: 1 }
+        memberIds: { type: array, minItems: 1, uniqueItems: true, items: { $ref: '#/components/schemas/ID' } }
+        disabledMemberIds: { type: array, uniqueItems: true, items: { $ref: '#/components/schemas/ID' } }
+        active: { type: boolean }
+        algorithm: { $ref: '#/components/schemas/DistributionAlgorithm' }
+    DistributionRuntimeSettings:
+      type: object
+      additionalProperties: false
+      required: [timezone, revision]
+      properties:
+        timezone: { type: string }
+        revision: { type: integer, format: int64, minimum: 1, maximum: 9007199254740991 }
+    DistributionTimezoneInput:
+      type: object
+      additionalProperties: false
+      required: [timezone]
+      properties:
+        timezone: { type: string, minLength: 1, maxLength: 100 }
+    DistributionObservation:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - ruleId
+      - groupId
+      - entryId
+      - eventId
+      - executionEpoch
+      - ruleRevision
+      - availabilityRevision
+      - observationRevision
+      - checkedAt
+      - decisionKind
+      - reason
+      - leadId
+      - currentResponsibleUserId
+      - plannedEmployeeId
+      - plannedResponsibleUserId
+      - nextShiftAt
+      properties:
+        bindingRevision: {type: integer, format: int64}
+        sourceOccurredAt: {anyOf: [{type: string, format: date-time}, {type: "null"}], x-go-type: "*time.Time", x-go-type-skip-optional-pointer: true}
+        sourceReceivedAt: {anyOf: [{type: string, format: date-time}, {type: "null"}], x-go-type: "*time.Time", x-go-type-skip-optional-pointer: true}
+        crmObservedAt: {type: string, format: date-time}
+        id:
+          $ref: '#/components/schemas/ID'
+        ruleId:
+          $ref: '#/components/schemas/ID'
+        groupId:
+          $ref: '#/components/schemas/ID'
+        entryId:
+          $ref: '#/components/schemas/ID'
+        eventId:
+          $ref: '#/components/schemas/ID'
+        executionEpoch:
+          type: integer
+          format: int64
+        ruleRevision:
+          type: integer
+          format: int64
+        availabilityRevision:
+          type: integer
+          format: int64
+        observationRevision:
+          type: integer
+          format: int64
+        checkedAt:
+          type: string
+          format: date-time
+        decisionKind:
+          type: string
+          enum:
+          - assign
+          - keep
+          - wait
+          - requires_configuration
+          - skipped
+        reason:
+          type: string
+        leadId:
+          $ref: '#/components/schemas/DistributionCRMID'
+        currentResponsibleUserId:
+          anyOf: [{type: string}, {type: "null"}]
+          x-go-type: "*string"
+        plannedEmployeeId:
+          anyOf: [{type: string, format: uuid}, {type: "null"}]
+          x-go-type: "*string"
+        plannedResponsibleUserId:
+          anyOf: [{type: string}, {type: "null"}]
+          x-go-type: "*string"
+        nextShiftAt:
+          anyOf: [{type: string, format: date-time}, {type: "null"}]
+          x-go-type: "*time.Time"
+    DistributionRuntimeObservations:
+      type: object
+      additionalProperties: false
+      required:
+      - items
+      - limit
+      - offset
+      properties:
+        hasMore: {type: boolean}
+        checkedAt: {type: string, format: date-time}
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/DistributionObservation'
+        limit:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+    DistributionRuntimeRule:
+      type: object
+      additionalProperties: false
+      required: [id, bindingId, bindingRevision, accountId, pipelineId, statusId, groupId, active, keepCurrentResponsible, revision, createdAt, updatedAt]
+      properties:
+        executionMode: {type: string, enum: [live, observe]}
+        executionEpoch: {type: integer, format: int64, minimum: 1, maximum: 9007199254740991}
+        liveStartedAt: {anyOf: [{type: string, format: date-time}, {type: "null"}], x-go-type: "*time.Time", x-go-type-skip-optional-pointer: true}
+        id: { $ref: '#/components/schemas/ID' }
+        bindingId: { $ref: '#/components/schemas/ID' }
+        bindingRevision: { type: integer, format: int64, minimum: 1, maximum: 9007199254740991 }
+        accountId: { $ref: '#/components/schemas/DistributionCRMID' }
+        pipelineId: { $ref: '#/components/schemas/DistributionCRMID' }
+        statusId: { $ref: '#/components/schemas/DistributionCRMID' }
+        groupId: { $ref: '#/components/schemas/ID' }
+        active: { type: boolean }
+        keepCurrentResponsible: { type: boolean }
+        revision: { type: integer, format: int64, minimum: 1, maximum: 9007199254740991 }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    DistributionRuleCreateInput:
+      type: object
+      additionalProperties: false
+      required: [bindingId, bindingRevision, groupId, pipelineId, statusId]
+      properties:
+        executionMode: {type: string, enum: [live, observe], default: live}
+        bindingId: { $ref: '#/components/schemas/ID' }
+        bindingRevision: { type: integer, format: int64, minimum: 1, maximum: 9007199254740991 }
+        groupId: { $ref: '#/components/schemas/ID' }
+        pipelineId: { $ref: '#/components/schemas/DistributionCRMID' }
+        statusId: { $ref: '#/components/schemas/DistributionCRMID' }
+        active: { type: boolean, default: false }
+        keepCurrentResponsible: { type: boolean, default: true }
+    DistributionRuleUpdateInput:
+      type: object
+      additionalProperties: false
+      required: [expectedRevision, active, keepCurrentResponsible]
+      properties:
+        executionMode: {type: string, enum: [live, observe]}
+        pipelineId: { $ref: '#/components/schemas/DistributionCRMID' }
+        statusId: { $ref: '#/components/schemas/DistributionCRMID' }
+        expectedRevision: { type: integer, format: int64, minimum: 1, maximum: 9007199254740991 }
+        active: { type: boolean }
+        keepCurrentResponsible: { type: boolean }
+    DistributionRuntimeRules:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items: { type: array, items: { $ref: '#/components/schemas/DistributionRuntimeRule' } }
+    DistributionRuntimeEmployeeAvailability:
+      type: object
+      additionalProperties: false
+      required: [employeeId, crmUserId, available, reason, until, nextShift]
+      properties:
+        employeeId: { $ref: '#/components/schemas/ID' }
+        crmUserId:
+          type: [string, 'null']
+          x-go-type: '*string'
+          x-go-type-skip-optional-pointer: true
+        available: { type: boolean }
+        reason: { type: string }
+        until:
+          type: [string, 'null']
+          format: date-time
+          x-go-type: '*time.Time'
+          x-go-type-skip-optional-pointer: true
+        nextShift:
+          type: [string, 'null']
+          format: date-time
+          x-go-type: '*time.Time'
+          x-go-type-skip-optional-pointer: true
+    DistributionRuntimeAvailability:
+      type: object
+      additionalProperties: false
+      required: [ruleId, groupId, checkedAt, employees]
+      properties:
+        ruleId: { $ref: '#/components/schemas/ID' }
+        groupId: { $ref: '#/components/schemas/ID' }
+        checkedAt: { type: string, format: date-time }
+        employees: { type: array, items: { $ref: '#/components/schemas/DistributionRuntimeEmployeeAvailability' } }
+    DistributionRuntimeQueueItem:
+      type: object
+      additionalProperties: false
+      required: [id, entryId, ruleId, groupId, accountId, leadId, state, reason, nextAttemptAt, operationId, plannedEmployeeId, plannedAt, createdAt]
+      properties:
+        updatedAt: { type: string, format: date-time }
+        actions: { type: array, items: { type: string, enum: [recalculate, check, retry, cancel] } }
+        resultVersion: { type: [integer, 'null'], format: int64, x-go-type: '*int64', x-go-type-skip-optional-pointer: true }
+        leadName: { type: [string, 'null'], x-go-type: '*string', x-go-type-skip-optional-pointer: true }
+        leadUrl: { type: [string, 'null'], x-go-type: '*string', x-go-type-skip-optional-pointer: true }
+        currentEmployeeId: { type: [string, 'null'], format: uuid, x-go-type: '*openapi_types.UUID', x-go-type-skip-optional-pointer: true }
+        previousEmployeeId: { type: [string, 'null'], format: uuid, x-go-type: '*openapi_types.UUID', x-go-type-skip-optional-pointer: true }
+
+        id: { $ref: '#/components/schemas/ID' }
+        entryId: { $ref: '#/components/schemas/ID' }
+        ruleId: { $ref: '#/components/schemas/ID' }
+        groupId: { $ref: '#/components/schemas/ID' }
+        accountId: { $ref: '#/components/schemas/DistributionCRMID' }
+        leadId:
+          type: [string, 'null']
+          description: CRM ID доступен только после проверки текущих прав сотрудника в amoCRM; иначе null
+          x-go-type: '*string'
+          x-go-type-skip-optional-pointer: true
+        state: { type: string }
+        reason: { type: string }
+        nextAttemptAt: { type: string, format: date-time }
+        operationId:
+          type: [string, 'null']
+          format: uuid
+          x-go-type: '*openapi_types.UUID'
+          x-go-type-skip-optional-pointer: true
+        plannedEmployeeId:
+          type: [string, 'null']
+          format: uuid
+          x-go-type: '*openapi_types.UUID'
+          x-go-type-skip-optional-pointer: true
+        plannedAt:
+          type: [string, 'null']
+          format: date-time
+          x-go-type: '*time.Time'
+          x-go-type-skip-optional-pointer: true
+        createdAt: { type: string, format: date-time }
+    DistributionRuntimeQueue:
+      type: object
+      additionalProperties: false
+      required: [items, limit, offset]
+      properties:
+        hasMore: { type: boolean }
+        checkedAt: { type: string, format: date-time }
+        items: { type: array, items: { $ref: '#/components/schemas/DistributionRuntimeQueueItem' } }
+        limit: { type: integer, format: int32 }
+        offset: { type: integer, format: int32 }
+    DistributionRuntimeHistoryItem:
+      type: object
+      additionalProperties: false
+      required: [id, state, reason, createdAt, payload]
+      properties:
+        id: { type: integer, format: int64 }
+        state: { type: string }
+        reason: { type: string }
+        createdAt: { type: string, format: date-time }
+        payload:
+          type: object
+          additionalProperties: false
+          description: Публичная история показывает только причины и переходы; приватные команды и CRM-доказательства остаются в защищённом аудите
+          x-go-type: 'struct{}'
+
+    DistributionRuntimeHistory:
+      type: object
+      additionalProperties: false
+      required: [items, limit, offset]
+      properties:
+        items: { type: array, items: { $ref: '#/components/schemas/DistributionRuntimeHistoryItem' } }
+        limit: { type: integer, format: int32 }
+        offset: { type: integer, format: int32 }
+    DistributionConnection:
+      type: object
+      required: [bindingId, revision, installationId, integrationId, accountId, state, intentId, expiresAt, mappingRevision, mappingAckRevision]
+      properties:
+        bindingId: { $ref: '#/components/schemas/ID' }
+        revision: { type: integer, format: int64, minimum: 1, maximum: 9007199254740991 }
+        installationId: { $ref: '#/components/schemas/ID' }
+        integrationId: { $ref: '#/components/schemas/ID' }
+        accountId: { $ref: '#/components/schemas/DistributionCRMID' }
+        state: { type: string, enum: [pending, active, revoked], x-enum-varnames: [DistributionConnectionPending, DistributionConnectionActive, DistributionConnectionRevoked] }
+        intentId: { $ref: '#/components/schemas/ID' }
+        expiresAt: { type: string, format: date-time }
+        mappingRevision: { type: integer, format: int64, minimum: 0, maximum: 9007199254740991 }
+        mappingAckRevision: { type: integer, format: int64, minimum: 0, maximum: 9007199254740991, description: Меньше mappingRevision означает ожидание подтверждения Core; доступ к сделкам закрыт }
+
+    DistributionLinkInput:
+      type: object
+      additionalProperties: false
+      required: [installationId, integrationId, accountId, intentId]
+      properties:
+        installationId: { $ref: '#/components/schemas/ID' }
+        integrationId: { $ref: '#/components/schemas/ID' }
+        accountId: { $ref: '#/components/schemas/DistributionCRMID' }
+        intentId: { $ref: '#/components/schemas/ID' }
+        widgetToken: { type: string, maxLength: 8192, writeOnly: true }
+    DistributionCRMID:
+      type: string
+      pattern: '^[1-9][0-9]{0,18}$'
+      description: Канонический decimal ID, максимум 9223372036854775807 проверяется сервером
+    DistributionCRMUser:
+      type: object
+      required: [id, name, isActive, groupId]
+      properties:
+        id: { $ref: '#/components/schemas/DistributionCRMID' }
+        name: { type: string }
+        isActive: { type: boolean }
+        groupId:
+          type: [string, 'null']
+          x-go-type: '*string'
+          x-go-type-skip-optional-pointer: true
+    DistributionCRMStatus:
+      type: object
+      required: [id, name]
+      properties:
+        id: { $ref: '#/components/schemas/DistributionCRMID' }
+        name: { type: string }
+    DistributionCRMPipeline:
+      type: object
+      required: [id, name, statuses]
+      properties:
+        id: { $ref: '#/components/schemas/DistributionCRMID' }
+        name: { type: string }
+        statuses:
+          type: array
+          items: { $ref: '#/components/schemas/DistributionCRMStatus' }
+    DistributionReferences:
+      type: object
+      required: [users, pipelines, fetchedAt, freshUntil, state]
+      properties:
+        users:
+          type: array
+          items: { $ref: '#/components/schemas/DistributionCRMUser' }
+        pipelines:
+          type: array
+          items: { $ref: '#/components/schemas/DistributionCRMPipeline' }
+        fetchedAt: { type: string, format: date-time }
+        freshUntil: { type: string, format: date-time }
+        state: { type: string, enum: [fresh] }
+    DistributionEmployeeMapping:
+      type: object
+      required: [id, userIdSnapshot, crmUserId, state, revision, verifiedAt]
+      properties:
+        id: { $ref: '#/components/schemas/ID' }
+        userId: { $ref: '#/components/schemas/ID' }
+        userIdSnapshot: { $ref: '#/components/schemas/ID' }
+        crmUserId: { $ref: '#/components/schemas/DistributionCRMID' }
+        state: { type: string, enum: [verified, unavailable, ambiguous], x-enum-varnames: [DistributionMappingVerified, DistributionMappingUnavailable, DistributionMappingAmbiguous] }
+        revision: { type: integer, format: int64, minimum: 1, maximum: 9007199254740991 }
+        verifiedAt: { type: string, format: date-time }
+    DistributionMappingInput:
+      type: object
+      additionalProperties: false
+      required: [userId, crmUserId]
+      properties:
+        userId: { $ref: '#/components/schemas/ID' }
+        crmUserId: { $ref: '#/components/schemas/DistributionCRMID' }
+    DistributionPermissionInput:
+      type: object
+      additionalProperties: false
+      required: [leadId]
+      properties:
+        leadId: { $ref: '#/components/schemas/DistributionCRMID' }
+    DistributionLeadPermission:
+      type: object
+      required: [userId, canViewLead, reason, checkedAt]
+      properties:
+        userId: { $ref: '#/components/schemas/DistributionCRMID' }
+        canViewLead: { type: boolean }
+        reason: { type: string }
+        checkedAt: { type: string, format: date-time }
     ID:
       type: string
       format: uuid
@@ -10209,6 +11012,7 @@ components:
         - unclaimedMinutes
         - createdAt
       properties:
+        revision: { type: integer, format: int64, minimum: 1, maximum: 9007199254740991 }
         id:
           $ref: '#/components/schemas/ID'
         name:

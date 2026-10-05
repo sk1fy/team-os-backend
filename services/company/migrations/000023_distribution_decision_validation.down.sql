@@ -1,0 +1,3 @@
+DELETE FROM distribution_service_grants WHERE capability='decision-validation';
+ALTER TABLE distribution_service_grants DROP CONSTRAINT distribution_service_grants_capability_check;
+ALTER TABLE distribution_service_grants ADD CONSTRAINT distribution_service_grants_capability_check CHECK(capability='widget-access');

@@ -1,0 +1,9 @@
+# Only the GitHub E2E job opts into this source-built upstream MinIO fixture.
+# Development and production keep their existing image configuration.
+services:
+  minio:
+    image: teamos-ci-minio:RELEASE.2025-04-22T22-12-26Z
+    pull_policy: never
+    build:
+      context: ..
+      dockerfile: deploy/ci/minio.Dockerfile

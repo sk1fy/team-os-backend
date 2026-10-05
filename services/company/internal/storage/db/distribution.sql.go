@@ -52,7 +52,7 @@ INSERT INTO distribution_groups (
     id, company_id, name, description, member_ids
 )
 VALUES ($1, $2, $3, $4, $5)
-RETURNING id, company_id, name, description, active, algorithm, member_ids, disabled_member_ids, source, deal_limit, unclaimed_minutes, created_at, updated_at
+RETURNING id, company_id, name, description, active, algorithm, member_ids, disabled_member_ids, source, deal_limit, unclaimed_minutes, created_at, updated_at, revision
 `
 
 type CreateDistributionGroupParams struct {
@@ -86,6 +86,7 @@ func (q *Queries) CreateDistributionGroup(ctx context.Context, arg CreateDistrib
 		&i.UnclaimedMinutes,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Revision,
 	)
 	return i, err
 }
@@ -137,7 +138,7 @@ func (q *Queries) DisableUserInDistributionGroups(ctx context.Context, arg Disab
 }
 
 const getDistributionGroup = `-- name: GetDistributionGroup :one
-SELECT id, company_id, name, description, active, algorithm, member_ids, disabled_member_ids, source, deal_limit, unclaimed_minutes, created_at, updated_at FROM distribution_groups WHERE company_id = $1 AND id = $2
+SELECT id, company_id, name, description, active, algorithm, member_ids, disabled_member_ids, source, deal_limit, unclaimed_minutes, created_at, updated_at, revision FROM distribution_groups WHERE company_id = $1 AND id = $2
 `
 
 type GetDistributionGroupParams struct {
@@ -162,12 +163,13 @@ func (q *Queries) GetDistributionGroup(ctx context.Context, arg GetDistributionG
 		&i.UnclaimedMinutes,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Revision,
 	)
 	return i, err
 }
 
 const getDistributionGroupForUpdate = `-- name: GetDistributionGroupForUpdate :one
-SELECT id, company_id, name, description, active, algorithm, member_ids, disabled_member_ids, source, deal_limit, unclaimed_minutes, created_at, updated_at FROM distribution_groups WHERE company_id = $1 AND id = $2 FOR UPDATE
+SELECT id, company_id, name, description, active, algorithm, member_ids, disabled_member_ids, source, deal_limit, unclaimed_minutes, created_at, updated_at, revision FROM distribution_groups WHERE company_id = $1 AND id = $2 FOR UPDATE
 `
 
 type GetDistributionGroupForUpdateParams struct {
@@ -192,6 +194,7 @@ func (q *Queries) GetDistributionGroupForUpdate(ctx context.Context, arg GetDist
 		&i.UnclaimedMinutes,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Revision,
 	)
 	return i, err
 }
@@ -234,7 +237,7 @@ func (q *Queries) ListDistributionEvents(ctx context.Context, arg ListDistributi
 }
 
 const listDistributionGroups = `-- name: ListDistributionGroups :many
-SELECT id, company_id, name, description, active, algorithm, member_ids, disabled_member_ids, source, deal_limit, unclaimed_minutes, created_at, updated_at FROM distribution_groups WHERE company_id = $1 ORDER BY created_at, id
+SELECT id, company_id, name, description, active, algorithm, member_ids, disabled_member_ids, source, deal_limit, unclaimed_minutes, created_at, updated_at, revision FROM distribution_groups WHERE company_id = $1 ORDER BY created_at, id
 `
 
 func (q *Queries) ListDistributionGroups(ctx context.Context, companyID uuid.UUID) ([]DistributionGroup, error) {
@@ -260,6 +263,7 @@ func (q *Queries) ListDistributionGroups(ctx context.Context, companyID uuid.UUI
 			&i.UnclaimedMinutes,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Revision,
 		); err != nil {
 			return nil, err
 		}
@@ -272,7 +276,7 @@ func (q *Queries) ListDistributionGroups(ctx context.Context, companyID uuid.UUI
 }
 
 const listDistributionGroupsContainingUserForUpdate = `-- name: ListDistributionGroupsContainingUserForUpdate :many
-SELECT id, company_id, name, description, active, algorithm, member_ids, disabled_member_ids, source, deal_limit, unclaimed_minutes, created_at, updated_at
+SELECT id, company_id, name, description, active, algorithm, member_ids, disabled_member_ids, source, deal_limit, unclaimed_minutes, created_at, updated_at, revision
 FROM distribution_groups
 WHERE company_id = $1
   AND $2::uuid = ANY(member_ids)
@@ -307,6 +311,7 @@ func (q *Queries) ListDistributionGroupsContainingUserForUpdate(ctx context.Cont
 			&i.UnclaimedMinutes,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Revision,
 		); err != nil {
 			return nil, err
 		}
@@ -367,7 +372,7 @@ SET name = CASE WHEN $1::boolean THEN $2 ELSE name END,
     unclaimed_minutes = CASE WHEN $17::boolean THEN $18 ELSE unclaimed_minutes END,
     updated_at = now()
 WHERE company_id = $19 AND id = $20
-RETURNING id, company_id, name, description, active, algorithm, member_ids, disabled_member_ids, source, deal_limit, unclaimed_minutes, created_at, updated_at
+RETURNING id, company_id, name, description, active, algorithm, member_ids, disabled_member_ids, source, deal_limit, unclaimed_minutes, created_at, updated_at, revision
 `
 
 type UpdateDistributionGroupParams struct {
@@ -431,6 +436,7 @@ func (q *Queries) UpdateDistributionGroup(ctx context.Context, arg UpdateDistrib
 		&i.UnclaimedMinutes,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Revision,
 	)
 	return i, err
 }

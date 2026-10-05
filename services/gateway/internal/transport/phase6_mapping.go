@@ -205,7 +205,7 @@ func distributionGroupFromProto(value *companyv1.DistributionGroup) (api.DealDis
 	if value.CreatedAt != nil {
 		created = value.CreatedAt.AsTime()
 	}
-	return api.DealDistributionGroup{Id: id, Name: value.Name, Description: value.Description, Active: value.Active, Algorithm: algorithm, MemberIds: members, DisabledMemberIds: disabled, Source: value.Source, DealLimit: int(value.DealLimit), UnclaimedMinutes: int(value.UnclaimedMinutes), CreatedAt: created}, nil
+	return api.DealDistributionGroup{Revision: &value.Revision, Id: id, Name: value.Name, Description: value.Description, Active: value.Active, Algorithm: algorithm, MemberIds: members, DisabledMemberIds: disabled, Source: value.Source, DealLimit: int(value.DealLimit), UnclaimedMinutes: int(value.UnclaimedMinutes), CreatedAt: created}, nil
 }
 func distributionGroupsFromProto(values []*companyv1.DistributionGroup) ([]api.DealDistributionGroup, error) {
 	result := make([]api.DealDistributionGroup, len(values))

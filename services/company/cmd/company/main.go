@@ -21,8 +21,11 @@ import (
 	"github.com/sk1fy/team-os-backend/services/company/internal/application"
 	"github.com/sk1fy/team-os-backend/services/company/internal/config"
 	"github.com/sk1fy/team-os-backend/services/company/internal/consumers"
+	"github.com/sk1fy/team-os-backend/services/company/internal/corebridge"
 	"github.com/sk1fy/team-os-backend/services/company/internal/externalusers"
 	"github.com/sk1fy/team-os-backend/services/company/internal/outbox"
+	"github.com/sk1fy/team-os-backend/services/company/internal/storage/db"
+	"github.com/sk1fy/team-os-backend/services/company/internal/transport/distributionhttp"
 	companygrpc "github.com/sk1fy/team-os-backend/services/company/internal/transport/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
@@ -103,6 +106,13 @@ func run(logger *slog.Logger) error {
 		application.WithAmoWidgetSessionTTL(configuration.AmoWidgetSessionTTL),
 		application.WithLogger(logger),
 	}
+	if configuration.DistributionCoreURL != "" {
+		client, e := corebridge.New(configuration.DistributionCoreURL, configuration.DistributionKeyID, configuration.DistributionKeys[configuration.DistributionKeyID])
+		if e != nil {
+			return e
+		}
+		serviceOptions = append(serviceOptions, application.WithDistributionCore(client), application.WithDistributionDeliveryCore(client))
+	}
 	if configuration.AmoImportEnabled {
 		externalUsersClient, externalClientErr := externalusers.NewClient(externalusers.Config{
 			APIURL: configuration.ExternalAPIURL, AppName: configuration.AmoAppName,
@@ -120,6 +130,9 @@ func run(logger *slog.Logger) error {
 
 	consumerContext, consumerCancel := context.WithCancel(context.Background())
 	defer consumerCancel()
+	if configuration.DistributionCoreURL != "" {
+		go service.RunDistributionDelivery(consumerContext)
+	}
 	if err = consumers.Start(consumerContext, bus, pool, logger); err != nil {
 		return fmt.Errorf("start academy consumers: %w", err)
 	}
@@ -142,6 +155,13 @@ func run(logger *slog.Logger) error {
 	grpc_health_v1.RegisterHealthServer(grpcServer, healthServer)
 
 	httpRouter := http.NewServeMux()
+	if len(configuration.DistributionKeys) > 0 {
+		callbacks := &distributionhttp.Handler{Keys: configuration.DistributionKeys, Store: db.New(pool), Service: service}
+		httpRouter.Handle("POST /internal/v1/distribution/widget-access", callbacks)
+		httpRouter.Handle("POST /internal/v1/distribution/validate-decision", callbacks)
+		httpRouter.Handle("POST /internal/v1/distribution/events", callbacks)
+		httpRouter.Handle("POST /internal/v1/distribution/results", callbacks)
+	}
 	httpRouter.Handle("GET /metrics", httpx.MetricsHandler())
 	httpRouter.Handle("GET /readyz", httpx.Readyz(map[string]httpx.ReadinessCheck{
 		"postgres": func(ctx context.Context) error {
@@ -223,6 +243,9 @@ func run(logger *slog.Logger) error {
 func runCompanyRegistrationCleanup(ctx context.Context, service *application.Service, logger *slog.Logger) {
 	const tokenRetention = 7 * 24 * time.Hour
 	cleanup := func() {
+		if err := service.CleanupDistributionServiceNonces(ctx); err != nil {
+			logger.Error("distribution nonce cleanup failed", "error", err)
+		}
 		cleanupContext, cancel := context.WithTimeout(ctx, 30*time.Second)
 		defer cancel()
 		deleted, err := service.CleanupCompanyRegistrationTokens(cleanupContext, tokenRetention)

@@ -155,10 +155,17 @@ jobs:
   e2e:
     name: E2E smoke
     runs-on: ubuntu-latest
+    env:
+      COMPOSE: docker compose --file deploy/docker-compose.yaml --file deploy/docker-compose.ci.yaml
+      COMPOSE_WITH_ENV: docker compose --env-file .env --file deploy/docker-compose.yaml --file deploy/docker-compose.ci.yaml
     steps:
       - uses: actions/checkout@v6
       - name: Validate production Compose security
         run: make check-production-compose
+      - name: Build pinned upstream MinIO fixture
+        run: |
+          make ensure-env
+          $COMPOSE_WITH_ENV build minio
       - name: Start development stack
         run: make up
       - name: Apply migrations
@@ -169,7 +176,7 @@ jobs:
         run: make e2e
       - name: Dump service logs on failure
         if: failure()
-        run: docker compose --file deploy/docker-compose.yaml logs --tail 200
+        run: $COMPOSE logs --tail 200
       - name: Stop stack
         if: always()
         run: make down

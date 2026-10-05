@@ -4,6 +4,7 @@ package application
 
 import (
 	"context"
+	"log/slog"
 	"testing"
 	"time"
 
@@ -209,6 +210,7 @@ func TestAmoImportAllowsSameEmployeeInDifferentCompanies(t *testing.T) {
 	service := &Service{
 		pool: pool, now: func() time.Time { return now },
 		externalUsers: staticExternalEmployees{{ID: "42", Name: "Общий Сотрудник", Email: &email}},
+		amoSyncStates: make(map[uuid.UUID]*amoSyncState), logger: slog.Default(), amoSyncTTL: defaultAmoSyncTTL,
 	}
 
 	actors := make([]Actor, 0, 2)
