@@ -22,12 +22,19 @@ type DistributionWidgetRuntimeInput struct {
 	UserID             string          `json:"userId"`
 	Kind               string          `json:"kind"`
 	ID                 uuid.UUID       `json:"id"`
+	GroupID            uuid.UUID       `json:"groupId"`
 	LeadID             string          `json:"leadId"`
 	Limit              int32           `json:"limit"`
 	Offset             int32           `json:"offset"`
 	Write              bool            `json:"write"`
 	RequestID          uuid.UUID       `json:"requestId"`
 	Payload            json.RawMessage `json:"payload"`
+}
+
+// DistributionDPCore is the optional Core bridge that issues the per-group
+// Digital Pipeline credential. Implemented by corebridge.Client.
+type DistributionDPCore interface {
+	DPCredential(context.Context, corebridge.Scope, uuid.UUID) (corebridge.DPCredential, error)
 }
 
 func (s *Service) widgetRuntimeActor(ctx context.Context, in DistributionWidgetRuntimeInput) (Actor, error) {
@@ -57,6 +64,22 @@ func (s *Service) widgetRuntimeResource(ctx context.Context, in DistributionWidg
 			return notFound("Группа")
 		}
 		other, e := q.DistributionWidgetGroupOtherBinding(ctx, db.DistributionWidgetGroupOtherBindingParams{CompanyID: in.CompanyID, GroupID: in.ID, BindingID: in.BindingID})
+		if e != nil {
+			return e
+		}
+		if other {
+			return forbidden("Группа используется другим подключением")
+		}
+	case "dp_settings":
+		// A paused group must stay configurable, so only ownership and binding
+		// scope are checked here; group activity remains admission policy.
+		if in.GroupID == uuid.Nil {
+			return validation("Укажите группу")
+		}
+		if _, e := q.GetDistributionGroup(ctx, db.GetDistributionGroupParams{CompanyID: in.CompanyID, ID: in.GroupID}); e != nil {
+			return notFound("Группа")
+		}
+		other, e := q.DistributionWidgetGroupOtherBinding(ctx, db.DistributionWidgetGroupOtherBindingParams{CompanyID: in.CompanyID, GroupID: in.GroupID, BindingID: in.BindingID})
 		if e != nil {
 			return e
 		}
@@ -178,7 +201,7 @@ func (s *Service) DistributionWidgetRuntime(ctx context.Context, in Distribution
 		return nil, validation("Укажите идентификатор запроса")
 	}
 	switch in.Kind {
-	case "rules", "rule", "group", "action":
+	case "rules", "rule", "group", "action", "dp_settings":
 	default:
 		return nil, validation("Неизвестная операция записи")
 	}
@@ -240,6 +263,11 @@ func (s *Service) DistributionWidgetRuntime(ctx context.Context, in Distribution
 			return nil, conflict("Идентификатор запроса уже использован")
 		}
 		if saved.State == "completed" {
+			if in.Kind == "dp_settings" {
+				// The secret is never persisted; Core re-issues the same
+				// idempotent credential for this scope.
+				return s.dpSettingsResponse(ctx, actor, in)
+			}
 			return saved.Response, nil
 		}
 		if saved.State == "rejected" {
@@ -253,7 +281,13 @@ func (s *Service) DistributionWidgetRuntime(ctx context.Context, in Distribution
 		return nil, e
 	}
 	ctx = context.WithValue(ctx, distributionWidgetMutationKey{}, in)
-	result, err := s.DistributionRuntimeWrite(ctx, actor, in.Kind, in.ID, payload)
+	var result json.RawMessage
+	var err error
+	if in.Kind == "dp_settings" {
+		result, err = s.dpSettingsResponse(ctx, actor, in)
+	} else {
+		result, err = s.DistributionRuntimeWrite(ctx, actor, in.Kind, in.ID, payload)
+	}
 	state := "completed"
 	var errorKind, errorMessage pgtype.Text
 	if err != nil {
@@ -265,10 +299,40 @@ func (s *Service) DistributionWidgetRuntime(ctx context.Context, in Distribution
 		errorKind = pgtype.Text{String: strconv.Itoa(int(app.Kind)), Valid: true}
 		errorMessage = pgtype.Text{String: app.Message, Valid: true}
 	}
-	if _, e = q.CompleteDistributionWidgetRequest(ctx, db.CompleteDistributionWidgetRequestParams{CompanyID: in.CompanyID, RequestID: in.RequestID, State: state, Response: result, ErrorKind: errorKind, ErrorMessage: errorMessage}); e != nil {
+	persisted := result
+	if in.Kind == "dp_settings" {
+		// Never store the DP credential in the idempotency result.
+		persisted = json.RawMessage(`{"state":"connected","redacted":true}`)
+	}
+	if _, e = q.CompleteDistributionWidgetRequest(ctx, db.CompleteDistributionWidgetRequestParams{CompanyID: in.CompanyID, RequestID: in.RequestID, State: state, Response: persisted, ErrorKind: errorKind, ErrorMessage: errorMessage}); e != nil {
 		return nil, e
 	}
 	return result, err
+}
+
+// dpSettingsResponse issues the per-group Digital Pipeline credential via Core.
+// It is deterministic for a scope, so replay stays safe without persisting the
+// plaintext key anywhere on the TeamOS side.
+func (s *Service) dpSettingsResponse(ctx context.Context, actor Actor, in DistributionWidgetRuntimeInput) (json.RawMessage, error) {
+	g, e := db.New(s.pool).GetDistributionGroup(ctx, db.GetDistributionGroupParams{CompanyID: actor.CompanyID, ID: in.GroupID})
+	if isNoRows(e) {
+		return nil, notFound("Группа")
+	}
+	if e != nil {
+		return nil, e
+	}
+	core, ok := s.deliveryCore.(DistributionDPCore)
+	if !ok || core == nil {
+		return nil, upstream("Core недоступен", nil)
+	}
+	cred, e := core.DPCredential(ctx, in.Scope, in.GroupID)
+	if e != nil {
+		return nil, coreError(e)
+	}
+	if len(cred.Key) < 6 || cred.Key[:3] != "dp_" {
+		return nil, upstream("Core не выдал ключ", nil)
+	}
+	return json.Marshal(map[string]any{"state": "connected", "groupId": in.GroupID.String(), "groupName": g.Name, "key": cred.Key})
 }
 
 type distributionWidgetMutationKey struct{}

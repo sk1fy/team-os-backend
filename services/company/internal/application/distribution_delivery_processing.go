@@ -292,16 +292,27 @@ func (s *Service) processDistributionEvent(ctx context.Context, row db.Distribut
 	// A same-stage notification can describe an unseen exit/reentry. Timestamp
 	// equality is not entry identity; pause the old candidate without inventing a
 	// new sequence. Clearly older source claims do not demote newer observations.
+	//
+	// One exception: amoCRM emits both the Digital Pipeline trigger and
+	// lead.status_changed for the same stage entry, and the trigger can be
+	// delivered first. The mirrored status_changed must not pause the fresh DP
+	// entry as if the lead had invisibly exited and re-entered.
+	mirror := false
+	if in.Event.Kind == "lead.status_changed" && head.CurrentEntryID.Valid && observed.Snapshot != nil {
+		if entry, ee := q.GetDistributionObservedEntry(ctx, head.CurrentEntryID.UUID); ee == nil {
+			mirror = mirrorOfDigitalPipelineEntry(entry, in, observed.Snapshot.PipelineID, observed.Snapshot.StatusID)
+		}
+	}
 	source := in.Event.SourceEvidence
 	sourceMatches := source != nil && source.StatusID != nil && observed.Snapshot != nil && *source.StatusID == observed.Snapshot.StatusID && (source.PipelineID == nil || *source.PipelineID == observed.Snapshot.PipelineID)
 	oldMatches := source != nil && source.OldStatusID != nil && previous != nil && *source.OldStatusID == previous.StatusID && (source.OldPipelineID == nil || *source.OldPipelineID == previous.PipelineID)
-	ambiguous := previous != nil && observed.Snapshot != nil && previous.PipelineID == observed.Snapshot.PipelineID && previous.StatusID == observed.Snapshot.StatusID && in.Event.Kind == "lead.status_changed" && source != nil && source.StatusID != nil && source.OldStatusID != nil && (sourceMatches != oldMatches) && (in.SourceOccurredAt == nil || previous.SourceUpdatedAt == nil || !in.SourceOccurredAt.Before(*previous.SourceUpdatedAt))
+	ambiguous := !mirror && previous != nil && observed.Snapshot != nil && previous.PipelineID == observed.Snapshot.PipelineID && previous.StatusID == observed.Snapshot.StatusID && in.Event.Kind == "lead.status_changed" && source != nil && source.StatusID != nil && source.OldStatusID != nil && (sourceMatches != oldMatches) && (in.SourceOccurredAt == nil || previous.SourceUpdatedAt == nil || !in.SourceOccurredAt.Before(*previous.SourceUpdatedAt))
 	if ambiguous && head.CurrentEntryID.Valid {
 		if e = q.PauseDistributionObservedEntry(ctx, head.CurrentEntryID.UUID); e != nil {
 			return e
 		}
 	}
-	changed := observed.Deleted || observed.Absent || head.Deleted || head.Absent || previous == nil || observed.Snapshot != nil && (previous.PipelineID != observed.Snapshot.PipelineID || previous.StatusID != observed.Snapshot.StatusID) || head.BindingID != scope.BindingID
+	changed := observed.Deleted || observed.Absent || head.Deleted || head.Absent || previous == nil || in.Event.Kind == "lead.digital_pipeline_trigger" || observed.Snapshot != nil && (previous.PipelineID != observed.Snapshot.PipelineID || previous.StatusID != observed.Snapshot.StatusID) || head.BindingID != scope.BindingID
 	entry := head.CurrentEntryID
 	sequence := head.LastSequence
 	if changed && entry.Valid {
@@ -325,7 +336,9 @@ func (s *Service) processDistributionEvent(ctx context.Context, row db.Distribut
 		id := uuid.New()
 		entry = uuid.NullUUID{UUID: id, Valid: true}
 		evidence, state := "reconciled", "needs_configuration"
-		if previous != nil && !head.Deleted && !head.Absent {
+		if in.Event.Kind == "lead.digital_pipeline_trigger" {
+			evidence, state = "digital_pipeline_trigger", "checking"
+		} else if previous != nil && !head.Deleted && !head.Absent {
 			evidence, state = "observed_transition", "checking"
 		} else if in.Event.Kind == "lead.created" && in.Event.SourceEvidence != nil && in.Event.SourceEvidence.PipelineID != nil && in.Event.SourceEvidence.StatusID != nil && *in.Event.SourceEvidence.PipelineID == observed.Snapshot.PipelineID && *in.Event.SourceEvidence.StatusID == observed.Snapshot.StatusID {
 			evidence, state = "created_in_stage", "checking"
@@ -334,7 +347,7 @@ func (s *Service) processDistributionEvent(ctx context.Context, row db.Distribut
 			state = "needs_configuration"
 			evidence = "source_time_unknown"
 		}
-		if e = q.CreateDistributionObservedEntry(ctx, db.CreateDistributionObservedEntryParams{ID: id, CompanyID: scope.CompanyID, AccountID: scope.AccountID, LeadID: in.Event.LeadID, BindingID: scope.BindingID, BindingRevision: scope.BindingRevision, Sequence: sequence, PipelineID: observed.Snapshot.PipelineID, StatusID: observed.Snapshot.StatusID, EntryEventID: in.EventID, Evidence: evidence, State: state, SourceReceivedAt: pgtype.Timestamptz{Time: in.ReceivedAt, Valid: true}, SourceOccurredAt: optionalDeliveryTime(in.SourceOccurredAt)}); e != nil {
+		if e = q.CreateDistributionObservedEntry(ctx, db.CreateDistributionObservedEntryParams{ID: id, CompanyID: scope.CompanyID, AccountID: scope.AccountID, LeadID: in.Event.LeadID, BindingID: scope.BindingID, BindingRevision: scope.BindingRevision, Sequence: sequence, PipelineID: observed.Snapshot.PipelineID, StatusID: observed.Snapshot.StatusID, EntryEventID: in.EventID, Evidence: evidence, State: state, SourceReceivedAt: pgtype.Timestamptz{Time: in.ReceivedAt, Valid: true}, SourceOccurredAt: optionalDeliveryTime(in.SourceOccurredAt), EventKind: in.Event.Kind, TriggerEvidence: in.Event.TriggerEvidence, TriggerGroupID: nullUUIDPtr(in.Event.TriggerGroupID)}); e != nil {
 			return e
 		}
 	}
@@ -361,6 +374,38 @@ func (s *Service) processDistributionEvent(ctx context.Context, row db.Distribut
 	}
 	return tx.Commit(ctx)
 }
+
+// mirrorOfDigitalPipelineEntry reports whether an incoming lead.status_changed is
+// the CRM mirror of the stage entry already captured by the current
+// digital_pipeline_trigger entry. Funnel, stage and the source occurrence second
+// must all match, so a genuinely later re-entry (or a missing source time) is
+// still treated as ambiguous and keeps the fail-closed protection.
+func mirrorOfDigitalPipelineEntry(entry db.DistributionObservedEntry, in DistributionEventEnvelope, pipelineID, statusID string) bool {
+	if entry.State == "cancelled" || entry.EventKind != "lead.digital_pipeline_trigger" {
+		return false
+	}
+	if entry.PipelineID != pipelineID || entry.StatusID != statusID {
+		return false
+	}
+	if in.SourceOccurredAt == nil || !entry.SourceOccurredAt.Valid {
+		return false
+	}
+	// The DP time comes from the trigger event and the mirror time from the CRM
+	// update; both are second-granularity and may be reported one second apart for
+	// the same transition, so accept the same source second.
+	delta := entry.SourceOccurredAt.Time.UTC().Sub(in.SourceOccurredAt.UTC())
+	if delta < 0 {
+		delta = -delta
+	}
+	return delta <= time.Second
+}
+func nullUUIDPtr(p *uuid.UUID) uuid.NullUUID {
+	if p == nil {
+		return uuid.NullUUID{}
+	}
+	return uuid.NullUUID{UUID: *p, Valid: true}
+}
+
 func (s *Service) ReconcileDistributionOperations(ctx context.Context, limit int32) error {
 	if limit < 1 || limit > 100 {
 		return validation("Размер сверки должен быть от 1 до 100")

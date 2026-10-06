@@ -39,6 +39,8 @@ type DistributionCRMEvent struct {
 	Before              *corebridge.LeadSnapshot    `json:"before"`
 	After               *corebridge.LeadSnapshot    `json:"after"`
 	ObservationRevision int64                       `json:"observationRevision"`
+	TriggerEvidence     json.RawMessage             `json:"triggerEvidence"`
+	TriggerGroupID      *uuid.UUID                  `json:"triggerGroupId"`
 }
 type DistributionEventEnvelope struct {
 	SchemaVersion    int                  `json:"schemaVersion"`
@@ -195,7 +197,7 @@ func (s *Service) ReceiveDistributionEvent(ctx context.Context, in DistributionE
 		return DistributionDeliveryReceipt{}, validation("Некорректное событие распределения")
 	}
 	switch in.Event.Kind {
-	case "lead.created", "lead.status_changed", "lead.responsible_changed", "lead.deleted", "lead.snapshot_reconciled":
+	case "lead.created", "lead.status_changed", "lead.responsible_changed", "lead.deleted", "lead.snapshot_reconciled", "lead.digital_pipeline_trigger":
 	default:
 		return DistributionDeliveryReceipt{}, validation("Неизвестное событие")
 	}

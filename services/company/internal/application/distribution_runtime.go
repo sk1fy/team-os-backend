@@ -170,8 +170,8 @@ func (s *Service) CreateDistributionRuntimeRule(ctx context.Context, actor Actor
 	if _, e = q.GetDistributionSettings(ctx, actor.CompanyID); e != nil {
 		return db.DistributionRule{}, validation("Укажите часовой пояс компании")
 	}
-	if !validCRMID(input.PipelineID) || !validCRMID(input.StatusID) {
-		return db.DistributionRule{}, validation("Укажите этап amoCRM")
+	if !validCRMID(input.PipelineID) || (input.Source != "creation" && !validCRMID(input.StatusID)) {
+		return db.DistributionRule{}, validation("Укажите воронку amoCRM")
 	}
 	refs, e := s.readDistributionReferences(ctx, bindingScope(b))
 	if e != nil {
@@ -179,8 +179,15 @@ func (s *Service) CreateDistributionRuntimeRule(ctx context.Context, actor Actor
 	}
 	found := false
 	for _, p := range refs.Pipelines {
+		if p.ID != input.PipelineID {
+			continue
+		}
+		if input.Source == "creation" {
+			found = true
+			break
+		}
 		for _, st := range p.Statuses {
-			if p.ID == input.PipelineID && st.ID == input.StatusID {
+			if st.ID == input.StatusID {
 				found = true
 			}
 		}
@@ -305,4 +312,31 @@ func crmUserActive(refs *corebridge.References, id string) bool {
 		}
 	}
 	return false
+}
+
+// ruleStageMatches scopes a rule to its pipeline. A creation-mode rule accepts a
+// lead anywhere inside the configured pipeline; other modes require the exact
+// trigger stage.
+func ruleStageMatches(r db.DistributionRule, snapshot *corebridge.LeadSnapshot) bool {
+	if snapshot == nil || snapshot.PipelineID != r.PipelineID {
+		return false
+	}
+	if r.Source == "creation" {
+		return true
+	}
+	return snapshot.StatusID == r.StatusID
+}
+
+// ruleSourceAcceptsEntry is the trusted-evidence gate. Only the authenticated
+// Digital Pipeline receiver writes evidence=digital_pipeline_trigger, so a
+// normal webhook entry can never satisfy a digital_pipeline rule.
+func ruleSourceAcceptsEntry(r db.DistributionRule, entry db.DistributionObservedEntry) bool {
+	switch r.Source {
+	case "creation":
+		return entry.EventKind == "lead.created"
+	case "digital_pipeline":
+		return entry.Evidence == "digital_pipeline_trigger" && len(entry.TriggerEvidence) > 0 && entry.TriggerGroupID.Valid && entry.TriggerGroupID.UUID == r.GroupID
+	default:
+		return true
+	}
 }

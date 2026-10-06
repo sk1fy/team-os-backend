@@ -194,6 +194,23 @@ func (c *Client) Permission(ctx context.Context, s Scope, in PermissionInput) (P
 	return o, e
 }
 
+// DPCredential is the per-group Digital Pipeline credential minted by Core.
+// Core persists only sha256(key) + a sealed copy, so re-issuing returns the
+// same value without storing plaintext at rest.
+type DPCredential struct {
+	Key             string `json:"key"`
+	GroupID         string `json:"groupId"`
+	BindingRevision int64  `json:"bindingRevision"`
+}
+
+func (c *Client) DPCredential(ctx context.Context, s Scope, groupID uuid.UUID) (DPCredential, error) {
+	var o DPCredential
+	e := c.call(ctx, "POST", "/internal/v1/distribution/bindings/"+s.BindingID.String()+"/dp-credentials?bindingRevision="+strconv.FormatInt(s.BindingRevision, 10), s, struct {
+		GroupID uuid.UUID `json:"groupId"`
+	}{groupID}, &o)
+	return o, e
+}
+
 func (c *Client) Revoke(ctx context.Context, s Scope) error {
 	var ack struct {
 		BindingID uuid.UUID `json:"bindingId"`

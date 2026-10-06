@@ -219,7 +219,11 @@ func (s *Service) ProcessDistributionObservation(ctx context.Context) (found boo
 func (s *Service) visibleObservation(ctx context.Context, actor Actor, row db.DistributionObservation) (*DistributionObservation, error) {
 	p, e := s.DistributionLeadPermission(ctx, actor, row.BindingID, row.LeadID)
 	if e != nil {
-		return nil, upstream("Не удалось проверить доступ к сделке наблюдения", e)
+		// DistributionLeadPermission already returns classified errors (forbidden for
+		// an unmapped actor, upstream for a Core transport failure). Re-wrapping every
+		// error as upstream turned a deterministic permission denial into a transient
+		// 503 "service unavailable"; propagate the original classification instead.
+		return nil, e
 	}
 	if !p.CanViewLead {
 		return nil, nil
