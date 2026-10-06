@@ -19,6 +19,7 @@
 | `files` | 8086 | файлы (MinIO/S3) |
 
 Подробности: [teamos-go-microservices-plan.md](teamos-go-microservices-plan.md) (полный дизайн),
+[docs/README.md](docs/README.md) (инструкции и контракты),
 [docs/adr/](docs/adr/) (ключевые решения), [AGENTS.md](AGENTS.md) (правила работы с кодом).
 
 ## Академия
