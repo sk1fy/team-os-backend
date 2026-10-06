@@ -19,7 +19,8 @@ func TestDistributionObservationIsolationDedupPrivacyAndEnableBoundary(t *testin
 	defer cancel()
 	pool := companyAccessTestPool(t, ctx)
 	company, ownerID, employee := uuid.New(), uuid.New(), uuid.New()
-	seedAccessCompany(t, ctx, pool, company, ownerID, []accessTestUser{{ownerID, "owner", "active"}, {employee, "employee", "active"}})
+	unmappedAdmin := uuid.New()
+	seedAccessCompany(t, ctx, pool, company, ownerID, []accessTestUser{{ownerID, "owner", "active"}, {employee, "employee", "active"}, {unmappedAdmin, "admin", "active"}})
 	owner := Actor{CompanyID: company, UserID: ownerID, Role: "owner"}
 	links := &interfaceCore{fakeDistributionCore: &fakeDistributionCore{bindings: map[uuid.UUID]corebridge.Binding{}, revoked: map[uuid.UUID]bool{}}}
 	links.refs = corebridge.References{State: "fresh", FetchedAt: time.Now(), FreshUntil: time.Now().Add(time.Hour), Users: []corebridge.User{{ID: "2", IsActive: true}}, Pipelines: []corebridge.Pipeline{{ID: "20", Statuses: []corebridge.Status{{ID: "30"}}}}}
@@ -113,6 +114,17 @@ func TestDistributionObservationIsolationDedupPrivacyAndEnableBoundary(t *testin
 	foreign.CompanyID = uuid.New()
 	if _, e = service.DistributionObservations(ctx, foreign, rule.ID, 25, 0); e == nil {
 		t.Fatal("foreign company read")
+	}
+	// An actor with distribution access but no verified CRM mapping must get a
+	// classified permission error, not a misleading transient upstream failure.
+	admin := Actor{CompanyID: company, UserID: unmappedAdmin, Role: "admin"}
+	if _, e = service.DistributionObservations(ctx, admin, rule.ID, 25, 0); e == nil {
+		t.Fatal("unmapped actor observation read succeeded")
+	} else {
+		var appErr *Error
+		if !errors.As(e, &appErr) || appErr.Kind != ErrorForbidden {
+			t.Fatalf("unmapped actor error is not forbidden: %v", e)
+		}
 	}
 	raw, e = service.DistributionRuntimeWrite(ctx, owner, "rule", rule.ID, []byte(`{"expectedRevision":1,"active":true,"keepCurrentResponsible":true,"executionMode":"live"}`))
 	if e != nil {

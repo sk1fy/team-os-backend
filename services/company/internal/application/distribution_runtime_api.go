@@ -31,6 +31,7 @@ type distributionRuleDTO struct {
 	Revision               int64      `json:"revision"`
 	CreatedAt              time.Time  `json:"createdAt"`
 	UpdatedAt              time.Time  `json:"updatedAt"`
+	Source                 string     `json:"source"`
 }
 
 func ruleDTO(r db.DistributionRule) distributionRuleDTO {
@@ -38,7 +39,7 @@ func ruleDTO(r db.DistributionRule) distributionRuleDTO {
 	if r.LiveStartedAt.Valid {
 		live = &r.LiveStartedAt.Time
 	}
-	return distributionRuleDTO{r.ExecutionMode, r.ExecutionEpoch, live, r.ID, r.BindingID, r.BindingRevision, r.AccountID, r.PipelineID, r.StatusID, r.GroupID, r.Active, r.KeepCurrent, r.Revision, r.CreatedAt, r.UpdatedAt}
+	return distributionRuleDTO{r.ExecutionMode, r.ExecutionEpoch, live, r.ID, r.BindingID, r.BindingRevision, r.AccountID, r.PipelineID, r.StatusID, r.GroupID, r.Active, r.KeepCurrent, r.Revision, r.CreatedAt, r.UpdatedAt, r.Source}
 }
 func (s *Service) DistributionRuntimeRead(ctx context.Context, actor Actor, kind string, id uuid.UUID, limit, offset int32) (json.RawMessage, error) {
 	if _, e := s.distributionActor(ctx, actor, false); e != nil {
@@ -178,6 +179,7 @@ func (s *Service) DistributionRuntimeWrite(ctx context.Context, actor Actor, kin
 			StatusID        string    `json:"statusId"`
 			Active          *bool     `json:"active"`
 			Keep            *bool     `json:"keepCurrentResponsible"`
+			Source          *string   `json:"source"`
 		}
 		if e := decodeRuntime(raw, &in); e != nil {
 			return nil, e
@@ -204,7 +206,14 @@ func (s *Service) DistributionRuntimeWrite(ctx context.Context, actor Actor, kin
 		if mode != "live" && mode != "observe" {
 			return nil, validation("Неизвестный режим распределения")
 		}
-		r, e := s.CreateDistributionRuntimeRule(ctx, actor, db.CreateDistributionRuleParams{CompanyID: actor.CompanyID, BindingID: in.BindingID, BindingRevision: in.BindingRevision, AccountID: b.AccountID, GroupID: in.GroupID, PipelineID: in.PipelineID, StatusID: in.StatusID, Active: active, KeepCurrent: keep, ExecutionMode: mode})
+		source := "legacy_stage"
+		if in.Source != nil {
+			source = *in.Source
+		}
+		if source != "legacy_stage" && source != "creation" && source != "digital_pipeline" {
+			return nil, validation("Неизвестный источник запуска")
+		}
+		r, e := s.CreateDistributionRuntimeRule(ctx, actor, db.CreateDistributionRuleParams{CompanyID: actor.CompanyID, BindingID: in.BindingID, BindingRevision: in.BindingRevision, AccountID: b.AccountID, GroupID: in.GroupID, PipelineID: in.PipelineID, StatusID: in.StatusID, Active: active, KeepCurrent: keep, ExecutionMode: mode, Source: source})
 		if e != nil {
 			return nil, e
 		}
@@ -217,6 +226,7 @@ func (s *Service) DistributionRuntimeWrite(ctx context.Context, actor Actor, kin
 			StatusID         *string `json:"statusId"`
 			Active           *bool   `json:"active"`
 			Keep             *bool   `json:"keepCurrentResponsible"`
+			Source           *string `json:"source"`
 		}
 		if e := decodeRuntime(raw, &in); e != nil {
 			return nil, e
@@ -228,6 +238,11 @@ func (s *Service) DistributionRuntimeWrite(ctx context.Context, actor Actor, kin
 		if e != nil {
 			return nil, e
 		}
+		if in.Source != nil && *in.Source != initial.Source {
+			if *in.Source != "legacy_stage" && *in.Source != "creation" && *in.Source != "digital_pipeline" {
+				return nil, validation("Неизвестный источник запуска")
+			}
+		}
 		pipeline, status := initial.PipelineID, initial.StatusID
 		if in.PipelineID != nil {
 			pipeline = *in.PipelineID
@@ -235,11 +250,18 @@ func (s *Service) DistributionRuntimeWrite(ctx context.Context, actor Actor, kin
 		if in.StatusID != nil {
 			status = *in.StatusID
 		}
+		sourceWant := initial.Source
+		if in.Source != nil {
+			if *in.Source != "legacy_stage" && *in.Source != "creation" && *in.Source != "digital_pipeline" {
+				return nil, validation("Неизвестный источник запуска")
+			}
+			sourceWant = *in.Source
+		}
 		changed := pipeline != initial.PipelineID || status != initial.StatusID
 		var refs corebridge.References
 		var binding db.DistributionBinding
 		if changed {
-			if !validCRMID(pipeline) || !validCRMID(status) {
+			if !validCRMID(pipeline) || (sourceWant != "creation" && !validCRMID(status)) {
 				return nil, validation("Укажите корректный этап amoCRM")
 			}
 			binding, e = db.New(s.pool).GetDistributionBinding(ctx, db.GetDistributionBindingParams{CompanyID: actor.CompanyID, ID: initial.BindingID})
@@ -252,8 +274,15 @@ func (s *Service) DistributionRuntimeWrite(ctx context.Context, actor Actor, kin
 			}
 			found := false
 			for _, p := range refs.Pipelines {
+				if p.ID != pipeline {
+					continue
+				}
+				if sourceWant == "creation" {
+					found = true
+					break
+				}
 				for _, st := range p.Statuses {
-					if p.ID == pipeline && st.ID == status {
+					if st.ID == status {
 						found = true
 					}
 				}
@@ -289,6 +318,21 @@ func (s *Service) DistributionRuntimeWrite(ctx context.Context, actor Actor, kin
 		}
 		if old.Revision != initial.Revision {
 			return nil, conflict("Правило изменилось: обновите данные")
+		}
+		source := sourceWant
+		sourceChanged := false
+		if in.Source != nil {
+			source = *in.Source
+			sourceChanged = source != old.Source
+		}
+		if sourceChanged {
+			busy, err := q.DistributionRuleUnsettled(ctx, db.DistributionRuleUnsettledParams{CompanyID: actor.CompanyID, RuleID: id})
+			if err != nil {
+				return nil, err
+			}
+			if busy {
+				return nil, conflict("Сначала завершите или отмените все ожидающие сделки правила")
+			}
 		}
 		if in.ExecutionMode != nil {
 			if *in.ExecutionMode != "live" && *in.ExecutionMode != "observe" {
@@ -351,7 +395,7 @@ func (s *Service) DistributionRuntimeWrite(ctx context.Context, actor Actor, kin
 				return nil, validation("Связь недоступна")
 			}
 		}
-		r, e := q.UpdateDistributionRulePoint(ctx, db.UpdateDistributionRulePointParams{CompanyID: actor.CompanyID, ID: id, PipelineID: pipeline, StatusID: status, Active: *in.Active, KeepCurrent: *in.Keep, Revision: in.ExpectedRevision})
+		r, e := q.UpdateDistributionRulePoint(ctx, db.UpdateDistributionRulePointParams{CompanyID: actor.CompanyID, ID: id, PipelineID: pipeline, StatusID: status, Active: *in.Active, KeepCurrent: *in.Keep, Revision: in.ExpectedRevision, Source: source})
 		if isNoRows(e) {
 			return nil, conflict("Правило изменилось: обновите данные")
 		}

@@ -157,6 +157,7 @@ func run(logger *slog.Logger) error {
 	httpRouter := http.NewServeMux()
 	if len(configuration.DistributionKeys) > 0 {
 		callbacks := &distributionhttp.Handler{Keys: configuration.DistributionKeys, Store: db.New(pool), Service: service}
+		httpRouter.Handle("POST /internal/v1/distribution/widget-runtime", callbacks)
 		httpRouter.Handle("POST /internal/v1/distribution/widget-access", callbacks)
 		httpRouter.Handle("POST /internal/v1/distribution/validate-decision", callbacks)
 		httpRouter.Handle("POST /internal/v1/distribution/events", callbacks)

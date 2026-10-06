@@ -49,6 +49,74 @@ func (f *deliveryFake) ReadLead(_ context.Context, s corebridge.Scope, id string
 func (f *deliveryFake) Operation(_ context.Context, _ corebridge.Scope, _ uuid.UUID) (corebridge.Operation, error) {
 	return f.operation, nil
 }
+
+// Regression: the exact Digital Pipeline source epoch must be persisted into
+// distribution_observed_entries.source_occurred_at (Core envelope -> TeamOS),
+// duplicates must dedupe, and a missing source time must stay fail-closed
+// (needs_configuration, NULL) instead of being replaced with "now".
+func TestDistributionDeliverySourceOccurredAtPersisted(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+	defer cancel()
+	pool := companyAccessTestPool(t, ctx)
+	company := uuid.New()
+	owner := Actor{CompanyID: company, UserID: uuid.New(), Role: "owner"}
+	seedAccessCompany(t, ctx, pool, company, owner.UserID, []accessTestUser{{owner.UserID, "owner", "active"}})
+	links := &fakeDistributionCore{bindings: map[uuid.UUID]corebridge.Binding{}, revoked: map[uuid.UUID]bool{}}
+	fake := &deliveryFake{}
+	svc := &Service{pool: pool, now: time.Now, distributionCore: links, deliveryCore: fake}
+	connection, e := svc.LinkDistributionConnection(ctx, owner, DistributionLinkInput{InstallationID: uuid.New(), IntegrationID: uuid.New(), IntentID: uuid.New(), AccountID: "123", WidgetToken: "test"})
+	if e != nil {
+		t.Fatal(e)
+	}
+	scope := corebridge.Scope{CompanyID: company, BindingID: connection.BindingID, BindingRevision: 1, InstallationID: connection.InstallationID, IntegrationID: connection.IntegrationID, AccountID: "123"}
+	now := time.Now().UTC()
+	p, st := "20", "30"
+	groupID := uuid.New()
+	fake.observation = corebridge.LeadObservation{Snapshot: &corebridge.LeadSnapshot{LeadID: "10", PipelineID: p, StatusID: st, ResponsibleUserID: "1", ObservedAt: now}}
+
+	exact := time.Unix(1700000000, 0).UTC()
+	event := DistributionEventEnvelope{SchemaVersion: 1, MessageID: uuid.New(), EventID: uuid.New(), Scope: scope, SourceOccurredAt: &exact, ReceivedAt: now, EmittedAt: now, CorrelationID: uuid.New(), Event: DistributionCRMEvent{Kind: "lead.digital_pipeline_trigger", LeadID: "10", ObservationRevision: 1, TriggerEvidence: json.RawMessage(`{"time":1700000000}`), TriggerGroupID: &groupID}}
+	if _, e = svc.ReceiveDistributionEvent(ctx, event); e != nil {
+		t.Fatal(e)
+	}
+	if _, e = svc.ProcessDistributionDelivery(ctx); e != nil {
+		t.Fatal(e)
+	}
+	var persisted time.Time
+	if e = pool.QueryRow(ctx, "SELECT source_occurred_at FROM distribution_observed_entries ORDER BY sequence DESC LIMIT 1").Scan(&persisted); e != nil || !persisted.Equal(exact) {
+		t.Fatalf("exact source time not persisted: %v %v", persisted, e)
+	}
+
+	// Dedupe: re-sending the same message is a duplicate and adds no entry.
+	dup, e := svc.ReceiveDistributionEvent(ctx, event)
+	if e != nil || dup.Disposition != "duplicate" {
+		t.Fatalf("dedupe %+v %v", dup, e)
+	}
+	var entries int
+	if e = pool.QueryRow(ctx, "SELECT count(*) FROM distribution_observed_entries").Scan(&entries); e != nil || entries != 1 {
+		t.Fatalf("duplicate created extra entry: %d %v", entries, e)
+	}
+
+	// Fail-closed: absent source time is never turned into "now".
+	noTime := event
+	noTime.MessageID = uuid.New()
+	noTime.EventID = uuid.New()
+	noTime.SourceOccurredAt = nil
+	noTime.Event.ObservationRevision++
+	fake.observation.Snapshot.StatusID = "40"
+	if _, e = svc.ReceiveDistributionEvent(ctx, noTime); e != nil {
+		t.Fatal(e)
+	}
+	if _, e = svc.ProcessDistributionDelivery(ctx); e != nil {
+		t.Fatal(e)
+	}
+	var state string
+	var src *time.Time
+	if e = pool.QueryRow(ctx, "SELECT state, source_occurred_at FROM distribution_observed_entries ORDER BY sequence DESC LIMIT 1").Scan(&state, &src); e != nil || state != "needs_configuration" || src != nil {
+		t.Fatalf("fail-closed broken: state=%s src=%v err=%v", state, src, e)
+	}
+}
+
 func TestDistributionDeliveryDurabilityAndHistoricalResults(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 	defer cancel()
@@ -376,4 +444,160 @@ func TestDistributionDeliveryDurabilityAndHistoricalResults(t *testing.T) {
 		t.Fatalf("pull/push race ACKed conflict: %v", err)
 	}
 
+}
+
+// Regression for the Digital Pipeline entry race: amoCRM emits both the DP
+// trigger and lead.status_changed for the same stage entry, and the trigger can
+// be delivered first. The mirrored status_changed must not pause the fresh DP
+// entry as an "ambiguous reentry", while a genuinely later reentry (or a missing
+// source time) must keep the fail-closed protection. Both delivery orders, an
+// intermediate snapshot_reconciled and duplicates are covered.
+func TestDistributionDeliveryDPMirrorStatusChanged(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+	defer cancel()
+	pool := companyAccessTestPool(t, ctx)
+	company := uuid.New()
+	owner := Actor{CompanyID: company, UserID: uuid.New(), Role: "owner"}
+	seedAccessCompany(t, ctx, pool, company, owner.UserID, []accessTestUser{{owner.UserID, "owner", "active"}})
+	links := &fakeDistributionCore{bindings: map[uuid.UUID]corebridge.Binding{}, revoked: map[uuid.UUID]bool{}}
+	fake := &deliveryFake{}
+	svc := &Service{pool: pool, now: time.Now, distributionCore: links, deliveryCore: fake}
+	connection, e := svc.LinkDistributionConnection(ctx, owner, DistributionLinkInput{InstallationID: uuid.New(), IntegrationID: uuid.New(), IntentID: uuid.New(), AccountID: "123", WidgetToken: "test"})
+	if e != nil {
+		t.Fatal(e)
+	}
+	scope := corebridge.Scope{CompanyID: company, BindingID: connection.BindingID, BindingRevision: 1, InstallationID: connection.InstallationID, IntegrationID: connection.IntegrationID, AccountID: "123"}
+	const pipeline, entered, other = "20", "30", "40"
+	group := uuid.New()
+	base := time.Now().UTC().Add(-time.Minute).Truncate(time.Second)
+	ptr := func(s string) *string { return &s }
+
+	observe := func(lead, status string, src *time.Time) {
+		rev := fake.observation.ObservationRevision
+		fake.observation = corebridge.LeadObservation{ObservationRevision: rev, Snapshot: &corebridge.LeadSnapshot{LeadID: lead, PipelineID: pipeline, StatusID: status, ResponsibleUserID: "1", ObservedAt: time.Now().UTC(), SourceUpdatedAt: src}}
+	}
+	newEvent := func(lead, kind string, occ *time.Time, se *DistributionSourceEvidence, withGroup bool) DistributionEventEnvelope {
+		var g *uuid.UUID
+		if withGroup {
+			g = &group
+		}
+		return DistributionEventEnvelope{SchemaVersion: 1, MessageID: uuid.New(), EventID: uuid.New(), Scope: scope, SourceOccurredAt: occ, ReceivedAt: time.Now().UTC(), EmittedAt: time.Now().UTC(), CorrelationID: uuid.New(), Event: DistributionCRMEvent{Kind: kind, LeadID: lead, ObservationRevision: 1, SourceEvidence: se, TriggerGroupID: g, TriggerEvidence: json.RawMessage(`{"time":1}`)}}
+	}
+	send := func(ev DistributionEventEnvelope) {
+		t.Helper()
+		if _, e := svc.ReceiveDistributionEvent(ctx, ev); e != nil {
+			t.Fatal(e)
+		}
+		for {
+			found, e := svc.ProcessDistributionDelivery(ctx)
+			if e != nil {
+				t.Fatal(e)
+			}
+			if !found {
+				break
+			}
+		}
+	}
+	stateOf := func(lead string) string {
+		var st string
+		if e := pool.QueryRow(ctx, "SELECT state FROM distribution_observed_entries WHERE lead_id=$1 ORDER BY sequence DESC LIMIT 1", lead).Scan(&st); e != nil {
+			t.Fatal(e)
+		}
+		return st
+	}
+	entryCount := func(lead string) int {
+		var n int
+		if e := pool.QueryRow(ctx, "SELECT count(*) FROM distribution_observed_entries WHERE lead_id=$1", lead).Scan(&n); e != nil {
+			t.Fatal(e)
+		}
+		return n
+	}
+	created := func(lead string, t0 time.Time) {
+		observe(lead, other, &t0)
+		send(newEvent(lead, "lead.created", &t0, &DistributionSourceEvidence{PipelineID: ptr(pipeline), StatusID: ptr(other)}, false))
+	}
+	mirrorSE := &DistributionSourceEvidence{PipelineID: ptr(pipeline), StatusID: ptr(entered), OldStatusID: ptr(other)}
+
+	// A. DP trigger first, then the mirrored status_changed.
+	{
+		lead := "100"
+		created(lead, base)
+		t1 := base.Add(time.Second)
+		observe(lead, entered, &t1)
+		send(newEvent(lead, "lead.digital_pipeline_trigger", &t1, nil, true))
+		send(newEvent(lead, "lead.status_changed", &t1, mirrorSE, false))
+		if got := stateOf(lead); got != "checking" {
+			t.Fatalf("mirror status_changed paused DP entry: %s", got)
+		}
+	}
+	// B. Reversed order: status_changed first, then the DP trigger.
+	{
+		lead := "101"
+		created(lead, base)
+		t1 := base.Add(time.Second)
+		observe(lead, entered, &t1)
+		send(newEvent(lead, "lead.status_changed", &t1, mirrorSE, false))
+		send(newEvent(lead, "lead.digital_pipeline_trigger", &t1, nil, true))
+		if got := stateOf(lead); got != "checking" {
+			t.Fatalf("reversed order entry not checking: %s", got)
+		}
+	}
+	// C. Intermediate snapshot_reconciled between trigger and mirror.
+	{
+		lead := "102"
+		created(lead, base)
+		t1 := base.Add(time.Second)
+		observe(lead, entered, &t1)
+		send(newEvent(lead, "lead.digital_pipeline_trigger", &t1, nil, true))
+		send(newEvent(lead, "lead.snapshot_reconciled", &t1, nil, false))
+		send(newEvent(lead, "lead.status_changed", &t1, mirrorSE, false))
+		if got := stateOf(lead); got != "checking" || entryCount(lead) != 2 {
+			var dump, inbox string
+			_ = pool.QueryRow(ctx, "SELECT string_agg(sequence::text||':'||event_kind||':'||state||':'||coalesce(evidence,''),' | ' ORDER BY sequence) FROM distribution_observed_entries WHERE lead_id=$1", lead).Scan(&dump)
+			_ = pool.QueryRow(ctx, "SELECT string_agg(message_kind||':'||state||':'||coalesce(error_code,'-'),' | ' ORDER BY accepted_at) FROM distribution_delivery_inbox WHERE lead_id=$1", lead).Scan(&inbox)
+			t.Fatalf("reconcile+mirror entry=%s count=%d entries=[%s] inbox=[%s]", got, entryCount(lead), dump, inbox)
+		}
+	}
+	// D. A duplicate mirror message is deduped and changes nothing.
+	{
+		lead := "103"
+		created(lead, base)
+		t1 := base.Add(time.Second)
+		observe(lead, entered, &t1)
+		send(newEvent(lead, "lead.digital_pipeline_trigger", &t1, nil, true))
+		mirror := newEvent(lead, "lead.status_changed", &t1, mirrorSE, false)
+		send(mirror)
+		if dup, e := svc.ReceiveDistributionEvent(ctx, mirror); e != nil || dup.Disposition != "duplicate" {
+			t.Fatalf("duplicate disposition %+v %v", dup, e)
+		}
+		if got := stateOf(lead); got != "checking" || entryCount(lead) != 2 {
+			t.Fatalf("duplicate changed entry=%s count=%d", got, entryCount(lead))
+		}
+	}
+	// E. A later reentry keeps the fail-closed ambiguity protection.
+	{
+		lead := "104"
+		created(lead, base)
+		t1 := base.Add(time.Second)
+		observe(lead, entered, &t1)
+		send(newEvent(lead, "lead.digital_pipeline_trigger", &t1, nil, true))
+		t9 := base.Add(9 * time.Second)
+		observe(lead, entered, &t9)
+		send(newEvent(lead, "lead.status_changed", &t9, mirrorSE, false))
+		if got := stateOf(lead); got != "needs_configuration" {
+			t.Fatalf("later reentry not paused: %s", got)
+		}
+	}
+	// F. Missing sourceOccurredAt stays fail-closed.
+	{
+		lead := "105"
+		created(lead, base)
+		t1 := base.Add(time.Second)
+		observe(lead, entered, &t1)
+		send(newEvent(lead, "lead.digital_pipeline_trigger", &t1, nil, true))
+		send(newEvent(lead, "lead.status_changed", nil, mirrorSE, false))
+		if got := stateOf(lead); got != "needs_configuration" {
+			t.Fatalf("missing source time not fail-closed: %s", got)
+		}
+	}
 }

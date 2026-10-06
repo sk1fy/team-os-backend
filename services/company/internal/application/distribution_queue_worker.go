@@ -91,7 +91,7 @@ func (s *Service) ProcessDistributionQueue(ctx context.Context) (bool, error) {
 	reason := ""
 	state := "waiting"
 	switch {
-	case entry.State == "cancelled" || !head.CurrentEntryID.Valid || head.CurrentEntryID.UUID != row.EntryID || observed.Snapshot == nil || observed.Snapshot.PipelineID != r.PipelineID || observed.Snapshot.StatusID != r.StatusID:
+	case entry.State == "cancelled" || !head.CurrentEntryID.Valid || head.CurrentEntryID.UUID != row.EntryID || observed.Snapshot == nil || !ruleStageMatches(r, observed.Snapshot) || !ruleSourceAcceptsEntry(r, entry):
 		reason = "observed_stage_exit"
 		state = "cancelled"
 	case entry.State == "needs_configuration":

@@ -1,0 +1,70 @@
+# TEMPLATE — local staging override for the TeamOS backend (full distribution contour).
+#
+# Replace every ${...} via your compose env / `.env` before use (see
+# VARIABLES.md). Secrets are injected from the environment and never written
+# here. Service list, `depends_on`/readiness from the base compose and every
+# port binding are preserved.
+#
+# Constraints on a small (2 vCPU / 4 GB) test host:
+#   * every published host port is loopback-only and collision-free with the
+#     existing amocrm-pro / amocrm-pro-admin stacks;
+#   * security-sensitive services publish no host ports at all;
+#   * only the gateway is reachable from host loopback for an SSH forward.
+#
+# The MinIO image may not be anonymously pullable; when needed it is built from
+# the pinned official source via deploy/ci/minio.Dockerfile (combine with
+# deploy/docker-compose.ci.yaml).
+#
+# Usage (from the team-os-backend root):
+#   docker compose --env-file .env \
+#     -f deploy/docker-compose.yaml \
+#     -f deploy/docker-compose.ci.yaml \
+#     -f /path/to/docker-compose.staging-local.yaml \
+#     up -d
+name: teamos
+
+services:
+  postgres:
+    ports: !override
+      - "127.0.0.1:${POSTGRES_PORT:-5532}:5432"
+
+  nats:
+    ports: !override
+      - "127.0.0.1:${NATS_MONITOR_PORT:-8223}:8222"
+
+  minio:
+    ports: !override
+      - "127.0.0.1:${MINIO_PORT:-9100}:9000"
+      - "127.0.0.1:${MINIO_CONSOLE_PORT:-9101}:9001"
+
+  kb:
+    ports: !override []
+
+  company:
+    environment:
+      # Core worker private listener over the host TLS bridge.
+      COMPANY_DISTRIBUTION_CORE_URL: '${COMPANY_DISTRIBUTION_CORE_URL}'
+      # Key id paired with the service keys (identifier, injected from .env).
+      COMPANY_DISTRIBUTION_KEY_ID: '${COMPANY_DISTRIBUTION_KEY_ID}'
+      # SECRET (service keys) — injected from .env, never committed.
+      COMPANY_DISTRIBUTION_SERVICE_KEYS: '${COMPANY_DISTRIBUTION_SERVICE_KEYS}'
+    extra_hosts:
+      - '${DISTRIBUTION_DOMAIN}:${TEAMOS_BRIDGE_GATEWAY}'
+    ports: !override
+      - "127.0.0.1:${COMPANY_DISTRIBUTION_HTTP_PORT:-18081}:8081"
+
+  tasks:
+    ports: !override []
+
+  academy:
+    ports: !override []
+
+  notifications:
+    ports: !override []
+
+  files:
+    ports: !override []
+
+  gateway:
+    ports: !override
+      - "127.0.0.1:${GATEWAY_HOST_PORT:-8180}:8080"

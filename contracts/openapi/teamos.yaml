@@ -5902,6 +5902,7 @@ components:
       required: [id, bindingId, bindingRevision, accountId, pipelineId, statusId, groupId, active, keepCurrentResponsible, revision, createdAt, updatedAt]
       properties:
         executionMode: {type: string, enum: [live, observe]}
+        source: {type: string, enum: [legacy_stage, creation, digital_pipeline], default: legacy_stage}
         executionEpoch: {type: integer, format: int64, minimum: 1, maximum: 9007199254740991}
         liveStartedAt: {anyOf: [{type: string, format: date-time}, {type: "null"}], x-go-type: "*time.Time", x-go-type-skip-optional-pointer: true}
         id: { $ref: '#/components/schemas/ID' }
@@ -5919,9 +5920,10 @@ components:
     DistributionRuleCreateInput:
       type: object
       additionalProperties: false
-      required: [bindingId, bindingRevision, groupId, pipelineId, statusId]
+      required: [bindingId, bindingRevision, groupId, pipelineId]
       properties:
         executionMode: {type: string, enum: [live, observe], default: live}
+        source: {type: string, enum: [legacy_stage, creation, digital_pipeline], default: legacy_stage}
         bindingId: { $ref: '#/components/schemas/ID' }
         bindingRevision: { type: integer, format: int64, minimum: 1, maximum: 9007199254740991 }
         groupId: { $ref: '#/components/schemas/ID' }
@@ -5935,6 +5937,7 @@ components:
       required: [expectedRevision, active, keepCurrentResponsible]
       properties:
         executionMode: {type: string, enum: [live, observe]}
+        source: {type: string, enum: [legacy_stage, creation, digital_pipeline]}
         pipelineId: { $ref: '#/components/schemas/DistributionCRMID' }
         statusId: { $ref: '#/components/schemas/DistributionCRMID' }
         expectedRevision: { type: integer, format: int64, minimum: 1, maximum: 9007199254740991 }

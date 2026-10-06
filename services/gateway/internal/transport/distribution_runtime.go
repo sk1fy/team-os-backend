@@ -109,7 +109,7 @@ func (h *Handler) GetDistributionRules(w http.ResponseWriter, r *http.Request, p
 }
 func (h *Handler) CreateDistributionRule(w http.ResponseWriter, r *http.Request) {
 	var in api.DistributionRuleCreateInput
-	if !runtimeDecode(w, r, &in, "bindingId", "bindingRevision", "groupId", "pipelineId", "statusId") {
+	if !runtimeDecode(w, r, &in, "bindingId", "bindingRevision", "groupId", "pipelineId") {
 		return
 	}
 	h.writeRuntime(w, r, "rules", uuid.Nil, in, &api.DistributionRuntimeRule{})
