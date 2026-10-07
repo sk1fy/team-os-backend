@@ -67,6 +67,7 @@ func TestDistributionInterfaceActionsFiltersScopeAndConfirmedTimezone(t *testing
 		t.Fatal(e)
 	}
 	exec("INSERT INTO distribution_settings(company_id,timezone) VALUES($1,'Asia/Tokyo')", company)
+	exec("UPDATE distribution_bindings SET account_timezone='Asia/Tokyo',timezone_fetched_at=now() WHERE id=$1", b.BindingID)
 	rule := uuid.New()
 	exec("INSERT INTO distribution_rules(id,company_id,binding_id,binding_revision,account_id,pipeline_id,status_id,group_id) VALUES($1,$2,$3,1,'123','20','30',$4)", rule, company, b.BindingID, g.ID)
 	// The database protects old and new writers, not just the public editor.
@@ -231,7 +232,7 @@ func TestDistributionInterfaceActionsFiltersScopeAndConfirmedTimezone(t *testing
 	}
 	// Used rule point may not reinterpret any queued or historic episode.
 	change, _ := json.Marshal(map[string]any{"expectedRevision": 1, "active": false, "keepCurrentResponsible": true, "pipelineId": "20", "statusId": "31"})
-	core.refs = corebridge.References{State: "fresh", FetchedAt: time.Now(), FreshUntil: time.Now().Add(time.Minute), Pipelines: []corebridge.Pipeline{{ID: "20", Statuses: []corebridge.Status{{ID: "31"}}}}, Users: []corebridge.User{{ID: "42", IsActive: true}}}
+	core.refs = corebridge.References{Timezone: "Europe/Moscow", TimezoneFetchedAt: time.Now(), State: "fresh", FetchedAt: time.Now(), FreshUntil: time.Now().Add(time.Minute), Pipelines: []corebridge.Pipeline{{ID: "20", Statuses: []corebridge.Status{{ID: "31"}}}}, Users: []corebridge.User{{ID: "42", IsActive: true}}}
 	if _, e = s.DistributionRuntimeWrite(ctx, owner, "rule", rule, change); !isCompanyError(e, ErrorConflict) {
 		t.Fatalf("usedpoint %v", e)
 	}

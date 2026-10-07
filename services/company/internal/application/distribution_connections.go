@@ -262,6 +262,9 @@ func (s *Service) DistributionReferences(ctx context.Context, a Actor, id uuid.U
 	if e = validateDistributionReferences(r, s.now()); e != nil {
 		return corebridge.References{}, upstream("Справочники amoCRM неполны или устарели", nil)
 	}
+	if e = s.cacheDistributionTimezone(ctx, bindingScope(b), r); e != nil {
+		return corebridge.References{}, e
+	}
 	return r, nil
 }
 func (s *Service) ListDistributionEmployeeMappings(ctx context.Context, a Actor, id uuid.UUID) ([]DistributionEmployeeMapping, error) {

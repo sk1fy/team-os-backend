@@ -90,7 +90,7 @@ func TestDistributionNightWaitSurvivesRestartAndConfirms(t *testing.T) {
 	owner := Actor{CompanyID: company, UserID: ownerID, Role: "owner"}
 	clock := time.Date(2026, 10, 5, 1, 0, 0, 0, time.UTC)
 	fake := &nightCore{fakeDistributionCore: &fakeDistributionCore{bindings: map[uuid.UUID]corebridge.Binding{}, revoked: map[uuid.UUID]bool{}}, now: func() time.Time { return clock }}
-	fake.refs = corebridge.References{State: "fresh", FetchedAt: clock, FreshUntil: clock.Add(24 * time.Hour), Users: []corebridge.User{{ID: "2", IsActive: true}}, Pipelines: []corebridge.Pipeline{{ID: "20", Statuses: []corebridge.Status{{ID: "30"}}}}}
+	fake.refs = corebridge.References{Timezone: "UTC", TimezoneFetchedAt: clock, State: "fresh", FetchedAt: clock, FreshUntil: clock.Add(24 * time.Hour), Users: []corebridge.User{{ID: "2", IsActive: true}}, Pipelines: []corebridge.Pipeline{{ID: "20", Statuses: []corebridge.Status{{ID: "30"}}}}}
 	svc := &Service{pool: pool, now: fake.now, distributionCore: fake.fakeDistributionCore, deliveryCore: fake}
 	binding, e := svc.LinkDistributionConnection(ctx, owner, DistributionLinkInput{InstallationID: uuid.New(), IntegrationID: uuid.New(), IntentID: uuid.New(), AccountID: "123", WidgetToken: "fixture"})
 	if e != nil {

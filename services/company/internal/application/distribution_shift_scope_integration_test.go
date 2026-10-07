@@ -71,7 +71,7 @@ func newShiftFixture(t *testing.T, ctx context.Context, clock *time.Time, member
 	for _, m := range members {
 		userRefs = append(userRefs, corebridge.User{ID: m.crm, IsActive: true})
 	}
-	fake.refs = corebridge.References{
+	fake.refs = corebridge.References{Timezone: "UTC", TimezoneFetchedAt: *clock,
 		State: "fresh", FetchedAt: *clock, FreshUntil: clock.Add(365 * 24 * time.Hour),
 		Users: userRefs, Pipelines: []corebridge.Pipeline{{ID: "20", Statuses: []corebridge.Status{{ID: "30"}}}},
 	}

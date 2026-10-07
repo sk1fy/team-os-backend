@@ -23,7 +23,7 @@ func TestDistributionObservationIsolationDedupPrivacyAndEnableBoundary(t *testin
 	seedAccessCompany(t, ctx, pool, company, ownerID, []accessTestUser{{ownerID, "owner", "active"}, {employee, "employee", "active"}, {unmappedAdmin, "admin", "active"}})
 	owner := Actor{CompanyID: company, UserID: ownerID, Role: "owner"}
 	links := &interfaceCore{fakeDistributionCore: &fakeDistributionCore{bindings: map[uuid.UUID]corebridge.Binding{}, revoked: map[uuid.UUID]bool{}}}
-	links.refs = corebridge.References{State: "fresh", FetchedAt: time.Now(), FreshUntil: time.Now().Add(time.Hour), Users: []corebridge.User{{ID: "2", IsActive: true}}, Pipelines: []corebridge.Pipeline{{ID: "20", Statuses: []corebridge.Status{{ID: "30"}}}}}
+	links.refs = corebridge.References{Timezone: "UTC", TimezoneFetchedAt: time.Now(), State: "fresh", FetchedAt: time.Now(), FreshUntil: time.Now().Add(time.Hour), Users: []corebridge.User{{ID: "2", IsActive: true}}, Pipelines: []corebridge.Pipeline{{ID: "20", Statuses: []corebridge.Status{{ID: "30"}}}}}
 	crm := &nightCore{fakeDistributionCore: links.fakeDistributionCore, now: time.Now}
 	service := &Service{pool: pool, now: time.Now, distributionCore: links, deliveryCore: crm}
 	binding, e := service.LinkDistributionConnection(ctx, owner, DistributionLinkInput{InstallationID: uuid.New(), IntegrationID: uuid.New(), IntentID: uuid.New(), AccountID: "123", WidgetToken: "fixture"})

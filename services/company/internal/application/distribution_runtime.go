@@ -126,13 +126,18 @@ func (s *Service) GetDistributionAvailability(ctx context.Context, actor Actor, 
 	if e != nil {
 		return nil, e
 	}
-	settings, e := q.GetDistributionSettings(ctx, actor.CompanyID)
-	if e != nil {
-		return nil, validation("Укажите часовой пояс компании")
-	}
+	settings := db.DistributionSetting{}
 	refs, re := s.readDistributionReferences(ctx, bindingScope(b))
 	if re != nil {
 		return nil, re
+	}
+	b, e = q.GetDistributionBinding(ctx, db.GetDistributionBindingParams{CompanyID: actor.CompanyID, ID: b.ID})
+	if e != nil {
+		return nil, e
+	}
+	settings, e = s.distributionBindingSettings(ctx, q, b)
+	if e != nil {
+		return nil, e
 	}
 	out, _, e := s.distributionAvailability(ctx, q, b, g, settings.Timezone, s.now(), &refs)
 	return out, e
@@ -167,17 +172,16 @@ func (s *Service) CreateDistributionRuntimeRule(ctx context.Context, actor Actor
 	if e != nil || g.Algorithm != "round_robin" {
 		return db.DistributionRule{}, validation("Для первой версии нужен round_robin")
 	}
-	if _, e = q.GetDistributionSettings(ctx, actor.CompanyID); e != nil {
-		return db.DistributionRule{}, validation("Укажите часовой пояс компании")
-	}
-	if !validCRMID(input.PipelineID) || (input.Source != "creation" && !validCRMID(input.StatusID)) {
+
+	input.PipelineID, input.StatusID = normalizedDistributionPoint(input.Source, input.PipelineID, input.StatusID)
+	if input.Source != "digital_pipeline" && (!validCRMID(input.PipelineID) || (input.Source != "creation" && !validCRMID(input.StatusID))) {
 		return db.DistributionRule{}, validation("Укажите воронку amoCRM")
 	}
 	refs, e := s.readDistributionReferences(ctx, bindingScope(b))
 	if e != nil {
 		return db.DistributionRule{}, internal("Не удалось проверить этап amoCRM", e)
 	}
-	found := false
+	found := input.Source == "digital_pipeline"
 	for _, p := range refs.Pipelines {
 		if p.ID != input.PipelineID {
 			continue
@@ -224,6 +228,9 @@ func (s *Service) CreateDistributionRuntimeRule(ctx context.Context, actor Actor
 		return db.DistributionRule{}, conflict("Справочник amoCRM устарел")
 	}
 	if input.Active {
+		if _, e = s.distributionBindingSettings(ctx, q, current); e != nil {
+			return db.DistributionRule{}, e
+		}
 		busy, e := q.DistributionPointHasUnfinishedOperation(ctx, db.DistributionPointHasUnfinishedOperationParams{AccountID: input.AccountID, PipelineID: input.PipelineID, StatusID: input.StatusID})
 		if e != nil {
 			return db.DistributionRule{}, e
@@ -249,6 +256,9 @@ func (s *Service) CreateDistributionRuntimeRule(ctx context.Context, actor Actor
 	return r, tx.Commit(ctx)
 }
 func (s *Service) queueState(ctx context.Context, q *db.Queries, row db.DistributionQueue, state, reason string, next time.Time, cancel bool) error {
+	if !row.OperationID.Valid && row.WaitingDeadlineAt.Before(next) {
+		next = row.WaitingDeadlineAt
+	}
 	return q.UpdateDistributionQueueState(ctx, db.UpdateDistributionQueueStateParams{ID: row.ID, State: state, Reason: reason, NextAttemptAt: next, CancelRequested: cancel, LeaseToken: row.LeaseToken})
 }
 
@@ -303,6 +313,9 @@ func (s *Service) readDistributionReferences(ctx context.Context, scope corebrid
 	if !r.FreshUntil.After(s.now()) || r.FetchedAt.After(s.now().Add(time.Minute)) {
 		return r, validation("Справочник amoCRM устарел")
 	}
+	if e = s.cacheDistributionTimezone(ctx, scope, r); e != nil {
+		return r, e
+	}
 	return r, nil
 }
 func crmUserActive(refs *corebridge.References, id string) bool {
@@ -318,7 +331,13 @@ func crmUserActive(refs *corebridge.References, id string) bool {
 // lead anywhere inside the configured pipeline; other modes require the exact
 // trigger stage.
 func ruleStageMatches(r db.DistributionRule, snapshot *corebridge.LeadSnapshot) bool {
-	if snapshot == nil || snapshot.PipelineID != r.PipelineID {
+	if snapshot == nil {
+		return false
+	}
+	if r.Source == "digital_pipeline" {
+		return validCRMID(snapshot.PipelineID) && validCRMID(snapshot.StatusID)
+	}
+	if snapshot.PipelineID != r.PipelineID {
 		return false
 	}
 	if r.Source == "creation" {
@@ -339,4 +358,12 @@ func ruleSourceAcceptsEntry(r db.DistributionRule, entry db.DistributionObserved
 	default:
 		return true
 	}
+}
+
+// Trigger launch scope comes from the authenticated persisted entry, never from a manual group point.
+func ruleEntrySnapshotMatches(r db.DistributionRule, entry db.DistributionObservedEntry, snapshot *corebridge.LeadSnapshot) bool {
+	if r.Source == "digital_pipeline" {
+		return snapshot != nil && snapshot.PipelineID == entry.PipelineID && snapshot.StatusID == entry.StatusID && ruleSourceAcceptsEntry(r, entry)
+	}
+	return ruleStageMatches(r, snapshot)
 }
