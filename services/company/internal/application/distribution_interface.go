@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"regexp"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -60,6 +61,66 @@ func (s *Service) distributionQueuePermission(ctx context.Context, actor Actor, 
 	}
 	p, e := s.DistributionLeadPermission(ctx, actor, r.BindingID, row.LeadID)
 	return p.CanViewLead, e
+}
+
+type distributionPermissionResult struct {
+	visible bool
+	err     error
+}
+
+// Bound CRM fan-out while sharing one fresh check between episodes of the same
+// rule/account/lead in this request. Never reuse permissions across requests.
+func distributionQueuePermissions(ctx context.Context, rows []db.DistributionQueue, check func(context.Context, db.DistributionQueue) (bool, error)) []distributionPermissionResult {
+	type key struct {
+		rule          uuid.UUID
+		account, lead string
+	}
+	indexes := make([]int, len(rows))
+	unique := make([]db.DistributionQueue, 0, len(rows))
+	seen := make(map[key]int)
+	for i, row := range rows {
+		k := key{row.RuleID, row.AccountID, row.LeadID}
+		index, ok := seen[k]
+		if !ok {
+			index = len(unique)
+			seen[k] = index
+			unique = append(unique, row)
+		}
+		indexes[i] = index
+	}
+	results := make([]distributionPermissionResult, len(unique))
+	jobs := make(chan int, len(unique))
+	for i := range unique {
+		jobs <- i
+	}
+	close(jobs)
+	var workers sync.WaitGroup
+	for n := 0; n < 4 && n < len(unique); n++ {
+		workers.Add(1)
+		go func() {
+			defer workers.Done()
+			for i := range jobs {
+				if err := ctx.Err(); err != nil {
+					results[i].err = err
+					continue
+				}
+				visible, err := check(ctx, unique[i])
+				results[i] = distributionPermissionResult{visible: visible && err == nil, err: err}
+			}
+		}()
+	}
+	workers.Wait()
+	out := make([]distributionPermissionResult, len(rows))
+	for i, index := range indexes {
+		out[i] = results[index]
+	}
+	return out
+}
+
+func (s *Service) distributionPagePermissions(ctx context.Context, actor Actor, rows []db.DistributionQueue) []distributionPermissionResult {
+	return distributionQueuePermissions(ctx, rows, func(ctx context.Context, row db.DistributionQueue) (bool, error) {
+		return s.distributionQueuePermission(ctx, actor, row)
+	})
 }
 func (s *Service) queueActions(ctx context.Context, q *db.Queries, row db.DistributionQueue) []string {
 	out := []string{}
@@ -148,9 +209,9 @@ func (s *Service) DistributionQueuePage(ctx context.Context, actor Actor, f Dist
 	permissions, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 	items := make([]any, 0, len(rows))
-	for _, row := range rows {
-		visible, _ := s.distributionQueuePermission(permissions, actor, row)
-		items = append(items, s.distributionQueueDTO(ctx, actor, row, visible))
+	checked := s.distributionPagePermissions(permissions, actor, rows)
+	for i, row := range rows {
+		items = append(items, s.distributionQueueDTO(ctx, actor, row, checked[i].visible))
 	}
 	return json.Marshal(map[string]any{"items": items, "limit": limit, "offset": offset, "hasMore": more, "checkedAt": s.now()})
 }
@@ -253,12 +314,16 @@ func (s *Service) DistributionSummary(ctx context.Context, actor Actor, group uu
 	defer cancel()
 	counts := map[string]int64{"waiting": 0, "assigning": 0, "errors": 0, "confirmedToday": 0, "keptToday": 0}
 	today := start.Format("2006-01-02")
-	for _, row := range rows {
-		visible, e := s.distributionQueuePermission(permissions, actor, row)
-		if e != nil {
+	checked := s.distributionPagePermissions(permissions, actor, rows)
+	if permissions.Err() != nil {
+		out["metricsReason"] = "permission_budget_exceeded"
+		return json.Marshal(out)
+	}
+	for i, row := range rows {
+		if checked[i].err != nil {
 			return json.Marshal(out)
 		}
-		if !visible {
+		if !checked[i].visible {
 			continue
 		}
 		switch row.State {

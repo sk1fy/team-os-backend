@@ -10,17 +10,30 @@ import (
 	"github.com/sk1fy/team-os-backend/services/company/internal/corebridge"
 	"github.com/sk1fy/team-os-backend/services/company/internal/storage/db"
 	"strconv"
+	"sync/atomic"
 	"testing"
 	"time"
 )
 
 type interfaceCore struct {
 	*fakeDistributionCore
-	deny        bool
-	unavailable bool
+	deny            bool
+	unavailable     bool
+	delay           time.Duration
+	permissionCalls atomic.Int32
 }
 
 func (f *interfaceCore) Permission(ctx context.Context, s corebridge.Scope, in corebridge.PermissionInput) (corebridge.Permission, error) {
+	f.permissionCalls.Add(1)
+	if f.delay > 0 {
+		timer := time.NewTimer(f.delay)
+		defer timer.Stop()
+		select {
+		case <-timer.C:
+		case <-ctx.Done():
+			return corebridge.Permission{}, ctx.Err()
+		}
+	}
 	if f.unavailable {
 		return corebridge.Permission{}, errors.New("fixture outage")
 	}
@@ -133,7 +146,14 @@ func TestDistributionInterfaceActionsFiltersScopeAndConfirmedTimezone(t *testing
 	add(12, "kept", true, day)
 	add(13, "confirmed", true, day.AddDate(0, 0, -1))
 	failed := add(14, "failed", true, now)
+	add(115, "waiting", false, now)
+	add(116, "waiting", false, now)
+	// Five independent 800ms CRM checks exceed the shared 3s budget when
+	// serialized. The real service must complete them with bounded fan-out.
+	core.delay = 800 * time.Millisecond
+	core.permissionCalls.Store(0)
 	summary, e := s.DistributionSummary(ctx, owner, g.ID)
+	core.delay = 0
 	if e != nil {
 		t.Fatal(e)
 	}
@@ -146,6 +166,23 @@ func TestDistributionInterfaceActionsFiltersScopeAndConfirmedTimezone(t *testing
 	_ = json.Unmarshal(summary, &stats)
 	if !stats.Available || stats.Confirmed == nil || *stats.Confirmed != 1 || stats.Kept == nil || *stats.Kept != 1 || stats.Errors == nil || *stats.Errors != 1 {
 		t.Fatal(string(summary))
+	}
+	if core.permissionCalls.Load() != 5 {
+		t.Fatalf("permission checks=%d", core.permissionCalls.Load())
+	}
+	core.delay = 4 * time.Second
+	timedOut, e := s.DistributionSummary(ctx, owner, g.ID)
+	core.delay = 0
+	if e != nil {
+		t.Fatal(e)
+	}
+	var timeoutStats struct {
+		Available bool   `json:"metricsAvailable"`
+		Reason    string `json:"metricsReason"`
+		Confirmed *int64 `json:"confirmedToday"`
+	}
+	if json.Unmarshal(timedOut, &timeoutStats) != nil || timeoutStats.Available || timeoutStats.Confirmed != nil || timeoutStats.Reason != "permission_budget_exceeded" {
+		t.Fatal(string(timedOut))
 	}
 	filtered, e := s.DistributionQueuePage(ctx, owner, DistributionQueueFilter{Tab: "errors", GroupID: g.ID}, 1, 0)
 	if e != nil {
