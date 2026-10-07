@@ -1,10 +1,11 @@
 package application
 
 import (
-	"github.com/google/uuid"
-	"github.com/sk1fy/team-os-backend/services/company/internal/storage/db"
 	"testing"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/sk1fy/team-os-backend/services/company/internal/storage/db"
 )
 
 func TestDistributionQueueDeadlineExact72HourBoundary(t *testing.T) {

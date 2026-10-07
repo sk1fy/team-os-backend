@@ -2,10 +2,11 @@ package application
 
 import (
 	"context"
+	"time"
+
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/sk1fy/team-os-backend/services/company/internal/storage/db"
-	"time"
 )
 
 func nullableTimestamp(t pgtype.Timestamptz) *time.Time {
@@ -29,7 +30,8 @@ func queueVisibleReason(row db.DistributionQueue, now time.Time) string {
 	return row.Reason
 }
 
-// Expiration does not wait behind CRM I/O, inbox retries or observation work.
+// RunDistributionQueueExpiry expires waiting deals independently of CRM I/O,
+// inbox retries and observation work.
 func (s *Service) RunDistributionQueueExpiry(ctx context.Context) {
 	ticker := time.NewTicker(5 * time.Second)
 	defer ticker.Stop()

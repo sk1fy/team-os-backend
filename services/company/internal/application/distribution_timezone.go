@@ -3,11 +3,12 @@ package application
 import (
 	"context"
 	"encoding/json"
+	"strings"
+	"time"
+
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/sk1fy/team-os-backend/services/company/internal/corebridge"
 	"github.com/sk1fy/team-os-backend/services/company/internal/storage/db"
-	"strings"
-	"time"
 )
 
 func normalizedDistributionPoint(source, pipeline, status string) (string, string) {
