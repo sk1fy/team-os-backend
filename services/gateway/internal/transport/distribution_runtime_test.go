@@ -160,7 +160,7 @@ func TestRuntimeDigitalPipelineCreateForwardsNoManualPoint(t *testing.T) {
 	}}}
 	raw := `{"bindingId":"` + binding.String() + `","bindingRevision":1,"groupId":"` + group.String() + `","source":"digital_pipeline"}`
 	w := httptest.NewRecorder()
-	h.CreateDistributionRule(w, httptest.NewRequest(http.MethodPost, "/", strings.NewReader(raw)))
+	h.CreateDistributionRule(w, httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/", strings.NewReader(raw)))
 	if w.Code != 403 || calls != 1 {
 		t.Fatal(w.Code, calls, w.Body.String())
 	}
