@@ -146,3 +146,22 @@ func TestRuntimeActionRequiresIdentityAndPropagatesConflict(t *testing.T) {
 		t.Fatal(w.Code, calls, w.Body)
 	}
 }
+
+func TestRuntimeDigitalPipelineCreateForwardsNoManualPoint(t *testing.T) {
+	binding, group := uuid.New(), uuid.New()
+	calls := 0
+	h := &Handler{company: runtimeClient{write: func(r *v.WriteDistributionRuntimeRequest) (*v.WriteDistributionRuntimeResponse, error) {
+		calls++
+		var in map[string]any
+		if json.Unmarshal(r.Payload, &in) != nil || in["source"] != "digital_pipeline" || in["pipelineId"] != nil || in["statusId"] != nil {
+			t.Fatal(string(r.Payload))
+		}
+		return nil, status.Error(codes.PermissionDenied, "Недостаточно прав")
+	}}}
+	raw := `{"bindingId":"` + binding.String() + `","bindingRevision":1,"groupId":"` + group.String() + `","source":"digital_pipeline"}`
+	w := httptest.NewRecorder()
+	h.CreateDistributionRule(w, httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/", strings.NewReader(raw)))
+	if w.Code != 403 || calls != 1 {
+		t.Fatal(w.Code, calls, w.Body.String())
+	}
+}

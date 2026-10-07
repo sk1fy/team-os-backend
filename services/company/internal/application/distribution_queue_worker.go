@@ -14,11 +14,17 @@ import (
 )
 
 func (s *Service) ProcessDistributionQueue(ctx context.Context) (bool, error) {
+	q := db.New(s.pool)
+	if _, e := q.ExpireUndispatchedDistributionQueue(ctx); e != nil {
+		return false, e
+	}
+	if _, e := q.RequestExpiredDistributionCancellation(ctx); e != nil {
+		return false, e
+	}
 	core, ok := s.deliveryCore.(DistributionAssignmentCore)
 	if !ok {
 		return false, nil
 	}
-	q := db.New(s.pool)
 	if _, e := q.ConsumeDistributionAvailabilityWake(ctx); e != nil {
 		return false, e
 	}
@@ -88,10 +94,19 @@ func (s *Service) ProcessDistributionQueue(ctx context.Context) (bool, error) {
 	if e != nil {
 		return true, e
 	}
+	if !row.WaitingDeadlineAt.After(s.now()) {
+		if _, e = q.SettleDistributionQueue(ctx, db.SettleDistributionQueueParams{ID: row.ID, State: "cancelled", Reason: "waiting_expired"}); e != nil {
+			return true, e
+		}
+		if e = q.AddDistributionQueueHistory(ctx, db.AddDistributionQueueHistoryParams{QueueID: row.ID, State: "cancelled", Reason: "waiting_expired", Payload: []byte(`{}`)}); e != nil {
+			return true, e
+		}
+		return true, tx.Commit(ctx)
+	}
 	reason := ""
 	state := "waiting"
 	switch {
-	case entry.State == "cancelled" || !head.CurrentEntryID.Valid || head.CurrentEntryID.UUID != row.EntryID || observed.Snapshot == nil || !ruleStageMatches(r, observed.Snapshot) || !ruleSourceAcceptsEntry(r, entry):
+	case entry.State == "cancelled" || !head.CurrentEntryID.Valid || head.CurrentEntryID.UUID != row.EntryID || observed.Snapshot == nil || !ruleEntrySnapshotMatches(r, entry, observed.Snapshot) || !ruleSourceAcceptsEntry(r, entry):
 		reason = "observed_stage_exit"
 		state = "cancelled"
 	case entry.State == "needs_configuration":
@@ -113,7 +128,7 @@ func (s *Service) ProcessDistributionQueue(ctx context.Context) (bool, error) {
 		}
 		return true, tx.Commit(ctx)
 	}
-	settings, e := q.GetDistributionSettings(ctx, row.CompanyID)
+	settings, e := s.distributionBindingSettings(ctx, q, b)
 	if e != nil {
 		if e = s.queueState(ctx, q, row, "requires_configuration", "timezone_required", s.now().Add(time.Minute), false); e != nil {
 			return true, e
@@ -138,6 +153,9 @@ func (s *Service) ProcessDistributionQueue(ctx context.Context) (bool, error) {
 		return true, tx.Commit(ctx)
 	}
 	plan := chooseDistributionPlan(observed.Snapshot.ResponsibleUserID, r.KeepCurrent, available, g.MemberIds, claim.CursorOrder, int(claim.CursorNext))
+	if e = q.SetDistributionQueueNextShift(ctx, db.SetDistributionQueueNextShiftParams{ID: row.ID, LeaseToken: row.LeaseToken, NextShiftAt: optionalDeliveryTime(plan.Next)}); e != nil {
+		return true, e
+	}
 	selected, kind := plan.Employee, plan.Kind
 	if selected == uuid.Nil {
 		next := s.now().Add(time.Minute)
@@ -178,6 +196,9 @@ func (s *Service) ProcessDistributionQueue(ctx context.Context) (bool, error) {
 	claim.Revision++
 	target := ""
 	until := s.now().Add(10 * time.Minute)
+	if row.WaitingDeadlineAt.Before(until) {
+		until = row.WaitingDeadlineAt
+	}
 	for _, a := range available {
 		if a.EmployeeID == selected {
 			target = *a.CRMUserID
@@ -285,7 +306,7 @@ func (s *Service) resumeDistributionAssignment(ctx context.Context, core Distrib
 		return e
 	}
 	if !op.ResolutionEvidence.GuardReleasable {
-		if e = s.queueState(ctx, q, row, "uncertain", "operation_unfinished", s.now().Add(5*time.Second), op.CancelRequestedAt != nil); e != nil {
+		if e = s.queueState(ctx, q, row, "uncertain", "operation_unfinished", s.now().Add(5*time.Second), row.CancelRequested || op.CancelRequestedAt != nil); e != nil {
 			return e
 		}
 		return tx.Commit(ctx)
@@ -340,7 +361,11 @@ func (s *Service) settleRuntimeOperation(ctx context.Context, q *db.Queries, row
 			retry = true
 		}
 	}
-	retry = retry && !row.CancelRequested && op.ExternalEffectState == "no_attempt" && entry.State == "checking"
+	if !row.WaitingDeadlineAt.After(s.now()) && state != "confirmed" && state != "kept" {
+		state, reason = "cancelled", "waiting_expired"
+		retry = false
+	}
+	retry = retry && row.WaitingDeadlineAt.After(s.now()) && !row.CancelRequested && op.ExternalEffectState == "no_attempt" && entry.State == "checking"
 	if retry {
 		state, reason = "waiting", "decision_recalculation"
 	}
@@ -416,6 +441,8 @@ func (s *Service) distributionAssignmentAdmissionGate(ctx context.Context, row d
 	}
 	reason, state := "", "waiting"
 	switch {
+	case !current.WaitingDeadlineAt.After(s.now()):
+		reason = "waiting_expired"
 	case current.OperationID != row.OperationID || current.Settled:
 		reason = "decision_changed"
 	case r.ExecutionMode != "live" || r.ExecutionEpoch != current.ExecutionEpoch:

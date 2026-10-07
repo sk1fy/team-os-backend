@@ -104,11 +104,15 @@ func (s *Service) validateRegisteredDistributionDecision(ctx context.Context, in
 	if e != nil {
 		return deny, e
 	}
-	if entry.State != "checking" || !head.CurrentEntryID.Valid || head.CurrentEntryID.UUID != entry.ID || head.BindingID != in.BindingID || head.Deleted || head.Absent {
+	if !ruleEntrySnapshotMatches(r, entry, &c.ExpectedSnapshot) || entry.State != "checking" || !head.CurrentEntryID.Valid || head.CurrentEntryID.UUID != entry.ID || head.BindingID != in.BindingID || head.Deleted || head.Absent {
 		deny.Reason = "episode_cancelled"
 		return deny, nil
 	}
-	settings, e := q.GetDistributionSettings(ctx, in.CompanyID)
+	if !row.WaitingDeadlineAt.After(s.now()) {
+		deny.Reason = "waiting_expired"
+		return deny, nil
+	}
+	settings, e := s.distributionBindingSettings(ctx, q, b)
 	if e != nil {
 		deny.Reason = "timezone_required"
 		return deny, nil

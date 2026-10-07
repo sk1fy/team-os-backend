@@ -157,3 +157,61 @@ func TestDistributionRuleFullUpdateAtomic(t *testing.T) {
 		t.Fatalf("pre-change entry must not be admitted after a mode change, rows=%d", len(rows))
 	}
 }
+
+func TestDistributionDigitalPipelineUsesTrustedPointAndCancelsStageExit(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+	defer cancel()
+	clock := time.Date(2026, 10, 6, 9, 0, 0, 0, time.UTC)
+	fx := newShiftFixture(t, ctx, &clock, []shiftMember{{uuid.New(), "2", []int{weekdayIndex(clock)}, "09:00", "18:00"}}, "9", "55")
+	fx.exec("UPDATE distribution_rules SET source='digital_pipeline',pipeline_id='',status_id='' WHERE id=$1", fx.rule)
+	fx.exec("UPDATE distribution_observed_entries SET evidence='digital_pipeline_trigger',event_kind='lead.digital_pipeline_trigger',trigger_evidence='{}',trigger_group_id=$1,status_id='99' WHERE id=$2", fx.group, fx.entry)
+	if _, e := fx.svc.ProcessDistributionQueue(ctx); e != nil {
+		t.Fatal(e)
+	}
+	row := fx.queueRow(t)
+	if row.State != "cancelled" || !row.Settled || row.Reason != "observed_stage_exit" || fx.core.calls != 0 {
+		t.Fatalf("stage exit assigned %+v calls%d", row, fx.core.calls)
+	}
+}
+
+func TestDistributionLaunchSettingsClearHiddenPointAndAllowSeparateTriggerGroups(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+	defer cancel()
+	clock := time.Date(2026, 10, 6, 9, 0, 0, 0, time.UTC)
+	employee := uuid.New()
+	fx := newShiftFixture(t, ctx, &clock, []shiftMember{{employee, "2", []int{weekdayIndex(clock)}, "09:00", "18:00"}}, "9", "57")
+	update := func(source string, revision int64) distributionRuleDTO {
+		t.Helper()
+		raw, _ := json.Marshal(map[string]any{"expectedRevision": revision, "active": true, "keepCurrentResponsible": true, "source": source})
+		response, e := fx.svc.DistributionRuntimeWrite(ctx, fx.owner, "rule", fx.rule, raw)
+		if e != nil {
+			t.Fatal(e)
+		}
+		var rule distributionRuleDTO
+		if e = json.Unmarshal(response, &rule); e != nil {
+			t.Fatal(e)
+		}
+		return rule
+	}
+	r := update("creation", 1)
+	if r.PipelineID != "20" || r.StatusID != "" {
+		t.Fatal("creation retained hidden stage")
+	}
+	r = update("digital_pipeline", r.Revision)
+	if r.PipelineID != "" || r.StatusID != "" {
+		t.Fatal("trigger retained manual point")
+	}
+	second, e := fx.svc.CreateDistributionGroup(ctx, fx.owner, CreateDistributionGroupInput{Name: "Second trigger", MemberIDs: []uuid.UUID{employee}})
+	if e != nil {
+		t.Fatal(e)
+	}
+	request, _ := json.Marshal(map[string]any{"bindingId": fx.binding, "bindingRevision": 1, "groupId": second.ID, "source": "digital_pipeline", "active": true})
+	raw, e := fx.svc.DistributionRuntimeWrite(ctx, fx.owner, "rules", uuid.Nil, request)
+	if e != nil {
+		t.Fatal(e)
+	}
+	var created distributionRuleDTO
+	if json.Unmarshal(raw, &created) != nil || created.PipelineID != "" || created.StatusID != "" {
+		t.Fatalf("independent trigger group %s", raw)
+	}
+}

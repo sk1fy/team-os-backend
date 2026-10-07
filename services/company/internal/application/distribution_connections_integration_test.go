@@ -89,7 +89,7 @@ func TestDistributionConnectionMappingLifecycle(t *testing.T) {
 		t.Fatal(e)
 	}
 	now := time.Now()
-	fake := &fakeDistributionCore{bindings: map[uuid.UUID]corebridge.Binding{}, revoked: map[uuid.UUID]bool{}, refs: corebridge.References{State: "fresh", FetchedAt: now, FreshUntil: now.Add(10 * time.Minute), Users: []corebridge.User{{ID: "42", IsActive: true}, {ID: "43", IsActive: false}}, Pipelines: []corebridge.Pipeline{{ID: "2", Statuses: []corebridge.Status{{ID: "3"}}}}}}
+	fake := &fakeDistributionCore{bindings: map[uuid.UUID]corebridge.Binding{}, revoked: map[uuid.UUID]bool{}, refs: corebridge.References{Timezone: "Europe/Moscow", TimezoneFetchedAt: time.Now(), State: "fresh", FetchedAt: now, FreshUntil: now.Add(10 * time.Minute), Users: []corebridge.User{{ID: "42", IsActive: true}, {ID: "43", IsActive: false}}, Pipelines: []corebridge.Pipeline{{ID: "2", Statuses: []corebridge.Status{{ID: "3"}}}}}}
 	svc := &Service{pool: pool, now: time.Now, distributionCore: fake}
 	in := DistributionLinkInput{InstallationID: uuid.New(), IntegrationID: uuid.New(), IntentID: uuid.New(), AccountID: "123", WidgetToken: "verified-test-admin"}
 	if _, e := svc.LinkDistributionConnection(ctx, employee, in); !isCompanyError(e, ErrorForbidden) {

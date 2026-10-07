@@ -53,11 +53,14 @@ type Pipeline struct {
 	Statuses []Status `json:"statuses"`
 }
 type References struct {
-	Users      []User     `json:"users"`
-	Pipelines  []Pipeline `json:"pipelines"`
-	FetchedAt  time.Time  `json:"fetchedAt"`
-	FreshUntil time.Time  `json:"freshUntil"`
-	State      string     `json:"state"`
+	AccountDomain     string     `json:"accountDomain,omitempty"`
+	Timezone          string     `json:"timezone,omitempty"`
+	TimezoneFetchedAt time.Time  `json:"timezoneFetchedAt,omitempty"`
+	Users             []User     `json:"users"`
+	Pipelines         []Pipeline `json:"pipelines"`
+	FetchedAt         time.Time  `json:"fetchedAt"`
+	FreshUntil        time.Time  `json:"freshUntil"`
+	State             string     `json:"state"`
 }
 type Mapping struct {
 	EmployeeID uuid.UUID `json:"employeeId"`

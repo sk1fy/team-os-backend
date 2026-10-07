@@ -5793,6 +5793,9 @@ components:
       additionalProperties: false
       required: [timezone, revision]
       properties:
+        timezoneSource: { type: string, description: "Источник: amocrm или legacy" }
+        timezoneStatus: { type: string, description: "Состояние: confirmed, cached или unavailable" }
+        timezoneFetchedAt: { type: string, format: date-time }
         timezone: { type: string }
         revision: { type: integer, format: int64, minimum: 1, maximum: 9007199254740991 }
     DistributionTimezoneInput:
@@ -5909,8 +5912,8 @@ components:
         bindingId: { $ref: '#/components/schemas/ID' }
         bindingRevision: { type: integer, format: int64, minimum: 1, maximum: 9007199254740991 }
         accountId: { $ref: '#/components/schemas/DistributionCRMID' }
-        pipelineId: { $ref: '#/components/schemas/DistributionCRMID' }
-        statusId: { $ref: '#/components/schemas/DistributionCRMID' }
+        pipelineId: { type: string, pattern: '^([1-9][0-9]{0,18}|)$' }
+        statusId: { type: string, pattern: '^([1-9][0-9]{0,18}|)$' }
         groupId: { $ref: '#/components/schemas/ID' }
         active: { type: boolean }
         keepCurrentResponsible: { type: boolean }
@@ -5920,15 +5923,15 @@ components:
     DistributionRuleCreateInput:
       type: object
       additionalProperties: false
-      required: [bindingId, bindingRevision, groupId, pipelineId]
+      required: [bindingId, bindingRevision, groupId]
       properties:
         executionMode: {type: string, enum: [live, observe], default: live}
         source: {type: string, enum: [legacy_stage, creation, digital_pipeline], default: legacy_stage}
         bindingId: { $ref: '#/components/schemas/ID' }
         bindingRevision: { type: integer, format: int64, minimum: 1, maximum: 9007199254740991 }
         groupId: { $ref: '#/components/schemas/ID' }
-        pipelineId: { $ref: '#/components/schemas/DistributionCRMID' }
-        statusId: { $ref: '#/components/schemas/DistributionCRMID' }
+        pipelineId: { type: string, pattern: '^([1-9][0-9]{0,18}|)$' }
+        statusId: { type: string, pattern: '^([1-9][0-9]{0,18}|)$' }
         active: { type: boolean, default: false }
         keepCurrentResponsible: { type: boolean, default: true }
     DistributionRuleUpdateInput:
@@ -5938,8 +5941,8 @@ components:
       properties:
         executionMode: {type: string, enum: [live, observe]}
         source: {type: string, enum: [legacy_stage, creation, digital_pipeline]}
-        pipelineId: { $ref: '#/components/schemas/DistributionCRMID' }
-        statusId: { $ref: '#/components/schemas/DistributionCRMID' }
+        pipelineId: { type: string, pattern: '^([1-9][0-9]{0,18}|)$' }
+        statusId: { type: string, pattern: '^([1-9][0-9]{0,18}|)$' }
         expectedRevision: { type: integer, format: int64, minimum: 1, maximum: 9007199254740991 }
         active: { type: boolean }
         keepCurrentResponsible: { type: boolean }
@@ -5985,6 +5988,8 @@ components:
       additionalProperties: false
       required: [id, entryId, ruleId, groupId, accountId, leadId, state, reason, nextAttemptAt, operationId, plannedEmployeeId, plannedAt, createdAt]
       properties:
+        waitingDeadlineAt: { type: string, format: date-time }
+        nextShiftAt: { type: [string, 'null'], format: date-time, x-go-type: '*time.Time', x-go-type-skip-optional-pointer: true }
         updatedAt: { type: string, format: date-time }
         actions: { type: array, items: { type: string, enum: [recalculate, check, retry, cancel] } }
         resultVersion: { type: [integer, 'null'], format: int64, x-go-type: '*int64', x-go-type-skip-optional-pointer: true }
@@ -6052,6 +6057,7 @@ components:
       additionalProperties: false
       required: [items, limit, offset]
       properties:
+        hasMore: { type: boolean }
         items: { type: array, items: { $ref: '#/components/schemas/DistributionRuntimeHistoryItem' } }
         limit: { type: integer, format: int32 }
         offset: { type: integer, format: int32 }

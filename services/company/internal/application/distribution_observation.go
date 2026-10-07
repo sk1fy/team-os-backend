@@ -163,7 +163,7 @@ func (s *Service) ProcessDistributionObservation(ctx context.Context) (found boo
 		out.Reason = "algorithm_unsupported"
 	case latest.State != "active" || bindingScope(latest) != observed.Scope || latest.Revision != job.BindingRevision || latest.MappingRevision != latest.MappingAckRevision:
 		out.Reason = "binding_unavailable"
-	case !head.CurrentEntryID.Valid || head.CurrentEntryID.UUID != job.EntryID || entry.State == "cancelled" || observed.Snapshot == nil || observed.Snapshot.PipelineID != r.PipelineID || observed.Snapshot.StatusID != r.StatusID:
+	case !head.CurrentEntryID.Valid || head.CurrentEntryID.UUID != job.EntryID || entry.State == "cancelled" || observed.Snapshot == nil || !ruleEntrySnapshotMatches(r, entry, observed.Snapshot) || !ruleSourceAcceptsEntry(r, entry):
 		out.Reason = "observed_stage_exit"
 	case entry.State == "needs_configuration" || !entry.SourceOccurredAt.Valid:
 		out.DecisionKind = "requires_configuration"
@@ -174,7 +174,7 @@ func (s *Service) ProcessDistributionObservation(ctx context.Context) (found boo
 		}
 		owner := observed.Snapshot.ResponsibleUserID
 		out.CurrentResponsibleUserID = &owner
-		settings, se := current.GetDistributionSettings(ctx, job.CompanyID)
+		settings, se := s.distributionBindingSettings(ctx, current, latest)
 		if se != nil {
 			out.DecisionKind = "requires_configuration"
 			out.Reason = "timezone_required"

@@ -67,3 +67,22 @@ func TestRuleSourceAcceptsEntry(t *testing.T) {
 		t.Fatal("dp must reject a normal webhook entry")
 	}
 }
+
+func TestDistributionTriggerPointIsTakenFromEntry(t *testing.T) {
+	group := uuid.New()
+	r := db.DistributionRule{Source: "digital_pipeline", GroupID: group, PipelineID: "", StatusID: ""}
+	entry := db.DistributionObservedEntry{PipelineID: "10", StatusID: "20", Evidence: "digital_pipeline_trigger", TriggerEvidence: []byte(`{}`), TriggerGroupID: uuid.NullUUID{UUID: group, Valid: true}}
+	for _, tt := range []struct {
+		p, st string
+		want  bool
+	}{{"10", "20", true}, {"10", "21", false}, {"11", "20", false}} {
+		if got := ruleEntrySnapshotMatches(r, entry, &corebridge.LeadSnapshot{PipelineID: tt.p, StatusID: tt.st}); got != tt.want {
+			t.Fatalf("scope %s/%s = %v", tt.p, tt.st, got)
+		}
+	}
+	entry.PipelineID = "12"
+	entry.StatusID = "99"
+	if !ruleEntrySnapshotMatches(r, entry, &corebridge.LeadSnapshot{PipelineID: "12", StatusID: "99"}) {
+		t.Fatal("another trusted trigger point in same group rejected")
+	}
+}

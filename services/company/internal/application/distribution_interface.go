@@ -142,7 +142,7 @@ func (s *Service) queueActions(ctx context.Context, q *db.Queries, row db.Distri
 	return []string{"recalculate", "cancel"}
 }
 func (s *Service) distributionRetrySafe(ctx context.Context, q *db.Queries, row db.DistributionQueue) bool {
-	if !row.Settled || row.State != "failed" {
+	if !row.WaitingDeadlineAt.After(s.now()) || !row.Settled || row.State != "failed" {
 		return false
 	}
 	if !row.OperationID.Valid {
@@ -187,7 +187,7 @@ func (s *Service) distributionQueueDTO(ctx context.Context, actor Actor, row db.
 			actions = s.queueActions(ctx, db.New(s.pool), row)
 		}
 	}
-	return map[string]any{"id": row.ID, "entryId": row.EntryID, "ruleId": row.RuleID, "groupId": row.GroupID, "accountId": row.AccountID, "leadId": lead, "state": row.State, "reason": row.Reason, "nextAttemptAt": row.NextAttemptAt, "operationId": op, "plannedEmployeeId": employee, "plannedAt": planned, "createdAt": row.CreatedAt, "updatedAt": row.UpdatedAt, "actions": actions, "resultVersion": version, "leadName": nil, "leadUrl": nil, "currentEmployeeId": nil, "previousEmployeeId": nil}
+	return map[string]any{"id": row.ID, "entryId": row.EntryID, "ruleId": row.RuleID, "groupId": row.GroupID, "accountId": row.AccountID, "leadId": lead, "state": row.State, "reason": queueVisibleReason(row, s.now()), "nextAttemptAt": row.NextAttemptAt, "operationId": op, "plannedEmployeeId": employee, "plannedAt": planned, "createdAt": row.CreatedAt, "waitingDeadlineAt": row.WaitingDeadlineAt, "nextShiftAt": nullableTimestamp(row.NextShiftAt), "updatedAt": row.UpdatedAt, "actions": actions, "resultVersion": version, "leadName": nil, "leadUrl": s.distributionQueueLeadURL(ctx, actor, row, visible), "currentEmployeeId": confirmedQueueEmployee(row, visible, employee), "previousEmployeeId": nil}
 }
 func (s *Service) DistributionQueuePage(ctx context.Context, actor Actor, f DistributionQueueFilter, limit, offset int32) (json.RawMessage, error) {
 	currentActor, e := s.distributionActor(ctx, actor, false)
@@ -197,6 +197,9 @@ func (s *Service) DistributionQueuePage(ctx context.Context, actor Actor, f Dist
 	actor = currentActor
 	if !f.valid() || limit < 1 || limit > 100 || offset < 0 || offset > 100000 {
 		return nil, validation("Некорректные фильтры очереди")
+	}
+	if limit > 15 {
+		limit = 15
 	}
 	rows, e := db.New(s.pool).ListDistributionQueueFiltered(ctx, filterParams(actor, f, limit+1, offset))
 	if e != nil {
@@ -287,6 +290,21 @@ func (s *Service) DistributionSummary(ctx context.Context, actor Actor, group uu
 	out := map[string]any{"timezone": nil, "checkedAt": s.now(), "metricsAvailable": false, "metricsReason": "configuration_or_permissions_unavailable", "waiting": nil, "assigning": nil, "errors": nil, "confirmedToday": nil, "keptToday": nil}
 	q := db.New(s.pool)
 	setting, e := q.GetDistributionSettings(ctx, actor.CompanyID)
+	bindings, be := q.ListDistributionBindings(ctx, actor.CompanyID)
+	if be != nil {
+		return nil, be
+	}
+	confirmedTimezone := false
+	for _, b := range bindings {
+		if b.State == "active" && b.AccountTimezone.Valid && b.TimezoneFetchedAt.Valid && validAccountTimezone(b.AccountTimezone.String) {
+			setting.Timezone = b.AccountTimezone.String
+			confirmedTimezone = true
+			break
+		}
+	}
+	if !confirmedTimezone {
+		return json.Marshal(out)
+	}
 	if isNoRows(e) {
 		return json.Marshal(out)
 	}
@@ -330,6 +348,7 @@ func (s *Service) DistributionSummary(ctx context.Context, actor Actor, group uu
 		case "waiting":
 			counts["waiting"]++
 		case "dispatching", "uncertain":
+			counts["waiting"]++
 			counts["assigning"]++
 		case "requires_configuration", "failed":
 			counts["errors"]++
@@ -624,4 +643,21 @@ func uuidOrderEqual(a, b []uuid.UUID) bool {
 		}
 	}
 	return true
+}
+
+func (s *Service) distributionQueueLeadURL(ctx context.Context, actor Actor, row db.DistributionQueue, visible bool) *string {
+	if !visible {
+		return nil
+	}
+	q := db.New(s.pool)
+	r, e := q.GetDistributionRule(ctx, db.GetDistributionRuleParams{CompanyID: actor.CompanyID, ID: row.RuleID})
+	if e != nil {
+		return nil
+	}
+	b, e := q.GetDistributionBinding(ctx, db.GetDistributionBindingParams{CompanyID: actor.CompanyID, ID: r.BindingID})
+	if e != nil || b.State != "active" || b.Revision != r.BindingRevision || b.AccountID != row.AccountID || !b.AccountDomain.Valid {
+		return nil
+	}
+	url := "https://" + b.AccountDomain.String + "/leads/detail/" + row.LeadID
+	return safeDistributionLeadURL(&url, row.LeadID)
 }

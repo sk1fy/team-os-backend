@@ -130,6 +130,7 @@ func run(logger *slog.Logger) error {
 
 	consumerContext, consumerCancel := context.WithCancel(context.Background())
 	defer consumerCancel()
+	go service.RunDistributionQueueExpiry(consumerContext)
 	if configuration.DistributionCoreURL != "" {
 		go service.RunDistributionDelivery(consumerContext)
 	}

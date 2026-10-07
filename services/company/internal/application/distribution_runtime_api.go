@@ -48,6 +48,9 @@ func (s *Service) DistributionRuntimeRead(ctx context.Context, actor Actor, kind
 	if limit == 0 {
 		limit = 50
 	}
+	if kind == "queue" && limit > 15 && limit <= 100 {
+		limit = 15
+	}
 	if limit < 1 || limit > 100 || offset < 0 || offset > 100000 {
 		return nil, validation("Некорректная страница")
 	}
@@ -55,14 +58,7 @@ func (s *Service) DistributionRuntimeRead(ctx context.Context, actor Actor, kind
 	var out any
 	switch kind {
 	case "settings":
-		v, e := q.GetDistributionSettings(ctx, actor.CompanyID)
-		if isNoRows(e) {
-			return nil, notFound("Часовой пояс")
-		}
-		if e != nil {
-			return nil, e
-		}
-		out = map[string]any{"timezone": v.Timezone, "revision": v.Revision}
+		return s.distributionAccountSettings(ctx, actor)
 	case "rules":
 		rows, e := q.ListDistributionRules(ctx, db.ListDistributionRulesParams{CompanyID: actor.CompanyID, Limit: limit, Offset: offset})
 		if e != nil {
@@ -122,15 +118,19 @@ func (s *Service) DistributionRuntimeRead(ctx context.Context, actor Actor, kind
 		if e != nil {
 			return nil, e
 		}
-		rows, e := q.ListDistributionQueueHistory(ctx, db.ListDistributionQueueHistoryParams{CompanyID: actor.CompanyID, ID: id, Limit: limit, Offset: offset})
+		rows, e := q.ListDistributionQueueHistory(ctx, db.ListDistributionQueueHistoryParams{CompanyID: actor.CompanyID, ID: id, Limit: limit + 1, Offset: offset})
 		if e != nil {
 			return nil, e
+		}
+		more := len(rows) > int(limit)
+		if more {
+			rows = rows[:limit]
 		}
 		items := make([]any, 0, len(rows))
 		for _, r := range rows {
 			items = append(items, map[string]any{"id": r.ID, "state": r.State, "reason": r.Reason, "createdAt": r.CreatedAt, "payload": map[string]any{}})
 		}
-		out = map[string]any{"items": items, "limit": limit, "offset": offset}
+		out = map[string]any{"items": items, "limit": limit, "offset": offset, "hasMore": more}
 	default:
 		return nil, validation("Неизвестная операция")
 	}
@@ -257,11 +257,12 @@ func (s *Service) DistributionRuntimeWrite(ctx context.Context, actor Actor, kin
 			}
 			sourceWant = *in.Source
 		}
+		pipeline, status = normalizedDistributionPoint(sourceWant, pipeline, status)
 		changed := pipeline != initial.PipelineID || status != initial.StatusID
 		var refs corebridge.References
 		var binding db.DistributionBinding
 		if changed {
-			if !validCRMID(pipeline) || (sourceWant != "creation" && !validCRMID(status)) {
+			if sourceWant != "digital_pipeline" && (!validCRMID(pipeline) || (sourceWant != "creation" && !validCRMID(status))) {
 				return nil, validation("Укажите корректный этап amoCRM")
 			}
 			binding, e = db.New(s.pool).GetDistributionBinding(ctx, db.GetDistributionBindingParams{CompanyID: actor.CompanyID, ID: initial.BindingID})
@@ -272,7 +273,7 @@ func (s *Service) DistributionRuntimeWrite(ctx context.Context, actor Actor, kin
 			if e != nil {
 				return nil, e
 			}
-			found := false
+			found := sourceWant == "digital_pipeline"
 			for _, p := range refs.Pipelines {
 				if p.ID != pipeline {
 					continue
@@ -325,7 +326,7 @@ func (s *Service) DistributionRuntimeWrite(ctx context.Context, actor Actor, kin
 			source = *in.Source
 			sourceChanged = source != old.Source
 		}
-		if sourceChanged {
+		if sourceChanged || changed {
 			busy, err := q.DistributionRuleUnsettled(ctx, db.DistributionRuleUnsettledParams{CompanyID: actor.CompanyID, RuleID: id})
 			if err != nil {
 				return nil, err
@@ -363,7 +364,7 @@ func (s *Service) DistributionRuntimeWrite(ctx context.Context, actor Actor, kin
 			if err != nil {
 				return nil, err
 			}
-			if used || observedUsed {
+			if (used || observedUsed) && sourceWant == "legacy_stage" {
 				return nil, conflict("Правило уже использовалось: приостановите его и создайте новую группу для другого этапа")
 			}
 			current, e := q.GetDistributionBinding(ctx, db.GetDistributionBindingParams{CompanyID: actor.CompanyID, ID: old.BindingID})
