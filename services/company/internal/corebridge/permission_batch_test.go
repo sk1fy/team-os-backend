@@ -3,7 +3,6 @@ package corebridge
 import (
 	"context"
 	"encoding/json"
-	"github.com/google/uuid"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -11,6 +10,8 @@ import (
 	"sync/atomic"
 	"testing"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 func TestPermissionBatchSignedExactResultsAndRolloutFallback(t *testing.T) {

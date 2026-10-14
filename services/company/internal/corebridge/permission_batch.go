@@ -3,9 +3,10 @@ package corebridge
 import (
 	"context"
 	"errors"
-	"github.com/google/uuid"
 	"strconv"
 	"sync"
+
+	"github.com/google/uuid"
 )
 
 // Permissions is additive to the single-lead API. Rollout fallback is permitted
