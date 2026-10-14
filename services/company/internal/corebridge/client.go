@@ -72,10 +72,13 @@ type PermissionInput struct {
 	LeadID     string    `json:"leadId"`
 }
 type Permission struct {
-	UserID      string    `json:"userId"`
-	CanViewLead bool      `json:"canViewLead"`
-	Reason      string    `json:"reason"`
-	CheckedAt   time.Time `json:"checkedAt"`
+	LeadName          *string   `json:"leadName,omitempty"`
+	LeadURL           *string   `json:"leadUrl,omitempty"`
+	ResponsibleUserID *string   `json:"responsibleUserId,omitempty"`
+	UserID            string    `json:"userId"`
+	CanViewLead       bool      `json:"canViewLead"`
+	Reason            string    `json:"reason"`
+	CheckedAt         time.Time `json:"checkedAt"`
 }
 type Error struct{ Status int }
 

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -370,22 +371,31 @@ func (s *Service) SetDistributionEmployeeMapping(ctx context.Context, a Actor, i
 	return mappingFromDB(m), nil
 }
 func (s *Service) DistributionLeadPermission(ctx context.Context, a Actor, id uuid.UUID, leadID string) (corebridge.Permission, error) {
+	results, err := s.distributionLeadPermissions(ctx, a, id, []string{leadID})
+	return results[leadID], err
+}
+func (s *Service) distributionLeadPermissions(ctx context.Context, a Actor, id uuid.UUID, leadIDs []string) (map[string]corebridge.Permission, error) {
 	if _, e := s.distributionActor(ctx, a, false); e != nil {
-		return corebridge.Permission{}, e
+		return nil, e
 	}
-	if !validCRMID(leadID) {
-		return corebridge.Permission{}, validation("Некорректный ID сделки")
+	if len(leadIDs) == 0 || len(leadIDs) > 100 {
+		return nil, validation("Некорректная страница прав")
+	}
+	for _, leadID := range leadIDs {
+		if !validCRMID(leadID) {
+			return nil, validation("Некорректный ID сделки")
+		}
 	}
 	b, e := s.activeDistributionBinding(ctx, a, id)
 	if e != nil {
-		return corebridge.Permission{}, e
+		return nil, e
 	}
 	if b.MappingRevision != b.MappingAckRevision {
-		return corebridge.Permission{}, conflict("Сопоставления ожидают синхронизации с Core")
+		return nil, conflict("Сопоставления ожидают синхронизации с Core")
 	}
 	rows, e := db.New(s.pool).ListDistributionMappings(ctx, db.ListDistributionMappingsParams{CompanyID: a.CompanyID, BindingID: id})
 	if e != nil {
-		return corebridge.Permission{}, internal("Не удалось получить сопоставление", e)
+		return nil, internal("Не удалось получить сопоставление", e)
 	}
 	var crm string
 	for _, m := range rows {
@@ -394,28 +404,63 @@ func (s *Service) DistributionLeadPermission(ctx context.Context, a Actor, id uu
 		}
 	}
 	if crm == "" {
-		return corebridge.Permission{}, forbidden("Сотрудник не сопоставлен с amoCRM")
+		return nil, forbidden("Сотрудник не сопоставлен с amoCRM")
 	}
-	r, e := s.distributionCore.Permission(ctx, bindingScope(b), corebridge.PermissionInput{EmployeeID: a.UserID, UserID: crm, LeadID: leadID})
+	input := corebridge.PermissionInput{EmployeeID: a.UserID, UserID: crm}
+	var results map[string]corebridge.Permission
+	if batch, ok := s.distributionCore.(interface {
+		Permissions(context.Context, corebridge.Scope, corebridge.PermissionInput, []string) (map[string]corebridge.Permission, error)
+	}); ok {
+		results, e = batch.Permissions(ctx, bindingScope(b), input, leadIDs)
+	} else {
+		// Legacy adapters retain fresh single-lead checks, bounded by this request.
+		rows := make([]db.DistributionQueue, len(leadIDs))
+		for i, lead := range leadIDs {
+			rows[i].LeadID = lead
+		}
+		results = make(map[string]corebridge.Permission, len(leadIDs))
+		var mu sync.Mutex
+		checked := distributionQueuePermissions(ctx, rows, func(ctx context.Context, row db.DistributionQueue) (bool, error) {
+			in := input
+			in.LeadID = row.LeadID
+			permission, err := s.distributionCore.Permission(ctx, bindingScope(b), in)
+			mu.Lock()
+			results[row.LeadID] = permission
+			mu.Unlock()
+			return permission.CanViewLead, err
+		})
+		for _, result := range checked {
+			if result.err != nil {
+				e = result.err
+				break
+			}
+		}
+	}
 	if e != nil {
-		return r, coreError(e)
+		return nil, coreError(e)
 	}
-	if r.UserID != crm || r.CheckedAt.IsZero() || s.now().Sub(r.CheckedAt) > time.Minute || r.CheckedAt.After(s.now().Add(time.Minute)) {
-		return corebridge.Permission{}, forbidden("Не удалось подтвердить права на сделку")
+	if len(results) != len(leadIDs) {
+		return nil, forbidden("Не удалось подтвердить права на сделки")
+	}
+	for _, lead := range leadIDs {
+		r, ok := results[lead]
+		if !ok || r.UserID != crm || r.CheckedAt.IsZero() || s.now().Sub(r.CheckedAt) > time.Minute || r.CheckedAt.After(s.now().Add(time.Minute)) {
+			return nil, forbidden("Не удалось подтвердить права на сделку")
+		}
 	}
 
 	if _, e = s.distributionActor(ctx, a, false); e != nil {
-		return corebridge.Permission{}, e
+		return nil, e
 	}
 	current, e := db.New(s.pool).GetDistributionBinding(ctx, db.GetDistributionBindingParams{CompanyID: a.CompanyID, ID: id})
 	if e != nil || current.State != "active" || bindingScope(current) != bindingScope(b) || current.MappingRevision != b.MappingRevision || current.MappingAckRevision != current.MappingRevision {
-		return corebridge.Permission{}, forbidden("Права или сопоставления изменились")
+		return nil, forbidden("Права или сопоставления изменились")
 	}
 	currentMapping, e := db.New(s.pool).GetDistributionMappingByCRM(ctx, db.GetDistributionMappingByCRMParams{CompanyID: a.CompanyID, BindingID: id, CrmUserID: crm})
 	if e != nil || currentMapping.State != "verified" || !currentMapping.UserID.Valid || currentMapping.UserID.UUID != a.UserID || currentMapping.UserStatus != "active" {
-		return corebridge.Permission{}, forbidden("Сопоставление изменилось")
+		return nil, forbidden("Сопоставление изменилось")
 	}
-	return r, nil
+	return results, nil
 }
 
 // RevokeDistributionConnection fences Core first, including pending-but-not-yet-visible confirmations.

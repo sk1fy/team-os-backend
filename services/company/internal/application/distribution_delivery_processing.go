@@ -298,21 +298,64 @@ func (s *Service) processDistributionEvent(ctx context.Context, row db.Distribut
 	// delivered first. The mirrored status_changed must not pause the fresh DP
 	// entry as if the lead had invisibly exited and re-entered.
 	mirror := false
+	var currentEntryTime *time.Time
 	if in.Event.Kind == "lead.status_changed" && head.CurrentEntryID.Valid && observed.Snapshot != nil {
 		if entry, ee := q.GetDistributionObservedEntry(ctx, head.CurrentEntryID.UUID); ee == nil {
+			if entry.SourceOccurredAt.Valid {
+				currentEntryTime = &entry.SourceOccurredAt.Time
+			}
 			mirror = mirrorOfDigitalPipelineEntry(entry, in, observed.Snapshot.PipelineID, observed.Snapshot.StatusID)
+			if !mirror && entry.EventKind == "lead.status_changed" {
+				payload, pe := q.GetDistributionEntrySourceEvent(ctx, db.GetDistributionEntrySourceEventParams{CompanyID: scope.CompanyID, BindingID: scope.BindingID, BindingRevision: scope.BindingRevision, EventID: entry.EntryEventID})
+				if pe != nil && !isNoRows(pe) {
+					return pe
+				}
+				var original DistributionEventEnvelope
+				if pe == nil && json.Unmarshal(payload, &original) == nil {
+					mirror = mirrorOfStatusChangedEntry(entry, in, original)
+				}
+			}
+		}
+	}
+	// A complete durable source chain can prove an exit/return even when both
+	// authoritative GETs already show the final target stage. Query by source
+	// time, not inbox arrival order, so a late exit can reconcile an earlier
+	// return. Reuse the real return event identity when creating the new entry.
+	var reentry *DistributionEventEnvelope
+	if !mirror && in.Event.Kind == "lead.status_changed" && head.BindingID == scope.BindingID && head.BindingRevision == scope.BindingRevision && head.CurrentEntryID.Valid && previous != nil && observed.Snapshot != nil && previous.PipelineID == observed.Snapshot.PipelineID && previous.StatusID == observed.Snapshot.StatusID {
+		current, ce := q.GetDistributionObservedEntry(ctx, head.CurrentEntryID.UUID)
+		if ce != nil {
+			return ce
+		}
+		if current.SourceOccurredAt.Valid {
+			payloads, pe := q.ListDistributionStageSourceEvents(ctx, db.ListDistributionStageSourceEventsParams{CompanyID: scope.CompanyID, BindingID: scope.BindingID, BindingRevision: scope.BindingRevision, AccountID: scope.AccountID, LeadID: in.Event.LeadID, AfterTime: current.SourceOccurredAt.Time, BeforeTime: observed.ObservedAt})
+			if pe != nil {
+				return pe
+			}
+			var original *DistributionEventEnvelope
+			if current.EventKind == "lead.created" && (current.Evidence == "reconciled" || current.Evidence == "ambiguous_reentry") {
+				raw, oe := q.GetDistributionEntrySourceEvent(ctx, db.GetDistributionEntrySourceEventParams{CompanyID: scope.CompanyID, BindingID: scope.BindingID, BindingRevision: scope.BindingRevision, EventID: current.EntryEventID})
+				if oe != nil && !isNoRows(oe) {
+					return oe
+				}
+				var event DistributionEventEnvelope
+				if oe == nil && json.Unmarshal(raw, &event) == nil {
+					original = &event
+				}
+			}
+			reentry = provenDistributionSourceChain(current, original, payloads)
 		}
 	}
 	source := in.Event.SourceEvidence
 	sourceMatches := source != nil && source.StatusID != nil && observed.Snapshot != nil && *source.StatusID == observed.Snapshot.StatusID && (source.PipelineID == nil || *source.PipelineID == observed.Snapshot.PipelineID)
 	oldMatches := source != nil && source.OldStatusID != nil && previous != nil && *source.OldStatusID == previous.StatusID && (source.OldPipelineID == nil || *source.OldPipelineID == previous.PipelineID)
-	ambiguous := !mirror && previous != nil && observed.Snapshot != nil && previous.PipelineID == observed.Snapshot.PipelineID && previous.StatusID == observed.Snapshot.StatusID && in.Event.Kind == "lead.status_changed" && source != nil && source.StatusID != nil && source.OldStatusID != nil && (sourceMatches != oldMatches) && (in.SourceOccurredAt == nil || previous.SourceUpdatedAt == nil || !in.SourceOccurredAt.Before(*previous.SourceUpdatedAt))
+	ambiguous := reentry == nil && !mirror && previous != nil && observed.Snapshot != nil && previous.PipelineID == observed.Snapshot.PipelineID && previous.StatusID == observed.Snapshot.StatusID && in.Event.Kind == "lead.status_changed" && source != nil && source.StatusID != nil && source.OldStatusID != nil && (sourceMatches != oldMatches) && distributionSourceClaimFresh(in.SourceOccurredAt, currentEntryTime, previous.SourceUpdatedAt)
 	if ambiguous && head.CurrentEntryID.Valid {
 		if e = q.PauseDistributionObservedEntry(ctx, head.CurrentEntryID.UUID); e != nil {
 			return e
 		}
 	}
-	changed := observed.Deleted || observed.Absent || head.Deleted || head.Absent || previous == nil || in.Event.Kind == "lead.digital_pipeline_trigger" || observed.Snapshot != nil && (previous.PipelineID != observed.Snapshot.PipelineID || previous.StatusID != observed.Snapshot.StatusID) || head.BindingID != scope.BindingID
+	changed := reentry != nil || observed.Deleted || observed.Absent || head.Deleted || head.Absent || previous == nil || in.Event.Kind == "lead.digital_pipeline_trigger" || observed.Snapshot != nil && (previous.PipelineID != observed.Snapshot.PipelineID || previous.StatusID != observed.Snapshot.StatusID) || head.BindingID != scope.BindingID
 	entry := head.CurrentEntryID
 	sequence := head.LastSequence
 	if changed && entry.Valid {
@@ -330,6 +373,9 @@ func (s *Service) processDistributionEvent(ctx context.Context, row db.Distribut
 			return e
 		}
 		entry = uuid.NullUUID{}
+	}
+	if reentry != nil {
+		in = *reentry
 	}
 	if changed && observed.Snapshot != nil {
 		sequence++

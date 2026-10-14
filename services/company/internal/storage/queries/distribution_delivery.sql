@@ -58,3 +58,15 @@ SELECT count(*) FILTER(WHERE state IN ('received','processing','blocked'))::bigi
 FROM distribution_delivery_inbox;
 -- name: PauseDistributionObservedEntry :exec
 UPDATE distribution_observed_entries SET state='needs_configuration',evidence='ambiguous_reentry' WHERE id=$1 AND state<>'cancelled';
+
+-- name: ListDistributionStageSourceEvents :many
+-- Immutable accepted source evidence is independent of delayed GET snapshots.
+SELECT payload FROM distribution_delivery_inbox
+WHERE company_id=$1 AND binding_id=$2 AND binding_revision=$3 AND account_id=$4 AND lead_id=$5
+AND message_kind='event' AND payload->'event'->>'kind'='lead.status_changed'
+AND (payload->>'sourceOccurredAt')::timestamptz > sqlc.arg(after_time)::timestamptz
+AND (payload->>'sourceOccurredAt')::timestamptz <= sqlc.arg(before_time)::timestamptz
+ORDER BY (payload->>'sourceOccurredAt')::timestamptz, event_id LIMIT 101;
+
+-- name: GetDistributionEntrySourceEvent :one
+SELECT payload FROM distribution_delivery_inbox WHERE company_id=$1 AND binding_id=$2 AND binding_revision=$3 AND event_id=$4 AND message_kind='event' LIMIT 1;

@@ -44,23 +44,27 @@ func filterParams(actor Actor, f DistributionQueueFilter, limit, offset int32) d
 	return p
 }
 func (s *Service) distributionQueuePermission(ctx context.Context, actor Actor, row db.DistributionQueue) (bool, error) {
+	p, e := s.distributionQueuePermissionData(ctx, actor, row)
+	return p.CanViewLead, e
+}
+func (s *Service) distributionQueuePermissionData(ctx context.Context, actor Actor, row db.DistributionQueue) (corebridge.Permission, error) {
 	if s.distributionCore == nil {
-		return false, upstream("Core не настроен", nil)
+		return corebridge.Permission{}, upstream("Core не настроен", nil)
 	}
 	q := db.New(s.pool)
 	r, e := q.GetDistributionRule(ctx, db.GetDistributionRuleParams{CompanyID: actor.CompanyID, ID: row.RuleID})
 	if e != nil {
-		return false, e
+		return corebridge.Permission{}, e
 	}
 	b, e := q.GetDistributionBinding(ctx, db.GetDistributionBindingParams{CompanyID: actor.CompanyID, ID: r.BindingID})
 	if e != nil {
-		return false, e
+		return corebridge.Permission{}, e
 	}
 	if b.Revision != r.BindingRevision || b.AccountID != row.AccountID {
-		return false, forbidden("Связь сделки недоступна")
+		return corebridge.Permission{}, forbidden("Связь сделки недоступна")
 	}
 	p, e := s.DistributionLeadPermission(ctx, actor, r.BindingID, row.LeadID)
-	return p.CanViewLead, e
+	return p, e
 }
 
 type distributionPermissionResult struct {
@@ -117,10 +121,94 @@ func distributionQueuePermissions(ctx context.Context, rows []db.DistributionQue
 	return out
 }
 
+type distributionPermissionTarget struct {
+	binding       uuid.UUID
+	revision      int64
+	account, lead string
+}
+
+// Batch pages by current binding. Every row is fenced against its recorded
+// account/revision before reading CRM and the actor/mapping is fenced afterwards.
+func (s *Service) distributionBindingPermissions(ctx context.Context, actor Actor, targets []distributionPermissionTarget) []distributionPermissionResult {
+	type key struct {
+		binding  uuid.UUID
+		revision int64
+		account  string
+	}
+	groups := map[key][]int{}
+	keys := []key{}
+	for i, target := range targets {
+		k := key{target.binding, target.revision, target.account}
+		if _, ok := groups[k]; !ok {
+			keys = append(keys, k)
+		}
+		groups[k] = append(groups[k], i)
+	}
+	results := make([]distributionPermissionResult, len(targets))
+	jobs := make(chan int, len(keys))
+	for i := range keys {
+		jobs <- i
+	}
+	close(jobs)
+	var workers sync.WaitGroup
+	for n := 0; n < 4 && n < len(keys); n++ {
+		workers.Add(1)
+		go func() {
+			defer workers.Done()
+			for j := range jobs {
+				k := keys[j]
+				indexes := groups[k]
+				ids := []string{}
+				seen := map[string]bool{}
+				for _, i := range indexes {
+					if !seen[targets[i].lead] {
+						ids = append(ids, targets[i].lead)
+						seen[targets[i].lead] = true
+					}
+				}
+				binding, err := db.New(s.pool).GetDistributionBinding(ctx, db.GetDistributionBindingParams{CompanyID: actor.CompanyID, ID: k.binding})
+				if err == nil && (binding.State != "active" || binding.Revision != k.revision || binding.AccountID != k.account) {
+					err = forbidden("Связь сделки недоступна")
+				}
+				var checked map[string]corebridge.Permission
+				if err == nil {
+					checked, err = s.distributionLeadPermissions(ctx, actor, k.binding, ids)
+				}
+				for _, i := range indexes {
+					results[i] = distributionPermissionResult{visible: err == nil && checked[targets[i].lead].CanViewLead, err: err}
+				}
+			}
+		}()
+	}
+	workers.Wait()
+	return results
+}
 func (s *Service) distributionPagePermissions(ctx context.Context, actor Actor, rows []db.DistributionQueue) []distributionPermissionResult {
-	return distributionQueuePermissions(ctx, rows, func(ctx context.Context, row db.DistributionQueue) (bool, error) {
-		return s.distributionQueuePermission(ctx, actor, row)
-	})
+	targets := make([]distributionPermissionTarget, 0, len(rows))
+	indexes := []int{}
+	out := make([]distributionPermissionResult, len(rows))
+	rules := map[uuid.UUID]db.DistributionRule{}
+	ruleErrors := map[uuid.UUID]error{}
+	for i, row := range rows {
+		rule, ok := rules[row.RuleID]
+		err := ruleErrors[row.RuleID]
+		if !ok && err == nil {
+			rule, err = db.New(s.pool).GetDistributionRule(ctx, db.GetDistributionRuleParams{CompanyID: actor.CompanyID, ID: row.RuleID})
+			rules[row.RuleID] = rule
+			ruleErrors[row.RuleID] = err
+		}
+		if err != nil {
+			out[i].err = err
+			continue
+		}
+		targets = append(targets, distributionPermissionTarget{rule.BindingID, rule.BindingRevision, row.AccountID, row.LeadID})
+		indexes = append(indexes, i)
+	}
+	checked := s.distributionBindingPermissions(ctx, actor, targets)
+	for i, index := range indexes {
+		out[index] = checked[i]
+	}
+	return out
 }
 func (s *Service) queueActions(ctx context.Context, q *db.Queries, row db.DistributionQueue) []string {
 	out := []string{}
@@ -233,11 +321,11 @@ func (s *Service) DistributionQueueDetail(ctx context.Context, actor Actor, id u
 	}
 	permission, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
-	visible, e := s.distributionQueuePermission(permission, actor, row)
+	checked, e := s.distributionQueuePermissionData(permission, actor, row)
 	if e != nil {
 		return nil, e
 	}
-	if !visible {
+	if !checked.CanViewLead {
 		return nil, forbidden("Нет доступа к сделке amoCRM")
 	}
 	out := s.distributionQueueDTO(ctx, actor, row, true)
@@ -260,7 +348,11 @@ func (s *Service) DistributionQueueDetail(ctx context.Context, actor Actor, id u
 				if json.Unmarshal(row.Command, &frozen) == nil {
 					out["previousEmployeeId"] = employee(frozen.Command.ExpectedSnapshot.ResponsibleUserID)
 				}
-				if core, ok := s.deliveryCore.(DistributionAssignmentCore); ok {
+				if checked.ResponsibleUserID != nil && validCRMID(*checked.ResponsibleUserID) {
+					out["leadName"] = checked.LeadName
+					out["currentEmployeeId"] = employee(*checked.ResponsibleUserID)
+					out["leadUrl"] = safeDistributionLeadURL(checked.LeadURL, row.LeadID)
+				} else if core, ok := s.deliveryCore.(DistributionAssignmentCore); ok {
 					observed, re := core.ReadLead(permission, bindingScope(b), row.LeadID)
 					if re == nil && observed.Scope == bindingScope(b) && observed.LeadID == row.LeadID && observed.Snapshot != nil && s.now().Sub(observed.ObservedAt) <= time.Minute && !observed.ObservedAt.After(s.now().Add(time.Minute)) {
 						// Core constructs the URL from its validated installation domain. Verify

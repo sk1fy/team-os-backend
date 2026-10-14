@@ -40,7 +40,7 @@ tenant/owner-scoped отчёты. Legacy `/api/v1` сохраняется адд
 
 ## Быстрый старт
 
-Требуются Docker (compose v2) и Go 1.25+. Для генерации кода — `buf`, `oapi-codegen`, `sqlc`.
+Требуются Docker (compose v2) и Go 1.26+ (закреплённый toolchain — 1.26.9). Для генерации кода — `buf`, `oapi-codegen`, `sqlc`.
 
 ```sh
 make up       # поднять весь стек (Postgres, NATS, MinIO, сервисы); .env с dev-ключами создаётся сам
