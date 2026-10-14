@@ -1,0 +1,2 @@
+DROP INDEX distribution_delivery_stage_source_history;
+DROP INDEX distribution_delivery_source_event;

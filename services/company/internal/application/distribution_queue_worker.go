@@ -114,6 +114,9 @@ func (s *Service) ProcessDistributionQueue(ctx context.Context) (bool, error) {
 		state = "requires_configuration"
 	case r.ExecutionMode != "live" || r.ExecutionEpoch != row.ExecutionEpoch:
 		reason = "execution_mode_changed"
+	case distributionEntryBeforeLiveBoundary(r, entry):
+		reason = "live_boundary_uncertain"
+		state = "requires_configuration"
 	case !r.Active || !g.Active:
 		reason = "group_paused"
 	case b.State != "active" || bindingScope(b) != observed.Scope:
@@ -463,4 +466,11 @@ func (s *Service) distributionAssignmentAdmissionGate(ctx context.Context, row d
 		return false, e
 	}
 	return true, tx.Commit(ctx)
+}
+
+// Source event seconds cannot establish ordering within the activation second.
+// Keep the candidate visible, but never let UI retry turn uncertainty into PATCH.
+func distributionEntryBeforeLiveBoundary(r db.DistributionRule, e db.DistributionObservedEntry) bool {
+	return !e.SourceOccurredAt.Valid || !r.LiveStartedAt.Valid || !r.FirstActivationAt.Valid ||
+		e.SourceOccurredAt.Time.Before(r.LiveStartedAt.Time) || e.SourceOccurredAt.Time.Before(r.FirstActivationAt.Time)
 }

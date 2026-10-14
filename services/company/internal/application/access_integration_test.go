@@ -264,7 +264,7 @@ func companyAccessTestPool(t *testing.T, ctx context.Context) *pgxpool.Pool {
 	initScripts := make([]string, 0, 24)
 
 	temporary := t.TempDir()
-	for migration := 1; migration <= 30; migration++ {
+	for migration := 1; migration <= 31; migration++ {
 		name := fmt.Sprintf("%06d_%s.up.sql", migration, accessMigrationName(migration))
 		source, err := os.ReadFile(filepath.Join(migrationsDir, name))
 		if err != nil {
@@ -338,6 +338,7 @@ func accessMigrationName(migration int) string {
 		28: "distribution_observation",
 		29: "distribution_launch_source",
 		30: "distribution_queue_ux",
+		31: "distribution_source_history_index",
 	}[migration]
 }
 

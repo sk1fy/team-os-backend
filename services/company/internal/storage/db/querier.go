@@ -119,6 +119,7 @@ type Querier interface {
 	GetDistributionBindingVersion(ctx context.Context, arg GetDistributionBindingVersionParams) (DistributionBindingVersion, error)
 	GetDistributionControlRequest(ctx context.Context, arg GetDistributionControlRequestParams) (DistributionControlRequest, error)
 	GetDistributionDelivery(ctx context.Context, arg GetDistributionDeliveryParams) (DistributionDeliveryInbox, error)
+	GetDistributionEntrySourceEvent(ctx context.Context, arg GetDistributionEntrySourceEventParams) ([]byte, error)
 	GetDistributionEventReceipt(ctx context.Context, arg GetDistributionEventReceiptParams) (DistributionEventReceipt, error)
 	GetDistributionGroup(ctx context.Context, arg GetDistributionGroupParams) (DistributionGroup, error)
 	GetDistributionGroupForUpdate(ctx context.Context, arg GetDistributionGroupForUpdateParams) (DistributionGroup, error)
@@ -172,6 +173,8 @@ type Querier interface {
 	ListDistributionQueueFiltered(ctx context.Context, arg ListDistributionQueueFilteredParams) ([]DistributionQueue, error)
 	ListDistributionQueueHistory(ctx context.Context, arg ListDistributionQueueHistoryParams) ([]DistributionQueueHistory, error)
 	ListDistributionRules(ctx context.Context, arg ListDistributionRulesParams) ([]DistributionRule, error)
+	// Immutable accepted source evidence is independent of delayed GET snapshots.
+	ListDistributionStageSourceEvents(ctx context.Context, arg ListDistributionStageSourceEventsParams) ([][]byte, error)
 	ListDistributionSummaryCandidates(ctx context.Context, arg ListDistributionSummaryCandidatesParams) ([]DistributionQueue, error)
 	ListDistributionWidgetEmployees(ctx context.Context, arg ListDistributionWidgetEmployeesParams) ([]ListDistributionWidgetEmployeesRow, error)
 	ListDistributionWidgetLeadQueue(ctx context.Context, arg ListDistributionWidgetLeadQueueParams) ([]DistributionQueue, error)

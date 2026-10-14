@@ -228,6 +228,9 @@ func (s *Service) visibleObservation(ctx context.Context, actor Actor, row db.Di
 	if !p.CanViewLead {
 		return nil, nil
 	}
+	return s.observationProjection(ctx, actor, row)
+}
+func (s *Service) observationProjection(ctx context.Context, actor Actor, row db.DistributionObservation) (*DistributionObservation, error) {
 	current, e := db.New(s.pool).GetDistributionBinding(ctx, db.GetDistributionBindingParams{CompanyID: actor.CompanyID, ID: row.BindingID})
 	if e != nil {
 		return nil, e
@@ -271,15 +274,24 @@ func (s *Service) DistributionObservations(ctx context.Context, actor Actor, id 
 	}
 	permissionCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
+	targets := make([]distributionPermissionTarget, len(rows))
+	for i, row := range rows {
+		targets[i] = distributionPermissionTarget{row.BindingID, row.BindingRevision, row.AccountID, row.LeadID}
+	}
+	checked := s.distributionBindingPermissions(permissionCtx, actor, targets)
 	items := []DistributionObservation{}
-	for _, row := range rows {
-		out, err := s.visibleObservation(permissionCtx, actor, row)
+	for i, row := range rows {
+		if checked[i].err != nil {
+			return nil, checked[i].err
+		}
+		if !checked[i].visible {
+			continue
+		}
+		out, err := s.observationProjection(permissionCtx, actor, row)
 		if err != nil {
 			return nil, err
 		}
-		if out != nil {
-			items = append(items, *out)
-		}
+		items = append(items, *out)
 	}
 	return json.Marshal(map[string]any{"items": items, "limit": limit, "offset": offset, "hasMore": hasMore, "checkedAt": s.now().UTC()})
 }
