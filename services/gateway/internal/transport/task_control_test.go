@@ -1,16 +1,18 @@
 package transport
 
 import (
+	"context"
 	"encoding/json"
-	"github.com/sk1fy/team-os-backend/services/gateway/internal/api"
 	"net/http/httptest"
 	"regexp"
 	"strings"
 	"testing"
+
+	"github.com/sk1fy/team-os-backend/services/gateway/internal/api"
 )
 
 func TestTaskControlRoutesDoNotClaimUnimplementedWritesSucceeded(t *testing.T) {
-	spec, err := api.GetSwagger()
+	spec, err := api.GetSpec()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -27,7 +29,7 @@ func TestTaskControlRoutesDoNotClaimUnimplementedWritesSucceeded(t *testing.T) {
 			}
 			count++
 			t.Run(method+path, func(t *testing.T) {
-				req := httptest.NewRequest(method, param.ReplaceAllString(path, "a0000000-0000-4000-8000-000000000001"), nil)
+				req := httptest.NewRequestWithContext(context.Background(), method, param.ReplaceAllString(path, "a0000000-0000-4000-8000-000000000001"), nil)
 				rec := httptest.NewRecorder()
 				router.ServeHTTP(rec, req)
 				if rec.Code != 501 {

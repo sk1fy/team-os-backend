@@ -4,13 +4,14 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"io"
+
 	"github.com/google/uuid"
 	v "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v1"
 	"github.com/sk1fy/team-os-backend/services/company/internal/application"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-	"io"
 )
 
 func taskControlDecode(raw []byte, out any) error {

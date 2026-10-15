@@ -6,13 +6,14 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
-	"github.com/google/uuid"
-	tc "github.com/sk1fy/team-os-backend/services/company/internal/domain/taskcontrol"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/google/uuid"
+	tc "github.com/sk1fy/team-os-backend/services/company/internal/domain/taskcontrol"
 )
 
 func TestSignedStatusScopeAndRedirects(t *testing.T) {
@@ -23,7 +24,7 @@ func TestSignedStatusScopeAndRedirects(t *testing.T) {
 	server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		calls++
 		if mode == "redirect" {
-			http.Redirect(w, r, "/other", 302)
+			http.Redirect(w, r, "/other", http.StatusFound)
 			return
 		}
 		empty := sha256.Sum256(nil)
@@ -40,7 +41,9 @@ func TestSignedStatusScopeAndRedirects(t *testing.T) {
 		if mode == "stale" {
 			out.FreshUntil = now.Add(-time.Minute)
 		}
-		json.NewEncoder(w).Encode(out)
+		if err := json.NewEncoder(w).Encode(out); err != nil {
+			t.Error(err)
+		}
 	}))
 	defer server.Close()
 	client, e := New(server.URL, "key", secret)

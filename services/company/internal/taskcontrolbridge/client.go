@@ -7,14 +7,15 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
-	"github.com/google/uuid"
-	tc "github.com/sk1fy/team-os-backend/services/company/internal/domain/taskcontrol"
 	"io"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/google/uuid"
+	tc "github.com/sk1fy/team-os-backend/services/company/internal/domain/taskcontrol"
 )
 
 type Client struct {
@@ -56,7 +57,7 @@ func (c *Client) Installation(ctx context.Context, company uuid.UUID, account st
 	if e != nil {
 		return out, e
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode != 200 {
 		return out, errors.New("Core не подтвердил установку")
 	}

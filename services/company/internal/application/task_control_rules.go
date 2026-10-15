@@ -5,13 +5,14 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"strings"
+	"time"
+	"unicode/utf8"
+
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	tc "github.com/sk1fy/team-os-backend/services/company/internal/domain/taskcontrol"
 	"github.com/sk1fy/team-os-backend/services/company/internal/storage/db"
-	"strings"
-	"time"
-	"unicode/utf8"
 )
 
 type TaskControlDraft struct {
@@ -127,7 +128,7 @@ func (s *Service) GetTaskControlDraft(ctx context.Context, a Actor, id uuid.UUID
 	if e != nil {
 		return out, e
 	}
-	defer tx.Rollback(ctx)
+	defer func() { _ = tx.Rollback(ctx) }()
 	d, e := q.GetTaskControlDraft(ctx, db.GetTaskControlDraftParams{CompanyID: a.CompanyID, BindingID: id})
 	if e != nil {
 		return out, e
@@ -147,7 +148,7 @@ func (s *Service) UpdateTaskControlDraft(ctx context.Context, a Actor, id uuid.U
 	if e != nil {
 		return out, e
 	}
-	defer tx.Rollback(ctx)
+	defer func() { _ = tx.Rollback(ctx) }()
 	if e = tcFence(c, in.ExpectedBindingRevision, in.ExpectedModeEpoch); e != nil {
 		return out, e
 	}
@@ -183,7 +184,7 @@ func (s *Service) PublishTaskControlDraft(ctx context.Context, a Actor, id uuid.
 	if e != nil {
 		return out, e
 	}
-	defer tx.Rollback(ctx)
+	defer func() { _ = tx.Rollback(ctx) }()
 	raw, _ := json.Marshal([]any{id, in})
 	hash := sha256.Sum256(raw)
 	hs := hex.EncodeToString(hash[:])
@@ -240,7 +241,7 @@ func (s *Service) TaskControlPublications(ctx context.Context, a Actor, id, publ
 	if e != nil {
 		return nil, e
 	}
-	defer tx.Rollback(ctx)
+	defer func() { _ = tx.Rollback(ctx) }()
 	if publication != uuid.Nil {
 		p, e := q.GetTaskControlPublication(ctx, db.GetTaskControlPublicationParams{CompanyID: a.CompanyID, BindingID: id, ID: publication})
 		if e != nil {
@@ -267,7 +268,7 @@ func (s *Service) SetTaskControlMode(ctx context.Context, a Actor, id uuid.UUID,
 	if e != nil {
 		return out, e
 	}
-	defer tx.Rollback(ctx)
+	defer func() { _ = tx.Rollback(ctx) }()
 	raw, _ := json.Marshal([]any{id, in.ExpectedBindingRevision, in.ExpectedModeEpoch, in.TargetMode, in.PublicationID})
 	hash := sha256.Sum256(raw)
 	hs := hex.EncodeToString(hash[:])
@@ -325,7 +326,7 @@ func (s *Service) TaskControlBootstrap(ctx context.Context, token string) (any, 
 	if e != nil {
 		return nil, e
 	}
-	defer tx.Rollback(ctx)
+	defer func() { _ = tx.Rollback(ctx) }()
 	q := db.New(tx)
 	if e = q.LockTaskControlAccount(ctx, c.Scope.AccountID); e != nil {
 		return nil, e

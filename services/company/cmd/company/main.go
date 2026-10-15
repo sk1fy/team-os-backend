@@ -6,7 +6,6 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"github.com/sk1fy/team-os-backend/services/company/internal/taskcontrolbridge"
 	"log/slog"
 	"net"
 	"net/http"
@@ -14,6 +13,8 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/sk1fy/team-os-backend/services/company/internal/taskcontrolbridge"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	companyv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v1"

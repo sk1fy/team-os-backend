@@ -6,11 +6,12 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/google/uuid"
 	"sort"
 	"strconv"
 	"strings"
 	"unicode/utf8"
+
+	"github.com/google/uuid"
 )
 
 type Pipeline struct {
@@ -83,7 +84,7 @@ func ValidateRules(rules []Rule) []Issue {
 	return out
 }
 
-// Field order matches the widget's version-1 legacy checksum material.
+// LegacyPipeline field order matches the widget's version-1 legacy checksum material.
 type LegacyPipeline struct {
 	PipelineID int64   `json:"pipeline_id"`
 	StatusIDs  []int64 `json:"status_ids"`

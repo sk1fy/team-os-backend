@@ -2,12 +2,13 @@ package transport
 
 import (
 	"encoding/json"
+	"net/http"
+	"strings"
+
 	v "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v1"
 	"github.com/sk1fy/team-os-backend/pkg/apierror"
 	"github.com/sk1fy/team-os-backend/services/gateway/internal/api"
 	"google.golang.org/grpc/metadata"
-	"net/http"
-	"strings"
 )
 
 func (h *Handler) taskControlCall(w http.ResponseWriter, r *http.Request, in *v.TaskControlConnectionRequest, runtime bool) {

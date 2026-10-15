@@ -5,10 +5,11 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"encoding/json"
-	"github.com/google/uuid"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 func testSign(key ed25519.PrivateKey, a Assertion) string {

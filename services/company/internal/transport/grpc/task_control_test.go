@@ -2,11 +2,12 @@ package grpc
 
 import (
 	"context"
+	"testing"
+
 	v "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-	"testing"
 )
 
 func TestTaskControlRuntimeRequiresGatewayCredential(t *testing.T) {

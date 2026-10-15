@@ -2,13 +2,14 @@ package transport
 
 import (
 	"context"
+	"net/http/httptest"
+	"strings"
+	"testing"
+
 	v "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v1"
 	"github.com/sk1fy/team-os-backend/services/gateway/internal/api"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
-	"net/http/httptest"
-	"strings"
-	"testing"
 )
 
 type taskControlClient struct {
@@ -40,7 +41,7 @@ func TestTaskControlRuntimeBoundary(t *testing.T) {
 		{"GET", "/api/v1/widget/task-control/bootstrap", "", "", 401},
 		{"GET", "/api/v1/widget/task-control/bootstrap", "", "Bearer " + strings.Repeat("x", 43), 200},
 	} {
-		r := httptest.NewRequest(test.method, test.path, strings.NewReader(test.body))
+		r := httptest.NewRequestWithContext(context.Background(), test.method, test.path, strings.NewReader(test.body))
 		if test.auth != "" {
 			r.Header.Set("Authorization", test.auth)
 		}

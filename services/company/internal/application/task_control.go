@@ -274,7 +274,7 @@ func (s *Service) LinkTaskControl(ctx context.Context, actor Actor, in TaskContr
 	if e != nil {
 		return out, internal("Не удалось начать подключение", e)
 	}
-	defer tx.Rollback(ctx)
+	defer func() { _ = tx.Rollback(ctx) }()
 	q = db.New(tx)
 	if e = q.LockTaskControlAccount(ctx, in.AccountID); e != nil {
 		return out, e
@@ -358,7 +358,7 @@ func (s *Service) RevokeTaskControl(ctx context.Context, actor Actor, id uuid.UU
 	if e != nil {
 		return out, e
 	}
-	defer tx.Rollback(ctx)
+	defer func() { _ = tx.Rollback(ctx) }()
 	q = db.New(tx)
 	if e = q.LockTaskControlAccount(ctx, c.AccountID); e != nil {
 		return out, e
@@ -423,7 +423,7 @@ func (s *Service) ExchangeTaskControlSession(ctx context.Context, raw string) (T
 	if e != nil {
 		return out, e
 	}
-	defer tx.Rollback(ctx)
+	defer func() { _ = tx.Rollback(ctx) }()
 	q := db.New(tx)
 	if e = q.LockTaskControlAccount(ctx, a.AccountID); e != nil {
 		return out, e
