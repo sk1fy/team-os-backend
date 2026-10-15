@@ -1,0 +1,851 @@
+openapi: 3.1.0
+info:
+  title: 'Контроль задач: прямой runtime TeamOS и инфраструктурный Core'
+  version: 1.2.0
+  description: Core проверяет JWT amoCRM и live CRM роль, выдаёт signed assertion и хранит установку/мониторинг. Runtime session/bootstrap
+    реализованы в teamos.yaml; правила выдаёт напрямую backend TeamOS. Остальные runtime/monitoring функции относятся к следующим
+    задачам.
+  license:
+    name: Proprietary
+    identifier: LicenseRef-Proprietary
+servers:
+- url: https://teamos.example.invalid
+security:
+- runtimeSession: []
+paths:
+  /api/v1/widget/task-control/config:
+    get:
+      operationId: getTaskControlRuntime
+      summary: Прямое чтение опубликованных правил из company для текущего CRM actor
+      x-owner: TeamOS
+      security:
+      - runtimeSession: []
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Runtime'
+        '400':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/widget/task-control/acks:
+    post:
+      operationId: ackTaskControlRuntime
+      summary: Подтвердить применение одной вкладкой непосредственно company
+      x-owner: TeamOS
+      security:
+      - runtimeSession: []
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: ./teamos.yaml#/components/schemas/TaskControlRuntimeAck
+        '400':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RuntimeAckInput'
+  /api/v1/widget/task-control/mode-intents/{intentId}/ack:
+    post:
+      operationId: ackTaskControlMode
+      summary: Подтвердить descriptor режима; дополнительно текущий проверенный admin
+      x-owner: TeamOS
+      security:
+      - runtimeSession: []
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: ./teamos.yaml#/components/schemas/TaskControlIntent
+        '400':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: intentId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModeAck'
+  /api/v1/widget/task-control/source-requests:
+    get:
+      operationId: getTaskControlSourceRequests
+      summary: 'Admin bridge: pending задания только текущего аккаунта и admin actor'
+      x-owner: TeamOS
+      security:
+      - runtimeSession: []
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: ./teamos.yaml#/components/schemas/TaskControlSourceRequest
+        '400':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/widget/task-control/source-requests/{sourceRequestId}/result:
+    put:
+      operationId: submitTaskControlSourceResult
+      summary: Полный снимок CRM через same-origin admin bridge
+      x-owner: TeamOS
+      security:
+      - runtimeSession: []
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: ./teamos.yaml#/components/schemas/TaskControlSourceRequest
+        '400':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: sourceRequestId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SourceResult'
+  /internal/v1/task-control/accounts/{accountId}/installation:
+    get:
+      operationId: readTaskControlInstallation
+      summary: Точный статус установки продукта, без правил и heartbeat-эвристик
+      x-owner: Core
+      security:
+      - signedService: []
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: ./teamos.yaml#/components/schemas/TaskControlInstallation
+        '400':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: accountId
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^[1-9][0-9]{0,15}$
+    servers:
+    - url: https://core.example.invalid
+  /api/v1/widget/task-control/telemetry:
+    post:
+      operationId: recordTaskControlTelemetry
+      summary: Техническое наблюдение для админ-панели, без изменения установки/правил
+      x-owner: Core
+      security:
+      - amoWidgetToken: []
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Receipt'
+        '400':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Ошибка без изменения правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Telemetry'
+    servers:
+    - url: https://core.example.invalid
+  /api/v1/widget/task-control/auth:
+    servers:
+    - url: https://core.example.invalid
+    post:
+      operationId: createTaskControlHandoff
+      summary: Core проверяет amoCRM JWT/live роль, выдаёт одноразовое Ed25519 подтверждение
+      x-owner: Core
+      security:
+      - amoWidgetToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - purpose
+              - requestId
+              properties:
+                purpose:
+                  type: string
+                  enum:
+                  - runtime
+                  - link
+                  - revoke
+                  - mode
+                  - adminBridge
+                requestId:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: Подтверждение ≤60 секунд, audience teamos-task-control, trusted company/installation/account/product/actor/generation,
+            purpose+requestId, jti. Формат keyId.base64url(JSON).base64url(Ed25519(signature)); signed message teamos-task-control/v1
+            + LF + keyId.payload.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required:
+                - assertion
+                - expiresAt
+                properties:
+                  assertion:
+                    type: string
+                  expiresAt:
+                    type: string
+                    format: date-time
+        default:
+          description: Ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Нет активной установки, доступа или JWT уже использован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  securitySchemes:
+    runtimeSession:
+      type: http
+      scheme: bearer
+      description: Opaque runtime-сессия backend TeamOS, TTL 5 минут; получена обменом одноразового signed assertion Core.
+        JWT amoCRM и его secret остаются в Core.
+    amoWidgetToken:
+      type: http
+      scheme: bearer
+      description: JWT amoCRM, проверяется Core локально только для телеметрии.
+    signedService:
+      type: apiKey
+      in: header
+      name: X-Task-Control-Signature
+      description: 'Серверный запрос installation status: HMAC-SHA256 over newline keyId, method, RequestURI, companyId, accountId,
+        product, timestamp, nonce, SHA256(raw body); headers X-Task-Control-Key-Id/Company/Account/Product/Timestamp/Nonce/Signature;
+        account/company allowlist checked, timestamp ±60s, durable nonce и grant task-control.installation.read. Не distribution
+        grant.'
+  schemas:
+    Runtime:
+      type: object
+      additionalProperties: false
+      required:
+      - scope
+      - publicationId
+      - version
+      - schemaVersion
+      - actorId
+      - publicationChecksum
+      - payloadChecksum
+      - rules
+      properties:
+        scope:
+          $ref: ./teamos.yaml#/components/schemas/TaskControlScope
+        publicationId:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          minimum: 1
+          maximum: 9007199254740991
+        schemaVersion:
+          type: integer
+          enum:
+          - 1
+        actorId:
+          type: string
+          pattern: ^[1-9][0-9]{0,15}$
+        publicationChecksum:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        payloadChecksum:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        rules:
+          type: array
+          items:
+            $ref: ./teamos.yaml#/components/schemas/TaskControlRule
+          maxItems: 1000
+    RuntimeAckInput:
+      type: object
+      additionalProperties: false
+      required:
+      - scope
+      - publicationId
+      - version
+      - payloadChecksum
+      - runtimeInstanceId
+      properties:
+        scope:
+          $ref: ./teamos.yaml#/components/schemas/TaskControlScope
+        publicationId:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          minimum: 1
+          maximum: 9007199254740991
+        payloadChecksum:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        runtimeInstanceId:
+          type: string
+          format: uuid
+    ModeAck:
+      type: object
+      additionalProperties: false
+      required:
+      - scope
+      - descriptorChecksum
+      - runtimeInstanceId
+      - coreAssertion
+      properties:
+        scope:
+          $ref: ./teamos.yaml#/components/schemas/TaskControlScope
+        descriptorChecksum:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        runtimeInstanceId:
+          type: string
+          format: uuid
+        coreAssertion:
+          type: string
+          maxLength: 8192
+          writeOnly: true
+    SourceResult:
+      type: object
+      additionalProperties: false
+      required:
+      - scope
+      - requestId
+      - complete
+      - kind
+      - checksum
+      - fetchedAt
+      - coreAssertion
+      properties:
+        scope:
+          $ref: ./teamos.yaml#/components/schemas/TaskControlScope
+        requestId:
+          type: string
+          format: uuid
+        complete:
+          type: boolean
+        kind:
+          type: string
+          enum:
+          - references
+          - catalog
+        checksum:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        fetchedAt:
+          type: string
+          format: date-time
+        references:
+          $ref: '#/components/schemas/SourceReferences'
+        rules:
+          type: array
+          items:
+            $ref: ./teamos.yaml#/components/schemas/TaskControlRule
+          maxItems: 1000
+        coreAssertion:
+          type: string
+          maxLength: 8192
+          writeOnly: true
+      description: Для references обязателен references; для catalog — rules (включая пустой массив). Body hash сверяется;
+        partial/freshness/scope проверяются. Данные browser bridge — admin input, не доказательство CRM admin.
+    Telemetry:
+      type: object
+      additionalProperties: false
+      required:
+      - installationId
+      - integrationId
+      - accountId
+      - product
+      - eventId
+      - runtimeInstanceId
+      - runtimeVersion
+      - kind
+      properties:
+        installationId:
+          type: string
+          format: uuid
+        integrationId:
+          type: string
+          format: uuid
+        accountId:
+          type: string
+          pattern: ^[1-9][0-9]{0,15}$
+        product:
+          type: string
+          enum:
+          - task-control
+        eventId:
+          type: string
+          format: uuid
+        runtimeInstanceId:
+          type: string
+          format: uuid
+        runtimeVersion:
+          type: string
+          maxLength: 40
+        kind:
+          type: string
+          enum:
+          - heartbeat
+          - configApplied
+          - runtimeError
+        publicationVersion:
+          type: integer
+          minimum: 1
+          maximum: 9007199254740991
+        errorCode:
+          type: string
+          maxLength: 100
+      description: Никаких rules, snapshot, текста задач и персональных данных; actor получается из JWT. Heartbeat не меняет
+        installation state.
+    Receipt:
+      type: object
+      additionalProperties: false
+      required:
+      - eventId
+      - receivedAt
+      properties:
+        eventId:
+          type: string
+          format: uuid
+        receivedAt:
+          type: string
+          format: date-time
+    Error:
+      $ref: ./teamos.yaml#/components/schemas/ErrorResponse
+    SourceReferences:
+      type: object
+      additionalProperties: false
+      required:
+      - users
+      - pipelines
+      - customersSupported
+      - customerStatuses
+      properties:
+        users:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required:
+            - id
+            - name
+            - active
+            properties:
+              id:
+                type: string
+                pattern: ^[1-9][0-9]{0,15}$
+                description: Положительный ID amoCRM, десятичная строка; не UUID TeamOS.
+              name:
+                type: string
+              active:
+                type: boolean
+        pipelines:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required:
+            - id
+            - name
+            - statuses
+            properties:
+              id:
+                type: string
+                pattern: ^[1-9][0-9]{0,15}$
+                description: Положительный ID amoCRM, десятичная строка; не UUID TeamOS.
+              name:
+                type: string
+              statuses:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: false
+                  required:
+                  - id
+                  - name
+                  properties:
+                    id:
+                      type: string
+                      pattern: ^[1-9][0-9]{0,15}$
+                      description: Положительный ID amoCRM, десятичная строка; не UUID TeamOS.
+                    name:
+                      type: string
+        customersSupported:
+          type: boolean
+        customerStatuses:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required:
+            - id
+            - name
+            properties:
+              id:
+                type: string
+                pattern: ^[1-9][0-9]{0,15}$
+                description: Положительный ID amoCRM, десятичная строка; не UUID TeamOS.
+              name:
+                type: string

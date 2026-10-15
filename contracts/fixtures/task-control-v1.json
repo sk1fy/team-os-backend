@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "ruleUid": "a0000000-0000-4000-8000-000000000001",
+      "name": "Сделки и покупатели",
+      "users": [
+        "2",
+        "7"
+      ],
+      "pipelines": [
+        {
+          "pipelineId": "100",
+          "statusIds": [
+            "200",
+            "201"
+          ]
+        }
+      ],
+      "customers": true,
+      "customerStatuses": [],
+      "showModal": true,
+      "denyExit": true,
+      "checkResponsible": false,
+      "enabled": true,
+      "archived": false
+    },
+    {
+      "ruleUid": "a0000000-0000-4000-8000-000000000002",
+      "name": "Архив",
+      "users": [
+        "7"
+      ],
+      "pipelines": [],
+      "customers": true,
+      "customerStatuses": [
+        "300"
+      ],
+      "showModal": false,
+      "denyExit": false,
+      "checkResponsible": true,
+      "enabled": false,
+      "archived": true
+    }
+  ],
+  "legacyRules": [
+    {
+      "uid": "a0000000-0000-4000-8000-000000000001",
+      "name": "Сделки и покупатели",
+      "users": [
+        2,
+        7
+      ],
+      "pipelines": [
+        {
+          "pipeline_id": 100,
+          "status_ids": [
+            200,
+            201
+          ]
+        }
+      ],
+      "customer_statuses": [],
+      "show_modal": true,
+      "deny_exit": true,
+      "check_responsible": false,
+      "customers": true,
+      "enabled": true,
+      "archived": false
+    },
+    {
+      "uid": "a0000000-0000-4000-8000-000000000002",
+      "name": "Архив",
+      "users": [
+        7
+      ],
+      "pipelines": [],
+      "customer_statuses": [
+        300
+      ],
+      "show_modal": false,
+      "deny_exit": false,
+      "check_responsible": true,
+      "customers": true,
+      "enabled": false,
+      "archived": true
+    }
+  ],
+  "canonicalRulesJson": "[{\"uid\":\"a0000000-0000-4000-8000-000000000001\",\"name\":\"Сделки и покупатели\",\"users\":[2,7],\"pipelines\":[{\"pipeline_id\":100,\"status_ids\":[200,201]}],\"customer_statuses\":[],\"show_modal\":true,\"deny_exit\":true,\"check_responsible\":false,\"customers\":true,\"enabled\":true,\"archived\":false},{\"uid\":\"a0000000-0000-4000-8000-000000000002\",\"name\":\"Архив\",\"users\":[7],\"pipelines\":[],\"customer_statuses\":[300],\"show_modal\":false,\"deny_exit\":false,\"check_responsible\":true,\"customers\":true,\"enabled\":false,\"archived\":true}]",
+  "checksum": "7c2a4d8e7bc1a35f68682c12a71d50222ccc005e75a719fe3a212602046ea59d"
+}

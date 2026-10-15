@@ -1,6 +1,7 @@
 package config
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -12,26 +13,30 @@ import (
 )
 
 type Config struct {
-	DistributionCoreURL  string
-	DistributionKeyID    string
-	DistributionKeys     map[string]string
-	HTTPAddr             string
-	GRPCAddr             string
-	DatabaseURL          string
-	NATSURL              string
-	JWTPrivateKey        string
-	GatewayServiceToken  string
-	JWTIssuer            string
-	JWTAudience          string
-	AccessTTL            time.Duration
-	ShutdownTimeout      time.Duration
-	ExternalAPIURL       string
-	AmoAppName           string
-	AmoImportEnabled     bool
-	ExternalTimeout      time.Duration
-	AmoSyncInterval      time.Duration
-	RegistrationTokenTTL time.Duration
-	AmoWidgetSessionTTL  time.Duration
+	TaskControlCoreURL       string
+	TaskControlKeyID         string
+	TaskControlSecret        string
+	TaskControlAssertionKeys map[string]string
+	DistributionCoreURL      string
+	DistributionKeyID        string
+	DistributionKeys         map[string]string
+	HTTPAddr                 string
+	GRPCAddr                 string
+	DatabaseURL              string
+	NATSURL                  string
+	JWTPrivateKey            string
+	GatewayServiceToken      string
+	JWTIssuer                string
+	JWTAudience              string
+	AccessTTL                time.Duration
+	ShutdownTimeout          time.Duration
+	ExternalAPIURL           string
+	AmoAppName               string
+	AmoImportEnabled         bool
+	ExternalTimeout          time.Duration
+	AmoSyncInterval          time.Duration
+	RegistrationTokenTTL     time.Duration
+	AmoWidgetSessionTTL      time.Duration
 }
 
 func Load() (Config, error) {
@@ -96,6 +101,25 @@ func Load() (Config, error) {
 		config.AmoWidgetSessionTTL, err = time.ParseDuration(value)
 		if err != nil || config.AmoWidgetSessionTTL <= 0 {
 			return Config{}, fmt.Errorf("COMPANY_AMO_WIDGET_SESSION_TTL: %w", errInvalidDuration)
+		}
+	}
+	config.TaskControlCoreURL = strings.TrimSpace(os.Getenv("COMPANY_TASK_CONTROL_CORE_URL"))
+	config.TaskControlKeyID = strings.TrimSpace(os.Getenv("COMPANY_TASK_CONTROL_KEY_ID"))
+	config.TaskControlSecret = os.Getenv("COMPANY_TASK_CONTROL_SECRET")
+	rawTaskKeys := os.Getenv("COMPANY_TASK_CONTROL_ASSERTION_PUBLIC_KEYS")
+	if config.TaskControlCoreURL != "" || config.TaskControlKeyID != "" || config.TaskControlSecret != "" || rawTaskKeys != "" {
+		u, e := url.Parse(config.TaskControlCoreURL)
+		if e != nil || u.Scheme != "https" || u.Host == "" || u.User != nil || u.Path != "" || u.RawQuery != "" || u.Fragment != "" || config.TaskControlKeyID == "" || len(config.TaskControlSecret) < 32 {
+			return config, errors.New("invalid task control Core configuration")
+		}
+		if json.Unmarshal([]byte(rawTaskKeys), &config.TaskControlAssertionKeys) != nil || len(config.TaskControlAssertionKeys) == 0 {
+			return config, errors.New("invalid task control assertion public keys")
+		}
+		for id, value := range config.TaskControlAssertionKeys {
+			key, e := base64.StdEncoding.DecodeString(value)
+			if id == "" || e != nil || len(key) != 32 {
+				return config, errors.New("invalid task control assertion public key")
+			}
 		}
 	}
 	config.DistributionCoreURL = strings.TrimSpace(os.Getenv("COMPANY_DISTRIBUTION_CORE_URL"))

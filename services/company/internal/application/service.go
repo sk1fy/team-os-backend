@@ -2,6 +2,7 @@ package application
 
 import (
 	"context"
+	"crypto/ed25519"
 	"encoding/json"
 	"errors"
 	"log/slog"
@@ -42,6 +43,8 @@ type amoSyncState struct {
 }
 
 type Service struct {
+	taskControlCore        TaskControlCore
+	taskControlKeys        map[string]ed25519.PublicKey
 	deliveryCore           DistributionDeliveryCore
 	distributionCore       DistributionCore
 	pool                   databasePool

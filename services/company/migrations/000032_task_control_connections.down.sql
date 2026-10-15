@@ -1,0 +1,6 @@
+DROP TABLE task_control_connection_requests;
+DROP TABLE task_control_runtime_sessions;
+DROP TABLE task_control_assertion_uses;
+DROP TABLE task_control_permissions;
+DROP TABLE task_control_installation_snapshots;
+DROP TABLE task_control_connections;

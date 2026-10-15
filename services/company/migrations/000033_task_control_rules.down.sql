@@ -1,0 +1,6 @@
+DELETE FROM task_control_connection_requests WHERE action='mode';
+ALTER TABLE task_control_connection_requests DROP CONSTRAINT task_control_connection_requests_action_check;
+ALTER TABLE task_control_connection_requests ADD CONSTRAINT task_control_connection_requests_action_check CHECK(action='revoke');
+ALTER TABLE task_control_connections DROP COLUMN publication_id;
+DROP TABLE task_control_publications;
+DROP TABLE task_control_drafts;
