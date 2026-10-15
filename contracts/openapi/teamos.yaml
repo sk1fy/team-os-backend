@@ -34,6 +34,8 @@ tags:
     description: Графики работы и отклонения.
   - name: Distribution
     description: Группы и события распределения сделок.
+  - name: Task Control
+    description: Контроль задач amoCRM.
 security:
   - bearerAuth: []
 
@@ -4658,8 +4660,1079 @@ paths:
         default:
           $ref: '#/components/responses/Error'
 
+  /api/v1/task-control/connections:
+    get:
+      tags:
+      - Task Control
+      operationId: getTaskControlConnections
+      summary: Подключения текущей компании
+      x-permission: taskControl.read
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TaskControlConnection'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/Error'
+        '413':
+          description: Конфигурация превышает допустимый размер
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/task-control/connections/link-intents:
+    post:
+      tags:
+      - Task Control
+      operationId: createTaskControlLinkIntent
+      summary: Начать подтверждение установки CRM
+      x-permission: taskControl.manage
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlIntent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/Error'
+        '413':
+          description: Конфигурация превышает допустимый размер
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskControlLinkInput'
+  /api/v1/task-control/intents/{intentId}:
+    get:
+      tags:
+      - Task Control
+      operationId: getTaskControlIntent
+      summary: Восстановить состояние операции переключения
+      x-permission: taskControl.read
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlIntent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/Error'
+        '413':
+          description: Конфигурация превышает допустимый размер
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+      - name: intentId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+  /api/v1/task-control/connections/{bindingId}/mode-intents:
+    post:
+      tags:
+      - Task Control
+      operationId: createTaskControlModeIntent
+      summary: Подготовить явное переключение режима
+      description: 'Контракт КТ-01.02; бизнес-реализация в КТ-01.03–12. companyId только из сессии; чужой binding возвращает
+        404. Запись требует текущий owner/admin и taskControl.manage. requestId при наличии: одинаковое нормализованное тело
+        возвращает сохранённый результат, другое — 409.'
+      x-permission: taskControl.manage
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlIntent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/Error'
+        '413':
+          description: Конфигурация превышает допустимый размер
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+      - name: bindingId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskControlModeInput'
+  /api/v1/task-control/connections/{bindingId}/revoke:
+    post:
+      tags:
+      - Task Control
+      operationId: revokeTaskControlConnection
+      summary: Отозвать managed-связь без автоматического standalone
+      x-permission: taskControl.manage
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlConnection'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/Error'
+        '413':
+          description: Конфигурация превышает допустимый размер
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+      - name: bindingId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskControlRevokeInput'
+  /api/v1/task-control/connections/{bindingId}/references:
+    get:
+      tags:
+      - Task Control
+      operationId: getTaskControlReferences
+      summary: Свежие CRM-справочники из admin bridge виджета
+      description: Контракт КТ-01.02; бизнес-реализация в КТ-01.03–12. companyId только из сессии; чужой binding возвращает
+        404. Чтение требует активное членство и отдельное право taskControl.read внутри Интеграций.
+      x-permission: taskControl.read
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlReferences'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '501':
+          description: Контракт опубликован, обработчик ещё не реализован.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        default:
+          $ref: '#/components/responses/Error'
+        '413':
+          description: Конфигурация превышает допустимый размер
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+      - name: bindingId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+  /api/v1/task-control/connections/{bindingId}/draft:
+    get:
+      tags:
+      - Task Control
+      operationId: getTaskControlDraft
+      summary: Черновик со всеми правилами и архивом
+      description: Контракт КТ-01.02; бизнес-реализация в КТ-01.03–12. companyId только из сессии; чужой binding возвращает
+        404. Чтение требует активное членство и отдельное право taskControl.read внутри Интеграций. Полные правила доступны
+        только текущему owner/admin с taskControl.manage.
+      x-permission: taskControl.manage
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlDraft'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/Error'
+        '413':
+          description: Конфигурация превышает допустимый размер
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+      - name: bindingId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+    put:
+      tags:
+      - Task Control
+      operationId: updateTaskControlDraft
+      summary: Атомарно заменить черновик по expectedRevision
+      description: 'Контракт КТ-01.02; бизнес-реализация в КТ-01.03–12. companyId только из сессии; чужой binding возвращает
+        404. Запись требует текущий owner/admin и taskControl.manage. requestId при наличии: одинаковое нормализованное тело
+        возвращает сохранённый результат, другое — 409.'
+      x-permission: taskControl.manage
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlDraft'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/Error'
+        '413':
+          description: Конфигурация превышает допустимый размер
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+      - name: bindingId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskControlDraftInput'
+  /api/v1/task-control/connections/{bindingId}/validate:
+    post:
+      tags:
+      - Task Control
+      operationId: validateTaskControlDraft
+      summary: Проверить правила и актуальные CRM ID без публикации
+      description: 'Контракт КТ-01.02; бизнес-реализация в КТ-01.03–12. companyId только из сессии; чужой binding возвращает
+        404. Запись требует текущий owner/admin и taskControl.manage. requestId при наличии: одинаковое нормализованное тело
+        возвращает сохранённый результат, другое — 409.'
+      x-permission: taskControl.manage
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlValidation'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/Error'
+        '413':
+          description: Конфигурация превышает допустимый размер
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+      - name: bindingId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - expectedBindingRevision
+              - expectedModeEpoch
+              - expectedDraftRevision
+              properties:
+                expectedBindingRevision:
+                  type: integer
+                  format: int64
+                  minimum: 1
+                  maximum: 9007199254740991
+                expectedModeEpoch:
+                  type: integer
+                  format: int64
+                  minimum: 1
+                  maximum: 9007199254740991
+                expectedDraftRevision:
+                  type: integer
+                  format: int64
+                  minimum: 1
+                  maximum: 9007199254740991
+  /api/v1/task-control/connections/{bindingId}/publications:
+    post:
+      tags:
+      - Task Control
+      operationId: publishTaskControlDraft
+      summary: Создать неизменяемую публикацию для прямого чтения виджетом
+      description: 'Контракт КТ-01.02; бизнес-реализация в КТ-01.03–12. companyId только из сессии; чужой binding возвращает
+        404. Запись требует текущий owner/admin и taskControl.manage. requestId при наличии: одинаковое нормализованное тело
+        возвращает сохранённый результат, другое — 409.'
+      x-permission: taskControl.manage
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlPublication'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/Error'
+        '413':
+          description: Конфигурация превышает допустимый размер
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+      - name: bindingId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskControlPublishInput'
+    get:
+      tags:
+      - Task Control
+      operationId: getTaskControlPublications
+      summary: История опубликованных версий
+      description: Контракт КТ-01.02; бизнес-реализация в КТ-01.03–12. companyId только из сессии; чужой binding возвращает
+        404. Чтение требует активное членство и отдельное право taskControl.read внутри Интеграций. Полные правила доступны
+        только текущему owner/admin с taskControl.manage.
+      x-permission: taskControl.manage
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlPublications'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/Error'
+        '413':
+          description: Конфигурация превышает допустимый размер
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+      - name: bindingId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+      - name: cursor
+        in: query
+        schema:
+          type: string
+          maxLength: 512
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 50
+  /api/v1/task-control/connections/{bindingId}/publications/{publicationId}:
+    get:
+      tags:
+      - Task Control
+      operationId: getTaskControlPublication
+      summary: Полная неизменяемая версия
+      description: Контракт КТ-01.02; бизнес-реализация в КТ-01.03–12. companyId только из сессии; чужой binding возвращает
+        404. Чтение требует активное членство и отдельное право taskControl.read внутри Интеграций. Полные правила доступны
+        только текущему owner/admin с taskControl.manage.
+      x-permission: taskControl.manage
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlPublication'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/Error'
+        '413':
+          description: Конфигурация превышает допустимый размер
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+      - name: bindingId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+      - name: publicationId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+  /api/v1/task-control/connections/{bindingId}/rollback:
+    post:
+      tags:
+      - Task Control
+      operationId: rollbackTaskControlPublication
+      summary: Опубликовать прежнее содержимое новой возрастающей версией
+      description: 'Контракт КТ-01.02; бизнес-реализация в КТ-01.03–12. companyId только из сессии; чужой binding возвращает
+        404. Запись требует текущий owner/admin и taskControl.manage. requestId при наличии: одинаковое нормализованное тело
+        возвращает сохранённый результат, другое — 409.'
+      x-permission: taskControl.manage
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlPublication'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '501':
+          description: Контракт опубликован, обработчик ещё не реализован.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        default:
+          $ref: '#/components/responses/Error'
+        '413':
+          description: Конфигурация превышает допустимый размер
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+      - name: bindingId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskControlRollbackInput'
+  /api/v1/task-control/connections/{bindingId}/imports:
+    post:
+      tags:
+      - Task Control
+      operationId: previewTaskControlImport
+      summary: Подготовить импорт из подтверждённого полного снимка admin bridge
+      description: 'Контракт КТ-01.02; бизнес-реализация в КТ-01.03–12. companyId только из сессии; чужой binding возвращает
+        404. Запись требует текущий owner/admin и taskControl.manage. requestId при наличии: одинаковое нормализованное тело
+        возвращает сохранённый результат, другое — 409.'
+      x-permission: taskControl.manage
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlImportPreview'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '501':
+          description: Контракт опубликован, обработчик ещё не реализован.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        default:
+          $ref: '#/components/responses/Error'
+        '413':
+          description: Конфигурация превышает допустимый размер
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+      - name: bindingId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskControlImportInput'
+  /api/v1/task-control/connections/{bindingId}/imports/{importId}:
+    get:
+      tags:
+      - Task Control
+      operationId: getTaskControlImport
+      summary: Результат предпросмотра импорта
+      description: Контракт КТ-01.02; бизнес-реализация в КТ-01.03–12. companyId только из сессии; чужой binding возвращает
+        404. Чтение требует активное членство и отдельное право taskControl.read внутри Интеграций. Полные правила доступны
+        только текущему owner/admin с taskControl.manage.
+      x-permission: taskControl.manage
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlImportPreview'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '501':
+          description: Контракт опубликован, обработчик ещё не реализован.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        default:
+          $ref: '#/components/responses/Error'
+        '413':
+          description: Конфигурация превышает допустимый размер
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+      - name: bindingId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+      - name: importId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+  /api/v1/task-control/connections/{bindingId}/imports/{importId}/apply:
+    post:
+      tags:
+      - Task Control
+      operationId: applyTaskControlImport
+      summary: Применить проверенный импорт только к draft
+      description: 'Контракт КТ-01.02; бизнес-реализация в КТ-01.03–12. companyId только из сессии; чужой binding возвращает
+        404. Запись требует текущий owner/admin и taskControl.manage. requestId при наличии: одинаковое нормализованное тело
+        возвращает сохранённый результат, другое — 409.'
+      x-permission: taskControl.manage
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlDraft'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '501':
+          description: Контракт опубликован, обработчик ещё не реализован.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        default:
+          $ref: '#/components/responses/Error'
+        '413':
+          description: Конфигурация превышает допустимый размер
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+      - name: bindingId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+      - name: importId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskControlImportApplyInput'
+  /api/v1/task-control/connections/{bindingId}/history:
+    get:
+      tags:
+      - Task Control
+      operationId: getTaskControlHistory
+      summary: Аудит текущего подключения
+      description: Контракт КТ-01.02; бизнес-реализация в КТ-01.03–12. companyId только из сессии; чужой binding возвращает
+        404. Чтение требует активное членство и отдельное право taskControl.read внутри Интеграций.
+      x-permission: taskControl.read
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlHistory'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '501':
+          description: Контракт опубликован, обработчик ещё не реализован.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        default:
+          $ref: '#/components/responses/Error'
+        '413':
+          description: Конфигурация превышает допустимый размер
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+      - name: bindingId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+      - name: cursor
+        in: query
+        schema:
+          type: string
+          maxLength: 512
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 50
+  /api/v1/task-control/connections/{bindingId}/publications/{publicationId}/application:
+    get:
+      tags:
+      - Task Control
+      operationId: getTaskControlApplicationStatus
+      summary: Опубликованная версия и подтверждение применения вкладкой
+      description: Контракт КТ-01.02; бизнес-реализация в КТ-01.03–12. companyId только из сессии; чужой binding возвращает
+        404. Чтение требует активное членство и отдельное право taskControl.read внутри Интеграций. Полные правила доступны
+        только текущему owner/admin с taskControl.manage.
+      x-permission: taskControl.manage
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlApplicationStatus'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '501':
+          description: Контракт опубликован, обработчик ещё не реализован.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        default:
+          $ref: '#/components/responses/Error'
+        '413':
+          description: Конфигурация превышает допустимый размер
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+      - name: bindingId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+      - name: publicationId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+  /api/v1/task-control/accounts/{accountId}/installation:
+    get:
+      tags:
+      - Task Control
+      operationId: getTaskControlInstallation
+      summary: Установлен ли Контроль задач на выбранном аккаунте
+      x-permission: taskControl.read
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlInstallation'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/Error'
+        '413':
+          description: Конфигурация превышает допустимый размер
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+      - name: accountId
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^[1-9][0-9]{0,15}$
+  /api/v1/task-control/connections/{bindingId}/source-requests:
+    post:
+      tags:
+      - Task Control
+      operationId: createTaskControlSourceRequest
+      summary: Запросить полный CRM снимок через открытый admin виджет
+      description: Текущий owner/admin и taskControl.manage, exact company/account/binding, свежая installed-проверка. Без доступа
+        к другому tenant — 404.
+      x-permission: taskControl.manage
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlSourceRequest'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '501':
+          description: Контракт опубликован, обработчик ещё не реализован.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        default:
+          $ref: '#/components/responses/Error'
+        '413':
+          description: Конфигурация превышает допустимый размер
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+      - name: bindingId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskControlSourceRequestInput'
+  /api/v1/task-control/connections/{bindingId}/source-requests/{sourceRequestId}:
+    get:
+      tags:
+      - Task Control
+      operationId: getTaskControlSourceRequest
+      summary: Статус запроса справочников или каталога
+      description: Контракт КТ-01.02; бизнес-реализация в КТ-01.03–12. companyId только из сессии; чужой binding возвращает
+        404. Чтение требует активное членство и отдельное право taskControl.read внутри Интеграций.
+      x-permission: taskControl.read
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlSourceRequest'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '501':
+          description: Контракт опубликован, обработчик ещё не реализован.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        default:
+          $ref: '#/components/responses/Error'
+        '413':
+          description: Конфигурация превышает допустимый размер
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+      - name: bindingId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+      - name: sourceRequestId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+  /api/v1/widget/task-control/sessions:
+    post:
+      tags:
+      - Task Control
+      operationId: exchangeTaskControlRuntimeSession
+      summary: Короткая сессия Контроля задач без TeamOS admin прав
+      security: []
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlSession'
+        default:
+          $ref: '#/components/responses/Error'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskControlSessionInput'
+  /api/v1/widget/task-control/bootstrap:
+    get:
+      tags:
+      - Task Control
+      operationId: getTaskControlBootstrap
+      summary: Descriptor по отдельной сессии виджета
+      security:
+      - taskControlSession: []
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlBootstrap'
+        default:
+          $ref: '#/components/responses/Error'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
 components:
   securitySchemes:
+    taskControlSession:
+      type: http
+      scheme: bearer
+      description: Opaque runtime сессия, не TeamOS JWT.
     bearerAuth:
       type: http
       scheme: bearer
@@ -11118,3 +12191,1107 @@ components:
         unclaimedMinutes:
           type: integer
           minimum: 1
+    TaskControlRule:
+      type: object
+      additionalProperties: false
+      required:
+      - ruleUid
+      - name
+      - users
+      - pipelines
+      - customers
+      - customerStatuses
+      - showModal
+      - denyExit
+      - checkResponsible
+      - enabled
+      - archived
+      properties:
+        ruleUid:
+          $ref: '#/components/schemas/ID'
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        users:
+          type: array
+          items:
+            type: string
+            pattern: ^[1-9][0-9]{0,15}$
+            description: Положительный ID amoCRM, десятичная строка; не UUID TeamOS.
+          minItems: 1
+          maxItems: 1000
+          uniqueItems: true
+        pipelines:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required:
+            - pipelineId
+            - statusIds
+            properties:
+              pipelineId:
+                type: string
+                pattern: ^[1-9][0-9]{0,15}$
+                description: Положительный ID amoCRM, десятичная строка; не UUID TeamOS.
+              statusIds:
+                type: array
+                items:
+                  type: string
+                  pattern: ^[1-9][0-9]{0,15}$
+                  description: Положительный ID amoCRM, десятичная строка; не UUID TeamOS.
+                minItems: 1
+                uniqueItems: true
+          maxItems: 1000
+        customers:
+          type: boolean
+        customerStatuses:
+          type: array
+          items:
+            type: string
+            pattern: ^[1-9][0-9]{0,15}$
+            description: Положительный ID amoCRM, десятичная строка; не UUID TeamOS.
+          uniqueItems: true
+        showModal:
+          type: boolean
+        denyExit:
+          type: boolean
+        checkResponsible:
+          type: boolean
+        enabled:
+          type: boolean
+        archived:
+          type: boolean
+      description: Стабильный ruleUid соответствует legacy uid/rule_uid. Полный набор полей сохраняется, включая archived. Активное
+        правило требует pipeline/status либо customers=true. Пустой customerStatuses означает все статусы покупателей. Повтор
+        ruleUid/pipelineId запрещён.
+    TaskControlScope:
+      type: object
+      additionalProperties: false
+      required:
+      - companyId
+      - bindingId
+      - bindingRevision
+      - installationId
+      - integrationId
+      - accountId
+      - product
+      - modeEpoch
+      properties:
+        companyId:
+          $ref: '#/components/schemas/ID'
+        bindingId:
+          $ref: '#/components/schemas/ID'
+        bindingRevision:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        installationId:
+          $ref: '#/components/schemas/ID'
+        integrationId:
+          $ref: '#/components/schemas/ID'
+        accountId:
+          type: string
+          pattern: ^[1-9][0-9]{0,15}$
+          description: Положительный ID amoCRM, десятичная строка; не UUID TeamOS.
+        product:
+          type: string
+          enum:
+          - task-control
+          x-enum-varnames:
+          - TaskControlScopeProductTaskControl
+        modeEpoch:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+    TaskControlConnection:
+      type: object
+      additionalProperties: false
+      required:
+      - scope
+      - state
+      - mode
+      - updatedAt
+      - installation
+      properties:
+        scope:
+          $ref: '#/components/schemas/TaskControlScope'
+        state:
+          type: string
+          enum:
+          - pending
+          - active
+          - revoked
+          x-enum-varnames:
+          - TaskControlConnectionStatePending
+          - TaskControlConnectionStateActive
+          - TaskControlConnectionStateRevoked
+        mode:
+          type: string
+          enum:
+          - standalone
+          - managed
+          x-enum-varnames:
+          - TaskControlConnectionModeStandalone
+          - TaskControlConnectionModeManaged
+        updatedAt:
+          type: string
+          format: date-time
+        installation:
+          $ref: '#/components/schemas/TaskControlInstallation'
+    TaskControlIntent:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - scope
+      - state
+      - targetMode
+      - expiresAt
+      - updatedAt
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        scope:
+          $ref: '#/components/schemas/TaskControlScope'
+        state:
+          type: string
+          enum:
+          - prepared
+          - confirmed
+          - completed
+          - cancelled
+          - expired
+          x-enum-varnames:
+          - TaskControlIntentStatePrepared
+          - TaskControlIntentStateConfirmed
+          - TaskControlIntentStateCompleted
+          - TaskControlIntentStateCancelled
+          - TaskControlIntentStateExpired
+        targetMode:
+          type: string
+          enum:
+          - standalone
+          - managed
+          x-enum-varnames:
+          - TaskControlIntentTargetModeStandalone
+          - TaskControlIntentTargetModeManaged
+        expiresAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    TaskControlLinkInput:
+      type: object
+      additionalProperties: false
+      required:
+      - intentId
+      - installationId
+      - integrationId
+      - accountId
+      - coreAssertion
+      properties:
+        intentId:
+          $ref: '#/components/schemas/ID'
+        installationId:
+          $ref: '#/components/schemas/ID'
+        integrationId:
+          $ref: '#/components/schemas/ID'
+        accountId:
+          type: string
+          pattern: ^[1-9][0-9]{0,15}$
+          description: Положительный ID amoCRM, десятичная строка; не UUID TeamOS.
+        coreAssertion:
+          type: string
+          minLength: 1
+          maxLength: 8192
+          writeOnly: true
+          description: Одноразовое подписанное Core подтверждение ≤60с, не JWT amoCRM.
+    TaskControlModeInput:
+      type: object
+      additionalProperties: false
+      required:
+      - expectedBindingRevision
+      - expectedModeEpoch
+      - requestId
+      - targetMode
+      - publicationId
+      - coreAssertion
+      properties:
+        expectedBindingRevision:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        expectedModeEpoch:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        requestId:
+          $ref: '#/components/schemas/ID'
+        targetMode:
+          type: string
+          enum:
+          - standalone
+          - managed
+          x-enum-varnames:
+          - TaskControlModeInputTargetModeStandalone
+          - TaskControlModeInputTargetModeManaged
+        publicationId:
+          $ref: '#/components/schemas/ID'
+        coreAssertion:
+          type: string
+          minLength: 1
+          maxLength: 8192
+          writeOnly: true
+          description: Одноразовое подписанное Core подтверждение ≤60с, не JWT amoCRM.
+    TaskControlRevokeInput:
+      type: object
+      additionalProperties: false
+      required:
+      - expectedBindingRevision
+      - expectedModeEpoch
+      - requestId
+      - coreAssertion
+      properties:
+        expectedBindingRevision:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        expectedModeEpoch:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        requestId:
+          $ref: '#/components/schemas/ID'
+        coreAssertion:
+          type: string
+          minLength: 1
+          maxLength: 8192
+          writeOnly: true
+          description: Одноразовое подписанное Core подтверждение ≤60с, не JWT amoCRM.
+    TaskControlDraft:
+      type: object
+      additionalProperties: false
+      required:
+      - scope
+      - revision
+      - schemaVersion
+      - checksum
+      - rules
+      - updatedAt
+      - updatedBy
+      properties:
+        scope:
+          $ref: '#/components/schemas/TaskControlScope'
+        revision:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        schemaVersion:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        checksum:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskControlRule'
+          maxItems: 1000
+        updatedAt:
+          type: string
+          format: date-time
+        updatedBy:
+          $ref: '#/components/schemas/ID'
+    TaskControlDraftInput:
+      type: object
+      additionalProperties: false
+      required:
+      - expectedBindingRevision
+      - expectedModeEpoch
+      - expectedRevision
+      - rules
+      properties:
+        expectedBindingRevision:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        expectedModeEpoch:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        expectedRevision:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskControlRule'
+          maxItems: 1000
+    TaskControlValidationIssue:
+      type: object
+      additionalProperties: false
+      required:
+      - path
+      - code
+      - message
+      properties:
+        path:
+          type: string
+        code:
+          type: string
+          enum:
+          - invalid_rule
+          - duplicate_uid
+          - unknown_crm_id
+          - inactive_user
+          - unsupported_schema
+          - incomplete_source
+          - source_conflict
+          x-enum-varnames:
+          - TaskControlValidationIssueCodeInvalidRule
+          - TaskControlValidationIssueCodeDuplicateUid
+          - TaskControlValidationIssueCodeUnknownCrmId
+          - TaskControlValidationIssueCodeInactiveUser
+          - TaskControlValidationIssueCodeUnsupportedSchema
+          - TaskControlValidationIssueCodeIncompleteSource
+          - TaskControlValidationIssueCodeSourceConflict
+        message:
+          type: string
+    TaskControlValidation:
+      type: object
+      additionalProperties: false
+      required:
+      - valid
+      - draftRevision
+      - referencesRevision
+      - issues
+      properties:
+        valid:
+          type: boolean
+        draftRevision:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        referencesRevision:
+          type: string
+        issues:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskControlValidationIssue'
+    TaskControlPublication:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - scope
+      - version
+      - draftRevision
+      - schemaVersion
+      - checksum
+      - rules
+      - createdAt
+      - createdBy
+      - reason
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        scope:
+          $ref: '#/components/schemas/TaskControlScope'
+        version:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        draftRevision:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        schemaVersion:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        checksum:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskControlRule'
+          maxItems: 1000
+        createdAt:
+          type: string
+          format: date-time
+        createdBy:
+          $ref: '#/components/schemas/ID'
+        reason:
+          type: string
+          maxLength: 1000
+        restoredFromPublicationId:
+          $ref: '#/components/schemas/ID'
+    TaskControlPublishInput:
+      type: object
+      additionalProperties: false
+      required:
+      - expectedBindingRevision
+      - expectedModeEpoch
+      - requestId
+      - expectedDraftRevision
+      - expectedChecksum
+      - reason
+      properties:
+        expectedBindingRevision:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        expectedModeEpoch:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        requestId:
+          $ref: '#/components/schemas/ID'
+        expectedDraftRevision:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        expectedChecksum:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 1000
+    TaskControlRollbackInput:
+      type: object
+      additionalProperties: false
+      required:
+      - expectedBindingRevision
+      - expectedModeEpoch
+      - requestId
+      - expectedPublishedVersion
+      - sourcePublicationId
+      - reason
+      properties:
+        expectedBindingRevision:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        expectedModeEpoch:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        requestId:
+          $ref: '#/components/schemas/ID'
+        expectedPublishedVersion:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        sourcePublicationId:
+          $ref: '#/components/schemas/ID'
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 1000
+    TaskControlReferences:
+      type: object
+      additionalProperties: false
+      required:
+      - scope
+      - revision
+      - fetchedAt
+      - freshUntil
+      - complete
+      - users
+      - pipelines
+      - customersSupported
+      - customerStatuses
+      - sourceSnapshotId
+      properties:
+        scope:
+          $ref: '#/components/schemas/TaskControlScope'
+        revision:
+          type: string
+        fetchedAt:
+          type: string
+          format: date-time
+        freshUntil:
+          type: string
+          format: date-time
+        complete:
+          type: boolean
+        users:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required:
+            - id
+            - name
+            - active
+            properties:
+              id:
+                type: string
+                pattern: ^[1-9][0-9]{0,15}$
+                description: Положительный ID amoCRM, десятичная строка; не UUID TeamOS.
+              name:
+                type: string
+              active:
+                type: boolean
+        pipelines:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required:
+            - id
+            - name
+            - statuses
+            properties:
+              id:
+                type: string
+                pattern: ^[1-9][0-9]{0,15}$
+                description: Положительный ID amoCRM, десятичная строка; не UUID TeamOS.
+              name:
+                type: string
+              statuses:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: false
+                  required:
+                  - id
+                  - name
+                  properties:
+                    id:
+                      type: string
+                      pattern: ^[1-9][0-9]{0,15}$
+                      description: Положительный ID amoCRM, десятичная строка; не UUID TeamOS.
+                    name:
+                      type: string
+        customersSupported:
+          type: boolean
+        customerStatuses:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required:
+            - id
+            - name
+            properties:
+              id:
+                type: string
+                pattern: ^[1-9][0-9]{0,15}$
+                description: Положительный ID amoCRM, десятичная строка; не UUID TeamOS.
+              name:
+                type: string
+        sourceSnapshotId:
+          $ref: '#/components/schemas/ID'
+    TaskControlImportInput:
+      type: object
+      additionalProperties: false
+      required:
+      - expectedBindingRevision
+      - expectedModeEpoch
+      - requestId
+      - expectedDraftRevision
+      - sourceSnapshotId
+      properties:
+        expectedBindingRevision:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        expectedModeEpoch:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        requestId:
+          $ref: '#/components/schemas/ID'
+        expectedDraftRevision:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        sourceSnapshotId:
+          $ref: '#/components/schemas/ID'
+    TaskControlImportPreview:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - scope
+      - catalogId
+      - sourceChecksum
+      - draftRevision
+      - complete
+      - rules
+      - issues
+      - expiresAt
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        scope:
+          $ref: '#/components/schemas/TaskControlScope'
+        catalogId:
+          type: string
+          pattern: ^[1-9][0-9]{0,15}$
+          description: Положительный ID amoCRM, десятичная строка; не UUID TeamOS.
+        sourceChecksum:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        draftRevision:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        complete:
+          type: boolean
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskControlRule'
+          maxItems: 1000
+        issues:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskControlValidationIssue'
+        expiresAt:
+          type: string
+          format: date-time
+    TaskControlImportApplyInput:
+      type: object
+      additionalProperties: false
+      required:
+      - expectedBindingRevision
+      - expectedModeEpoch
+      - requestId
+      - expectedDraftRevision
+      - expectedSourceChecksum
+      - verificationSnapshotId
+      properties:
+        expectedBindingRevision:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        expectedModeEpoch:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        requestId:
+          $ref: '#/components/schemas/ID'
+        expectedDraftRevision:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        expectedSourceChecksum:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        verificationSnapshotId:
+          $ref: '#/components/schemas/ID'
+    TaskControlRuntimeAck:
+      type: object
+      additionalProperties: false
+      required:
+      - runtimeInstanceId
+      - actorId
+      - version
+      - payloadChecksum
+      - appliedAt
+      - receivedAt
+      properties:
+        runtimeInstanceId:
+          $ref: '#/components/schemas/ID'
+        actorId:
+          type: string
+          pattern: ^[1-9][0-9]{0,15}$
+          description: Положительный ID amoCRM, десятичная строка; не UUID TeamOS.
+        version:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        payloadChecksum:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        appliedAt:
+          type: string
+          format: date-time
+        receivedAt:
+          type: string
+          format: date-time
+    TaskControlAuditEntry:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - scope
+      - actorId
+      - action
+      - createdAt
+      - reason
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        scope:
+          $ref: '#/components/schemas/TaskControlScope'
+        actorId:
+          $ref: '#/components/schemas/ID'
+        action:
+          type: string
+          enum:
+          - link
+          - draftUpdated
+          - imported
+          - published
+          - rollbackPublished
+          - modeChanged
+          - revoked
+          x-enum-varnames:
+          - TaskControlAuditEntryActionLink
+          - TaskControlAuditEntryActionDraftUpdated
+          - TaskControlAuditEntryActionImported
+          - TaskControlAuditEntryActionPublished
+          - TaskControlAuditEntryActionRollbackPublished
+          - TaskControlAuditEntryActionModeChanged
+          - TaskControlAuditEntryActionRevoked
+        createdAt:
+          type: string
+          format: date-time
+        requestId:
+          $ref: '#/components/schemas/ID'
+        reason:
+          type: string
+        publicationId:
+          $ref: '#/components/schemas/ID'
+    TaskControlHistory:
+      type: object
+      additionalProperties: false
+      required:
+      - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskControlAuditEntry'
+        nextCursor:
+          type: string
+    TaskControlPublications:
+      type: object
+      additionalProperties: false
+      required:
+      - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskControlPublication'
+        nextCursor:
+          type: string
+    TaskControlInstallation:
+      type: object
+      additionalProperties: false
+      required:
+      - companyId
+      - accountId
+      - product
+      - state
+      - checkedAt
+      - freshUntil
+      properties:
+        companyId:
+          $ref: '#/components/schemas/ID'
+        accountId:
+          type: string
+          pattern: ^[1-9][0-9]{0,15}$
+        installationId:
+          $ref: '#/components/schemas/ID'
+        integrationId:
+          $ref: '#/components/schemas/ID'
+        product:
+          type: string
+          enum:
+          - task-control
+          x-enum-varnames:
+          - TaskControlInstallationProductTaskControl
+        state:
+          type: string
+          enum:
+          - installed
+          - notInstalled
+          - unknown
+          x-enum-varnames:
+          - TaskControlInstallationStateInstalled
+          - TaskControlInstallationStateNotInstalled
+          - TaskControlInstallationStateUnknown
+        revision:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        checkedAt:
+          type: string
+          format: date-time
+        freshUntil:
+          type: string
+          format: date-time
+        generation:
+          type: integer
+          format: int64
+          minimum: 1
+          description: Поколение установки; переустановка не переиспользует старые сессии.
+      description: Состояние из Core для проверенного аккаунта компании. installed делает блок Интеграции активным; notInstalled
+        — неактивным; unknown/просроченный снимок — статус не подтверждён, не uninstall. Без проверки Core нельзя утверждать installed.
+        Heartbeat и оплата не определяют установку.
+    TaskControlApplicationStatus:
+      type: object
+      additionalProperties: false
+      required:
+      - scope
+      - publicationId
+      - publishedVersion
+      - runtimeState
+      properties:
+        scope:
+          $ref: '#/components/schemas/TaskControlScope'
+        publicationId:
+          $ref: '#/components/schemas/ID'
+        publishedVersion:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        runtimeState:
+          type: string
+          enum:
+          - runtimeUnknown
+          - appliedByRuntime
+          x-enum-varnames:
+          - TaskControlApplicationStatusRuntimeStateRuntimeUnknown
+          - TaskControlApplicationStatusRuntimeStateAppliedByRuntime
+        lastRuntimeAck:
+          $ref: '#/components/schemas/TaskControlRuntimeAck'
+    TaskControlSourceRequestInput:
+      type: object
+      additionalProperties: false
+      required:
+      - expectedBindingRevision
+      - expectedModeEpoch
+      - requestId
+      - kind
+      properties:
+        expectedBindingRevision:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        expectedModeEpoch:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        requestId:
+          $ref: '#/components/schemas/ID'
+        kind:
+          type: string
+          enum:
+          - references
+          - catalog
+          x-enum-varnames:
+          - TaskControlSourceRequestInputKindReferences
+          - TaskControlSourceRequestInputKindCatalog
+        catalogId:
+          type: string
+          pattern: ^[1-9][0-9]{0,15}$
+    TaskControlSourceRequest:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - scope
+      - kind
+      - state
+      - expiresAt
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        scope:
+          $ref: '#/components/schemas/TaskControlScope'
+        kind:
+          type: string
+          enum:
+          - references
+          - catalog
+          x-enum-varnames:
+          - TaskControlSourceRequestKindReferences
+          - TaskControlSourceRequestKindCatalog
+        state:
+          type: string
+          enum:
+          - pending
+          - completed
+          - failed
+          - expired
+          x-enum-varnames:
+          - TaskControlSourceRequestStatePending
+          - TaskControlSourceRequestStateCompleted
+          - TaskControlSourceRequestStateFailed
+          - TaskControlSourceRequestStateExpired
+        catalogId:
+          type: string
+          pattern: ^[1-9][0-9]{0,15}$
+        sourceSnapshotId:
+          $ref: '#/components/schemas/ID'
+        expiresAt:
+          type: string
+          format: date-time
+    TaskControlSessionInput:
+      type: object
+      additionalProperties: false
+      required:
+      - coreAssertion
+      properties:
+        coreAssertion:
+          type: string
+          minLength: 1
+          maxLength: 8192
+          writeOnly: true
+    TaskControlSession:
+      type: object
+      additionalProperties: false
+      required:
+      - accessToken
+      - expiresAt
+      - scope
+      - actorId
+      properties:
+        accessToken:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+        scope:
+          $ref: '#/components/schemas/TaskControlScope'
+        actorId:
+          type: string
+          pattern: ^[1-9][0-9]{0,15}$
+    TaskControlBootstrap:
+      type: object
+      additionalProperties: false
+      required:
+      - scope
+      - mode
+      - state
+      - minRuntimeVersion
+      - installation
+      properties:
+        scope:
+          $ref: '#/components/schemas/TaskControlScope'
+        mode:
+          type: string
+          enum:
+          - standalone
+          - managed
+          x-enum-varnames:
+          - TaskControlBootstrapStandalone
+          - TaskControlBootstrapManaged
+        state:
+          type: string
+          enum:
+          - active
+          - revoked
+          x-enum-varnames:
+          - TaskControlBootstrapActive
+          - TaskControlBootstrapRevoked
+        minRuntimeVersion:
+          type: string
+        installation:
+          $ref: '#/components/schemas/TaskControlInstallation'
+        publication:
+          $ref: '#/components/schemas/TaskControlRuntimePublication'
+    TaskControlRuntimePublication:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - scope
+      - version
+      - draftRevision
+      - schemaVersion
+      - checksum
+      - rules
+      - createdAt
+      - createdBy
+      - reason
+      - runtimeRules
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        scope:
+          $ref: '#/components/schemas/TaskControlScope'
+        version:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        draftRevision:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        schemaVersion:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        checksum:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskControlRule'
+          maxItems: 1000
+        createdAt:
+          type: string
+          format: date-time
+        createdBy:
+          $ref: '#/components/schemas/ID'
+        reason:
+          type: string
+          maxLength: 1000
+        restoredFromPublicationId:
+          $ref: '#/components/schemas/ID'
+        runtimeRules:
+          type: array
+          items:
+            type: object
+            additionalProperties: true

@@ -70,6 +70,10 @@ func bearerToken(header string) (string, bool) {
 
 func isPublic(method, path string) bool {
 	switch {
+	case method == http.MethodPost && path == "/api/v1/widget/task-control/sessions":
+		return true
+	case method == http.MethodGet && path == "/api/v1/widget/task-control/bootstrap":
+		return true
 	case method == http.MethodGet && strings.HasPrefix(path, "/api/v1/public/"):
 		return true
 	case method == http.MethodPost && isExternalAcademyMutation(path):

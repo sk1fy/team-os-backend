@@ -29,6 +29,8 @@ sql:
       - migrations/000029_distribution_launch_source.up.sql
       - migrations/000030_distribution_queue_ux.up.sql
       - migrations/000031_distribution_source_history_index.up.sql
+      - migrations/000032_task_control_connections.up.sql
+      - migrations/000033_task_control_rules.up.sql
     queries: internal/storage/queries
     gen:
       go:

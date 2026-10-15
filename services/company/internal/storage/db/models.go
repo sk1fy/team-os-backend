@@ -601,6 +601,87 @@ type SsoToken struct {
 	CreatedAt          time.Time          `json:"created_at"`
 }
 
+type TaskControlAssertionUse struct {
+	KeyID     string    `json:"key_id"`
+	Jti       uuid.UUID `json:"jti"`
+	CompanyID uuid.UUID `json:"company_id"`
+	ExpiresAt time.Time `json:"expires_at"`
+}
+
+type TaskControlConnection struct {
+	CompanyID       uuid.UUID     `json:"company_id"`
+	ID              uuid.UUID     `json:"id"`
+	InstallationID  uuid.UUID     `json:"installation_id"`
+	IntegrationID   uuid.UUID     `json:"integration_id"`
+	AccountID       string        `json:"account_id"`
+	Generation      int64         `json:"generation"`
+	BindingRevision int64         `json:"binding_revision"`
+	ModeEpoch       int64         `json:"mode_epoch"`
+	Mode            string        `json:"mode"`
+	State           string        `json:"state"`
+	IntentID        uuid.UUID     `json:"intent_id"`
+	LinkedBy        uuid.UUID     `json:"linked_by"`
+	CrmAdminID      string        `json:"crm_admin_id"`
+	UpdatedAt       time.Time     `json:"updated_at"`
+	PublicationID   uuid.NullUUID `json:"publication_id"`
+}
+
+type TaskControlConnectionRequest struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	RequestID uuid.UUID `json:"request_id"`
+	BindingID uuid.UUID `json:"binding_id"`
+	ActorID   uuid.UUID `json:"actor_id"`
+	Action    string    `json:"action"`
+	BodyHash  string    `json:"body_hash"`
+	Response  []byte    `json:"response"`
+}
+
+type TaskControlDraft struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	BindingID uuid.UUID `json:"binding_id"`
+	Revision  int64     `json:"revision"`
+	Rules     []byte    `json:"rules"`
+	Checksum  string    `json:"checksum"`
+	UpdatedAt time.Time `json:"updated_at"`
+	UpdatedBy uuid.UUID `json:"updated_by"`
+}
+
+type TaskControlInstallationSnapshot struct {
+	CompanyID  uuid.UUID `json:"company_id"`
+	AccountID  string    `json:"account_id"`
+	Payload    []byte    `json:"payload"`
+	CheckedAt  time.Time `json:"checked_at"`
+	FreshUntil time.Time `json:"fresh_until"`
+}
+
+type TaskControlPermission struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	UserID    uuid.UUID `json:"user_id"`
+	CanRead   bool      `json:"can_read"`
+	CanManage bool      `json:"can_manage"`
+}
+
+type TaskControlPublication struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	BindingID uuid.UUID `json:"binding_id"`
+	ID        uuid.UUID `json:"id"`
+	Version   int64     `json:"version"`
+	RequestID uuid.UUID `json:"request_id"`
+	BodyHash  string    `json:"body_hash"`
+	Payload   []byte    `json:"payload"`
+}
+
+type TaskControlRuntimeSession struct {
+	TokenHash       []byte    `json:"token_hash"`
+	CompanyID       uuid.UUID `json:"company_id"`
+	BindingID       uuid.UUID `json:"binding_id"`
+	ActorID         string    `json:"actor_id"`
+	BindingRevision int64     `json:"binding_revision"`
+	ModeEpoch       int64     `json:"mode_epoch"`
+	Generation      int64     `json:"generation"`
+	ExpiresAt       time.Time `json:"expires_at"`
+}
+
 type User struct {
 	ID                uuid.UUID          `json:"id"`
 	CompanyID         uuid.UUID          `json:"company_id"`

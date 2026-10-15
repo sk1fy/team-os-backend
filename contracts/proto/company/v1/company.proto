@@ -10,6 +10,7 @@ option go_package = "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v
 // few services that need synchronous organization lookups. Authenticated
 // calls receive actor/company claims through gRPC metadata.
 service CompanyService {
+  rpc TaskControlConnection(TaskControlConnectionRequest) returns (TaskControlConnectionResponse);
   rpc ReadDistributionRuntime(ReadDistributionRuntimeRequest) returns (ReadDistributionRuntimeResponse);
   rpc WriteDistributionRuntime(WriteDistributionRuntimeRequest) returns (WriteDistributionRuntimeResponse);
   rpc SyncDistributionMappings(SyncDistributionMappingsRequest) returns (SyncDistributionMappingsResponse);
@@ -1134,3 +1135,30 @@ message ReadDistributionRuntimeRequest { string kind = 1; string id = 2; int32 l
 message WriteDistributionRuntimeRequest { string kind = 1; string id = 2; bytes payload = 3; }
 message ReadDistributionRuntimeResponse { bytes payload = 1; }
 message WriteDistributionRuntimeResponse { bytes payload = 1; }
+
+// Connection-only Task Control boundary. Rules remain in later domain APIs.
+message TaskControlConnectionRequest {
+  enum Action {
+    ACTION_UNSPECIFIED = 0;
+    ACTION_INSTALLATION = 1;
+    ACTION_LIST = 2;
+    ACTION_LINK = 3;
+    ACTION_REVOKE = 4;
+    ACTION_INTENT = 5;
+    ACTION_EXCHANGE = 6;
+    ACTION_BOOTSTRAP = 7;
+    ACTION_DRAFT = 8;
+    ACTION_UPDATE_DRAFT = 9;
+    ACTION_VALIDATE = 10;
+    ACTION_PUBLISH = 11;
+    ACTION_PUBLICATIONS = 12;
+    ACTION_PUBLICATION = 13;
+    ACTION_MODE = 14;
+  }
+  Action action = 1;
+  string id = 2;
+  string account_id = 3;
+  bytes json_body = 4;
+  string credential = 5;
+}
+message TaskControlConnectionResponse { bytes json_body = 1; }

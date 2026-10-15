@@ -3,8 +3,10 @@ package main
 import (
 	"context"
 	"crypto/ed25519"
+	"encoding/base64"
 	"errors"
 	"fmt"
+	"github.com/sk1fy/team-os-backend/services/company/internal/taskcontrolbridge"
 	"log/slog"
 	"net"
 	"net/http"
@@ -105,6 +107,21 @@ func run(logger *slog.Logger) error {
 		application.WithCompanyRegistrationTTL(configuration.RegistrationTokenTTL),
 		application.WithAmoWidgetSessionTTL(configuration.AmoWidgetSessionTTL),
 		application.WithLogger(logger),
+	}
+	if configuration.TaskControlCoreURL != "" {
+		client, e := taskcontrolbridge.New(configuration.TaskControlCoreURL, configuration.TaskControlKeyID, configuration.TaskControlSecret)
+		if e != nil {
+			return e
+		}
+		keys := map[string]ed25519.PublicKey{}
+		for id, raw := range configuration.TaskControlAssertionKeys {
+			key, e := base64.StdEncoding.DecodeString(raw)
+			if e != nil {
+				return e
+			}
+			keys[id] = ed25519.PublicKey(key)
+		}
+		serviceOptions = append(serviceOptions, application.WithTaskControl(client, keys))
 	}
 	if configuration.DistributionCoreURL != "" {
 		client, e := corebridge.New(configuration.DistributionCoreURL, configuration.DistributionKeyID, configuration.DistributionKeys[configuration.DistributionKeyID])
