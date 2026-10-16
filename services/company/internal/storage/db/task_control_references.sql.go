@@ -303,7 +303,7 @@ func (q *Queries) SaveTaskControlReferenceCache(ctx context.Context, arg SaveTas
 }
 
 const taskControlReferenceActiveConnections = `-- name: TaskControlReferenceActiveConnections :many
-SELECT c.company_id, c.id, c.installation_id, c.integration_id, c.account_id, c.generation, c.binding_revision, c.mode_epoch, c.mode, c.state, c.intent_id, c.linked_by, c.crm_admin_id, c.updated_at, c.publication_id FROM task_control_connections c JOIN companies co ON co.id=c.company_id AND co.status='active'
+SELECT c.company_id, c.id, c.installation_id, c.integration_id, c.account_id, c.generation, c.binding_revision, c.mode_epoch, c.mode, c.state, c.intent_id, c.linked_by, c.crm_admin_id, c.updated_at, c.publication_id, c.runtime_schema_version FROM task_control_connections c JOIN companies co ON co.id=c.company_id AND co.status='active'
 WHERE c.state='active' ORDER BY c.company_id,c.id
 `
 
@@ -332,6 +332,7 @@ func (q *Queries) TaskControlReferenceActiveConnections(ctx context.Context) ([]
 			&i.CrmAdminID,
 			&i.UpdatedAt,
 			&i.PublicationID,
+			&i.RuntimeSchemaVersion,
 		); err != nil {
 			return nil, err
 		}

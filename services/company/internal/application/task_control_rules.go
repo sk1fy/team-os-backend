@@ -139,6 +139,9 @@ func (s *Service) GetTaskControlDraft(ctx context.Context, a Actor, id uuid.UUID
 		return out, e
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
+	if c.RuntimeSchemaVersion == 2 {
+		return out, taskControlRequiresV2()
+	}
 	d, e := q.GetTaskControlDraft(ctx, db.GetTaskControlDraftParams{CompanyID: a.CompanyID, BindingID: id})
 	if isNoRows(e) {
 		_, sum := tc.Legacy([]tc.Rule{})
@@ -163,6 +166,9 @@ func (s *Service) UpdateTaskControlDraft(ctx context.Context, a Actor, id uuid.U
 		return out, e
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
+	if c.RuntimeSchemaVersion == 2 {
+		return out, taskControlRequiresV2()
+	}
 	if e = tcFence(c, in.ExpectedBindingRevision, in.ExpectedModeEpoch); e != nil {
 		return out, e
 	}
@@ -187,6 +193,9 @@ func (s *Service) ValidateTaskControlDraft(ctx context.Context, a Actor, id uuid
 		return nil, e
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
+	if c.RuntimeSchemaVersion == 2 {
+		return nil, taskControlRequiresV2()
+	}
 	d, e := q.GetTaskControlDraft(ctx, db.GetTaskControlDraftParams{CompanyID: a.CompanyID, BindingID: id})
 	if e != nil {
 		return nil, e
@@ -217,6 +226,9 @@ func (s *Service) PublishTaskControlDraft(ctx context.Context, a Actor, id uuid.
 		return out, e
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
+	if c.RuntimeSchemaVersion == 2 {
+		return out, taskControlRequiresV2()
+	}
 	raw, _ := json.Marshal([]any{id, in})
 	hash := sha256.Sum256(raw)
 	hs := hex.EncodeToString(hash[:])
@@ -281,11 +293,14 @@ func (s *Service) PublishTaskControlDraft(ctx context.Context, a Actor, id uuid.
 	return out, tx.Commit(ctx)
 }
 func (s *Service) TaskControlPublications(ctx context.Context, a Actor, id, publication uuid.UUID) (any, error) {
-	tx, q, _, e := s.taskControlRulesTx(ctx, a, id, false)
+	tx, q, c, e := s.taskControlRulesTx(ctx, a, id, false)
 	if e != nil {
 		return nil, e
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
+	if c.RuntimeSchemaVersion == 2 {
+		return nil, taskControlRequiresV2()
+	}
 	if publication != uuid.Nil {
 		p, e := q.GetTaskControlPublication(ctx, db.GetTaskControlPublicationParams{CompanyID: a.CompanyID, BindingID: id, ID: publication})
 		if e != nil {
@@ -313,6 +328,9 @@ func (s *Service) SetTaskControlMode(ctx context.Context, a Actor, id uuid.UUID,
 		return out, e
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
+	if c.RuntimeSchemaVersion == 2 {
+		return out, taskControlRequiresV2()
+	}
 	raw, _ := json.Marshal([]any{id, in.ExpectedBindingRevision, in.ExpectedModeEpoch, in.TargetMode, in.PublicationID})
 	hash := sha256.Sum256(raw)
 	hs := hex.EncodeToString(hash[:])
@@ -382,6 +400,9 @@ func (s *Service) TaskControlBootstrap(ctx context.Context, token string) (any, 
 	row, e := q.GetTaskControlConnection(ctx, db.GetTaskControlConnectionParams{CompanyID: c.Scope.CompanyID, ID: c.Scope.BindingID})
 	if e != nil {
 		return nil, e
+	}
+	if row.RuntimeSchemaVersion == 2 {
+		return nil, taskControlRequiresV2()
 	}
 	if row.State != "active" || row.Mode != "managed" || row.BindingRevision != c.Scope.BindingRevision || row.ModeEpoch != c.Scope.ModeEpoch {
 		return nil, forbidden("Сессия подключения отозвана")

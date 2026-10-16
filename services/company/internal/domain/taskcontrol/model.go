@@ -63,17 +63,19 @@ func Verify(raw string, keys map[string]ed25519.PublicKey, now time.Time) (Asser
 }
 
 type Installation struct {
-	CompanyID      uuid.UUID  `json:"companyId"`
-	AccountID      string     `json:"accountId"`
-	InstallationID *uuid.UUID `json:"installationId,omitempty"`
-	IntegrationID  *uuid.UUID `json:"integrationId,omitempty"`
-	Product        string     `json:"product"`
-	State          string     `json:"state"`
-	Revision       int64      `json:"revision,omitempty"`
-	Generation     int64      `json:"generation,omitempty"`
-	CheckedAt      time.Time  `json:"checkedAt"`
-	FreshUntil     time.Time  `json:"freshUntil"`
-	ReasonCode     string     `json:"reasonCode,omitempty"`
+	RuntimeVersion      string     `json:"runtimeVersion,omitempty"`
+	RuntimeCapabilities []string   `json:"runtimeCapabilities,omitempty"`
+	CompanyID           uuid.UUID  `json:"companyId"`
+	AccountID           string     `json:"accountId"`
+	InstallationID      *uuid.UUID `json:"installationId,omitempty"`
+	IntegrationID       *uuid.UUID `json:"integrationId,omitempty"`
+	Product             string     `json:"product"`
+	State               string     `json:"state"`
+	Revision            int64      `json:"revision,omitempty"`
+	Generation          int64      `json:"generation,omitempty"`
+	CheckedAt           time.Time  `json:"checkedAt"`
+	FreshUntil          time.Time  `json:"freshUntil"`
+	ReasonCode          string     `json:"reasonCode,omitempty"`
 }
 
 func (s Installation) Valid(company uuid.UUID, account string, now time.Time) bool {

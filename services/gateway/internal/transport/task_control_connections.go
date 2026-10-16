@@ -27,6 +27,10 @@ func (h *Handler) taskControlCall(w http.ResponseWriter, r *http.Request, in *v.
 		apierror.Write(w, apierror.New(502, "Некорректный ответ Контроля задач"))
 		return
 	}
+	if in.Action == v.TaskControlConnectionRequest_ACTION_ACK_V2 {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
 	responseStatus := http.StatusOK
 	if in.Action == v.TaskControlConnectionRequest_ACTION_REFRESH_REFERENCES {
 		responseStatus = http.StatusAccepted
@@ -66,7 +70,7 @@ func (h *Handler) ExchangeTaskControlRuntimeSession(w http.ResponseWriter, r *ht
 	if !decodeStrict(w, r, &body) {
 		return
 	}
-	h.taskControlCall(w, r, &v.TaskControlConnectionRequest{Action: v.TaskControlConnectionRequest_ACTION_EXCHANGE, Credential: valueOrEmpty(body.CoreAssertion)}, true)
+	h.taskControlCall(w, r, &v.TaskControlConnectionRequest{Action: v.TaskControlConnectionRequest_ACTION_EXCHANGE, Credential: valueOrEmpty(body.CoreAssertion), JsonBody: func() []byte { raw, _ := json.Marshal(body); return raw }()}, true)
 }
 func (h *Handler) GetTaskControlBootstrap(w http.ResponseWriter, r *http.Request) {
 	values := r.Header.Values("Authorization")

@@ -11,6 +11,10 @@ func TestTaskControlOnlyDedicatedRuntimeHandlersSkipTeamOSJWT(t *testing.T) {
 		want         bool
 	}{
 		{http.MethodPost, "/api/v1/widget/task-control/sessions", true}, {http.MethodGet, "/api/v1/widget/task-control/bootstrap", true},
+		{http.MethodGet, "/api/v2/task-control/runtime/bootstrap", true},
+		{http.MethodPost, "/api/v2/task-control/runtime/ack", true},
+		{http.MethodPost, "/api/v2/task-control/runtime/bootstrap", false},
+		{http.MethodGet, "/api/v2/task-control/runtime/ack", false},
 		{http.MethodGet, "/api/v2/task-control/connections/a0000000-0000-4000-8000-000000000001/references", false},
 		{http.MethodPost, "/api/v2/task-control/connections/a0000000-0000-4000-8000-000000000001/references/refresh", false},
 		{http.MethodGet, "/api/v1/task-control/connections", false}, {http.MethodPost, "/api/v1/task-control/connections/link-intents", false},

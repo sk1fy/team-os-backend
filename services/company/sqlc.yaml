@@ -34,6 +34,7 @@ sql:
       - migrations/000034_task_control_runtime_limits.up.sql
       - migrations/000035_task_control_references.up.sql
       - migrations/000036_task_control_shared_mappings.up.sql
+      - migrations/000037_task_control_dynamic_runtime.up.sql
     queries: internal/storage/queries
     gen:
       go:

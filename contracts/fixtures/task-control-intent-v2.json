@@ -1,0 +1,41 @@
+{
+  "intentRules": [
+    {
+      "kind": "dynamic",
+      "rule": {
+        "schemaVersion": 2,
+        "ruleUid": "11111111-1111-4111-8111-111111111111",
+        "name": "Поддержка и выбранный сотрудник",
+        "audience": {
+          "kind": "selected",
+          "employeeIds": [],
+          "departments": [
+            {
+              "departmentId": "33333333-3333-4333-8333-333333333333",
+              "includeDescendants": true
+            }
+          ]
+        },
+        "leads": {
+          "kind": "selected",
+          "pipelines": [
+            {
+              "pipelineId": "10",
+              "stages": {
+                "kind": "allOpen"
+              }
+            }
+          ]
+        },
+        "customers": {
+          "kind": "disabled"
+        },
+        "showModal": true,
+        "denyExit": true,
+        "checkResponsible": true,
+        "enabled": true,
+        "archived": false
+      }
+    }
+  ]
+}

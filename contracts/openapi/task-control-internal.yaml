@@ -1,10 +1,10 @@
 openapi: 3.1.0
 info:
   title: 'Контроль задач: прямой runtime TeamOS и инфраструктурный Core'
-  version: 1.2.0
+  version: 1.3.0
   description: Core проверяет JWT amoCRM и live CRM роль, выдаёт signed assertion и хранит установку/мониторинг. Runtime session/bootstrap
-    реализованы в teamos.yaml; правила выдаёт напрямую backend TeamOS. Остальные runtime/monitoring функции относятся к следующим
-    задачам.
+    и runtime v2 bootstrap/ACK реализованы в teamos.yaml; правила выдаёт напрямую backend TeamOS.
+    Динамический intent и resolver v2 реализованы в company (КТ-01.R11); расширенный monitoring относится к R07.
   license:
     name: Proprietary
     identifier: LicenseRef-Proprietary
