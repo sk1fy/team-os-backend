@@ -150,6 +150,11 @@ func run(logger *slog.Logger) error {
 	defer consumerCancel()
 	go service.RunDistributionQueueExpiry(consumerContext)
 	go service.RunTaskControlRuntimeCleanup(consumerContext)
+	go func() {
+		if err := service.RunTaskControlReferences(consumerContext); err != nil && consumerContext.Err() == nil {
+			logger.Error("task control reference worker failed", "error", err)
+		}
+	}()
 	if configuration.DistributionCoreURL != "" {
 		go service.RunDistributionDelivery(consumerContext)
 	}
@@ -164,7 +169,7 @@ func run(logger *slog.Logger) error {
 	}
 	grpcServer := grpc.NewServer(
 		grpc.MaxRecvMsgSize(2<<20),
-		grpc.MaxSendMsgSize(2<<20),
+		grpc.MaxSendMsgSize(8<<20),
 	)
 	companyv1.RegisterCompanyServiceServer(
 		grpcServer,

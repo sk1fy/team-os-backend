@@ -80,6 +80,36 @@ func (s *Server) TaskControlConnection(ctx context.Context, r *v.TaskControlConn
 			return nil, invalidRequest()
 		}
 		out, err = s.application.GetTaskControlIntent(ctx, a, id)
+
+	case v.TaskControlConnectionRequest_ACTION_REFERENCES:
+		id, e := uuid.Parse(r.Id)
+		if e != nil {
+			return nil, invalidRequest()
+		}
+		if r.Operation == "legacy" {
+			out, err = s.application.TaskControlLegacyReferences(ctx, a, id)
+		} else {
+			var opts application.TaskControlReferenceOptions
+			if len(r.JsonBody) > 0 {
+				if e = taskControlDecode(r.JsonBody, &opts); e != nil {
+					return nil, e
+				}
+			}
+			out, err = s.application.GetTaskControlReferences(ctx, a, id, opts)
+		}
+	case v.TaskControlConnectionRequest_ACTION_REFRESH_REFERENCES:
+		id, e := uuid.Parse(r.Id)
+		if e != nil {
+			return nil, invalidRequest()
+		}
+		out, err = s.application.RequestTaskControlReferencesRefresh(ctx, a, id)
+	case v.TaskControlConnectionRequest_ACTION_REFERENCES_REFRESH:
+		id, e := uuid.Parse(r.Id)
+		refreshID, re := uuid.Parse(r.AccountId)
+		if e != nil || re != nil {
+			return nil, invalidRequest()
+		}
+		out, err = s.application.GetTaskControlReferencesRefresh(ctx, a, id, refreshID)
 	case v.TaskControlConnectionRequest_ACTION_EXCHANGE:
 		out, err = s.application.ExchangeTaskControlSession(ctx, r.Credential)
 	case v.TaskControlConnectionRequest_ACTION_BOOTSTRAP:

@@ -84,6 +84,13 @@ func (s *Service) syncAmoUsersNow(ctx context.Context, actor Actor) error {
 	if err = queries.LockAmoUserSync(ctx, actor.CompanyID); err != nil {
 		return internal("Не удалось заблокировать импорт сотрудников", err)
 	}
+	verifiedCompany, err := queries.GetCompany(ctx, actor.CompanyID)
+	if err != nil {
+		return internal("Не удалось проверить аккаунт импорта", err)
+	}
+	if !verifiedCompany.AmoAccountID.Valid || verifiedCompany.AmoAccountID.String != *amoAccountID {
+		return conflict("Аккаунт amoCRM изменился во время импорта")
+	}
 	amoUsers, err := queries.ListAmoUsersForReconciliation(ctx, actor.CompanyID)
 	if err != nil {
 		return internal("Не удалось получить сотрудников amoCRM для сверки", err)
@@ -161,6 +168,8 @@ func (s *Service) syncAmoUsersNow(ctx context.Context, actor Actor) error {
 					return err
 				}
 			}
+			// Historical external IDs lack an importing account. Never attach an
+			// existing profile to the current account by ID/email coincidence.
 			if restored {
 				if err = createUserAdminAudit(
 					ctx, queries, actor.CompanyID, &existing.ID, nil, "amo_sync", "external_restored",
@@ -188,6 +197,9 @@ func (s *Service) syncAmoUsersNow(ctx context.Context, actor Actor) error {
 		}
 		if err != nil {
 			return internal("Не удалось сохранить сотрудника amoCRM", err)
+		}
+		if err = recordTaskControlImportedMapping(ctx, queries, actor.CompanyID, *amoAccountID, row.ID, employee.ID); err != nil {
+			return err
 		}
 		if _, organizationErr := syncAmoUserDepartment(
 			ctx, queries, actor.CompanyID, row, employee, departmentID,
@@ -439,4 +451,14 @@ func avatarSource(avatarURL *string) pgtype.Text {
 		return pgtype.Text{}
 	}
 	return pgtype.Text{String: "amo", Valid: true}
+}
+
+func recordTaskControlImportedMapping(ctx context.Context, q *db.Queries, company uuid.UUID, account string, employee uuid.UUID, crmUser string) error {
+	if err := q.ClearTaskControlEmployeeMapping(ctx, db.ClearTaskControlEmployeeMappingParams{CompanyID: company, AccountID: account, EmployeeID: employee, CrmUserID: crmUser}); err != nil {
+		return internal("Не удалось обновить связь сотрудника amoCRM", err)
+	}
+	if err := q.RecordTaskControlEmployeeMapping(ctx, db.RecordTaskControlEmployeeMappingParams{CompanyID: company, AccountID: account, EmployeeID: employee, CrmUserID: crmUser}); err != nil {
+		return internal("Не удалось сохранить связь сотрудника amoCRM", err)
+	}
+	return nil
 }

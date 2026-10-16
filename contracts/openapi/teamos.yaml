@@ -4880,14 +4880,159 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/TaskControlRevokeInput'
+  /api/v2/task-control/connections/{bindingId}/references:
+    get:
+      tags: [Task Control]
+      operationId: getTaskControlReferenceSelection
+      summary: CRM-справочники, сотрудники и оргструктура для выбора
+      description: Полный ограниченный CRM snapshot, до 1000 сотрудников в странице. GET не ожидает CRM; cold GET ставит coalesced refresh. selectedEmployeeIds возвращаются отдельно вне фильтра/страницы, в том числе удалённые. Пустые departmentIds означают «Без отдела». Число активных сделок не вычисляется.
+      x-permission: taskControl.read
+      responses:
+        '200':
+          description: Данные и фактическое состояние источника
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlReferenceView'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '503':
+          description: Источник временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        default:
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: bindingId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+      - name: search
+        in: query
+        schema:
+          type: string
+          maxLength: 200
+      - name: departmentId
+        in: query
+        schema:
+          $ref: '#/components/schemas/ID'
+      - name: withoutDepartment
+        in: query
+        schema:
+          type: boolean
+      - name: offset
+        in: query
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          default: 100
+      - name: selectedEmployeeIds
+        in: query
+        style: form
+        explode: false
+        schema:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/ID'
+  /api/v2/task-control/connections/{bindingId}/references/refresh:
+    post:
+      tags: [Task Control]
+      operationId: refreshTaskControlReferences
+      summary: Запланировать ограниченное обновление справочников
+      x-permission: taskControl.manage
+      responses:
+        '202':
+          description: Обновление поставлено в очередь или объединено с текущим
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlReferenceRefresh'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '503':
+          description: Источник временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        default:
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: bindingId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+  /api/v2/task-control/connections/{bindingId}/references/refresh/{refreshId}:
+    get:
+      tags: [Task Control]
+      operationId: getTaskControlReferencesRefresh
+      summary: Состояние обновления справочников
+      x-permission: taskControl.read
+      responses:
+        '200':
+          description: Состояние обновления в текущем scope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlReferenceRefresh'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '503':
+          description: Источник временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        default:
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: bindingId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+      - name: refreshId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
   /api/v1/task-control/connections/{bindingId}/references:
     get:
       tags:
       - Task Control
       operationId: getTaskControlReferences
-      summary: Свежие CRM-справочники из admin bridge виджета
-      description: Контракт КТ-01.02; бизнес-реализация в КТ-01.03–12. companyId только из сессии; чужой binding возвращает
-        404. Чтение требует активное членство и отдельное право taskControl.read внутри Интеграций.
+      summary: Совместимая v1-проекция серверных CRM-справочников
+      description: Проекция общего Core provider. При отсутствии fresh снимка или unknown customers — 503. Для состояния источника, оргструктуры и выбора используйте v2. Чужой binding — 404.
       x-permission: taskControl.read
       responses:
         '200':
@@ -4906,12 +5051,6 @@ paths:
           $ref: '#/components/responses/NotFound'
         '409':
           $ref: '#/components/responses/Conflict'
-        '501':
-          description: Контракт опубликован, обработчик ещё не реализован.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         default:
           $ref: '#/components/responses/Error'
         '413':
@@ -12841,6 +12980,308 @@ components:
                 type: string
         sourceSnapshotId:
           $ref: '#/components/schemas/ID'
+    CRMReferenceScope:
+      type: object
+      additionalProperties: false
+      required: [companyId, accountId, integrationId, installationId, generation, product]
+      properties:
+        companyId:
+          $ref: '#/components/schemas/ID'
+        accountId:
+          type: string
+          pattern: ^[1-9][0-9]{0,15}$
+        integrationId:
+          $ref: '#/components/schemas/ID'
+        installationId:
+          $ref: '#/components/schemas/ID'
+        generation:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        product:
+          type: string
+          enum: [task-control]
+    CRMReferenceSnapshot:
+      type: object
+      additionalProperties: false
+      required: [schemaVersion, scope, revision, provenance, freshUntil, complete, users, groups, pipelines, customers]
+      properties:
+        schemaVersion:
+          type: integer
+          enum: [1]
+        scope:
+          $ref: '#/components/schemas/CRMReferenceScope'
+        revision:
+          type: string
+          pattern: '^sha256:[a-f0-9]{64}$'
+        provenance:
+          type: object
+          additionalProperties: false
+          required: [source, fetchedAt, fetchStartedAt]
+          properties:
+            source:
+              type: string
+              enum: [coreAmocrm]
+            fetchedAt:
+              type: string
+              format: date-time
+            fetchStartedAt:
+              type: string
+              format: date-time
+        freshUntil:
+          type: string
+          format: date-time
+        complete:
+          type: boolean
+          enum: [true]
+        users:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/CRMReferenceUser'
+        groups:
+          type: array
+          maxItems: 1000
+          items:
+            type: object
+            additionalProperties: false
+            required: [id, name]
+            properties:
+              id:
+                type: string
+                pattern: ^[1-9][0-9]{0,15}$
+              name:
+                type: string
+        pipelines:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/CRMReferencePipeline'
+        customers:
+          $ref: '#/components/schemas/CRMCustomerReferences'
+    CRMReferenceUser:
+      type: object
+      additionalProperties: false
+      required: [id, name, isActive, groupId]
+      properties:
+        id:
+          type: string
+          pattern: ^[1-9][0-9]{0,15}$
+        name:
+          type: string
+        isActive:
+          type: boolean
+        groupId:
+          type: [string, 'null']
+          x-go-type: '*string'
+          x-go-type-skip-optional-pointer: true
+          pattern: ^[1-9][0-9]{0,15}$
+    CRMReferencePipeline:
+      type: object
+      additionalProperties: false
+      required: [id, name, sort, statuses]
+      properties:
+        id:
+          type: string
+          pattern: ^[1-9][0-9]{0,15}$
+        name:
+          type: string
+        sort:
+          type: integer
+        statuses:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/CRMReferenceStatus'
+    CRMReferenceStatus:
+      type: object
+      additionalProperties: false
+      required: [id, name, sort, color, kind]
+      properties:
+        id:
+          type: string
+          pattern: ^[1-9][0-9]{0,15}$
+        name:
+          type: string
+        sort:
+          type: integer
+        color:
+          type: [string, 'null']
+          x-go-type: '*string'
+          x-go-type-skip-optional-pointer: true
+        kind:
+          type: string
+          enum: [open, won, lost]
+          x-enum-varnames: [CRMReferenceStageOpen, CRMReferenceStageWon, CRMReferenceStageLost]
+    CRMCustomerReferences:
+      type: object
+      additionalProperties: false
+      required: [availability, statuses, checkedAt, errorCode]
+      properties:
+        availability:
+          type: string
+          enum: [supported, unsupported, unknown]
+          x-enum-varnames: [CRMCustomersSupported, CRMCustomersUnsupported, CRMCustomersUnknown]
+        statuses:
+          type: array
+          maxItems: 1000
+          items:
+            type: object
+            additionalProperties: false
+            required: [id, name, sort, color]
+            properties:
+              id:
+                type: string
+                pattern: ^[1-9][0-9]{0,15}$
+              name:
+                type: string
+              sort:
+                type: integer
+              color:
+                type: [string, 'null']
+                x-go-type: '*string'
+                x-go-type-skip-optional-pointer: true
+        checkedAt:
+          type: string
+          format: date-time
+        errorCode:
+          type: [string, 'null']
+          x-go-type: '*string'
+          x-go-type-skip-optional-pointer: true
+    TaskControlReferenceView:
+      type: object
+      additionalProperties: false
+      required: [scope, state, crm, organizationRevision, mappingRevision, employees, selectedEmployees, departments, issues, total, offset, limit]
+      properties:
+        scope:
+          $ref: '#/components/schemas/TaskControlScope'
+        state:
+          type: string
+          enum: [fresh, stale, refreshing, unavailable, error]
+          x-enum-varnames: [TaskControlReferenceFresh, TaskControlReferenceStale, TaskControlReferenceRefreshing, TaskControlReferenceUnavailable, TaskControlReferenceError]
+        crm:
+          x-go-type: '*CRMReferenceSnapshot'
+          x-go-type-skip-optional-pointer: true
+          anyOf:
+          - $ref: '#/components/schemas/CRMReferenceSnapshot'
+          - type: 'null'
+        organizationRevision:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        mappingRevision:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        employees:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/TaskControlReferenceEmployee'
+        selectedEmployees:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/TaskControlReferenceEmployee'
+        departments:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/TaskControlReferenceDepartment'
+        issues:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskControlReferenceIssue'
+        total:
+          type: integer
+          minimum: 0
+          description: Точное число сотрудников после фильтров до пагинации.
+        offset:
+          type: integer
+          minimum: 0
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 1000
+    TaskControlReferenceEmployee:
+      type: object
+      additionalProperties: false
+      required: [employeeId, name, positionName, departmentIds, crmUserId, eligible, ineligibleReason]
+      properties:
+        employeeId:
+          $ref: '#/components/schemas/ID'
+        name:
+          type: string
+        positionName:
+          type: [string, 'null']
+          x-go-type: '*string'
+          x-go-type-skip-optional-pointer: true
+        departmentIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/ID'
+        crmUserId:
+          type: [string, 'null']
+          x-go-type: '*string'
+          x-go-type-skip-optional-pointer: true
+          pattern: ^[1-9][0-9]{0,15}$
+        eligible:
+          type: boolean
+        ineligibleReason:
+          type: [string, 'null']
+          x-go-type: '*string'
+          x-go-type-skip-optional-pointer: true
+    TaskControlReferenceDepartment:
+      type: object
+      additionalProperties: false
+      required: [id, name, parentId]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        name:
+          type: string
+        parentId:
+          type: [string, 'null']
+          x-go-type: '*string'
+          x-go-type-skip-optional-pointer: true
+          format: uuid
+    TaskControlReferenceIssue:
+      type: object
+      additionalProperties: false
+      required: [path, code, message]
+      properties:
+        path:
+          type: string
+        code:
+          type: string
+        message:
+          type: string
+    TaskControlReferenceRefresh:
+      type: object
+      additionalProperties: false
+      required: [refreshId, state, errorCode, createdAt, completedAt]
+      properties:
+        refreshId:
+          $ref: '#/components/schemas/ID'
+        state:
+          type: string
+          enum: [pending, completed, failed]
+          x-enum-varnames: [TaskControlReferenceRefreshPending, TaskControlReferenceRefreshCompleted, TaskControlReferenceRefreshFailed]
+        errorCode:
+          type: [string, 'null']
+          x-go-type: '*string'
+          x-go-type-skip-optional-pointer: true
+        createdAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: [string, 'null']
+          x-go-type: '*string'
+          x-go-type-skip-optional-pointer: true
+          format: date-time
     TaskControlImportInput:
       type: object
       additionalProperties: false

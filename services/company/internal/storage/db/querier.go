@@ -34,11 +34,14 @@ type Querier interface {
 	ClaimDistributionObservation(ctx context.Context, leaseToken uuid.NullUUID) (DistributionObservationJob, error)
 	ClaimDistributionQueue(ctx context.Context, leaseToken uuid.NullUUID) (DistributionQueue, error)
 	ClaimDistributionWidgetRequest(ctx context.Context, arg ClaimDistributionWidgetRequestParams) (int64, error)
+	ClaimTaskControlReferenceRefresh(ctx context.Context) (TaskControlReferenceRefresh, error)
 	CleanupDistributionNonces(ctx context.Context) error
 	ClearAmoUserDepartment(ctx context.Context, arg ClearAmoUserDepartmentParams) (int64, error)
 	ClearAmoUserTombstone(ctx context.Context, arg ClearAmoUserTombstoneParams) (User, error)
+	ClearTaskControlEmployeeMapping(ctx context.Context, arg ClearTaskControlEmployeeMappingParams) error
 	CompanyAmoAccountExists(ctx context.Context, externalAccountID string) (bool, error)
 	CompleteDistributionWidgetRequest(ctx context.Context, arg CompleteDistributionWidgetRequestParams) (int64, error)
+	CompleteTaskControlReferenceRefresh(ctx context.Context, arg CompleteTaskControlReferenceRefreshParams) error
 	ConsumeAccessLinkEntryContext(ctx context.Context, arg ConsumeAccessLinkEntryContextParams) (pgtype.Text, error)
 	ConsumeAmoWidgetContinuation(ctx context.Context, arg ConsumeAmoWidgetContinuationParams) (SsoToken, error)
 	ConsumeCompanyRegistrationToken(ctx context.Context, arg ConsumeCompanyRegistrationTokenParams) (CompanyRegistrationToken, error)
@@ -160,6 +163,9 @@ type Querier interface {
 	GetTaskControlPermissions(ctx context.Context, arg GetTaskControlPermissionsParams) (TaskControlPermission, error)
 	GetTaskControlPublication(ctx context.Context, arg GetTaskControlPublicationParams) (TaskControlPublication, error)
 	GetTaskControlPublishRequest(ctx context.Context, arg GetTaskControlPublishRequestParams) (TaskControlPublication, error)
+	GetTaskControlReferenceCache(ctx context.Context, arg GetTaskControlReferenceCacheParams) (TaskControlReferenceCache, error)
+	GetTaskControlReferenceRefresh(ctx context.Context, arg GetTaskControlReferenceRefreshParams) (TaskControlReferenceRefresh, error)
+	GetTaskControlReferenceRevisions(ctx context.Context, companyID uuid.UUID) (GetTaskControlReferenceRevisionsRow, error)
 	GetTaskControlRuntimeSession(ctx context.Context, arg GetTaskControlRuntimeSessionParams) (TaskControlRuntimeSession, error)
 	GetTaskControlSnapshot(ctx context.Context, arg GetTaskControlSnapshotParams) (TaskControlInstallationSnapshot, error)
 	GetUser(ctx context.Context, arg GetUserParams) (User, error)
@@ -176,7 +182,9 @@ type Querier interface {
 	GetUserWithPositions(ctx context.Context, arg GetUserWithPositionsParams) (GetUserWithPositionsRow, error)
 	GetUsersByIDs(ctx context.Context, arg GetUsersByIDsParams) ([]GetUsersByIDsRow, error)
 	GrantEmployeeSectionAccess(ctx context.Context, arg GrantEmployeeSectionAccessParams) error
+	InvalidateTaskControlReferenceCache(ctx context.Context, arg InvalidateTaskControlReferenceCacheParams) error
 	LatestDistributionLeadObservation(ctx context.Context, arg LatestDistributionLeadObservationParams) (DistributionObservation, error)
+	LatestTaskControlReferenceRefresh(ctx context.Context, arg LatestTaskControlReferenceRefreshParams) (TaskControlReferenceRefresh, error)
 	ListAmoUsersForReconciliation(ctx context.Context, companyID uuid.UUID) ([]User, error)
 	ListDepartments(ctx context.Context, companyID uuid.UUID) ([]Department, error)
 	ListDistributionBindings(ctx context.Context, companyID uuid.UUID) ([]DistributionBinding, error)
@@ -217,6 +225,7 @@ type Querier interface {
 	LockDistributionQueueLease(ctx context.Context, arg LockDistributionQueueLeaseParams) (DistributionQueue, error)
 	LockDistributionRule(ctx context.Context, arg LockDistributionRuleParams) (DistributionRule, error)
 	LockTaskControlAccount(ctx context.Context, accountID string) error
+	LockTaskControlReferenceRefresh(ctx context.Context, id uuid.UUID) (TaskControlReferenceRefresh, error)
 	MarkAmoUserExternallyDeleted(ctx context.Context, arg MarkAmoUserExternallyDeletedParams) (User, error)
 	MoveDepartment(ctx context.Context, arg MoveDepartmentParams) (Department, error)
 	NextDistributionMappingRevision(ctx context.Context, arg NextDistributionMappingRevisionParams) (int64, error)
@@ -225,9 +234,12 @@ type Querier interface {
 	PromoteAmoWidgetAdmin(ctx context.Context, arg PromoteAmoWidgetAdminParams) (User, error)
 	PromoteAmoWidgetOwner(ctx context.Context, arg PromoteAmoWidgetOwnerParams) (User, error)
 	PruneTaskControlAssertions(ctx context.Context, expiresAt time.Time) (int64, error)
+	PruneTaskControlReferenceRefreshes(ctx context.Context) error
 	PruneTaskControlRuntimeSessions(ctx context.Context, expiresAt time.Time) (int64, error)
+	QueueTaskControlReferenceRefresh(ctx context.Context, arg QueueTaskControlReferenceRefreshParams) (TaskControlReferenceRefresh, error)
 	ReassignUserInvites(ctx context.Context, arg ReassignUserInvitesParams) error
 	RecordDistributionBindingVersion(ctx context.Context, arg RecordDistributionBindingVersionParams) error
+	RecordTaskControlEmployeeMapping(ctx context.Context, arg RecordTaskControlEmployeeMappingParams) error
 	RegisterDistributionOperationMirror(ctx context.Context, arg RegisterDistributionOperationMirrorParams) error
 	ReleaseDistributionGroupClaim(ctx context.Context, arg ReleaseDistributionGroupClaimParams) error
 	ReleaseDistributionLeadClaim(ctx context.Context, queueID uuid.UUID) error
@@ -260,6 +272,7 @@ type Querier interface {
 	SaveDistributionSettings(ctx context.Context, arg SaveDistributionSettingsParams) (DistributionSetting, error)
 	SaveDistributionUIAction(ctx context.Context, arg SaveDistributionUIActionParams) error
 	SaveTaskControlConnectionRequest(ctx context.Context, arg SaveTaskControlConnectionRequestParams) error
+	SaveTaskControlReferenceCache(ctx context.Context, arg SaveTaskControlReferenceCacheParams) error
 	SaveTaskControlSnapshot(ctx context.Context, arg SaveTaskControlSnapshotParams) error
 	ScheduleDistributionObservation(ctx context.Context, arg ScheduleDistributionObservationParams) error
 	SetAccessLinkEntryContext(ctx context.Context, arg SetAccessLinkEntryContextParams) (AccessLink, error)
@@ -273,6 +286,10 @@ type Querier interface {
 	SetTaskControlPublication(ctx context.Context, arg SetTaskControlPublicationParams) (TaskControlConnection, error)
 	SettleDistributionQueue(ctx context.Context, arg SettleDistributionQueueParams) (int64, error)
 	StoreDistributionMappingSnapshot(ctx context.Context, arg StoreDistributionMappingSnapshotParams) error
+	TaskControlReferenceActiveConnections(ctx context.Context) ([]TaskControlConnection, error)
+	TaskControlReferenceDepartments(ctx context.Context, companyID uuid.UUID) ([]byte, error)
+	TaskControlReferenceEmployees(ctx context.Context, arg TaskControlReferenceEmployeesParams) ([]byte, error)
+	TaskControlReferenceOrganizationCounts(ctx context.Context, companyID uuid.UUID) (TaskControlReferenceOrganizationCountsRow, error)
 	UpdateAmoUserGroup(ctx context.Context, arg UpdateAmoUserGroupParams) (int64, error)
 	UpdateCompany(ctx context.Context, arg UpdateCompanyParams) (Company, error)
 	UpdateCurrentUser(ctx context.Context, arg UpdateCurrentUserParams) (User, error)

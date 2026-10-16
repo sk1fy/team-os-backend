@@ -1156,6 +1156,9 @@ message TaskControlConnectionRequest {
     ACTION_MODE = 14;
     ACTION_CAPABILITIES = 15;
     ACTION_AUTHORIZE = 16;
+    ACTION_REFERENCES = 17;
+    ACTION_REFRESH_REFERENCES = 18;
+    ACTION_REFERENCES_REFRESH = 19;
   }
   Action action = 1;
   string id = 2;

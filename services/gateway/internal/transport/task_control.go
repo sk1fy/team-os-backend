@@ -82,7 +82,7 @@ func (h *Handler) GetTaskControlApplicationStatus(w http.ResponseWriter, r *http
 }
 
 func (h *Handler) GetTaskControlReferences(w http.ResponseWriter, r *http.Request, bindingID api.ID) {
-	h.taskControlPending(w, r, bindingID, "references")
+	h.taskControlCall(w, r, &v.TaskControlConnectionRequest{Action: v.TaskControlConnectionRequest_ACTION_REFERENCES, Id: bindingID.String(), Operation: "legacy"}, false)
 }
 
 func (h *Handler) RollbackTaskControlPublication(w http.ResponseWriter, r *http.Request, bindingID api.ID) {
@@ -99,4 +99,35 @@ func (h *Handler) GetTaskControlSourceRequest(w http.ResponseWriter, r *http.Req
 
 func (h *Handler) ValidateTaskControlDraft(w http.ResponseWriter, r *http.Request, bindingID api.ID) {
 	h.taskControlCall(w, r, &v.TaskControlConnectionRequest{Action: v.TaskControlConnectionRequest_ACTION_VALIDATE, Id: bindingID.String()}, false)
+}
+
+func (h *Handler) GetTaskControlReferenceSelection(w http.ResponseWriter, r *http.Request, bindingID api.ID, params api.GetTaskControlReferenceSelectionParams) {
+	// Map generated query DTO explicitly to avoid exposing security scope as input.
+	options := map[string]any{}
+	if params.Search != nil {
+		options["Search"] = *params.Search
+	}
+	if params.DepartmentId != nil {
+		options["DepartmentID"] = *params.DepartmentId
+	}
+	if params.WithoutDepartment != nil {
+		options["WithoutDepartment"] = *params.WithoutDepartment
+	}
+	if params.Offset != nil {
+		options["Offset"] = *params.Offset
+	}
+	if params.Limit != nil {
+		options["Limit"] = *params.Limit
+	}
+	if params.SelectedEmployeeIds != nil {
+		options["SelectedEmployeeIDs"] = *params.SelectedEmployeeIds
+	}
+	raw, _ := json.Marshal(options)
+	h.taskControlCall(w, r, &v.TaskControlConnectionRequest{Action: v.TaskControlConnectionRequest_ACTION_REFERENCES, Id: bindingID.String(), JsonBody: raw}, false)
+}
+func (h *Handler) RefreshTaskControlReferences(w http.ResponseWriter, r *http.Request, bindingID api.ID) {
+	h.taskControlCall(w, r, &v.TaskControlConnectionRequest{Action: v.TaskControlConnectionRequest_ACTION_REFRESH_REFERENCES, Id: bindingID.String()}, false)
+}
+func (h *Handler) GetTaskControlReferencesRefresh(w http.ResponseWriter, r *http.Request, bindingID api.ID, refreshID api.ID) {
+	h.taskControlCall(w, r, &v.TaskControlConnectionRequest{Action: v.TaskControlConnectionRequest_ACTION_REFERENCES_REFRESH, Id: bindingID.String(), AccountId: refreshID.String()}, false)
 }

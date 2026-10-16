@@ -608,6 +608,13 @@ type TaskControlAssertionUse struct {
 	ExpiresAt time.Time `json:"expires_at"`
 }
 
+type TaskControlConfirmedEmployeeMapping struct {
+	CompanyID  uuid.UUID `json:"company_id"`
+	AccountID  string    `json:"account_id"`
+	EmployeeID uuid.UUID `json:"employee_id"`
+	CrmUserID  string    `json:"crm_user_id"`
+}
+
 type TaskControlConnection struct {
 	CompanyID       uuid.UUID     `json:"company_id"`
 	ID              uuid.UUID     `json:"id"`
@@ -646,6 +653,13 @@ type TaskControlDraft struct {
 	UpdatedBy uuid.UUID `json:"updated_by"`
 }
 
+type TaskControlEmployeeMapping struct {
+	CompanyID  uuid.UUID `json:"company_id"`
+	AccountID  string    `json:"account_id"`
+	EmployeeID uuid.UUID `json:"employee_id"`
+	CrmUserID  string    `json:"crm_user_id"`
+}
+
 type TaskControlInstallationSnapshot struct {
 	CompanyID  uuid.UUID `json:"company_id"`
 	AccountID  string    `json:"account_id"`
@@ -669,6 +683,33 @@ type TaskControlPublication struct {
 	RequestID uuid.UUID `json:"request_id"`
 	BodyHash  string    `json:"body_hash"`
 	Payload   []byte    `json:"payload"`
+}
+
+type TaskControlReferenceCache struct {
+	CompanyID uuid.UUID   `json:"company_id"`
+	BindingID uuid.UUID   `json:"binding_id"`
+	ScopeKey  string      `json:"scope_key"`
+	Payload   []byte      `json:"payload"`
+	LastError pgtype.Text `json:"last_error"`
+	UpdatedAt time.Time   `json:"updated_at"`
+}
+
+type TaskControlReferenceRefresh struct {
+	ID          uuid.UUID          `json:"id"`
+	CompanyID   uuid.UUID          `json:"company_id"`
+	BindingID   uuid.UUID          `json:"binding_id"`
+	ScopeKey    string             `json:"scope_key"`
+	State       string             `json:"state"`
+	ErrorCode   pgtype.Text        `json:"error_code"`
+	CreatedAt   time.Time          `json:"created_at"`
+	CompletedAt pgtype.Timestamptz `json:"completed_at"`
+	LeaseUntil  pgtype.Timestamptz `json:"lease_until"`
+}
+
+type TaskControlReferenceRevision struct {
+	CompanyID            uuid.UUID `json:"company_id"`
+	OrganizationRevision int64     `json:"organization_revision"`
+	MappingRevision      int64     `json:"mapping_revision"`
 }
 
 type TaskControlRuntimeSession struct {

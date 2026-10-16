@@ -935,6 +935,12 @@ func (h *Handler) writeRPCError(w http.ResponseWriter, r *http.Request, err erro
 		write(apierror.New(http.StatusNotFound, message))
 	case codes.AlreadyExists, codes.Aborted:
 		write(apierror.Conflict(message))
+	case codes.ResourceExhausted:
+		if errorCode == "references_too_large" || errorCode == "task_control_runtime_payload_too_large" {
+			write(apierror.New(http.StatusRequestEntityTooLarge, message))
+		} else {
+			write(apierror.New(http.StatusTooManyRequests, message))
+		}
 	case codes.Unavailable, codes.DeadlineExceeded:
 		h.logger.WarnContext(r.Context(), "company RPC unavailable", "code", grpcStatus.Code(), "error", err)
 		write(apierror.New(http.StatusServiceUnavailable, "Сервис временно недоступен"))

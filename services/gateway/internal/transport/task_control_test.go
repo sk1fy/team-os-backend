@@ -81,10 +81,10 @@ func TestTaskControlRoutesDoNotClaimUnimplementedWritesSucceeded(t *testing.T) {
 			})
 		}
 	}
-	if count != 9 {
-		t.Fatalf("checked %d operations, expected 9", count)
+	if count != 8 {
+		t.Fatalf("checked %d operations, expected 8", count)
 	}
-	if len(client.operations) != 18 {
+	if len(client.operations) != 16 {
 		t.Fatalf("missing guards: %v", client.operations)
 	}
 }
