@@ -35,6 +35,8 @@ sql:
       - migrations/000035_task_control_references.up.sql
       - migrations/000036_task_control_shared_mappings.up.sql
       - migrations/000037_task_control_dynamic_runtime.up.sql
+      - migrations/000038_task_control_import.up.sql
+      - migrations/000039_task_control_audit.up.sql
     queries: internal/storage/queries
     gen:
       go:

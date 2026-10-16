@@ -31,7 +31,7 @@ func (s *Server) TaskControlConnection(ctx context.Context, r *v.TaskControlConn
 	}
 	var a application.Actor
 	var err error
-	runtime := r.Action == v.TaskControlConnectionRequest_ACTION_EXCHANGE || (r.Action == v.TaskControlConnectionRequest_ACTION_BOOTSTRAP || r.Action == v.TaskControlConnectionRequest_ACTION_BOOTSTRAP_V2 || r.Action == v.TaskControlConnectionRequest_ACTION_ACK_V2)
+	runtime := r.Action == v.TaskControlConnectionRequest_ACTION_RUNTIME_CONNECTION || r.Action == v.TaskControlConnectionRequest_ACTION_SOURCE_PENDING || r.Action == v.TaskControlConnectionRequest_ACTION_SOURCE_SUBMIT || r.Action == v.TaskControlConnectionRequest_ACTION_EXCHANGE || (r.Action == v.TaskControlConnectionRequest_ACTION_BOOTSTRAP || r.Action == v.TaskControlConnectionRequest_ACTION_BOOTSTRAP_V2 || r.Action == v.TaskControlConnectionRequest_ACTION_ACK_V2)
 	if runtime {
 		md, _ := metadata.FromIncomingContext(ctx)
 		if len(md.Get("x-teamos-service")) != 1 || md.Get("x-teamos-service")[0] != "task-control" || len(md.Get("x-teamos-service-token")) != 1 || !secureServiceTokenEqual(md.Get("x-teamos-service-token")[0], s.gatewayServiceToken) {
@@ -147,7 +147,13 @@ func (s *Server) TaskControlConnection(ctx context.Context, r *v.TaskControlConn
 			}
 			out, err = s.application.PublishTaskControlDraft(ctx, a, id, input)
 		case v.TaskControlConnectionRequest_ACTION_PUBLICATIONS:
-			out, err = s.application.TaskControlPublications(ctx, a, id, uuid.Nil)
+			var opts application.TaskControlPublicationOptionsV2
+			if len(r.JsonBody) > 0 {
+				if e = taskControlDecode(r.JsonBody, &opts); e != nil {
+					return nil, e
+				}
+			}
+			out, err = s.application.TaskControlPublications(ctx, a, id, uuid.Nil, opts)
 		case v.TaskControlConnectionRequest_ACTION_PUBLICATION:
 			pid, e := uuid.Parse(r.AccountId)
 			if e != nil {
@@ -162,6 +168,53 @@ func (s *Server) TaskControlConnection(ctx context.Context, r *v.TaskControlConn
 			out, err = s.application.SetTaskControlMode(ctx, a, id, input)
 		}
 
+	case v.TaskControlConnectionRequest_ACTION_HISTORY, v.TaskControlConnectionRequest_ACTION_ROLLBACK:
+		id, e := uuid.Parse(r.Id)
+		if e != nil {
+			return nil, invalidRequest()
+		}
+		if r.Action == v.TaskControlConnectionRequest_ACTION_HISTORY {
+			var opts application.TaskControlHistoryOptions
+			if len(r.JsonBody) > 0 {
+				if e = taskControlDecode(r.JsonBody, &opts); e != nil {
+					return nil, e
+				}
+			}
+			if r.Operation == "history-v1" {
+				out, err = s.application.TaskControlHistoryLegacy(ctx, a, id, opts)
+			} else {
+				out, err = s.application.TaskControlHistory(ctx, a, id, opts)
+			}
+		} else {
+			var in application.TaskControlRollbackInputV2
+			if e = taskControlDecode(r.JsonBody, &in); e != nil {
+				return nil, e
+			}
+			out, err = s.application.RollbackTaskControl(ctx, a, id, in)
+		}
+	case v.TaskControlConnectionRequest_ACTION_RUNTIME_CONNECTION:
+		out, err = s.application.TaskControlRuntimeConnection(ctx, r.Credential)
+	case v.TaskControlConnectionRequest_ACTION_SOURCE_PENDING:
+		out, err = s.application.PendingTaskControlSources(ctx, uuid.Nil, r.Credential)
+	case v.TaskControlConnectionRequest_ACTION_SOURCE_SUBMIT:
+		rid, e := uuid.Parse(r.Id)
+		if e != nil {
+			return nil, invalidRequest()
+		}
+		var input application.TaskControlSourceResult
+		if e = taskControlDecode(r.JsonBody, &input); e != nil {
+			return nil, e
+		}
+		if input.CoreAssertion != r.Credential {
+			return nil, invalidRequest()
+		}
+		out, err = s.application.SubmitTaskControlSource(ctx, uuid.Nil, rid, input)
+	case v.TaskControlConnectionRequest_ACTION_SOURCE_CREATE, v.TaskControlConnectionRequest_ACTION_SOURCE_GET, v.TaskControlConnectionRequest_ACTION_IMPORT_PREVIEW, v.TaskControlConnectionRequest_ACTION_IMPORT_GET, v.TaskControlConnectionRequest_ACTION_IMPORT_APPLY:
+		id, e := uuid.Parse(r.Id)
+		if e != nil {
+			return nil, invalidRequest()
+		}
+		out, err = s.taskControlImport(ctx, a, id, r)
 	case v.TaskControlConnectionRequest_ACTION_BOOTSTRAP_V2:
 		out, err = s.application.TaskControlBootstrapV2(ctx, r.Credential)
 	case v.TaskControlConnectionRequest_ACTION_ACK_V2:
@@ -253,6 +306,46 @@ func (s *Server) taskControlV2(ctx context.Context, a application.Actor, id uuid
 			return s.application.TaskControlApplicationV2(ctx, a, id, pid)
 		}
 		return s.application.TaskControlPublicationsV2(ctx, a, id, pid)
+	}
+	return nil, invalidRequest()
+}
+
+func (s *Server) taskControlImport(ctx context.Context, a application.Actor, id uuid.UUID, r *v.TaskControlConnectionRequest) (any, error) {
+	switch r.Action {
+	case v.TaskControlConnectionRequest_ACTION_SOURCE_CREATE:
+		var in application.TaskControlSourceInput
+		if e := taskControlDecode(r.JsonBody, &in); e != nil {
+			return nil, e
+		}
+		return s.application.CreateTaskControlSource(ctx, a, id, in)
+	case v.TaskControlConnectionRequest_ACTION_SOURCE_GET:
+		rid, e := uuid.Parse(r.AccountId)
+		if e != nil {
+			return nil, invalidRequest()
+		}
+		return s.application.GetTaskControlSource(ctx, a, id, rid)
+	case v.TaskControlConnectionRequest_ACTION_IMPORT_PREVIEW:
+		var in application.TaskControlImportInput
+		if e := taskControlDecode(r.JsonBody, &in); e != nil {
+			return nil, e
+		}
+		return s.application.PreviewTaskControlImport(ctx, a, id, in, r.Operation == "v2")
+	case v.TaskControlConnectionRequest_ACTION_IMPORT_GET:
+		pid, e := uuid.Parse(r.AccountId)
+		if e != nil {
+			return nil, invalidRequest()
+		}
+		return s.application.GetTaskControlImport(ctx, a, id, pid)
+	case v.TaskControlConnectionRequest_ACTION_IMPORT_APPLY:
+		pid, e := uuid.Parse(r.AccountId)
+		if e != nil {
+			return nil, invalidRequest()
+		}
+		var in application.TaskControlImportApplyInput
+		if e = taskControlDecode(r.JsonBody, &in); e != nil {
+			return nil, e
+		}
+		return s.application.ApplyTaskControlImport(ctx, a, id, pid, in, r.Operation == "v2")
 	}
 	return nil, invalidRequest()
 }

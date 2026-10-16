@@ -1,0 +1,37 @@
+{
+  "items": [
+    {
+      "id": "10000000-0000-4000-8000-000000000001",
+      "sequence": "12345",
+      "eventType": "publication_restored",
+      "scope": {
+        "companyId": "10000000-0000-4000-8000-000000000010",
+        "bindingId": "10000000-0000-4000-8000-000000000011",
+        "installationId": "10000000-0000-4000-8000-000000000012",
+        "integrationId": "10000000-0000-4000-8000-000000000013",
+        "accountId": "123456",
+        "generation": 1,
+        "bindingRevision": 3,
+        "modeEpoch": 2,
+        "product": "task-control"
+      },
+      "actorId": "10000000-0000-4000-8000-000000000014",
+      "createdAt": "2026-10-16T10:00:00Z",
+      "details": {
+        "publicationId": "10000000-0000-4000-8000-000000000015",
+        "restoredFromId": "10000000-0000-4000-8000-000000000016",
+        "version": 6,
+        "schemaVersion": 2,
+        "reason": "Восстановить согласованный intent",
+        "changedRuleCount": 1,
+        "ruleChanges": [
+          {
+            "uid": "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+            "change": "changed"
+          }
+        ],
+        "diffTruncated": false
+      }
+    }
+  ]
+}

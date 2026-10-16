@@ -807,6 +807,16 @@ const (
 	TaskControlConnectionRequest_ACTION_ROLLBACK_V2        TaskControlConnectionRequest_Action = 30
 	TaskControlConnectionRequest_ACTION_MODE_PREVIEW_V2    TaskControlConnectionRequest_Action = 31
 	TaskControlConnectionRequest_ACTION_MODE_V2            TaskControlConnectionRequest_Action = 32
+	TaskControlConnectionRequest_ACTION_SOURCE_CREATE      TaskControlConnectionRequest_Action = 33
+	TaskControlConnectionRequest_ACTION_SOURCE_GET         TaskControlConnectionRequest_Action = 34
+	TaskControlConnectionRequest_ACTION_SOURCE_PENDING     TaskControlConnectionRequest_Action = 35
+	TaskControlConnectionRequest_ACTION_SOURCE_SUBMIT      TaskControlConnectionRequest_Action = 36
+	TaskControlConnectionRequest_ACTION_IMPORT_PREVIEW     TaskControlConnectionRequest_Action = 37
+	TaskControlConnectionRequest_ACTION_IMPORT_GET         TaskControlConnectionRequest_Action = 38
+	TaskControlConnectionRequest_ACTION_IMPORT_APPLY       TaskControlConnectionRequest_Action = 39
+	TaskControlConnectionRequest_ACTION_RUNTIME_CONNECTION TaskControlConnectionRequest_Action = 40
+	TaskControlConnectionRequest_ACTION_HISTORY            TaskControlConnectionRequest_Action = 41
+	TaskControlConnectionRequest_ACTION_ROLLBACK           TaskControlConnectionRequest_Action = 42
 )
 
 // Enum value maps for TaskControlConnectionRequest_Action.
@@ -845,6 +855,16 @@ var (
 		30: "ACTION_ROLLBACK_V2",
 		31: "ACTION_MODE_PREVIEW_V2",
 		32: "ACTION_MODE_V2",
+		33: "ACTION_SOURCE_CREATE",
+		34: "ACTION_SOURCE_GET",
+		35: "ACTION_SOURCE_PENDING",
+		36: "ACTION_SOURCE_SUBMIT",
+		37: "ACTION_IMPORT_PREVIEW",
+		38: "ACTION_IMPORT_GET",
+		39: "ACTION_IMPORT_APPLY",
+		40: "ACTION_RUNTIME_CONNECTION",
+		41: "ACTION_HISTORY",
+		42: "ACTION_ROLLBACK",
 	}
 	TaskControlConnectionRequest_Action_value = map[string]int32{
 		"ACTION_UNSPECIFIED":        0,
@@ -880,6 +900,16 @@ var (
 		"ACTION_ROLLBACK_V2":        30,
 		"ACTION_MODE_PREVIEW_V2":    31,
 		"ACTION_MODE_V2":            32,
+		"ACTION_SOURCE_CREATE":      33,
+		"ACTION_SOURCE_GET":         34,
+		"ACTION_SOURCE_PENDING":     35,
+		"ACTION_SOURCE_SUBMIT":      36,
+		"ACTION_IMPORT_PREVIEW":     37,
+		"ACTION_IMPORT_GET":         38,
+		"ACTION_IMPORT_APPLY":       39,
+		"ACTION_RUNTIME_CONNECTION": 40,
+		"ACTION_HISTORY":            41,
+		"ACTION_ROLLBACK":           42,
 	}
 )
 
@@ -13021,7 +13051,7 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\x1fReadDistributionRuntimeResponse\x12\x18\n" +
 	"\apayload\x18\x01 \x01(\fR\apayload\"<\n" +
 	" WriteDistributionRuntimeResponse\x12\x18\n" +
-	"\apayload\x18\x01 \x01(\fR\apayload\"\xff\a\n" +
+	"\apayload\x18\x01 \x01(\fR\apayload\"\xf8\t\n" +
 	"\x1cTaskControlConnectionRequest\x12N\n" +
 	"\x06action\x18\x01 \x01(\x0e26.teamos.company.v1.TaskControlConnectionRequest.ActionR\x06action\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\x12\x1d\n" +
@@ -13031,7 +13061,7 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\n" +
 	"credential\x18\x05 \x01(\tR\n" +
 	"credential\x12\x1c\n" +
-	"\toperation\x18\x06 \x01(\tR\toperation\"\x84\x06\n" +
+	"\toperation\x18\x06 \x01(\tR\toperation\"\xfd\a\n" +
 	"\x06Action\x12\x16\n" +
 	"\x12ACTION_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13ACTION_INSTALLATION\x10\x01\x12\x0f\n" +
@@ -13066,7 +13096,17 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\x15ACTION_APPLICATION_V2\x10\x1d\x12\x16\n" +
 	"\x12ACTION_ROLLBACK_V2\x10\x1e\x12\x1a\n" +
 	"\x16ACTION_MODE_PREVIEW_V2\x10\x1f\x12\x12\n" +
-	"\x0eACTION_MODE_V2\x10 \"<\n" +
+	"\x0eACTION_MODE_V2\x10 \x12\x18\n" +
+	"\x14ACTION_SOURCE_CREATE\x10!\x12\x15\n" +
+	"\x11ACTION_SOURCE_GET\x10\"\x12\x19\n" +
+	"\x15ACTION_SOURCE_PENDING\x10#\x12\x18\n" +
+	"\x14ACTION_SOURCE_SUBMIT\x10$\x12\x19\n" +
+	"\x15ACTION_IMPORT_PREVIEW\x10%\x12\x15\n" +
+	"\x11ACTION_IMPORT_GET\x10&\x12\x17\n" +
+	"\x13ACTION_IMPORT_APPLY\x10'\x12\x1d\n" +
+	"\x19ACTION_RUNTIME_CONNECTION\x10(\x12\x12\n" +
+	"\x0eACTION_HISTORY\x10)\x12\x13\n" +
+	"\x0fACTION_ROLLBACK\x10*\"<\n" +
 	"\x1dTaskControlConnectionResponse\x12\x1b\n" +
 	"\tjson_body\x18\x01 \x01(\fR\bjsonBody*~\n" +
 	"\bUserRole\x12\x19\n" +

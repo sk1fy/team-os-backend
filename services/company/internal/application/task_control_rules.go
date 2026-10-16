@@ -39,16 +39,17 @@ type TaskControlPublishInput struct {
 	Reason                  string    `json:"reason"`
 }
 type TaskControlPublication struct {
-	ID            uuid.UUID        `json:"id"`
-	Scope         TaskControlScope `json:"scope"`
-	Version       int64            `json:"version"`
-	DraftRevision int64            `json:"draftRevision"`
-	SchemaVersion int              `json:"schemaVersion"`
-	Checksum      string           `json:"checksum"`
-	Rules         []tc.Rule        `json:"rules"`
-	CreatedAt     time.Time        `json:"createdAt"`
-	CreatedBy     uuid.UUID        `json:"createdBy"`
-	Reason        string           `json:"reason"`
+	ID             uuid.UUID        `json:"id"`
+	Scope          TaskControlScope `json:"scope"`
+	Version        int64            `json:"version"`
+	DraftRevision  int64            `json:"draftRevision"`
+	SchemaVersion  int              `json:"schemaVersion"`
+	Checksum       string           `json:"checksum"`
+	Rules          []tc.Rule        `json:"rules"`
+	CreatedAt      time.Time        `json:"createdAt"`
+	CreatedBy      uuid.UUID        `json:"createdBy"`
+	Reason         string           `json:"reason"`
+	RestoredFromID *uuid.UUID       `json:"restoredFromId,omitempty"`
 }
 type TaskControlModeInput struct {
 	ExpectedBindingRevision int64     `json:"expectedBindingRevision"`
@@ -84,6 +85,10 @@ func (s *Service) taskControlRulesTx(ctx context.Context, a Actor, id uuid.UUID,
 		return nil, nil, c, e
 	}
 	q = db.New(tx)
+	if e = q.SetTaskControlAuditActor(ctx, a.UserID.String()); e != nil {
+		_ = tx.Rollback(ctx)
+		return nil, nil, c, e
+	}
 	fail := func(err error) (pgx.Tx, *db.Queries, db.TaskControlConnection, error) {
 		_ = tx.Rollback(ctx)
 		return nil, nil, c, err
@@ -272,15 +277,15 @@ func (s *Service) PublishTaskControlDraft(ctx context.Context, a Actor, id uuid.
 			return out, coded(ErrorValidation, issues[0].Code, issues[0].Message)
 		}
 	}
-	rows, e := q.ListTaskControlPublications(ctx, db.ListTaskControlPublicationsParams{CompanyID: a.CompanyID, BindingID: id})
+	latest, e := q.GetTaskControlPublicationHighWater(ctx, db.GetTaskControlPublicationHighWaterParams{CompanyID: a.CompanyID, BindingID: id})
 	if e != nil {
 		return out, e
 	}
-	version := int64(1)
-	if len(rows) > 0 {
-		version = rows[0].Version + 1
+	if latest >= 9007199254740991 {
+		return out, conflict("Исчерпан счётчик публикаций")
 	}
-	out = TaskControlPublication{uuid.New(), taskControlScope(c), version, d.Revision, 1, d.Checksum, rules, s.now().UTC(), a.UserID, in.Reason}
+	version := latest + 1
+	out = TaskControlPublication{uuid.New(), taskControlScope(c), version, d.Revision, 1, d.Checksum, rules, s.now().UTC(), a.UserID, in.Reason, nil}
 	payload, _ := json.Marshal(out)
 	_, e = q.CreateTaskControlPublication(ctx, db.CreateTaskControlPublicationParams{CompanyID: a.CompanyID, BindingID: id, ID: out.ID, RequestID: in.RequestID, BodyHash: hs, Payload: payload})
 	if e != nil {
@@ -292,7 +297,14 @@ func (s *Service) PublishTaskControlDraft(ctx context.Context, a Actor, id uuid.
 	}
 	return out, tx.Commit(ctx)
 }
-func (s *Service) TaskControlPublications(ctx context.Context, a Actor, id, publication uuid.UUID) (any, error) {
+func (s *Service) TaskControlPublications(ctx context.Context, a Actor, id, publication uuid.UUID, options ...TaskControlPublicationOptionsV2) (any, error) {
+	if publication == uuid.Nil {
+		var opts TaskControlPublicationOptionsV2
+		if len(options) > 0 {
+			opts = options[0]
+		}
+		return s.taskControlPublicationsPage(ctx, a, id, opts, false)
+	}
 	tx, q, c, e := s.taskControlRulesTx(ctx, a, id, false)
 	if e != nil {
 		return nil, e
@@ -308,15 +320,7 @@ func (s *Service) TaskControlPublications(ctx context.Context, a Actor, id, publ
 		}
 		return json.RawMessage(p.Payload), nil
 	}
-	rows, e := q.ListTaskControlPublications(ctx, db.ListTaskControlPublicationsParams{CompanyID: a.CompanyID, BindingID: id})
-	if e != nil {
-		return nil, e
-	}
-	items := []json.RawMessage{}
-	for _, p := range rows {
-		items = append(items, p.Payload)
-	}
-	return map[string]any{"items": items}, nil
+	return nil, notFound("Публикация")
 }
 func (s *Service) SetTaskControlMode(ctx context.Context, a Actor, id uuid.UUID, in TaskControlModeInput) (TaskControlIntent, error) {
 	var out TaskControlIntent

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/google/uuid"
 	"github.com/sk1fy/team-os-backend/pkg/apierror"
 	sharedauth "github.com/sk1fy/team-os-backend/pkg/auth"
 	"github.com/sk1fy/team-os-backend/pkg/httpx"
@@ -70,6 +71,12 @@ func bearerToken(header string) (string, bool) {
 
 func isPublic(method, path string) bool {
 	switch {
+	case method == http.MethodGet && path == "/api/v1/widget/task-control/connection":
+		return true
+	case method == http.MethodGet && path == "/api/v1/widget/task-control/source-requests":
+		return true
+	case method == http.MethodPut && isTaskControlBridgeResult(path):
+		return true
 	case method == http.MethodPost && path == "/api/v1/widget/task-control/sessions":
 		return true
 	case method == http.MethodGet && (path == "/api/v1/widget/task-control/bootstrap" || path == "/api/v2/task-control/runtime/bootstrap"):
@@ -151,4 +158,15 @@ func isExternalAcademyMutation(path string) bool {
 	return strings.HasPrefix(path, "/api/v1/public/academy/access/") ||
 		strings.HasPrefix(path, "/api/v1/public/academy/verifications/") ||
 		strings.HasPrefix(path, "/api/v1/public/academy/enrollments/")
+}
+
+// Only the exact result route uses a fresh Core admin assertion instead of TeamOS JWT.
+func isTaskControlBridgeResult(path string) bool {
+	const prefix = "/api/v1/widget/task-control/source-requests/"
+	if !strings.HasPrefix(path, prefix) || !strings.HasSuffix(path, "/result") {
+		return false
+	}
+	id := strings.TrimSuffix(strings.TrimPrefix(path, prefix), "/result")
+	parsed, err := uuid.Parse(id)
+	return err == nil && parsed != uuid.Nil && len(id) == 36 && !strings.Contains(id, "/")
 }

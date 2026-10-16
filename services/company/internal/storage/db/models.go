@@ -608,6 +608,18 @@ type TaskControlAssertionUse struct {
 	ExpiresAt time.Time `json:"expires_at"`
 }
 
+type TaskControlAuditEvent struct {
+	Sequence  int64         `json:"sequence"`
+	ID        uuid.UUID     `json:"id"`
+	CompanyID uuid.UUID     `json:"company_id"`
+	BindingID uuid.UUID     `json:"binding_id"`
+	EventType string        `json:"event_type"`
+	Scope     []byte        `json:"scope"`
+	ActorID   uuid.NullUUID `json:"actor_id"`
+	CreatedAt time.Time     `json:"created_at"`
+	Details   []byte        `json:"details"`
+}
+
 type TaskControlConfirmedEmployeeMapping struct {
 	CompanyID  uuid.UUID `json:"company_id"`
 	AccountID  string    `json:"account_id"`
@@ -660,6 +672,14 @@ type TaskControlEmployeeMapping struct {
 	AccountID  string    `json:"account_id"`
 	EmployeeID uuid.UUID `json:"employee_id"`
 	CrmUserID  string    `json:"crm_user_id"`
+}
+
+type TaskControlImportObject struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	BindingID uuid.UUID `json:"binding_id"`
+	ID        uuid.UUID `json:"id"`
+	Kind      string    `json:"kind"`
+	Payload   []byte    `json:"payload"`
 }
 
 type TaskControlInstallationSnapshot struct {
