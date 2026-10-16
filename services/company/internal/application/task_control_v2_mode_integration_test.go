@@ -140,6 +140,16 @@ func TestTaskControlDynamicModeConfirmationEpochAndRollback(t *testing.T) {
 	if e != nil || envelope.Scope.ModeEpoch != 3 || len(envelope.RuntimeRules) != 1 || len(envelope.RuntimeRules[0].Users) != 1 {
 		t.Fatal("managed runtime", envelope, e)
 	}
+	if taskControlReleaseDrillEnabled() {
+		event := TaskControlTelemetryInput{Scope: envelope.Scope, ActorID: "7", RuntimeInstanceID: uuid.New(), RuntimeVersion: "1.2.3", Event: "received", EventID: uuid.New(), OccurredAt: now, CorrelationID: uuid.New(), PublicationID: envelope.PublicationID, PublicationVersion: envelope.PublicationVersion, SnapshotID: envelope.SnapshotID, RuntimeRevision: envelope.RuntimeRevision, PayloadChecksum: envelope.PayloadChecksum}
+		if e = svc.RecordTaskControlTelemetry(ctx, managedSession.AccessToken, event); e != nil {
+			t.Fatal(e)
+		}
+		event.Event, event.EventID = "applied", uuid.New()
+		if e = svc.RecordTaskControlTelemetry(ctx, managedSession.AccessToken, event); e != nil {
+			t.Fatal(e)
+		}
+	}
 	// A confirmation binds the complete export and both organization/mapping revisions.
 	preview = previewMode("standalone", original.ID)
 	exported := preview["runtimeRules"].([]tc.LegacyRule)
@@ -209,5 +219,10 @@ func TestTaskControlDynamicModeConfirmationEpochAndRollback(t *testing.T) {
 	var count int
 	if e = pool.QueryRow(ctx, `SELECT count(*) FROM task_control_publications WHERE company_id=$1 AND binding_id=$2`, company, binding).Scan(&count); e != nil || count != 4 {
 		t.Fatal("failed restore allocated publication", count, e)
+	}
+	if taskControlReleaseDrillEnabled() {
+		t.Run("release_backup_restore", func(t *testing.T) {
+			verifyTaskControlReleaseBackupRestore(t, ctx, pool, svc, actor, binding, original)
+		})
 	}
 }

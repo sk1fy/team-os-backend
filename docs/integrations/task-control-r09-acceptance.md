@@ -111,7 +111,7 @@ actor-проекции той же публикации. Gateway, Core HTTP, amo
 | Импортировать legacy | source request → preview → новый verification snapshot → apply; apply не публикует draft |
 | Опубликовать/восстановить | publications/rollback; immutable publication, requestId и optimistic revisions; restore не исполняет промежуточный draft |
 | История/публикации | непрозрачный cursor + limit; применяются текущие read permissions |
-| Переключить режим | mode intent prepared → confirmed → completed; после confirmed нужен reconciliation, автоматический timeout rollback запрещён |
+| Переключить режим | V1: prepared → confirmed → completed; confirmed требует reconciliation. V2: mode-preview → mode-intents с fences/proof/подтверждениями возвращает server completed и full export receipt; это не доказывает сохранение настроек amoCRM |
 | Диагностика применения | application status; observedInstancesOnly, allInstancesApplied=false; ACK одной вкладки не означает всех |
 
 Точные request/response, codes и permissions: [контракт](task-control-contract.md),
