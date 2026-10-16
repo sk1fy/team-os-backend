@@ -6,7 +6,7 @@
 
 `GET /api/v1/task-control/connections/{bindingId}/history` и аналогичный v2 путь возвращают
 `{items, nextCursor?}`. Каждый элемент содержит `id`, десятичную строку `sequence`,
-`eventType`, сохранённый `scope`, `actorId` (UUID TeamOS или `null` для автоматики),
+`eventType`, сохранённый `scope`, `actorId` (в v2 UUID TeamOS или `null` для автоматики),
 `createdAt` и `details`. Текущие членство и `taskControl.read` проверяются при каждом
 чтении. Чужой binding даёт 404. История доступна после revoke и при недоступном Core:
 чтение сохранённых событий не требует свежей установки.
@@ -88,3 +88,9 @@ mapping. Исторический состав отдела и старый runt
 
 Все management ответы используют `Cache-Control: private, no-store`.
 ACK/telemetry/application-status v1 относятся к следующей задаче R07.
+
+V1 сохраняет исходные обязательные поля `action`, `reason`, `actorId` и ссылки
+`publicationId`/`requestId`. У автоматических событий `actorType: system` и нулевой
+UUID `actorId`; этот UUID не обозначает пользователя. У пользовательских событий
+`actorType: user`. Новые поля `eventType`, `sequence`, `details` добавлены к этому
+формату. V2 использует `actorId: null` для системных событий.

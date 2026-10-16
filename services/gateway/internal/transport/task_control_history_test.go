@@ -35,6 +35,12 @@ func TestTaskControlHistoryAndRestoreUseAuthenticatedCompanyActor(t *testing.T) 
 				t.Fatalf("%d %s", rec.Code, rec.Body.String())
 			}
 			got := client.calls[0]
+			if strings.Contains(tc.path, "/v1/") && strings.Contains(tc.path, "/history") && got.Operation != "history-v1" {
+				t.Fatal("v1 history lost compatibility projection", got)
+			}
+			if strings.Contains(tc.path, "/v2/") && got.Operation != "" {
+				t.Fatal("v2 history must preserve nullable authors", got)
+			}
 			if got.Action != tc.action || got.Id != binding || client.service[0] || got.Credential != "" {
 				t.Fatal("wrong authorization boundary", got)
 			}

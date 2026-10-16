@@ -37,7 +37,7 @@ func (h *Handler) UpdateTaskControlDraft(w http.ResponseWriter, r *http.Request,
 
 func (h *Handler) GetTaskControlHistory(w http.ResponseWriter, r *http.Request, bindingID api.ID, params api.GetTaskControlHistoryParams) {
 	raw, _ := json.Marshal(params)
-	h.taskControlCall(w, r, &v.TaskControlConnectionRequest{Action: v.TaskControlConnectionRequest_ACTION_HISTORY, Id: bindingID.String(), JsonBody: raw}, false)
+	h.taskControlCall(w, r, &v.TaskControlConnectionRequest{Action: v.TaskControlConnectionRequest_ACTION_HISTORY, Id: bindingID.String(), Operation: "history-v1", JsonBody: raw}, false)
 }
 
 func (h *Handler) PreviewTaskControlImport(w http.ResponseWriter, r *http.Request, bindingID api.ID) {

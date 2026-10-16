@@ -285,3 +285,57 @@ func (s *Service) RollbackTaskControl(ctx context.Context, a Actor, id uuid.UUID
 	}
 	return out, tx.Commit(ctx)
 }
+
+// TaskControlHistoryLegacy preserves the v1 audit envelope. A zero actor UUID
+// identifies a system event explicitly; v2 represents that author as null.
+func (s *Service) TaskControlHistoryLegacy(ctx context.Context, a Actor, id uuid.UUID, opts TaskControlHistoryOptions) (any, error) {
+	out, err := s.TaskControlHistory(ctx, a, id, opts)
+	if err != nil {
+		return nil, err
+	}
+	page := out.(map[string]any)
+	events := page["items"].([]TaskControlHistoryEvent)
+	items := make([]taskControlLegacyHistoryEvent, 0, len(events))
+	for _, event := range events {
+		items = append(items, taskControlLegacyHistory(event))
+	}
+	page["items"] = items
+	return page, nil
+}
+
+type taskControlLegacyHistoryEvent struct {
+	TaskControlHistoryEvent
+	ActorID       uuid.UUID  `json:"actorId"`
+	ActorType     string     `json:"actorType"`
+	Action        string     `json:"action"`
+	Reason        string     `json:"reason"`
+	PublicationID *uuid.UUID `json:"publicationId,omitempty"`
+	RequestID     *uuid.UUID `json:"requestId,omitempty"`
+}
+
+func taskControlLegacyHistory(event TaskControlHistoryEvent) taskControlLegacyHistoryEvent {
+	item := taskControlLegacyHistoryEvent{TaskControlHistoryEvent: event, ActorType: "system"}
+	if event.ActorID != nil {
+		item.ActorID = *event.ActorID
+		item.ActorType = "user"
+	}
+	var details struct {
+		Reason        string     `json:"reason"`
+		PublicationID *uuid.UUID `json:"publicationId"`
+		RequestID     *uuid.UUID `json:"requestId"`
+		After         struct {
+			State string `json:"state"`
+		} `json:"after"`
+	}
+	_ = json.Unmarshal(event.Details, &details)
+	item.Reason, item.PublicationID, item.RequestID = details.Reason, details.PublicationID, details.RequestID
+	item.Action = map[string]string{
+		"connection_linked": "link", "draft_updated": "draftUpdated", "import_applied": "imported",
+		"publication_published": "published", "publication_restored": "rollbackPublished",
+		"mode_changed": "modeChanged", "runtime_recomputed": "runtimeRecomputed", "connection_updated": "settingsChanged",
+	}[event.EventType]
+	if event.EventType == "connection_updated" && details.After.State == "revoked" {
+		item.Action = "revoked"
+	}
+	return item
+}

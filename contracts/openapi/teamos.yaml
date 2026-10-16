@@ -5560,7 +5560,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TaskControlHistoryPage'
+                $ref: '#/components/schemas/TaskControlHistory'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -6108,7 +6108,6 @@ paths:
           type: integer
           minimum: 1
           maximum: 100
-          default: 50
   /api/v2/task-control/connections/{bindingId}/publications/{publicationId}:
     parameters:
     - name: bindingId
@@ -9293,6 +9292,7 @@ components:
     UserSource:
       type: string
       enum: [local, amo, external]
+      x-enum-varnames: [UserSourceLocal, UserSourceAmo, UserSourceExternal]
       description: >-
         Источник сотрудника. Профиль, роль, статус и доступ управляются в TeamOS.
         Для `amo` факт наличия сотрудника периодически сверяется с amoCRM;
@@ -15277,6 +15277,8 @@ components:
           - rollbackPublished
           - modeChanged
           - revoked
+          - settingsChanged
+          - runtimeRecomputed
           x-enum-varnames:
           - TaskControlAuditEntryActionLink
           - TaskControlAuditEntryActionDraftUpdated
@@ -15285,6 +15287,8 @@ components:
           - TaskControlAuditEntryActionRollbackPublished
           - TaskControlAuditEntryActionModeChanged
           - TaskControlAuditEntryActionRevoked
+          - TaskControlAuditEntryActionSettingsChanged
+          - TaskControlAuditEntryActionRuntimeRecomputed
         createdAt:
           type: string
           format: date-time
@@ -15294,6 +15298,17 @@ components:
           type: string
         publicationId:
           $ref: '#/components/schemas/ID'
+        actorType:
+          type: string
+          enum: [user, system]
+          description: Системные события используют нулевой UUID actorId для совместимости v1; это не пользователь TeamOS.
+        eventType:
+          type: string
+        sequence:
+          type: string
+          pattern: '^[1-9][0-9]*$'
+        details:
+          $ref: '#/components/schemas/TaskControlAuditDetails'
     TaskControlHistoryPage:
       type: object
       additionalProperties: false

@@ -180,7 +180,11 @@ func (s *Server) TaskControlConnection(ctx context.Context, r *v.TaskControlConn
 					return nil, e
 				}
 			}
-			out, err = s.application.TaskControlHistory(ctx, a, id, opts)
+			if r.Operation == "history-v1" {
+				out, err = s.application.TaskControlHistoryLegacy(ctx, a, id, opts)
+			} else {
+				out, err = s.application.TaskControlHistory(ctx, a, id, opts)
+			}
 		} else {
 			var in application.TaskControlRollbackInputV2
 			if e = taskControlDecode(r.JsonBody, &in); e != nil {
