@@ -47,6 +47,7 @@ type Querier interface {
 	ConsumeTaskControlAssertion(ctx context.Context, arg ConsumeTaskControlAssertionParams) (int64, error)
 	CountDepartmentChildren(ctx context.Context, arg CountDepartmentChildrenParams) (int64, error)
 	CountDepartmentPositions(ctx context.Context, arg CountDepartmentPositionsParams) (int64, error)
+	CountTaskControlRuntimeSessions(ctx context.Context, arg CountTaskControlRuntimeSessionsParams) (int64, error)
 	CreateAmoUser(ctx context.Context, arg CreateAmoUserParams) (User, error)
 	CreateAmoWidgetContinuation(ctx context.Context, arg CreateAmoWidgetContinuationParams) (SsoToken, error)
 	CreateAmoWidgetIdentity(ctx context.Context, arg CreateAmoWidgetIdentityParams) (UserExternalIdentity, error)
@@ -223,6 +224,8 @@ type Querier interface {
 	PauseDistributionObservedEntry(ctx context.Context, id uuid.UUID) error
 	PromoteAmoWidgetAdmin(ctx context.Context, arg PromoteAmoWidgetAdminParams) (User, error)
 	PromoteAmoWidgetOwner(ctx context.Context, arg PromoteAmoWidgetOwnerParams) (User, error)
+	PruneTaskControlAssertions(ctx context.Context, expiresAt time.Time) (int64, error)
+	PruneTaskControlRuntimeSessions(ctx context.Context, expiresAt time.Time) (int64, error)
 	ReassignUserInvites(ctx context.Context, arg ReassignUserInvitesParams) error
 	RecordDistributionBindingVersion(ctx context.Context, arg RecordDistributionBindingVersionParams) error
 	RegisterDistributionOperationMirror(ctx context.Context, arg RegisterDistributionOperationMirrorParams) error

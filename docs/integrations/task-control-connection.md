@@ -129,3 +129,11 @@ Core `go vet`, frontend build/contract:check и 2 клиента, standalone 58/
 `GET /api/v1/widget/task-control/bootstrap` в managed возвращает `publication` с canonical rules и `runtimeRules` в legacy формате. Scope runtime-публикации отражает текущую привязку/эпоху; исторический scope неизменяемой публикации в management API сохраняется. Checksum рассчитан по нормализованному legacy JSON виджета (сортировка UID, числовых ID/воронок/статусов и обрезка пробелов имени). Runtime получает только опубликованную версию, никогда черновик.
 
 В MVP валидация структурная (`referencesRevision=structural-v1`): существование/активность CRM ID не подтверждается, справочники и импорт ещё не реализованы. UI явно использует ручной ввод CRM ID. Расширенные source/import/history/rollback/ACK операции сохраняют 501. Список публикаций возвращает последние 100 записей; cursor пока не используется. MVP не заявляет подтверждение применения правил всеми вкладками или полный мониторинг.
+
+## Уточнение runtime R01 (16.10.2026)
+
+Реализованы ограниченная offline lease (до 300 секунд, только память вкладки),
+renewal/retry и очистка/лимиты сессий; актуальные TTL, ошибки, совместимость
+пакета 1.1.4 и граница v2 описаны в [task-control-r01-runtime.md](task-control-r01-runtime.md).
+При outage последний снимок действует только до своей lease, cold offline reload
+работает fail-open. Poll — 60 секунд в видимой вкладке, backoff до 300 секунд.

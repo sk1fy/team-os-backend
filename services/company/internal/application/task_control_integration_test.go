@@ -51,6 +51,13 @@ func TestTaskControlLifecycle(t *testing.T) {
 	if _, e = pool.Exec(ctx, string(migration)); e != nil {
 		t.Fatal(e)
 	}
+	migration, e = os.ReadFile(filepath.Join(filepath.Dir(file), "../../migrations/000034_task_control_runtime_limits.up.sql"))
+	if e != nil {
+		t.Fatal(e)
+	}
+	if _, e = pool.Exec(ctx, string(migration)); e != nil {
+		t.Fatal(e)
+	}
 	company, ownerID, employeeID := uuid.New(), uuid.New(), uuid.New()
 	owner := Actor{CompanyID: company, UserID: ownerID, Role: "owner"}
 	employee := Actor{CompanyID: company, UserID: employeeID, Role: "employee"}
@@ -63,8 +70,9 @@ func TestTaskControlLifecycle(t *testing.T) {
 	core := &tcTestCore{status: tc.Installation{CompanyID: company, AccountID: "123", InstallationID: &install, IntegrationID: &integration, Product: tc.Product, State: "installed", Revision: 1, Generation: 1, CheckedAt: now, FreshUntil: now.Add(5 * time.Minute)}}
 	pub, key, _ := ed25519.GenerateKey(rand.Reader)
 	svc := &Service{pool: pool, now: func() time.Time { return now }, taskControlCore: core, taskControlKeys: map[string]ed25519.PublicKey{"key": pub}}
+	crmActor := "7"
 	assertion := func(purpose string, request uuid.UUID, admin bool) string {
-		a := tc.Assertion{Audience: "teamos-task-control", ID: uuid.NewString(), IssuedAt: now.Unix(), ExpiresAt: now.Add(time.Minute).Unix(), CompanyID: company, InstallationID: install, IntegrationID: integration, AccountID: "123", ActorID: "7", Product: tc.Product, Generation: core.status.Generation, Admin: admin, Purpose: purpose, RequestID: request}
+		a := tc.Assertion{Audience: "teamos-task-control", ID: uuid.NewString(), IssuedAt: now.Unix(), ExpiresAt: now.Add(time.Minute).Unix(), CompanyID: company, InstallationID: install, IntegrationID: integration, AccountID: "123", ActorID: crmActor, Product: tc.Product, Generation: core.status.Generation, Admin: admin, Purpose: purpose, RequestID: request}
 		raw, _ := json.Marshal(a)
 		prefix := "key." + base64.RawURLEncoding.EncodeToString(raw)
 		return prefix + "." + base64.RawURLEncoding.EncodeToString(ed25519.Sign(key, []byte("teamos-task-control/v1\n"+prefix)))
@@ -260,7 +268,11 @@ func TestTaskControlLifecycle(t *testing.T) {
 	}
 	encoded, _ := json.Marshal(boot)
 	var envelope struct {
-		Mode        string `json:"mode"`
+		Mode        string    `json:"mode"`
+		Schema      int       `json:"runtimeSchemaVersion"`
+		Actor       string    `json:"actorId"`
+		IssuedAt    time.Time `json:"issuedAt"`
+		ValidUntil  time.Time `json:"validUntil"`
 		Publication struct {
 			Checksum     string           `json:"checksum"`
 			Scope        TaskControlScope `json:"scope"`
@@ -268,7 +280,7 @@ func TestTaskControlLifecycle(t *testing.T) {
 		} `json:"publication"`
 	}
 	_ = json.Unmarshal(encoded, &envelope)
-	if envelope.Mode != "managed" || envelope.Publication.Checksum != fx.Checksum || envelope.Publication.Scope.ModeEpoch != 2 || len(envelope.Publication.RuntimeRules) != 2 {
+	if envelope.Schema != 1 || envelope.Actor != "7" || !envelope.IssuedAt.Equal(now) || envelope.ValidUntil.Sub(now) != taskControlSessionTTL || envelope.Mode != "managed" || envelope.Publication.Checksum != fx.Checksum || envelope.Publication.Scope.ModeEpoch != 2 || len(envelope.Publication.RuntimeRules) != 2 {
 		t.Fatalf("bootstrap %s", encoded)
 	}
 	// Existing lifecycle below exercises a standalone connection; return explicitly.
@@ -303,6 +315,61 @@ func TestTaskControlLifecycle(t *testing.T) {
 	}
 	if success != 1 {
 		t.Fatalf("concurrent successes %d", success)
+	}
+	// Multiple independent tabs coexist; admission is serialized and bounded per actor.
+	for i := 2; i < taskControlMaxActorSessions-1; i++ {
+		if _, e = svc.ExchangeTaskControlSession(ctx, assertion("runtime", uuid.New(), false)); e != nil {
+			t.Fatal("session admission", i, e)
+		}
+	}
+	admitted := make(chan error, 2)
+	for i := 0; i < 2; i++ {
+		proof := assertion("runtime", uuid.New(), false)
+		wg.Add(1)
+		go func() { defer wg.Done(); _, err := svc.ExchangeTaskControlSession(ctx, proof); admitted <- err }()
+	}
+	wg.Wait()
+	close(admitted)
+	admissionSuccess := 0
+	for err := range admitted {
+		if err == nil {
+			admissionSuccess++
+		} else if !isCompanyError(err, ErrorUpstream) {
+			t.Fatal("concurrent admission", err)
+		}
+	}
+	if admissionSuccess != 1 {
+		t.Fatal("concurrent admission exceeded cap", admissionSuccess)
+	}
+	crmActor = "8"
+	if _, e = svc.ExchangeTaskControlSession(ctx, assertion("runtime", uuid.New(), false)); e != nil {
+		t.Fatal("session limit leaked between actors", e)
+	}
+	crmActor = "7"
+	if _, e = svc.ExchangeTaskControlSession(ctx, assertion("runtime", uuid.New(), false)); !isCompanyError(e, ErrorUpstream) {
+		t.Fatal("session limit", e)
+	}
+	if _, _, e = svc.AuthorizeTaskControlRuntime(ctx, session.AccessToken); e != nil {
+		t.Fatal("another tab revoked existing session", e)
+	}
+	if _, e = pool.Exec(ctx, `INSERT INTO task_control_assertion_uses(key_id,jti,company_id,expires_at) SELECT 'expired-batch',gen_random_uuid(),$1,$2 FROM generate_series(1,1005)`, company, now.Add(-time.Second)); e != nil {
+		t.Fatal(e)
+	}
+	if e = svc.CleanupTaskControlRuntime(ctx); e != nil {
+		t.Fatal(e)
+	}
+	var expiredLeft int
+	if e = pool.QueryRow(ctx, `SELECT count(*) FROM task_control_assertion_uses WHERE key_id='expired-batch'`).Scan(&expiredLeft); e != nil || expiredLeft != 5 {
+		t.Fatal("cleanup exceeded batch", expiredLeft, e)
+	}
+	var retained int
+	if e = pool.QueryRow(ctx, `SELECT count(*) FROM task_control_runtime_sessions`).Scan(&retained); e != nil || retained != taskControlMaxActorSessions+1 {
+		t.Fatal("live sessions pruned", retained, e)
+	}
+	canceled, cancelRequest := context.WithCancel(ctx)
+	cancelRequest()
+	if _, _, e = svc.AuthorizeTaskControlRuntime(canceled, session.AccessToken); !isCompanyError(e, ErrorUpstream) {
+		t.Fatal("database outage became denial", e)
 	}
 	before := core.calls
 	if _, actor, e := svc.AuthorizeTaskControlRuntime(ctx, session.AccessToken); e != nil || actor != "7" {
@@ -369,6 +436,16 @@ func TestTaskControlLifecycle(t *testing.T) {
 	now = now.Add(5*time.Minute + time.Second)
 	if _, _, e = svc.AuthorizeTaskControlRuntime(ctx, session.AccessToken); !isCompanyError(e, ErrorUnauthenticated) {
 		t.Fatal("expired runtime session accepted", e)
+	}
+	if e = svc.CleanupTaskControlRuntime(ctx); e != nil {
+		t.Fatal(e)
+	}
+	var sessionsLeft, proofsLeft int
+	if e = pool.QueryRow(ctx, `SELECT (SELECT count(*) FROM task_control_runtime_sessions), (SELECT count(*) FROM task_control_assertion_uses)`).Scan(&sessionsLeft, &proofsLeft); e != nil || sessionsLeft != 0 || proofsLeft != 0 {
+		t.Fatal("expiry cleanup", sessionsLeft, proofsLeft, e)
+	}
+	if _, e = svc.ExchangeTaskControlSession(ctx, raw); e == nil {
+		t.Fatal("expired proof resurrected after cleanup")
 	}
 	now = previousNow
 	requestID := uuid.New()

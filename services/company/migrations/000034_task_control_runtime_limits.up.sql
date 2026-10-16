@@ -1,0 +1,3 @@
+CREATE INDEX task_control_session_expiry ON task_control_runtime_sessions(expires_at);
+CREATE INDEX task_control_actor_sessions ON task_control_runtime_sessions(company_id,binding_id,actor_id,expires_at);
+CREATE INDEX task_control_assertion_expiry ON task_control_assertion_uses(expires_at);
