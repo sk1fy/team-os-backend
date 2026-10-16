@@ -105,7 +105,7 @@ func (s *Service) taskControlRulesTx(ctx context.Context, a Actor, id uuid.UUID,
 		return fail(forbidden("Подключение отозвано"))
 	}
 	if manage {
-		if e = taskControlInstalled(st, c.InstallationID, c.IntegrationID, c.Generation, s.now()); e != nil {
+		if e = s.currentTaskControlInstallation(ctx, q, a.CompanyID, c.AccountID, c.InstallationID, c.IntegrationID, c.Generation); e != nil {
 			return fail(e)
 		}
 	}

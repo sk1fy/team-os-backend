@@ -332,11 +332,19 @@ func TestTaskControlLifecycle(t *testing.T) {
 	if e != nil || st.State != "unknown" {
 		t.Fatal("outage became uninstall", st, e)
 	}
+	connections, e := svc.ListTaskControlConnections(ctx, owner)
+	if e != nil || len(connections) != 1 || connections[0].State != "active" {
+		t.Fatal("unknown retired binding", connections, e)
+	}
 	core.fail = false
 	core.status.State = "notInstalled"
 	core.status.Revision = 2
 	if _, _, e = svc.AuthorizeTaskControlRuntime(ctx, session.AccessToken); !isCompanyError(e, ErrorForbidden) {
 		t.Fatalf("uninstall: %v", e)
+	}
+	connections, e = svc.ListTaskControlConnections(ctx, owner)
+	if e != nil || len(connections) != 1 || connections[0].State != "revoked" {
+		t.Fatal("confirmed uninstall did not retire binding", connections, e)
 	}
 	core.status.State = "installed"
 	core.status.Generation = 2

@@ -129,6 +129,9 @@ func (s *Service) taskControlStatus(ctx context.Context, company uuid.UUID, acco
 	cached, e := q.GetTaskControlSnapshot(ctx, db.GetTaskControlSnapshotParams{CompanyID: company, AccountID: account})
 	var prior tc.Installation
 	if e == nil && json.Unmarshal(cached.Payload, &prior) == nil && !force && prior.Valid(company, account, now) {
+		if e = s.retireTaskControlInstallation(ctx, company, account); e != nil {
+			return unknown, e
+		}
 		return prior, nil
 	}
 	if e != nil && !isNoRows(e) {
@@ -155,7 +158,52 @@ func (s *Service) taskControlStatus(ctx context.Context, company uuid.UUID, acco
 	if e != nil || json.Unmarshal(saved.Payload, &value) != nil {
 		return unknown, internal("Не удалось перечитать статус установки", e)
 	}
+	if e = s.retireTaskControlInstallation(ctx, company, account); e != nil {
+		return unknown, e
+	}
 	return value, nil
+}
+
+// Only fresh positive evidence retires a binding. Retain its draft/publications
+// for history and require an explicit link for the next installation generation.
+func (s *Service) retireTaskControlInstallation(ctx context.Context, company uuid.UUID, account string) error {
+	tx, e := s.pool.Begin(ctx)
+	if e != nil {
+		return e
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+	q := db.New(tx)
+	if e = q.LockTaskControlAccount(ctx, account); e != nil {
+		return e
+	}
+	row, e := q.GetTaskControlSnapshot(ctx, db.GetTaskControlSnapshotParams{CompanyID: company, AccountID: account})
+	if e != nil {
+		return e
+	}
+	var st tc.Installation
+	if json.Unmarshal(row.Payload, &st) != nil || !st.Valid(company, account, s.now()) || st.State == "unknown" {
+		return nil
+	}
+	connections, e := q.ListTaskControlConnections(ctx, company)
+	if e != nil {
+		return e
+	}
+	for _, c := range connections {
+		if c.AccountID != account || c.State != "active" {
+			continue
+		}
+		changed := st.State == "notInstalled" || (st.State == "installed" && (*st.InstallationID != c.InstallationID || *st.IntegrationID != c.IntegrationID || st.Generation != c.Generation))
+		if !changed {
+			continue
+		}
+		if _, e = q.RevokeTaskControlConnection(ctx, db.RevokeTaskControlConnectionParams{CompanyID: company, ID: c.ID, BindingRevision: c.BindingRevision, ModeEpoch: c.ModeEpoch}); e != nil {
+			return e
+		}
+		if e = q.DeleteTaskControlRuntimeSessions(ctx, db.DeleteTaskControlRuntimeSessionsParams{CompanyID: company, BindingID: c.ID}); e != nil {
+			return e
+		}
+	}
+	return tx.Commit(ctx)
 }
 func taskControlInstalled(status tc.Installation, installation, integration uuid.UUID, generation int64, now time.Time) error {
 	if status.State == "notInstalled" {
@@ -168,6 +216,15 @@ func taskControlInstalled(status tc.Installation, installation, integration uuid
 		return coded(ErrorForbidden, "task_control_installation_changed", "Установка изменилась; требуется новое подключение")
 	}
 	return nil
+}
+
+func (s *Service) currentTaskControlInstallation(ctx context.Context, q *db.Queries, company uuid.UUID, account string, installation, integration uuid.UUID, generation int64) error {
+	row, e := q.GetTaskControlSnapshot(ctx, db.GetTaskControlSnapshotParams{CompanyID: company, AccountID: account})
+	var st tc.Installation
+	if e != nil || json.Unmarshal(row.Payload, &st) != nil || !st.Valid(company, account, s.now()) {
+		return upstream("Статус установки Контроля задач не подтверждён", e)
+	}
+	return taskControlInstalled(st, installation, integration, generation, s.now())
 }
 func (s *Service) GetTaskControlInstallation(ctx context.Context, a Actor, account string) (tc.Installation, error) {
 	if _, e := s.taskControlActor(ctx, db.New(s.pool), a, false); e != nil {
@@ -187,6 +244,10 @@ func (s *Service) ListTaskControlConnections(ctx context.Context, a Actor) ([]Ta
 	out := make([]TaskControlConnection, 0, len(rows))
 	for _, c := range rows {
 		st, e := s.taskControlStatus(ctx, a.CompanyID, c.AccountID, false)
+		if e != nil {
+			return nil, e
+		}
+		c, e = q.GetTaskControlConnection(ctx, db.GetTaskControlConnectionParams{CompanyID: a.CompanyID, ID: c.ID})
 		if e != nil {
 			return nil, e
 		}
@@ -301,6 +362,9 @@ func (s *Service) LinkTaskControl(ctx context.Context, actor Actor, in TaskContr
 		return out, e
 	}
 	if e = s.taskControlAccount(ctx, q, actor.CompanyID, in.AccountID); e != nil {
+		return out, e
+	}
+	if e = s.currentTaskControlInstallation(ctx, q, actor.CompanyID, in.AccountID, in.InstallationID, in.IntegrationID, assertion.Generation); e != nil {
 		return out, e
 	}
 	if saved, err := q.GetTaskControlIntent(ctx, db.GetTaskControlIntentParams{CompanyID: actor.CompanyID, IntentID: in.IntentID}); err == nil {
@@ -461,6 +525,9 @@ func (s *Service) ExchangeTaskControlSession(ctx context.Context, raw string) (T
 	}
 	if c.InstallationID != a.InstallationID || c.IntegrationID != a.IntegrationID || c.Generation != a.Generation {
 		return out, forbidden("Подключение изменилось")
+	}
+	if e = s.currentTaskControlInstallation(ctx, q, a.CompanyID, a.AccountID, a.InstallationID, a.IntegrationID, a.Generation); e != nil {
+		return out, e
 	}
 	if s.now().Unix() >= a.ExpiresAt {
 		return out, forbidden("Подтверждение Core истекло")
