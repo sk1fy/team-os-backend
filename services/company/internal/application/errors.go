@@ -13,6 +13,7 @@ const (
 	ErrorUpstream
 	ErrorInternal
 	ErrorPayloadTooLarge
+	ErrorRateLimited
 )
 
 const (

@@ -31,3 +31,24 @@ func TestTaskControlRuntimeRequiresGatewayCredential(t *testing.T) {
 		}
 	}
 }
+
+func TestTaskControlTelemetryRequiresGatewayServiceCredential(t *testing.T) {
+	server := NewServer(nil, nil, "test-service-secret-that-is-long-enough")
+	for _, action := range []v.TaskControlConnectionRequest_Action{v.TaskControlConnectionRequest_ACTION_ACK, v.TaskControlConnectionRequest_ACTION_ACK_V2, v.TaskControlConnectionRequest_ACTION_TELEMETRY} {
+		_, err := server.TaskControlConnection(context.Background(), &v.TaskControlConnectionRequest{Action: action, Credential: "forged"})
+		if status.Code(err) != codes.Unauthenticated {
+			t.Fatal(action, err)
+		}
+	}
+}
+
+func TestTaskControlTelemetryRejectsFreeTextBeforeApplication(t *testing.T) {
+	server := NewServer(nil, nil, "test-service-secret-that-is-long-enough")
+	ctx := metadata.NewIncomingContext(context.Background(), metadata.Pairs("x-teamos-service", "task-control", "x-teamos-service-token", "test-service-secret-that-is-long-enough"))
+	for _, body := range []string{`{"message":"sensitive text"}`, `{"rules":[]}`, `{"assertion":"secret"}`} {
+		_, err := server.TaskControlConnection(ctx, &v.TaskControlConnectionRequest{Action: v.TaskControlConnectionRequest_ACTION_TELEMETRY, Credential: "opaque-runtime", JsonBody: []byte(body)})
+		if status.Code(err) != codes.InvalidArgument {
+			t.Fatal(body, err)
+		}
+	}
+}

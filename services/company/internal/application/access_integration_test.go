@@ -264,7 +264,7 @@ func companyAccessTestPool(t *testing.T, ctx context.Context) *pgxpool.Pool {
 	initScripts := make([]string, 0, 24)
 
 	temporary := t.TempDir()
-	for migration := 1; migration <= 39; migration++ {
+	for migration := 1; migration <= 40; migration++ {
 		name := fmt.Sprintf("%06d_%s.up.sql", migration, accessMigrationName(migration))
 		source, err := os.ReadFile(filepath.Join(migrationsDir, name))
 		if err != nil {
@@ -344,7 +344,7 @@ func accessMigrationName(migration int) string {
 		34: "task_control_runtime_limits",
 		35: "task_control_references",
 		36: "task_control_shared_mappings",
-		37: "task_control_dynamic_runtime", 38: "task_control_import", 39: "task_control_audit",
+		37: "task_control_dynamic_runtime", 38: "task_control_import", 39: "task_control_audit", 40: "task_control_runtime_diagnostics",
 	}[migration]
 }
 

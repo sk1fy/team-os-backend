@@ -27,7 +27,7 @@ func (h *Handler) taskControlCall(w http.ResponseWriter, r *http.Request, in *v.
 		apierror.Write(w, apierror.New(502, "Некорректный ответ Контроля задач"))
 		return
 	}
-	if in.Action == v.TaskControlConnectionRequest_ACTION_ACK_V2 {
+	if in.Action == v.TaskControlConnectionRequest_ACTION_ACK_V2 || in.Action == v.TaskControlConnectionRequest_ACTION_ACK || in.Action == v.TaskControlConnectionRequest_ACTION_TELEMETRY {
 		w.WriteHeader(http.StatusNoContent)
 		return
 	}

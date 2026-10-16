@@ -734,6 +734,36 @@ type TaskControlReferenceRevision struct {
 	MappingRevision      int64     `json:"mapping_revision"`
 }
 
+type TaskControlRuntimeEvent struct {
+	Sequence          int64     `json:"sequence"`
+	CompanyID         uuid.UUID `json:"company_id"`
+	BindingID         uuid.UUID `json:"binding_id"`
+	EventID           uuid.UUID `json:"event_id"`
+	ModeEpoch         int64     `json:"mode_epoch"`
+	ActorID           string    `json:"actor_id"`
+	RuntimeInstanceID uuid.UUID `json:"runtime_instance_id"`
+	PublicationID     uuid.UUID `json:"publication_id"`
+	RuntimeRevision   int64     `json:"runtime_revision"`
+	Event             string    `json:"event"`
+	PayloadHash       string    `json:"payload_hash"`
+	Payload           []byte    `json:"payload"`
+	ReceivedAt        time.Time `json:"received_at"`
+}
+
+type TaskControlRuntimeIssued struct {
+	CompanyID          uuid.UUID `json:"company_id"`
+	BindingID          uuid.UUID `json:"binding_id"`
+	ModeEpoch          int64     `json:"mode_epoch"`
+	ActorID            string    `json:"actor_id"`
+	IssueKey           uuid.UUID `json:"issue_key"`
+	PublicationID      uuid.UUID `json:"publication_id"`
+	PublicationVersion int64     `json:"publication_version"`
+	RuntimeRevision    int64     `json:"runtime_revision"`
+	PayloadChecksum    string    `json:"payload_checksum"`
+	IssuedAt           time.Time `json:"issued_at"`
+	ValidUntil         time.Time `json:"valid_until"`
+}
+
 type TaskControlRuntimeSession struct {
 	TokenHash       []byte    `json:"token_hash"`
 	CompanyID       uuid.UUID `json:"company_id"`

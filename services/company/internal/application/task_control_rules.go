@@ -411,6 +411,9 @@ func (s *Service) TaskControlBootstrap(ctx context.Context, token string) (any, 
 	if row.State != "active" || row.Mode != "managed" || row.BindingRevision != c.Scope.BindingRevision || row.ModeEpoch != c.Scope.ModeEpoch {
 		return nil, forbidden("Сессия подключения отозвана")
 	}
+	if e = s.currentTaskControlInstallation(ctx, q, row.CompanyID, row.AccountID, row.InstallationID, row.IntegrationID, row.Generation); e != nil {
+		return nil, e
+	}
 	if !row.PublicationID.Valid {
 		return nil, conflict("Нет опубликованных правил")
 	}
@@ -423,7 +426,11 @@ func (s *Service) TaskControlBootstrap(ctx context.Context, token string) (any, 
 		return nil, e
 	}
 	pub.Scope = c.Scope
-	legacy, _ := tc.Legacy(pub.Rules)
+	legacy, checksum := tc.Legacy(pub.Rules)
+	out["publicationId"] = pub.ID
+	out["publicationVersion"] = pub.Version
+	out["runtimeRevision"] = pub.Version
+	out["payloadChecksum"] = checksum
 	out["publication"] = struct {
 		TaskControlPublication
 		RuntimeRules []tc.LegacyRule `json:"runtimeRules"`
@@ -435,7 +442,10 @@ func (s *Service) TaskControlBootstrap(ctx context.Context, token string) (any, 
 	if len(encoded) > 1<<20 {
 		return nil, coded(ErrorUpstream, "task_control_runtime_payload_too_large", "Публикация превышает лимит runtime 1 MiB")
 	}
-	return out, nil
+	if e = saveTaskControlRuntimeIssue(ctx, q, c.Scope, actor, pub.ID, pub.ID, pub.Version, pub.Version, checksum, now, now.Add(taskControlSessionTTL)); e != nil {
+		return nil, e
+	}
+	return out, tx.Commit(ctx)
 }
 
 func taskControlRulesNeedReferences(rules []tc.Rule) bool {

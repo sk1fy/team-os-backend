@@ -53,6 +53,8 @@ type Querier interface {
 	ConsumeTaskControlAssertion(ctx context.Context, arg ConsumeTaskControlAssertionParams) (int64, error)
 	CountDepartmentChildren(ctx context.Context, arg CountDepartmentChildrenParams) (int64, error)
 	CountDepartmentPositions(ctx context.Context, arg CountDepartmentPositionsParams) (int64, error)
+	CountTaskControlRuntimeEvents(ctx context.Context, arg CountTaskControlRuntimeEventsParams) (int64, error)
+	CountTaskControlRuntimeInstances(ctx context.Context, arg CountTaskControlRuntimeInstancesParams) (int64, error)
 	CountTaskControlRuntimeSessions(ctx context.Context, arg CountTaskControlRuntimeSessionsParams) (int64, error)
 	CreateAmoUser(ctx context.Context, arg CreateAmoUserParams) (User, error)
 	CreateAmoWidgetContinuation(ctx context.Context, arg CreateAmoWidgetContinuationParams) (SsoToken, error)
@@ -176,6 +178,9 @@ type Querier interface {
 	GetTaskControlReferenceCache(ctx context.Context, arg GetTaskControlReferenceCacheParams) (TaskControlReferenceCache, error)
 	GetTaskControlReferenceRefresh(ctx context.Context, arg GetTaskControlReferenceRefreshParams) (TaskControlReferenceRefresh, error)
 	GetTaskControlReferenceRevisions(ctx context.Context, companyID uuid.UUID) (GetTaskControlReferenceRevisionsRow, error)
+	GetTaskControlRuntimeEvent(ctx context.Context, arg GetTaskControlRuntimeEventParams) (TaskControlRuntimeEvent, error)
+	GetTaskControlRuntimeInstanceActor(ctx context.Context, arg GetTaskControlRuntimeInstanceActorParams) (string, error)
+	GetTaskControlRuntimeIssued(ctx context.Context, arg GetTaskControlRuntimeIssuedParams) (TaskControlRuntimeIssued, error)
 	GetTaskControlRuntimeSession(ctx context.Context, arg GetTaskControlRuntimeSessionParams) (TaskControlRuntimeSession, error)
 	GetTaskControlSnapshot(ctx context.Context, arg GetTaskControlSnapshotParams) (TaskControlInstallationSnapshot, error)
 	GetTaskControlV2Ack(ctx context.Context, arg GetTaskControlV2AckParams) (TaskControlV2Ack, error)
@@ -198,6 +203,7 @@ type Querier interface {
 	GetUsersByIDs(ctx context.Context, arg GetUsersByIDsParams) ([]GetUsersByIDsRow, error)
 	GrantEmployeeSectionAccess(ctx context.Context, arg GrantEmployeeSectionAccessParams) error
 	HasCurrentTaskControlV2Ack(ctx context.Context, arg HasCurrentTaskControlV2AckParams) (bool, error)
+	HasTaskControlRuntimeApplied(ctx context.Context, arg HasTaskControlRuntimeAppliedParams) (bool, error)
 	InvalidateTaskControlReferenceCache(ctx context.Context, arg InvalidateTaskControlReferenceCacheParams) error
 	LatestDistributionLeadObservation(ctx context.Context, arg LatestDistributionLeadObservationParams) (DistributionObservation, error)
 	LatestTaskControlReferenceRefresh(ctx context.Context, arg LatestTaskControlReferenceRefreshParams) (TaskControlReferenceRefresh, error)
@@ -233,6 +239,7 @@ type Querier interface {
 	ListTaskControlPublications(ctx context.Context, arg ListTaskControlPublicationsParams) ([]TaskControlPublication, error)
 	ListTaskControlPublicationsPage(ctx context.Context, arg ListTaskControlPublicationsPageParams) ([]TaskControlPublication, error)
 	ListTaskControlPublicationsV2(ctx context.Context, arg ListTaskControlPublicationsV2Params) ([]TaskControlPublication, error)
+	ListTaskControlRuntimeEvents(ctx context.Context, arg ListTaskControlRuntimeEventsParams) ([]TaskControlRuntimeEvent, error)
 	ListUsers(ctx context.Context, companyID uuid.UUID) ([]ListUsersRow, error)
 	LockAmoAccount(ctx context.Context, arg LockAmoAccountParams) error
 	LockAmoUserSync(ctx context.Context, companyID uuid.UUID) error
@@ -257,6 +264,8 @@ type Querier interface {
 	PromoteAmoWidgetOwner(ctx context.Context, arg PromoteAmoWidgetOwnerParams) (User, error)
 	PruneTaskControlAssertions(ctx context.Context, expiresAt time.Time) (int64, error)
 	PruneTaskControlReferenceRefreshes(ctx context.Context) error
+	PruneTaskControlRuntimeEvents(ctx context.Context, before time.Time) error
+	PruneTaskControlRuntimeIssued(ctx context.Context, before time.Time) error
 	PruneTaskControlRuntimeSessions(ctx context.Context, expiresAt time.Time) (int64, error)
 	PruneTaskControlV2History(ctx context.Context) error
 	PruneTaskControlV2Issued(ctx context.Context) error
@@ -301,6 +310,8 @@ type Querier interface {
 	SaveTaskControlConnectionRequest(ctx context.Context, arg SaveTaskControlConnectionRequestParams) error
 	SaveTaskControlImportObject(ctx context.Context, arg SaveTaskControlImportObjectParams) error
 	SaveTaskControlReferenceCache(ctx context.Context, arg SaveTaskControlReferenceCacheParams) error
+	SaveTaskControlRuntimeEvent(ctx context.Context, arg SaveTaskControlRuntimeEventParams) error
+	SaveTaskControlRuntimeIssued(ctx context.Context, arg SaveTaskControlRuntimeIssuedParams) error
 	SaveTaskControlSnapshot(ctx context.Context, arg SaveTaskControlSnapshotParams) error
 	SaveTaskControlV2Ack(ctx context.Context, arg SaveTaskControlV2AckParams) error
 	SaveTaskControlV2Issued(ctx context.Context, arg SaveTaskControlV2IssuedParams) error

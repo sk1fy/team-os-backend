@@ -1,0 +1,52 @@
+[
+  {
+    "scope": {
+      "companyId": "a0000000-0000-4000-8000-000000000001",
+      "bindingId": "b0000000-0000-4000-8000-000000000001",
+      "bindingRevision": 1,
+      "installationId": "c0000000-0000-4000-8000-000000000001",
+      "integrationId": "d0000000-0000-4000-8000-000000000001",
+      "accountId": "123",
+      "product": "task-control",
+      "modeEpoch": 2,
+      "generation": 1
+    },
+    "runtimeInstanceId": "a0000000-0000-4000-8000-000000000001",
+    "actorId": "7",
+    "publicationId": "e0000000-0000-4000-8000-000000000001",
+    "publicationVersion": 7,
+    "runtimeRevision": 21,
+    "payloadChecksum": "da5c15cbef934106021f696cbef3eeadbe19c343dd7427bfd5344cc1ef084b37",
+    "runtimeVersion": "1.2.2",
+    "snapshotId": "f0000000-0000-4000-8000-000000000001",
+    "event": "received",
+    "eventId": "a0000000-0000-4000-8000-000000000004",
+    "correlationId": "a0000000-0000-4000-8000-000000000003",
+    "occurredAt": "2026-10-16T12:00:00.000Z"
+  },
+  {
+    "scope": {
+      "companyId": "a0000000-0000-4000-8000-000000000001",
+      "bindingId": "b0000000-0000-4000-8000-000000000001",
+      "bindingRevision": 1,
+      "installationId": "c0000000-0000-4000-8000-000000000001",
+      "integrationId": "d0000000-0000-4000-8000-000000000001",
+      "accountId": "123",
+      "product": "task-control",
+      "modeEpoch": 2,
+      "generation": 1
+    },
+    "runtimeInstanceId": "a0000000-0000-4000-8000-000000000001",
+    "actorId": "7",
+    "publicationId": "e0000000-0000-4000-8000-000000000001",
+    "publicationVersion": 7,
+    "runtimeRevision": 21,
+    "payloadChecksum": "da5c15cbef934106021f696cbef3eeadbe19c343dd7427bfd5344cc1ef084b37",
+    "runtimeVersion": "1.2.2",
+    "snapshotId": "f0000000-0000-4000-8000-000000000001",
+    "event": "applied",
+    "eventId": "a0000000-0000-4000-8000-000000000005",
+    "correlationId": "a0000000-0000-4000-8000-000000000003",
+    "occurredAt": "2026-10-16T12:00:00.000Z"
+  }
+]

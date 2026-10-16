@@ -31,7 +31,7 @@ func (s *Server) TaskControlConnection(ctx context.Context, r *v.TaskControlConn
 	}
 	var a application.Actor
 	var err error
-	runtime := r.Action == v.TaskControlConnectionRequest_ACTION_RUNTIME_CONNECTION || r.Action == v.TaskControlConnectionRequest_ACTION_SOURCE_PENDING || r.Action == v.TaskControlConnectionRequest_ACTION_SOURCE_SUBMIT || r.Action == v.TaskControlConnectionRequest_ACTION_EXCHANGE || (r.Action == v.TaskControlConnectionRequest_ACTION_BOOTSTRAP || r.Action == v.TaskControlConnectionRequest_ACTION_BOOTSTRAP_V2 || r.Action == v.TaskControlConnectionRequest_ACTION_ACK_V2)
+	runtime := r.Action == v.TaskControlConnectionRequest_ACTION_ACK || r.Action == v.TaskControlConnectionRequest_ACTION_TELEMETRY || r.Action == v.TaskControlConnectionRequest_ACTION_RUNTIME_CONNECTION || r.Action == v.TaskControlConnectionRequest_ACTION_SOURCE_PENDING || r.Action == v.TaskControlConnectionRequest_ACTION_SOURCE_SUBMIT || r.Action == v.TaskControlConnectionRequest_ACTION_EXCHANGE || (r.Action == v.TaskControlConnectionRequest_ACTION_BOOTSTRAP || r.Action == v.TaskControlConnectionRequest_ACTION_BOOTSTRAP_V2 || r.Action == v.TaskControlConnectionRequest_ACTION_ACK_V2)
 	if runtime {
 		md, _ := metadata.FromIncomingContext(ctx)
 		if len(md.Get("x-teamos-service")) != 1 || md.Get("x-teamos-service")[0] != "task-control" || len(md.Get("x-teamos-service-token")) != 1 || !secureServiceTokenEqual(md.Get("x-teamos-service-token")[0], s.gatewayServiceToken) {
@@ -45,6 +45,36 @@ func (s *Server) TaskControlConnection(ctx context.Context, r *v.TaskControlConn
 	}
 	var out any
 	switch r.Action {
+	case v.TaskControlConnectionRequest_ACTION_APPLICATION:
+		id, e := uuid.Parse(r.Id)
+		if e != nil {
+			return nil, invalidRequest()
+		}
+		pid, e := uuid.Parse(r.AccountId)
+		if e != nil {
+			return nil, invalidRequest()
+		}
+		out, err = s.application.TaskControlApplication(ctx, a, id, pid)
+	case v.TaskControlConnectionRequest_ACTION_ACK:
+		var in application.TaskControlAckInputV2
+		if len(r.JsonBody) > 8192 {
+			return nil, invalidRequest()
+		}
+		if e := taskControlDecode(r.JsonBody, &in); e != nil {
+			return nil, e
+		}
+		err = s.application.AckTaskControl(ctx, r.Credential, in)
+		out = map[string]bool{"accepted": err == nil}
+	case v.TaskControlConnectionRequest_ACTION_TELEMETRY:
+		var in application.TaskControlTelemetryInput
+		if len(r.JsonBody) > 8192 {
+			return nil, invalidRequest()
+		}
+		if e := taskControlDecode(r.JsonBody, &in); e != nil {
+			return nil, e
+		}
+		err = s.application.RecordTaskControlTelemetry(ctx, r.Credential, in)
+		out = map[string]bool{"accepted": err == nil}
 	case v.TaskControlConnectionRequest_ACTION_CAPABILITIES:
 		out, err = s.application.GetTaskControlCapabilities(ctx, a)
 	case v.TaskControlConnectionRequest_ACTION_AUTHORIZE:
@@ -218,6 +248,9 @@ func (s *Server) TaskControlConnection(ctx context.Context, r *v.TaskControlConn
 	case v.TaskControlConnectionRequest_ACTION_BOOTSTRAP_V2:
 		out, err = s.application.TaskControlBootstrapV2(ctx, r.Credential)
 	case v.TaskControlConnectionRequest_ACTION_ACK_V2:
+		if len(r.JsonBody) > 8192 {
+			return nil, invalidRequest()
+		}
 		var input application.TaskControlAckInputV2
 		if e := taskControlDecode(r.JsonBody, &input); e != nil {
 			return nil, e

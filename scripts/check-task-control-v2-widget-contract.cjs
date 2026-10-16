@@ -7,12 +7,12 @@ const Snapshot = require(path.join(widgetDir, 'lib/snapshot.js'));
 const Rules = require(path.join(widgetDir, 'lib/rules.js'));
 const TeamOS = require(path.join(widgetDir, 'lib/teamos.js'))(Snapshot, Rules);
 (async () => {
-  let acknowledgement;
+  const telemetry=[]; let sequence=0;
   const now = Date.parse(fixture.issuedAt);
-  const client = new TeamOS.Client({accountId:fixture.scope.accountId, settings:()=>({}), coreOrigin:'https://core.example.invalid', backendOrigin:'https://backend.example.invalid', now:()=>now, clock:()=>0, uuid:()=> 'a0000000-0000-4000-8000-000000000002', request:async(url,options)=>{
+  const client = new TeamOS.Client({accountId:fixture.scope.accountId, settings:()=>({}), coreOrigin:'https://core.example.invalid', backendOrigin:'https://backend.example.invalid', now:()=>now, clock:()=>0, uuid:()=> 'a0000000-0000-4000-8000-'+String(++sequence).padStart(12,'0'), request:async(url,options)=>{
     if(url.endsWith('/sessions')) return {scope:fixture.scope,actorId:fixture.actorId,accessToken:'x'.repeat(43),expiresAt:fixture.validUntil,runtimeSchemaVersion:2};
     if(url.endsWith('/bootstrap')) return fixture;
-    if(url.endsWith('/ack')) {acknowledgement=options.body;return null;}
+    if(url.endsWith('/telemetry')) {telemetry.push(options.body);return null;}
     throw new Error(`unexpected request ${url}`);
   }});
   client.proof=async()=>({assertion:'synthetic'});
@@ -24,8 +24,14 @@ const TeamOS = require(path.join(widgetDir, 'lib/teamos.js'))(Snapshot, Rules);
   const engine=new Rules.RuleEngine(good.config.rules,Number(fixture.actorId));
   assert(engine.myRules().length>0);
   await client.acknowledge(good);
+  assert.deepEqual(telemetry.map(event=>event.event),['received','applied']);
+  assert.notEqual(telemetry[0].eventId,telemetry[1].eventId);
+  const acknowledgement=telemetry[1];
   assert.equal(acknowledgement.snapshotId,fixture.snapshotId);
   assert.equal(acknowledgement.payloadChecksum,fixture.payloadChecksum);
   assert.equal(acknowledgement.runtimeRevision,fixture.runtimeRevision);
-  console.log('Task Control v2: company JSON → widget validation → engine → ACK match');
+  const output=path.resolve(__dirname,'../contracts/fixtures/task-control-telemetry.json');
+  if(process.argv.includes('--write-fixture')) require('node:fs').writeFileSync(output,JSON.stringify(telemetry,null,2)+'\n');
+  else assert.deepEqual(telemetry,require(output),'actual widget telemetry differs from company wire fixture');
+  console.log('Task Control v2: company JSON → widget validation → engine → distinct received/applied telemetry match');
 })().catch(error=>{console.error(error);process.exitCode=1;});
