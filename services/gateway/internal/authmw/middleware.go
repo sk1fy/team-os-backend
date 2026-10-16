@@ -72,7 +72,9 @@ func isPublic(method, path string) bool {
 	switch {
 	case method == http.MethodPost && path == "/api/v1/widget/task-control/sessions":
 		return true
-	case method == http.MethodGet && path == "/api/v1/widget/task-control/bootstrap":
+	case method == http.MethodGet && (path == "/api/v1/widget/task-control/bootstrap" || path == "/api/v2/task-control/runtime/bootstrap"):
+		return true
+	case method == http.MethodPost && path == "/api/v2/task-control/runtime/ack":
 		return true
 	case method == http.MethodGet && strings.HasPrefix(path, "/api/v1/public/"):
 		return true

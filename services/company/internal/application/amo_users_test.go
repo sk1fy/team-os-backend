@@ -300,6 +300,8 @@ func TestAmoImportDoesNotChangeExistingUserStatusOrProfile(t *testing.T) {
 	mock.ExpectExec("SELECT pg_advisory_xact_lock").
 		WithArgs(companyID).
 		WillReturnResult(pgconn.NewCommandTag("SELECT 1"))
+	mock.ExpectQuery("SELECT id, name, logo_url.+FROM companies").WithArgs(companyID).
+		WillReturnRows(pgxmock.NewRows([]string{"id", "name", "logo_url", "owner_id", "created_at", "updated_at", "amo_account_id", "status", "onboarding_completed_at"}).AddRow(companyID, "Компания", nil, nil, now, now, "31355990", "active", now))
 	userColumns := []string{
 		"id", "company_id", "email", "first_name", "last_name", "phone", "avatar_url",
 		"role", "status", "birth_date", "hired_at", "vacation_allowance", "created_at", "updated_at",

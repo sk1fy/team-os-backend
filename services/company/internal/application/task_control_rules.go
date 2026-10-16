@@ -139,6 +139,9 @@ func (s *Service) GetTaskControlDraft(ctx context.Context, a Actor, id uuid.UUID
 		return out, e
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
+	if c.RuntimeSchemaVersion == 2 {
+		return out, taskControlRequiresV2()
+	}
 	d, e := q.GetTaskControlDraft(ctx, db.GetTaskControlDraftParams{CompanyID: a.CompanyID, BindingID: id})
 	if isNoRows(e) {
 		_, sum := tc.Legacy([]tc.Rule{})
@@ -163,6 +166,9 @@ func (s *Service) UpdateTaskControlDraft(ctx context.Context, a Actor, id uuid.U
 		return out, e
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
+	if c.RuntimeSchemaVersion == 2 {
+		return out, taskControlRequiresV2()
+	}
 	if e = tcFence(c, in.ExpectedBindingRevision, in.ExpectedModeEpoch); e != nil {
 		return out, e
 	}
@@ -182,11 +188,14 @@ func (s *Service) UpdateTaskControlDraft(ctx context.Context, a Actor, id uuid.U
 	return out, tx.Commit(ctx)
 }
 func (s *Service) ValidateTaskControlDraft(ctx context.Context, a Actor, id uuid.UUID) (any, error) {
-	tx, q, _, e := s.taskControlRulesTx(ctx, a, id, true)
+	tx, q, c, e := s.taskControlRulesTx(ctx, a, id, true)
 	if e != nil {
 		return nil, e
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
+	if c.RuntimeSchemaVersion == 2 {
+		return nil, taskControlRequiresV2()
+	}
 	d, e := q.GetTaskControlDraft(ctx, db.GetTaskControlDraftParams{CompanyID: a.CompanyID, BindingID: id})
 	if e != nil {
 		return nil, e
@@ -196,7 +205,16 @@ func (s *Service) ValidateTaskControlDraft(ctx context.Context, a Actor, id uuid
 		return nil, e
 	}
 	issues := tc.ValidateRules(rules)
-	return map[string]any{"valid": len(issues) == 0, "draftRevision": d.Revision, "referencesRevision": "structural-v1", "issues": issues}, nil
+	revision := "not-required"
+	if taskControlRulesNeedReferences(rules) {
+		refs, err := s.taskControlFreshReferencesTx(ctx, q, c)
+		if err != nil {
+			return nil, err
+		}
+		revision = refs.Revision
+		issues = append(issues, tc.ValidateReferenceRules(rules, refs)...)
+	}
+	return map[string]any{"valid": len(issues) == 0, "draftRevision": d.Revision, "referencesRevision": revision, "issues": issues}, nil
 }
 func (s *Service) PublishTaskControlDraft(ctx context.Context, a Actor, id uuid.UUID, in TaskControlPublishInput) (TaskControlPublication, error) {
 	var out TaskControlPublication
@@ -208,6 +226,9 @@ func (s *Service) PublishTaskControlDraft(ctx context.Context, a Actor, id uuid.
 		return out, e
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
+	if c.RuntimeSchemaVersion == 2 {
+		return out, taskControlRequiresV2()
+	}
 	raw, _ := json.Marshal([]any{id, in})
 	hash := sha256.Sum256(raw)
 	hs := hex.EncodeToString(hash[:])
@@ -242,6 +263,15 @@ func (s *Service) PublishTaskControlDraft(ctx context.Context, a Actor, id uuid.
 	if issues := tc.ValidateRules(rules); len(issues) > 0 {
 		return out, validation(issues[0].Message)
 	}
+	if taskControlRulesNeedReferences(rules) {
+		refs, err := s.taskControlFreshReferencesTx(ctx, q, c)
+		if err != nil {
+			return out, err
+		}
+		if issues := tc.ValidateReferenceRules(rules, refs); len(issues) > 0 {
+			return out, coded(ErrorValidation, issues[0].Code, issues[0].Message)
+		}
+	}
 	rows, e := q.ListTaskControlPublications(ctx, db.ListTaskControlPublicationsParams{CompanyID: a.CompanyID, BindingID: id})
 	if e != nil {
 		return out, e
@@ -263,11 +293,14 @@ func (s *Service) PublishTaskControlDraft(ctx context.Context, a Actor, id uuid.
 	return out, tx.Commit(ctx)
 }
 func (s *Service) TaskControlPublications(ctx context.Context, a Actor, id, publication uuid.UUID) (any, error) {
-	tx, q, _, e := s.taskControlRulesTx(ctx, a, id, false)
+	tx, q, c, e := s.taskControlRulesTx(ctx, a, id, false)
 	if e != nil {
 		return nil, e
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
+	if c.RuntimeSchemaVersion == 2 {
+		return nil, taskControlRequiresV2()
+	}
 	if publication != uuid.Nil {
 		p, e := q.GetTaskControlPublication(ctx, db.GetTaskControlPublicationParams{CompanyID: a.CompanyID, BindingID: id, ID: publication})
 		if e != nil {
@@ -295,6 +328,9 @@ func (s *Service) SetTaskControlMode(ctx context.Context, a Actor, id uuid.UUID,
 		return out, e
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
+	if c.RuntimeSchemaVersion == 2 {
+		return out, taskControlRequiresV2()
+	}
 	raw, _ := json.Marshal([]any{id, in.ExpectedBindingRevision, in.ExpectedModeEpoch, in.TargetMode, in.PublicationID})
 	hash := sha256.Sum256(raw)
 	hs := hex.EncodeToString(hash[:])
@@ -365,6 +401,9 @@ func (s *Service) TaskControlBootstrap(ctx context.Context, token string) (any, 
 	if e != nil {
 		return nil, e
 	}
+	if row.RuntimeSchemaVersion == 2 {
+		return nil, taskControlRequiresV2()
+	}
 	if row.State != "active" || row.Mode != "managed" || row.BindingRevision != c.Scope.BindingRevision || row.ModeEpoch != c.Scope.ModeEpoch {
 		return nil, forbidden("Сессия подключения отозвана")
 	}
@@ -393,4 +432,13 @@ func (s *Service) TaskControlBootstrap(ctx context.Context, token string) (any, 
 		return nil, coded(ErrorUpstream, "task_control_runtime_payload_too_large", "Публикация превышает лимит runtime 1 MiB")
 	}
 	return out, nil
+}
+
+func taskControlRulesNeedReferences(rules []tc.Rule) bool {
+	for _, rule := range rules {
+		if rule.Enabled && !rule.Archived {
+			return true
+		}
+	}
+	return false
 }

@@ -774,23 +774,39 @@ func (AmoWidgetSessionAction) EnumDescriptor() ([]byte, []int) {
 type TaskControlConnectionRequest_Action int32
 
 const (
-	TaskControlConnectionRequest_ACTION_UNSPECIFIED  TaskControlConnectionRequest_Action = 0
-	TaskControlConnectionRequest_ACTION_INSTALLATION TaskControlConnectionRequest_Action = 1
-	TaskControlConnectionRequest_ACTION_LIST         TaskControlConnectionRequest_Action = 2
-	TaskControlConnectionRequest_ACTION_LINK         TaskControlConnectionRequest_Action = 3
-	TaskControlConnectionRequest_ACTION_REVOKE       TaskControlConnectionRequest_Action = 4
-	TaskControlConnectionRequest_ACTION_INTENT       TaskControlConnectionRequest_Action = 5
-	TaskControlConnectionRequest_ACTION_EXCHANGE     TaskControlConnectionRequest_Action = 6
-	TaskControlConnectionRequest_ACTION_BOOTSTRAP    TaskControlConnectionRequest_Action = 7
-	TaskControlConnectionRequest_ACTION_DRAFT        TaskControlConnectionRequest_Action = 8
-	TaskControlConnectionRequest_ACTION_UPDATE_DRAFT TaskControlConnectionRequest_Action = 9
-	TaskControlConnectionRequest_ACTION_VALIDATE     TaskControlConnectionRequest_Action = 10
-	TaskControlConnectionRequest_ACTION_PUBLISH      TaskControlConnectionRequest_Action = 11
-	TaskControlConnectionRequest_ACTION_PUBLICATIONS TaskControlConnectionRequest_Action = 12
-	TaskControlConnectionRequest_ACTION_PUBLICATION  TaskControlConnectionRequest_Action = 13
-	TaskControlConnectionRequest_ACTION_MODE         TaskControlConnectionRequest_Action = 14
-	TaskControlConnectionRequest_ACTION_CAPABILITIES TaskControlConnectionRequest_Action = 15
-	TaskControlConnectionRequest_ACTION_AUTHORIZE    TaskControlConnectionRequest_Action = 16
+	TaskControlConnectionRequest_ACTION_UNSPECIFIED        TaskControlConnectionRequest_Action = 0
+	TaskControlConnectionRequest_ACTION_INSTALLATION       TaskControlConnectionRequest_Action = 1
+	TaskControlConnectionRequest_ACTION_LIST               TaskControlConnectionRequest_Action = 2
+	TaskControlConnectionRequest_ACTION_LINK               TaskControlConnectionRequest_Action = 3
+	TaskControlConnectionRequest_ACTION_REVOKE             TaskControlConnectionRequest_Action = 4
+	TaskControlConnectionRequest_ACTION_INTENT             TaskControlConnectionRequest_Action = 5
+	TaskControlConnectionRequest_ACTION_EXCHANGE           TaskControlConnectionRequest_Action = 6
+	TaskControlConnectionRequest_ACTION_BOOTSTRAP          TaskControlConnectionRequest_Action = 7
+	TaskControlConnectionRequest_ACTION_DRAFT              TaskControlConnectionRequest_Action = 8
+	TaskControlConnectionRequest_ACTION_UPDATE_DRAFT       TaskControlConnectionRequest_Action = 9
+	TaskControlConnectionRequest_ACTION_VALIDATE           TaskControlConnectionRequest_Action = 10
+	TaskControlConnectionRequest_ACTION_PUBLISH            TaskControlConnectionRequest_Action = 11
+	TaskControlConnectionRequest_ACTION_PUBLICATIONS       TaskControlConnectionRequest_Action = 12
+	TaskControlConnectionRequest_ACTION_PUBLICATION        TaskControlConnectionRequest_Action = 13
+	TaskControlConnectionRequest_ACTION_MODE               TaskControlConnectionRequest_Action = 14
+	TaskControlConnectionRequest_ACTION_CAPABILITIES       TaskControlConnectionRequest_Action = 15
+	TaskControlConnectionRequest_ACTION_AUTHORIZE          TaskControlConnectionRequest_Action = 16
+	TaskControlConnectionRequest_ACTION_REFERENCES         TaskControlConnectionRequest_Action = 17
+	TaskControlConnectionRequest_ACTION_REFRESH_REFERENCES TaskControlConnectionRequest_Action = 18
+	TaskControlConnectionRequest_ACTION_REFERENCES_REFRESH TaskControlConnectionRequest_Action = 19
+	TaskControlConnectionRequest_ACTION_DRAFT_V2           TaskControlConnectionRequest_Action = 20
+	TaskControlConnectionRequest_ACTION_UPDATE_DRAFT_V2    TaskControlConnectionRequest_Action = 21
+	TaskControlConnectionRequest_ACTION_VALIDATE_V2        TaskControlConnectionRequest_Action = 22
+	TaskControlConnectionRequest_ACTION_PUBLISH_V2         TaskControlConnectionRequest_Action = 23
+	TaskControlConnectionRequest_ACTION_PUBLICATIONS_V2    TaskControlConnectionRequest_Action = 24
+	TaskControlConnectionRequest_ACTION_PUBLICATION_V2     TaskControlConnectionRequest_Action = 25
+	TaskControlConnectionRequest_ACTION_BOOTSTRAP_V2       TaskControlConnectionRequest_Action = 26
+	TaskControlConnectionRequest_ACTION_ACK_V2             TaskControlConnectionRequest_Action = 27
+	TaskControlConnectionRequest_ACTION_ACTIVATE_V2        TaskControlConnectionRequest_Action = 28
+	TaskControlConnectionRequest_ACTION_APPLICATION_V2     TaskControlConnectionRequest_Action = 29
+	TaskControlConnectionRequest_ACTION_ROLLBACK_V2        TaskControlConnectionRequest_Action = 30
+	TaskControlConnectionRequest_ACTION_MODE_PREVIEW_V2    TaskControlConnectionRequest_Action = 31
+	TaskControlConnectionRequest_ACTION_MODE_V2            TaskControlConnectionRequest_Action = 32
 )
 
 // Enum value maps for TaskControlConnectionRequest_Action.
@@ -813,25 +829,57 @@ var (
 		14: "ACTION_MODE",
 		15: "ACTION_CAPABILITIES",
 		16: "ACTION_AUTHORIZE",
+		17: "ACTION_REFERENCES",
+		18: "ACTION_REFRESH_REFERENCES",
+		19: "ACTION_REFERENCES_REFRESH",
+		20: "ACTION_DRAFT_V2",
+		21: "ACTION_UPDATE_DRAFT_V2",
+		22: "ACTION_VALIDATE_V2",
+		23: "ACTION_PUBLISH_V2",
+		24: "ACTION_PUBLICATIONS_V2",
+		25: "ACTION_PUBLICATION_V2",
+		26: "ACTION_BOOTSTRAP_V2",
+		27: "ACTION_ACK_V2",
+		28: "ACTION_ACTIVATE_V2",
+		29: "ACTION_APPLICATION_V2",
+		30: "ACTION_ROLLBACK_V2",
+		31: "ACTION_MODE_PREVIEW_V2",
+		32: "ACTION_MODE_V2",
 	}
 	TaskControlConnectionRequest_Action_value = map[string]int32{
-		"ACTION_UNSPECIFIED":  0,
-		"ACTION_INSTALLATION": 1,
-		"ACTION_LIST":         2,
-		"ACTION_LINK":         3,
-		"ACTION_REVOKE":       4,
-		"ACTION_INTENT":       5,
-		"ACTION_EXCHANGE":     6,
-		"ACTION_BOOTSTRAP":    7,
-		"ACTION_DRAFT":        8,
-		"ACTION_UPDATE_DRAFT": 9,
-		"ACTION_VALIDATE":     10,
-		"ACTION_PUBLISH":      11,
-		"ACTION_PUBLICATIONS": 12,
-		"ACTION_PUBLICATION":  13,
-		"ACTION_MODE":         14,
-		"ACTION_CAPABILITIES": 15,
-		"ACTION_AUTHORIZE":    16,
+		"ACTION_UNSPECIFIED":        0,
+		"ACTION_INSTALLATION":       1,
+		"ACTION_LIST":               2,
+		"ACTION_LINK":               3,
+		"ACTION_REVOKE":             4,
+		"ACTION_INTENT":             5,
+		"ACTION_EXCHANGE":           6,
+		"ACTION_BOOTSTRAP":          7,
+		"ACTION_DRAFT":              8,
+		"ACTION_UPDATE_DRAFT":       9,
+		"ACTION_VALIDATE":           10,
+		"ACTION_PUBLISH":            11,
+		"ACTION_PUBLICATIONS":       12,
+		"ACTION_PUBLICATION":        13,
+		"ACTION_MODE":               14,
+		"ACTION_CAPABILITIES":       15,
+		"ACTION_AUTHORIZE":          16,
+		"ACTION_REFERENCES":         17,
+		"ACTION_REFRESH_REFERENCES": 18,
+		"ACTION_REFERENCES_REFRESH": 19,
+		"ACTION_DRAFT_V2":           20,
+		"ACTION_UPDATE_DRAFT_V2":    21,
+		"ACTION_VALIDATE_V2":        22,
+		"ACTION_PUBLISH_V2":         23,
+		"ACTION_PUBLICATIONS_V2":    24,
+		"ACTION_PUBLICATION_V2":     25,
+		"ACTION_BOOTSTRAP_V2":       26,
+		"ACTION_ACK_V2":             27,
+		"ACTION_ACTIVATE_V2":        28,
+		"ACTION_APPLICATION_V2":     29,
+		"ACTION_ROLLBACK_V2":        30,
+		"ACTION_MODE_PREVIEW_V2":    31,
+		"ACTION_MODE_V2":            32,
 	}
 )
 
@@ -12973,7 +13021,7 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\x1fReadDistributionRuntimeResponse\x12\x18\n" +
 	"\apayload\x18\x01 \x01(\fR\apayload\"<\n" +
 	" WriteDistributionRuntimeResponse\x12\x18\n" +
-	"\apayload\x18\x01 \x01(\fR\apayload\"\xec\x04\n" +
+	"\apayload\x18\x01 \x01(\fR\apayload\"\xff\a\n" +
 	"\x1cTaskControlConnectionRequest\x12N\n" +
 	"\x06action\x18\x01 \x01(\x0e26.teamos.company.v1.TaskControlConnectionRequest.ActionR\x06action\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\x12\x1d\n" +
@@ -12983,7 +13031,7 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\n" +
 	"credential\x18\x05 \x01(\tR\n" +
 	"credential\x12\x1c\n" +
-	"\toperation\x18\x06 \x01(\tR\toperation\"\xf1\x02\n" +
+	"\toperation\x18\x06 \x01(\tR\toperation\"\x84\x06\n" +
 	"\x06Action\x12\x16\n" +
 	"\x12ACTION_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13ACTION_INSTALLATION\x10\x01\x12\x0f\n" +
@@ -13002,7 +13050,23 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\x12ACTION_PUBLICATION\x10\r\x12\x0f\n" +
 	"\vACTION_MODE\x10\x0e\x12\x17\n" +
 	"\x13ACTION_CAPABILITIES\x10\x0f\x12\x14\n" +
-	"\x10ACTION_AUTHORIZE\x10\x10\"<\n" +
+	"\x10ACTION_AUTHORIZE\x10\x10\x12\x15\n" +
+	"\x11ACTION_REFERENCES\x10\x11\x12\x1d\n" +
+	"\x19ACTION_REFRESH_REFERENCES\x10\x12\x12\x1d\n" +
+	"\x19ACTION_REFERENCES_REFRESH\x10\x13\x12\x13\n" +
+	"\x0fACTION_DRAFT_V2\x10\x14\x12\x1a\n" +
+	"\x16ACTION_UPDATE_DRAFT_V2\x10\x15\x12\x16\n" +
+	"\x12ACTION_VALIDATE_V2\x10\x16\x12\x15\n" +
+	"\x11ACTION_PUBLISH_V2\x10\x17\x12\x1a\n" +
+	"\x16ACTION_PUBLICATIONS_V2\x10\x18\x12\x19\n" +
+	"\x15ACTION_PUBLICATION_V2\x10\x19\x12\x17\n" +
+	"\x13ACTION_BOOTSTRAP_V2\x10\x1a\x12\x11\n" +
+	"\rACTION_ACK_V2\x10\x1b\x12\x16\n" +
+	"\x12ACTION_ACTIVATE_V2\x10\x1c\x12\x19\n" +
+	"\x15ACTION_APPLICATION_V2\x10\x1d\x12\x16\n" +
+	"\x12ACTION_ROLLBACK_V2\x10\x1e\x12\x1a\n" +
+	"\x16ACTION_MODE_PREVIEW_V2\x10\x1f\x12\x12\n" +
+	"\x0eACTION_MODE_V2\x10 \"<\n" +
 	"\x1dTaskControlConnectionResponse\x12\x1b\n" +
 	"\tjson_body\x18\x01 \x01(\fR\bjsonBody*~\n" +
 	"\bUserRole\x12\x19\n" +

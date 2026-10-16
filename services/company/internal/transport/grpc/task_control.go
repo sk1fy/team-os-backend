@@ -31,7 +31,7 @@ func (s *Server) TaskControlConnection(ctx context.Context, r *v.TaskControlConn
 	}
 	var a application.Actor
 	var err error
-	runtime := r.Action == v.TaskControlConnectionRequest_ACTION_EXCHANGE || r.Action == v.TaskControlConnectionRequest_ACTION_BOOTSTRAP
+	runtime := r.Action == v.TaskControlConnectionRequest_ACTION_EXCHANGE || (r.Action == v.TaskControlConnectionRequest_ACTION_BOOTSTRAP || r.Action == v.TaskControlConnectionRequest_ACTION_BOOTSTRAP_V2 || r.Action == v.TaskControlConnectionRequest_ACTION_ACK_V2)
 	if runtime {
 		md, _ := metadata.FromIncomingContext(ctx)
 		if len(md.Get("x-teamos-service")) != 1 || md.Get("x-teamos-service")[0] != "task-control" || len(md.Get("x-teamos-service-token")) != 1 || !secureServiceTokenEqual(md.Get("x-teamos-service-token")[0], s.gatewayServiceToken) {
@@ -80,8 +80,48 @@ func (s *Server) TaskControlConnection(ctx context.Context, r *v.TaskControlConn
 			return nil, invalidRequest()
 		}
 		out, err = s.application.GetTaskControlIntent(ctx, a, id)
+
+	case v.TaskControlConnectionRequest_ACTION_REFERENCES:
+		id, e := uuid.Parse(r.Id)
+		if e != nil {
+			return nil, invalidRequest()
+		}
+		if r.Operation == "legacy" {
+			out, err = s.application.TaskControlLegacyReferences(ctx, a, id)
+		} else {
+			var opts application.TaskControlReferenceOptions
+			if len(r.JsonBody) > 0 {
+				if e = taskControlDecode(r.JsonBody, &opts); e != nil {
+					return nil, e
+				}
+			}
+			out, err = s.application.GetTaskControlReferences(ctx, a, id, opts)
+		}
+	case v.TaskControlConnectionRequest_ACTION_REFRESH_REFERENCES:
+		id, e := uuid.Parse(r.Id)
+		if e != nil {
+			return nil, invalidRequest()
+		}
+		out, err = s.application.RequestTaskControlReferencesRefresh(ctx, a, id)
+	case v.TaskControlConnectionRequest_ACTION_REFERENCES_REFRESH:
+		id, e := uuid.Parse(r.Id)
+		refreshID, re := uuid.Parse(r.AccountId)
+		if e != nil || re != nil {
+			return nil, invalidRequest()
+		}
+		out, err = s.application.GetTaskControlReferencesRefresh(ctx, a, id, refreshID)
 	case v.TaskControlConnectionRequest_ACTION_EXCHANGE:
-		out, err = s.application.ExchangeTaskControlSession(ctx, r.Credential)
+		var in struct {
+			CoreAssertion  string   `json:"coreAssertion"`
+			RuntimeVersion string   `json:"runtimeVersion"`
+			Capabilities   []string `json:"capabilities"`
+		}
+		if len(r.JsonBody) > 0 {
+			if e := taskControlDecode(r.JsonBody, &in); e != nil {
+				return nil, e
+			}
+		}
+		out, err = s.application.ExchangeTaskControlSessionNegotiated(ctx, r.Credential, in.RuntimeVersion, in.Capabilities)
 	case v.TaskControlConnectionRequest_ACTION_BOOTSTRAP:
 		out, err = s.application.TaskControlBootstrap(ctx, r.Credential)
 	case v.TaskControlConnectionRequest_ACTION_DRAFT, v.TaskControlConnectionRequest_ACTION_UPDATE_DRAFT, v.TaskControlConnectionRequest_ACTION_VALIDATE, v.TaskControlConnectionRequest_ACTION_PUBLISH, v.TaskControlConnectionRequest_ACTION_PUBLICATIONS, v.TaskControlConnectionRequest_ACTION_PUBLICATION, v.TaskControlConnectionRequest_ACTION_MODE:
@@ -122,6 +162,21 @@ func (s *Server) TaskControlConnection(ctx context.Context, r *v.TaskControlConn
 			out, err = s.application.SetTaskControlMode(ctx, a, id, input)
 		}
 
+	case v.TaskControlConnectionRequest_ACTION_BOOTSTRAP_V2:
+		out, err = s.application.TaskControlBootstrapV2(ctx, r.Credential)
+	case v.TaskControlConnectionRequest_ACTION_ACK_V2:
+		var input application.TaskControlAckInputV2
+		if e := taskControlDecode(r.JsonBody, &input); e != nil {
+			return nil, e
+		}
+		err = s.application.AckTaskControlV2(ctx, r.Credential, input)
+		out = map[string]bool{"acknowledged": err == nil}
+	case v.TaskControlConnectionRequest_ACTION_DRAFT_V2, v.TaskControlConnectionRequest_ACTION_UPDATE_DRAFT_V2, v.TaskControlConnectionRequest_ACTION_VALIDATE_V2, v.TaskControlConnectionRequest_ACTION_PUBLISH_V2, v.TaskControlConnectionRequest_ACTION_PUBLICATIONS_V2, v.TaskControlConnectionRequest_ACTION_PUBLICATION_V2, v.TaskControlConnectionRequest_ACTION_ACTIVATE_V2, v.TaskControlConnectionRequest_ACTION_APPLICATION_V2, v.TaskControlConnectionRequest_ACTION_ROLLBACK_V2, v.TaskControlConnectionRequest_ACTION_MODE_PREVIEW_V2, v.TaskControlConnectionRequest_ACTION_MODE_V2:
+		id, e := uuid.Parse(r.Id)
+		if e != nil {
+			return nil, invalidRequest()
+		}
+		out, err = s.taskControlV2(ctx, a, id, r)
 	default:
 		return nil, invalidRequest()
 	}
@@ -133,4 +188,71 @@ func (s *Server) TaskControlConnection(ctx context.Context, r *v.TaskControlConn
 		return nil, status.Error(codes.Internal, "Не удалось подготовить ответ")
 	}
 	return &v.TaskControlConnectionResponse{JsonBody: raw}, nil
+}
+
+func (s *Server) taskControlV2(ctx context.Context, a application.Actor, id uuid.UUID, r *v.TaskControlConnectionRequest) (any, error) {
+	switch r.Action {
+	case v.TaskControlConnectionRequest_ACTION_DRAFT_V2:
+		return s.application.GetTaskControlDraftV2(ctx, a, id)
+	case v.TaskControlConnectionRequest_ACTION_UPDATE_DRAFT_V2:
+		var in application.TaskControlDraftInputV2
+		if e := taskControlDecode(r.JsonBody, &in); e != nil {
+			return nil, e
+		}
+		return s.application.UpdateTaskControlDraftV2(ctx, a, id, in)
+	case v.TaskControlConnectionRequest_ACTION_VALIDATE_V2:
+		var in application.TaskControlValidateInputV2
+		if e := taskControlDecode(r.JsonBody, &in); e != nil {
+			return nil, e
+		}
+		return s.application.ValidateTaskControlDraftV2(ctx, a, id, in)
+	case v.TaskControlConnectionRequest_ACTION_PUBLISH_V2:
+		var in application.TaskControlPublishInputV2
+		if e := taskControlDecode(r.JsonBody, &in); e != nil {
+			return nil, e
+		}
+		return s.application.PublishTaskControlDraftV2(ctx, a, id, in)
+	case v.TaskControlConnectionRequest_ACTION_ACTIVATE_V2:
+		var in application.TaskControlActivateInputV2
+		if e := taskControlDecode(r.JsonBody, &in); e != nil {
+			return nil, e
+		}
+		return s.application.ActivateTaskControlV2(ctx, a, id, in)
+	case v.TaskControlConnectionRequest_ACTION_ROLLBACK_V2:
+		var in application.TaskControlRollbackInputV2
+		if e := taskControlDecode(r.JsonBody, &in); e != nil {
+			return nil, e
+		}
+		return s.application.RollbackTaskControlV2(ctx, a, id, in)
+	case v.TaskControlConnectionRequest_ACTION_MODE_PREVIEW_V2:
+		var in application.TaskControlModePreviewInputV2
+		if e := taskControlDecode(r.JsonBody, &in); e != nil {
+			return nil, e
+		}
+		return s.application.PreviewTaskControlModeV2(ctx, a, id, in)
+	case v.TaskControlConnectionRequest_ACTION_MODE_V2:
+		var in application.TaskControlModeInputV2
+		if e := taskControlDecode(r.JsonBody, &in); e != nil {
+			return nil, e
+		}
+		return s.application.SetTaskControlModeV2(ctx, a, id, in)
+	case v.TaskControlConnectionRequest_ACTION_PUBLICATIONS_V2:
+		var opts application.TaskControlPublicationOptionsV2
+		if len(r.JsonBody) > 0 {
+			if e := taskControlDecode(r.JsonBody, &opts); e != nil {
+				return nil, e
+			}
+		}
+		return s.application.TaskControlPublicationsV2(ctx, a, id, uuid.Nil, opts)
+	case v.TaskControlConnectionRequest_ACTION_PUBLICATION_V2, v.TaskControlConnectionRequest_ACTION_APPLICATION_V2:
+		pid, e := uuid.Parse(r.AccountId)
+		if e != nil {
+			return nil, invalidRequest()
+		}
+		if r.Action == v.TaskControlConnectionRequest_ACTION_APPLICATION_V2 {
+			return s.application.TaskControlApplicationV2(ctx, a, id, pid)
+		}
+		return s.application.TaskControlPublicationsV2(ctx, a, id, pid)
+	}
+	return nil, invalidRequest()
 }

@@ -608,22 +608,30 @@ type TaskControlAssertionUse struct {
 	ExpiresAt time.Time `json:"expires_at"`
 }
 
+type TaskControlConfirmedEmployeeMapping struct {
+	CompanyID  uuid.UUID `json:"company_id"`
+	AccountID  string    `json:"account_id"`
+	EmployeeID uuid.UUID `json:"employee_id"`
+	CrmUserID  string    `json:"crm_user_id"`
+}
+
 type TaskControlConnection struct {
-	CompanyID       uuid.UUID     `json:"company_id"`
-	ID              uuid.UUID     `json:"id"`
-	InstallationID  uuid.UUID     `json:"installation_id"`
-	IntegrationID   uuid.UUID     `json:"integration_id"`
-	AccountID       string        `json:"account_id"`
-	Generation      int64         `json:"generation"`
-	BindingRevision int64         `json:"binding_revision"`
-	ModeEpoch       int64         `json:"mode_epoch"`
-	Mode            string        `json:"mode"`
-	State           string        `json:"state"`
-	IntentID        uuid.UUID     `json:"intent_id"`
-	LinkedBy        uuid.UUID     `json:"linked_by"`
-	CrmAdminID      string        `json:"crm_admin_id"`
-	UpdatedAt       time.Time     `json:"updated_at"`
-	PublicationID   uuid.NullUUID `json:"publication_id"`
+	CompanyID            uuid.UUID     `json:"company_id"`
+	ID                   uuid.UUID     `json:"id"`
+	InstallationID       uuid.UUID     `json:"installation_id"`
+	IntegrationID        uuid.UUID     `json:"integration_id"`
+	AccountID            string        `json:"account_id"`
+	Generation           int64         `json:"generation"`
+	BindingRevision      int64         `json:"binding_revision"`
+	ModeEpoch            int64         `json:"mode_epoch"`
+	Mode                 string        `json:"mode"`
+	State                string        `json:"state"`
+	IntentID             uuid.UUID     `json:"intent_id"`
+	LinkedBy             uuid.UUID     `json:"linked_by"`
+	CrmAdminID           string        `json:"crm_admin_id"`
+	UpdatedAt            time.Time     `json:"updated_at"`
+	PublicationID        uuid.NullUUID `json:"publication_id"`
+	RuntimeSchemaVersion int32         `json:"runtime_schema_version"`
 }
 
 type TaskControlConnectionRequest struct {
@@ -637,13 +645,21 @@ type TaskControlConnectionRequest struct {
 }
 
 type TaskControlDraft struct {
-	CompanyID uuid.UUID `json:"company_id"`
-	BindingID uuid.UUID `json:"binding_id"`
-	Revision  int64     `json:"revision"`
-	Rules     []byte    `json:"rules"`
-	Checksum  string    `json:"checksum"`
-	UpdatedAt time.Time `json:"updated_at"`
-	UpdatedBy uuid.UUID `json:"updated_by"`
+	CompanyID     uuid.UUID `json:"company_id"`
+	BindingID     uuid.UUID `json:"binding_id"`
+	Revision      int64     `json:"revision"`
+	Rules         []byte    `json:"rules"`
+	Checksum      string    `json:"checksum"`
+	UpdatedAt     time.Time `json:"updated_at"`
+	UpdatedBy     uuid.UUID `json:"updated_by"`
+	SchemaVersion int32     `json:"schema_version"`
+}
+
+type TaskControlEmployeeMapping struct {
+	CompanyID  uuid.UUID `json:"company_id"`
+	AccountID  string    `json:"account_id"`
+	EmployeeID uuid.UUID `json:"employee_id"`
+	CrmUserID  string    `json:"crm_user_id"`
 }
 
 type TaskControlInstallationSnapshot struct {
@@ -671,6 +687,33 @@ type TaskControlPublication struct {
 	Payload   []byte    `json:"payload"`
 }
 
+type TaskControlReferenceCache struct {
+	CompanyID uuid.UUID   `json:"company_id"`
+	BindingID uuid.UUID   `json:"binding_id"`
+	ScopeKey  string      `json:"scope_key"`
+	Payload   []byte      `json:"payload"`
+	LastError pgtype.Text `json:"last_error"`
+	UpdatedAt time.Time   `json:"updated_at"`
+}
+
+type TaskControlReferenceRefresh struct {
+	ID          uuid.UUID          `json:"id"`
+	CompanyID   uuid.UUID          `json:"company_id"`
+	BindingID   uuid.UUID          `json:"binding_id"`
+	ScopeKey    string             `json:"scope_key"`
+	State       string             `json:"state"`
+	ErrorCode   pgtype.Text        `json:"error_code"`
+	CreatedAt   time.Time          `json:"created_at"`
+	CompletedAt pgtype.Timestamptz `json:"completed_at"`
+	LeaseUntil  pgtype.Timestamptz `json:"lease_until"`
+}
+
+type TaskControlReferenceRevision struct {
+	CompanyID            uuid.UUID `json:"company_id"`
+	OrganizationRevision int64     `json:"organization_revision"`
+	MappingRevision      int64     `json:"mapping_revision"`
+}
+
 type TaskControlRuntimeSession struct {
 	TokenHash       []byte    `json:"token_hash"`
 	CompanyID       uuid.UUID `json:"company_id"`
@@ -680,6 +723,70 @@ type TaskControlRuntimeSession struct {
 	ModeEpoch       int64     `json:"mode_epoch"`
 	Generation      int64     `json:"generation"`
 	ExpiresAt       time.Time `json:"expires_at"`
+}
+
+type TaskControlV2Ack struct {
+	CompanyID         uuid.UUID `json:"company_id"`
+	BindingID         uuid.UUID `json:"binding_id"`
+	ModeEpoch         int64     `json:"mode_epoch"`
+	ActorID           string    `json:"actor_id"`
+	RuntimeInstanceID uuid.UUID `json:"runtime_instance_id"`
+	RuntimeRevision   int64     `json:"runtime_revision"`
+	PayloadChecksum   string    `json:"payload_checksum"`
+	Payload           []byte    `json:"payload"`
+	ReceivedAt        time.Time `json:"received_at"`
+}
+
+type TaskControlV2Failure struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	BindingID uuid.UUID `json:"binding_id"`
+	Code      string    `json:"code"`
+	Message   string    `json:"message"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type TaskControlV2Issued struct {
+	CompanyID       uuid.UUID `json:"company_id"`
+	BindingID       uuid.UUID `json:"binding_id"`
+	ModeEpoch       int64     `json:"mode_epoch"`
+	ActorID         string    `json:"actor_id"`
+	SnapshotID      uuid.UUID `json:"snapshot_id"`
+	PayloadChecksum string    `json:"payload_checksum"`
+	Payload         []byte    `json:"payload"`
+	IssuedAt        time.Time `json:"issued_at"`
+}
+
+type TaskControlV2Job struct {
+	CompanyID     uuid.UUID `json:"company_id"`
+	BindingID     uuid.UUID `json:"binding_id"`
+	ModeEpoch     int64     `json:"mode_epoch"`
+	PublicationID uuid.UUID `json:"publication_id"`
+	QueuedAt      time.Time `json:"queued_at"`
+}
+
+type TaskControlV2Snapshot struct {
+	CompanyID       uuid.UUID `json:"company_id"`
+	BindingID       uuid.UUID `json:"binding_id"`
+	ID              uuid.UUID `json:"id"`
+	ModeEpoch       int64     `json:"mode_epoch"`
+	RuntimeRevision int64     `json:"runtime_revision"`
+	PublicationID   uuid.UUID `json:"publication_id"`
+	Payload         []byte    `json:"payload"`
+	CreatedAt       time.Time `json:"created_at"`
+}
+
+type TaskControlV2SourceChange struct {
+	ID        int64     `json:"id"`
+	CompanyID uuid.UUID `json:"company_id"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+type TaskControlV2State struct {
+	CompanyID                uuid.UUID          `json:"company_id"`
+	BindingID                uuid.UUID          `json:"binding_id"`
+	CurrentSnapshotID        uuid.NullUUID      `json:"current_snapshot_id"`
+	RuntimeRevision          int64              `json:"runtime_revision"`
+	VerifiedSourceFreshUntil pgtype.Timestamptz `json:"verified_source_fresh_until"`
 }
 
 type User struct {

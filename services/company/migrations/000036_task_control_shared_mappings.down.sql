@@ -1,0 +1,4 @@
+DROP TRIGGER IF EXISTS task_control_shared_mapping_account_revision ON distribution_bindings;
+DROP TRIGGER IF EXISTS task_control_shared_mapping_revision ON distribution_employee_mappings;
+DROP FUNCTION IF EXISTS task_control_bump_shared_mapping_revision();
+DROP VIEW IF EXISTS task_control_confirmed_employee_mappings;

@@ -1,0 +1,11 @@
+DROP TABLE task_control_reference_refreshes;
+DROP TABLE task_control_reference_cache;
+DROP TRIGGER task_control_mapping_revision ON task_control_employee_mappings;
+DROP TRIGGER task_control_org_user_departments ON user_departments;
+DROP TRIGGER task_control_org_user_positions ON user_positions;
+DROP TRIGGER task_control_org_positions ON positions;
+DROP TRIGGER task_control_org_departments ON departments;
+DROP TRIGGER task_control_org_users ON users;
+DROP FUNCTION task_control_bump_reference_revision();
+DROP TABLE task_control_employee_mappings;
+DROP TABLE task_control_reference_revisions;

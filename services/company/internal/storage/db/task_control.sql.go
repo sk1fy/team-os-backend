@@ -13,7 +13,7 @@ import (
 )
 
 const activeTaskControlConnection = `-- name: ActiveTaskControlConnection :one
-SELECT company_id, id, installation_id, integration_id, account_id, generation, binding_revision, mode_epoch, mode, state, intent_id, linked_by, crm_admin_id, updated_at, publication_id FROM task_control_connections WHERE company_id=$1 AND account_id=$2 AND state='active'
+SELECT company_id, id, installation_id, integration_id, account_id, generation, binding_revision, mode_epoch, mode, state, intent_id, linked_by, crm_admin_id, updated_at, publication_id, runtime_schema_version FROM task_control_connections WHERE company_id=$1 AND account_id=$2 AND state='active'
 `
 
 type ActiveTaskControlConnectionParams struct {
@@ -40,6 +40,7 @@ func (q *Queries) ActiveTaskControlConnection(ctx context.Context, arg ActiveTas
 		&i.CrmAdminID,
 		&i.UpdatedAt,
 		&i.PublicationID,
+		&i.RuntimeSchemaVersion,
 	)
 	return i, err
 }
@@ -94,7 +95,7 @@ func (q *Queries) CountTaskControlRuntimeSessions(ctx context.Context, arg Count
 
 const createTaskControlConnection = `-- name: CreateTaskControlConnection :one
 INSERT INTO task_control_connections(company_id,id,installation_id,integration_id,account_id,generation,intent_id,linked_by,crm_admin_id)
-VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING company_id, id, installation_id, integration_id, account_id, generation, binding_revision, mode_epoch, mode, state, intent_id, linked_by, crm_admin_id, updated_at, publication_id
+VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING company_id, id, installation_id, integration_id, account_id, generation, binding_revision, mode_epoch, mode, state, intent_id, linked_by, crm_admin_id, updated_at, publication_id, runtime_schema_version
 `
 
 type CreateTaskControlConnectionParams struct {
@@ -138,6 +139,7 @@ func (q *Queries) CreateTaskControlConnection(ctx context.Context, arg CreateTas
 		&i.CrmAdminID,
 		&i.UpdatedAt,
 		&i.PublicationID,
+		&i.RuntimeSchemaVersion,
 	)
 	return i, err
 }
@@ -243,7 +245,7 @@ func (q *Queries) EnsureTaskControlDraft(ctx context.Context, arg EnsureTaskCont
 }
 
 const getTaskControlConnection = `-- name: GetTaskControlConnection :one
-SELECT company_id, id, installation_id, integration_id, account_id, generation, binding_revision, mode_epoch, mode, state, intent_id, linked_by, crm_admin_id, updated_at, publication_id FROM task_control_connections WHERE company_id=$1 AND id=$2
+SELECT company_id, id, installation_id, integration_id, account_id, generation, binding_revision, mode_epoch, mode, state, intent_id, linked_by, crm_admin_id, updated_at, publication_id, runtime_schema_version FROM task_control_connections WHERE company_id=$1 AND id=$2
 `
 
 type GetTaskControlConnectionParams struct {
@@ -270,6 +272,7 @@ func (q *Queries) GetTaskControlConnection(ctx context.Context, arg GetTaskContr
 		&i.CrmAdminID,
 		&i.UpdatedAt,
 		&i.PublicationID,
+		&i.RuntimeSchemaVersion,
 	)
 	return i, err
 }
@@ -299,7 +302,7 @@ func (q *Queries) GetTaskControlConnectionRequest(ctx context.Context, arg GetTa
 }
 
 const getTaskControlDraft = `-- name: GetTaskControlDraft :one
-SELECT company_id, binding_id, revision, rules, checksum, updated_at, updated_by FROM task_control_drafts WHERE company_id=$1 AND binding_id=$2
+SELECT company_id, binding_id, revision, rules, checksum, updated_at, updated_by, schema_version FROM task_control_drafts WHERE company_id=$1 AND binding_id=$2
 `
 
 type GetTaskControlDraftParams struct {
@@ -318,12 +321,13 @@ func (q *Queries) GetTaskControlDraft(ctx context.Context, arg GetTaskControlDra
 		&i.Checksum,
 		&i.UpdatedAt,
 		&i.UpdatedBy,
+		&i.SchemaVersion,
 	)
 	return i, err
 }
 
 const getTaskControlIntent = `-- name: GetTaskControlIntent :one
-SELECT company_id, id, installation_id, integration_id, account_id, generation, binding_revision, mode_epoch, mode, state, intent_id, linked_by, crm_admin_id, updated_at, publication_id FROM task_control_connections WHERE company_id=$1 AND intent_id=$2
+SELECT company_id, id, installation_id, integration_id, account_id, generation, binding_revision, mode_epoch, mode, state, intent_id, linked_by, crm_admin_id, updated_at, publication_id, runtime_schema_version FROM task_control_connections WHERE company_id=$1 AND intent_id=$2
 `
 
 type GetTaskControlIntentParams struct {
@@ -350,6 +354,7 @@ func (q *Queries) GetTaskControlIntent(ctx context.Context, arg GetTaskControlIn
 		&i.CrmAdminID,
 		&i.UpdatedAt,
 		&i.PublicationID,
+		&i.RuntimeSchemaVersion,
 	)
 	return i, err
 }
@@ -472,7 +477,7 @@ func (q *Queries) GetTaskControlSnapshot(ctx context.Context, arg GetTaskControl
 }
 
 const listTaskControlConnections = `-- name: ListTaskControlConnections :many
-SELECT company_id, id, installation_id, integration_id, account_id, generation, binding_revision, mode_epoch, mode, state, intent_id, linked_by, crm_admin_id, updated_at, publication_id FROM task_control_connections WHERE company_id=$1 ORDER BY updated_at DESC,id
+SELECT company_id, id, installation_id, integration_id, account_id, generation, binding_revision, mode_epoch, mode, state, intent_id, linked_by, crm_admin_id, updated_at, publication_id, runtime_schema_version FROM task_control_connections WHERE company_id=$1 ORDER BY updated_at DESC,id
 `
 
 func (q *Queries) ListTaskControlConnections(ctx context.Context, companyID uuid.UUID) ([]TaskControlConnection, error) {
@@ -500,6 +505,7 @@ func (q *Queries) ListTaskControlConnections(ctx context.Context, companyID uuid
 			&i.CrmAdminID,
 			&i.UpdatedAt,
 			&i.PublicationID,
+			&i.RuntimeSchemaVersion,
 		); err != nil {
 			return nil, err
 		}
@@ -589,7 +595,7 @@ func (q *Queries) PruneTaskControlRuntimeSessions(ctx context.Context, expiresAt
 
 const revokeTaskControlConnection = `-- name: RevokeTaskControlConnection :one
 UPDATE task_control_connections SET state='revoked',binding_revision=binding_revision+1,mode_epoch=mode_epoch+1,updated_at=now()
-WHERE company_id=$1 AND id=$2 AND binding_revision=$3 AND mode_epoch=$4 AND state='active' RETURNING company_id, id, installation_id, integration_id, account_id, generation, binding_revision, mode_epoch, mode, state, intent_id, linked_by, crm_admin_id, updated_at, publication_id
+WHERE company_id=$1 AND id=$2 AND binding_revision=$3 AND mode_epoch=$4 AND state='active' RETURNING company_id, id, installation_id, integration_id, account_id, generation, binding_revision, mode_epoch, mode, state, intent_id, linked_by, crm_admin_id, updated_at, publication_id, runtime_schema_version
 `
 
 type RevokeTaskControlConnectionParams struct {
@@ -623,6 +629,7 @@ func (q *Queries) RevokeTaskControlConnection(ctx context.Context, arg RevokeTas
 		&i.CrmAdminID,
 		&i.UpdatedAt,
 		&i.PublicationID,
+		&i.RuntimeSchemaVersion,
 	)
 	return i, err
 }
@@ -682,7 +689,7 @@ func (q *Queries) SaveTaskControlSnapshot(ctx context.Context, arg SaveTaskContr
 }
 
 const setTaskControlMode = `-- name: SetTaskControlMode :one
-UPDATE task_control_connections SET mode=$3,mode_epoch=mode_epoch+1,updated_at=now() WHERE company_id=$1 AND id=$2 AND binding_revision=$4 AND mode_epoch=$5 AND state='active' RETURNING company_id, id, installation_id, integration_id, account_id, generation, binding_revision, mode_epoch, mode, state, intent_id, linked_by, crm_admin_id, updated_at, publication_id
+UPDATE task_control_connections SET mode=$3,mode_epoch=mode_epoch+1,updated_at=now() WHERE company_id=$1 AND id=$2 AND binding_revision=$4 AND mode_epoch=$5 AND state='active' RETURNING company_id, id, installation_id, integration_id, account_id, generation, binding_revision, mode_epoch, mode, state, intent_id, linked_by, crm_admin_id, updated_at, publication_id, runtime_schema_version
 `
 
 type SetTaskControlModeParams struct {
@@ -718,12 +725,13 @@ func (q *Queries) SetTaskControlMode(ctx context.Context, arg SetTaskControlMode
 		&i.CrmAdminID,
 		&i.UpdatedAt,
 		&i.PublicationID,
+		&i.RuntimeSchemaVersion,
 	)
 	return i, err
 }
 
 const setTaskControlPublication = `-- name: SetTaskControlPublication :one
-UPDATE task_control_connections SET publication_id=$3,updated_at=now() WHERE company_id=$1 AND id=$2 AND state='active' RETURNING company_id, id, installation_id, integration_id, account_id, generation, binding_revision, mode_epoch, mode, state, intent_id, linked_by, crm_admin_id, updated_at, publication_id
+UPDATE task_control_connections SET publication_id=$3,updated_at=now() WHERE company_id=$1 AND id=$2 AND state='active' RETURNING company_id, id, installation_id, integration_id, account_id, generation, binding_revision, mode_epoch, mode, state, intent_id, linked_by, crm_admin_id, updated_at, publication_id, runtime_schema_version
 `
 
 type SetTaskControlPublicationParams struct {
@@ -751,12 +759,13 @@ func (q *Queries) SetTaskControlPublication(ctx context.Context, arg SetTaskCont
 		&i.CrmAdminID,
 		&i.UpdatedAt,
 		&i.PublicationID,
+		&i.RuntimeSchemaVersion,
 	)
 	return i, err
 }
 
 const updateTaskControlDraft = `-- name: UpdateTaskControlDraft :one
-UPDATE task_control_drafts SET rules=$3,checksum=$4,revision=revision+1,updated_at=now(),updated_by=$5 WHERE company_id=$1 AND binding_id=$2 AND revision=$6 RETURNING company_id, binding_id, revision, rules, checksum, updated_at, updated_by
+UPDATE task_control_drafts SET rules=$3,checksum=$4,revision=revision+1,updated_at=now(),updated_by=$5 WHERE company_id=$1 AND binding_id=$2 AND revision=$6 RETURNING company_id, binding_id, revision, rules, checksum, updated_at, updated_by, schema_version
 `
 
 type UpdateTaskControlDraftParams struct {
@@ -786,6 +795,7 @@ func (q *Queries) UpdateTaskControlDraft(ctx context.Context, arg UpdateTaskCont
 		&i.Checksum,
 		&i.UpdatedAt,
 		&i.UpdatedBy,
+		&i.SchemaVersion,
 	)
 	return i, err
 }

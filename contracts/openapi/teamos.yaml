@@ -4880,14 +4880,159 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/TaskControlRevokeInput'
+  /api/v2/task-control/connections/{bindingId}/references:
+    get:
+      tags: [Task Control]
+      operationId: getTaskControlReferenceSelection
+      summary: CRM-справочники, сотрудники и оргструктура для выбора
+      description: Полный ограниченный CRM snapshot, до 1000 сотрудников в странице. GET не ожидает CRM; cold GET ставит coalesced refresh. selectedEmployeeIds возвращаются отдельно вне фильтра/страницы, в том числе удалённые. Пустые departmentIds означают «Без отдела». Число активных сделок не вычисляется.
+      x-permission: taskControl.read
+      responses:
+        '200':
+          description: Данные и фактическое состояние источника
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlReferenceView'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '503':
+          description: Источник временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        default:
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: bindingId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+      - name: search
+        in: query
+        schema:
+          type: string
+          maxLength: 200
+      - name: departmentId
+        in: query
+        schema:
+          $ref: '#/components/schemas/ID'
+      - name: withoutDepartment
+        in: query
+        schema:
+          type: boolean
+      - name: offset
+        in: query
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          default: 100
+      - name: selectedEmployeeIds
+        in: query
+        style: form
+        explode: false
+        schema:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/ID'
+  /api/v2/task-control/connections/{bindingId}/references/refresh:
+    post:
+      tags: [Task Control]
+      operationId: refreshTaskControlReferences
+      summary: Запланировать ограниченное обновление справочников
+      x-permission: taskControl.manage
+      responses:
+        '202':
+          description: Обновление поставлено в очередь или объединено с текущим
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlReferenceRefresh'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '503':
+          description: Источник временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        default:
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: bindingId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+  /api/v2/task-control/connections/{bindingId}/references/refresh/{refreshId}:
+    get:
+      tags: [Task Control]
+      operationId: getTaskControlReferencesRefresh
+      summary: Состояние обновления справочников
+      x-permission: taskControl.read
+      responses:
+        '200':
+          description: Состояние обновления в текущем scope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlReferenceRefresh'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '503':
+          description: Источник временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        default:
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: bindingId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+      - name: refreshId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
   /api/v1/task-control/connections/{bindingId}/references:
     get:
       tags:
       - Task Control
       operationId: getTaskControlReferences
-      summary: Свежие CRM-справочники из admin bridge виджета
-      description: Контракт КТ-01.02; бизнес-реализация в КТ-01.03–12. companyId только из сессии; чужой binding возвращает
-        404. Чтение требует активное членство и отдельное право taskControl.read внутри Интеграций.
+      summary: Совместимая v1-проекция серверных CRM-справочников
+      description: Проекция общего Core provider. При отсутствии fresh снимка или unknown customers — 503. Для состояния источника, оргструктуры и выбора используйте v2. Чужой binding — 404.
       x-permission: taskControl.read
       responses:
         '200':
@@ -4906,12 +5051,6 @@ paths:
           $ref: '#/components/responses/NotFound'
         '409':
           $ref: '#/components/responses/Conflict'
-        '501':
-          description: Контракт опубликован, обработчик ещё не реализован.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         default:
           $ref: '#/components/responses/Error'
         '413':
@@ -5735,6 +5874,572 @@ paths:
         '403':
           $ref: '#/components/responses/Forbidden'
 
+  /api/v2/task-control/connections/{bindingId}/draft:
+    parameters:
+    - name: bindingId
+      in: path
+      required: true
+      schema: &r11path001
+        $ref: '#/components/schemas/ID'
+    get:
+      tags:
+      - Task Control
+      operationId: getTaskControlDraftV2
+      summary: Намерение выбора и диагностика черновика v2
+      x-permission: taskControl.read
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlDraftV2'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '413':
+          description: Превышен размер полного снимка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: Актуальные источники недоступны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+      - Task Control
+      operationId: updateTaskControlDraftV2
+      summary: Сохранить намерение по CAS
+      x-permission: taskControl.manage
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlDraftV2'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '413':
+          description: Превышен размер полного снимка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: Актуальные источники недоступны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskControlDraftInputV2'
+  /api/v2/task-control/connections/{bindingId}/validate:
+    parameters:
+    - name: bindingId
+      in: path
+      required: true
+      schema: *r11path001
+    post:
+      tags:
+      - Task Control
+      operationId: validateTaskControlDraftV2
+      summary: Вычислить состав без публикации
+      x-permission: taskControl.manage
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlValidationV2'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '413':
+          description: Превышен размер полного снимка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: Актуальные источники недоступны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskControlValidateInputV2'
+  /api/v2/task-control/connections/{bindingId}/publications:
+    parameters:
+    - name: bindingId
+      in: path
+      required: true
+      schema: *r11path001
+    post:
+      tags:
+      - Task Control
+      operationId: publishTaskControlDraftV2
+      summary: Опубликовать intent и первый вычисленный снимок атомарно
+      x-permission: taskControl.manage
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlPublicationV2'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '413':
+          description: Превышен размер полного снимка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: Актуальные источники недоступны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskControlPublishInputV2'
+    get:
+      tags:
+      - Task Control
+      operationId: getTaskControlPublicationsV2
+      summary: История неизменяемых intent-публикаций
+      x-permission: taskControl.read
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlPublicationsV2'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '413':
+          description: Превышен размер полного снимка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: Актуальные источники недоступны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+      - name: cursor
+        in: query
+        schema:
+          type: string
+          maxLength: 512
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+  /api/v2/task-control/connections/{bindingId}/publications/{publicationId}:
+    parameters:
+    - name: bindingId
+      in: path
+      required: true
+      schema: *r11path001
+    - name: publicationId
+      in: path
+      required: true
+      schema: *r11path001
+    get:
+      tags:
+      - Task Control
+      operationId: getTaskControlPublicationV2
+      summary: Намерение опубликованной версии
+      x-permission: taskControl.read
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlPublicationV2'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '413':
+          description: Превышен размер полного снимка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: Актуальные источники недоступны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v2/task-control/connections/{bindingId}/publications/{publicationId}/application:
+    parameters:
+    - name: bindingId
+      in: path
+      required: true
+      schema: *r11path001
+    - name: publicationId
+      in: path
+      required: true
+      schema: *r11path001
+    get:
+      tags:
+      - Task Control
+      operationId: getTaskControlApplicationV2
+      summary: Текущая вычисленная ревизия и ACK
+      x-permission: taskControl.read
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlApplicationV2'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '413':
+          description: Превышен размер полного снимка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: Актуальные источники недоступны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v2/task-control/connections/{bindingId}/activate:
+    parameters:
+    - name: bindingId
+      in: path
+      required: true
+      schema: *r11path001
+    post:
+      tags:
+      - Task Control
+      operationId: activateTaskControlV2
+      summary: Явно перейти на schema v2 с новым epoch
+      x-permission: taskControl.manage
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlActivationV2'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '413':
+          description: Превышен размер полного снимка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: Актуальные источники недоступны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskControlActivationInputV2'
+  /api/v2/task-control/connections/{bindingId}/rollback:
+    parameters:
+    - name: bindingId
+      in: path
+      required: true
+      schema: *r11path001
+    post:
+      tags:
+      - Task Control
+      operationId: rollbackTaskControlPublicationV2
+      summary: Создать публикацию из исторического intent с текущими источниками
+      x-permission: taskControl.manage
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlPublicationV2'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '413':
+          description: Превышен размер полного снимка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: Актуальные источники недоступны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskControlRollbackInputV2'
+  /api/v2/task-control/runtime/bootstrap:
+    get:
+      tags:
+      - Task Control
+      operationId: getTaskControlRuntimeV2
+      summary: Свежая actor-проекция вычисленного runtime-снимка
+      x-permission: runtime-session
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlRuntimeEnvelopeV2'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '413':
+          description: Превышен размер полного снимка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: Актуальные источники недоступны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - taskControlSession: []
+  /api/v2/task-control/runtime/ack:
+    post:
+      tags:
+      - Task Control
+      operationId: ackTaskControlRuntimeV2
+      summary: Подтвердить выданную actor-проекцию
+      x-permission: runtime-session
+      responses:
+        '204':
+          description: Подтверждено
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '413':
+          description: Превышен размер полного снимка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: Актуальные источники недоступны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - taskControlSession: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskControlRuntimeAckInputV2'
+  /api/v2/task-control/connections/{bindingId}/mode-preview:
+    parameters:
+    - name: bindingId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/ID'
+    post:
+      tags:
+      - Task Control
+      operationId: previewTaskControlModeV2
+      summary: Проверить материализацию
+      x-permission: taskControl.manage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskControlModePreviewInputV2'
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlModePreviewV2'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '413':
+          description: Превышен размер полного экспорта
+        '503':
+          description: Актуальные источники недоступны
+  /api/v2/task-control/connections/{bindingId}/mode-intents:
+    parameters:
+    - name: bindingId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/ID'
+    post:
+      tags:
+      - Task Control
+      operationId: createTaskControlModeV2
+      summary: Подтвердить смену режима без потери намерения
+      x-permission: taskControl.manage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskControlModeInputV2'
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlModeResultV2'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '413':
+          description: Превышен размер полного экспорта
+        '503':
+          description: Актуальные источники недоступны
 components:
   securitySchemes:
     taskControlSession:
@@ -6836,6 +7541,808 @@ components:
             $ref: '#/components/schemas/FileDownload'
 
   schemas:
+    TaskControlModePreviewInputV2:
+      type: object
+      additionalProperties: false
+      required:
+      - targetMode
+      - publicationId
+      properties:
+        targetMode:
+          type: string
+          enum:
+          - managed
+          - standalone
+          x-enum-varnames:
+          - TCModePreviewTargetV2Managed
+          - TCModePreviewTargetV2Standalone
+        publicationId:
+          $ref: '#/components/schemas/ID'
+    TaskControlModePreviewV2:
+      type: object
+      additionalProperties: false
+      required:
+      - scope
+      - publicationId
+      - targetMode
+      - exportChecksum
+      - sourceRevisions
+      - runtimeRules
+      - dynamicLoss
+      - emptyExport
+      - issues
+      properties:
+        scope:
+          $ref: '#/components/schemas/TaskControlScope'
+        publicationId:
+          $ref: '#/components/schemas/ID'
+        targetMode:
+          type: string
+        exportChecksum:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        sourceRevisions:
+          $ref: '#/components/schemas/TaskControlSourceRevisionsV2'
+        runtimeRules:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+          maxItems: 1000
+          minItems: 0
+          uniqueItems: true
+        dynamicLoss:
+          type: boolean
+        emptyExport:
+          type: boolean
+        issues:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskControlResolverIssueV2'
+          maxItems: 10000
+          minItems: 0
+          uniqueItems: true
+    TaskControlModeInputV2:
+      type: object
+      additionalProperties: false
+      required:
+      - expectedBindingRevision
+      - expectedModeEpoch
+      - requestId
+      - targetMode
+      - publicationId
+      - coreAssertion
+      properties:
+        expectedBindingRevision:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        expectedModeEpoch:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        requestId:
+          $ref: '#/components/schemas/ID'
+        targetMode:
+          type: string
+          enum:
+          - managed
+          - standalone
+          x-enum-varnames:
+          - TCModeCommitTargetV2Managed
+          - TCModeCommitTargetV2Standalone
+        publicationId:
+          $ref: '#/components/schemas/ID'
+        coreAssertion:
+          type: string
+          minLength: 1
+          maxLength: 8192
+          writeOnly: true
+        exportChecksum:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        expectedSourceRevisions:
+          $ref: '#/components/schemas/TaskControlSourceRevisionsV2'
+        confirmDynamicLoss:
+          type: boolean
+        confirmEmptyExport:
+          type: boolean
+    TaskControlModeResultV2:
+      type: object
+      additionalProperties: false
+      required:
+      - scope
+      - state
+      - targetMode
+      - export
+      - updatedAt
+      - expiresAt
+      properties:
+        scope:
+          $ref: '#/components/schemas/TaskControlScope'
+        state:
+          type: string
+        targetMode:
+          type: string
+        export:
+          $ref: '#/components/schemas/TaskControlModePreviewV2'
+        updatedAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+    TaskControlActivationV2:
+      type: object
+      additionalProperties: false
+      required: [scope, runtimeSchemaVersion, state]
+      properties:
+        scope:
+          $ref: '#/components/schemas/TaskControlScope'
+        runtimeSchemaVersion:
+          type: integer
+          enum: [2]
+        state:
+          type: string
+          enum: [completed]
+    TaskControlAudienceAllV2:
+      type: object
+      additionalProperties: false
+      required:
+      - kind
+      properties:
+        kind:
+          type: string
+          enum:
+          - allLinked
+          x-enum-varnames:
+          - TCAudienceAllLinked
+    TaskControlDepartmentSelectionV2:
+      type: object
+      additionalProperties: false
+      required:
+      - departmentId
+      - includeDescendants
+      properties:
+        departmentId: &r11schema001
+          $ref: '#/components/schemas/ID'
+        includeDescendants:
+          type: boolean
+    TaskControlAudienceSelectedV2:
+      type: object
+      additionalProperties: false
+      required:
+      - kind
+      - employeeIds
+      - departments
+      properties:
+        kind:
+          type: string
+          enum:
+          - selected
+          x-enum-varnames:
+          - TCAudienceSelected
+        employeeIds:
+          type: array
+          items: *r11schema001
+          maxItems: 1000
+          minItems: 0
+          uniqueItems: true
+        departments:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskControlDepartmentSelectionV2'
+          maxItems: 1000
+          minItems: 0
+          uniqueItems: true
+    TaskControlAudienceV2:
+      oneOf:
+      - $ref: '#/components/schemas/TaskControlAudienceAllV2'
+      - $ref: '#/components/schemas/TaskControlAudienceSelectedV2'
+      discriminator:
+        propertyName: kind
+        mapping:
+          allLinked: '#/components/schemas/TaskControlAudienceAllV2'
+          selected: '#/components/schemas/TaskControlAudienceSelectedV2'
+    TaskControlStagesAllOpenV2:
+      type: object
+      additionalProperties: false
+      required:
+      - kind
+      properties:
+        kind:
+          type: string
+          enum:
+          - allOpen
+          x-enum-varnames:
+          - TCStagesAllOpen
+    TaskControlStagesSelectedV2:
+      type: object
+      additionalProperties: false
+      required:
+      - kind
+      - statusIds
+      properties:
+        kind:
+          type: string
+          enum:
+          - selected
+          x-enum-varnames:
+          - TCStagesSelected
+        statusIds:
+          type: array
+          items: &r11schema002
+            type: string
+            pattern: ^[1-9][0-9]{0,15}$
+          maxItems: 1000
+          minItems: 1
+          uniqueItems: true
+    TaskControlStagesV2:
+      oneOf:
+      - $ref: '#/components/schemas/TaskControlStagesAllOpenV2'
+      - $ref: '#/components/schemas/TaskControlStagesSelectedV2'
+      discriminator:
+        propertyName: kind
+        mapping:
+          allOpen: '#/components/schemas/TaskControlStagesAllOpenV2'
+          selected: '#/components/schemas/TaskControlStagesSelectedV2'
+    TaskControlCustomersDisabledV2:
+      type: object
+      additionalProperties: false
+      required:
+      - kind
+      properties:
+        kind:
+          type: string
+          enum:
+          - disabled
+          x-enum-varnames:
+          - TCCustomersDisabled
+    TaskControlCustomersAllV2:
+      type: object
+      additionalProperties: false
+      required:
+      - kind
+      properties:
+        kind:
+          type: string
+          enum:
+          - all
+          x-enum-varnames:
+          - TCCustomersAll
+    TaskControlCustomersSelectedV2:
+      type: object
+      additionalProperties: false
+      required:
+      - kind
+      - statusIds
+      properties:
+        kind:
+          type: string
+          enum:
+          - selected
+          x-enum-varnames:
+          - TCCustomersSelected
+        statusIds:
+          type: array
+          items: *r11schema002
+          maxItems: 1000
+          minItems: 1
+          uniqueItems: true
+    TaskControlCustomersV2:
+      oneOf:
+      - $ref: '#/components/schemas/TaskControlCustomersDisabledV2'
+      - $ref: '#/components/schemas/TaskControlCustomersAllV2'
+      - $ref: '#/components/schemas/TaskControlCustomersSelectedV2'
+      discriminator:
+        propertyName: kind
+        mapping:
+          disabled: '#/components/schemas/TaskControlCustomersDisabledV2'
+          all: '#/components/schemas/TaskControlCustomersAllV2'
+          selected: '#/components/schemas/TaskControlCustomersSelectedV2'
+    TaskControlPipelineSelectionV2:
+      type: object
+      additionalProperties: false
+      required:
+      - pipelineId
+      - stages
+      properties:
+        pipelineId: *r11schema002
+        stages:
+          $ref: '#/components/schemas/TaskControlStagesV2'
+    TaskControlLeadsDisabledV2:
+      type: object
+      additionalProperties: false
+      required:
+      - kind
+      properties:
+        kind:
+          type: string
+          enum:
+          - disabled
+          x-enum-varnames:
+          - TCLeadsDisabled
+    TaskControlLeadsAllOpenV2:
+      type: object
+      additionalProperties: false
+      required:
+      - kind
+      properties:
+        kind:
+          type: string
+          enum:
+          - allOpen
+          x-enum-varnames:
+          - TCLeadsAllOpen
+    TaskControlLeadsSelectedV2:
+      type: object
+      additionalProperties: false
+      required:
+      - kind
+      - pipelines
+      properties:
+        kind:
+          type: string
+          enum:
+          - selected
+          x-enum-varnames:
+          - TCLeadsSelected
+        pipelines:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskControlPipelineSelectionV2'
+          maxItems: 1000
+          minItems: 1
+          uniqueItems: true
+    TaskControlLeadsV2:
+      oneOf:
+      - $ref: '#/components/schemas/TaskControlLeadsDisabledV2'
+      - $ref: '#/components/schemas/TaskControlLeadsAllOpenV2'
+      - $ref: '#/components/schemas/TaskControlLeadsSelectedV2'
+      discriminator:
+        propertyName: kind
+        mapping:
+          disabled: '#/components/schemas/TaskControlLeadsDisabledV2'
+          allOpen: '#/components/schemas/TaskControlLeadsAllOpenV2'
+          selected: '#/components/schemas/TaskControlLeadsSelectedV2'
+    TaskControlRuleV2:
+      type: object
+      additionalProperties: false
+      required:
+      - schemaVersion
+      - ruleUid
+      - name
+      - audience
+      - leads
+      - customers
+      - showModal
+      - denyExit
+      - checkResponsible
+      - enabled
+      - archived
+      properties:
+        schemaVersion:
+          type: integer
+          enum:
+          - 2
+        ruleUid: *r11schema001
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        audience:
+          $ref: '#/components/schemas/TaskControlAudienceV2'
+        leads:
+          $ref: '#/components/schemas/TaskControlLeadsV2'
+        customers:
+          $ref: '#/components/schemas/TaskControlCustomersV2'
+        showModal:
+          type: boolean
+        denyExit:
+          type: boolean
+        checkResponsible:
+          type: boolean
+        enabled:
+          type: boolean
+        archived:
+          type: boolean
+    TaskControlIntentDynamicV2:
+      type: object
+      additionalProperties: false
+      required:
+      - kind
+      - rule
+      properties:
+        kind:
+          type: string
+          enum:
+          - dynamic
+          x-enum-varnames:
+          - TCIntentDynamic
+        rule:
+          $ref: '#/components/schemas/TaskControlRuleV2'
+    TaskControlIntentLegacyExplicitV2:
+      type: object
+      additionalProperties: false
+      required:
+      - kind
+      - rule
+      properties:
+        kind:
+          type: string
+          enum:
+          - legacyExplicit
+          x-enum-varnames:
+          - TCIntentLegacyExplicit
+        rule:
+          $ref: '#/components/schemas/TaskControlRule'
+    TaskControlIntentRuleV2:
+      oneOf:
+      - $ref: '#/components/schemas/TaskControlIntentDynamicV2'
+      - $ref: '#/components/schemas/TaskControlIntentLegacyExplicitV2'
+      discriminator:
+        propertyName: kind
+        mapping:
+          dynamic: '#/components/schemas/TaskControlIntentDynamicV2'
+          legacyExplicit: '#/components/schemas/TaskControlIntentLegacyExplicitV2'
+    TaskControlSourceRevisionsV2:
+      type: object
+      additionalProperties: false
+      required:
+      - crm
+      - organization
+      - mapping
+      properties:
+        crm:
+          type: string
+          pattern: ^sha256:[a-f0-9]{64}$
+        organization:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        mapping:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+    TaskControlResolverIssueV2:
+      type: object
+      additionalProperties: false
+      required:
+      - code
+      - path
+      - message
+      properties:
+        ruleUid: *r11schema001
+        code:
+          type: string
+        path:
+          type: string
+        message:
+          type: string
+        blocking:
+          type: boolean
+    TaskControlDraftV2:
+      type: object
+      additionalProperties: false
+      required:
+      - scope
+      - revision
+      - schemaVersion
+      - intentRules
+      - checksum
+      properties:
+        scope:
+          $ref: '#/components/schemas/TaskControlScope'
+        revision: &r11schema003
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        schemaVersion:
+          type: integer
+          enum:
+          - 2
+        intentRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskControlIntentRuleV2'
+          maxItems: 1000
+          minItems: 0
+          uniqueItems: true
+        checksum: &r11schema004
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        issues:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskControlResolverIssueV2'
+          maxItems: 100000
+          minItems: 0
+          uniqueItems: true
+        updatedAt: &r11schema005
+          type: string
+          format: date-time
+        updatedBy: *r11schema001
+    TaskControlDraftInputV2:
+      type: object
+      additionalProperties: false
+      required:
+      - expectedBindingRevision
+      - expectedModeEpoch
+      - expectedRevision
+      - intentRules
+      properties:
+        expectedBindingRevision: *r11schema003
+        expectedModeEpoch: *r11schema003
+        expectedRevision: *r11schema003
+        intentRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskControlIntentRuleV2'
+          maxItems: 1000
+          minItems: 0
+          uniqueItems: true
+    TaskControlValidateInputV2:
+      type: object
+      additionalProperties: false
+      required:
+      - expectedDraftRevision
+      properties:
+        expectedDraftRevision: *r11schema003
+    TaskControlPublishInputV2:
+      type: object
+      additionalProperties: false
+      required:
+      - expectedBindingRevision
+      - expectedModeEpoch
+      - requestId
+      - expectedDraftRevision
+      - expectedChecksum
+      properties:
+        expectedBindingRevision: *r11schema003
+        expectedModeEpoch: *r11schema003
+        requestId: *r11schema001
+        expectedDraftRevision: *r11schema003
+        expectedChecksum: *r11schema004
+        reason:
+          type: string
+          maxLength: 1000
+        expectedSourceRevisions:
+          $ref: '#/components/schemas/TaskControlSourceRevisionsV2'
+    TaskControlActivationInputV2:
+      type: object
+      additionalProperties: false
+      required:
+      - expectedBindingRevision
+      - expectedModeEpoch
+      - requestId
+      properties:
+        expectedBindingRevision: *r11schema003
+        expectedModeEpoch: *r11schema003
+        requestId: *r11schema001
+    TaskControlValidationV2:
+      type: object
+      additionalProperties: false
+      required:
+      - valid
+      - intentChecksum
+      - sourceRevisions
+      - issues
+      - resolvedPreview
+      properties:
+        valid:
+          type: boolean
+        intentChecksum: *r11schema004
+        sourceRevisions:
+          $ref: '#/components/schemas/TaskControlSourceRevisionsV2'
+        issues:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskControlResolverIssueV2'
+          maxItems: 100000
+          minItems: 0
+          uniqueItems: true
+        resolvedPreview:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+          maxItems: 1000
+          minItems: 0
+          uniqueItems: true
+    TaskControlPublicationV2:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - scopeAtPublication
+      - version
+      - schemaVersion
+      - draftRevision
+      - intentRules
+      - intentChecksum
+      - createdAt
+      - createdBy
+      - reason
+      properties:
+        id: *r11schema001
+        scopeAtPublication:
+          $ref: '#/components/schemas/TaskControlScope'
+        version: *r11schema003
+        schemaVersion:
+          type: integer
+          enum:
+          - 2
+        draftRevision: *r11schema003
+        intentRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskControlIntentRuleV2'
+          maxItems: 1000
+          minItems: 0
+          uniqueItems: true
+        intentChecksum: *r11schema004
+        createdAt: *r11schema005
+        createdBy: *r11schema001
+        reason:
+          type: string
+        restoredFromId:
+          type: [string, 'null']
+          format: uuid
+          x-go-type: '*openapi_types.UUID'
+        initialSnapshotId: *r11schema001
+        runtimeRevision: *r11schema003
+    TaskControlPublicationsV2:
+      type: object
+      additionalProperties: false
+      required:
+      - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskControlPublicationV2'
+          maxItems: 1000
+          minItems: 0
+          uniqueItems: true
+        nextCursor:
+          type: string
+    TaskControlRuntimeEnvelopeV2:
+      type: object
+      additionalProperties: false
+      required:
+      - runtimeSchemaVersion
+      - scope
+      - actorId
+      - publicationId
+      - publicationVersion
+      - intentChecksum
+      - snapshotId
+      - runtimeRevision
+      - sourceRevisions
+      - resolverVersion
+      - resolvedChecksum
+      - payloadChecksum
+      - runtimeRules
+      - issuedAt
+      - validUntil
+      - minRuntimeVersion
+      properties:
+        runtimeSchemaVersion:
+          type: integer
+          enum:
+          - 2
+        scope:
+          $ref: '#/components/schemas/TaskControlScope'
+        actorId: *r11schema002
+        publicationId: *r11schema001
+        publicationVersion: *r11schema003
+        intentChecksum: *r11schema004
+        snapshotId: *r11schema001
+        runtimeRevision: *r11schema003
+        sourceRevisions:
+          $ref: '#/components/schemas/TaskControlSourceRevisionsV2'
+        resolverVersion:
+          type: integer
+          enum:
+          - 1
+        resolvedChecksum: *r11schema004
+        payloadChecksum: *r11schema004
+        runtimeRules:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+          maxItems: 1000
+          minItems: 0
+          uniqueItems: true
+        issuedAt: *r11schema005
+        validUntil: *r11schema005
+        minRuntimeVersion:
+          type: string
+    TaskControlRuntimeAckInputV2:
+      type: object
+      additionalProperties: false
+      required:
+      - scope
+      - actorId
+      - runtimeInstanceId
+      - snapshotId
+      - publicationId
+      - publicationVersion
+      - runtimeRevision
+      - payloadChecksum
+      - appliedAt
+      - runtimeVersion
+      properties:
+        actorId:
+          type: string
+          pattern: ^[1-9][0-9]{0,15}$
+        scope:
+          $ref: '#/components/schemas/TaskControlScope'
+        runtimeInstanceId: *r11schema001
+        snapshotId: *r11schema001
+        publicationId: *r11schema001
+        publicationVersion: *r11schema003
+        runtimeRevision: *r11schema003
+        payloadChecksum: *r11schema004
+        appliedAt: *r11schema005
+        runtimeVersion:
+          type: string
+          maxLength: 40
+    TaskControlApplicationV2:
+      type: object
+      additionalProperties: false
+      required:
+      - publicationId
+      - runtimeState
+      - issues
+      properties:
+        publicationId: *r11schema001
+        currentSnapshotId:
+          type: [string, 'null']
+          format: uuid
+          x-go-type: '*openapi_types.UUID'
+        currentRuntimeRevision:
+          type: [integer, 'null']
+          format: int64
+          minimum: 1
+          x-go-type: '*int64'
+        runtimeState:
+          type: string
+        lastRuntimeAck:
+          type: [object, 'null']
+          x-go-type: '*map[string]interface{}'
+          additionalProperties: true
+        issues:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskControlResolverIssueV2'
+          maxItems: 100000
+          minItems: 0
+          uniqueItems: true
+    TaskControlRollbackInputV2:
+      type: object
+      additionalProperties: false
+      required:
+      - expectedBindingRevision
+      - expectedModeEpoch
+      - requestId
+      - sourcePublicationId
+      - expectedPublishedVersion
+      properties:
+        reason:
+          type: string
+          maxLength: 1000
+        expectedBindingRevision: *r11schema003
+        expectedModeEpoch: *r11schema003
+        requestId: *r11schema001
+        sourcePublicationId: *r11schema001
+        expectedPublishedVersion: *r11schema003
     DistributionRuntimeSummary:
       type: object
       additionalProperties: false
@@ -12287,6 +13794,12 @@ components:
       - product
       - modeEpoch
       properties:
+        generation:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+          description: Поколение установки; обязательное для runtime v2.
         companyId:
           $ref: '#/components/schemas/ID'
         bindingId:
@@ -12841,6 +14354,308 @@ components:
                 type: string
         sourceSnapshotId:
           $ref: '#/components/schemas/ID'
+    CRMReferenceScope:
+      type: object
+      additionalProperties: false
+      required: [companyId, accountId, integrationId, installationId, generation, product]
+      properties:
+        companyId:
+          $ref: '#/components/schemas/ID'
+        accountId:
+          type: string
+          pattern: ^[1-9][0-9]{0,15}$
+        integrationId:
+          $ref: '#/components/schemas/ID'
+        installationId:
+          $ref: '#/components/schemas/ID'
+        generation:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        product:
+          type: string
+          enum: [task-control]
+    CRMReferenceSnapshot:
+      type: object
+      additionalProperties: false
+      required: [schemaVersion, scope, revision, provenance, freshUntil, complete, users, groups, pipelines, customers]
+      properties:
+        schemaVersion:
+          type: integer
+          enum: [1]
+        scope:
+          $ref: '#/components/schemas/CRMReferenceScope'
+        revision:
+          type: string
+          pattern: '^sha256:[a-f0-9]{64}$'
+        provenance:
+          type: object
+          additionalProperties: false
+          required: [source, fetchedAt, fetchStartedAt]
+          properties:
+            source:
+              type: string
+              enum: [coreAmocrm]
+            fetchedAt:
+              type: string
+              format: date-time
+            fetchStartedAt:
+              type: string
+              format: date-time
+        freshUntil:
+          type: string
+          format: date-time
+        complete:
+          type: boolean
+          enum: [true]
+        users:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/CRMReferenceUser'
+        groups:
+          type: array
+          maxItems: 1000
+          items:
+            type: object
+            additionalProperties: false
+            required: [id, name]
+            properties:
+              id:
+                type: string
+                pattern: ^[1-9][0-9]{0,15}$
+              name:
+                type: string
+        pipelines:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/CRMReferencePipeline'
+        customers:
+          $ref: '#/components/schemas/CRMCustomerReferences'
+    CRMReferenceUser:
+      type: object
+      additionalProperties: false
+      required: [id, name, isActive, groupId]
+      properties:
+        id:
+          type: string
+          pattern: ^[1-9][0-9]{0,15}$
+        name:
+          type: string
+        isActive:
+          type: boolean
+        groupId:
+          type: [string, 'null']
+          x-go-type: '*string'
+          x-go-type-skip-optional-pointer: true
+          pattern: ^[1-9][0-9]{0,15}$
+    CRMReferencePipeline:
+      type: object
+      additionalProperties: false
+      required: [id, name, sort, statuses]
+      properties:
+        id:
+          type: string
+          pattern: ^[1-9][0-9]{0,15}$
+        name:
+          type: string
+        sort:
+          type: integer
+        statuses:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/CRMReferenceStatus'
+    CRMReferenceStatus:
+      type: object
+      additionalProperties: false
+      required: [id, name, sort, color, kind]
+      properties:
+        id:
+          type: string
+          pattern: ^[1-9][0-9]{0,15}$
+        name:
+          type: string
+        sort:
+          type: integer
+        color:
+          type: [string, 'null']
+          x-go-type: '*string'
+          x-go-type-skip-optional-pointer: true
+        kind:
+          type: string
+          enum: [open, won, lost]
+          x-enum-varnames: [CRMReferenceStageOpen, CRMReferenceStageWon, CRMReferenceStageLost]
+    CRMCustomerReferences:
+      type: object
+      additionalProperties: false
+      required: [availability, statuses, checkedAt, errorCode]
+      properties:
+        availability:
+          type: string
+          enum: [supported, unsupported, unknown]
+          x-enum-varnames: [CRMCustomersSupported, CRMCustomersUnsupported, CRMCustomersUnknown]
+        statuses:
+          type: array
+          maxItems: 1000
+          items:
+            type: object
+            additionalProperties: false
+            required: [id, name, sort, color]
+            properties:
+              id:
+                type: string
+                pattern: ^[1-9][0-9]{0,15}$
+              name:
+                type: string
+              sort:
+                type: integer
+              color:
+                type: [string, 'null']
+                x-go-type: '*string'
+                x-go-type-skip-optional-pointer: true
+        checkedAt:
+          type: string
+          format: date-time
+        errorCode:
+          type: [string, 'null']
+          x-go-type: '*string'
+          x-go-type-skip-optional-pointer: true
+    TaskControlReferenceView:
+      type: object
+      additionalProperties: false
+      required: [scope, state, crm, organizationRevision, mappingRevision, employees, selectedEmployees, departments, issues, total, offset, limit]
+      properties:
+        scope:
+          $ref: '#/components/schemas/TaskControlScope'
+        state:
+          type: string
+          enum: [fresh, stale, refreshing, unavailable, error]
+          x-enum-varnames: [TaskControlReferenceFresh, TaskControlReferenceStale, TaskControlReferenceRefreshing, TaskControlReferenceUnavailable, TaskControlReferenceError]
+        crm:
+          x-go-type: '*CRMReferenceSnapshot'
+          x-go-type-skip-optional-pointer: true
+          anyOf:
+          - $ref: '#/components/schemas/CRMReferenceSnapshot'
+          - type: 'null'
+        organizationRevision:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        mappingRevision:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+        employees:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/TaskControlReferenceEmployee'
+        selectedEmployees:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/TaskControlReferenceEmployee'
+        departments:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/TaskControlReferenceDepartment'
+        issues:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskControlReferenceIssue'
+        total:
+          type: integer
+          minimum: 0
+          description: Точное число сотрудников после фильтров до пагинации.
+        offset:
+          type: integer
+          minimum: 0
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 1000
+    TaskControlReferenceEmployee:
+      type: object
+      additionalProperties: false
+      required: [employeeId, name, positionName, departmentIds, crmUserId, eligible, ineligibleReason]
+      properties:
+        employeeId:
+          $ref: '#/components/schemas/ID'
+        name:
+          type: string
+        positionName:
+          type: [string, 'null']
+          x-go-type: '*string'
+          x-go-type-skip-optional-pointer: true
+        departmentIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/ID'
+        crmUserId:
+          type: [string, 'null']
+          x-go-type: '*string'
+          x-go-type-skip-optional-pointer: true
+          pattern: ^[1-9][0-9]{0,15}$
+        eligible:
+          type: boolean
+        ineligibleReason:
+          type: [string, 'null']
+          x-go-type: '*string'
+          x-go-type-skip-optional-pointer: true
+    TaskControlReferenceDepartment:
+      type: object
+      additionalProperties: false
+      required: [id, name, parentId]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        name:
+          type: string
+        parentId:
+          type: [string, 'null']
+          x-go-type: '*string'
+          x-go-type-skip-optional-pointer: true
+          format: uuid
+    TaskControlReferenceIssue:
+      type: object
+      additionalProperties: false
+      required: [path, code, message]
+      properties:
+        path:
+          type: string
+        code:
+          type: string
+        message:
+          type: string
+    TaskControlReferenceRefresh:
+      type: object
+      additionalProperties: false
+      required: [refreshId, state, errorCode, createdAt, completedAt]
+      properties:
+        refreshId:
+          $ref: '#/components/schemas/ID'
+        state:
+          type: string
+          enum: [pending, completed, failed]
+          x-enum-varnames: [TaskControlReferenceRefreshPending, TaskControlReferenceRefreshCompleted, TaskControlReferenceRefreshFailed]
+        errorCode:
+          type: [string, 'null']
+          x-go-type: '*string'
+          x-go-type-skip-optional-pointer: true
+        createdAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: [string, 'null']
+          x-go-type: '*string'
+          x-go-type-skip-optional-pointer: true
+          format: date-time
     TaskControlImportInput:
       type: object
       additionalProperties: false
@@ -13057,6 +14872,13 @@ components:
       - checkedAt
       - freshUntil
       properties:
+        runtimeVersion:
+          type: string
+          description: Версия пакета, подтверждённая оператором для текущего поколения установки.
+        runtimeCapabilities:
+          type: array
+          items:
+            type: string
         reasonCode:
           type: string
           description: Причина состояния, включая disconnect_unverified, disconnect_confirmed, operator_uninstall, product_disabled, installation_unconfirmed, core_unavailable и registry_<status>. Неизвестный код не меняет семантику state.
@@ -13212,6 +15034,15 @@ components:
       required:
       - coreAssertion
       properties:
+        runtimeVersion:
+          type: string
+          maxLength: 40
+        capabilities:
+          type: array
+          maxItems: 8
+          items:
+            type: string
+            maxLength: 40
         coreAssertion:
           type: string
           minLength: 1
@@ -13226,6 +15057,9 @@ components:
       - scope
       - actorId
       properties:
+        runtimeSchemaVersion:
+          type: integer
+          enum: [1, 2]
         accessToken:
           type: string
         expiresAt:

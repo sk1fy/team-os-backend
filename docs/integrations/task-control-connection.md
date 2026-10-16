@@ -137,3 +137,11 @@ renewal/retry и очистка/лимиты сессий; актуальные 
 пакета 1.1.4 и граница v2 описаны в [task-control-r01-runtime.md](task-control-r01-runtime.md).
 При outage последний снимок действует только до своей lease, cold offline reload
 работает fail-open. Poll — 60 секунд в видимой вкладке, backoff до 300 секунд.
+
+## Реализация справочников R03 (16.10.2026)
+
+Managed-справочники теперь читает общий server provider Core с отдельной references
+capability; browser admin bridge для них не используется. Реализованы v2 selection/refresh
+API, company org/mapping projection и fresh reference validation/publish. Точные формы,
+совместимость v1, TTL и ввод в эксплуатацию: [task-control-r03-references.md](task-control-r03-references.md).
+Импорт каталога и динамический resolver остаются в R04/R11.

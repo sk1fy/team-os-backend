@@ -240,6 +240,7 @@ func companyRegistrationTestPool(t *testing.T, ctx context.Context) *pgxpool.Poo
 		{14, "department_root"}, {15, "position_levels"}, {16, "user_logins"},
 		{17, "company_scoped_emails_and_login_reservations"},
 		{18, "default_users_inactive"}, {19, "amo_admin_self_login_audit"}, {20, "amo_company_bootstrap_audit"}, {21, "access_link_entry_context"}, {22, "distribution_connections"}, {23, "distribution_decision_validation"}, {24, "distribution_delivery"},
+		{32, "task_control_connections"}, {33, "task_control_rules"}, {34, "task_control_runtime_limits"}, {35, "task_control_references"}, {36, "task_control_shared_mappings"},
 	}
 	initScripts := make([]string, 0, len(migrations))
 

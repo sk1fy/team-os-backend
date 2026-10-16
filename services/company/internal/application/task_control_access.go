@@ -35,7 +35,7 @@ func (s *Service) GetTaskControlCapabilities(ctx context.Context, a Actor) (Task
 		return TaskControlCapabilities{}, err
 	}
 	out := TaskControlCapabilities{Read: p.Read, Manage: p.Manage, Operations: map[string]bool{},
-		AvailableOperations:  []string{"connections", "installation", "draft", "publications", "link", "revoke", "mode", "updateDraft", "validate", "publish", "intent"},
+		AvailableOperations:  []string{"connections", "installation", "draft", "publications", "link", "revoke", "mode", "updateDraft", "validate", "publish", "intent", "references", "refreshReferences"},
 		AdminProofTTLSeconds: 60, RuntimeSessionTTLSeconds: 300}
 	for _, op := range []string{"connections", "installation", "draft", "publications", "history", "references", "application", "link", "revoke", "mode", "updateDraft", "validate", "publish", "rollback", "imports", "sourceRequests", "refreshReferences", "intent"} {
 		manage, _ := tc.RequiredAccess(op)

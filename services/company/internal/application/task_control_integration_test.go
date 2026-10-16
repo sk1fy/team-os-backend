@@ -9,14 +9,16 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
-	"github.com/google/uuid"
-	tc "github.com/sk1fy/team-os-backend/services/company/internal/domain/taskcontrol"
 	"os"
 	"path/filepath"
 	"runtime"
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/google/uuid"
+	tc "github.com/sk1fy/team-os-backend/services/company/internal/domain/taskcontrol"
+	"github.com/sk1fy/team-os-backend/services/company/internal/storage/db"
 )
 
 type tcTestCore struct {
@@ -36,33 +38,13 @@ func TestTaskControlLifecycle(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Minute)
 	defer cancel()
 	pool := companyAccessTestPool(t, ctx)
+	var e error
 	_, file, _, _ := runtime.Caller(0)
-	migration, e := os.ReadFile(filepath.Join(filepath.Dir(file), "../../migrations/000032_task_control_connections.up.sql"))
-	if e != nil {
-		t.Fatal(e)
-	}
-	if _, e = pool.Exec(ctx, string(migration)); e != nil {
-		t.Fatal(e)
-	}
-	migration, e = os.ReadFile(filepath.Join(filepath.Dir(file), "../../migrations/000033_task_control_rules.up.sql"))
-	if e != nil {
-		t.Fatal(e)
-	}
-	if _, e = pool.Exec(ctx, string(migration)); e != nil {
-		t.Fatal(e)
-	}
-	migration, e = os.ReadFile(filepath.Join(filepath.Dir(file), "../../migrations/000034_task_control_runtime_limits.up.sql"))
-	if e != nil {
-		t.Fatal(e)
-	}
-	if _, e = pool.Exec(ctx, string(migration)); e != nil {
-		t.Fatal(e)
-	}
 	company, ownerID, employeeID := uuid.New(), uuid.New(), uuid.New()
 	owner := Actor{CompanyID: company, UserID: ownerID, Role: "owner"}
 	employee := Actor{CompanyID: company, UserID: employeeID, Role: "employee"}
 	seedAccessCompany(t, ctx, pool, company, ownerID, []accessTestUser{{ownerID, "owner", "active"}, {employeeID, "employee", "active"}})
-	if _, e = pool.Exec(ctx, `INSERT INTO company_integrations(id,company_id,provider,external_account_id,status) VALUES($1,$2,'rakurs','123','active')`, uuid.New(), company); e != nil {
+	if _, e := pool.Exec(ctx, `INSERT INTO company_integrations(id,company_id,provider,external_account_id,status) VALUES($1,$2,'rakurs','123','active')`, uuid.New(), company); e != nil {
 		t.Fatal(e)
 	}
 	now := time.Now().UTC().Truncate(time.Second)
@@ -142,7 +124,39 @@ func TestTaskControlLifecycle(t *testing.T) {
 	if _, e = svc.UpdateTaskControlDraft(ctx, owner, binding, update); !isCompanyError(e, ErrorConflict) {
 		t.Fatal("stale draft", e)
 	}
+	referenceRow, e := db.New(pool).GetTaskControlConnection(ctx, db.GetTaskControlConnectionParams{CompanyID: company, ID: binding})
+	if e != nil {
+		t.Fatal(e)
+	}
+	referenceSnapshot := referenceRulesFixture(fx.Rules, referenceScope(referenceRow), now)
+	referencePayload, _ := json.Marshal(referenceSnapshot)
+	if _, e = pool.Exec(ctx, `INSERT INTO task_control_reference_cache(company_id,binding_id,scope_key,payload) VALUES($1,$2,$3,$4)`, company, binding, referenceScopeKey(referenceRow), referencePayload); e != nil {
+		t.Fatal(e)
+	}
+	if validationResult, err := svc.ValidateTaskControlDraft(ctx, owner, binding); err != nil || validationResult.(map[string]any)["valid"] != true || validationResult.(map[string]any)["referencesRevision"] != referenceSnapshot.Revision {
+		t.Fatal("reference validation", validationResult, err)
+	}
 	publish := TaskControlPublishInput{1, 1, uuid.New(), draft.Revision, draft.Checksum, "MVP"}
+	invalidReferences := referenceRulesFixture(fx.Rules, referenceScope(referenceRow), now)
+	for i := range invalidReferences.Users {
+		if invalidReferences.Users[i].ID == fx.Rules[0].Users[0] {
+			invalidReferences.Users[i].IsActive = false
+		}
+	}
+	invalidReferences.Revision, _ = tc.ReferenceRevision(invalidReferences)
+	badPayload, _ := json.Marshal(invalidReferences)
+	if _, e = pool.Exec(ctx, `UPDATE task_control_reference_cache SET payload=$1 WHERE company_id=$2 AND binding_id=$3`, badPayload, company, binding); e != nil {
+		t.Fatal(e)
+	}
+	if result, err := svc.ValidateTaskControlDraft(ctx, owner, binding); err != nil || result.(map[string]any)["valid"] != false {
+		t.Fatal("inactive user validation", result, err)
+	}
+	if _, err := svc.PublishTaskControlDraft(ctx, owner, binding, publish); !isCompanyError(err, ErrorValidation) {
+		t.Fatal("inactive user published", err)
+	}
+	if _, e = pool.Exec(ctx, `UPDATE task_control_reference_cache SET payload=$1 WHERE company_id=$2 AND binding_id=$3`, referencePayload, company, binding); e != nil {
+		t.Fatal(e)
+	}
 	publication, e := svc.PublishTaskControlDraft(ctx, owner, binding, publish)
 	if e != nil {
 		t.Fatal("publish", e)
@@ -473,4 +487,49 @@ func TestTaskControlLifecycle(t *testing.T) {
 	if companies != 1 || users != 2 {
 		t.Fatalf("provisioning %d/%d", companies, users)
 	}
+}
+
+func referenceRulesFixture(rules []tc.Rule, scope tc.ReferenceScope, now time.Time) tc.ReferenceSnapshot {
+	snapshot := tc.ReferenceSnapshot{SchemaVersion: 1, Scope: scope, Provenance: tc.ReferenceProvenance{Source: "coreAmocrm", FetchedAt: now, FetchStartedAt: now}, FreshUntil: now.Add(5 * time.Minute), Complete: true, Users: []tc.ReferenceUser{}, Groups: []tc.ReferenceGroup{}, Pipelines: []tc.ReferencePipeline{}, Customers: tc.ReferenceCustomers{Availability: "supported", Statuses: []tc.ReferenceCustomerStatus{}, CheckedAt: now}}
+	users := map[string]bool{}
+	pipelines := map[string]map[string]bool{}
+	customerStatuses := map[string]bool{}
+	for _, rule := range rules {
+		for _, id := range rule.Users {
+			users[id] = true
+		}
+		for _, pipeline := range rule.Pipelines {
+			if pipelines[pipeline.PipelineID] == nil {
+				pipelines[pipeline.PipelineID] = map[string]bool{}
+			}
+			for _, id := range pipeline.StatusIDs {
+				pipelines[pipeline.PipelineID][id] = true
+			}
+		}
+		for _, id := range rule.CustomerStatuses {
+			customerStatuses[id] = true
+		}
+	}
+	for id := range users {
+		snapshot.Users = append(snapshot.Users, tc.ReferenceUser{ID: id, Name: "User " + id, IsActive: true})
+	}
+	for id, statuses := range pipelines {
+		pipeline := tc.ReferencePipeline{ID: id, Name: "Pipeline " + id, Statuses: []tc.ReferenceStatus{}}
+		for sid := range statuses {
+			kind := "open"
+			if sid == "142" {
+				kind = "won"
+			}
+			if sid == "143" {
+				kind = "lost"
+			}
+			pipeline.Statuses = append(pipeline.Statuses, tc.ReferenceStatus{ID: sid, Name: "Status " + sid, Kind: kind})
+		}
+		snapshot.Pipelines = append(snapshot.Pipelines, pipeline)
+	}
+	for id := range customerStatuses {
+		snapshot.Customers.Statuses = append(snapshot.Customers.Statuses, tc.ReferenceCustomerStatus{ID: id, Name: "Customer " + id})
+	}
+	snapshot.Revision, _ = tc.ReferenceRevision(snapshot)
+	return snapshot
 }

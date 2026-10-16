@@ -32,6 +32,7 @@ type TaskControlScope struct {
 	AccountID       string    `json:"accountId"`
 	Product         string    `json:"product"`
 	ModeEpoch       int64     `json:"modeEpoch"`
+	Generation      int64     `json:"generation"`
 }
 type TaskControlConnection struct {
 	Scope        TaskControlScope `json:"scope"`
@@ -63,7 +64,7 @@ type TaskControlRevokeInput struct {
 }
 
 func taskControlScope(c db.TaskControlConnection) TaskControlScope {
-	return TaskControlScope{c.CompanyID, c.ID, c.BindingRevision, c.InstallationID, c.IntegrationID, c.AccountID, tc.Product, c.ModeEpoch}
+	return TaskControlScope{c.CompanyID, c.ID, c.BindingRevision, c.InstallationID, c.IntegrationID, c.AccountID, tc.Product, c.ModeEpoch, c.Generation}
 }
 func taskControlIntent(c db.TaskControlConnection) TaskControlIntent {
 	return TaskControlIntent{c.IntentID, taskControlScope(c), "completed", "standalone", c.UpdatedAt.Add(time.Minute), c.UpdatedAt}
@@ -494,13 +495,17 @@ func (s *Service) RevokeTaskControl(ctx context.Context, actor Actor, id uuid.UU
 }
 
 type TaskControlSession struct {
-	AccessToken string           `json:"accessToken"`
-	ExpiresAt   time.Time        `json:"expiresAt"`
-	Scope       TaskControlScope `json:"scope"`
-	ActorID     string           `json:"actorId"`
+	AccessToken          string           `json:"accessToken"`
+	ExpiresAt            time.Time        `json:"expiresAt"`
+	Scope                TaskControlScope `json:"scope"`
+	ActorID              string           `json:"actorId"`
+	RuntimeSchemaVersion int              `json:"runtimeSchemaVersion"`
 }
 
 func (s *Service) ExchangeTaskControlSession(ctx context.Context, raw string) (TaskControlSession, error) {
+	return s.ExchangeTaskControlSessionNegotiated(ctx, raw, "", nil)
+}
+func (s *Service) ExchangeTaskControlSessionNegotiated(ctx context.Context, raw, runtimeVersion string, capabilities []string) (TaskControlSession, error) {
 	var out TaskControlSession
 	a, key, e := s.taskControlAssertion(raw, "runtime")
 	if e != nil {
@@ -541,6 +546,18 @@ func (s *Service) ExchangeTaskControlSession(ctx context.Context, raw string) (T
 	if s.now().Unix() >= a.ExpiresAt {
 		return out, forbidden("Подтверждение Core истекло")
 	}
+	if c.RuntimeSchemaVersion == 2 {
+		if e = s.taskControlV2DescriptorTx(ctx, q, c); e != nil {
+			return out, e
+		}
+		capable := false
+		for _, capability := range capabilities {
+			capable = capable || capability == "dynamicRulesV2"
+		}
+		if runtimeVersion != "1.2.0" || !capable || !taskControlV2Descriptor(st) {
+			return out, coded(ErrorConflict, "runtime_upgrade_required", "Обновите runtime до версии 1.2.0")
+		}
+	}
 	count, e := q.CountTaskControlRuntimeSessions(ctx, db.CountTaskControlRuntimeSessionsParams{CompanyID: c.CompanyID, BindingID: c.ID, ActorID: a.ActorID, ExpiresAt: s.now()})
 	if e != nil {
 		return out, internal("Не удалось проверить лимит сессий", e)
@@ -555,7 +572,7 @@ func (s *Service) ExchangeTaskControlSession(ctx context.Context, raw string) (T
 	if _, e = rand.Read(token); e != nil {
 		return out, e
 	}
-	out = TaskControlSession{base64.RawURLEncoding.EncodeToString(token), s.now().UTC().Add(taskControlSessionTTL), taskControlScope(c), a.ActorID}
+	out = TaskControlSession{base64.RawURLEncoding.EncodeToString(token), s.now().UTC().Add(taskControlSessionTTL), taskControlScope(c), a.ActorID, int(c.RuntimeSchemaVersion)}
 	digest := sha256.Sum256([]byte(out.AccessToken))
 	e = q.CreateTaskControlRuntimeSession(ctx, db.CreateTaskControlRuntimeSessionParams{TokenHash: digest[:], CompanyID: c.CompanyID, BindingID: c.ID, ActorID: a.ActorID, BindingRevision: c.BindingRevision, ModeEpoch: c.ModeEpoch, Generation: c.Generation, ExpiresAt: out.ExpiresAt})
 	if e != nil {

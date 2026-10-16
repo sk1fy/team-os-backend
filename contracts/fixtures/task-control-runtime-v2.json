@@ -1,0 +1,56 @@
+{
+  "runtimeSchemaVersion": 2,
+  "scope": {
+    "companyId": "a0000000-0000-4000-8000-000000000001",
+    "bindingId": "b0000000-0000-4000-8000-000000000001",
+    "bindingRevision": 1,
+    "installationId": "c0000000-0000-4000-8000-000000000001",
+    "integrationId": "d0000000-0000-4000-8000-000000000001",
+    "accountId": "123",
+    "product": "task-control",
+    "modeEpoch": 2,
+    "generation": 1
+  },
+  "actorId": "7",
+  "publicationId": "e0000000-0000-4000-8000-000000000001",
+  "publicationVersion": 7,
+  "intentChecksum": "84f5c28c5dc14a8991b7ecba728f37c292d215556bd4c64d9596fb0f601cfabc",
+  "snapshotId": "f0000000-0000-4000-8000-000000000001",
+  "runtimeRevision": 21,
+  "sourceRevisions": {
+    "crm": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "organization": 1,
+    "mapping": 1
+  },
+  "resolverVersion": 1,
+  "resolvedChecksum": "7c2a4d8e7bc1a35f68682c12a71d50222ccc005e75a719fe3a212602046ea59d",
+  "payloadChecksum": "da5c15cbef934106021f696cbef3eeadbe19c343dd7427bfd5344cc1ef084b37",
+  "runtimeRules": [
+    {
+      "uid": "a0000000-0000-4000-8000-000000000001",
+      "name": "Сделки и покупатели",
+      "users": [
+        7
+      ],
+      "pipelines": [
+        {
+          "pipeline_id": 100,
+          "status_ids": [
+            200,
+            201
+          ]
+        }
+      ],
+      "customer_statuses": [],
+      "show_modal": true,
+      "deny_exit": true,
+      "check_responsible": false,
+      "customers": true,
+      "enabled": true,
+      "archived": false
+    }
+  ],
+  "issuedAt": "2026-10-16T12:00:00Z",
+  "validUntil": "2026-10-16T12:03:00Z",
+  "minRuntimeVersion": "1.2.0"
+}

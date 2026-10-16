@@ -12,6 +12,7 @@ const (
 	ErrorConflict
 	ErrorUpstream
 	ErrorInternal
+	ErrorPayloadTooLarge
 )
 
 const (

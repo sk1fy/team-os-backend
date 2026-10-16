@@ -63,3 +63,51 @@ func TestTaskControlContractPreservesRulesAndRejectsUnsafeInputs(t *testing.T) {
 		t.Fatal("unsafe JS revision accepted")
 	}
 }
+
+func TestTaskControlReferenceSchemaMatchesCoreWire(t *testing.T) {
+	spec, err := GetSwagger()
+	if err != nil {
+		t.Fatal(err)
+	}
+	raw, err := os.ReadFile("../../../../contracts/fixtures/task-control-references-core-v1.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var snapshot map[string]any
+	if err = json.Unmarshal(raw, &snapshot); err != nil {
+		t.Fatal(err)
+	}
+	schema := spec.Components.Schemas["CRMReferenceSnapshot"].Value
+	if err = schema.VisitJSON(snapshot); err != nil {
+		t.Fatal("Core reference wire", err)
+	}
+	snapshot["complete"] = false
+	if schema.VisitJSON(snapshot) == nil {
+		t.Fatal("partial snapshot accepted")
+	}
+	snapshot["complete"] = true
+	snapshot["schemaVersion"] = float64(2)
+	if schema.VisitJSON(snapshot) == nil {
+		t.Fatal("unknown reference protocol accepted")
+	}
+}
+
+func TestTaskControlReferenceSelectionAndRefreshExamples(t *testing.T) {
+	spec, err := GetSwagger()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for filename, schemaName := range map[string]string{"task-control-reference-selection-v2.json": "TaskControlReferenceView", "task-control-reference-refresh-v2.json": "TaskControlReferenceRefresh"} {
+		raw, err := os.ReadFile("../../../../contracts/fixtures/" + filename)
+		if err != nil {
+			t.Fatal(err)
+		}
+		var value map[string]any
+		if err = json.Unmarshal(raw, &value); err != nil {
+			t.Fatal(err)
+		}
+		if err = spec.Components.Schemas[schemaName].Value.VisitJSON(value); err != nil {
+			t.Fatalf("%s: %v", filename, err)
+		}
+	}
+}
