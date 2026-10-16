@@ -3,8 +3,10 @@ package application
 import (
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/google/uuid"
+	tc "github.com/sk1fy/team-os-backend/services/company/internal/domain/taskcontrol"
 	"github.com/sk1fy/team-os-backend/services/company/internal/storage/db"
 )
 
@@ -30,5 +32,15 @@ func TestTaskControlStableErrors(t *testing.T) {
 	}
 	if !errors.As(tcFence(c, 1, 2), &err) || err.Code != "task_control_revision_conflict" {
 		t.Fatal(err)
+	}
+}
+
+func TestTaskControlChangedInstallationRevokesRuntimeCache(t *testing.T) {
+	now := time.Now()
+	id, integration := uuid.New(), uuid.New()
+	st := tc.Installation{CompanyID: uuid.New(), AccountID: "123", InstallationID: &id, IntegrationID: &integration, Product: tc.Product, State: "installed", Generation: 2, Revision: 2, CheckedAt: now, FreshUntil: now.Add(time.Minute)}
+	var err *Error
+	if !errors.As(taskControlInstalled(st, id, integration, 1, now), &err) || err.Kind != ErrorForbidden || err.Code != "task_control_installation_changed" {
+		t.Fatal("must return 403 so existing widget discards revoked cache", err)
 	}
 }

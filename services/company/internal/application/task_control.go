@@ -165,7 +165,7 @@ func taskControlInstalled(status tc.Installation, installation, integration uuid
 		return upstream("Статус установки Контроля задач не подтверждён", nil)
 	}
 	if *status.InstallationID != installation || *status.IntegrationID != integration || status.Generation != generation {
-		return conflict("Установка изменилась; требуется новое подключение")
+		return coded(ErrorForbidden, "task_control_installation_changed", "Установка изменилась; требуется новое подключение")
 	}
 	return nil
 }
