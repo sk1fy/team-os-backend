@@ -10,7 +10,7 @@ import (
 const taskControlSessionTTL = 5 * time.Minute
 const taskControlMaxActorSessions = 64
 
-// Cleanup is bounded and index-backed, including when no runtime is connected.
+// CleanupTaskControlRuntime removes expired records in bounded, indexed batches.
 // Expiry is checked on every read independently of garbage collection.
 func (s *Service) CleanupTaskControlRuntime(ctx context.Context) error {
 	q := db.New(s.pool)
