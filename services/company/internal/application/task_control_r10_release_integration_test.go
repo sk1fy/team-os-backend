@@ -149,14 +149,31 @@ func verifyTaskControlReleaseBackupRestore(t *testing.T, ctx context.Context, po
 	if err = json.Unmarshal(payload, &current); err != nil {
 		t.Fatal(err)
 	}
-	// Roll back to the latest valid allLinked intent. The earlier selected
-	// department was intentionally deleted by the base scenario and must stay invalid.
-	rolled, err := restored.RollbackTaskControlV2(ctx, actor, binding, TaskControlRollbackInputV2{RequestID: uuid.New(), SourcePublicationID: current.ID, ExpectedPublishedVersion: current.Version, ExpectedBindingRevision: c.BindingRevision, ExpectedModeEpoch: c.ModeEpoch})
-	if err != nil || rolled.ID == current.ID || rolled.IntentChecksum != current.IntentChecksum || rolled.Version != current.Version+1 {
+	// Publish a different behavior after restart, then restore the pre-change
+	// intent. Copying the currently active publication would not prove rollback.
+	var changed TaskControlDraftV2
+	if err = json.Unmarshal(mustR05JSON(t, draft), &changed); err != nil {
+		t.Fatal(err)
+	}
+	if len(changed.IntentRules) == 0 || changed.IntentRules[0].Dynamic == nil {
+		t.Fatal("dynamic rollback fixture missing")
+	}
+	changed.IntentRules[0].Dynamic.CheckResponsible = !changed.IntentRules[0].Dynamic.CheckResponsible
+	changed.IntentRules[0].Dynamic.Name = "Проверка изменения перед откатом R10"
+	updated, err := restored.UpdateTaskControlDraftV2(ctx, actor, binding, TaskControlDraftInputV2{draft.Revision, c.BindingRevision, c.ModeEpoch, changed.IntentRules})
+	if err != nil {
+		t.Fatal(err)
+	}
+	replacement, err := restored.PublishTaskControlDraftV2(ctx, actor, binding, TaskControlPublishInputV2{RequestID: uuid.New(), ExpectedBindingRevision: c.BindingRevision, ExpectedModeEpoch: c.ModeEpoch, ExpectedDraftRevision: updated.Revision, ExpectedChecksum: updated.Checksum})
+	if err != nil || replacement.IntentChecksum == current.IntentChecksum {
+		t.Fatal("replacement did not change intent", err)
+	}
+	rolled, err := restored.RollbackTaskControlV2(ctx, actor, binding, TaskControlRollbackInputV2{RequestID: uuid.New(), SourcePublicationID: current.ID, ExpectedPublishedVersion: replacement.Version, ExpectedBindingRevision: c.BindingRevision, ExpectedModeEpoch: c.ModeEpoch})
+	if err != nil || rolled.ID == current.ID || rolled.IntentChecksum != current.IntentChecksum || rolled.Version != replacement.Version+1 || rolled.RestoredFromID == nil || *rolled.RestoredFromID != current.ID {
 		t.Fatal("explicit rollback after restore", rolled, err)
 	}
 	retained, err := restored.GetTaskControlDraftV2(ctx, actor, binding)
-	if err != nil || draft.Revision != retained.Revision || draft.Checksum != retained.Checksum {
+	if err != nil || updated.Revision != retained.Revision || updated.Checksum != retained.Checksum {
 		t.Fatal("rollback changed draft", err)
 	}
 	var count int
