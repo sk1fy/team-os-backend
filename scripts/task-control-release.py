@@ -59,6 +59,14 @@ def run(name, directory, command, extra=None):
         raise SystemExit(f"{name} failed; see {out / (name + '.log')}")
 
 
+def verify_sources():
+    for name, item in manifest["repositories"].items():
+        if git(item["path"], "rev-parse", "HEAD") != item["sha"] or git(item["path"], "status", "--porcelain", "--untracked-files=no"):
+            manifest["failedStep"] = "source-changed-" + name
+            save()
+            raise SystemExit("Checkout changed during candidate build; do not use partial artifacts")
+
+
 for name, directory in [("core", args.core), ("backend", backend), ("widgets", args.widgets)]:
     if git(directory, "status", "--porcelain", "--untracked-files=no"):
         raise SystemExit(f"Commit tracked changes first: {directory}")
@@ -87,16 +95,19 @@ for mode in ["standalone", "managed"]:
             raise SystemExit("invalid ZIP/version")
     manifest["archives"][mode] = {"path": str(paths[0]), "sha256": hashlib.sha256(paths[0].read_bytes()).hexdigest(), "sourceDateEpoch": int(epoch), "rebuildIdentical": True}
     save()
+verify_sources()
 if args.build_images:
     targets = [("core", target, ["--target", target]) for target in ["api", "worker", "migrate", "integrations", "task-control-grant", "task-control-runtime-descriptor"]]
     targets += [("backend", service, ["-f", f"services/{service}/Dockerfile"]) for service in ["company", "gateway"]]
     for repo, component, options in targets:
+        verify_sources()
         directory = args.core if repo == "core" else backend
         sha = manifest["repositories"][repo]["sha"]
         image = f"task-control-rc-{repo}-{component}:{sha[:12]}"
         print(f"Building {image}", flush=True)
         run(f"image-{repo}-{component}", directory, ["docker", "build", *options,
             "--build-arg", f"BUILD_REVISION={sha}", "--label", f"org.opencontainers.image.revision={sha}", "-t", image, "."])
+        verify_sources()
         raw = subprocess.check_output(["docker", "image", "inspect", "--format", '{{json .Id}}\n{{json .RepoDigests}}\n{{json .Config.Labels}}\n{{json .Architecture}}', image], text=True).splitlines()
         image_id, digests, labels, architecture = map(json.loads, raw)
         if labels.get("org.opencontainers.image.revision") != sha:
@@ -112,6 +123,7 @@ if args.build_images:
         filename = out / (repo + ".compose.json")
         filename.write_text(json.dumps({"services": services}, indent=2) + "\n")
     manifest["composeOverrides"] = {"core": str(out / "core.compose.json"), "backend": str(out / "backend.compose.json")}
+verify_sources()
 manifest["completedAt"] = datetime.now(timezone.utc).isoformat()
 manifest["imagesComplete"] = len(manifest["images"]) == 8
 if not manifest["imagesComplete"]:
