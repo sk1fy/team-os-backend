@@ -9,6 +9,7 @@ from pathlib import Path
 import subprocess
 import sys
 import uuid
+from urllib.parse import urlsplit
 import zipfile
 import zlib
 
@@ -22,6 +23,10 @@ parser.add_argument("--backend-origin", default="https://backend.example.invalid
 parser.add_argument("--oauth-client-uuid")
 parser.add_argument("--build-images", action="store_true")
 args = parser.parse_args()
+for origin in [args.core_origin, args.backend_origin]:
+    parsed_origin = urlsplit(origin)
+    if parsed_origin.scheme != "https" or not parsed_origin.hostname or parsed_origin.username or parsed_origin.password or parsed_origin.path not in ["", "/"] or parsed_origin.query or parsed_origin.fragment:
+        parser.error("Expected public HTTPS origins without paths, credentials, queries or fragments")
 if args.oauth_client_uuid:
     parsed = uuid.UUID(args.oauth_client_uuid)
     if parsed.int == 0:
@@ -34,7 +39,7 @@ manifest = {"kind": "local-release-candidate", "runtimeVersion": "1.2.3", "relea
             "publicConfiguration": {"coreOrigin": args.core_origin, "backendOrigin": args.backend_origin, "oauthClientUUID": args.oauth_client_uuid},
             "schema": {"core": 30, "company": 40, "runtime": [1, 2]},
             "toolchain": {"python": sys.version.split()[0], "zlib": zlib.ZLIB_VERSION},
-            "remainingGates": ["R09 live acceptance deferred", "browser acceptance deferred", "CI on final R10 commits", "registry image digests after publishing", "operator verifies current installation/generation and OAuth UUID"]}
+            "remainingGates": ["R09 live acceptance deferred", "browser acceptance deferred", "CI on final R10 commits", "registry image digests after publishing", "full-stack rollout and binary rollback on approved environment", "verify deployment architecture", "operator verifies current installation/generation and OAuth UUID"]}
 
 
 def save():
@@ -108,6 +113,9 @@ if args.build_images:
         filename.write_text(json.dumps({"services": services}, indent=2) + "\n")
     manifest["composeOverrides"] = {"core": str(out / "core.compose.json"), "backend": str(out / "backend.compose.json")}
 manifest["completedAt"] = datetime.now(timezone.utc).isoformat()
+manifest["imagesComplete"] = len(manifest["images"]) == 8
+if not manifest["imagesComplete"]:
+    manifest["remainingGates"].append("eight application/tool images not built")
 manifest["localBuildPassed"] = True
 save()
 print(f"Local candidate: {out / 'candidate.json'}; rollout is not approved")
