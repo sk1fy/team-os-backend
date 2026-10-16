@@ -114,14 +114,16 @@ if args.build_images:
         image_id, digests, labels, architecture = map(json.loads, raw)
         if labels.get("org.opencontainers.image.revision") != sha:
             raise SystemExit("image revision mismatch")
-        manifest["images"][repo + "/" + component] = {"tag": image, "localImageId": image_id, "repositoryDigests": digests or [], "architecture": architecture, "revision": sha}
+        # A daemon may populate RepoDigests for local builds. It is not proof
+        # that an artifact exists in a registry; this tool never publishes.
+        manifest["images"][repo + "/" + component] = {"tag": image, "localImageId": image_id, "repositoryDigests": digests or [], "registryVerified": False, "architecture": architecture, "revision": sha}
         save()
     for repo in ["core", "backend"]:
         services = {}
         for key, item in manifest["images"].items():
             owner, service = key.split("/", 1)
             if owner == repo:
-                services[service] = {"image": (item["repositoryDigests"] or [item["localImageId"]])[0]}
+                services[service] = {"image": item["localImageId"]}
         filename = out / (repo + ".compose.json")
         filename.write_text(json.dumps({"services": services}, indent=2) + "\n")
     manifest["composeOverrides"] = {"core": str(out / "core.compose.json"), "backend": str(out / "backend.compose.json")}

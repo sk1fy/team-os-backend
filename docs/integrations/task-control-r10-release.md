@@ -26,15 +26,16 @@ python3 scripts/task-control-release.py --output /tmp/task-control-rc --build-im
 использовать для живой проверки. Стандартный standalone архив не содержит origins.
 
 Candidate фиксирует точные commit SHA, 8 local image IDs и OCI revision/architecture,
-RepoDigests при наличии, schema 30/40, runtime 1.2.3 и SHA-256 двух ZIP. Каждый ZIP
+RepoDigests из локального daemon при наличии, schema 30/40, runtime 1.2.3 и SHA-256 двух ZIP. Каждый ZIP
 собирается дважды с одним SOURCE_DATE_EPOCH и сравнивается побитово. Для повторения
 на другой машине нужны те же исходники/config, Python и zlib; toolchain записан.
+Наличие RepoDigests в daemon не подтверждает push; registryVerified=false.
 Локальный Docker image ID не является registry manifest digest. После push отдельно
 зафиксировать repo@sha256 для нужной архитектуры и проверки CI финальных SHA.
 `releaseApproved=false` сохраняется явно; блокирующие release gates не скрываются.
 После сборки создаются core.compose.json и backend.compose.json: добавить их
 **последними** к существующим overlays и использовать up --no-build. Они закрепляют
-точный локальный image ID (или RepoDigest), включая tools; build не выполняется
+точный локальный image ID, включая tools; build не выполняется
 повторно под плавающим тегом. Локальные ID работают только на этом Docker engine.
 Для сервера нужны опубликованные и повторно проверенные registry digests.
 
