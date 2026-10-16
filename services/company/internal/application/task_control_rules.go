@@ -343,11 +343,12 @@ func (s *Service) SetTaskControlMode(ctx context.Context, a Actor, id uuid.UUID,
 	return out, tx.Commit(ctx)
 }
 func (s *Service) TaskControlBootstrap(ctx context.Context, token string) (any, error) {
-	c, _, e := s.AuthorizeTaskControlRuntime(ctx, token)
+	c, actor, e := s.AuthorizeTaskControlRuntime(ctx, token)
 	if e != nil {
 		return nil, e
 	}
-	out := map[string]any{"scope": c.Scope, "mode": c.Mode, "state": c.State, "installation": c.Installation, "minRuntimeVersion": "1.1.0"}
+	now := s.now().UTC()
+	out := map[string]any{"scope": c.Scope, "mode": c.Mode, "state": c.State, "installation": c.Installation, "minRuntimeVersion": "1.1.0", "runtimeSchemaVersion": 1, "actorId": actor, "issuedAt": now, "validUntil": now.Add(taskControlSessionTTL)}
 	if c.Mode != "managed" {
 		return out, nil
 	}
@@ -384,5 +385,12 @@ func (s *Service) TaskControlBootstrap(ctx context.Context, token string) (any, 
 		TaskControlPublication
 		RuntimeRules []tc.LegacyRule `json:"runtimeRules"`
 	}{pub, legacy}
+	encoded, e := json.Marshal(out)
+	if e != nil {
+		return nil, internal("Не удалось подготовить runtime", e)
+	}
+	if len(encoded) > 1<<20 {
+		return nil, coded(ErrorUpstream, "task_control_runtime_payload_too_large", "Публикация превышает лимит runtime 1 MiB")
+	}
 	return out, nil
 }

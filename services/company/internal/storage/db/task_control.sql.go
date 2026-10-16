@@ -68,6 +68,30 @@ func (q *Queries) ConsumeTaskControlAssertion(ctx context.Context, arg ConsumeTa
 	return result.RowsAffected(), nil
 }
 
+const countTaskControlRuntimeSessions = `-- name: CountTaskControlRuntimeSessions :one
+SELECT count(*) FROM task_control_runtime_sessions
+WHERE company_id=$1 AND binding_id=$2 AND actor_id=$3 AND expires_at>$4
+`
+
+type CountTaskControlRuntimeSessionsParams struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	BindingID uuid.UUID `json:"binding_id"`
+	ActorID   string    `json:"actor_id"`
+	ExpiresAt time.Time `json:"expires_at"`
+}
+
+func (q *Queries) CountTaskControlRuntimeSessions(ctx context.Context, arg CountTaskControlRuntimeSessionsParams) (int64, error) {
+	row := q.db.QueryRow(ctx, countTaskControlRuntimeSessions,
+		arg.CompanyID,
+		arg.BindingID,
+		arg.ActorID,
+		arg.ExpiresAt,
+	)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createTaskControlConnection = `-- name: CreateTaskControlConnection :one
 INSERT INTO task_control_connections(company_id,id,installation_id,integration_id,account_id,generation,intent_id,linked_by,crm_admin_id)
 VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING company_id, id, installation_id, integration_id, account_id, generation, binding_revision, mode_epoch, mode, state, intent_id, linked_by, crm_admin_id, updated_at, publication_id
@@ -531,6 +555,36 @@ SELECT pg_advisory_xact_lock(hashtextextended('task-control:' || $1::text,0))
 func (q *Queries) LockTaskControlAccount(ctx context.Context, accountID string) error {
 	_, err := q.db.Exec(ctx, lockTaskControlAccount, accountID)
 	return err
+}
+
+const pruneTaskControlAssertions = `-- name: PruneTaskControlAssertions :execrows
+DELETE FROM task_control_assertion_uses WHERE (key_id,jti) IN (
+ SELECT expired.key_id,expired.jti FROM task_control_assertion_uses expired WHERE expired.expires_at <= $1
+ ORDER BY expired.expires_at LIMIT 1000 FOR UPDATE SKIP LOCKED
+)
+`
+
+func (q *Queries) PruneTaskControlAssertions(ctx context.Context, expiresAt time.Time) (int64, error) {
+	result, err := q.db.Exec(ctx, pruneTaskControlAssertions, expiresAt)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
+const pruneTaskControlRuntimeSessions = `-- name: PruneTaskControlRuntimeSessions :execrows
+DELETE FROM task_control_runtime_sessions WHERE token_hash IN (
+ SELECT expired.token_hash FROM task_control_runtime_sessions expired WHERE expired.expires_at <= $1
+ ORDER BY expired.expires_at LIMIT 1000 FOR UPDATE SKIP LOCKED
+)
+`
+
+func (q *Queries) PruneTaskControlRuntimeSessions(ctx context.Context, expiresAt time.Time) (int64, error) {
+	result, err := q.db.Exec(ctx, pruneTaskControlRuntimeSessions, expiresAt)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const revokeTaskControlConnection = `-- name: RevokeTaskControlConnection :one

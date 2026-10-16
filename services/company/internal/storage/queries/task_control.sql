@@ -56,3 +56,17 @@ VALUES($1,$2,$3,(SELECT coalesce(max(version),0)+1 FROM task_control_publication
 UPDATE task_control_connections SET publication_id=$3,updated_at=now() WHERE company_id=$1 AND id=$2 AND state='active' RETURNING *;
 -- name: SetTaskControlMode :one
 UPDATE task_control_connections SET mode=$3,mode_epoch=mode_epoch+1,updated_at=now() WHERE company_id=$1 AND id=$2 AND binding_revision=$4 AND mode_epoch=$5 AND state='active' RETURNING *;
+
+-- name: CountTaskControlRuntimeSessions :one
+SELECT count(*) FROM task_control_runtime_sessions
+WHERE company_id=$1 AND binding_id=$2 AND actor_id=$3 AND expires_at>$4;
+-- name: PruneTaskControlRuntimeSessions :execrows
+DELETE FROM task_control_runtime_sessions WHERE token_hash IN (
+ SELECT expired.token_hash FROM task_control_runtime_sessions expired WHERE expired.expires_at <= $1
+ ORDER BY expired.expires_at LIMIT 1000 FOR UPDATE SKIP LOCKED
+);
+-- name: PruneTaskControlAssertions :execrows
+DELETE FROM task_control_assertion_uses WHERE (key_id,jti) IN (
+ SELECT expired.key_id,expired.jti FROM task_control_assertion_uses expired WHERE expired.expires_at <= $1
+ ORDER BY expired.expires_at LIMIT 1000 FOR UPDATE SKIP LOCKED
+);

@@ -107,14 +107,20 @@ func (s *Service) taskControlAccount(ctx context.Context, q *db.Queries, company
 		return validation("Некорректный аккаунт")
 	}
 	row, e := q.GetCompanyIntegrationByExternalAccount(ctx, db.GetCompanyIntegrationByExternalAccountParams{Provider: "rakurs", ExternalAccountID: account})
-	if e != nil || row.CompanyID != company {
+	if e != nil && !isNoRows(e) {
+		return coded(ErrorUpstream, "task_control_session_unavailable", "Не удалось проверить аккаунт")
+	}
+	if isNoRows(e) || row.CompanyID != company {
 		return notFound("Аккаунт")
 	}
 	if row.Status != "active" {
 		return forbidden("Аккаунт отключён")
 	}
 	c, e := q.GetCompany(ctx, company)
-	if e != nil || c.Status != "active" {
+	if e != nil && !isNoRows(e) {
+		return coded(ErrorUpstream, "task_control_session_unavailable", "Не удалось проверить компанию")
+	}
+	if isNoRows(e) || c.Status != "active" {
 		return forbidden("Компания недоступна")
 	}
 	return nil
@@ -520,7 +526,10 @@ func (s *Service) ExchangeTaskControlSession(ctx context.Context, raw string) (T
 		return out, e
 	}
 	c, e := q.ActiveTaskControlConnection(ctx, db.ActiveTaskControlConnectionParams{CompanyID: a.CompanyID, AccountID: a.AccountID})
-	if e != nil {
+	if e != nil && !isNoRows(e) {
+		return out, coded(ErrorUpstream, "task_control_session_unavailable", "Не удалось проверить подключение")
+	}
+	if isNoRows(e) {
 		return out, notFound("Подключение")
 	}
 	if c.InstallationID != a.InstallationID || c.IntegrationID != a.IntegrationID || c.Generation != a.Generation {
@@ -532,6 +541,13 @@ func (s *Service) ExchangeTaskControlSession(ctx context.Context, raw string) (T
 	if s.now().Unix() >= a.ExpiresAt {
 		return out, forbidden("Подтверждение Core истекло")
 	}
+	count, e := q.CountTaskControlRuntimeSessions(ctx, db.CountTaskControlRuntimeSessionsParams{CompanyID: c.CompanyID, BindingID: c.ID, ActorID: a.ActorID, ExpiresAt: s.now()})
+	if e != nil {
+		return out, internal("Не удалось проверить лимит сессий", e)
+	}
+	if count >= taskControlMaxActorSessions {
+		return out, coded(ErrorUpstream, "task_control_session_limit", "Достигнут лимит активных сессий виджета; повторите позже")
+	}
 	if e = s.consumeTC(ctx, q, a, key); e != nil {
 		return out, e
 	}
@@ -539,7 +555,7 @@ func (s *Service) ExchangeTaskControlSession(ctx context.Context, raw string) (T
 	if _, e = rand.Read(token); e != nil {
 		return out, e
 	}
-	out = TaskControlSession{base64.RawURLEncoding.EncodeToString(token), s.now().UTC().Add(5 * time.Minute), taskControlScope(c), a.ActorID}
+	out = TaskControlSession{base64.RawURLEncoding.EncodeToString(token), s.now().UTC().Add(taskControlSessionTTL), taskControlScope(c), a.ActorID}
 	digest := sha256.Sum256([]byte(out.AccessToken))
 	e = q.CreateTaskControlRuntimeSession(ctx, db.CreateTaskControlRuntimeSessionParams{TokenHash: digest[:], CompanyID: c.CompanyID, BindingID: c.ID, ActorID: a.ActorID, BindingRevision: c.BindingRevision, ModeEpoch: c.ModeEpoch, Generation: c.Generation, ExpiresAt: out.ExpiresAt})
 	if e != nil {
@@ -557,12 +573,18 @@ func (s *Service) AuthorizeTaskControlRuntime(ctx context.Context, token string)
 	hash := sha256.Sum256([]byte(token))
 	q := db.New(s.pool)
 	session, e := q.GetTaskControlRuntimeSession(ctx, db.GetTaskControlRuntimeSessionParams{TokenHash: hash[:], ExpiresAt: s.now()})
-	if e != nil {
+	if isNoRows(e) {
 		return out, "", coded(ErrorUnauthenticated, "task_control_session_invalid", "Сессия виджета истекла или отозвана")
 	}
-	c, e := q.GetTaskControlConnection(ctx, db.GetTaskControlConnectionParams{CompanyID: session.CompanyID, ID: session.BindingID})
 	if e != nil {
+		return out, "", coded(ErrorUpstream, "task_control_session_unavailable", "Не удалось проверить сессию виджета")
+	}
+	c, e := q.GetTaskControlConnection(ctx, db.GetTaskControlConnectionParams{CompanyID: session.CompanyID, ID: session.BindingID})
+	if isNoRows(e) {
 		return out, "", forbidden("Подключение отсутствует")
+	}
+	if e != nil {
+		return out, "", coded(ErrorUpstream, "task_control_session_unavailable", "Не удалось проверить подключение")
 	}
 	st, e := s.taskControlStatus(ctx, c.CompanyID, c.AccountID, false)
 	if e != nil {
@@ -570,8 +592,11 @@ func (s *Service) AuthorizeTaskControlRuntime(ctx context.Context, token string)
 	}
 	// Re-read fences after the network call, including explicit revoke.
 	c, e = q.GetTaskControlConnection(ctx, db.GetTaskControlConnectionParams{CompanyID: session.CompanyID, ID: session.BindingID})
-	if e != nil {
+	if isNoRows(e) {
 		return out, "", forbidden("Подключение отсутствует")
+	}
+	if e != nil {
+		return out, "", coded(ErrorUpstream, "task_control_session_unavailable", "Не удалось проверить подключение")
 	}
 	if c.State != "active" || c.BindingRevision != session.BindingRevision || c.ModeEpoch != session.ModeEpoch || c.Generation != session.Generation || !s.now().Before(session.ExpiresAt) {
 		return out, "", forbidden("Сессия подключения отозвана")

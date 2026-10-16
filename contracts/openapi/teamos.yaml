@@ -13246,6 +13246,20 @@ components:
       - minRuntimeVersion
       - installation
       properties:
+        runtimeSchemaVersion:
+          type: integer
+          enum: [1]
+          description: Версия runtime-протокола; v2 использует отдельный путь и envelope.
+        actorId:
+          type: string
+          pattern: ^[1-9][0-9]{0,15}$
+        issuedAt:
+          type: string
+          format: date-time
+        validUntil:
+          type: string
+          format: date-time
+          description: Конец lease, максимум 5 минут от issuedAt. Retry её не продлевает.
         scope:
           $ref: '#/components/schemas/TaskControlScope'
         mode:
