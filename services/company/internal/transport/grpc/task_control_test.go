@@ -2,8 +2,9 @@ package grpc
 
 import (
 	"context"
-	"github.com/sk1fy/team-os-backend/services/company/internal/application"
 	"testing"
+
+	"github.com/sk1fy/team-os-backend/services/company/internal/application"
 
 	v "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v1"
 	"google.golang.org/grpc/codes"

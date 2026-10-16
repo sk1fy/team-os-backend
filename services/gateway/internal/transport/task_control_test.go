@@ -3,14 +3,15 @@ package transport
 import (
 	"context"
 	"encoding/json"
-	v "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v1"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"net/http/httptest"
 	"regexp"
 	"strings"
 	"testing"
+
+	v "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v1"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/sk1fy/team-os-backend/services/gateway/internal/api"
 )
