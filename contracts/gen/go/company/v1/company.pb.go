@@ -789,6 +789,8 @@ const (
 	TaskControlConnectionRequest_ACTION_PUBLICATIONS TaskControlConnectionRequest_Action = 12
 	TaskControlConnectionRequest_ACTION_PUBLICATION  TaskControlConnectionRequest_Action = 13
 	TaskControlConnectionRequest_ACTION_MODE         TaskControlConnectionRequest_Action = 14
+	TaskControlConnectionRequest_ACTION_CAPABILITIES TaskControlConnectionRequest_Action = 15
+	TaskControlConnectionRequest_ACTION_AUTHORIZE    TaskControlConnectionRequest_Action = 16
 )
 
 // Enum value maps for TaskControlConnectionRequest_Action.
@@ -809,6 +811,8 @@ var (
 		12: "ACTION_PUBLICATIONS",
 		13: "ACTION_PUBLICATION",
 		14: "ACTION_MODE",
+		15: "ACTION_CAPABILITIES",
+		16: "ACTION_AUTHORIZE",
 	}
 	TaskControlConnectionRequest_Action_value = map[string]int32{
 		"ACTION_UNSPECIFIED":  0,
@@ -826,6 +830,8 @@ var (
 		"ACTION_PUBLICATIONS": 12,
 		"ACTION_PUBLICATION":  13,
 		"ACTION_MODE":         14,
+		"ACTION_CAPABILITIES": 15,
+		"ACTION_AUTHORIZE":    16,
 	}
 )
 
@@ -11937,6 +11943,7 @@ type TaskControlConnectionRequest struct {
 	AccountId     string                              `protobuf:"bytes,3,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
 	JsonBody      []byte                              `protobuf:"bytes,4,opt,name=json_body,json=jsonBody,proto3" json:"json_body,omitempty"`
 	Credential    string                              `protobuf:"bytes,5,opt,name=credential,proto3" json:"credential,omitempty"`
+	Operation     string                              `protobuf:"bytes,6,opt,name=operation,proto3" json:"operation,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -12002,6 +12009,13 @@ func (x *TaskControlConnectionRequest) GetJsonBody() []byte {
 func (x *TaskControlConnectionRequest) GetCredential() string {
 	if x != nil {
 		return x.Credential
+	}
+	return ""
+}
+
+func (x *TaskControlConnectionRequest) GetOperation() string {
+	if x != nil {
+		return x.Operation
 	}
 	return ""
 }
@@ -12959,7 +12973,7 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\x1fReadDistributionRuntimeResponse\x12\x18\n" +
 	"\apayload\x18\x01 \x01(\fR\apayload\"<\n" +
 	" WriteDistributionRuntimeResponse\x12\x18\n" +
-	"\apayload\x18\x01 \x01(\fR\apayload\"\x9f\x04\n" +
+	"\apayload\x18\x01 \x01(\fR\apayload\"\xec\x04\n" +
 	"\x1cTaskControlConnectionRequest\x12N\n" +
 	"\x06action\x18\x01 \x01(\x0e26.teamos.company.v1.TaskControlConnectionRequest.ActionR\x06action\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\x12\x1d\n" +
@@ -12968,7 +12982,8 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\tjson_body\x18\x04 \x01(\fR\bjsonBody\x12\x1e\n" +
 	"\n" +
 	"credential\x18\x05 \x01(\tR\n" +
-	"credential\"\xc2\x02\n" +
+	"credential\x12\x1c\n" +
+	"\toperation\x18\x06 \x01(\tR\toperation\"\xf1\x02\n" +
 	"\x06Action\x12\x16\n" +
 	"\x12ACTION_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13ACTION_INSTALLATION\x10\x01\x12\x0f\n" +
@@ -12985,7 +13000,9 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\x0eACTION_PUBLISH\x10\v\x12\x17\n" +
 	"\x13ACTION_PUBLICATIONS\x10\f\x12\x16\n" +
 	"\x12ACTION_PUBLICATION\x10\r\x12\x0f\n" +
-	"\vACTION_MODE\x10\x0e\"<\n" +
+	"\vACTION_MODE\x10\x0e\x12\x17\n" +
+	"\x13ACTION_CAPABILITIES\x10\x0f\x12\x14\n" +
+	"\x10ACTION_AUTHORIZE\x10\x10\"<\n" +
 	"\x1dTaskControlConnectionResponse\x12\x1b\n" +
 	"\tjson_body\x18\x01 \x01(\fR\bjsonBody*~\n" +
 	"\bUserRole\x12\x19\n" +

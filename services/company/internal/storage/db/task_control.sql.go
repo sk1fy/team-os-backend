@@ -426,7 +426,7 @@ func (q *Queries) GetTaskControlRuntimeSession(ctx context.Context, arg GetTaskC
 }
 
 const getTaskControlSnapshot = `-- name: GetTaskControlSnapshot :one
-SELECT company_id, account_id, payload, checked_at, fresh_until FROM task_control_installation_snapshots WHERE company_id=$1 AND account_id=$2
+SELECT company_id, account_id, payload, checked_at, fresh_until FROM task_control_installation_snapshots WHERE company_id=$1 AND account_id=$2 FOR SHARE
 `
 
 type GetTaskControlSnapshotParams struct {

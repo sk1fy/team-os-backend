@@ -1154,11 +1154,14 @@ message TaskControlConnectionRequest {
     ACTION_PUBLICATIONS = 12;
     ACTION_PUBLICATION = 13;
     ACTION_MODE = 14;
+    ACTION_CAPABILITIES = 15;
+    ACTION_AUTHORIZE = 16;
   }
   Action action = 1;
   string id = 2;
   string account_id = 3;
   bytes json_body = 4;
   string credential = 5;
+  string operation = 6;
 }
 message TaskControlConnectionResponse { bytes json_body = 1; }

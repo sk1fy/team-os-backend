@@ -31,6 +31,9 @@ func (h *Handler) taskControlCall(w http.ResponseWriter, r *http.Request, in *v.
 func (h *Handler) GetTaskControlConnections(w http.ResponseWriter, r *http.Request) {
 	h.taskControlCall(w, r, &v.TaskControlConnectionRequest{Action: v.TaskControlConnectionRequest_ACTION_LIST}, false)
 }
+func (h *Handler) GetTaskControlCapabilities(w http.ResponseWriter, r *http.Request) {
+	h.taskControlCall(w, r, &v.TaskControlConnectionRequest{Action: v.TaskControlConnectionRequest_ACTION_CAPABILITIES}, false)
+}
 func (h *Handler) GetTaskControlInstallation(w http.ResponseWriter, r *http.Request, accountID string) {
 	h.taskControlCall(w, r, &v.TaskControlConnectionRequest{Action: v.TaskControlConnectionRequest_ACTION_INSTALLATION, AccountId: accountID}, false)
 }

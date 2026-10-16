@@ -45,6 +45,15 @@ func (s *Server) TaskControlConnection(ctx context.Context, r *v.TaskControlConn
 	}
 	var out any
 	switch r.Action {
+	case v.TaskControlConnectionRequest_ACTION_CAPABILITIES:
+		out, err = s.application.GetTaskControlCapabilities(ctx, a)
+	case v.TaskControlConnectionRequest_ACTION_AUTHORIZE:
+		id, e := uuid.Parse(r.Id)
+		if e != nil {
+			return nil, invalidRequest()
+		}
+		err = s.application.AuthorizeTaskControlOperation(ctx, a, id, r.Operation)
+		out = map[string]bool{"authorized": err == nil}
 	case v.TaskControlConnectionRequest_ACTION_INSTALLATION:
 		out, err = s.application.GetTaskControlInstallation(ctx, a, r.AccountId)
 	case v.TaskControlConnectionRequest_ACTION_LIST:
@@ -117,7 +126,7 @@ func (s *Server) TaskControlConnection(ctx context.Context, r *v.TaskControlConn
 		return nil, invalidRequest()
 	}
 	if err != nil {
-		return nil, transportError(err)
+		return nil, transportError(application.TaskControlError(err))
 	}
 	raw, e := json.Marshal(out)
 	if e != nil {

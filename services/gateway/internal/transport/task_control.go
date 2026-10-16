@@ -13,6 +13,15 @@ import (
 func taskControlNotImplemented(w http.ResponseWriter) {
 	apierror.Write(w, apierror.New(http.StatusNotImplemented, "Контроль задач: обработчик ещё не реализован").WithCode("task_control_not_implemented"))
 }
+func (h *Handler) taskControlPending(w http.ResponseWriter, r *http.Request, id api.ID, operation string) {
+	setPrivateNoStore(w)
+	_, err := h.company.TaskControlConnection(outgoingContext(r), &v.TaskControlConnectionRequest{Action: v.TaskControlConnectionRequest_ACTION_AUTHORIZE, Id: id.String(), Operation: operation})
+	if err != nil {
+		h.writeRPCError(w, r, err)
+		return
+	}
+	taskControlNotImplemented(w)
+}
 
 func (h *Handler) GetTaskControlDraft(w http.ResponseWriter, r *http.Request, bindingID api.ID) {
 	h.taskControlCall(w, r, &v.TaskControlConnectionRequest{Action: v.TaskControlConnectionRequest_ACTION_DRAFT, Id: bindingID.String()}, false)
@@ -27,19 +36,19 @@ func (h *Handler) UpdateTaskControlDraft(w http.ResponseWriter, r *http.Request,
 }
 
 func (h *Handler) GetTaskControlHistory(w http.ResponseWriter, r *http.Request, bindingID api.ID, params api.GetTaskControlHistoryParams) {
-	taskControlNotImplemented(w)
+	h.taskControlPending(w, r, bindingID, "history")
 }
 
 func (h *Handler) PreviewTaskControlImport(w http.ResponseWriter, r *http.Request, bindingID api.ID) {
-	taskControlNotImplemented(w)
+	h.taskControlPending(w, r, bindingID, "imports")
 }
 
 func (h *Handler) GetTaskControlImport(w http.ResponseWriter, r *http.Request, bindingID api.ID, importID api.ID) {
-	taskControlNotImplemented(w)
+	h.taskControlPending(w, r, bindingID, "imports")
 }
 
 func (h *Handler) ApplyTaskControlImport(w http.ResponseWriter, r *http.Request, bindingID api.ID, importID api.ID) {
-	taskControlNotImplemented(w)
+	h.taskControlPending(w, r, bindingID, "imports")
 }
 
 func (h *Handler) CreateTaskControlModeIntent(w http.ResponseWriter, r *http.Request, bindingID api.ID) {
@@ -69,23 +78,23 @@ func (h *Handler) GetTaskControlPublication(w http.ResponseWriter, r *http.Reque
 }
 
 func (h *Handler) GetTaskControlApplicationStatus(w http.ResponseWriter, r *http.Request, bindingID api.ID, publicationID api.ID) {
-	taskControlNotImplemented(w)
+	h.taskControlPending(w, r, bindingID, "application")
 }
 
 func (h *Handler) GetTaskControlReferences(w http.ResponseWriter, r *http.Request, bindingID api.ID) {
-	taskControlNotImplemented(w)
+	h.taskControlPending(w, r, bindingID, "references")
 }
 
 func (h *Handler) RollbackTaskControlPublication(w http.ResponseWriter, r *http.Request, bindingID api.ID) {
-	taskControlNotImplemented(w)
+	h.taskControlPending(w, r, bindingID, "rollback")
 }
 
 func (h *Handler) CreateTaskControlSourceRequest(w http.ResponseWriter, r *http.Request, bindingID api.ID) {
-	taskControlNotImplemented(w)
+	h.taskControlPending(w, r, bindingID, "sourceRequests")
 }
 
 func (h *Handler) GetTaskControlSourceRequest(w http.ResponseWriter, r *http.Request, bindingID api.ID, sourceRequestID api.ID) {
-	taskControlNotImplemented(w)
+	h.taskControlPending(w, r, bindingID, "sourceRequests")
 }
 
 func (h *Handler) ValidateTaskControlDraft(w http.ResponseWriter, r *http.Request, bindingID api.ID) {

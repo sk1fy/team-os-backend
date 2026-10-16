@@ -73,6 +73,7 @@ type Installation struct {
 	Generation     int64      `json:"generation,omitempty"`
 	CheckedAt      time.Time  `json:"checkedAt"`
 	FreshUntil     time.Time  `json:"freshUntil"`
+	ReasonCode     string     `json:"reasonCode,omitempty"`
 }
 
 func (s Installation) Valid(company uuid.UUID, account string, now time.Time) bool {

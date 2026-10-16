@@ -4660,6 +4660,25 @@ paths:
         default:
           $ref: '#/components/responses/Error'
 
+  /api/v1/task-control/capabilities:
+    get:
+      tags: [Task Control]
+      operationId: getTaskControlCapabilities
+      summary: Актуальные серверные права Контроля задач
+      description: Активный пользователь компании может узнать свои права, включая отсутствие доступа. Operations описывает права, availableOperations — реализованные операции; доступность установки и proof проверяются отдельно при действии.
+      responses:
+        '200':
+          description: Права текущего пользователя без зависимости от роли в JWT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlCapabilities'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        default:
+          $ref: '#/components/responses/Error'
   /api/v1/task-control/connections:
     get:
       tags:
@@ -4738,7 +4757,7 @@ paths:
       - Task Control
       operationId: getTaskControlIntent
       summary: Восстановить состояние операции переключения
-      x-permission: taskControl.read
+      x-permission: taskControl.manage
       responses:
         '200':
           description: Результат
@@ -4913,10 +4932,7 @@ paths:
       - Task Control
       operationId: getTaskControlDraft
       summary: Черновик со всеми правилами и архивом
-      description: Контракт КТ-01.02; бизнес-реализация в КТ-01.03–12. companyId только из сессии; чужой binding возвращает
-        404. Чтение требует активное членство и отдельное право taskControl.read внутри Интеграций. Полные правила доступны
-        только текущему owner/admin с taskControl.manage.
-      x-permission: taskControl.manage
+      x-permission: taskControl.read
       responses:
         '200':
           description: Результат
@@ -5114,10 +5130,7 @@ paths:
       - Task Control
       operationId: getTaskControlPublications
       summary: История опубликованных версий
-      description: Контракт КТ-01.02; бизнес-реализация в КТ-01.03–12. companyId только из сессии; чужой binding возвращает
-        404. Чтение требует активное членство и отдельное право taskControl.read внутри Интеграций. Полные правила доступны
-        только текущему owner/admin с taskControl.manage.
-      x-permission: taskControl.manage
+      x-permission: taskControl.read
       responses:
         '200':
           description: Результат
@@ -5167,10 +5180,7 @@ paths:
       - Task Control
       operationId: getTaskControlPublication
       summary: Полная неизменяемая версия
-      description: Контракт КТ-01.02; бизнес-реализация в КТ-01.03–12. companyId только из сессии; чужой binding возвращает
-        404. Чтение требует активное членство и отдельное право taskControl.read внутри Интеграций. Полные правила доступны
-        только текущему owner/admin с taskControl.manage.
-      x-permission: taskControl.manage
+      x-permission: taskControl.read
       responses:
         '200':
           description: Результат
@@ -5630,9 +5640,7 @@ paths:
       - Task Control
       operationId: getTaskControlSourceRequest
       summary: Статус запроса справочников или каталога
-      description: Контракт КТ-01.02; бизнес-реализация в КТ-01.03–12. companyId только из сессии; чужой binding возвращает
-        404. Чтение требует активное членство и отдельное право taskControl.read внутри Интеграций.
-      x-permission: taskControl.read
+      x-permission: taskControl.manage
       responses:
         '200':
           description: Результат
@@ -12307,6 +12315,28 @@ components:
           format: int64
           minimum: 1
           maximum: 9007199254740991
+    TaskControlCapabilities:
+      type: object
+      required: [read, manage, operations, availableOperations, adminProofTtlSeconds, runtimeSessionTtlSeconds]
+      properties:
+        read:
+          type: boolean
+        manage:
+          type: boolean
+        operations:
+          type: object
+          additionalProperties:
+            type: boolean
+        availableOperations:
+          type: array
+          items:
+            type: string
+        adminProofTtlSeconds:
+          type: integer
+          example: 60
+        runtimeSessionTtlSeconds:
+          type: integer
+          example: 300
     TaskControlConnection:
       type: object
       additionalProperties: false
@@ -13027,6 +13057,9 @@ components:
       - checkedAt
       - freshUntil
       properties:
+        reasonCode:
+          type: string
+          description: Причина состояния, включая disconnect_unverified, disconnect_confirmed, operator_uninstall, product_disabled, installation_unconfirmed, core_unavailable и registry_<status>. Неизвестный код не меняет семантику state.
         companyId:
           $ref: '#/components/schemas/ID'
         accountId:

@@ -3,7 +3,7 @@ SELECT pg_advisory_xact_lock(hashtextextended('task-control:' || sqlc.arg(accoun
 -- name: GetTaskControlPermissions :one
 SELECT * FROM task_control_permissions WHERE company_id=$1 AND user_id=$2;
 -- name: GetTaskControlSnapshot :one
-SELECT * FROM task_control_installation_snapshots WHERE company_id=$1 AND account_id=$2;
+SELECT * FROM task_control_installation_snapshots WHERE company_id=$1 AND account_id=$2 FOR SHARE;
 -- name: SaveTaskControlSnapshot :exec
 INSERT INTO task_control_installation_snapshots(company_id,account_id,payload,checked_at,fresh_until) VALUES($1,$2,$3,$4,$5)
 ON CONFLICT(company_id,account_id) DO UPDATE SET payload=excluded.payload,checked_at=excluded.checked_at,fresh_until=excluded.fresh_until
