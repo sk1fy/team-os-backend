@@ -662,6 +662,14 @@ type TaskControlEmployeeMapping struct {
 	CrmUserID  string    `json:"crm_user_id"`
 }
 
+type TaskControlImportObject struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	BindingID uuid.UUID `json:"binding_id"`
+	ID        uuid.UUID `json:"id"`
+	Kind      string    `json:"kind"`
+	Payload   []byte    `json:"payload"`
+}
+
 type TaskControlInstallationSnapshot struct {
 	CompanyID  uuid.UUID `json:"company_id"`
 	AccountID  string    `json:"account_id"`

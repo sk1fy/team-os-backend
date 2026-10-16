@@ -439,7 +439,7 @@ func (s *Service) TaskControlPublicationsV2(ctx context.Context, a Actor, id, pu
 	return out, nil
 }
 func taskControlV2Descriptor(st tc.Installation) bool {
-	if st.RuntimeVersion != "1.2.0" {
+	if !taskControlRuntimeV2Version(st.RuntimeVersion) {
 		return false
 	}
 	for _, v := range st.RuntimeCapabilities {

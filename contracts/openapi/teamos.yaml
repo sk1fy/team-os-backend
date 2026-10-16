@@ -5415,9 +5415,9 @@ paths:
       - Task Control
       operationId: previewTaskControlImport
       summary: Подготовить импорт из подтверждённого полного снимка admin bridge
-      description: 'Контракт КТ-01.02; бизнес-реализация в КТ-01.03–12. companyId только из сессии; чужой binding возвращает
-        404. Запись требует текущий owner/admin и taskControl.manage. requestId при наличии: одинаковое нормализованное тело
-        возвращает сохранённый результат, другое — 409.'
+      description: Рабочий API R04. Import сохраняет только draft, без publish и смены режима. Scope/права/CAS проверяются
+        сервером. Применение требует сохранённый preview, новый независимый полный verification snapshot и подтверждение
+        предупреждений сравнения источников.
       x-permission: taskControl.manage
       responses:
         '200':
@@ -5436,12 +5436,6 @@ paths:
           $ref: '#/components/responses/NotFound'
         '409':
           $ref: '#/components/responses/Conflict'
-        '501':
-          description: Контракт опубликован, обработчик ещё не реализован.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         default:
           $ref: '#/components/responses/Error'
         '413':
@@ -5468,9 +5462,9 @@ paths:
       - Task Control
       operationId: getTaskControlImport
       summary: Результат предпросмотра импорта
-      description: Контракт КТ-01.02; бизнес-реализация в КТ-01.03–12. companyId только из сессии; чужой binding возвращает
-        404. Чтение требует активное членство и отдельное право taskControl.read внутри Интеграций. Полные правила доступны
-        только текущему owner/admin с taskControl.manage.
+      description: Рабочий API R04. Import сохраняет только draft, без publish и смены режима. Scope/права/CAS проверяются
+        сервером. Применение требует сохранённый preview, новый независимый полный verification snapshot и подтверждение
+        предупреждений сравнения источников.
       x-permission: taskControl.manage
       responses:
         '200':
@@ -5489,12 +5483,6 @@ paths:
           $ref: '#/components/responses/NotFound'
         '409':
           $ref: '#/components/responses/Conflict'
-        '501':
-          description: Контракт опубликован, обработчик ещё не реализован.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         default:
           $ref: '#/components/responses/Error'
         '413':
@@ -5520,9 +5508,9 @@ paths:
       - Task Control
       operationId: applyTaskControlImport
       summary: Применить проверенный импорт только к draft
-      description: 'Контракт КТ-01.02; бизнес-реализация в КТ-01.03–12. companyId только из сессии; чужой binding возвращает
-        404. Запись требует текущий owner/admin и taskControl.manage. requestId при наличии: одинаковое нормализованное тело
-        возвращает сохранённый результат, другое — 409.'
+      description: Рабочий API R04. Import сохраняет только draft, без publish и смены режима. Scope/права/CAS проверяются
+        сервером. Применение требует сохранённый preview, новый независимый полный verification snapshot и подтверждение
+        предупреждений сравнения источников.
       x-permission: taskControl.manage
       responses:
         '200':
@@ -5541,12 +5529,6 @@ paths:
           $ref: '#/components/responses/NotFound'
         '409':
           $ref: '#/components/responses/Conflict'
-        '501':
-          description: Контракт опубликован, обработчик ещё не реализован.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         default:
           $ref: '#/components/responses/Error'
         '413':
@@ -5727,8 +5709,9 @@ paths:
       - Task Control
       operationId: createTaskControlSourceRequest
       summary: Запросить полный CRM снимок через открытый admin виджет
-      description: Текущий owner/admin и taskControl.manage, exact company/account/binding, свежая installed-проверка. Без доступа
-        к другому tenant — 404.
+      description: Рабочий API R04. Import сохраняет только draft, без publish и смены режима. Scope/права/CAS проверяются
+        сервером. Применение требует сохранённый preview, новый независимый полный verification snapshot и подтверждение
+        предупреждений сравнения источников.
       x-permission: taskControl.manage
       responses:
         '200':
@@ -5747,12 +5730,6 @@ paths:
           $ref: '#/components/responses/NotFound'
         '409':
           $ref: '#/components/responses/Conflict'
-        '501':
-          description: Контракт опубликован, обработчик ещё не реализован.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         default:
           $ref: '#/components/responses/Error'
         '413':
@@ -5797,12 +5774,6 @@ paths:
           $ref: '#/components/responses/NotFound'
         '409':
           $ref: '#/components/responses/Conflict'
-        '501':
-          description: Контракт опубликован, обработчик ещё не реализован.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         default:
           $ref: '#/components/responses/Error'
         '413':
@@ -5822,6 +5793,9 @@ paths:
         required: true
         schema:
           $ref: '#/components/schemas/ID'
+      description: Рабочий API R04. Import сохраняет только draft, без publish и смены режима. Scope/права/CAS проверяются
+        сервером. Применение требует сохранённый preview, новый независимый полный verification snapshot и подтверждение
+        предупреждений сравнения источников.
   /api/v1/widget/task-control/sessions:
     post:
       tags:
@@ -6440,8 +6414,270 @@ paths:
           description: Превышен размер полного экспорта
         '503':
           description: Актуальные источники недоступны
+  /api/v2/task-control/connections/{bindingId}/imports:
+    post:
+      tags:
+      - Task Control
+      operationId: previewTaskControlImportV2
+      summary: Подготовить импорт из подтверждённого полного снимка admin bridge
+      description: Рабочий API R04. Import сохраняет только draft, без publish и смены режима. Scope/права/CAS проверяются
+        сервером. Применение требует сохранённый preview, новый независимый полный verification snapshot и подтверждение
+        предупреждений сравнения источников.
+      x-permission: taskControl.manage
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlImportPreview'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/Error'
+        '413':
+          description: Конфигурация превышает допустимый размер
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+      - name: bindingId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskControlImportInput'
+  /api/v2/task-control/connections/{bindingId}/imports/{importId}:
+    get:
+      tags:
+      - Task Control
+      operationId: getTaskControlImportV2
+      summary: Результат предпросмотра импорта
+      description: Рабочий API R04. Import сохраняет только draft, без publish и смены режима. Scope/права/CAS проверяются
+        сервером. Применение требует сохранённый preview, новый независимый полный verification snapshot и подтверждение
+        предупреждений сравнения источников.
+      x-permission: taskControl.manage
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlImportPreview'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/Error'
+        '413':
+          description: Конфигурация превышает допустимый размер
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+      - name: bindingId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+      - name: importId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+  /api/v2/task-control/connections/{bindingId}/imports/{importId}/apply:
+    post:
+      tags:
+      - Task Control
+      operationId: applyTaskControlImportV2
+      summary: Применить проверенный импорт только к draft
+      description: Рабочий API R04. Import сохраняет только draft, без publish и смены режима. Scope/права/CAS проверяются
+        сервером. Применение требует сохранённый preview, новый независимый полный verification snapshot и подтверждение
+        предупреждений сравнения источников.
+      x-permission: taskControl.manage
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlDraftV2'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/Error'
+        '413':
+          description: Конфигурация превышает допустимый размер
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+      - name: bindingId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+      - name: importId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskControlImportApplyInput'
+  /api/v1/widget/task-control/source-requests:
+    get:
+      tags:
+      - Task Control
+      operationId: getTaskControlSourceRequests
+      summary: 'Admin bridge: свежий Core adminBridge assertion, текущий scope и инициатор запроса'
+      security:
+      - taskControlBridgeAssertion: []
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TaskControlSourceRequest'
+                maxItems: 100
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '413':
+          description: Тело источника превышает 1 МиБ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: Установка или источник временно недоступны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/widget/task-control/source-requests/{sourceRequestId}/result:
+    parameters:
+    - name: sourceRequestId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/ID'
+    put:
+      tags:
+      - Task Control
+      operationId: submitTaskControlSourceResult
+      summary: 'Admin bridge: свежий Core adminBridge assertion, текущий scope и инициатор запроса'
+      security:
+      - taskControlBridgeAssertion: []
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlSourceRequest'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '413':
+          description: Тело источника превышает 1 МиБ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: Установка или источник временно недоступны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskControlBridgeResult'
+  /api/v1/widget/task-control/connection:
+    get:
+      tags:
+      - Task Control
+      operationId: getTaskControlRuntimeConnection
+      summary: Проверить актуальный режим и scope перед автономным возвратом
+      security:
+      - taskControlSession: []
+      responses:
+        '200':
+          description: Текущее подключение без runtime-проекции
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlConnection'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '503':
+          description: Установка временно не подтверждена
 components:
   securitySchemes:
+    taskControlBridgeAssertion:
+      type: http
+      scheme: bearer
+      bearerFormat: CORE_ADMIN_BRIDGE_ASSERTION
+      description: Свежий одноразовый signed Core assertion purpose adminBridge (60 с), не TeamOS JWT и не runtime bearer. Result требует requestId равный ID задания и тот же coreAssertion в body.
     taskControlSession:
       type: http
       scheme: bearer
@@ -7541,6 +7777,156 @@ components:
             $ref: '#/components/schemas/FileDownload'
 
   schemas:
+    TaskControlImportIssue:
+      type: object
+      additionalProperties: false
+      required:
+      - path
+      - code
+      - message
+      properties:
+        path:
+          type: string
+        code:
+          type: string
+          description: Стабильный код проверки источника или сравнения, включая source_read_failed,
+            invalid_source_capture, catalog_runtime_divergence, runtime_config_invalid,
+            catalog_invalid.
+        message:
+          type: string
+    TaskControlBridgeCompleteResult:
+      type: object
+      additionalProperties: false
+      required:
+      - coreAssertion
+      - complete
+      - sourceChecksum
+      - fetchedAt
+      - payload
+      properties:
+        coreAssertion:
+          type: string
+          minLength: 1
+          maxLength: 8192
+          writeOnly: true
+        complete:
+          type: boolean
+          enum:
+          - true
+        sourceChecksum:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        fetchedAt:
+          type: string
+          format: date-time
+        payload:
+          $ref: '#/components/schemas/TaskControlBridgePayload'
+    TaskControlBridgePartialResult:
+      type: object
+      additionalProperties: false
+      required:
+      - coreAssertion
+      - complete
+      - payload
+      properties:
+        coreAssertion:
+          type: string
+          minLength: 1
+          maxLength: 8192
+          writeOnly: true
+        complete:
+          type: boolean
+          enum:
+          - false
+        sourceChecksum:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        fetchedAt:
+          type: string
+          format: date-time
+        payload:
+          $ref: '#/components/schemas/TaskControlBridgePartialPayload'
+    TaskControlBridgePartialPayload:
+      type: object
+      additionalProperties: false
+      required: []
+      properties:
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskControlRule'
+          maxItems: 1000
+        raw:
+          type: object
+          additionalProperties: true
+        catalogId:
+          type: string
+          pattern: ^[1-9][0-9]{0,15}$
+        fieldIds:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int64
+            minimum: 1
+            maximum: 9007199254740991
+        code:
+          type: string
+          maxLength: 200
+        discrepancies:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskControlImportIssue'
+          maxItems: 10000
+        issues:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskControlImportIssue'
+          maxItems: 10000
+    TaskControlBridgePayload:
+      type: object
+      additionalProperties: false
+      required:
+      - rules
+      - raw
+      - catalogId
+      properties:
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskControlRule'
+          maxItems: 1000
+        raw:
+          type: object
+          additionalProperties: true
+        catalogId:
+          type: string
+          pattern: ^[1-9][0-9]{0,15}$
+        fieldIds:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int64
+            minimum: 1
+            maximum: 9007199254740991
+        code:
+          type: string
+          maxLength: 200
+        discrepancies:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskControlImportIssue'
+          maxItems: 10000
+        issues:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskControlImportIssue'
+          maxItems: 10000
+    TaskControlBridgeResult:
+      oneOf:
+      - $ref: '#/components/schemas/TaskControlBridgeCompleteResult'
+      - $ref: '#/components/schemas/TaskControlBridgePartialResult'
+      description: Полный capture или явный failed capture. complete=false не создаёт sourceSnapshotId и не требует
+        фиктивных правил/hash.
     TaskControlModePreviewInputV2:
       type: object
       additionalProperties: false
@@ -7602,6 +7988,17 @@ components:
           maxItems: 10000
           minItems: 0
           uniqueItems: true
+        complete:
+          type: boolean
+        projection:
+          type: string
+          enum:
+          - full
+          x-enum-varnames:
+          - TaskControlModePreviewV2ProjectionFull
+        expiresAt:
+          type: string
+          format: date-time
     TaskControlModeInputV2:
       type: object
       additionalProperties: false
@@ -14725,10 +15122,28 @@ components:
         issues:
           type: array
           items:
-            $ref: '#/components/schemas/TaskControlValidationIssue'
+            $ref: '#/components/schemas/TaskControlImportIssue'
         expiresAt:
           type: string
           format: date-time
+        sourceKind:
+          type: string
+          enum:
+          - catalog
+          - runtime_config
+          x-enum-varnames:
+          - TaskControlImportPreviewSourceKindCatalog
+          - TaskControlImportPreviewSourceKindRuntimeConfig
+        sourceSnapshotId:
+          $ref: '#/components/schemas/ID'
+        original:
+          type: object
+          additionalProperties: true
+        backup:
+          type: object
+          additionalProperties: true
+        appliedRequestId:
+          $ref: '#/components/schemas/ID'
     TaskControlImportApplyInput:
       type: object
       additionalProperties: false
@@ -14762,6 +15177,9 @@ components:
           pattern: ^[a-f0-9]{64}$
         verificationSnapshotId:
           $ref: '#/components/schemas/ID'
+        acknowledgeDiscrepancies:
+          type: boolean
+          description: Явно принять предупреждения сравнения источников, привязанные к preview и повторному снимку.
     TaskControlRuntimeAck:
       type: object
       additionalProperties: false
@@ -14980,9 +15398,11 @@ components:
           enum:
           - references
           - catalog
+          - runtime_config
           x-enum-varnames:
           - TaskControlSourceRequestInputKindReferences
           - TaskControlSourceRequestInputKindCatalog
+          - TaskControlSourceRequestInputKindRuntimeConfig
         catalogId:
           type: string
           pattern: ^[1-9][0-9]{0,15}$
@@ -15005,9 +15425,11 @@ components:
           enum:
           - references
           - catalog
+          - runtime_config
           x-enum-varnames:
           - TaskControlSourceRequestKindReferences
           - TaskControlSourceRequestKindCatalog
+          - TaskControlSourceRequestKindRuntimeConfig
         state:
           type: string
           enum:
@@ -15026,6 +15448,16 @@ components:
         sourceSnapshotId:
           $ref: '#/components/schemas/ID'
         expiresAt:
+          type: string
+          format: date-time
+        issues:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskControlImportIssue'
+          maxItems: 10000
+        errorCode:
+          type: string
+        freshUntil:
           type: string
           format: date-time
     TaskControlSessionInput:

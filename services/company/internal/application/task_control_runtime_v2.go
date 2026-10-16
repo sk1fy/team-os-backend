@@ -146,7 +146,7 @@ func (s *Service) AckTaskControlV2(ctx context.Context, token string, in TaskCon
 	if e != nil {
 		return e
 	}
-	if in.Scope != conn.Scope || in.ActorID != actor || in.RuntimeInstanceID == uuid.Nil || in.SnapshotID == uuid.Nil || in.RuntimeVersion != "1.2.0" || in.RuntimeRevision < 1 || in.RuntimeRevision > 9007199254740991 || in.AppliedAt.IsZero() || in.AppliedAt.After(s.now().Add(5*time.Second)) {
+	if in.Scope != conn.Scope || in.ActorID != actor || in.RuntimeInstanceID == uuid.Nil || in.SnapshotID == uuid.Nil || !taskControlRuntimeV2Version(in.RuntimeVersion) || in.RuntimeRevision < 1 || in.RuntimeRevision > 9007199254740991 || in.AppliedAt.IsZero() || in.AppliedAt.After(s.now().Add(5*time.Second)) {
 		return validation("Некорректное подтверждение runtime")
 	}
 	tx, e := s.pool.Begin(ctx)

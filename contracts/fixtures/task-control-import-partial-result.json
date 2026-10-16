@@ -1,0 +1,13 @@
+{
+  "coreAssertion": "synthetic.payload.signature",
+  "complete": false,
+  "payload": {
+    "issues": [
+      {
+        "path": "source",
+        "code": "source_read_failed",
+        "message": "Не удалось прочитать полный источник"
+      }
+    ]
+  }
+}

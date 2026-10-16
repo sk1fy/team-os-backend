@@ -554,7 +554,7 @@ func (s *Service) ExchangeTaskControlSessionNegotiated(ctx context.Context, raw,
 		for _, capability := range capabilities {
 			capable = capable || capability == "dynamicRulesV2"
 		}
-		if runtimeVersion != "1.2.0" || !capable || !taskControlV2Descriptor(st) {
+		if !taskControlRuntimeV2Version(runtimeVersion) || !capable || !taskControlV2Descriptor(st) {
 			return out, coded(ErrorConflict, "runtime_upgrade_required", "Обновите runtime до версии 1.2.0")
 		}
 	}

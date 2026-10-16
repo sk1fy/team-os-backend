@@ -165,6 +165,8 @@ type Querier interface {
 	GetTaskControlConnection(ctx context.Context, arg GetTaskControlConnectionParams) (TaskControlConnection, error)
 	GetTaskControlConnectionRequest(ctx context.Context, arg GetTaskControlConnectionRequestParams) (TaskControlConnectionRequest, error)
 	GetTaskControlDraft(ctx context.Context, arg GetTaskControlDraftParams) (TaskControlDraft, error)
+	GetTaskControlImportObject(ctx context.Context, arg GetTaskControlImportObjectParams) ([]byte, error)
+	GetTaskControlImportSourceSnapshot(ctx context.Context, arg GetTaskControlImportSourceSnapshotParams) ([]byte, error)
 	GetTaskControlIntent(ctx context.Context, arg GetTaskControlIntentParams) (TaskControlConnection, error)
 	GetTaskControlPermissions(ctx context.Context, arg GetTaskControlPermissionsParams) (TaskControlPermission, error)
 	GetTaskControlPublication(ctx context.Context, arg GetTaskControlPublicationParams) (TaskControlPublication, error)
@@ -224,6 +226,7 @@ type Querier interface {
 	ListSchedules(ctx context.Context, companyID uuid.UUID) ([]UserSchedule, error)
 	ListShiftExceptionsByMonth(ctx context.Context, arg ListShiftExceptionsByMonthParams) ([]ShiftException, error)
 	ListTaskControlConnections(ctx context.Context, companyID uuid.UUID) ([]TaskControlConnection, error)
+	ListTaskControlImportSources(ctx context.Context, arg ListTaskControlImportSourcesParams) ([][]byte, error)
 	ListTaskControlPublications(ctx context.Context, arg ListTaskControlPublicationsParams) ([]TaskControlPublication, error)
 	ListTaskControlPublicationsV2(ctx context.Context, arg ListTaskControlPublicationsV2Params) ([]TaskControlPublication, error)
 	ListUsers(ctx context.Context, companyID uuid.UUID) ([]ListUsersRow, error)
@@ -292,6 +295,7 @@ type Querier interface {
 	SaveDistributionSettings(ctx context.Context, arg SaveDistributionSettingsParams) (DistributionSetting, error)
 	SaveDistributionUIAction(ctx context.Context, arg SaveDistributionUIActionParams) error
 	SaveTaskControlConnectionRequest(ctx context.Context, arg SaveTaskControlConnectionRequestParams) error
+	SaveTaskControlImportObject(ctx context.Context, arg SaveTaskControlImportObjectParams) error
 	SaveTaskControlReferenceCache(ctx context.Context, arg SaveTaskControlReferenceCacheParams) error
 	SaveTaskControlSnapshot(ctx context.Context, arg SaveTaskControlSnapshotParams) error
 	SaveTaskControlV2Ack(ctx context.Context, arg SaveTaskControlV2AckParams) error

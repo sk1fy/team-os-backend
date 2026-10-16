@@ -127,7 +127,7 @@ func (s *Service) taskControlModePreviewTx(ctx context.Context, q *db.Queries, c
 	if e = json.Unmarshal(row.Payload, &pub); e != nil || pub.SchemaVersion != 2 {
 		return nil, coded(ErrorConflict, "unsupported_schema", "Требуется публикация версии 2")
 	}
-	resolved, src, fresh, e := s.taskControlResolveTx(ctx, q, c, pub.IntentRules, true)
+	resolved, src, fresh, e := s.taskControlExportTx(ctx, q, c, pub.IntentRules)
 	if e != nil {
 		return nil, e
 	}
@@ -140,19 +140,16 @@ func (s *Service) taskControlModePreviewTx(ctx context.Context, q *db.Queries, c
 		return nil, coded(ErrorValidation, "invalid_selection", "Невозможно материализовать недоступные ссылки")
 	}
 	loss := false
-	active := 0
 	for _, item := range pub.IntentRules {
-		if item.Dynamic != nil && item.Dynamic.Enabled && !item.Dynamic.Archived {
+		if item.Dynamic != nil {
 			loss = true
-			active++
-		} else if item.Legacy != nil && item.Legacy.Enabled && !item.Legacy.Archived {
-			active++
 		}
 	}
-	if len(resolved.RuntimeRules) < active && len(resolved.RuntimeRules) > 0 {
-		return nil, coded(ErrorValidation, "export_unrepresentable", "Некоторые правила имеют пустой состав и не представимы в автономных настройках")
+	expires := fresh
+	if maximum := s.now().UTC().Add(5 * time.Minute); maximum.Before(expires) {
+		expires = maximum
 	}
-	return map[string]any{"scope": taskControlScope(c), "publicationId": pub.ID, "targetMode": in.TargetMode, "exportChecksum": resolved.ResolvedChecksum, "sourceRevisions": src, "runtimeRules": resolved.RuntimeRules, "dynamicLoss": loss, "emptyExport": len(resolved.RuntimeRules) == 0, "issues": resolved.Issues, "_sourceFreshUntil": fresh}, nil
+	return map[string]any{"scope": taskControlScope(c), "publicationId": pub.ID, "targetMode": in.TargetMode, "exportChecksum": resolved.ResolvedChecksum, "sourceRevisions": src, "runtimeRules": resolved.RuntimeRules, "dynamicLoss": loss, "emptyExport": len(resolved.RuntimeRules) == 0, "issues": resolved.Issues, "complete": true, "projection": "full", "expiresAt": expires, "_sourceFreshUntil": fresh}, nil
 }
 func (s *Service) PreviewTaskControlModeV2(ctx context.Context, a Actor, id uuid.UUID, in TaskControlModePreviewInputV2) (any, error) {
 	tx, q, c, e := s.taskControlRulesTx(ctx, a, id, true)

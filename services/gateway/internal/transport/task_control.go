@@ -40,15 +40,15 @@ func (h *Handler) GetTaskControlHistory(w http.ResponseWriter, r *http.Request, 
 }
 
 func (h *Handler) PreviewTaskControlImport(w http.ResponseWriter, r *http.Request, bindingID api.ID) {
-	h.taskControlPending(w, r, bindingID, "imports")
+	h.taskControlImportMutation(w, r, bindingID, api.ID{}, v.TaskControlConnectionRequest_ACTION_IMPORT_PREVIEW, "")
 }
 
 func (h *Handler) GetTaskControlImport(w http.ResponseWriter, r *http.Request, bindingID api.ID, importID api.ID) {
-	h.taskControlPending(w, r, bindingID, "imports")
+	h.taskControlCall(w, r, &v.TaskControlConnectionRequest{Action: v.TaskControlConnectionRequest_ACTION_IMPORT_GET, Id: bindingID.String(), AccountId: importID.String()}, false)
 }
 
 func (h *Handler) ApplyTaskControlImport(w http.ResponseWriter, r *http.Request, bindingID api.ID, importID api.ID) {
-	h.taskControlPending(w, r, bindingID, "imports")
+	h.taskControlImportMutation(w, r, bindingID, importID, v.TaskControlConnectionRequest_ACTION_IMPORT_APPLY, "")
 }
 
 func (h *Handler) CreateTaskControlModeIntent(w http.ResponseWriter, r *http.Request, bindingID api.ID) {
@@ -90,11 +90,11 @@ func (h *Handler) RollbackTaskControlPublication(w http.ResponseWriter, r *http.
 }
 
 func (h *Handler) CreateTaskControlSourceRequest(w http.ResponseWriter, r *http.Request, bindingID api.ID) {
-	h.taskControlPending(w, r, bindingID, "sourceRequests")
+	h.taskControlImportMutation(w, r, bindingID, api.ID{}, v.TaskControlConnectionRequest_ACTION_SOURCE_CREATE, "")
 }
 
 func (h *Handler) GetTaskControlSourceRequest(w http.ResponseWriter, r *http.Request, bindingID api.ID, sourceRequestID api.ID) {
-	h.taskControlPending(w, r, bindingID, "sourceRequests")
+	h.taskControlCall(w, r, &v.TaskControlConnectionRequest{Action: v.TaskControlConnectionRequest_ACTION_SOURCE_GET, Id: bindingID.String(), AccountId: sourceRequestID.String()}, false)
 }
 
 func (h *Handler) ValidateTaskControlDraft(w http.ResponseWriter, r *http.Request, bindingID api.ID) {

@@ -1,0 +1,271 @@
+{
+  "complete": true,
+  "sourceChecksum": "9435589f1030ec9c20ab573907e3d4ade48e0179a30f2ec864ab9195cfafaddf",
+  "fetchedAt": "2026-10-16T12:00:00.000Z",
+  "payload": {
+    "rules": [
+      {
+        "ruleUid": "0c736c20-f044-45aa-b982-38b0e78f4760",
+        "name": "Отдел продаж",
+        "users": [
+          "2",
+          "3"
+        ],
+        "pipelines": [
+          {
+            "pipelineId": "10",
+            "statusIds": [
+              "20",
+              "142",
+              "143"
+            ]
+          }
+        ],
+        "customerStatuses": [
+          "30"
+        ],
+        "showModal": true,
+        "denyExit": true,
+        "checkResponsible": false,
+        "customers": true,
+        "enabled": false,
+        "archived": true
+      }
+    ],
+    "raw": {
+      "catalog": {
+        "id": 77,
+        "type": "regular",
+        "account_id": 123
+      },
+      "fields": [
+        {
+          "id": 100,
+          "code": "RKRS_WT_RULE_UID",
+          "type": "text",
+          "is_visible": false
+        },
+        {
+          "id": 101,
+          "code": "RKRS_WT_USERS",
+          "type": "text",
+          "is_visible": false
+        },
+        {
+          "id": 102,
+          "code": "RKRS_WT_PIPELINES",
+          "type": "text",
+          "is_visible": false
+        },
+        {
+          "id": 103,
+          "code": "RKRS_WT_CUSTOMER_STATUSES",
+          "type": "text",
+          "is_visible": false
+        },
+        {
+          "id": 104,
+          "code": "RKRS_WT_SHOW_MODAL",
+          "type": "select",
+          "is_visible": false,
+          "enums": [
+            {
+              "id": 1008,
+              "value": "0"
+            },
+            {
+              "id": 1009,
+              "value": "1"
+            }
+          ]
+        },
+        {
+          "id": 105,
+          "code": "RKRS_WT_DENY_EXIT",
+          "type": "select",
+          "is_visible": false,
+          "enums": [
+            {
+              "id": 1010,
+              "value": "0"
+            },
+            {
+              "id": 1011,
+              "value": "1"
+            }
+          ]
+        },
+        {
+          "id": 106,
+          "code": "RKRS_WT_CHECK_RESP",
+          "type": "select",
+          "is_visible": false,
+          "enums": [
+            {
+              "id": 1012,
+              "value": "0"
+            },
+            {
+              "id": 1013,
+              "value": "1"
+            }
+          ]
+        },
+        {
+          "id": 107,
+          "code": "RKRS_WT_CUSTOMERS",
+          "type": "select",
+          "is_visible": false,
+          "enums": [
+            {
+              "id": 1014,
+              "value": "0"
+            },
+            {
+              "id": 1015,
+              "value": "1"
+            }
+          ]
+        },
+        {
+          "id": 108,
+          "code": "RKRS_WT_ENABLED",
+          "type": "select",
+          "is_visible": false,
+          "enums": [
+            {
+              "id": 1016,
+              "value": "0"
+            },
+            {
+              "id": 1017,
+              "value": "1"
+            }
+          ]
+        },
+        {
+          "id": 109,
+          "code": "RKRS_WT_ARCHIVED",
+          "type": "select",
+          "is_visible": false,
+          "enums": [
+            {
+              "id": 1018,
+              "value": "0"
+            },
+            {
+              "id": 1019,
+              "value": "1"
+            }
+          ]
+        }
+      ],
+      "elements": [
+        {
+          "id": 900,
+          "name": "Отдел продаж",
+          "custom_fields_values": [
+            {
+              "field_id": 100,
+              "values": [
+                {
+                  "value": "0c736c20-f044-45aa-b982-38b0e78f4760"
+                }
+              ]
+            },
+            {
+              "field_id": 101,
+              "values": [
+                {
+                  "value": "[2,3]"
+                }
+              ]
+            },
+            {
+              "field_id": 102,
+              "values": [
+                {
+                  "value": "[{\"pipeline_id\":10,\"status_ids\":[20,142,143]}]"
+                }
+              ]
+            },
+            {
+              "field_id": 103,
+              "values": [
+                {
+                  "value": "[30]"
+                }
+              ]
+            },
+            {
+              "field_id": 104,
+              "values": [
+                {
+                  "enum_id": 1009
+                }
+              ]
+            },
+            {
+              "field_id": 105,
+              "values": [
+                {
+                  "enum_id": 1011
+                }
+              ]
+            },
+            {
+              "field_id": 106,
+              "values": [
+                {
+                  "enum_id": 1012
+                }
+              ]
+            },
+            {
+              "field_id": 107,
+              "values": [
+                {
+                  "enum_id": 1015
+                }
+              ]
+            },
+            {
+              "field_id": 108,
+              "values": [
+                {
+                  "enum_id": 1016
+                }
+              ]
+            },
+            {
+              "field_id": 109,
+              "values": [
+                {
+                  "enum_id": 1019
+                }
+              ]
+            }
+          ],
+          "original_extra": "preserved"
+        }
+      ],
+      "runtimeConfig": "{\"schema_version\":1,\"storage\":{\"catalog_id\":77,\"fields\":{\"rule_uid\":100,\"users\":101,\"pipelines\":102,\"customer_statuses\":103,\"show_modal\":104,\"deny_exit\":105,\"check_responsible\":106,\"customers\":107,\"enabled\":108,\"archived\":109},\"enums\":{\"show_modal\":{\"false\":1008,\"true\":1009},\"deny_exit\":{\"false\":1010,\"true\":1011},\"check_responsible\":{\"false\":1012,\"true\":1013},\"customers\":{\"false\":1014,\"true\":1015},\"enabled\":{\"false\":1016,\"true\":1017},\"archived\":{\"false\":1018,\"true\":1019}}},\"published\":{\"revision\":3,\"hash\":\"9435589f1030ec9c20ab573907e3d4ade48e0179a30f2ec864ab9195cfafaddf\",\"published_at\":1792170180},\"rules\":[{\"uid\":\"0c736c20-f044-45aa-b982-38b0e78f4760\",\"name\":\"Отдел продаж\",\"users\":[2,3],\"pipelines\":[{\"pipeline_id\":10,\"status_ids\":[20,142,143]}],\"customer_statuses\":[30],\"show_modal\":true,\"deny_exit\":true,\"check_responsible\":false,\"customers\":true,\"enabled\":false,\"archived\":true}]}"
+    },
+    "catalogId": "77",
+    "fieldIds": {
+      "rule_uid": 100,
+      "users": 101,
+      "pipelines": 102,
+      "customer_statuses": 103,
+      "show_modal": 104,
+      "deny_exit": 105,
+      "check_responsible": 106,
+      "customers": 107,
+      "enabled": 108,
+      "archived": 109
+    },
+    "code": "RKRS_WT_RULE_UID",
+    "discrepancies": []
+  },
+  "coreAssertion": "synthetic.payload.signature"
+}
