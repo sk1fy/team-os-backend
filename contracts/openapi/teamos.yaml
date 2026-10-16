@@ -5362,9 +5362,7 @@ paths:
       - Task Control
       operationId: rollbackTaskControlPublication
       summary: Опубликовать прежнее содержимое новой возрастающей версией
-      description: 'Контракт КТ-01.02; бизнес-реализация в КТ-01.03–12. companyId только из сессии; чужой binding возвращает
-        404. Запись требует текущий owner/admin и taskControl.manage. requestId при наличии: одинаковое нормализованное тело
-        возвращает сохранённый результат, другое — 409.'
+      description: Создаёт новую возрастающую immutable публикацию из прежней версии после проверки актуальных CRM-справочников. Исходная запись не изменяется. Требует owner/admin, taskControl.manage и CAS. Для schemaVersion 2 используйте v2 rollback, который восстанавливает intent и заново разрешает динамические выборки.
       x-permission: taskControl.manage
       responses:
         '200':
@@ -5383,12 +5381,6 @@ paths:
           $ref: '#/components/responses/NotFound'
         '409':
           $ref: '#/components/responses/Conflict'
-        '501':
-          description: Контракт опубликован, обработчик ещё не реализован.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         default:
           $ref: '#/components/responses/Error'
         '413':
@@ -5560,8 +5552,7 @@ paths:
       - Task Control
       operationId: getTaskControlHistory
       summary: Аудит текущего подключения
-      description: Контракт КТ-01.02; бизнес-реализация в КТ-01.03–12. companyId только из сессии; чужой binding возвращает
-        404. Чтение требует активное членство и отдельное право taskControl.read внутри Интеграций.
+      description: История сохранённых изменений и пересчётов. Требует taskControl.read; доступна при отключённом подключении и недоступном Core. Opaque cursor привязан к company и binding, фиксирует верхнюю границу страницы; limit 1–100.
       x-permission: taskControl.read
       responses:
         '200':
@@ -5569,7 +5560,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TaskControlHistory'
+                $ref: '#/components/schemas/TaskControlHistoryPage'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -5580,12 +5571,57 @@ paths:
           $ref: '#/components/responses/NotFound'
         '409':
           $ref: '#/components/responses/Conflict'
-        '501':
-          description: Контракт опубликован, обработчик ещё не реализован.
+        default:
+          $ref: '#/components/responses/Error'
+        '413':
+          description: Конфигурация превышает допустимый размер
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+      - name: bindingId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+      - name: cursor
+        in: query
+        schema:
+          type: string
+          maxLength: 512
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 50
+  /api/v2/task-control/connections/{bindingId}/history:
+    get:
+      tags:
+      - Task Control
+      operationId: getTaskControlHistoryV2
+      summary: Аудит текущего подключения
+      description: История сохранённых изменений и пересчётов. Требует taskControl.read; доступна при отключённом подключении и недоступном Core. Opaque cursor привязан к company и binding, фиксирует верхнюю границу страницы; limit 1–100.
+      x-permission: taskControl.read
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskControlHistoryPage'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
         default:
           $ref: '#/components/responses/Error'
         '413':
@@ -6072,6 +6108,7 @@ paths:
           type: integer
           minimum: 1
           maximum: 100
+          default: 50
   /api/v2/task-control/connections/{bindingId}/publications/{publicationId}:
     parameters:
     - name: bindingId
@@ -14550,6 +14587,8 @@ components:
       - createdBy
       - reason
       properties:
+        restoredFromId:
+          $ref: '#/components/schemas/ID'
         id:
           $ref: '#/components/schemas/ID'
         scope:
@@ -15255,6 +15294,99 @@ components:
           type: string
         publicationId:
           $ref: '#/components/schemas/ID'
+    TaskControlHistoryPage:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/TaskControlHistoryEvent'
+        nextCursor:
+          type: string
+          maxLength: 512
+    TaskControlHistoryEvent:
+      type: object
+      additionalProperties: false
+      required: [id, sequence, eventType, scope, actorId, createdAt, details]
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        sequence:
+          type: string
+          pattern: '^[1-9][0-9]*$'
+          description: Монотонный номер события в десятичной строке.
+        eventType:
+          type: string
+          enum: [connection_linked, connection_updated, draft_updated, import_applied, mode_changed, publication_published, publication_restored, runtime_recomputed]
+        scope:
+          $ref: '#/components/schemas/TaskControlScope'
+        actorId:
+          type: [string, 'null']
+          format: uuid
+          x-go-type: '*openapi_types.UUID'
+          description: TeamOS actor; null для автоматического пересчёта.
+        createdAt:
+          type: string
+          format: date-time
+        details:
+          $ref: '#/components/schemas/TaskControlAuditDetails'
+    TaskControlAuditDetails:
+      type: object
+      additionalProperties: true
+      description: Ограниченные метаданные аудита; полные правила читаются из immutable публикаций.
+      properties:
+        reason: { type: [string, 'null'], x-go-type: '*string' }
+        publicationId: { type: [string, 'null'], x-go-type: '*openapi_types.UUID', format: uuid }
+        previousPublicationId: { type: [string, 'null'], x-go-type: '*openapi_types.UUID', format: uuid }
+        restoredFromId: { type: [string, 'null'], x-go-type: '*openapi_types.UUID', format: uuid }
+        requestId: { type: [string, 'null'], x-go-type: '*openapi_types.UUID', format: uuid }
+        snapshotId: { type: [string, 'null'], x-go-type: '*openapi_types.UUID', format: uuid }
+        version: { type: [integer, 'null'], x-go-type: '*int64', format: int64, minimum: 1, maximum: 9007199254740991 }
+        runtimeRevision: { type: [integer, 'null'], x-go-type: '*int64', format: int64, minimum: 1, maximum: 9007199254740991 }
+        revision: { type: [integer, 'null'], x-go-type: '*int64', format: int64, minimum: 1, maximum: 9007199254740991 }
+        previousRevision: { type: [integer, 'null'], x-go-type: '*int64', format: int64, minimum: 1, maximum: 9007199254740991 }
+        backupRevision: { type: [integer, 'null'], x-go-type: '*int64', format: int64, minimum: 1, maximum: 9007199254740991 }
+        draftRevision: { type: [integer, 'null'], x-go-type: '*int64', format: int64, minimum: 1, maximum: 9007199254740991 }
+        schemaVersion: { type: [integer, 'null'], x-go-type: '*int', enum: [1, 2, null] }
+        checksum: { type: [string, 'null'], x-go-type: '*string' }
+        previousChecksum: { type: [string, 'null'], x-go-type: '*string' }
+        intentChecksum: { type: [string, 'null'], x-go-type: '*string' }
+        resolvedChecksum: { type: [string, 'null'], x-go-type: '*string' }
+        sourceRevisions:
+          type: [object, 'null']
+          x-go-type: '*map[string]interface{}'
+          additionalProperties: true
+        before:
+          $ref: '#/components/schemas/TaskControlAuditSettings'
+        after:
+          $ref: '#/components/schemas/TaskControlAuditSettings'
+        state: { type: string }
+        mode: { type: string, enum: [standalone, managed] }
+        runtimeSchemaVersion: { type: integer, enum: [1, 2] }
+        changedRuleCount: { type: integer, format: int64, minimum: 0 }
+        ruleChanges:
+          type: array
+          maxItems: 100
+          items:
+            type: object
+            additionalProperties: false
+            required: [uid, change]
+            properties:
+              uid: { type: string }
+              change: { type: string, enum: [added, removed, changed] }
+        diffTruncated: { type: boolean }
+        backfilled: { type: boolean }
+    TaskControlAuditSettings:
+      type: object
+      additionalProperties: false
+      required: [state, mode, runtimeSchemaVersion]
+      properties:
+        state: { type: string }
+        mode: { type: string, enum: [standalone, managed] }
+        runtimeSchemaVersion: { type: integer, enum: [1, 2] }
     TaskControlHistory:
       type: object
       additionalProperties: false

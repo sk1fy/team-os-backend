@@ -1180,6 +1180,8 @@ message TaskControlConnectionRequest {
     ACTION_IMPORT_GET = 38;
     ACTION_IMPORT_APPLY = 39;
     ACTION_RUNTIME_CONNECTION = 40;
+    ACTION_HISTORY = 41;
+    ACTION_ROLLBACK = 42;
   }
   Action action = 1;
   string id = 2;

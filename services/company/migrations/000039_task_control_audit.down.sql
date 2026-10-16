@@ -1,0 +1,11 @@
+DO $$ BEGIN IF EXISTS(SELECT 1 FROM task_control_audit_events) THEN RAISE EXCEPTION 'Retained Task Control audit prevents downgrade'; END IF; END $$;
+DROP TRIGGER task_control_audit_connection ON task_control_connections;
+DROP TRIGGER task_control_audit_draft ON task_control_drafts;
+DROP TRIGGER task_control_audit_publication ON task_control_publications;
+DROP TRIGGER task_control_audit_import ON task_control_import_objects;
+DROP TRIGGER task_control_audit_runtime ON task_control_v2_snapshots;
+DROP TABLE task_control_audit_events;
+DROP FUNCTION task_control_audit_change();
+DROP FUNCTION task_control_audit_immutable();
+DROP FUNCTION task_control_audit_rule_diff(jsonb,jsonb);
+DROP INDEX task_control_publications_schema_page_idx;

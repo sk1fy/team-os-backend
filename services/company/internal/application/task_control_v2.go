@@ -299,14 +299,14 @@ func (s *Service) publishTaskControlIntentV2(ctx context.Context, q *db.Queries,
 	if in.ExpectedSourceRevisions != nil && *in.ExpectedSourceRevisions != src {
 		return out, coded(ErrorConflict, "source_changed", "Справочники изменились")
 	}
-	rows, e := q.ListTaskControlPublications(ctx, db.ListTaskControlPublicationsParams{CompanyID: c.CompanyID, BindingID: c.ID})
+	latest, e := q.GetTaskControlPublicationHighWater(ctx, db.GetTaskControlPublicationHighWaterParams{CompanyID: c.CompanyID, BindingID: c.ID})
 	if e != nil {
 		return out, e
 	}
-	version := int64(1)
-	if len(rows) > 0 {
-		version = rows[0].Version + 1
+	if latest >= 9007199254740991 {
+		return out, conflict("Исчерпан счётчик публикаций")
 	}
+	version := latest + 1
 	sum, e := tc.IntentChecksum(rules)
 	if e != nil {
 		return out, e
@@ -380,6 +380,13 @@ type TaskControlPublicationOptionsV2 struct {
 }
 
 func (s *Service) TaskControlPublicationsV2(ctx context.Context, a Actor, id, pubID uuid.UUID, options ...TaskControlPublicationOptionsV2) (any, error) {
+	if pubID == uuid.Nil {
+		var opts TaskControlPublicationOptionsV2
+		if len(options) > 0 {
+			opts = options[0]
+		}
+		return s.taskControlPublicationsPage(ctx, a, id, opts, true)
+	}
 	tx, q, _, e := s.taskControlRulesTx(ctx, a, id, false)
 	if e != nil {
 		return nil, e
@@ -399,44 +406,7 @@ func (s *Service) TaskControlPublicationsV2(ctx context.Context, a Actor, id, pu
 		}
 		return json.RawMessage(p.Payload), nil
 	}
-	opts := TaskControlPublicationOptionsV2{Limit: 100}
-	if len(options) > 0 {
-		opts = options[0]
-		if opts.Limit == 0 {
-			opts.Limit = 100
-		}
-	}
-	if opts.Limit < 1 || opts.Limit > 100 {
-		return nil, validation("Некорректный размер страницы")
-	}
-	var cursor uuid.NullUUID
-	if opts.Cursor != "" {
-		cursorID, e := uuid.Parse(opts.Cursor)
-		if e != nil {
-			return nil, validation("Некорректный курсор")
-		}
-		cursor = uuid.NullUUID{UUID: cursorID, Valid: true}
-		if _, e = q.GetTaskControlPublication(ctx, db.GetTaskControlPublicationParams{CompanyID: a.CompanyID, BindingID: id, ID: cursor.UUID}); e != nil {
-			return nil, notFound("Курсор публикации")
-		}
-	}
-	rows, e := q.ListTaskControlPublicationsV2(ctx, db.ListTaskControlPublicationsV2Params{CompanyID: a.CompanyID, BindingID: id, CursorID: cursor, PageLimit: int32(opts.Limit + 1)})
-	if e != nil {
-		return nil, e
-	}
-	more := len(rows) > opts.Limit
-	if more {
-		rows = rows[:opts.Limit]
-	}
-	items := []json.RawMessage{}
-	for _, row := range rows {
-		items = append(items, row.Payload)
-	}
-	out := map[string]any{"items": items}
-	if more && len(rows) > 0 {
-		out["nextCursor"] = rows[len(rows)-1].ID
-	}
-	return out, nil
+	return nil, notFound("Публикация")
 }
 func taskControlV2Descriptor(st tc.Installation) bool {
 	if !taskControlRuntimeV2Version(st.RuntimeVersion) {

@@ -162,6 +162,7 @@ type Querier interface {
 	GetReportUserProfiles(ctx context.Context, arg GetReportUserProfilesParams) ([]GetReportUserProfilesRow, error)
 	GetSessionByHashForUpdate(ctx context.Context, refreshHash []byte) (Session, error)
 	GetSystemDepartment(ctx context.Context, companyID uuid.UUID) (Department, error)
+	GetTaskControlAuditHighWater(ctx context.Context, arg GetTaskControlAuditHighWaterParams) (int64, error)
 	GetTaskControlConnection(ctx context.Context, arg GetTaskControlConnectionParams) (TaskControlConnection, error)
 	GetTaskControlConnectionRequest(ctx context.Context, arg GetTaskControlConnectionRequestParams) (TaskControlConnectionRequest, error)
 	GetTaskControlDraft(ctx context.Context, arg GetTaskControlDraftParams) (TaskControlDraft, error)
@@ -170,6 +171,7 @@ type Querier interface {
 	GetTaskControlIntent(ctx context.Context, arg GetTaskControlIntentParams) (TaskControlConnection, error)
 	GetTaskControlPermissions(ctx context.Context, arg GetTaskControlPermissionsParams) (TaskControlPermission, error)
 	GetTaskControlPublication(ctx context.Context, arg GetTaskControlPublicationParams) (TaskControlPublication, error)
+	GetTaskControlPublicationHighWater(ctx context.Context, arg GetTaskControlPublicationHighWaterParams) (int64, error)
 	GetTaskControlPublishRequest(ctx context.Context, arg GetTaskControlPublishRequestParams) (TaskControlPublication, error)
 	GetTaskControlReferenceCache(ctx context.Context, arg GetTaskControlReferenceCacheParams) (TaskControlReferenceCache, error)
 	GetTaskControlReferenceRefresh(ctx context.Context, arg GetTaskControlReferenceRefreshParams) (TaskControlReferenceRefresh, error)
@@ -225,9 +227,11 @@ type Querier interface {
 	ListPositions(ctx context.Context, companyID uuid.UUID) ([]Position, error)
 	ListSchedules(ctx context.Context, companyID uuid.UUID) ([]UserSchedule, error)
 	ListShiftExceptionsByMonth(ctx context.Context, arg ListShiftExceptionsByMonthParams) ([]ShiftException, error)
+	ListTaskControlAuditEvents(ctx context.Context, arg ListTaskControlAuditEventsParams) ([]TaskControlAuditEvent, error)
 	ListTaskControlConnections(ctx context.Context, companyID uuid.UUID) ([]TaskControlConnection, error)
 	ListTaskControlImportSources(ctx context.Context, arg ListTaskControlImportSourcesParams) ([][]byte, error)
 	ListTaskControlPublications(ctx context.Context, arg ListTaskControlPublicationsParams) ([]TaskControlPublication, error)
+	ListTaskControlPublicationsPage(ctx context.Context, arg ListTaskControlPublicationsPageParams) ([]TaskControlPublication, error)
 	ListTaskControlPublicationsV2(ctx context.Context, arg ListTaskControlPublicationsV2Params) ([]TaskControlPublication, error)
 	ListUsers(ctx context.Context, companyID uuid.UUID) ([]ListUsersRow, error)
 	LockAmoAccount(ctx context.Context, arg LockAmoAccountParams) error
@@ -309,6 +313,7 @@ type Querier interface {
 	SetDistributionDeliveryGeneration(ctx context.Context, arg SetDistributionDeliveryGenerationParams) error
 	SetDistributionMappingState(ctx context.Context, arg SetDistributionMappingStateParams) error
 	SetDistributionQueueNextShift(ctx context.Context, arg SetDistributionQueueNextShiftParams) error
+	SetTaskControlAuditActor(ctx context.Context, actorID string) error
 	SetTaskControlMode(ctx context.Context, arg SetTaskControlModeParams) (TaskControlConnection, error)
 	SetTaskControlPublication(ctx context.Context, arg SetTaskControlPublicationParams) (TaskControlConnection, error)
 	SetTaskControlV2State(ctx context.Context, arg SetTaskControlV2StateParams) error

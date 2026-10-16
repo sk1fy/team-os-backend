@@ -362,6 +362,9 @@ func (s *Service) LinkTaskControl(ctx context.Context, actor Actor, in TaskContr
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
 	q = db.New(tx)
+	if e = q.SetTaskControlAuditActor(ctx, actor.UserID.String()); e != nil {
+		return out, e
+	}
 	if e = q.LockTaskControlAccount(ctx, in.AccountID); e != nil {
 		return out, e
 	}
@@ -452,6 +455,9 @@ func (s *Service) RevokeTaskControl(ctx context.Context, actor Actor, id uuid.UU
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
 	q = db.New(tx)
+	if e = q.SetTaskControlAuditActor(ctx, actor.UserID.String()); e != nil {
+		return out, e
+	}
 	if e = q.LockTaskControlAccount(ctx, c.AccountID); e != nil {
 		return out, e
 	}

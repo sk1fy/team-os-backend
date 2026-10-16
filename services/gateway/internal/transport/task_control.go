@@ -36,7 +36,8 @@ func (h *Handler) UpdateTaskControlDraft(w http.ResponseWriter, r *http.Request,
 }
 
 func (h *Handler) GetTaskControlHistory(w http.ResponseWriter, r *http.Request, bindingID api.ID, params api.GetTaskControlHistoryParams) {
-	h.taskControlPending(w, r, bindingID, "history")
+	raw, _ := json.Marshal(params)
+	h.taskControlCall(w, r, &v.TaskControlConnectionRequest{Action: v.TaskControlConnectionRequest_ACTION_HISTORY, Id: bindingID.String(), JsonBody: raw}, false)
 }
 
 func (h *Handler) PreviewTaskControlImport(w http.ResponseWriter, r *http.Request, bindingID api.ID) {
@@ -61,7 +62,7 @@ func (h *Handler) CreateTaskControlModeIntent(w http.ResponseWriter, r *http.Req
 }
 
 func (h *Handler) GetTaskControlPublications(w http.ResponseWriter, r *http.Request, bindingID api.ID, params api.GetTaskControlPublicationsParams) {
-	h.taskControlCall(w, r, &v.TaskControlConnectionRequest{Action: v.TaskControlConnectionRequest_ACTION_PUBLICATIONS, Id: bindingID.String()}, false)
+	h.taskControlCall(w, r, &v.TaskControlConnectionRequest{Action: v.TaskControlConnectionRequest_ACTION_PUBLICATIONS, Id: bindingID.String(), JsonBody: taskControlPageJSON(params.Cursor, params.Limit)}, false)
 }
 
 func (h *Handler) PublishTaskControlDraft(w http.ResponseWriter, r *http.Request, bindingID api.ID) {
@@ -86,7 +87,7 @@ func (h *Handler) GetTaskControlReferences(w http.ResponseWriter, r *http.Reques
 }
 
 func (h *Handler) RollbackTaskControlPublication(w http.ResponseWriter, r *http.Request, bindingID api.ID) {
-	h.taskControlPending(w, r, bindingID, "rollback")
+	h.taskControlV2Mutation(w, r, bindingID, v.TaskControlConnectionRequest_ACTION_ROLLBACK)
 }
 
 func (h *Handler) CreateTaskControlSourceRequest(w http.ResponseWriter, r *http.Request, bindingID api.ID) {
@@ -130,4 +131,15 @@ func (h *Handler) RefreshTaskControlReferences(w http.ResponseWriter, r *http.Re
 }
 func (h *Handler) GetTaskControlReferencesRefresh(w http.ResponseWriter, r *http.Request, bindingID api.ID, refreshID api.ID) {
 	h.taskControlCall(w, r, &v.TaskControlConnectionRequest{Action: v.TaskControlConnectionRequest_ACTION_REFERENCES_REFRESH, Id: bindingID.String(), AccountId: refreshID.String()}, false)
+}
+
+func taskControlPageJSON(cursor *string, limit *int) []byte {
+	raw, _ := json.Marshal(struct {
+		Cursor *string `json:"cursor,omitempty"`
+		Limit  *int    `json:"limit,omitempty"`
+	}{cursor, limit})
+	return raw
+}
+func (h *Handler) GetTaskControlHistoryV2(w http.ResponseWriter, r *http.Request, bindingID api.ID, params api.GetTaskControlHistoryV2Params) {
+	h.taskControlCall(w, r, &v.TaskControlConnectionRequest{Action: v.TaskControlConnectionRequest_ACTION_HISTORY, Id: bindingID.String(), JsonBody: taskControlPageJSON(params.Cursor, params.Limit)}, false)
 }

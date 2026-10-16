@@ -147,7 +147,13 @@ func (s *Server) TaskControlConnection(ctx context.Context, r *v.TaskControlConn
 			}
 			out, err = s.application.PublishTaskControlDraft(ctx, a, id, input)
 		case v.TaskControlConnectionRequest_ACTION_PUBLICATIONS:
-			out, err = s.application.TaskControlPublications(ctx, a, id, uuid.Nil)
+			var opts application.TaskControlPublicationOptionsV2
+			if len(r.JsonBody) > 0 {
+				if e = taskControlDecode(r.JsonBody, &opts); e != nil {
+					return nil, e
+				}
+			}
+			out, err = s.application.TaskControlPublications(ctx, a, id, uuid.Nil, opts)
 		case v.TaskControlConnectionRequest_ACTION_PUBLICATION:
 			pid, e := uuid.Parse(r.AccountId)
 			if e != nil {
@@ -162,6 +168,26 @@ func (s *Server) TaskControlConnection(ctx context.Context, r *v.TaskControlConn
 			out, err = s.application.SetTaskControlMode(ctx, a, id, input)
 		}
 
+	case v.TaskControlConnectionRequest_ACTION_HISTORY, v.TaskControlConnectionRequest_ACTION_ROLLBACK:
+		id, e := uuid.Parse(r.Id)
+		if e != nil {
+			return nil, invalidRequest()
+		}
+		if r.Action == v.TaskControlConnectionRequest_ACTION_HISTORY {
+			var opts application.TaskControlHistoryOptions
+			if len(r.JsonBody) > 0 {
+				if e = taskControlDecode(r.JsonBody, &opts); e != nil {
+					return nil, e
+				}
+			}
+			out, err = s.application.TaskControlHistory(ctx, a, id, opts)
+		} else {
+			var in application.TaskControlRollbackInputV2
+			if e = taskControlDecode(r.JsonBody, &in); e != nil {
+				return nil, e
+			}
+			out, err = s.application.RollbackTaskControl(ctx, a, id, in)
+		}
 	case v.TaskControlConnectionRequest_ACTION_RUNTIME_CONNECTION:
 		out, err = s.application.TaskControlRuntimeConnection(ctx, r.Credential)
 	case v.TaskControlConnectionRequest_ACTION_SOURCE_PENDING:

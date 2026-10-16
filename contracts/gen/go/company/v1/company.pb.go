@@ -815,6 +815,8 @@ const (
 	TaskControlConnectionRequest_ACTION_IMPORT_GET         TaskControlConnectionRequest_Action = 38
 	TaskControlConnectionRequest_ACTION_IMPORT_APPLY       TaskControlConnectionRequest_Action = 39
 	TaskControlConnectionRequest_ACTION_RUNTIME_CONNECTION TaskControlConnectionRequest_Action = 40
+	TaskControlConnectionRequest_ACTION_HISTORY            TaskControlConnectionRequest_Action = 41
+	TaskControlConnectionRequest_ACTION_ROLLBACK           TaskControlConnectionRequest_Action = 42
 )
 
 // Enum value maps for TaskControlConnectionRequest_Action.
@@ -861,6 +863,8 @@ var (
 		38: "ACTION_IMPORT_GET",
 		39: "ACTION_IMPORT_APPLY",
 		40: "ACTION_RUNTIME_CONNECTION",
+		41: "ACTION_HISTORY",
+		42: "ACTION_ROLLBACK",
 	}
 	TaskControlConnectionRequest_Action_value = map[string]int32{
 		"ACTION_UNSPECIFIED":        0,
@@ -904,6 +908,8 @@ var (
 		"ACTION_IMPORT_GET":         38,
 		"ACTION_IMPORT_APPLY":       39,
 		"ACTION_RUNTIME_CONNECTION": 40,
+		"ACTION_HISTORY":            41,
+		"ACTION_ROLLBACK":           42,
 	}
 )
 
@@ -13045,7 +13051,7 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\x1fReadDistributionRuntimeResponse\x12\x18\n" +
 	"\apayload\x18\x01 \x01(\fR\apayload\"<\n" +
 	" WriteDistributionRuntimeResponse\x12\x18\n" +
-	"\apayload\x18\x01 \x01(\fR\apayload\"\xcf\t\n" +
+	"\apayload\x18\x01 \x01(\fR\apayload\"\xf8\t\n" +
 	"\x1cTaskControlConnectionRequest\x12N\n" +
 	"\x06action\x18\x01 \x01(\x0e26.teamos.company.v1.TaskControlConnectionRequest.ActionR\x06action\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\x12\x1d\n" +
@@ -13055,7 +13061,7 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\n" +
 	"credential\x18\x05 \x01(\tR\n" +
 	"credential\x12\x1c\n" +
-	"\toperation\x18\x06 \x01(\tR\toperation\"\xd4\a\n" +
+	"\toperation\x18\x06 \x01(\tR\toperation\"\xfd\a\n" +
 	"\x06Action\x12\x16\n" +
 	"\x12ACTION_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13ACTION_INSTALLATION\x10\x01\x12\x0f\n" +
@@ -13098,7 +13104,9 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\x15ACTION_IMPORT_PREVIEW\x10%\x12\x15\n" +
 	"\x11ACTION_IMPORT_GET\x10&\x12\x17\n" +
 	"\x13ACTION_IMPORT_APPLY\x10'\x12\x1d\n" +
-	"\x19ACTION_RUNTIME_CONNECTION\x10(\"<\n" +
+	"\x19ACTION_RUNTIME_CONNECTION\x10(\x12\x12\n" +
+	"\x0eACTION_HISTORY\x10)\x12\x13\n" +
+	"\x0fACTION_ROLLBACK\x10*\"<\n" +
 	"\x1dTaskControlConnectionResponse\x12\x1b\n" +
 	"\tjson_body\x18\x01 \x01(\fR\bjsonBody*~\n" +
 	"\bUserRole\x12\x19\n" +

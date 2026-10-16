@@ -1,5 +1,8 @@
 # Контроль задач: модель данных и API v1 (КТ-01.02)
 
+> Реализация R05: рабочие [история, аудит, pagination и восстановление](task-control-r05-history.md).
+> Для текущих DTO используйте OpenAPI и R05; исторические AuditEntry ниже не являются формой рабочего history API.
+
 > Реализация R04: source/import API и bridge работают, включая v2 legacyExplicit,
 > повторный verification snapshot, original/backup и безопасный автономный возврат.
 > Фактический контракт: [R04](task-control-r04-import.md). Исторические формы ниже
