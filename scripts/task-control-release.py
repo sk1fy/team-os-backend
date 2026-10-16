@@ -61,7 +61,9 @@ def run(name, directory, command, extra=None):
 
 def verify_sources():
     for name, item in manifest["repositories"].items():
-        if git(item["path"], "rev-parse", "HEAD") != item["sha"] or git(item["path"], "status", "--porcelain", "--untracked-files=no"):
+        untracked = git(item["path"], "ls-files", "--others", "--exclude-standard").splitlines()
+        relevant = untracked if name != "widgets" else [f for f in untracked if f.startswith("rkrs_lead_notasks/") and not f.endswith("/.DS_Store")]
+        if relevant or git(item["path"], "rev-parse", "HEAD") != item["sha"] or git(item["path"], "status", "--porcelain", "--untracked-files=no"):
             manifest["failedStep"] = "source-changed-" + name
             save()
             raise SystemExit("Checkout changed during candidate build; do not use partial artifacts")
