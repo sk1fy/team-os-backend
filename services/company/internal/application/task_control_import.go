@@ -544,7 +544,7 @@ func (s *Service) ApplyTaskControlImport(ctx context.Context, a Actor, id, pid u
 }
 
 func taskControlRuntimeV2Version(version string) bool {
-	return version == "1.2.0" || version == "1.2.1" || version == "1.2.2"
+	return version == "1.2.0" || version == "1.2.1" || version == "1.2.2" || version == "1.2.3"
 }
 
 func tcImportErrorKind(err error, kind ErrorKind) bool {

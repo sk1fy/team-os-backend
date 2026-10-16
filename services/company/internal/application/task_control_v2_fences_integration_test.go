@@ -62,11 +62,22 @@ func TestTaskControlDynamicLateWorkerCannotReplaceNewPublication(t *testing.T) {
 	svc := &Service{pool: pool, now: time.Now}
 	done := make(chan error, 1)
 	go func() {
-		worked, err := svc.resolveTaskControlV2Job(ctx)
-		if !worked && err == nil {
-			err = errors.New("worker did not claim queued job")
+		// The NOWAIT probe below briefly locks the row itself. SKIP LOCKED can
+		// legitimately return no job during that interval, so mirror the real
+		// worker poll instead of treating this observer race as a fence failure.
+		for {
+			worked, err := svc.resolveTaskControlV2Job(ctx)
+			if worked || err != nil {
+				done <- err
+				return
+			}
+			select {
+			case <-ctx.Done():
+				done <- ctx.Err()
+				return
+			case <-time.After(10 * time.Millisecond):
+			}
 		}
-		done <- err
 	}()
 	// Wait until the worker owns its old job and is blocked on the account lock.
 	claimed := false
