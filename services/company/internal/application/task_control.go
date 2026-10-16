@@ -69,32 +69,38 @@ func taskControlIntent(c db.TaskControlConnection) TaskControlIntent {
 	return TaskControlIntent{c.IntentID, taskControlScope(c), "completed", "standalone", c.UpdatedAt.Add(time.Minute), c.UpdatedAt}
 }
 func (s *Service) taskControlActor(ctx context.Context, q *db.Queries, a Actor, manage bool) (Actor, error) {
+	a, p, e := s.taskControlPermissions(ctx, q, a)
+	if e != nil {
+		return a, e
+	}
+	if !p.Read || (manage && !p.Manage) {
+		return a, coded(ErrorForbidden, "task_control_access_denied", "Недостаточно прав Контроля задач")
+	}
+	return a, nil
+}
+func (s *Service) taskControlPermissions(ctx context.Context, q *db.Queries, a Actor) (Actor, tc.Permissions, error) {
+	none := tc.Permissions{}
 	company, e := q.GetCompany(ctx, a.CompanyID)
 	if e != nil {
-		return a, notFound("Компания")
+		return a, none, notFound("Компания")
 	}
 	if company.Status != "active" {
-		return a, forbidden("Компания недоступна")
+		return a, none, forbidden("Компания недоступна")
 	}
 	user, e := q.GetUserWithPositions(ctx, db.GetUserWithPositionsParams{CompanyID: a.CompanyID, ID: a.UserID})
 	if e != nil || user.Status != "active" || user.ExternalDeletedAt.Valid {
-		return a, forbidden("Пользователь недоступен")
+		return a, none, forbidden("Пользователь недоступен")
 	}
 	a.Role = user.Role
 	a.SectionAccess = user.SectionAccess
-	read := a.Role == "owner" || a.Role == "admin"
-	write := read
+	var override *tc.Permissions
 	p, e := q.GetTaskControlPermissions(ctx, db.GetTaskControlPermissionsParams{CompanyID: a.CompanyID, UserID: a.UserID})
 	if e == nil {
-		read = p.CanRead
-		write = p.CanManage && write
+		override = &tc.Permissions{Read: p.CanRead, Manage: p.CanManage}
 	} else if !isNoRows(e) {
-		return a, internal("Не удалось проверить права Контроля задач", e)
+		return a, none, internal("Не удалось проверить права Контроля задач", e)
 	}
-	if !read || (manage && !write) {
-		return a, forbidden("Недостаточно прав Контроля задач")
-	}
-	return a, nil
+	return a, tc.Access(a.Role, override), nil
 }
 func (s *Service) taskControlAccount(ctx context.Context, q *db.Queries, company uuid.UUID, account string) error {
 	if !tc.ValidCRMID(account) {
@@ -116,7 +122,7 @@ func (s *Service) taskControlAccount(ctx context.Context, q *db.Queries, company
 func (s *Service) taskControlStatus(ctx context.Context, company uuid.UUID, account string, force bool) (tc.Installation, error) {
 	now := s.now().UTC()
 	q := db.New(s.pool)
-	unknown := tc.Installation{CompanyID: company, AccountID: account, Product: tc.Product, State: "unknown", CheckedAt: now, FreshUntil: now}
+	unknown := tc.Installation{CompanyID: company, AccountID: account, Product: tc.Product, State: "unknown", CheckedAt: now, FreshUntil: now, ReasonCode: "core_unavailable"}
 	if e := s.taskControlAccount(ctx, q, company, account); e != nil {
 		return unknown, e
 	}
@@ -206,7 +212,16 @@ func (s *Service) GetTaskControlIntent(ctx context.Context, a Actor, id uuid.UUI
 		if err = json.Unmarshal(receipt.Response, &out); err != nil {
 			return out, internal("Не удалось прочитать намерение", err)
 		}
+		if err = s.taskControlAccount(ctx, q, a.CompanyID, out.Scope.AccountID); err != nil {
+			return TaskControlIntent{}, err
+		}
 		return out, nil
+	}
+	if c.LinkedBy != a.UserID {
+		return TaskControlIntent{}, notFound("Намерение")
+	}
+	if e = s.taskControlAccount(ctx, q, a.CompanyID, c.AccountID); e != nil {
+		return TaskControlIntent{}, e
 	}
 	return taskControlIntent(c), nil
 }
@@ -220,7 +235,10 @@ func (s *Service) taskControlAssertion(raw, purpose string) (tc.Assertion, strin
 	}
 	return a, k, nil
 }
-func consumeTC(ctx context.Context, q *db.Queries, a tc.Assertion, key string) error {
+func (s *Service) consumeTC(ctx context.Context, q *db.Queries, a tc.Assertion, key string) error {
+	if s.now().Unix() >= a.ExpiresAt {
+		return coded(ErrorUnauthenticated, "task_control_assertion_invalid", "Подтверждение Core истекло")
+	}
 	n, e := q.ConsumeTaskControlAssertion(ctx, db.ConsumeTaskControlAssertionParams{KeyID: key, Jti: uuid.MustParse(a.ID), CompanyID: a.CompanyID, ExpiresAt: time.Unix(a.ExpiresAt, 0)})
 	if e != nil {
 		return internal("Не удалось принять подтверждение Core", e)
@@ -250,7 +268,7 @@ func (s *Service) LinkTaskControl(ctx context.Context, actor Actor, in TaskContr
 	}
 	if ee == nil {
 		if existing.LinkedBy != actor.UserID || existing.InstallationID != in.InstallationID || existing.IntegrationID != in.IntegrationID || existing.AccountID != in.AccountID || existing.State != "active" {
-			return out, conflict("Намерение уже использовано")
+			return out, coded(ErrorConflict, "task_control_idempotency_conflict", "Намерение уже использовано")
 		}
 		if e = taskControlInstalled(st, existing.InstallationID, existing.IntegrationID, existing.Generation, s.now()); e != nil {
 			return out, e
@@ -289,7 +307,7 @@ func (s *Service) LinkTaskControl(ctx context.Context, actor Actor, in TaskContr
 		if saved.LinkedBy == actor.UserID && saved.InstallationID == in.InstallationID && saved.IntegrationID == in.IntegrationID && saved.AccountID == in.AccountID && saved.Generation == assertion.Generation && saved.State == "active" {
 			return taskControlIntent(saved), nil
 		}
-		return out, conflict("Намерение уже использовано")
+		return out, coded(ErrorConflict, "task_control_idempotency_conflict", "Намерение уже использовано")
 	} else if !isNoRows(err) {
 		return out, err
 	}
@@ -308,7 +326,7 @@ func (s *Service) LinkTaskControl(ctx context.Context, actor Actor, in TaskContr
 	if s.now().Unix() >= assertion.ExpiresAt {
 		return out, forbidden("Подтверждение Core истекло")
 	}
-	if e = consumeTC(ctx, q, assertion, key); e != nil {
+	if e = s.consumeTC(ctx, q, assertion, key); e != nil {
 		return out, e
 	}
 	c, e := q.CreateTaskControlConnection(ctx, db.CreateTaskControlConnectionParams{CompanyID: actor.CompanyID, ID: uuid.New(), InstallationID: in.InstallationID, IntegrationID: in.IntegrationID, AccountID: in.AccountID, Generation: assertion.Generation, IntentID: in.IntentID, LinkedBy: actor.UserID, CrmAdminID: assertion.ActorID})
@@ -330,6 +348,9 @@ func (s *Service) RevokeTaskControl(ctx context.Context, actor Actor, id uuid.UU
 	if e != nil {
 		return out, notFound("Подключение")
 	}
+	if e = s.taskControlAccount(ctx, q, actor.CompanyID, c.AccountID); e != nil {
+		return out, e
+	}
 	if in.RequestID == uuid.Nil || in.ExpectedBindingRevision <= 0 || in.ExpectedModeEpoch <= 0 {
 		return out, validation("Некорректная ревизия")
 	}
@@ -339,7 +360,7 @@ func (s *Service) RevokeTaskControl(ctx context.Context, actor Actor, id uuid.UU
 	prior, e := q.GetTaskControlConnectionRequest(ctx, db.GetTaskControlConnectionRequestParams{CompanyID: actor.CompanyID, RequestID: in.RequestID})
 	if e == nil {
 		if prior.ActorID != actor.UserID || prior.Action != "revoke" || prior.BodyHash != bodyHash || prior.BindingID != id {
-			return out, conflict("Ключ операции уже использован")
+			return out, coded(ErrorConflict, "task_control_idempotency_conflict", "Ключ операции уже использован")
 		}
 		e = json.Unmarshal(prior.Response, &out)
 		return out, e
@@ -366,9 +387,12 @@ func (s *Service) RevokeTaskControl(ctx context.Context, actor Actor, id uuid.UU
 	if _, e = s.taskControlActor(ctx, q, actor, true); e != nil {
 		return out, e
 	}
+	if e = s.taskControlAccount(ctx, q, actor.CompanyID, c.AccountID); e != nil {
+		return out, e
+	}
 	if saved, err := q.GetTaskControlConnectionRequest(ctx, db.GetTaskControlConnectionRequestParams{CompanyID: actor.CompanyID, RequestID: in.RequestID}); err == nil {
 		if saved.ActorID != actor.UserID || saved.BodyHash != bodyHash || saved.BindingID != id || saved.Action != "revoke" {
-			return out, conflict("Ключ операции уже использован")
+			return out, coded(ErrorConflict, "task_control_idempotency_conflict", "Ключ операции уже использован")
 		}
 		err = json.Unmarshal(saved.Response, &out)
 		return out, err
@@ -378,7 +402,7 @@ func (s *Service) RevokeTaskControl(ctx context.Context, actor Actor, id uuid.UU
 	if s.now().Unix() >= a.ExpiresAt {
 		return out, forbidden("Подтверждение Core истекло")
 	}
-	if e = consumeTC(ctx, q, a, key); e != nil {
+	if e = s.consumeTC(ctx, q, a, key); e != nil {
 		return out, e
 	}
 	c, e = q.RevokeTaskControlConnection(ctx, db.RevokeTaskControlConnectionParams{CompanyID: actor.CompanyID, ID: id, BindingRevision: in.ExpectedBindingRevision, ModeEpoch: in.ExpectedModeEpoch})
@@ -441,7 +465,7 @@ func (s *Service) ExchangeTaskControlSession(ctx context.Context, raw string) (T
 	if s.now().Unix() >= a.ExpiresAt {
 		return out, forbidden("Подтверждение Core истекло")
 	}
-	if e = consumeTC(ctx, q, a, key); e != nil {
+	if e = s.consumeTC(ctx, q, a, key); e != nil {
 		return out, e
 	}
 	token := make([]byte, 32)

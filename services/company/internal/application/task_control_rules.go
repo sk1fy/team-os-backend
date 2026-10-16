@@ -69,12 +69,15 @@ func (s *Service) taskControlRulesTx(ctx context.Context, a Actor, id uuid.UUID,
 	if e != nil {
 		return nil, nil, c, notFound("Подключение")
 	}
-	st, e := s.taskControlStatus(ctx, a.CompanyID, c.AccountID, false)
-	if e != nil {
-		return nil, nil, c, e
-	}
-	if e = taskControlInstalled(st, c.InstallationID, c.IntegrationID, c.Generation, s.now()); e != nil {
-		return nil, nil, c, e
+	var st tc.Installation
+	if manage {
+		st, e = s.taskControlStatus(ctx, a.CompanyID, c.AccountID, false)
+		if e != nil {
+			return nil, nil, c, e
+		}
+		if e = taskControlInstalled(st, c.InstallationID, c.IntegrationID, c.Generation, s.now()); e != nil {
+			return nil, nil, c, e
+		}
 	}
 	tx, e := s.pool.Begin(ctx)
 	if e != nil {
@@ -98,16 +101,20 @@ func (s *Service) taskControlRulesTx(ctx context.Context, a Actor, id uuid.UUID,
 	if e != nil {
 		return fail(e)
 	}
-	if c.State != "active" {
+	if manage && c.State != "active" {
 		return fail(forbidden("Подключение отозвано"))
 	}
-	if e = taskControlInstalled(st, c.InstallationID, c.IntegrationID, c.Generation, s.now()); e != nil {
-		return fail(e)
+	if manage {
+		if e = taskControlInstalled(st, c.InstallationID, c.IntegrationID, c.Generation, s.now()); e != nil {
+			return fail(e)
+		}
 	}
-	_, sum := tc.Legacy([]tc.Rule{})
-	e = q.EnsureTaskControlDraft(ctx, db.EnsureTaskControlDraftParams{CompanyID: a.CompanyID, BindingID: id, Checksum: sum, UpdatedBy: c.LinkedBy})
-	if e != nil {
-		return fail(e)
+	if manage {
+		_, sum := tc.Legacy([]tc.Rule{})
+		e = q.EnsureTaskControlDraft(ctx, db.EnsureTaskControlDraftParams{CompanyID: a.CompanyID, BindingID: id, Checksum: sum, UpdatedBy: c.LinkedBy})
+		if e != nil {
+			return fail(e)
+		}
 	}
 	return tx, q, c, nil
 }
@@ -117,19 +124,26 @@ func draftDTO(c db.TaskControlConnection, d db.TaskControlDraft) (TaskControlDra
 	return TaskControlDraft{taskControlScope(c), d.Revision, 1, d.Checksum, rules, d.UpdatedAt, d.UpdatedBy}, e
 }
 func tcFence(c db.TaskControlConnection, revision, epoch int64) error {
-	if revision != c.BindingRevision || epoch != c.ModeEpoch {
-		return conflict("Ревизия подключения изменилась")
+	if epoch != c.ModeEpoch {
+		return coded(ErrorConflict, "task_control_epoch_conflict", "Режим подключения изменился")
+	}
+	if revision != c.BindingRevision {
+		return coded(ErrorConflict, "task_control_revision_conflict", "Ревизия подключения изменилась")
 	}
 	return nil
 }
 func (s *Service) GetTaskControlDraft(ctx context.Context, a Actor, id uuid.UUID) (TaskControlDraft, error) {
 	var out TaskControlDraft
-	tx, q, c, e := s.taskControlRulesTx(ctx, a, id, true)
+	tx, q, c, e := s.taskControlRulesTx(ctx, a, id, false)
 	if e != nil {
 		return out, e
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
 	d, e := q.GetTaskControlDraft(ctx, db.GetTaskControlDraftParams{CompanyID: a.CompanyID, BindingID: id})
+	if isNoRows(e) {
+		_, sum := tc.Legacy([]tc.Rule{})
+		return TaskControlDraft{taskControlScope(c), 1, 1, sum, []tc.Rule{}, c.UpdatedAt, c.LinkedBy}, nil
+	}
 	if e != nil {
 		return out, e
 	}
@@ -168,11 +182,20 @@ func (s *Service) UpdateTaskControlDraft(ctx context.Context, a Actor, id uuid.U
 	return out, tx.Commit(ctx)
 }
 func (s *Service) ValidateTaskControlDraft(ctx context.Context, a Actor, id uuid.UUID) (any, error) {
-	d, e := s.GetTaskControlDraft(ctx, a, id)
+	tx, q, _, e := s.taskControlRulesTx(ctx, a, id, true)
 	if e != nil {
 		return nil, e
 	}
-	issues := tc.ValidateRules(d.Rules)
+	defer func() { _ = tx.Rollback(ctx) }()
+	d, e := q.GetTaskControlDraft(ctx, db.GetTaskControlDraftParams{CompanyID: a.CompanyID, BindingID: id})
+	if e != nil {
+		return nil, e
+	}
+	var rules []tc.Rule
+	if e = json.Unmarshal(d.Rules, &rules); e != nil {
+		return nil, e
+	}
+	issues := tc.ValidateRules(rules)
 	return map[string]any{"valid": len(issues) == 0, "draftRevision": d.Revision, "referencesRevision": "structural-v1", "issues": issues}, nil
 }
 func (s *Service) PublishTaskControlDraft(ctx context.Context, a Actor, id uuid.UUID, in TaskControlPublishInput) (TaskControlPublication, error) {
@@ -191,9 +214,12 @@ func (s *Service) PublishTaskControlDraft(ctx context.Context, a Actor, id uuid.
 	prior, e := q.GetTaskControlPublishRequest(ctx, db.GetTaskControlPublishRequestParams{CompanyID: a.CompanyID, RequestID: in.RequestID})
 	if e == nil {
 		if prior.BindingID != id || prior.BodyHash != hs {
-			return out, conflict("Ключ операции уже использован")
+			return out, coded(ErrorConflict, "task_control_idempotency_conflict", "Ключ операции уже использован")
 		}
 		e = json.Unmarshal(prior.Payload, &out)
+		if e == nil && out.CreatedBy != a.UserID {
+			return TaskControlPublication{}, coded(ErrorConflict, "task_control_idempotency_conflict", "Ключ операции принадлежит другому пользователю")
+		}
 		return out, e
 	}
 	if !isNoRows(e) {
@@ -237,7 +263,7 @@ func (s *Service) PublishTaskControlDraft(ctx context.Context, a Actor, id uuid.
 	return out, tx.Commit(ctx)
 }
 func (s *Service) TaskControlPublications(ctx context.Context, a Actor, id, publication uuid.UUID) (any, error) {
-	tx, q, _, e := s.taskControlRulesTx(ctx, a, id, true)
+	tx, q, _, e := s.taskControlRulesTx(ctx, a, id, false)
 	if e != nil {
 		return nil, e
 	}
@@ -275,7 +301,7 @@ func (s *Service) SetTaskControlMode(ctx context.Context, a Actor, id uuid.UUID,
 	prior, e := q.GetTaskControlConnectionRequest(ctx, db.GetTaskControlConnectionRequestParams{CompanyID: a.CompanyID, RequestID: in.RequestID})
 	if e == nil {
 		if prior.ActorID != a.UserID || prior.BindingID != id || prior.Action != "mode" || prior.BodyHash != hs {
-			return out, conflict("Ключ операции уже использован")
+			return out, coded(ErrorConflict, "task_control_idempotency_conflict", "Ключ операции уже использован")
 		}
 		e = json.Unmarshal(prior.Response, &out)
 		return out, e
@@ -285,6 +311,9 @@ func (s *Service) SetTaskControlMode(ctx context.Context, a Actor, id uuid.UUID,
 	}
 	if e = tcFence(c, in.ExpectedBindingRevision, in.ExpectedModeEpoch); e != nil {
 		return out, e
+	}
+	if c.Mode == in.TargetMode {
+		return out, coded(ErrorConflict, "task_control_mode_unchanged", "Уже выбран этот режим")
 	}
 	if !c.PublicationID.Valid || c.PublicationID.UUID != in.PublicationID {
 		return out, conflict("Сначала опубликуйте правила и выберите текущую публикацию")
@@ -296,7 +325,7 @@ func (s *Service) SetTaskControlMode(ctx context.Context, a Actor, id uuid.UUID,
 	if proof.CompanyID != a.CompanyID || proof.InstallationID != c.InstallationID || proof.IntegrationID != c.IntegrationID || proof.Generation != c.Generation || proof.AccountID != c.AccountID || proof.RequestID != in.RequestID {
 		return out, forbidden("Подтверждение относится к другому подключению")
 	}
-	if e = consumeTC(ctx, q, proof, key); e != nil {
+	if e = s.consumeTC(ctx, q, proof, key); e != nil {
 		return out, e
 	}
 	c, e = q.SetTaskControlMode(ctx, db.SetTaskControlModeParams{CompanyID: a.CompanyID, ID: id, Mode: in.TargetMode, BindingRevision: in.ExpectedBindingRevision, ModeEpoch: in.ExpectedModeEpoch})

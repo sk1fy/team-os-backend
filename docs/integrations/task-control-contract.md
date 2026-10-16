@@ -3,11 +3,23 @@
 Дата: 2026-10-15. Основание: согласованный [ADR-0038](../../../amocrm-pro/docs/adr/0038-task-control-hybrid-integration.md).
 Задача: [КТ-01.02](https://app.clickup.com/t/869fhtvv7).
 
-КТ-01.02 фиксирует контракт; КТ-01.03 реализует подключение, статус и auth handoff. Правила и UI пока не реализованы. REST опубликован
+> Дополнение 2026-10-16: [R00 — справочники и динамические правила v2](task-control-r00-architecture.md)
+> определяет целевую релизную архитектуру. Admin bridge references ниже — историческое
+> решение v1, заменённое серверным Core provider; bridge каталога для импорта сохраняется.
+> V1 wire-формы/checksum не меняются; динамика вводится отдельной версией API/runtime.
+> Ни описание будущих операций, ни наличие OpenAPI не означают их реализацию.
+
+[R02: текущая матрица прав, capabilities и повторы операций](task-control-r02-access.md).
+
+КТ-01.02 зафиксировала контракт; MVP уже реализует подключение, статус, auth handoff,
+draft, структурную validate, publish, mode switch и bootstrap; UI принимает явные IDs.
+REST опубликован
 в `contracts/openapi/teamos.yaml`, прямая виджетная/инфраструктурная граница — в
 `contracts/openapi/task-control-internal.yaml`. Go gateway и TS-типы генерируются;
 `team-os/src/api/taskControl.ts` использует эти типы без независимых DTO.
-Gateway возвращает 501 только для будущих обработчиков правил/импорта/режима. Подключение, список, состояние установки, link intent, revoke, обмен сессии и bootstrap реализованы.
+Gateway ещё возвращает 501 для references/source requests, импорта, истории,
+rollback и application status. Подключение, список, состояние установки, link intent,
+revoke, обмен сессии и bootstrap реализованы.
 Миграция 32, company RPC и обработчики подключений реализованы в КТ-01.03; правила — .04–08; UI — .09–11,
 адаптация runtime — .12. Только реализованные операции подтверждают сохранение; 501 не считается успехом.
 

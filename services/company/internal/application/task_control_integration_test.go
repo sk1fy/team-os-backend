@@ -139,6 +139,64 @@ func TestTaskControlLifecycle(t *testing.T) {
 	if e != nil {
 		t.Fatal("publish", e)
 	}
+	// A browser's stale owner role must not elevate an employee. Read overrides
+	// expose draft/history without granting validate, publish or mode changes.
+	if _, e = pool.Exec(ctx, `INSERT INTO task_control_permissions(company_id,user_id,can_read,can_manage) VALUES($1,$2,true,true)`, company, employeeID); e != nil {
+		t.Fatal(e)
+	}
+	spoofed := employee
+	spoofed.Role = "owner"
+	caps, e := svc.GetTaskControlCapabilities(ctx, spoofed)
+	if e != nil || !caps.Read || caps.Manage || !caps.Operations["history"] || caps.Operations["rollback"] {
+		t.Fatal("capabilities", caps, e)
+	}
+	if _, e = svc.GetTaskControlDraft(ctx, spoofed, binding); e != nil {
+		t.Fatal("read draft", e)
+	}
+	if _, e = svc.TaskControlPublications(ctx, spoofed, binding, publication.ID); e != nil {
+		t.Fatal("read publication", e)
+	}
+	if _, e = svc.ValidateTaskControlDraft(ctx, spoofed, binding); !isCompanyError(e, ErrorForbidden) {
+		t.Fatal("read-only validate", e)
+	}
+	if _, e = svc.PublishTaskControlDraft(ctx, spoofed, binding, publish); !isCompanyError(e, ErrorForbidden) {
+		t.Fatal("read-only publish", e)
+	}
+	for _, op := range []string{"history", "references", "application"} {
+		if e = svc.AuthorizeTaskControlOperation(ctx, spoofed, binding, op); e != nil {
+			t.Fatal(op, e)
+		}
+	}
+	for _, op := range []string{"rollback", "imports", "sourceRequests", "mode", "forged"} {
+		if e = svc.AuthorizeTaskControlOperation(ctx, spoofed, binding, op); !isCompanyError(e, ErrorForbidden) {
+			t.Fatal(op, e)
+		}
+	}
+	if e = svc.AuthorizeTaskControlOperation(ctx, spoofed, uuid.New(), "history"); !isCompanyError(e, ErrorNotFound) {
+		t.Fatal("foreign binding", e)
+	}
+	if _, e = pool.Exec(ctx, `UPDATE users SET role='admin' WHERE company_id=$1 AND id=$2`, company, employeeID); e != nil {
+		t.Fatal(e)
+	}
+	if _, e = svc.PublishTaskControlDraft(ctx, spoofed, binding, publish); !isCompanyError(e, ErrorConflict) {
+		t.Fatal("another actor replay", e)
+	}
+	if _, e = svc.GetTaskControlIntent(ctx, spoofed, intentID); !isCompanyError(e, ErrorNotFound) {
+		t.Fatal("another actor intent", e)
+	}
+	if _, e = pool.Exec(ctx, `UPDATE users SET role='employee' WHERE company_id=$1 AND id=$2`, company, employeeID); e != nil {
+		t.Fatal(e)
+	}
+	if _, e = pool.Exec(ctx, `DELETE FROM task_control_permissions WHERE company_id=$1 AND user_id=$2`, company, employeeID); e != nil {
+		t.Fatal(e)
+	}
+	if _, e = svc.TaskControlPublications(ctx, spoofed, binding, publication.ID); !isCompanyError(e, ErrorForbidden) {
+		t.Fatal("revoked read", e)
+	}
+	caps, e = svc.GetTaskControlCapabilities(ctx, spoofed)
+	if e != nil || caps.Read || caps.Manage {
+		t.Fatal("no access capabilities", caps, e)
+	}
 	repeated, e := svc.PublishTaskControlDraft(ctx, owner, binding, publish)
 	if e != nil || repeated.ID != publication.ID {
 		t.Fatal("publish retry", e)
@@ -154,9 +212,40 @@ func TestTaskControlLifecycle(t *testing.T) {
 	}
 	modeID := uuid.New()
 	mode := TaskControlModeInput{1, 1, modeID, "managed", publication.ID, assertion("mode", modeID, true)}
+	for _, badProof := range []string{assertion("link", modeID, true), assertion("mode", modeID, false), assertion("mode", uuid.New(), true)} {
+		bad := mode
+		bad.CoreAssertion = badProof
+		if _, e = svc.SetTaskControlMode(ctx, owner, binding, bad); !isCompanyError(e, ErrorForbidden) {
+			t.Fatal("invalid mode proof", e)
+		}
+	}
+	proofTime := now
+	now = now.Add(61 * time.Second)
+	if _, e = svc.SetTaskControlMode(ctx, owner, binding, mode); !isCompanyError(e, ErrorUnauthenticated) {
+		t.Fatal("expired mode proof", e)
+	}
+	now = proofTime
 	switched, e := svc.SetTaskControlMode(ctx, owner, binding, mode)
 	if e != nil || switched.Scope.ModeEpoch != 2 {
 		t.Fatal("managed", e)
+	}
+	modeAgain, e := svc.SetTaskControlMode(ctx, owner, binding, mode)
+	if e != nil || modeAgain.Scope.ModeEpoch != 2 {
+		t.Fatal("mode lost response", e)
+	}
+	changedMode := mode
+	changedMode.TargetMode = "standalone"
+	if _, e = svc.SetTaskControlMode(ctx, owner, binding, changedMode); !isCompanyError(e, ErrorConflict) {
+		t.Fatal("mode key conflict", e)
+	}
+	if _, e = pool.Exec(ctx, `UPDATE task_control_permissions SET can_manage=false WHERE company_id=$1 AND user_id=$2`, company, ownerID); e != nil {
+		t.Fatal(e)
+	}
+	if _, e = svc.SetTaskControlMode(ctx, owner, binding, mode); !isCompanyError(e, ErrorForbidden) {
+		t.Fatal("mode replay after revoke", e)
+	}
+	if _, e = pool.Exec(ctx, `UPDATE task_control_permissions SET can_manage=true WHERE company_id=$1 AND user_id=$2`, company, ownerID); e != nil {
+		t.Fatal(e)
 	}
 	if _, e = svc.TaskControlBootstrap(ctx, beforeMode.AccessToken); e == nil {
 		t.Fatal("old session after mode")
@@ -227,6 +316,9 @@ func TestTaskControlLifecycle(t *testing.T) {
 		t.Fatal(e)
 	}
 	core.fail = true
+	if _, e = svc.TaskControlPublications(ctx, owner, binding, publication.ID); e != nil {
+		t.Fatal("history during Core outage", e)
+	}
 	if _, _, e = svc.AuthorizeTaskControlRuntime(ctx, session.AccessToken); e != nil {
 		t.Fatal("fresh snapshot outage", e)
 	}
@@ -279,6 +371,9 @@ func TestTaskControlLifecycle(t *testing.T) {
 	}
 	if _, e = svc.RevokeTaskControl(ctx, owner, linked.Scope.BindingID, rev); e != nil {
 		t.Fatal("revoke repeat", e)
+	}
+	if _, e = svc.TaskControlPublications(ctx, owner, binding, publication.ID); e != nil {
+		t.Fatal("history retained after revoke/reinstall", e)
 	}
 	if _, _, e = svc.AuthorizeTaskControlRuntime(ctx, session.AccessToken); e == nil {
 		t.Fatal("revoked runtime active")
