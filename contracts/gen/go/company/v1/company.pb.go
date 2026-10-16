@@ -817,6 +817,9 @@ const (
 	TaskControlConnectionRequest_ACTION_RUNTIME_CONNECTION TaskControlConnectionRequest_Action = 40
 	TaskControlConnectionRequest_ACTION_HISTORY            TaskControlConnectionRequest_Action = 41
 	TaskControlConnectionRequest_ACTION_ROLLBACK           TaskControlConnectionRequest_Action = 42
+	TaskControlConnectionRequest_ACTION_ACK                TaskControlConnectionRequest_Action = 43
+	TaskControlConnectionRequest_ACTION_APPLICATION        TaskControlConnectionRequest_Action = 44
+	TaskControlConnectionRequest_ACTION_TELEMETRY          TaskControlConnectionRequest_Action = 45
 )
 
 // Enum value maps for TaskControlConnectionRequest_Action.
@@ -865,6 +868,9 @@ var (
 		40: "ACTION_RUNTIME_CONNECTION",
 		41: "ACTION_HISTORY",
 		42: "ACTION_ROLLBACK",
+		43: "ACTION_ACK",
+		44: "ACTION_APPLICATION",
+		45: "ACTION_TELEMETRY",
 	}
 	TaskControlConnectionRequest_Action_value = map[string]int32{
 		"ACTION_UNSPECIFIED":        0,
@@ -910,6 +916,9 @@ var (
 		"ACTION_RUNTIME_CONNECTION": 40,
 		"ACTION_HISTORY":            41,
 		"ACTION_ROLLBACK":           42,
+		"ACTION_ACK":                43,
+		"ACTION_APPLICATION":        44,
+		"ACTION_TELEMETRY":          45,
 	}
 )
 
@@ -13051,7 +13060,8 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\x1fReadDistributionRuntimeResponse\x12\x18\n" +
 	"\apayload\x18\x01 \x01(\fR\apayload\"<\n" +
 	" WriteDistributionRuntimeResponse\x12\x18\n" +
-	"\apayload\x18\x01 \x01(\fR\apayload\"\xf8\t\n" +
+	"\apayload\x18\x01 \x01(\fR\apayload\"\xb6\n" +
+	"\n" +
 	"\x1cTaskControlConnectionRequest\x12N\n" +
 	"\x06action\x18\x01 \x01(\x0e26.teamos.company.v1.TaskControlConnectionRequest.ActionR\x06action\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\x12\x1d\n" +
@@ -13061,7 +13071,7 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\n" +
 	"credential\x18\x05 \x01(\tR\n" +
 	"credential\x12\x1c\n" +
-	"\toperation\x18\x06 \x01(\tR\toperation\"\xfd\a\n" +
+	"\toperation\x18\x06 \x01(\tR\toperation\"\xbb\b\n" +
 	"\x06Action\x12\x16\n" +
 	"\x12ACTION_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13ACTION_INSTALLATION\x10\x01\x12\x0f\n" +
@@ -13106,7 +13116,11 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\x13ACTION_IMPORT_APPLY\x10'\x12\x1d\n" +
 	"\x19ACTION_RUNTIME_CONNECTION\x10(\x12\x12\n" +
 	"\x0eACTION_HISTORY\x10)\x12\x13\n" +
-	"\x0fACTION_ROLLBACK\x10*\"<\n" +
+	"\x0fACTION_ROLLBACK\x10*\x12\x0e\n" +
+	"\n" +
+	"ACTION_ACK\x10+\x12\x16\n" +
+	"\x12ACTION_APPLICATION\x10,\x12\x14\n" +
+	"\x10ACTION_TELEMETRY\x10-\"<\n" +
 	"\x1dTaskControlConnectionResponse\x12\x1b\n" +
 	"\tjson_body\x18\x01 \x01(\fR\bjsonBody*~\n" +
 	"\bUserRole\x12\x19\n" +

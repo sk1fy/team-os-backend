@@ -68,15 +68,7 @@ func (h *Handler) GetTaskControlRuntimeV2(w http.ResponseWriter, r *http.Request
 	h.taskControlCall(w, r, &v.TaskControlConnectionRequest{Action: v.TaskControlConnectionRequest_ACTION_BOOTSTRAP_V2, Credential: token}, true)
 }
 func (h *Handler) AckTaskControlRuntimeV2(w http.ResponseWriter, r *http.Request) {
-	token, ok := taskControlRuntimeBearer(w, r)
-	if !ok {
-		return
-	}
-	var raw json.RawMessage
-	if !decodeStrict(w, r, &raw) {
-		return
-	}
-	h.taskControlCall(w, r, &v.TaskControlConnectionRequest{Action: v.TaskControlConnectionRequest_ACTION_ACK_V2, Credential: token, JsonBody: raw}, true)
+	h.taskControlRuntimeEvent(w, r, v.TaskControlConnectionRequest_ACTION_ACK_V2)
 }
 
 func (h *Handler) PreviewTaskControlModeV2(w http.ResponseWriter, r *http.Request, id api.ID) {

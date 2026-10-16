@@ -17,8 +17,13 @@ func (s *Service) CleanupTaskControlRuntime(ctx context.Context) error {
 	if _, err := q.PruneTaskControlRuntimeSessions(ctx, s.now()); err != nil {
 		return err
 	}
-	_, err := q.PruneTaskControlAssertions(ctx, s.now())
-	return err
+	if _, err := q.PruneTaskControlAssertions(ctx, s.now()); err != nil {
+		return err
+	}
+	if err := q.PruneTaskControlRuntimeEvents(ctx, s.now().Add(-30*24*time.Hour)); err != nil {
+		return err
+	}
+	return q.PruneTaskControlRuntimeIssued(ctx, s.now().Add(-30*24*time.Hour))
 }
 func (s *Service) RunTaskControlRuntimeCleanup(ctx context.Context) {
 	ticker := time.NewTicker(time.Minute)

@@ -5,23 +5,8 @@ import (
 	"net/http"
 
 	v "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v1"
-	"github.com/sk1fy/team-os-backend/pkg/apierror"
 	"github.com/sk1fy/team-os-backend/services/gateway/internal/api"
 )
-
-// KT-01.02 publishes the contract only. Never return fake persistence/delivery success.
-func taskControlNotImplemented(w http.ResponseWriter) {
-	apierror.Write(w, apierror.New(http.StatusNotImplemented, "Контроль задач: обработчик ещё не реализован").WithCode("task_control_not_implemented"))
-}
-func (h *Handler) taskControlPending(w http.ResponseWriter, r *http.Request, id api.ID, operation string) {
-	setPrivateNoStore(w)
-	_, err := h.company.TaskControlConnection(outgoingContext(r), &v.TaskControlConnectionRequest{Action: v.TaskControlConnectionRequest_ACTION_AUTHORIZE, Id: id.String(), Operation: operation})
-	if err != nil {
-		h.writeRPCError(w, r, err)
-		return
-	}
-	taskControlNotImplemented(w)
-}
 
 func (h *Handler) GetTaskControlDraft(w http.ResponseWriter, r *http.Request, bindingID api.ID) {
 	h.taskControlCall(w, r, &v.TaskControlConnectionRequest{Action: v.TaskControlConnectionRequest_ACTION_DRAFT, Id: bindingID.String()}, false)
@@ -79,7 +64,7 @@ func (h *Handler) GetTaskControlPublication(w http.ResponseWriter, r *http.Reque
 }
 
 func (h *Handler) GetTaskControlApplicationStatus(w http.ResponseWriter, r *http.Request, bindingID api.ID, publicationID api.ID) {
-	h.taskControlPending(w, r, bindingID, "application")
+	h.taskControlCall(w, r, &v.TaskControlConnectionRequest{Action: v.TaskControlConnectionRequest_ACTION_APPLICATION, Id: bindingID.String(), AccountId: publicationID.String()}, false)
 }
 
 func (h *Handler) GetTaskControlReferences(w http.ResponseWriter, r *http.Request, bindingID api.ID) {

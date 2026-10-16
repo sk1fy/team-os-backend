@@ -188,8 +188,8 @@ func TestTaskControlDynamicPublicationRuntimeAndCAS(t *testing.T) {
 	if e != nil || same.RuntimeRevision != next.RuntimeRevision {
 		t.Fatal("duplicatejoballocatedrevision", same, e)
 	}
-	if e = svc.AckTaskControlV2(ctx, session.AccessToken, ack); e != nil {
-		t.Fatal("historicalack", e)
+	if e = svc.AckTaskControlV2(ctx, session.AccessToken, ack); e == nil {
+		t.Fatal("historical ACK unexpectedly accepted")
 	}
 	application, e = svc.TaskControlApplicationV2(ctx, actor, binding, pub.ID)
 	if e != nil || application.(map[string]any)["runtimeState"] == "appliedByRuntime" {

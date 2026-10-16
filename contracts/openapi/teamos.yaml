@@ -5654,10 +5654,8 @@ paths:
       - Task Control
       operationId: getTaskControlApplicationStatus
       summary: Опубликованная версия и подтверждение применения вкладкой
-      description: Контракт КТ-01.02; бизнес-реализация в КТ-01.03–12. companyId только из сессии; чужой binding возвращает
-        404. Чтение требует активное членство и отдельное право taskControl.read внутри Интеграций. Полные правила доступны
-        только текущему owner/admin с taskControl.manage.
-      x-permission: taskControl.manage
+      description: Диагностика наблюдавшихся экземпляров runtime с TTL, актуальностью ревизии и безопасными кодами ошибок. Отсутствие данных не означает удаление виджета или применение всеми сотрудниками.
+      x-permission: taskControl.read
       responses:
         '200':
           description: Результат
@@ -5675,12 +5673,6 @@ paths:
           $ref: '#/components/responses/NotFound'
         '409':
           $ref: '#/components/responses/Conflict'
-        '501':
-          description: Контракт опубликован, обработчик ещё не реализован.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         default:
           $ref: '#/components/responses/Error'
         '413':
@@ -6330,6 +6322,98 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
       security:
       - taskControlSession: []
+  /api/v1/task-control/runtime/ack:
+    post:
+      tags:
+      - Task Control
+      operationId: ackTaskControlRuntime
+      summary: Подтвердить выданную actor-проекцию
+      x-permission: runtime-session
+      responses:
+        '204':
+          description: Подтверждено
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '413':
+          description: Превышен размер полного снимка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Превышен лимит частоты или числа экземпляров
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: Актуальные источники недоступны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - taskControlSession: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskControlRuntimeAckInput'
+  /api/v1/task-control/runtime/telemetry:
+    post:
+      tags:
+      - Task Control
+      operationId: recordTaskControlRuntimeTelemetry
+      summary: Получение, применение, heartbeat и безопасные коды ошибок runtime
+      x-permission: runtime-session
+      responses:
+        '204':
+          description: Подтверждено
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '413':
+          description: Превышен размер полного снимка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Превышен лимит частоты или числа экземпляров
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: Актуальные источники недоступны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - taskControlSession: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskControlRuntimeTelemetryInput'
   /api/v2/task-control/runtime/ack:
     post:
       tags:
@@ -6352,6 +6436,12 @@ paths:
           $ref: '#/components/responses/Conflict'
         '413':
           description: Превышен размер полного снимка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Превышен лимит частоты или числа экземпляров
           content:
             application/json:
               schema:
@@ -8697,6 +8787,96 @@ components:
         validUntil: *r11schema005
         minRuntimeVersion:
           type: string
+    TaskControlRuntimeInstance:
+      type: object
+      additionalProperties: false
+      required: [runtimeInstanceId, publicationId, runtimeRevision, runtimeVersion, state, lastEvent, lastSeenAt, leaseValidUntil, correlationId]
+      properties:
+        runtimeInstanceId:
+          $ref: '#/components/schemas/ID'
+        publicationId:
+          $ref: '#/components/schemas/ID'
+        runtimeRevision: { type: integer, format: int64, minimum: 0, maximum: 9007199254740991 }
+        runtimeVersion: { type: string, maxLength: 40 }
+        state:
+          type: string
+          enum: [active, stale]
+          x-enum-varnames: [TaskControlRuntimeInstanceActive, TaskControlRuntimeInstanceStale]
+        lastEvent:
+          type: string
+          enum: [received, applied, heartbeat, error]
+          x-enum-varnames: [TaskControlRuntimeInstanceReceived, TaskControlRuntimeInstanceApplied, TaskControlRuntimeInstanceHeartbeat, TaskControlRuntimeInstanceError]
+        lastSeenAt: { type: string, format: date-time }
+        leaseValidUntil: { type: string, format: date-time }
+        reason: { type: string, maxLength: 80 }
+        correlationId:
+          $ref: '#/components/schemas/ID'
+        lastReceivedAt: { type: string, format: date-time }
+        lastAppliedAt: { type: string, format: date-time }
+        lastHeartbeatAt: { type: string, format: date-time }
+    TaskControlRuntimeAckInput:
+      type: object
+      additionalProperties: false
+      required:
+      - scope
+      - actorId
+      - runtimeInstanceId
+      - publicationId
+      - publicationVersion
+      - runtimeRevision
+      - payloadChecksum
+      - appliedAt
+      - runtimeVersion
+      properties:
+        actorId:
+          type: string
+          pattern: ^[1-9][0-9]{0,15}$
+        scope:
+          $ref: '#/components/schemas/TaskControlScope'
+        runtimeInstanceId: *r11schema001
+        snapshotId: *r11schema001
+        publicationId: *r11schema001
+        publicationVersion: *r11schema003
+        runtimeRevision: *r11schema003
+        payloadChecksum: *r11schema004
+        appliedAt: *r11schema005
+        runtimeVersion:
+          type: string
+          maxLength: 40
+    TaskControlRuntimeTelemetryInput:
+      type: object
+      additionalProperties: false
+      required: [scope, actorId, runtimeInstanceId, runtimeVersion, event, eventId, occurredAt, correlationId]
+      properties:
+        scope:
+          $ref: '#/components/schemas/TaskControlScope'
+        actorId:
+          type: string
+          pattern: ^[1-9][0-9]{0,15}$
+        runtimeInstanceId:
+          $ref: '#/components/schemas/ID'
+        runtimeVersion: { type: string, maxLength: 40 }
+        event:
+          type: string
+          enum: [received, applied, heartbeat, error]
+          x-enum-varnames: [TaskControlRuntimeEventReceived, TaskControlRuntimeEventApplied, TaskControlRuntimeEventHeartbeat, TaskControlRuntimeEventError]
+        eventId:
+          $ref: '#/components/schemas/ID'
+        occurredAt: { type: string, format: date-time }
+        correlationId:
+          $ref: '#/components/schemas/ID'
+        publicationId:
+          $ref: '#/components/schemas/ID'
+        publicationVersion: { type: integer, format: int64, minimum: 1, maximum: 9007199254740991 }
+        runtimeRevision: { type: integer, format: int64, minimum: 1, maximum: 9007199254740991 }
+        payloadChecksum: { type: string, pattern: '^[a-f0-9]{64}$' }
+        snapshotId:
+          $ref: '#/components/schemas/ID'
+        errorCode:
+          type: string
+          enum: [config_invalid, config_fetch_failed, lease_expired, scope_mismatch, runtime_incompatible, apply_failed, references_unavailable, network_unavailable]
+          x-enum-varnames: [TaskControlRuntimeErrorConfigInvalid, TaskControlRuntimeErrorConfigFetchFailed, TaskControlRuntimeErrorLeaseExpired, TaskControlRuntimeErrorScopeMismatch, TaskControlRuntimeErrorRuntimeIncompatible, TaskControlRuntimeErrorApplyFailed, TaskControlRuntimeErrorReferencesUnavailable, TaskControlRuntimeErrorNetworkUnavailable]
+      description: До 8 КиБ. Поля публикации обязательны для received/applied/heartbeat; при error допускается ошибка загрузки до получения публикации. Никаких текстов ошибок, сделок или правил. Сервер проверяет scope, выданную проекцию, lease, актуальную ревизию и частоту.
     TaskControlRuntimeAckInputV2:
       type: object
       additionalProperties: false
@@ -8735,6 +8915,30 @@ components:
       - runtimeState
       - issues
       properties:
+        scope:
+          $ref: '#/components/schemas/TaskControlScope'
+        publishedVersion: { type: integer, format: int64, minimum: 1, maximum: 9007199254740991 }
+        publicationVersion: { type: integer, format: int64, minimum: 1, maximum: 9007199254740991 }
+        observedAt: { type: string, format: date-time }
+        evidenceTtlSeconds: { type: integer, minimum: 1 }
+        retentionDays: { type: integer, minimum: 1 }
+        coverage:
+          type: string
+          enum: [observedInstancesOnly]
+          description: Наблюдались только отправившие события экземпляры; это не мониторинг всех сотрудников или сделок.
+        allInstancesApplied:
+          type: boolean
+          enum: [false]
+          description: Данных браузеров недостаточно, чтобы утверждать применение во всех вкладках.
+        truncated: { type: boolean }
+        activeInstances: { type: integer, minimum: 0, maximum: 256 }
+        staleInstances: { type: integer, minimum: 0, maximum: 256 }
+        appliedInstances: { type: integer, minimum: 0, maximum: 256 }
+        instances:
+          type: array
+          maxItems: 256
+          items:
+            $ref: '#/components/schemas/TaskControlRuntimeInstance'
         publicationId: *r11schema001
         currentSnapshotId:
           type: [string, 'null']
@@ -15500,6 +15704,37 @@ components:
       - publishedVersion
       - runtimeState
       properties:
+        currentSnapshotId:
+          type: [string, 'null']
+          format: uuid
+          x-go-type: '*openapi_types.UUID'
+        currentRuntimeRevision: { type: integer, format: int64, minimum: 1, maximum: 9007199254740991 }
+        issues:
+          type: array
+          maxItems: 100000
+          items:
+            $ref: '#/components/schemas/TaskControlResolverIssueV2'
+        publicationVersion: { type: integer, format: int64, minimum: 1, maximum: 9007199254740991 }
+        observedAt: { type: string, format: date-time }
+        evidenceTtlSeconds: { type: integer, minimum: 1 }
+        retentionDays: { type: integer, minimum: 1 }
+        coverage:
+          type: string
+          enum: [observedInstancesOnly]
+          description: Наблюдались только отправившие события экземпляры; это не мониторинг всех сотрудников или сделок.
+        allInstancesApplied:
+          type: boolean
+          enum: [false]
+          description: Данных браузеров недостаточно, чтобы утверждать применение во всех вкладках.
+        truncated: { type: boolean }
+        activeInstances: { type: integer, minimum: 0, maximum: 256 }
+        staleInstances: { type: integer, minimum: 0, maximum: 256 }
+        appliedInstances: { type: integer, minimum: 0, maximum: 256 }
+        instances:
+          type: array
+          maxItems: 256
+          items:
+            $ref: '#/components/schemas/TaskControlRuntimeInstance'
         scope:
           $ref: '#/components/schemas/TaskControlScope'
         publicationId:
@@ -15659,6 +15894,11 @@ components:
       - minRuntimeVersion
       - installation
       properties:
+        publicationId:
+          $ref: '#/components/schemas/ID'
+        publicationVersion: { type: integer, format: int64, minimum: 1, maximum: 9007199254740991 }
+        runtimeRevision: { type: integer, format: int64, minimum: 1, maximum: 9007199254740991 }
+        payloadChecksum: { type: string, pattern: '^[a-f0-9]{64}$' }
         runtimeSchemaVersion:
           type: integer
           enum: [1]

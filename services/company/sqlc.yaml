@@ -37,6 +37,7 @@ sql:
       - migrations/000037_task_control_dynamic_runtime.up.sql
       - migrations/000038_task_control_import.up.sql
       - migrations/000039_task_control_audit.up.sql
+      - migrations/000040_task_control_runtime_diagnostics.up.sql
     queries: internal/storage/queries
     gen:
       go:

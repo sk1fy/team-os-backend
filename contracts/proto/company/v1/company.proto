@@ -1182,6 +1182,9 @@ message TaskControlConnectionRequest {
     ACTION_RUNTIME_CONNECTION = 40;
     ACTION_HISTORY = 41;
     ACTION_ROLLBACK = 42;
+    ACTION_ACK = 43;
+    ACTION_APPLICATION = 44;
+    ACTION_TELEMETRY = 45;
   }
   Action action = 1;
   string id = 2;

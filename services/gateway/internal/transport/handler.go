@@ -936,7 +936,7 @@ func (h *Handler) writeRPCError(w http.ResponseWriter, r *http.Request, err erro
 	case codes.AlreadyExists, codes.Aborted:
 		write(apierror.Conflict(message))
 	case codes.ResourceExhausted:
-		if errorCode == "references_too_large" || errorCode == "task_control_runtime_payload_too_large" {
+		if errorCode == "references_too_large" || errorCode == "task_control_runtime_payload_too_large" || errorCode == "telemetry_payload_too_large" {
 			write(apierror.New(http.StatusRequestEntityTooLarge, message))
 		} else {
 			write(apierror.New(http.StatusTooManyRequests, message))

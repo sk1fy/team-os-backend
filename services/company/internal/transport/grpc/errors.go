@@ -39,7 +39,7 @@ func transportError(err error) error {
 		code = codes.NotFound
 	case application.ErrorConflict:
 		code = codes.AlreadyExists
-	case application.ErrorPayloadTooLarge:
+	case application.ErrorRateLimited, application.ErrorPayloadTooLarge:
 		code = codes.ResourceExhausted
 	case application.ErrorUpstream:
 		code = codes.Unavailable
