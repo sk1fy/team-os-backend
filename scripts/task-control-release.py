@@ -98,6 +98,15 @@ if args.build_images:
             raise SystemExit("image revision mismatch")
         manifest["images"][repo + "/" + component] = {"tag": image, "localImageId": image_id, "repositoryDigests": digests or [], "architecture": architecture, "revision": sha}
         save()
+    for repo in ["core", "backend"]:
+        services = {}
+        for key, item in manifest["images"].items():
+            owner, service = key.split("/", 1)
+            if owner == repo:
+                services[service] = {"image": (item["repositoryDigests"] or [item["localImageId"]])[0]}
+        filename = out / (repo + ".compose.json")
+        filename.write_text(json.dumps({"services": services}, indent=2) + "\n")
+    manifest["composeOverrides"] = {"core": str(out / "core.compose.json"), "backend": str(out / "backend.compose.json")}
 manifest["completedAt"] = datetime.now(timezone.utc).isoformat()
 manifest["localBuildPassed"] = True
 save()

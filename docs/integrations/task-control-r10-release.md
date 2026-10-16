@@ -32,6 +32,11 @@ RepoDigests при наличии, schema 30/40, runtime 1.2.3 и SHA-256 дву
 Локальный Docker image ID не является registry manifest digest. После push отдельно
 зафиксировать repo@sha256 для нужной архитектуры и проверки CI финальных SHA.
 `releaseApproved=false` сохраняется явно; блокирующие release gates не скрываются.
+После сборки создаются core.compose.json и backend.compose.json: добавить их
+**последними** к существующим overlays и использовать up --no-build. Они закрепляют
+точный локальный image ID (или RepoDigest), включая tools; build не выполняется
+повторно под плавающим тегом. Локальные ID работают только на этом Docker engine.
+Для сервера нужны опубликованные и повторно проверенные registry digests.
 
 ## Реальные локальные drills
 
