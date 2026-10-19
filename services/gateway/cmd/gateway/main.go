@@ -20,6 +20,7 @@ import (
 	notificationsv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/notifications/v1"
 	tasksv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/tasks/v1"
 	sharedauth "github.com/sk1fy/team-os-backend/pkg/auth"
+	"github.com/sk1fy/team-os-backend/pkg/buildinfo"
 	"github.com/sk1fy/team-os-backend/pkg/httpx"
 	"github.com/sk1fy/team-os-backend/services/gateway/internal/amochallenge"
 	"github.com/sk1fy/team-os-backend/services/gateway/internal/api"
@@ -33,6 +34,10 @@ import (
 )
 
 func main() {
+	if len(os.Args) == 2 && os.Args[1] == "--version" {
+		fmt.Printf("gateway revision=%s\n", buildinfo.Revision)
+		return
+	}
 	if len(os.Args) == 3 && os.Args[1] == "healthcheck" {
 		if err := healthcheck(os.Args[2]); err != nil {
 			_, _ = fmt.Fprintln(os.Stderr, err)

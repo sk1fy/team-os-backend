@@ -11,9 +11,12 @@ RUN cd services/gateway && GOWORK=off go mod download
 COPY pkg ./pkg
 COPY contracts/gen/go ./contracts/gen/go
 COPY services/gateway ./services/gateway
-RUN cd services/gateway && GOWORK=off CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /out/gateway ./cmd/gateway
+ARG BUILD_REVISION=unknown
+RUN cd services/gateway && GOWORK=off CGO_ENABLED=0 go build -trimpath -ldflags="-s -w -X github.com/sk1fy/team-os-backend/pkg/buildinfo.Revision=${BUILD_REVISION}" -o /out/gateway ./cmd/gateway
 
 FROM gcr.io/distroless/static-debian12:nonroot
+ARG BUILD_REVISION=unknown
+LABEL org.opencontainers.image.revision=$BUILD_REVISION
 WORKDIR /app
 COPY --from=build /out/gateway /app/gateway
 EXPOSE 8080
