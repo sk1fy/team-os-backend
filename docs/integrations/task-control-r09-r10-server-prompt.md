@@ -1,7 +1,9 @@
 # Промпт серверному агенту: завершение R09/R10 после merge
 
 Ниже текст для pi на тестовом сервере. Он самодостаточен: ClickUp агенту не нужен.
-Запускать после review/merge трёх PR этой проверки. Не развёртывать незамёрженные
+Запускать после review/merge Core https://github.com/sk1fy/amocrm-pro/pull/72,
+backend https://github.com/sk1fy/team-os-backend/pull/56 и
+widgets https://github.com/sk1fy/rakurs-widgets-new/pull/12. Не развёртывать незамёрженные
 ветки. Если обновлённый main не содержит перечисленных исправлений, остановить
 мутации и сообщить несовпадение. Не утверждать принятие до получения evidence.
 
