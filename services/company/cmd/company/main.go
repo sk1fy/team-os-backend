@@ -19,6 +19,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	companyv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v1"
 	sharedauth "github.com/sk1fy/team-os-backend/pkg/auth"
+	"github.com/sk1fy/team-os-backend/pkg/buildinfo"
 	"github.com/sk1fy/team-os-backend/pkg/eventbus"
 	"github.com/sk1fy/team-os-backend/pkg/httpx"
 	"github.com/sk1fy/team-os-backend/services/company/internal/application"
@@ -36,6 +37,10 @@ import (
 )
 
 func main() {
+	if len(os.Args) == 2 && os.Args[1] == "--version" {
+		fmt.Printf("company revision=%s\n", buildinfo.Revision)
+		return
+	}
 	if len(os.Args) == 3 && os.Args[1] == "healthcheck" {
 		if err := healthcheck(os.Args[2]); err != nil {
 			_, _ = fmt.Fprintln(os.Stderr, err)

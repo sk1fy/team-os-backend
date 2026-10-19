@@ -112,3 +112,58 @@ R09 live + поддерживаемые браузеры; согласованн
 финальных SHA; совместимость текущего MVP UI на выбранной схеме; rollout и binary
 rollback на разрешённом стенде, защищённый backup/restore реальных данных с актуальными
 ключами и reconciliation OAuth. Эти пункты отделены от выполненных локальных drills.
+
+## Передача после серверного аудита 19.10.2026
+
+Read-only аудит обнаружил прежний R06 на тестовом сервере: Core `759c4e3`
+(schema 25), backend `39cf57a` (company schema 33). Отдельный Task Control
+`task-control-widget` включён в managed; `amocrm-pro-service` обслуживает
+Distribution. Bootstrap 200 подтверждает доступность старой цепочки, а не
+версию 1.2.3 и не завершение R09. Упоминание 501 в аудите — чтение старого кода,
+не полученный HTTP-ответ. В текущем main эти обработчики уже реализованы.
+
+После согласованного merge серверный агент обновляет три checkout **с main**,
+фиксирует новые полные SHA и CI, создаёт новый candidate по инструкции выше.
+SHA предыдущего RC не переносить на новую сборку. Для company/gateway обычный
+Compose и CI теперь передают `BUILD_REVISION`: OCI revision и `--version` бинарника
+должны совпадать. Без аргумента остаётся явное `unknown`; это не evidence.
+Запуск `company --version` / `gateway --version` не требует env, БД или токенов.
+
+До запуска сборки через обычный Compose:
+
+```sh
+export BUILD_REVISION="$(git rev-parse HEAD)"
+docker compose -f deploy/docker-compose.yaml build company gateway
+```
+
+При candidate-сборке аргумент передаёт `task-control-release.py`. Не запускать
+повторный build поверх закреплённых image IDs. После загрузки **тех же** образов
+и согласованного обновления можно выполнить read-only сравнение артефактов:
+
+```sh
+python3 scripts/task-control-deployment-audit.py \
+  --candidate /secure/task-control-rc/candidate.json \
+  --container core/api=amocrm-pro-api-1 \
+  --container core/worker=amocrm-pro-worker-1 \
+  --container backend/company=teamos-company-1 \
+  --container backend/gateway=teamos-gateway-1 \
+  --widget-zip /secure/task-control-rc/task-control-1.2.3-managed.zip \
+  --output /secure/task-control-rc/deployment-audit.json
+```
+
+Имена контейнеров сверить с целевым Compose. Команда читает только image ID,
+OCI revision, architecture, running и ZIP; не выгружает Env, не создаёт sessions
+и не меняет сервер. Возвращает ненулевой код при старом/неизвестном SHA, другом
+image ID/архитектуре, остановленном контейнере, ином ZIP/версии, example.invalid
+или неизвестном OAuth UUID. Для registry-поставки нужно сохранить исходный image
+ID и отдельно подтвердить repo digest; пересборка с тем же SHA не эквивалентна
+кандидату. Файл ZIP на диске не доказывает установку в amoCRM.
+
+`artifactMatch=true` **не закрывает** schema, installation/generation, webhook,
+freshness, ACK, R09 live/browser matrix и R10 rollout/restore/binary rollback.
+Поля `acceptancePassed=false`, `releaseApproved=false` сохранены намеренно.
+`webhook_status=error` требует штатной диагностики/reconcile; expired OAuth state
+требует новой штатной OAuth-попытки, а не ослабления state-проверки. Истёкший
+runtime snapshot не становится свежим от обновления бинарника: проверить новый
+bootstrap и application evidence. R09/R10 остаются in progress до реальных
+проверок, перечисленных выше; эти PR сами по себе не являются приёмкой.
