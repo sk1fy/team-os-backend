@@ -84,7 +84,7 @@ def compare(candidate, observed, archive, mode):
             "archive": {"sha256": checksum, "version": version, "mode": mode},
             "acceptancePassed": False, "releaseApproved": False,
             "remainingGates": [
-                "Schema Core/company 30/40: проверить на целевых БД",
+                "Schema Core/company 31/40: проверить на целевых БД",
                 "Установленный в amoCRM ZIP: сверить отдельно; файл на диске не доказывает установку",
                 "Installation/generation, runtime descriptor, webhook, binding и freshness",
                 "R09 live/browser/ACK и regression matrix",

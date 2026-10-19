@@ -37,7 +37,18 @@ func TestTaskControlR09ActualWidgetRoundTrip(t *testing.T) {
 	}
 	now := f.svc.now()
 	core := f.svc.taskControlCore.(*referenceTestCore)
-	core.status.RuntimeVersion = "1.2.3"
+	// Simulate operator-confirmed deployment of the package under test.
+	packageJSON, err := os.ReadFile(filepath.Join(os.Getenv("WIDGET_DIR"), "package.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var widgetPackage struct {
+		Version string `json:"version"`
+	}
+	if err := json.Unmarshal(packageJSON, &widgetPackage); err != nil {
+		t.Fatal(err)
+	}
+	core.status.RuntimeVersion = widgetPackage.Version
 	core.snapshot = tc.ReferenceSnapshot{SchemaVersion: 1, Scope: referenceScope(c), Complete: true,
 		Provenance: tc.ReferenceProvenance{Source: "coreAmocrm", FetchedAt: now, FetchStartedAt: now}, FreshUntil: now.Add(5 * time.Minute),
 		Users: []tc.ReferenceUser{{ID: "7", Name: "Тест", IsActive: true}}, Groups: []tc.ReferenceGroup{},

@@ -39,7 +39,7 @@ manifest = {"kind": "local-release-candidate", "runtimeVersion": runtime_version
             "candidateId": uuid.uuid4().hex,
             "createdAt": datetime.now(timezone.utc).isoformat(), "repositories": {}, "images": {}, "archives": {},
             "publicConfiguration": {"coreOrigin": args.core_origin, "backendOrigin": args.backend_origin, "oauthClientUUID": args.oauth_client_uuid},
-            "schema": {"core": 30, "company": 40, "runtime": [1, 2]},
+            "schema": {"core": 31, "company": 40, "runtime": [1, 2]},
             "toolchain": {"python": sys.version.split()[0], "zlib": zlib.ZLIB_VERSION},
             "remainingGates": ["R09 live acceptance deferred", "browser acceptance deferred", "CI on final R10 commits", "registry image digests after publishing", "full-stack rollout and binary rollback on approved environment", "verify deployment architecture", "operator verifies current installation/generation and OAuth UUID"]}
 

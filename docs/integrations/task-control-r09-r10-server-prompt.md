@@ -26,7 +26,7 @@ Distribution/amocrm-pro-service — отдельная интеграция; е�
 
 1. Сначала preflight и backup. Зафиксируй актуальные dirty state/SHA трёх checkout,
 получи main через fast-forward без reset/clean, запиши полные SHA и CI. Core main
-должен содержать empty-events reconcile, widgets —1.2.4 с повторными напоминаниями,
+должен содержать empty-events reconcile и migration31/runtime1.2.4, widgets —1.2.4 с повторными напоминаниями,
 backend — уникальные candidate tags и image tar archives. Прочитай актуальные
 runbooks/Core lifecycle и backend R09/R10 contracts перед командами. Сними
 защищённые backup БД Core/company и конфигов, проверь восстановление в отдельные
@@ -52,7 +52,7 @@ manifest не доступны в image store: прежние tags были пе
 именно IDs нового candidate, используя его Compose overrides без --build.
 После rollout health и `task-control-deployment-audit.py` обязаны подтвердить
 artifactMatch=true для четырёх работающих контейнеров и нужного ZIP. Отдельно
-проверь миграции30/40 и runtime tools. Registry-публикацию не имитировать:
+проверь миграции31/40 и runtime tools. Registry-публикацию не имитировать:
 используй настроенный разрешённый registry и проверь digests либо явно укажи
 невыполненный registry gate; не менять registry credentials/права.
 
@@ -121,7 +121,7 @@ Node-тестами. При потребности в действии сооб�
 
 9. R10: на изолированной восстановленной копии выполни full-stack rollout и
 binary rollback точных архивированных образов, проверь не только health, но и
-runtime/bootstrap/ACK и данные до/после restore. Down30/40 не применять при наличии
+runtime/bootstrap/ACK и данные до/после restore. Down31/40 не применять при наличии
 evidence. Проверить load image tar→исходный image ID; old R06 health на схеме30/40
 не выдавать за доказательство v2 compatibility. Затем верни стенд на новый
 проверенный candidate и повтори artifact audit/health/runtime checks.

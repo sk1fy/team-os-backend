@@ -197,3 +197,11 @@ SHA: tags не пересекаются, старые tags сохраняютс�
 Порядок серверной приёмки: [готовый промпт](task-control-r09-r10-server-prompt.md).
 Установка нового ZIP1.2.4 и server rollout после merge обязательны; локальные тесты
 и browser smoke1.2.3 не закрывают эти gates.
+
+
+Для1.2.4 Core должен применить новую миграцию31 до подтверждения descriptor;
+Core CLI/status/admin-read и backend allowlists поддерживают1.2.4. Целевой candidate
+теперь указывает Core31/company40. Down31 блокируется при descriptor1.2.4.
+Прошлый health/drill на30/40 не является приёмкой новой сборки. После merge
+сначала Core migration/API/worker/tools и backend, затем ZIP и только после
+проверки загруженных файлов — descriptor1.2.4 на текущей generation.

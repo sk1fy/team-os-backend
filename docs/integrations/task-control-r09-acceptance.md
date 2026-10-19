@@ -187,3 +187,15 @@ R09/R10 ещё не приняты: новые исправления требу
 установки1.2.4 и остатка живой матрицы выше. Registry digests/образа и reversible
 full-stack rollback нельзя заменить локальными тестами. Выполнимый порядок и
 условия остановки — [промпт pi](task-control-r09-r10-server-prompt.md).
+
+
+Проверка совместимости1.2.4 выявила прежние allowlists до1.2.3. Исправлены Core
+CLI/status/admin-read и CHECK через новую миграцию31, backend разрешает проверенную
+1.2.4 в v2/session/telemetry/import. Неизвестные версии по-прежнему отклоняются.
+R09 actual-widget fixture берёт operator-confirmed version из проверяемого package,
+а wire comparator сверяет runtimeVersion с ним, сохраняя точное сравнение остальных
+полей. PostgreSQL/race `TestTaskControlR09ActualWidgetRoundTrip` с настоящим1.2.4
+прошёл: v2→engine→received/applied→application, затем пустая projection после
+удаления mapping. Это loopback application test, не живая amoCRM/gateway-приёмка.
+Новый целевой rollout: **Core31/company40**, установленный1.2.4 и descriptor текущей
+generation. Старый стенд30/40 остаётся прежним до merge/deploy.
