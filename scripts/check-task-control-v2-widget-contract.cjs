@@ -32,6 +32,12 @@ const TeamOS = require(path.join(widgetDir, 'lib/teamos.js'))(Snapshot, Rules);
   assert.equal(acknowledgement.runtimeRevision,fixture.runtimeRevision);
   const output=path.resolve(__dirname,'../contracts/fixtures/task-control-telemetry.json');
   if(process.argv.includes('--write-fixture')) require('node:fs').writeFileSync(output,JSON.stringify(telemetry,null,2)+'\n');
-  else assert.deepEqual(telemetry,require(output),'actual widget telemetry differs from company wire fixture');
+  else {
+    // The fixture describes the protocol, while runtimeVersion identifies the
+    // tested package. Keep every other wire field under the exact comparison.
+    const version = require(path.join(widgetDir, 'package.json')).version;
+    const expected = require(output).map(event => ({ ...event, runtimeVersion: version }));
+    assert.deepEqual(telemetry,expected,'actual widget telemetry differs from company wire fixture');
+  }
   console.log('Task Control v2: company JSON → widget validation → engine → distinct received/applied telemetry match');
 })().catch(error=>{console.error(error);process.exitCode=1;});
