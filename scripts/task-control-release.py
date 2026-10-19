@@ -34,7 +34,9 @@ if args.oauth_client_uuid:
 out = args.output.resolve()
 out.mkdir(parents=True, exist_ok=False)
 os.chmod(out, 0o700)
-manifest = {"kind": "local-release-candidate", "runtimeVersion": "1.2.3", "releaseApproved": False,
+runtime_version = json.loads((args.widgets / "rkrs_lead_notasks/manifest.json").read_text())["widget"]["version"]
+manifest = {"kind": "local-release-candidate", "runtimeVersion": runtime_version, "releaseApproved": False,
+            "candidateId": uuid.uuid4().hex,
             "createdAt": datetime.now(timezone.utc).isoformat(), "repositories": {}, "images": {}, "archives": {},
             "publicConfiguration": {"coreOrigin": args.core_origin, "backendOrigin": args.backend_origin, "oauthClientUUID": args.oauth_client_uuid},
             "schema": {"core": 30, "company": 40, "runtime": [1, 2]},
@@ -81,7 +83,7 @@ for name, directory in [("core", args.core), ("backend", backend), ("widgets", a
 widget = args.widgets / "rkrs_lead_notasks"
 epoch = git(args.widgets, "show", "-s", "--format=%ct", "HEAD")
 for mode in ["standalone", "managed"]:
-    paths = [out / f"task-control-1.2.3-{mode}{suffix}.zip" for suffix in ["", "-repeat"]]
+    paths = [out / f"task-control-{runtime_version}-{mode}{suffix}.zip" for suffix in ["", "-repeat"]]
     for index, archive in enumerate(paths):
         run(f"zip-{mode}-{index}", widget, ["sh", "scripts/build.sh"], {
             "SOURCE_DATE_EPOCH": epoch, "TASK_CONTROL_OUTPUT": str(archive),
@@ -93,7 +95,7 @@ for mode in ["standalone", "managed"]:
         raise SystemExit("ZIP rebuild differs; do not release")
     paths[1].unlink()
     with zipfile.ZipFile(paths[0]) as archive:
-        if archive.testzip() is not None or json.loads(archive.read("manifest.json"))["widget"]["version"] != "1.2.3":
+        if archive.testzip() is not None or json.loads(archive.read("manifest.json"))["widget"]["version"] != runtime_version:
             raise SystemExit("invalid ZIP/version")
     manifest["archives"][mode] = {"path": str(paths[0]), "sha256": hashlib.sha256(paths[0].read_bytes()).hexdigest(), "sourceDateEpoch": int(epoch), "rebuildIdentical": True}
     save()
@@ -105,7 +107,7 @@ if args.build_images:
         verify_sources()
         directory = args.core if repo == "core" else backend
         sha = manifest["repositories"][repo]["sha"]
-        image = f"task-control-rc-{repo}-{component}:{sha[:12]}"
+        image = f"task-control-rc-{repo}-{component}:{sha[:12]}-{manifest['candidateId'][:12]}"
         print(f"Building {image}", flush=True)
         run(f"image-{repo}-{component}", directory, ["docker", "build", *options,
             "--build-arg", f"BUILD_REVISION={sha}", "--label", f"org.opencontainers.image.revision={sha}", "-t", image, "."])
@@ -116,7 +118,18 @@ if args.build_images:
             raise SystemExit("image revision mismatch")
         # A daemon may populate RepoDigests for local builds. It is not proof
         # that an artifact exists in a registry; this tool never publishes.
-        manifest["images"][repo + "/" + component] = {"tag": image, "localImageId": image_id, "repositoryDigests": digests or [], "registryVerified": False, "architecture": architecture, "revision": sha}
+        # Preserve the exact artifact before another build or tag update can
+        # orphan it. Loading this archive restores the recorded ID; rebuilding
+        # the same commit is not an equivalent rollback artifact.
+        image_archive = out / f"{repo}-{component}.tar"
+        run(f"archive-{repo}-{component}", directory,
+            ["docker", "image", "save", "--output", str(image_archive), image_id])
+        digest = hashlib.sha256()
+        with image_archive.open("rb") as source:
+            for chunk in iter(lambda: source.read(1024 * 1024), b""):
+                digest.update(chunk)
+        manifest["images"][repo + "/" + component] = {"tag": image, "localImageId": image_id, "repositoryDigests": digests or [], "registryVerified": False, "architecture": architecture, "revision": sha,
+            "archive": {"path": str(image_archive), "sha256": digest.hexdigest()}}
         save()
     for repo in ["core", "backend"]:
         services = {}

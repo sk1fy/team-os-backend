@@ -69,8 +69,9 @@ elif args.phase == "postgres":
     run("core-postgres-migrations", args.core, ["make", "integration-test"])
 elif args.phase == "artifacts":
     import zipfile
+    runtime_version = json.loads((widget / "manifest.json").read_text())["widget"]["version"]
     for mode in ["standalone", "managed"]:
-        archive = out / f"task-control-1.2.3-{mode}-synthetic.zip"
+        archive = out / f"task-control-{runtime_version}-{mode}-synthetic.zip"
         run(mode, widget, ["sh", "scripts/build.sh"], {
             "TASK_CONTROL_OUTPUT": str(archive), "TASK_CONTROL_STANDALONE_BUILD": "1" if mode == "standalone" else "0",
             "TASK_CONTROL_CORE_ORIGIN": "" if mode == "standalone" else "https://core.example.invalid",
@@ -78,7 +79,7 @@ elif args.phase == "artifacts":
         })
         with zipfile.ZipFile(archive) as bundle:
             assert bundle.testzip() is None
-            assert json.loads(bundle.read("manifest.json"))["widget"]["version"] == "1.2.3"
+            assert json.loads(bundle.read("manifest.json"))["widget"]["version"] == runtime_version
             deployment = bundle.read("lib/deployment.js").decode()
             assert ("https://core.example.invalid" in deployment) == (mode == "managed")
             assert "script.js" in bundle.namelist()

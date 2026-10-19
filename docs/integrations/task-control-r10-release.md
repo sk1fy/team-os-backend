@@ -167,3 +167,33 @@ freshness, ACK, R09 live/browser matrix и R10 rollout/restore/binary rollback.
 runtime snapshot не становится свежим от обновления бинарника: проверить новый
 bootstrap и application evidence. R09/R10 остаются in progress до реальных
 проверок, перечисленных выше; эти PR сами по себе не являются приёмкой.
+
+
+## Восстановление поставки после проверки20.10.2026
+
+Повторная сборка одного SHA не обязана дать тот же image ID. Раньше tag содержал
+только SHA и новая сборка могла перезаписать ссылку на старый работающий образ.
+Теперь candidate имеет уникальный `candidateId`, tags включают SHA и candidateId;
+каждый из восьми образов сразу сохраняется `docker image save` **по image ID** в
+`core-*.tar` / `backend-*.tar` с SHA-256 в `images.*.archive`. Под этот вывод надо
+заранее выделить место под восемь архивов. Версия ZIP читается из manifest виджета,
+поэтому следующий пакет1.2.4 не будет ошибочно назван1.2.3.
+
+Это не восстанавливает уже утраченные image IDs: manifest нельзя вручную
+переписать под старые контейнеры. После merge нужен новый отдельный candidate,
+rollout его точных IDs и сравнение с работающими контейнерами. Для восстановления
+проверить SHA-256 tar, выполнить `docker image load --input ...`, затем убедиться,
+что `docker image inspect <recorded-ID>` возвращает исходный ID/revision/arch.
+Нельзя повторно build поверх закреплённого кандидата. Registry digest остаётся
+отдельным gate: локальный tar/ID не является подтверждением публикации registry.
+
+Deployment audit теперь проверяет также JSON origins внутри `lib/deployment.js`
+ZIP, а не только поля candidate и SHA архива. Код JS из ZIP не исполняется.
+CLI test с временными Git checkout и fake Docker проверяет две сборки того же
+SHA: tags не пересекаются, старые tags сохраняются, восемь архивов соответствуют
+зафиксированным ID/checksum, Compose overrides используют эти IDs. Это тест
+оркестратора, не реальная сборка/restore Docker-образов.
+
+Порядок серверной приёмки: [готовый промпт](task-control-r09-r10-server-prompt.md).
+Установка нового ZIP1.2.4 и server rollout после merge обязательны; локальные тесты
+и browser smoke1.2.3 не закрывают эти gates.
