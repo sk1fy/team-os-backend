@@ -54,6 +54,16 @@ def compare(candidate, observed, archive, mode):
         if package.testzip() is not None:
             errors.append("Нарушена целостность ZIP")
         version = json.loads(package.read("manifest.json"))["widget"]["version"]
+        # Read the builder's JSON literal, never execute JavaScript from a ZIP.
+        deployment = package.read("lib/deployment.js").decode("utf-8")
+        match = re.fullmatch(r"\s*define\(\[\], function \(\) \{ return (\{.*\}); \}\);\s*", deployment)
+        if not match:
+            raise ValueError("Unsupported deployment.js format")
+        origins = json.loads(match.group(1))
+        expected_origins = {field: candidate.get("publicConfiguration", {}).get(field) if mode == "managed" else ""
+                            for field in ["coreOrigin", "backendOrigin"]}
+        if origins != expected_origins:
+            errors.append("Origins внутри ZIP не совпадают с режимом и candidate.json")
     if version != candidate.get("runtimeVersion"):
         errors.append("Версия manifest.json не совпадает с кандидатом")
     if mode == "managed":
@@ -74,7 +84,7 @@ def compare(candidate, observed, archive, mode):
             "archive": {"sha256": checksum, "version": version, "mode": mode},
             "acceptancePassed": False, "releaseApproved": False,
             "remainingGates": [
-                "Schema Core/company 30/40: проверить на целевых БД",
+                "Schema Core/company 31/40: проверить на целевых БД",
                 "Установленный в amoCRM ZIP: сверить отдельно; файл на диске не доказывает установку",
                 "Installation/generation, runtime descriptor, webhook, binding и freshness",
                 "R09 live/browser/ACK и regression matrix",

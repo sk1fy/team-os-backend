@@ -19,6 +19,7 @@ class DeploymentAuditTest(unittest.TestCase):
         self.archive = Path(self.temp.name) / "widget.zip"
         with zipfile.ZipFile(self.archive, "w") as package:
             package.writestr("manifest.json", json.dumps({"widget": {"version": "1.2.3"}}))
+            package.writestr("lib/deployment.js", 'define([], function () { return ' + json.dumps({"coreOrigin": "https://core.example.com", "backendOrigin": "https://backend.example.com"}) + '; });\n')
         image = {"localImageId": "sha256:" + "b" * 64, "revision": "a" * 40, "architecture": "amd64"}
         self.candidate = {
             "localBuildPassed": True, "imagesComplete": True, "runtimeVersion": "1.2.3",
@@ -58,7 +59,18 @@ class DeploymentAuditTest(unittest.TestCase):
     def test_synthetic_candidate_cannot_pass_managed_audit(self):
         self.candidate["publicConfiguration"]["coreOrigin"] = "https://core.example.invalid"
         self.candidate["publicConfiguration"]["oauthClientUUID"] = None
-        self.assertEqual(len(self.compare()["errors"]), 2)
+        self.assertIn("coreOrigin: нет пригодного HTTPS origin", self.compare()["errors"])
+        self.assertFalse(self.compare()["artifactMatch"])
+
+    def test_zip_configuration_must_match_even_with_correct_checksum(self):
+        self.candidate["publicConfiguration"]["coreOrigin"] = "https://core.example.com:8443"
+        result = self.compare()
+        self.assertFalse(result["artifactMatch"])
+        self.assertIn("Origins внутри ZIP не совпадают с режимом и candidate.json", result["errors"])
+
+    def test_managed_origins_cannot_pass_as_standalone(self):
+        self.candidate["archives"]["standalone"] = self.candidate["archives"]["managed"]
+        self.assertFalse(audit.compare(self.candidate, self.observed, self.archive, "standalone")["artifactMatch"])
 
     def test_incomplete_build_is_rejected(self):
         self.candidate["imagesComplete"] = False

@@ -23,7 +23,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - run: python3 -m unittest discover -s scripts -p "test_task_control_deployment_audit.py" -v
+      - run: python3 -m unittest discover -s scripts -p "test_task_control*.py" -v
 
   modules:
     name: Discover Go modules
