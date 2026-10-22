@@ -5,7 +5,7 @@
 Runbook относится к персональным ссылкам, promo/candidate campaigns, внешней email-верификации,
 campaign analytics и совместимому public course-by-ID. Он дополняет
 [academy-migration-cutover.md](academy-migration-cutover.md),
-[production-security.md](../production-security.md) и [test-services.md](../test-services.md).
+[production-security.md](runbooks/production-security.md) и [test-services.md](runbooks/test-services.md).
 
 В кодовой базе есть hashed access/session/code tokens, AES-256-GCM envelope для OTP-письма,
 first-party visitor cookie, UTM/referrer normalization, version-pinned enrollment и campaign

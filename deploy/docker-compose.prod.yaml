@@ -1,6 +1,6 @@
-# Production-override поверх docker-compose.yaml (см. production-security.md §4.2).
+# Production-override поверх docker-compose.yaml (см. docs/runbooks/production-security.md §4.2).
 #
-# Закрывает риски из production-security.md §2: Postgres, NATS и доменные сервисы
+# Закрывает риски из docs/runbooks/production-security.md §2: Postgres, NATS и доменные сервисы
 # не публикуют порты на хост, MinIO и gateway слушают только loopback (наружу
 # смотрит reverse proxy c TLS), все длительно работающие сервисы получают
 # restart policy, presigned-ссылки files подписываются как https.

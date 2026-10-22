@@ -1,25 +1,23 @@
-# Конфигурация распределения на staging
+# Staging распределения: TeamOS
 
-Шаблоны перенесены из серверного аудита 06.10.2026. Это дополнительные
-слои к основным compose-файлам, а не самостоятельный стек. Переменные
-описаны в VARIABLES.md; живые значения хранятся вне Git.
+`docker-compose.staging-local.yaml` — дополнительный слой для
+`deploy/docker-compose.yaml`; он не запускается самостоятельно. Переменные
+TeamOS описаны в [VARIABLES.md](VARIABLES.md). Живые значения хранятся вне Git.
+Указывайте `--env-file` и имя Compose-проекта явно; слой `deploy/docker-compose.ci.yaml`
+нужен только соответствующему тестовому стеку.
 
-Core использует docker-compose.yml, docker-compose.v0.yml и
-core-distribution.local.yaml. TeamOS использует deploy/docker-compose.yaml
-и docker-compose.staging-local.yaml с явным --env-file и именем проекта.
-Слой deploy/docker-compose.ci.yaml нужен только соответствующему тестовому
-стеку; он не является обязательной настройкой рабочего развёртывания.
-
-Для nginx разрешено подставлять только перечисленные в VARIABLES.md
-переменные: без списка envsubst затронет собственные переменные nginx.
-Сначала выполните compose config и nginx -t с сертификатами нужной среды.
-Сохраните loopback-порты и ACL приватного моста.
+Перед применением проверьте `compose config`. Сохраните loopback-порты и ACL
+приватного моста. Миграции уже применены в staging; проверки up/down проводятся
+только на изолированных тестовых БД.
 
 Для новой среды создаются отдельные ключи и сертификаты. При обновлении
-существующей среды сохраняйте её ключи шифрования и версии key ring:
-не генерируйте их заново во время переноса исходников. Для замены ключей
-нужна отдельная согласованная ротация. Миграции уже применены в staging;
-проверки up/down выполняются только на изолированных тестовых БД.
+существующей среды сохраняйте ключи шифрования и версии key ring; для их замены
+нужна отдельная согласованная ротация.
 
-Полный комплект Core/nginx находится в amocrm-pro/deploy/distribution-staging,
-слой TeamOS — в team-os-backend/deploy/distribution-staging.
+Core worker и nginx принадлежат репозиторию Core:
+[инструкции](https://github.com/sk1fy/amocrm-pro/blob/6f14c78adc1ccb29c1c56d0f6d6ed883cb5d0471/deploy/distribution-staging/README.md),
+[переменные](https://github.com/sk1fy/amocrm-pro/blob/6f14c78adc1ccb29c1c56d0f6d6ed883cb5d0471/deploy/distribution-staging/VARIABLES.md).
+Ссылки закреплены на ревизию и работают без соседнего checkout. Для проверки
+совместимости следующего релиза сверяйте обе стороны bridge.
+
+[Исходники и воспроизводимость переноса 06.10.2026](SOURCE-SYNC.md).

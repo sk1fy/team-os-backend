@@ -194,7 +194,7 @@ SHA: tags не пересекаются, старые tags сохраняютс�
 зафиксированным ID/checksum, Compose overrides используют эти IDs. Это тест
 оркестратора, не реальная сборка/restore Docker-образов.
 
-Порядок серверной приёмки: [готовый промпт](task-control-r09-r10-server-prompt.md).
+Порядок серверной приёмки: [готовый промпт](../runbooks/task-control-r09-r10-server-prompt.md).
 Установка нового ZIP1.2.4 и server rollout после merge обязательны; локальные тесты
 и browser smoke1.2.3 не закрывают эти gates.
 

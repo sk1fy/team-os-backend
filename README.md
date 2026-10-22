@@ -18,7 +18,7 @@
 | `notifications` | 8085 | уведомления + SSE |
 | `files` | 8086 | файлы (MinIO/S3) |
 
-Подробности: [teamos-go-microservices-plan.md](teamos-go-microservices-plan.md) (полный дизайн),
+Подробности: [teamos-go-microservices-plan.md](docs/architecture/teamos-go-microservices-plan.md) (полный дизайн),
 [docs/README.md](docs/README.md) (инструкции и контракты),
 [docs/adr/](docs/adr/) (ключевые решения), [AGENTS.md](AGENTS.md) (правила работы с кодом).
 
@@ -64,10 +64,10 @@ API доступен на `http://localhost:8080`. Все команды — `ma
 
 ## Эксплуатация
 
-- [deploy.md](deploy.md) — пошаговое production-развёртывание.
-- [production-security.md](production-security.md) — требования безопасности; production-стек
+- [deploy.md](docs/runbooks/deploy.md) — пошаговое production-развёртывание.
+- [production-security.md](docs/runbooks/production-security.md) — требования безопасности; production-стек
   запускается с override `deploy/docker-compose.prod.yaml`, закрывающим внешние порты.
-- [test-services.md](test-services.md) — post-deploy runbook.
+- [test-services.md](docs/runbooks/test-services.md) — post-deploy runbook.
 - `make observability-up` — Prometheus, Grafana, Loki, Tempo.
 
 - [Подключение распределения через Core](docs/integrations/lead-distribution.md) — РС-03: связи, CRM ID, справочники, доступ и серверные ключи.
