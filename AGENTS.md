@@ -6,7 +6,7 @@
 
 Бэкенд TeamOS на Go-микросервисах, заменяющий мок-API фронтенда на настоящий бэкенд
 (персистентность, реальная авторизация, фоновые процессы, пуш-уведомления). Полный дизайн — в
-[teamos-go-microservices-plan.md](teamos-go-microservices-plan.md); считай его источником правды по
+[teamos-go-microservices-plan.md](docs/architecture/teamos-go-microservices-plan.md); считай его источником правды по
 архитектуре, фазам и контрактам.
 
 - **Фронтенд (источник правды для контракта):** `/Users/nikpeskov/Projects/team-os`
@@ -71,7 +71,7 @@ docs/adr/          # architecture decision records (ADR-001..004)
 ```
 
 Go-модули используют префикс `github.com/sk1fy/team-os-backend/...`. Workspace `go.work` связывает их
-вместе (Go 1.26+, toolchain 1.26.9).
+вместе (Go 1.26+, toolchain 1.26.10).
 
 ## Частые команды (через Makefile)
 

@@ -2,7 +2,7 @@ module github.com/sk1fy/team-os-backend/services/gateway
 
 go 1.26.0
 
-toolchain go1.26.9
+toolchain go1.26.10
 
 require (
 	github.com/getkin/kin-openapi v0.142.0

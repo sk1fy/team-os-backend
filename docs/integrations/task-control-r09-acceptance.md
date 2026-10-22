@@ -15,7 +15,7 @@
 R09 добавляет проверочный инструментарий; SHA его коммита фиксируется отдельно
 в отчёте задачи. Изменений бизнес-логики, production env и данных аккаунтов нет.
 
-Из корня backend (Go 1.26.9, Node.js 22.12+, Python 3, npm, buf и Docker;
+Из корня backend (Go 1.26.10, Node.js 22.12+, Python 3, npm, buf и Docker;
 зависимости Distribution должны быть установлены):
 
 ```sh
@@ -186,7 +186,7 @@ PostgreSQL/race webhook + amoCRM client прошёл; 9 Python audit/release tes
 R09/R10 ещё не приняты: новые исправления требуют review/merge, server rollout,
 установки1.2.4 и остатка живой матрицы выше. Registry digests/образа и reversible
 full-stack rollback нельзя заменить локальными тестами. Выполнимый порядок и
-условия остановки — [промпт pi](task-control-r09-r10-server-prompt.md).
+условия остановки — [промпт pi](../runbooks/task-control-r09-r10-server-prompt.md).
 
 
 Проверка совместимости1.2.4 выявила прежние allowlists до1.2.3. Исправлены Core
