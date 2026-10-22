@@ -71,7 +71,7 @@ docs/adr/          # architecture decision records (ADR-001..004)
 ```
 
 Go-модули используют префикс `github.com/sk1fy/team-os-backend/...`. Workspace `go.work` связывает их
-вместе (Go 1.26+, toolchain 1.26.9).
+вместе (Go 1.26+, toolchain 1.26.10).
 
 ## Частые команды (через Makefile)
 

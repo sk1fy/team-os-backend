@@ -1,6 +1,6 @@
 # CI fixture of the same release used by deploy/docker-compose.yaml.
 # Upstream tag RELEASE.2025-04-22T22-12-26Z resolves to this exact commit.
-FROM golang:1.26.9-alpine@sha256:3082400e369fa24d5fc60bca20edab3f6d604e0c5a690ec66b295eff4dd87ade AS build
+FROM golang:1.26.10-alpine@sha256:5cb67f19c5e7994dcb80c074f7cfca8aeeada45bbdca035f73df269cefdcce61 AS build
 ENV CGO_ENABLED=0 GOTOOLCHAIN=local GOMAXPROCS=2
 WORKDIR /src
 RUN wget -O /tmp/minio.tar.gz https://codeload.github.com/minio/minio/tar.gz/0d7408fc9969caf07de6a8c3a84f9fbb10a6739e \
