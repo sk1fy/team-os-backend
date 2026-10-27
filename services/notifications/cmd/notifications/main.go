@@ -102,7 +102,7 @@ func run(logger *slog.Logger) error {
 	healthv1.RegisterHealthServer(g, h)
 	mux := http.NewServeMux()
 	mux.Handle("GET /metrics", httpx.MetricsHandler())
-	mux.Handle("GET /readyz", httpx.Readyz(map[string]httpx.ReadinessCheck{"postgres": func(ctx context.Context) error { return pool.Ping(ctx) }, "nats": func(ctx context.Context) error { return bus.Ready(ctx) }}))
+	mux.Handle("GET /readyz", readinessHandler(pool.Ping, bus.Ready))
 	httpServer := &http.Server{Addr: c.HTTPAddr, Handler: httpx.Chain(mux, httpx.RequestID, httpx.Recoverer(logger), httpx.Tracing("notifications"), httpx.Metrics, httpx.Logging(logger)), ReadHeaderTimeout: 5 * time.Second}
 	errs := make(chan error, 2)
 	go func() { errs <- g.Serve(listener) }()
