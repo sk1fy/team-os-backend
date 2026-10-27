@@ -22,7 +22,7 @@ func TestReadinessSuppliesNATSDeadline(t *testing.T) {
 	})
 	before := time.Now()
 	response := httptest.NewRecorder()
-	handler.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/readyz", nil))
+	handler.ServeHTTP(response, httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/readyz", nil))
 	if response.Code != http.StatusOK {
 		t.Fatalf("healthy dependencies returned %d: %s", response.Code, response.Body.String())
 	}
@@ -36,7 +36,7 @@ func TestReadinessReportsNATSFailure(t *testing.T) {
 		return errors.New("NATS unavailable")
 	})
 	response := httptest.NewRecorder()
-	handler.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/readyz", nil))
+	handler.ServeHTTP(response, httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/readyz", nil))
 	if response.Code != http.StatusServiceUnavailable {
 		t.Fatalf("unavailable NATS returned %d", response.Code)
 	}
@@ -78,7 +78,7 @@ func TestReadinessPreservesRequestContext(t *testing.T) {
 				return checkContext.Err()
 			})
 			response := httptest.NewRecorder()
-			handler.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/readyz", nil).WithContext(ctx))
+			handler.ServeHTTP(response, httptest.NewRequestWithContext(ctx, http.MethodGet, "/readyz", nil))
 			if !called {
 				t.Fatal("NATS check was not called")
 			}
