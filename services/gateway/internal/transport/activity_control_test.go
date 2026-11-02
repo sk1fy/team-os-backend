@@ -33,7 +33,7 @@ func TestActivityRoutesRequireAndForwardExpectedBinding(t *testing.T) {
 	id := uuid.NewString()
 	for _, route := range []struct{ method, path string }{{"GET", "panels"}, {"GET", "employees"}, {"GET", "task-panel"}, {"POST", "panels"}, {"PATCH", "panels/" + id}, {"POST", "panels/" + id + "/share-link"}, {"PATCH", "task-panel"}} {
 		for _, header := range []string{"", binding} {
-			r := httptest.NewRequest(route.method, "/api/v1/activity-control/"+route.path, strings.NewReader(`{}`))
+			r := httptest.NewRequestWithContext(context.Background(), route.method, "/api/v1/activity-control/"+route.path, strings.NewReader(`{}`))
 			r.Header.Set("Content-Type", "application/json")
 			r.Header.Set("Idempotency-Key", uuid.NewString())
 			if header != "" {

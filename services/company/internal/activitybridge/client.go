@@ -60,7 +60,7 @@ func (c *Client) call(ctx context.Context, scope Scope, method, path, command st
 	if err != nil {
 		return &Error{Status: 503, Cause: err}
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		return &Error{Status: resp.StatusCode, RetryAfter: resp.Header.Get("Retry-After")}
 	}

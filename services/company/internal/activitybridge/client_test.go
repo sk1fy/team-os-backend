@@ -28,16 +28,23 @@ func TestClientScopeMappingAndErrors(t *testing.T) {
 			return
 		}
 		if r.URL.Path == "/api/v1/activity/connection" {
-			json.NewEncoder(w).Encode(map[string]any{"installation_id": scope.InstallationId, "integration_id": scope.IntegrationId, "account_id": "42", "state": "active"})
+			if err := json.NewEncoder(w).Encode(map[string]any{"installation_id": scope.InstallationId, "integration_id": scope.IntegrationId, "account_id": "42", "state": "active"}); err != nil {
+				t.Errorf("encode connection: %v", err)
+			}
 			return
 		}
 		if r.URL.Path == "/api/v1/activity/task-panel" {
 			var body map[string]any
-			json.NewDecoder(r.Body).Decode(&body)
+			if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+				t.Errorf("decode task panel: %v", err)
+				return
+			}
 			if body["consider_future_tasks"] != true || body["revision"] != float64(4) {
 				t.Errorf("mapping=%v", body)
 			}
-			json.NewEncoder(w).Encode(body)
+			if err := json.NewEncoder(w).Encode(body); err != nil {
+				t.Errorf("encode task panel: %v", err)
+			}
 			return
 		}
 		t.Errorf("unexpected path %s", r.URL.Path)
@@ -80,7 +87,9 @@ func TestBindingRejectsAmbiguity(t *testing.T) {
 func TestClientRejectsMismatchedAuthority(t *testing.T) {
 	s := Scope{CompanyId: uuid.New(), InstallationId: uuid.New(), IntegrationId: uuid.New(), AccountId: "42"}
 	server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		json.NewEncoder(w).Encode(map[string]any{"installation_id": s.InstallationId, "integration_id": s.IntegrationId, "account_id": "43", "state": "active"})
+		if err := json.NewEncoder(w).Encode(map[string]any{"installation_id": s.InstallationId, "integration_id": s.IntegrationId, "account_id": "43", "state": "active"}); err != nil {
+			t.Errorf("encode connection: %v", err)
+		}
 	}))
 	defer server.Close()
 	c, _ := New(server.URL, strings.Repeat("x", 32))
@@ -97,7 +106,8 @@ func TestPanelMappingPreservesCASAndIssuedLink(t *testing.T) {
 	server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var body map[string]json.RawMessage
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-			t.Fatal(err)
+			t.Errorf("decode panel: %v", err)
+			return
 		}
 		if string(body["revision"]) != "9" || string(body["employee_ids"]) != "[7]" || body["employeeIds"] != nil {
 			t.Errorf("wrong panel mapping %v", body)
@@ -112,7 +122,7 @@ func TestPanelMappingPreservesCASAndIssuedLink(t *testing.T) {
 	if !errors.As(err, &upstream) || upstream.Status != 409 {
 		t.Fatalf("CAS error=%v", err)
 	}
-	public := panel{Id: panelID, Revision: 9, EmployeeIds: []int64{7}, Options: options{Operators: []operator{{EmployeeId: 7, Plan: 100, Thresholds: thresholds{DialingSeconds: 10, ConversationSeconds: 30, ExceedingSeconds: 180}}}}}.public()
+	public := panel{ID: panelID, Revision: 9, EmployeeIds: []int64{7}, Options: options{Operators: []operator{{EmployeeID: 7, Plan: 100, Thresholds: thresholds{DialingSeconds: 10, ConversationSeconds: 30, ExceedingSeconds: 180}}}}}.public()
 	if public.Options.Operators[0].Thresholds.ConversationSeconds != 30 || public.Options.PipelineIds == nil || public.Options.Departments == nil || public.ShareUrl != nil {
 		t.Fatalf("lossy panel mapping %+v", public)
 	}
@@ -121,7 +131,9 @@ func TestPanelMappingPreservesCASAndIssuedLink(t *testing.T) {
 func TestMalformedSuccessIsUnavailableNotEmptyData(t *testing.T) {
 	server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(`{}`))
+		if _, err := w.Write([]byte(`{}`)); err != nil {
+			t.Errorf("write malformed response: %v", err)
+		}
 	}))
 	defer server.Close()
 	c, _ := New(server.URL, strings.Repeat("x", 32))

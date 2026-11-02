@@ -29,7 +29,7 @@ func thresholdsInput(v dto.ActivityThresholds) thresholds {
 }
 
 type operator struct {
-	EmployeeId int64      `json:"employee_id"`
+	EmployeeID int64      `json:"employee_id"`
 	Enabled    bool       `json:"enabled"`
 	Plan       int64      `json:"plan"`
 	Thresholds thresholds `json:"thresholds"`
@@ -37,7 +37,7 @@ type operator struct {
 
 func (v operator) public() dto.ActivityOperator {
 	out := dto.ActivityOperator{}
-	out.EmployeeId = v.EmployeeId
+	out.EmployeeId = v.EmployeeID
 	out.Enabled = v.Enabled
 	out.Plan = v.Plan
 	out.Thresholds = v.Thresholds.public()
@@ -45,7 +45,7 @@ func (v operator) public() dto.ActivityOperator {
 }
 func operatorInput(v dto.ActivityOperator) operator {
 	out := operator{}
-	out.EmployeeId = v.EmployeeId
+	out.EmployeeID = v.EmployeeId
 	out.Enabled = v.Enabled
 	out.Plan = v.Plan
 	out.Thresholds = thresholdsInput(v.Thresholds)
@@ -53,19 +53,19 @@ func operatorInput(v dto.ActivityOperator) operator {
 }
 
 type department struct {
-	GroupId    int64      `json:"group_id"`
+	GroupID    int64      `json:"group_id"`
 	Thresholds thresholds `json:"thresholds"`
 }
 
 func (v department) public() dto.ActivityDepartment {
 	out := dto.ActivityDepartment{}
-	out.GroupId = v.GroupId
+	out.GroupId = v.GroupID
 	out.Thresholds = v.Thresholds.public()
 	return out
 }
 func departmentInput(v dto.ActivityDepartment) department {
 	out := department{}
-	out.GroupId = v.GroupId
+	out.GroupID = v.GroupId
 	out.Thresholds = thresholdsInput(v.Thresholds)
 	return out
 }
@@ -109,12 +109,12 @@ type panel struct {
 	DisplayWindow  dto.ActivityWindow `json:"display_window"`
 	Enabled        bool               `json:"enabled"`
 	Options        options            `json:"options"`
-	Id             uuid.UUID          `json:"id"`
+	ID             uuid.UUID          `json:"id"`
 	Revision       int64              `json:"revision"`
 	Timezone       string             `json:"timezone"`
 	UpdatedAt      time.Time          `json:"updated_at"`
-	ShareUrlIssued bool               `json:"share_url_issued"`
-	ShareUrl       *string            `json:"share_url,omitempty"`
+	ShareURLIssued bool               `json:"share_url_issued"`
+	ShareURL       *string            `json:"share_url,omitempty"`
 }
 
 func (v panel) public() dto.ActivityPanel {
@@ -124,27 +124,27 @@ func (v panel) public() dto.ActivityPanel {
 	out.DisplayWindow = v.DisplayWindow
 	out.Enabled = v.Enabled
 	out.Options = v.Options.public()
-	out.Id = v.Id
+	out.Id = v.ID
 	out.Revision = v.Revision
 	out.Timezone = v.Timezone
 	out.UpdatedAt = v.UpdatedAt
-	out.ShareUrlIssued = v.ShareUrlIssued
-	out.ShareUrl = v.ShareUrl
+	out.ShareUrlIssued = v.ShareURLIssued
+	out.ShareUrl = v.ShareURL
 	return out
 }
 
 type employee struct {
-	Id        int64  `json:"id"`
+	ID        int64  `json:"id"`
 	Name      string `json:"name"`
-	GroupId   int64  `json:"group_id"`
+	GroupID   int64  `json:"group_id"`
 	GroupName string `json:"group_name"`
 }
 
 func (v employee) public() dto.ActivityEmployee {
 	out := dto.ActivityEmployee{}
-	out.Id = v.Id
+	out.Id = v.ID
 	out.Name = v.Name
-	out.GroupId = v.GroupId
+	out.GroupId = v.GroupID
 	out.GroupName = v.GroupName
 	return out
 }
