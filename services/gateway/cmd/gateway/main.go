@@ -179,14 +179,7 @@ func run(logger *slog.Logger) error {
 	}
 
 	router := chi.NewRouter()
-	router.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   configuration.CORSOrigins,
-		AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete, http.MethodOptions},
-		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-Auth-Token", httpx.RequestIDHeader, "If-Match", "Idempotency-Key"},
-		ExposedHeaders:   []string{httpx.RequestIDHeader},
-		AllowCredentials: true,
-		MaxAge:           300,
-	}))
+	router.Use(corsMiddleware(configuration.CORSOrigins))
 	router.Use(httpx.SecurityHeaders, httpx.RequestID, httpx.Recoverer(logger), httpx.Tracing("gateway"), httpx.Metrics, httpx.Logging(logger))
 	router.Get("/healthz", httpx.Healthz().ServeHTTP)
 	router.Get("/metrics", httpx.MetricsHandler().ServeHTTP)
@@ -312,6 +305,17 @@ func run(logger *slog.Logger) error {
 		}
 		return err
 	}
+}
+
+func corsMiddleware(allowedOrigins []string) func(http.Handler) http.Handler {
+	return cors.Handler(cors.Options{
+		AllowedOrigins:   allowedOrigins,
+		AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete, http.MethodOptions},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-Auth-Token", httpx.RequestIDHeader, "If-Match", "Idempotency-Key", "X-Activity-Binding-Id"},
+		ExposedHeaders:   []string{httpx.RequestIDHeader},
+		AllowCredentials: true,
+		MaxAge:           300,
+	})
 }
 
 func defaultUnaryTimeout(timeout time.Duration) grpc.UnaryClientInterceptor {

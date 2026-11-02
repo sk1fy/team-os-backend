@@ -125,6 +125,19 @@ jobs:
         working-directory: services/${{ matrix.service }}
         run: go test -tags integration ./internal/application -count=1
 
+  activity-company-integration:
+    name: Activity company integration
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache-dependency-path: services/company/go.sum
+      - name: Test Activity membership revocation against PostgreSQL
+        working-directory: services/company
+        run: go test -tags integration ./internal/application -run '^TestActivityMembershipRevocationInPostgres$' -count=1
+
   changed-services:
     name: Discover changed services
     runs-on: ubuntu-latest
