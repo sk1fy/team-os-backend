@@ -82,6 +82,7 @@ gen: ## Generate configured protobuf, OpenAPI and sqlc artifacts.
 		oapi-codegen -generate types,chi-server,spec -package api \
 			-o services/gateway/internal/api/teamos.gen.go contracts/openapi/teamos.yaml; \
 	fi
+	@oapi-codegen --config contracts/openapi/activity-codegen.yaml contracts/openapi/teamos.yaml
 	@for config in services/*/sqlc.yaml; do \
 		[[ -f "$$config" ]] || continue; \
 		sqlc generate -f "$$config"; \

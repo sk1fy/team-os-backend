@@ -22,6 +22,7 @@ import (
 	"github.com/sk1fy/team-os-backend/pkg/buildinfo"
 	"github.com/sk1fy/team-os-backend/pkg/eventbus"
 	"github.com/sk1fy/team-os-backend/pkg/httpx"
+	"github.com/sk1fy/team-os-backend/services/company/internal/activitybridge"
 	"github.com/sk1fy/team-os-backend/services/company/internal/application"
 	"github.com/sk1fy/team-os-backend/services/company/internal/config"
 	"github.com/sk1fy/team-os-backend/services/company/internal/consumers"
@@ -113,6 +114,19 @@ func run(logger *slog.Logger) error {
 		application.WithCompanyRegistrationTTL(configuration.RegistrationTokenTTL),
 		application.WithAmoWidgetSessionTTL(configuration.AmoWidgetSessionTTL),
 		application.WithLogger(logger),
+	}
+	if configuration.ActivityCoreURL != "" || configuration.ActivityManagementToken != "" || configuration.ActivityBindings != "" {
+		client, e := activitybridge.New(configuration.ActivityCoreURL, configuration.ActivityManagementToken)
+		if e != nil {
+			logger.Error("invalid Activity configuration")
+			os.Exit(1)
+		}
+		bindings, e := activitybridge.ParseBindings(configuration.ActivityBindings)
+		if e != nil {
+			logger.Error("invalid Activity bindings")
+			os.Exit(1)
+		}
+		serviceOptions = append(serviceOptions, application.WithActivity(client, bindings))
 	}
 	if configuration.TaskControlCoreURL != "" {
 		client, e := taskcontrolbridge.New(configuration.TaskControlCoreURL, configuration.TaskControlKeyID, configuration.TaskControlSecret)

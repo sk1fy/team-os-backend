@@ -19,6 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
+	CompanyService_ActivityControl_FullMethodName                       = "/teamos.company.v1.CompanyService/ActivityControl"
 	CompanyService_TaskControlConnection_FullMethodName                 = "/teamos.company.v1.CompanyService/TaskControlConnection"
 	CompanyService_ReadDistributionRuntime_FullMethodName               = "/teamos.company.v1.CompanyService/ReadDistributionRuntime"
 	CompanyService_WriteDistributionRuntime_FullMethodName              = "/teamos.company.v1.CompanyService/WriteDistributionRuntime"
@@ -116,6 +117,7 @@ const (
 // few services that need synchronous organization lookups. Authenticated
 // calls receive actor/company claims through gRPC metadata.
 type CompanyServiceClient interface {
+	ActivityControl(ctx context.Context, in *ActivityControlRequest, opts ...grpc.CallOption) (*ActivityControlResponse, error)
 	TaskControlConnection(ctx context.Context, in *TaskControlConnectionRequest, opts ...grpc.CallOption) (*TaskControlConnectionResponse, error)
 	ReadDistributionRuntime(ctx context.Context, in *ReadDistributionRuntimeRequest, opts ...grpc.CallOption) (*ReadDistributionRuntimeResponse, error)
 	WriteDistributionRuntime(ctx context.Context, in *WriteDistributionRuntimeRequest, opts ...grpc.CallOption) (*WriteDistributionRuntimeResponse, error)
@@ -211,6 +213,16 @@ type companyServiceClient struct {
 
 func NewCompanyServiceClient(cc grpc.ClientConnInterface) CompanyServiceClient {
 	return &companyServiceClient{cc}
+}
+
+func (c *companyServiceClient) ActivityControl(ctx context.Context, in *ActivityControlRequest, opts ...grpc.CallOption) (*ActivityControlResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ActivityControlResponse)
+	err := c.cc.Invoke(ctx, CompanyService_ActivityControl_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *companyServiceClient) TaskControlConnection(ctx context.Context, in *TaskControlConnectionRequest, opts ...grpc.CallOption) (*TaskControlConnectionResponse, error) {
@@ -1091,6 +1103,7 @@ func (c *companyServiceClient) ResetDistributionEvents(ctx context.Context, in *
 // few services that need synchronous organization lookups. Authenticated
 // calls receive actor/company claims through gRPC metadata.
 type CompanyServiceServer interface {
+	ActivityControl(context.Context, *ActivityControlRequest) (*ActivityControlResponse, error)
 	TaskControlConnection(context.Context, *TaskControlConnectionRequest) (*TaskControlConnectionResponse, error)
 	ReadDistributionRuntime(context.Context, *ReadDistributionRuntimeRequest) (*ReadDistributionRuntimeResponse, error)
 	WriteDistributionRuntime(context.Context, *WriteDistributionRuntimeRequest) (*WriteDistributionRuntimeResponse, error)
@@ -1188,6 +1201,9 @@ type CompanyServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedCompanyServiceServer struct{}
 
+func (UnimplementedCompanyServiceServer) ActivityControl(context.Context, *ActivityControlRequest) (*ActivityControlResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ActivityControl not implemented")
+}
 func (UnimplementedCompanyServiceServer) TaskControlConnection(context.Context, *TaskControlConnectionRequest) (*TaskControlConnectionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TaskControlConnection not implemented")
 }
@@ -1468,6 +1484,24 @@ func RegisterCompanyServiceServer(s grpc.ServiceRegistrar, srv CompanyServiceSer
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&CompanyService_ServiceDesc, srv)
+}
+
+func _CompanyService_ActivityControl_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ActivityControlRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).ActivityControl(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_ActivityControl_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).ActivityControl(ctx, req.(*ActivityControlRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _CompanyService_TaskControlConnection_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -3043,6 +3077,10 @@ var CompanyService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "teamos.company.v1.CompanyService",
 	HandlerType: (*CompanyServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "ActivityControl",
+			Handler:    _CompanyService_ActivityControl_Handler,
+		},
 		{
 			MethodName: "TaskControlConnection",
 			Handler:    _CompanyService_TaskControlConnection_Handler,

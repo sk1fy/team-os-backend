@@ -10,6 +10,7 @@ option go_package = "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v
 // few services that need synchronous organization lookups. Authenticated
 // calls receive actor/company claims through gRPC metadata.
 service CompanyService {
+  rpc ActivityControl(ActivityControlRequest) returns (ActivityControlResponse);
   rpc TaskControlConnection(TaskControlConnectionRequest) returns (TaskControlConnectionResponse);
   rpc ReadDistributionRuntime(ReadDistributionRuntimeRequest) returns (ReadDistributionRuntimeResponse);
   rpc WriteDistributionRuntime(WriteDistributionRuntimeRequest) returns (WriteDistributionRuntimeResponse);
@@ -1194,3 +1195,23 @@ message TaskControlConnectionRequest {
   string operation = 6;
 }
 message TaskControlConnectionResponse { bytes json_body = 1; }
+
+message ActivityControlRequest {
+  enum Action {
+    ACTION_UNSPECIFIED = 0;
+    ACTION_CONNECTION = 1;
+    ACTION_PANELS = 2;
+    ACTION_CREATE = 3;
+    ACTION_UPDATE = 4;
+    ACTION_SHARE = 5;
+    ACTION_EMPLOYEES = 6;
+    ACTION_TASK_PANEL = 7;
+    ACTION_SAVE_TASK_PANEL = 8;
+  }
+  Action action = 1;
+  string panel_id = 2;
+  string command_id = 3;
+  bytes json_body = 4;
+  string binding_id = 5;
+}
+message ActivityControlResponse { bytes json_body = 1; }
