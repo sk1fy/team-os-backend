@@ -1,0 +1,6 @@
+package: activitycontract
+generate:
+  models: true
+output: services/company/internal/activitycontract/activity.gen.go
+output-options:
+  include-tags: [ActivityControl]

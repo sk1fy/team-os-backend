@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	activitybridge "github.com/sk1fy/team-os-backend/services/company/internal/activitybridge"
 	"log/slog"
 	"net"
 	"net/http"
@@ -113,6 +114,19 @@ func run(logger *slog.Logger) error {
 		application.WithCompanyRegistrationTTL(configuration.RegistrationTokenTTL),
 		application.WithAmoWidgetSessionTTL(configuration.AmoWidgetSessionTTL),
 		application.WithLogger(logger),
+	}
+	if configuration.ActivityCoreURL != "" || configuration.ActivityManagementToken != "" || configuration.ActivityBindings != "" {
+		client, e := activitybridge.New(configuration.ActivityCoreURL, configuration.ActivityManagementToken)
+		if e != nil {
+			logger.Error("invalid Activity configuration")
+			os.Exit(1)
+		}
+		bindings, e := activitybridge.ParseBindings(configuration.ActivityBindings)
+		if e != nil {
+			logger.Error("invalid Activity bindings")
+			os.Exit(1)
+		}
+		serviceOptions = append(serviceOptions, application.WithActivity(client, bindings))
 	}
 	if configuration.TaskControlCoreURL != "" {
 		client, e := taskcontrolbridge.New(configuration.TaskControlCoreURL, configuration.TaskControlKeyID, configuration.TaskControlSecret)

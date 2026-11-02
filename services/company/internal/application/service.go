@@ -18,6 +18,7 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 	sharedauth "github.com/sk1fy/team-os-backend/pkg/auth"
+	dto "github.com/sk1fy/team-os-backend/services/company/internal/activitycontract"
 	"github.com/sk1fy/team-os-backend/services/company/internal/domain/amoauth"
 	domainauth "github.com/sk1fy/team-os-backend/services/company/internal/domain/auth"
 	"github.com/sk1fy/team-os-backend/services/company/internal/storage/db"
@@ -43,6 +44,8 @@ type amoSyncState struct {
 }
 
 type Service struct {
+	activityCore           ActivityCore
+	activityBindings       map[uuid.UUID]dto.ActivityScope
 	taskControlCore        TaskControlCore
 	taskControlKeys        map[string]ed25519.PublicKey
 	deliveryCore           DistributionDeliveryCore

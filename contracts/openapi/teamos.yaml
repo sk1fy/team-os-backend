@@ -14,6 +14,8 @@ servers:
   - url: /
     description: Gateway в текущем окружении
 tags:
+  - name: ActivityControl
+    description: Общие настройки Activity и виджета amoCRM.
   - name: Auth
     description: Сессии, профиль и принятие приглашений.
   - name: Provisioning
@@ -40,6 +42,229 @@ security:
   - bearerAuth: []
 
 paths:
+  /api/v1/activity-control/connection:
+    get:
+      tags:
+      - ActivityControl
+      operationId: getActivityConnection
+      summary: getActivityConnection
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityConnection'
+        default:
+          $ref: '#/components/responses/Error'
+  /api/v1/activity-control/panels:
+    get:
+      tags:
+      - ActivityControl
+      operationId: getActivityPanels
+      summary: getActivityPanels
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityPanels'
+        default:
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: X-Activity-Binding-Id
+        in: header
+        required: true
+        description: Expected connection identity returned by getActivityConnection.
+          It never grants authority. A changed binding returns 409.
+        schema:
+          type: string
+          format: uuid
+    post:
+      tags:
+      - ActivityControl
+      operationId: createActivityPanel
+      summary: createActivityPanel
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityPanel'
+        default:
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Activity-Binding-Id
+        in: header
+        required: true
+        description: Expected connection identity returned by getActivityConnection.
+          It never grants authority. A changed binding returns 409.
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActivityPanelInput'
+  /api/v1/activity-control/panels/{panelId}:
+    patch:
+      tags:
+      - ActivityControl
+      operationId: updateActivityPanel
+      summary: updateActivityPanel
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityPanel'
+        default:
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: panelId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Activity-Binding-Id
+        in: header
+        required: true
+        description: Expected connection identity returned by getActivityConnection.
+          It never grants authority. A changed binding returns 409.
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActivityPanelPatch'
+  /api/v1/activity-control/panels/{panelId}/share-link:
+    post:
+      tags:
+      - ActivityControl
+      operationId: rotateActivityShareLink
+      summary: rotateActivityShareLink
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityPanel'
+        default:
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: panelId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Activity-Binding-Id
+        in: header
+        required: true
+        description: Expected connection identity returned by getActivityConnection.
+          It never grants authority. A changed binding returns 409.
+        schema:
+          type: string
+          format: uuid
+  /api/v1/activity-control/employees:
+    get:
+      tags:
+      - ActivityControl
+      operationId: getActivityEmployees
+      summary: getActivityEmployees
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityDirectory'
+        default:
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: X-Activity-Binding-Id
+        in: header
+        required: true
+        description: Expected connection identity returned by getActivityConnection.
+          It never grants authority. A changed binding returns 409.
+        schema:
+          type: string
+          format: uuid
+  /api/v1/activity-control/task-panel:
+    get:
+      tags:
+      - ActivityControl
+      operationId: getActivityTaskPanel
+      summary: getActivityTaskPanel
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityTaskPanel'
+        default:
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: X-Activity-Binding-Id
+        in: header
+        required: true
+        description: Expected connection identity returned by getActivityConnection.
+          It never grants authority. A changed binding returns 409.
+        schema:
+          type: string
+          format: uuid
+    patch:
+      tags:
+      - ActivityControl
+      operationId: updateActivityTaskPanel
+      summary: updateActivityTaskPanel
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityTaskPanel'
+        default:
+          $ref: '#/components/responses/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActivityTaskPanel'
+      parameters:
+      - name: X-Activity-Binding-Id
+        in: header
+        required: true
+        description: Expected connection identity returned by getActivityConnection.
+          It never grants authority. A changed binding returns 409.
+        schema:
+          type: string
+          format: uuid
   /api/v1/distribution/summary:
     get:
       tags: [Distribution]
@@ -7903,6 +8128,271 @@ components:
             $ref: '#/components/schemas/FileDownload'
 
   schemas:
+    ActivityWindow:
+      type: object
+      additionalProperties: false
+      properties:
+        from: &activitySchema001
+          type: string
+        to: *activitySchema001
+      required:
+      - from
+      - to
+    ActivityThresholds:
+      type: object
+      additionalProperties: false
+      properties:
+        dialingSeconds: &activitySchema002
+          type: integer
+          format: int64
+        conversationSeconds: *activitySchema002
+        exceedingSeconds: *activitySchema002
+      required:
+      - dialingSeconds
+      - conversationSeconds
+      - exceedingSeconds
+    ActivityOperator:
+      type: object
+      additionalProperties: false
+      properties:
+        employeeId: *activitySchema002
+        enabled: &activitySchema003
+          type: boolean
+        plan: *activitySchema002
+        thresholds:
+          $ref: '#/components/schemas/ActivityThresholds'
+      required:
+      - employeeId
+      - enabled
+      - plan
+      - thresholds
+    ActivityDepartment:
+      type: object
+      additionalProperties: false
+      properties:
+        groupId: *activitySchema002
+        thresholds:
+          $ref: '#/components/schemas/ActivityThresholds'
+      required:
+      - groupId
+      - thresholds
+    ActivityOptions:
+      type: object
+      additionalProperties: false
+      properties:
+        pipelineIds:
+          type: array
+          items: *activitySchema002
+        operators:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivityOperator'
+        departments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivityDepartment'
+      required:
+      - pipelineIds
+      - operators
+      - departments
+    ActivityPanelInput:
+      type: object
+      additionalProperties: false
+      properties:
+        name: &activitySchema004
+          type: string
+          minLength: 1
+          maxLength: 120
+        employeeIds: &activitySchema005
+          type: array
+          minItems: 1
+          maxItems: 100
+          uniqueItems: true
+          items: *activitySchema002
+        displayWindow: &activitySchema006
+          $ref: '#/components/schemas/ActivityWindow'
+        enabled: *activitySchema003
+        options: &activitySchema007
+          $ref: '#/components/schemas/ActivityOptions'
+      required:
+      - name
+      - employeeIds
+      - displayWindow
+      - enabled
+      - options
+    ActivityPanelPatch:
+      type: object
+      additionalProperties: false
+      properties:
+        name: *activitySchema004
+        employeeIds: *activitySchema005
+        displayWindow: *activitySchema006
+        enabled: *activitySchema003
+        options: *activitySchema007
+        revision: *activitySchema002
+      required:
+      - name
+      - employeeIds
+      - displayWindow
+      - enabled
+      - options
+      - revision
+    ActivityPanel:
+      type: object
+      additionalProperties: false
+      properties:
+        name: *activitySchema004
+        employeeIds: *activitySchema005
+        displayWindow: *activitySchema006
+        enabled: *activitySchema003
+        options: *activitySchema007
+        id: &activitySchema008
+          type: string
+          format: uuid
+        revision: *activitySchema002
+        timezone: *activitySchema001
+        updatedAt:
+          type: string
+          format: date-time
+        shareUrlIssued: *activitySchema003
+        shareUrl: *activitySchema001
+      required:
+      - name
+      - employeeIds
+      - displayWindow
+      - enabled
+      - options
+      - id
+      - revision
+      - timezone
+      - updatedAt
+      - shareUrlIssued
+    ActivityPanels:
+      type: object
+      additionalProperties: false
+      properties:
+        panels:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivityPanel'
+      required:
+      - panels
+    ActivityTaskPanel:
+      type: object
+      additionalProperties: false
+      properties:
+        enabled: *activitySchema003
+        employeeIds:
+          type: array
+          items: *activitySchema002
+        considerFutureTasks: *activitySchema003
+        includeRelatedDeals: *activitySchema003
+        priorityKeys:
+          type: array
+          items: *activitySchema001
+        revision: *activitySchema002
+      required:
+      - enabled
+      - employeeIds
+      - considerFutureTasks
+      - includeRelatedDeals
+      - priorityKeys
+      - revision
+    ActivityEmployee:
+      type: object
+      additionalProperties: false
+      properties:
+        id: *activitySchema002
+        name: *activitySchema001
+        groupId: *activitySchema002
+        groupName: *activitySchema001
+      required:
+      - id
+      - name
+      - groupId
+      - groupName
+    ActivityPipeline:
+      type: object
+      additionalProperties: false
+      properties:
+        id: *activitySchema002
+        name: *activitySchema001
+        statuses:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              id: *activitySchema002
+              name: *activitySchema001
+            required:
+            - id
+            - name
+      required:
+      - id
+      - name
+      - statuses
+    ActivityDirectory:
+      type: object
+      additionalProperties: false
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivityEmployee'
+        pipelines:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivityPipeline'
+        timezone: *activitySchema001
+      required:
+      - users
+      - pipelines
+      - timezone
+    ActivityScope:
+      type: object
+      additionalProperties: false
+      properties:
+        companyId: *activitySchema008
+        installationId: *activitySchema008
+        integrationId: *activitySchema008
+        accountId: *activitySchema001
+      required:
+      - companyId
+      - installationId
+      - integrationId
+      - accountId
+    ActivityConnection:
+      oneOf:
+      - type: object
+        additionalProperties: false
+        properties:
+          state:
+            type: string
+            enum:
+            - configured
+          scope:
+            $ref: '#/components/schemas/ActivityScope'
+          bindingId:
+            type: string
+            format: uuid
+        required:
+        - state
+        - scope
+        - bindingId
+      - type: object
+        additionalProperties: false
+        properties:
+          state:
+            type: string
+            enum:
+            - unconfigured
+            - unavailable
+          message:
+            type: string
+        required:
+        - state
+        - message
     TaskControlImportIssue:
       type: object
       additionalProperties: false
