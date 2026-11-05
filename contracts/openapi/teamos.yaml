@@ -467,9 +467,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/DistributionObservationAssignmentOptions'
         '400':
-          $ref: '#/components/responses/Error'
+          $ref: '#/components/responses/BadRequest'
         '401':
-          $ref: '#/components/responses/Error'
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Error'
         '404':
@@ -494,9 +494,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/DistributionObservationAssignment'
         '400':
-          $ref: '#/components/responses/Error'
+          $ref: '#/components/responses/BadRequest'
         '401':
-          $ref: '#/components/responses/Error'
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Error'
         '404':

@@ -13,3 +13,7 @@ ALTER TABLE distribution_queue
    AND manual_expected_responsible_user_id > 0)
  ),
  ADD CONSTRAINT distribution_manual_request_unique UNIQUE (company_id, manual_request_id);
+
+ALTER TABLE distribution_queue DROP CONSTRAINT distribution_queue_entry_id_key;
+CREATE UNIQUE INDEX distribution_queue_entry_id_key ON distribution_queue(entry_id)
+ WHERE manual_observation_id IS NULL OR NOT settled OR state NOT IN ('failed', 'cancelled');
