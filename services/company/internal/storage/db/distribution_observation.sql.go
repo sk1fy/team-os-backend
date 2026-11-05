@@ -9,6 +9,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const claimDistributionObservation = `-- name: ClaimDistributionObservation :one
@@ -38,6 +39,50 @@ func (q *Queries) ClaimDistributionObservation(ctx context.Context, leaseToken u
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const createDistributionManualAssignment = `-- name: CreateDistributionManualAssignment :execrows
+INSERT INTO distribution_queue(id,company_id,entry_id,rule_id,group_id,account_id,lead_id,execution_epoch,manual_observation_id,manual_request_id,manual_employee_id,manual_actor_id,manual_expected_responsible_user_id)
+VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+ON CONFLICT (company_id, manual_request_id) DO NOTHING
+`
+
+type CreateDistributionManualAssignmentParams struct {
+	ID                              uuid.UUID     `json:"id"`
+	CompanyID                       uuid.UUID     `json:"company_id"`
+	EntryID                         uuid.UUID     `json:"entry_id"`
+	RuleID                          uuid.UUID     `json:"rule_id"`
+	GroupID                         uuid.UUID     `json:"group_id"`
+	AccountID                       string        `json:"account_id"`
+	LeadID                          string        `json:"lead_id"`
+	ExecutionEpoch                  int64         `json:"execution_epoch"`
+	ManualObservationID             uuid.NullUUID `json:"manual_observation_id"`
+	ManualRequestID                 uuid.NullUUID `json:"manual_request_id"`
+	ManualEmployeeID                uuid.NullUUID `json:"manual_employee_id"`
+	ManualActorID                   uuid.NullUUID `json:"manual_actor_id"`
+	ManualExpectedResponsibleUserID pgtype.Int8   `json:"manual_expected_responsible_user_id"`
+}
+
+func (q *Queries) CreateDistributionManualAssignment(ctx context.Context, arg CreateDistributionManualAssignmentParams) (int64, error) {
+	result, err := q.db.Exec(ctx, createDistributionManualAssignment,
+		arg.ID,
+		arg.CompanyID,
+		arg.EntryID,
+		arg.RuleID,
+		arg.GroupID,
+		arg.AccountID,
+		arg.LeadID,
+		arg.ExecutionEpoch,
+		arg.ManualObservationID,
+		arg.ManualRequestID,
+		arg.ManualEmployeeID,
+		arg.ManualActorID,
+		arg.ManualExpectedResponsibleUserID,
+	)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const distributionRuleHasObservation = `-- name: DistributionRuleHasObservation :one
@@ -84,6 +129,143 @@ type FinishDistributionObservationParams struct {
 func (q *Queries) FinishDistributionObservation(ctx context.Context, arg FinishDistributionObservationParams) error {
 	_, err := q.db.Exec(ctx, finishDistributionObservation, arg.ID, arg.LeaseToken)
 	return err
+}
+
+const getDistributionManualAssignment = `-- name: GetDistributionManualAssignment :one
+SELECT id, company_id, entry_id, rule_id, group_id, account_id, lead_id, state, reason, next_attempt_at, lease_token, lease_until, operation_id, decision_id, command, idempotency_key, cancel_key, reconcile_key, cancel_requested, settled, availability_hash, wake_revision, claim_revision, selection_order, planned_employee_id, planned_at, created_at, updated_at, execution_epoch, waiting_deadline_at, next_shift_at, manual_observation_id, manual_request_id, manual_employee_id, manual_actor_id, manual_expected_responsible_user_id FROM distribution_queue WHERE company_id=$1 AND manual_observation_id=$2
+`
+
+type GetDistributionManualAssignmentParams struct {
+	CompanyID           uuid.UUID     `json:"company_id"`
+	ManualObservationID uuid.NullUUID `json:"manual_observation_id"`
+}
+
+func (q *Queries) GetDistributionManualAssignment(ctx context.Context, arg GetDistributionManualAssignmentParams) (DistributionQueue, error) {
+	row := q.db.QueryRow(ctx, getDistributionManualAssignment, arg.CompanyID, arg.ManualObservationID)
+	var i DistributionQueue
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.EntryID,
+		&i.RuleID,
+		&i.GroupID,
+		&i.AccountID,
+		&i.LeadID,
+		&i.State,
+		&i.Reason,
+		&i.NextAttemptAt,
+		&i.LeaseToken,
+		&i.LeaseUntil,
+		&i.OperationID,
+		&i.DecisionID,
+		&i.Command,
+		&i.IdempotencyKey,
+		&i.CancelKey,
+		&i.ReconcileKey,
+		&i.CancelRequested,
+		&i.Settled,
+		&i.AvailabilityHash,
+		&i.WakeRevision,
+		&i.ClaimRevision,
+		&i.SelectionOrder,
+		&i.PlannedEmployeeID,
+		&i.PlannedAt,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.ExecutionEpoch,
+		&i.WaitingDeadlineAt,
+		&i.NextShiftAt,
+		&i.ManualObservationID,
+		&i.ManualRequestID,
+		&i.ManualEmployeeID,
+		&i.ManualActorID,
+		&i.ManualExpectedResponsibleUserID,
+	)
+	return i, err
+}
+
+const getDistributionManualAssignmentRequest = `-- name: GetDistributionManualAssignmentRequest :one
+SELECT id, company_id, entry_id, rule_id, group_id, account_id, lead_id, state, reason, next_attempt_at, lease_token, lease_until, operation_id, decision_id, command, idempotency_key, cancel_key, reconcile_key, cancel_requested, settled, availability_hash, wake_revision, claim_revision, selection_order, planned_employee_id, planned_at, created_at, updated_at, execution_epoch, waiting_deadline_at, next_shift_at, manual_observation_id, manual_request_id, manual_employee_id, manual_actor_id, manual_expected_responsible_user_id FROM distribution_queue WHERE company_id=$1 AND manual_request_id=$2
+`
+
+type GetDistributionManualAssignmentRequestParams struct {
+	CompanyID       uuid.UUID     `json:"company_id"`
+	ManualRequestID uuid.NullUUID `json:"manual_request_id"`
+}
+
+func (q *Queries) GetDistributionManualAssignmentRequest(ctx context.Context, arg GetDistributionManualAssignmentRequestParams) (DistributionQueue, error) {
+	row := q.db.QueryRow(ctx, getDistributionManualAssignmentRequest, arg.CompanyID, arg.ManualRequestID)
+	var i DistributionQueue
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.EntryID,
+		&i.RuleID,
+		&i.GroupID,
+		&i.AccountID,
+		&i.LeadID,
+		&i.State,
+		&i.Reason,
+		&i.NextAttemptAt,
+		&i.LeaseToken,
+		&i.LeaseUntil,
+		&i.OperationID,
+		&i.DecisionID,
+		&i.Command,
+		&i.IdempotencyKey,
+		&i.CancelKey,
+		&i.ReconcileKey,
+		&i.CancelRequested,
+		&i.Settled,
+		&i.AvailabilityHash,
+		&i.WakeRevision,
+		&i.ClaimRevision,
+		&i.SelectionOrder,
+		&i.PlannedEmployeeID,
+		&i.PlannedAt,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.ExecutionEpoch,
+		&i.WaitingDeadlineAt,
+		&i.NextShiftAt,
+		&i.ManualObservationID,
+		&i.ManualRequestID,
+		&i.ManualEmployeeID,
+		&i.ManualActorID,
+		&i.ManualExpectedResponsibleUserID,
+	)
+	return i, err
+}
+
+const getDistributionObservation = `-- name: GetDistributionObservation :one
+SELECT id, company_id, rule_id, group_id, execution_epoch, entry_id, event_id, binding_id, binding_revision, account_id, lead_id, payload, created_at FROM distribution_observations WHERE company_id=$1 AND rule_id=$2 AND id=$3
+`
+
+type GetDistributionObservationParams struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	RuleID    uuid.UUID `json:"rule_id"`
+	ID        uuid.UUID `json:"id"`
+}
+
+func (q *Queries) GetDistributionObservation(ctx context.Context, arg GetDistributionObservationParams) (DistributionObservation, error) {
+	row := q.db.QueryRow(ctx, getDistributionObservation, arg.CompanyID, arg.RuleID, arg.ID)
+	var i DistributionObservation
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.RuleID,
+		&i.GroupID,
+		&i.ExecutionEpoch,
+		&i.EntryID,
+		&i.EventID,
+		&i.BindingID,
+		&i.BindingRevision,
+		&i.AccountID,
+		&i.LeadID,
+		&i.Payload,
+		&i.CreatedAt,
+	)
+	return i, err
 }
 
 const getDistributionObservationCursor = `-- name: GetDistributionObservationCursor :one

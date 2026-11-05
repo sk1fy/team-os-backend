@@ -69,7 +69,7 @@ func (q *Queries) CancelUndispatchedDistributionQueueUI(ctx context.Context, id 
 }
 
 const claimDistributionQueue = `-- name: ClaimDistributionQueue :one
-UPDATE distribution_queue SET lease_token=$1,lease_until=clock_timestamp()+interval '30 seconds' WHERE id=(SELECT id FROM distribution_queue WHERE state NOT IN('confirmed','kept','cancelled','failed') AND (next_attempt_at<=clock_timestamp() OR EXISTS(SELECT 1 FROM distribution_observed_entries e WHERE e.id=entry_id AND e.state='cancelled')) AND (lease_until IS NULL OR lease_until<clock_timestamp()) AND NOT EXISTS(SELECT 1 FROM distribution_queue older WHERE older.company_id=distribution_queue.company_id AND older.group_id=distribution_queue.group_id AND older.state NOT IN('confirmed','kept','cancelled','failed') AND (older.next_attempt_at<=clock_timestamp() OR older.lease_until>clock_timestamp()) AND (older.created_at,older.id)<(distribution_queue.created_at,distribution_queue.id)) ORDER BY created_at,id FOR UPDATE SKIP LOCKED LIMIT 1) RETURNING id, company_id, entry_id, rule_id, group_id, account_id, lead_id, state, reason, next_attempt_at, lease_token, lease_until, operation_id, decision_id, command, idempotency_key, cancel_key, reconcile_key, cancel_requested, settled, availability_hash, wake_revision, claim_revision, selection_order, planned_employee_id, planned_at, created_at, updated_at, execution_epoch, waiting_deadline_at, next_shift_at
+UPDATE distribution_queue SET lease_token=$1,lease_until=clock_timestamp()+interval '30 seconds' WHERE id=(SELECT id FROM distribution_queue WHERE manual_observation_id IS NULL AND state NOT IN('confirmed','kept','cancelled','failed') AND (next_attempt_at<=clock_timestamp() OR EXISTS(SELECT 1 FROM distribution_observed_entries e WHERE e.id=entry_id AND e.state='cancelled')) AND (lease_until IS NULL OR lease_until<clock_timestamp()) AND NOT EXISTS(SELECT 1 FROM distribution_queue older WHERE older.manual_observation_id IS NULL AND older.company_id=distribution_queue.company_id AND older.group_id=distribution_queue.group_id AND older.state NOT IN('confirmed','kept','cancelled','failed') AND (older.next_attempt_at<=clock_timestamp() OR older.lease_until>clock_timestamp()) AND (older.created_at,older.id)<(distribution_queue.created_at,distribution_queue.id)) ORDER BY created_at,id FOR UPDATE SKIP LOCKED LIMIT 1) RETURNING id, company_id, entry_id, rule_id, group_id, account_id, lead_id, state, reason, next_attempt_at, lease_token, lease_until, operation_id, decision_id, command, idempotency_key, cancel_key, reconcile_key, cancel_requested, settled, availability_hash, wake_revision, claim_revision, selection_order, planned_employee_id, planned_at, created_at, updated_at, execution_epoch, waiting_deadline_at, next_shift_at, manual_observation_id, manual_request_id, manual_employee_id, manual_actor_id, manual_expected_responsible_user_id
 `
 
 func (q *Queries) ClaimDistributionQueue(ctx context.Context, leaseToken uuid.NullUUID) (DistributionQueue, error) {
@@ -107,6 +107,11 @@ func (q *Queries) ClaimDistributionQueue(ctx context.Context, leaseToken uuid.Nu
 		&i.ExecutionEpoch,
 		&i.WaitingDeadlineAt,
 		&i.NextShiftAt,
+		&i.ManualObservationID,
+		&i.ManualRequestID,
+		&i.ManualEmployeeID,
+		&i.ManualActorID,
+		&i.ManualExpectedResponsibleUserID,
 	)
 	return i, err
 }
@@ -473,7 +478,7 @@ func (q *Queries) GetDistributionObservedEntry(ctx context.Context, id uuid.UUID
 }
 
 const getDistributionQueueByOperation = `-- name: GetDistributionQueueByOperation :one
-SELECT id, company_id, entry_id, rule_id, group_id, account_id, lead_id, state, reason, next_attempt_at, lease_token, lease_until, operation_id, decision_id, command, idempotency_key, cancel_key, reconcile_key, cancel_requested, settled, availability_hash, wake_revision, claim_revision, selection_order, planned_employee_id, planned_at, created_at, updated_at, execution_epoch, waiting_deadline_at, next_shift_at FROM distribution_queue WHERE operation_id=$1
+SELECT id, company_id, entry_id, rule_id, group_id, account_id, lead_id, state, reason, next_attempt_at, lease_token, lease_until, operation_id, decision_id, command, idempotency_key, cancel_key, reconcile_key, cancel_requested, settled, availability_hash, wake_revision, claim_revision, selection_order, planned_employee_id, planned_at, created_at, updated_at, execution_epoch, waiting_deadline_at, next_shift_at, manual_observation_id, manual_request_id, manual_employee_id, manual_actor_id, manual_expected_responsible_user_id FROM distribution_queue WHERE operation_id=$1
 `
 
 func (q *Queries) GetDistributionQueueByOperation(ctx context.Context, operationID uuid.NullUUID) (DistributionQueue, error) {
@@ -511,6 +516,11 @@ func (q *Queries) GetDistributionQueueByOperation(ctx context.Context, operation
 		&i.ExecutionEpoch,
 		&i.WaitingDeadlineAt,
 		&i.NextShiftAt,
+		&i.ManualObservationID,
+		&i.ManualRequestID,
+		&i.ManualEmployeeID,
+		&i.ManualActorID,
+		&i.ManualExpectedResponsibleUserID,
 	)
 	return i, err
 }
@@ -585,7 +595,7 @@ func (q *Queries) GetDistributionUIAction(ctx context.Context, arg GetDistributi
 }
 
 const listDistributionQueue = `-- name: ListDistributionQueue :many
-SELECT id, company_id, entry_id, rule_id, group_id, account_id, lead_id, state, reason, next_attempt_at, lease_token, lease_until, operation_id, decision_id, command, idempotency_key, cancel_key, reconcile_key, cancel_requested, settled, availability_hash, wake_revision, claim_revision, selection_order, planned_employee_id, planned_at, created_at, updated_at, execution_epoch, waiting_deadline_at, next_shift_at FROM distribution_queue WHERE company_id=$1 ORDER BY created_at,id LIMIT $2 OFFSET $3
+SELECT id, company_id, entry_id, rule_id, group_id, account_id, lead_id, state, reason, next_attempt_at, lease_token, lease_until, operation_id, decision_id, command, idempotency_key, cancel_key, reconcile_key, cancel_requested, settled, availability_hash, wake_revision, claim_revision, selection_order, planned_employee_id, planned_at, created_at, updated_at, execution_epoch, waiting_deadline_at, next_shift_at, manual_observation_id, manual_request_id, manual_employee_id, manual_actor_id, manual_expected_responsible_user_id FROM distribution_queue WHERE company_id=$1 ORDER BY created_at,id LIMIT $2 OFFSET $3
 `
 
 type ListDistributionQueueParams struct {
@@ -635,6 +645,11 @@ func (q *Queries) ListDistributionQueue(ctx context.Context, arg ListDistributio
 			&i.ExecutionEpoch,
 			&i.WaitingDeadlineAt,
 			&i.NextShiftAt,
+			&i.ManualObservationID,
+			&i.ManualRequestID,
+			&i.ManualEmployeeID,
+			&i.ManualActorID,
+			&i.ManualExpectedResponsibleUserID,
 		); err != nil {
 			return nil, err
 		}
@@ -647,7 +662,7 @@ func (q *Queries) ListDistributionQueue(ctx context.Context, arg ListDistributio
 }
 
 const listDistributionQueueFiltered = `-- name: ListDistributionQueueFiltered :many
-SELECT id, company_id, entry_id, rule_id, group_id, account_id, lead_id, state, reason, next_attempt_at, lease_token, lease_until, operation_id, decision_id, command, idempotency_key, cancel_key, reconcile_key, cancel_requested, settled, availability_hash, wake_revision, claim_revision, selection_order, planned_employee_id, planned_at, created_at, updated_at, execution_epoch, waiting_deadline_at, next_shift_at FROM distribution_queue WHERE company_id=$1
+SELECT id, company_id, entry_id, rule_id, group_id, account_id, lead_id, state, reason, next_attempt_at, lease_token, lease_until, operation_id, decision_id, command, idempotency_key, cancel_key, reconcile_key, cancel_requested, settled, availability_hash, wake_revision, claim_revision, selection_order, planned_employee_id, planned_at, created_at, updated_at, execution_epoch, waiting_deadline_at, next_shift_at, manual_observation_id, manual_request_id, manual_employee_id, manual_actor_id, manual_expected_responsible_user_id FROM distribution_queue WHERE company_id=$1
 AND ($2::uuid IS NULL OR group_id=$2)
 AND ($3::timestamptz IS NULL OR created_at>=$3)
 AND ($4::timestamptz IS NULL OR created_at<$4)
@@ -714,6 +729,11 @@ func (q *Queries) ListDistributionQueueFiltered(ctx context.Context, arg ListDis
 			&i.ExecutionEpoch,
 			&i.WaitingDeadlineAt,
 			&i.NextShiftAt,
+			&i.ManualObservationID,
+			&i.ManualRequestID,
+			&i.ManualEmployeeID,
+			&i.ManualActorID,
+			&i.ManualExpectedResponsibleUserID,
 		); err != nil {
 			return nil, err
 		}
@@ -818,7 +838,7 @@ func (q *Queries) ListDistributionRules(ctx context.Context, arg ListDistributio
 }
 
 const listDistributionSummaryCandidates = `-- name: ListDistributionSummaryCandidates :many
-SELECT id, company_id, entry_id, rule_id, group_id, account_id, lead_id, state, reason, next_attempt_at, lease_token, lease_until, operation_id, decision_id, command, idempotency_key, cancel_key, reconcile_key, cancel_requested, settled, availability_hash, wake_revision, claim_revision, selection_order, planned_employee_id, planned_at, created_at, updated_at, execution_epoch, waiting_deadline_at, next_shift_at FROM distribution_queue WHERE company_id=$1 AND ($2::uuid IS NULL OR group_id=$2) AND (NOT settled OR state='failed' OR (state IN('confirmed','kept') AND updated_at >= $3 AND updated_at < $4)) ORDER BY created_at,id LIMIT 101
+SELECT id, company_id, entry_id, rule_id, group_id, account_id, lead_id, state, reason, next_attempt_at, lease_token, lease_until, operation_id, decision_id, command, idempotency_key, cancel_key, reconcile_key, cancel_requested, settled, availability_hash, wake_revision, claim_revision, selection_order, planned_employee_id, planned_at, created_at, updated_at, execution_epoch, waiting_deadline_at, next_shift_at, manual_observation_id, manual_request_id, manual_employee_id, manual_actor_id, manual_expected_responsible_user_id FROM distribution_queue WHERE company_id=$1 AND ($2::uuid IS NULL OR group_id=$2) AND (NOT settled OR state='failed' OR (state IN('confirmed','kept') AND updated_at >= $3 AND updated_at < $4)) ORDER BY created_at,id LIMIT 101
 `
 
 type ListDistributionSummaryCandidatesParams struct {
@@ -874,6 +894,11 @@ func (q *Queries) ListDistributionSummaryCandidates(ctx context.Context, arg Lis
 			&i.ExecutionEpoch,
 			&i.WaitingDeadlineAt,
 			&i.NextShiftAt,
+			&i.ManualObservationID,
+			&i.ManualRequestID,
+			&i.ManualEmployeeID,
+			&i.ManualActorID,
+			&i.ManualExpectedResponsibleUserID,
 		); err != nil {
 			return nil, err
 		}
@@ -920,7 +945,7 @@ func (q *Queries) LockDistributionGroupClaim(ctx context.Context, arg LockDistri
 }
 
 const lockDistributionQueue = `-- name: LockDistributionQueue :one
-SELECT id, company_id, entry_id, rule_id, group_id, account_id, lead_id, state, reason, next_attempt_at, lease_token, lease_until, operation_id, decision_id, command, idempotency_key, cancel_key, reconcile_key, cancel_requested, settled, availability_hash, wake_revision, claim_revision, selection_order, planned_employee_id, planned_at, created_at, updated_at, execution_epoch, waiting_deadline_at, next_shift_at FROM distribution_queue WHERE id=$1 FOR UPDATE
+SELECT id, company_id, entry_id, rule_id, group_id, account_id, lead_id, state, reason, next_attempt_at, lease_token, lease_until, operation_id, decision_id, command, idempotency_key, cancel_key, reconcile_key, cancel_requested, settled, availability_hash, wake_revision, claim_revision, selection_order, planned_employee_id, planned_at, created_at, updated_at, execution_epoch, waiting_deadline_at, next_shift_at, manual_observation_id, manual_request_id, manual_employee_id, manual_actor_id, manual_expected_responsible_user_id FROM distribution_queue WHERE id=$1 FOR UPDATE
 `
 
 func (q *Queries) LockDistributionQueue(ctx context.Context, id uuid.UUID) (DistributionQueue, error) {
@@ -958,12 +983,17 @@ func (q *Queries) LockDistributionQueue(ctx context.Context, id uuid.UUID) (Dist
 		&i.ExecutionEpoch,
 		&i.WaitingDeadlineAt,
 		&i.NextShiftAt,
+		&i.ManualObservationID,
+		&i.ManualRequestID,
+		&i.ManualEmployeeID,
+		&i.ManualActorID,
+		&i.ManualExpectedResponsibleUserID,
 	)
 	return i, err
 }
 
 const lockDistributionQueueLease = `-- name: LockDistributionQueueLease :one
-SELECT id, company_id, entry_id, rule_id, group_id, account_id, lead_id, state, reason, next_attempt_at, lease_token, lease_until, operation_id, decision_id, command, idempotency_key, cancel_key, reconcile_key, cancel_requested, settled, availability_hash, wake_revision, claim_revision, selection_order, planned_employee_id, planned_at, created_at, updated_at, execution_epoch, waiting_deadline_at, next_shift_at FROM distribution_queue WHERE id=$1 AND lease_token=$2 AND lease_until>clock_timestamp() FOR UPDATE
+SELECT id, company_id, entry_id, rule_id, group_id, account_id, lead_id, state, reason, next_attempt_at, lease_token, lease_until, operation_id, decision_id, command, idempotency_key, cancel_key, reconcile_key, cancel_requested, settled, availability_hash, wake_revision, claim_revision, selection_order, planned_employee_id, planned_at, created_at, updated_at, execution_epoch, waiting_deadline_at, next_shift_at, manual_observation_id, manual_request_id, manual_employee_id, manual_actor_id, manual_expected_responsible_user_id FROM distribution_queue WHERE id=$1 AND lease_token=$2 AND lease_until>clock_timestamp() FOR UPDATE
 `
 
 type LockDistributionQueueLeaseParams struct {
@@ -1006,6 +1036,11 @@ func (q *Queries) LockDistributionQueueLease(ctx context.Context, arg LockDistri
 		&i.ExecutionEpoch,
 		&i.WaitingDeadlineAt,
 		&i.NextShiftAt,
+		&i.ManualObservationID,
+		&i.ManualRequestID,
+		&i.ManualEmployeeID,
+		&i.ManualActorID,
+		&i.ManualExpectedResponsibleUserID,
 	)
 	return i, err
 }

@@ -466,6 +466,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DistributionObservationAssignmentOptions'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
     post:
@@ -485,6 +493,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DistributionObservationAssignment'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
         default:
           $ref: '#/components/responses/Error'
   /api/v1/distribution/rules/{ruleId}/observations:

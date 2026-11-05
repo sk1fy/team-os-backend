@@ -38,5 +38,6 @@ SELECT * FROM distribution_queue WHERE company_id=$1 AND manual_observation_id=$
 SELECT * FROM distribution_queue WHERE company_id=$1 AND manual_request_id=$2;
 
 -- name: CreateDistributionManualAssignment :execrows
-INSERT INTO distribution_queue(id,company_id,entry_id,rule_id,group_id,account_id,lead_id,execution_epoch,manual_observation_id,manual_request_id)
-VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) ON CONFLICT DO NOTHING;
+INSERT INTO distribution_queue(id,company_id,entry_id,rule_id,group_id,account_id,lead_id,execution_epoch,manual_observation_id,manual_request_id,manual_employee_id,manual_actor_id,manual_expected_responsible_user_id)
+VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+ON CONFLICT (company_id, manual_request_id) DO NOTHING;
