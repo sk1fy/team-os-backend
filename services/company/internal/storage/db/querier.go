@@ -207,6 +207,7 @@ type Querier interface {
 	GetUserWithPositions(ctx context.Context, arg GetUserWithPositionsParams) (GetUserWithPositionsRow, error)
 	GetUsersByIDs(ctx context.Context, arg GetUsersByIDsParams) ([]GetUsersByIDsRow, error)
 	GrantEmployeeSectionAccess(ctx context.Context, arg GrantEmployeeSectionAccessParams) error
+	HasAppliedTaskControlRules(ctx context.Context, arg HasAppliedTaskControlRulesParams) (bool, error)
 	HasCurrentTaskControlV2Ack(ctx context.Context, arg HasCurrentTaskControlV2AckParams) (bool, error)
 	HasTaskControlRuntimeApplied(ctx context.Context, arg HasTaskControlRuntimeAppliedParams) (bool, error)
 	InvalidateTaskControlReferenceCache(ctx context.Context, arg InvalidateTaskControlReferenceCacheParams) error

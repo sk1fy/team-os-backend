@@ -161,7 +161,7 @@ func (s *Service) GetTaskControlDraft(ctx context.Context, a Actor, id uuid.UUID
 	}
 	return out, tx.Commit(ctx)
 }
-func (s *Service) UpdateTaskControlDraft(ctx context.Context, a Actor, id uuid.UUID, in TaskControlDraftInput) (TaskControlDraft, error) {
+func (s *Service) UpdateTaskControlDraft(ctx context.Context, a Actor, id uuid.UUID, in TaskControlDraftInput, apply ...*uuid.UUID) (TaskControlDraft, error) {
 	var out TaskControlDraft
 	if issues := tc.ValidateRules(in.Rules); len(issues) > 0 {
 		return out, validation(issues[0].Message)
@@ -173,6 +173,13 @@ func (s *Service) UpdateTaskControlDraft(ctx context.Context, a Actor, id uuid.U
 	defer func() { _ = tx.Rollback(ctx) }()
 	if c.RuntimeSchemaVersion == 2 {
 		return out, taskControlRequiresV2()
+	}
+	request, e := taskControlApplyRequest(c, a, in, apply)
+	if e != nil {
+		return out, e
+	}
+	if replayed, err := request.replay(ctx, q, &out); replayed || err != nil {
+		return out, err
 	}
 	if e = tcFence(c, in.ExpectedBindingRevision, in.ExpectedModeEpoch); e != nil {
 		return out, e
@@ -186,8 +193,20 @@ func (s *Service) UpdateTaskControlDraft(ctx context.Context, a Actor, id uuid.U
 	if e != nil {
 		return out, e
 	}
+	if request != nil {
+		c, e = activateTaskControlRules(ctx, q, c)
+		if e != nil {
+			return out, e
+		}
+		if _, e = s.publishTaskControlRules(ctx, q, c, a, d, in.Rules, request.id, request.hash, taskControlSaveReason); e != nil {
+			return out, taskControlRuleSaveError(e)
+		}
+	}
 	out, e = draftDTO(c, d)
 	if e != nil {
+		return out, e
+	}
+	if e = request.record(ctx, q, out); e != nil {
 		return out, e
 	}
 	return out, tx.Commit(ctx)
@@ -268,6 +287,15 @@ func (s *Service) PublishTaskControlDraft(ctx context.Context, a Actor, id uuid.
 	if issues := tc.ValidateRules(rules); len(issues) > 0 {
 		return out, validation(issues[0].Message)
 	}
+	out, e = s.publishTaskControlRules(ctx, q, c, a, d, rules, in.RequestID, hs, in.Reason)
+	if e != nil {
+		return out, e
+	}
+	return out, tx.Commit(ctx)
+}
+
+func (s *Service) publishTaskControlRules(ctx context.Context, q *db.Queries, c db.TaskControlConnection, a Actor, d db.TaskControlDraft, rules []tc.Rule, requestID uuid.UUID, hash, reason string) (TaskControlPublication, error) {
+	var out TaskControlPublication
 	if taskControlRulesNeedReferences(rules) {
 		refs, err := s.taskControlFreshReferencesTx(ctx, q, c)
 		if err != nil {
@@ -277,7 +305,7 @@ func (s *Service) PublishTaskControlDraft(ctx context.Context, a Actor, id uuid.
 			return out, coded(ErrorValidation, issues[0].Code, issues[0].Message)
 		}
 	}
-	latest, e := q.GetTaskControlPublicationHighWater(ctx, db.GetTaskControlPublicationHighWaterParams{CompanyID: a.CompanyID, BindingID: id})
+	latest, e := q.GetTaskControlPublicationHighWater(ctx, db.GetTaskControlPublicationHighWaterParams{CompanyID: a.CompanyID, BindingID: c.ID})
 	if e != nil {
 		return out, e
 	}
@@ -285,17 +313,17 @@ func (s *Service) PublishTaskControlDraft(ctx context.Context, a Actor, id uuid.
 		return out, conflict("Исчерпан счётчик публикаций")
 	}
 	version := latest + 1
-	out = TaskControlPublication{uuid.New(), taskControlScope(c), version, d.Revision, 1, d.Checksum, rules, s.now().UTC(), a.UserID, in.Reason, nil}
+	out = TaskControlPublication{uuid.New(), taskControlScope(c), version, d.Revision, 1, d.Checksum, rules, s.now().UTC(), a.UserID, reason, nil}
 	payload, _ := json.Marshal(out)
-	_, e = q.CreateTaskControlPublication(ctx, db.CreateTaskControlPublicationParams{CompanyID: a.CompanyID, BindingID: id, ID: out.ID, RequestID: in.RequestID, BodyHash: hs, Payload: payload})
+	_, e = q.CreateTaskControlPublication(ctx, db.CreateTaskControlPublicationParams{CompanyID: a.CompanyID, BindingID: c.ID, ID: out.ID, RequestID: requestID, BodyHash: hash, Payload: payload})
 	if e != nil {
 		return out, e
 	}
-	_, e = q.SetTaskControlPublication(ctx, db.SetTaskControlPublicationParams{CompanyID: a.CompanyID, ID: id, PublicationID: uuid.NullUUID{UUID: out.ID, Valid: true}})
+	_, e = q.SetTaskControlPublication(ctx, db.SetTaskControlPublicationParams{CompanyID: a.CompanyID, ID: c.ID, PublicationID: uuid.NullUUID{UUID: out.ID, Valid: true}})
 	if e != nil {
 		return out, e
 	}
-	return out, tx.Commit(ctx)
+	return out, nil
 }
 func (s *Service) TaskControlPublications(ctx context.Context, a Actor, id, publication uuid.UUID, options ...TaskControlPublicationOptionsV2) (any, error) {
 	if publication == uuid.Nil {
@@ -350,6 +378,9 @@ func (s *Service) SetTaskControlMode(ctx context.Context, a Actor, id uuid.UUID,
 		return out, e
 	}
 	if e = tcFence(c, in.ExpectedBindingRevision, in.ExpectedModeEpoch); e != nil {
+		return out, e
+	}
+	if e = checkTaskControlModeTransition(ctx, q, c, in.TargetMode); e != nil {
 		return out, e
 	}
 	if c.Mode == in.TargetMode {

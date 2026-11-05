@@ -476,6 +476,25 @@ func (q *Queries) GetTaskControlSnapshot(ctx context.Context, arg GetTaskControl
 	return i, err
 }
 
+const hasAppliedTaskControlRules = `-- name: HasAppliedTaskControlRules :one
+SELECT EXISTS (
+    SELECT 1 FROM task_control_connection_requests
+    WHERE company_id=$1 AND binding_id=$2 AND action='applyRules'
+)
+`
+
+type HasAppliedTaskControlRulesParams struct {
+	CompanyID uuid.UUID `json:"company_id"`
+	BindingID uuid.UUID `json:"binding_id"`
+}
+
+func (q *Queries) HasAppliedTaskControlRules(ctx context.Context, arg HasAppliedTaskControlRulesParams) (bool, error) {
+	row := q.db.QueryRow(ctx, hasAppliedTaskControlRules, arg.CompanyID, arg.BindingID)
+	var exists bool
+	err := row.Scan(&exists)
+	return exists, err
+}
+
 const listTaskControlConnections = `-- name: ListTaskControlConnections :many
 SELECT company_id, id, installation_id, integration_id, account_id, generation, binding_revision, mode_epoch, mode, state, intent_id, linked_by, crm_admin_id, updated_at, publication_id, runtime_schema_version FROM task_control_connections WHERE company_id=$1 ORDER BY updated_at DESC,id
 `

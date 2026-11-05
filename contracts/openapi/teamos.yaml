@@ -5402,10 +5402,9 @@ paths:
       tags:
       - Task Control
       operationId: updateTaskControlDraft
-      summary: Атомарно заменить черновик по expectedRevision
-      description: 'Контракт КТ-01.02; бизнес-реализация в КТ-01.03–12. companyId только из сессии; чужой binding возвращает
-        404. Запись требует текущий owner/admin и taskControl.manage. requestId при наличии: одинаковое нормализованное тело
-        возвращает сохранённый результат, другое — 409.'
+      summary: Сохранить правила по expectedRevision
+      description: Без applyRequestId сохраняет черновик. С applyRequestId сохраняет и применяет правила в одной транзакции.
+        Повтор с тем же телом возвращает сохранённый результат. Повтор с другим телом возвращает 409.
       x-permission: taskControl.manage
       responses:
         '200':
@@ -5428,6 +5427,12 @@ paths:
           $ref: '#/components/responses/Error'
         '413':
           description: Конфигурация превышает допустимый размер
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: Для применения правил требуется свежий справочник CRM (references_unavailable)
           content:
             application/json:
               schema:
@@ -6217,7 +6222,9 @@ paths:
       tags:
       - Task Control
       operationId: updateTaskControlDraftV2
-      summary: Сохранить намерение по CAS
+      summary: Сохранить правила по expectedRevision
+      description: Без applyRequestId сохраняет черновик. С applyRequestId сохраняет и применяет правила в одной транзакции.
+        Повтор с тем же телом возвращает сохранённый результат. Повтор с другим телом возвращает 409.
       x-permission: taskControl.manage
       responses:
         '200':
@@ -9159,6 +9166,10 @@ components:
       - expectedRevision
       - intentRules
       properties:
+        applyRequestId:
+          description: Ключ операции сохранения. При указании правила сохраняются и применяются атомарно.
+          type: string
+          format: uuid
         expectedBindingRevision: *r11schema003
         expectedModeEpoch: *r11schema003
         expectedRevision: *r11schema003
@@ -15314,6 +15325,10 @@ components:
       - expectedRevision
       - rules
       properties:
+        applyRequestId:
+          description: Ключ операции сохранения. При указании правила сохраняются и применяются атомарно.
+          type: string
+          format: uuid
         expectedBindingRevision:
           type: integer
           format: int64

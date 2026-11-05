@@ -60,11 +60,18 @@ else:
             state = root / "docker.json"
             env = {**os.environ, "PATH": str(executables) + os.pathsep + os.environ["PATH"], "FAKE_DOCKER_STATE": str(state)}
             candidates = []
-            for index in range(2):
+            for index, version in enumerate(["1.2.4", "1.2.5"]):
+                if index:
+                    (widget / "manifest.json").write_text(json.dumps({"widget": {"version": version}}))
+                    subprocess.run(["git", "-c", "user.name=Test", "-c", "user.email=test@example.invalid", "commit", "-qam", "managed-only package"], cwd=widgets, check=True, capture_output=True)
                 output = root / f"candidate-{index}"
                 subprocess.run(["python3", str(builder), "--core", str(core), "--widgets", str(widgets), "--output", str(output), "--build-images"], env=env, check=True, capture_output=True)
                 candidate = json.loads((output / "candidate.json").read_text())
-                self.assertEqual(candidate["runtimeVersion"], "1.2.4")
+                self.assertEqual(candidate["runtimeVersion"], version)
+                expected_modes = {"managed"} if index else {"standalone", "managed"}
+                self.assertEqual(set(candidate["archives"]), expected_modes)
+                expected_schemas = (36, 42) if index else (31, 40)
+                self.assertEqual((candidate["schema"]["core"], candidate["schema"]["company"]), expected_schemas)
                 self.assertTrue(candidate["imagesComplete"])
                 self.assertFalse(candidate["releaseApproved"])
                 self.assertEqual(len(candidate["images"]), 8)
