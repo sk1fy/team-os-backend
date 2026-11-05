@@ -112,7 +112,11 @@ func (s *Service) validateRegisteredDistributionDecision(ctx context.Context, in
 	if e != nil {
 		return deny, e
 	}
-	if !ruleEntrySnapshotMatches(r, entry, &c.ExpectedSnapshot) || entry.State != "checking" || !head.CurrentEntryID.Valid || head.CurrentEntryID.UUID != entry.ID || head.BindingID != in.BindingID || head.Deleted || head.Absent {
+	eligibleEntry := entry.State == "checking" && head.CurrentEntryID.Valid && head.CurrentEntryID.UUID == entry.ID && head.BindingID == in.BindingID && !head.Deleted && !head.Absent
+	if row.ManualObservationID.Valid {
+		eligibleEntry = entry.BindingID == in.BindingID && entry.BindingRevision == in.BindingRevision && manualEntryMatches(entry, head, &c.ExpectedSnapshot)
+	}
+	if !eligibleEntry || !ruleEntrySnapshotMatches(r, entry, &c.ExpectedSnapshot) {
 		deny.Reason = "episode_cancelled"
 		return deny, nil
 	}
