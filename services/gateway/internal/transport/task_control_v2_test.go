@@ -119,7 +119,7 @@ func TestTaskControlApplyRulesRoutesPreserveRequestAndReferenceError(t *testing.
 	} {
 		t.Run(tc.version, func(t *testing.T) {
 			body := `{"expectedRevision":1,"expectedBindingRevision":1,"expectedModeEpoch":1,"applyRequestId":"` + requestID + `","` + tc.rulesField + `":[]}`
-			r := httptest.NewRequest(http.MethodPut, "/api/"+tc.version+"/task-control/connections/"+bindingID+"/draft", strings.NewReader(body))
+			r := httptest.NewRequestWithContext(t.Context(), http.MethodPut, "/api/"+tc.version+"/task-control/connections/"+bindingID+"/draft", strings.NewReader(body))
 			w := httptest.NewRecorder()
 			router.ServeHTTP(w, r)
 			if w.Code != http.StatusServiceUnavailable || !strings.Contains(w.Body.String(), `"code":"references_unavailable"`) {
