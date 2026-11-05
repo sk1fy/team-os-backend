@@ -27,3 +27,17 @@ SELECT * FROM distribution_observations WHERE company_id=$1 AND binding_id=$2 AN
 
 -- name: LockDistributionRule :one
 SELECT * FROM distribution_rules WHERE company_id=$1 AND id=$2 FOR UPDATE;
+
+-- name: GetDistributionObservation :one
+SELECT * FROM distribution_observations WHERE company_id=$1 AND rule_id=$2 AND id=$3;
+
+-- name: GetDistributionManualAssignment :one
+SELECT * FROM distribution_queue WHERE company_id=$1 AND manual_observation_id=$2;
+
+-- name: GetDistributionManualAssignmentRequest :one
+SELECT * FROM distribution_queue WHERE company_id=$1 AND manual_request_id=$2;
+
+-- name: CreateDistributionManualAssignment :execrows
+INSERT INTO distribution_queue(id,company_id,entry_id,rule_id,group_id,account_id,lead_id,execution_epoch,manual_observation_id,manual_request_id,manual_employee_id,manual_actor_id,manual_expected_responsible_user_id)
+VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+ON CONFLICT (company_id, manual_request_id) DO NOTHING;

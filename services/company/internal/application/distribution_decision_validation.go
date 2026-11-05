@@ -73,7 +73,7 @@ func (s *Service) ValidateDistributionDecision(ctx context.Context, in Distribut
 		}
 	}
 
-	if in.Actor.OperatorID != nil || (in.Actor.Kind != "system" && in.Actor.Kind != "user") || (in.Actor.Kind == "system" && (in.Actor.TeamOSUserID != nil || in.Actor.CRMUserID != nil)) || (in.Actor.Kind == "user" && (in.Actor.TeamOSUserID == nil || *in.Actor.TeamOSUserID == uuid.Nil || in.Actor.CRMUserID == nil || !validCRMID(*in.Actor.CRMUserID))) {
+	if in.Actor.OperatorID != nil || (in.Actor.Kind != "system" && in.Actor.Kind != "user" && in.Actor.Kind != "manual") || (in.Actor.Kind == "system" && (in.Actor.TeamOSUserID != nil || in.Actor.CRMUserID != nil)) || (in.Actor.Kind != "system" && (in.Actor.TeamOSUserID == nil || *in.Actor.TeamOSUserID == uuid.Nil || in.Actor.CRMUserID == nil || !validCRMID(*in.Actor.CRMUserID))) {
 		deny.Reason = "invalid_decision"
 		return deny, nil
 	}
@@ -102,8 +102,8 @@ func (s *Service) ValidateDistributionDecision(ctx context.Context, in Distribut
 		return deny, nil
 	}
 
-	if in.Actor.Kind == "user" {
-		if _, err := s.distributionActor(ctx, Actor{CompanyID: in.CompanyID, UserID: *in.Actor.TeamOSUserID}, false); err != nil {
+	if in.Actor.Kind != "system" {
+		if _, err := s.distributionActor(ctx, Actor{CompanyID: in.CompanyID, UserID: *in.Actor.TeamOSUserID}, in.Actor.Kind == "manual"); err != nil {
 			deny.Reason = "actor_unavailable"
 			return deny, nil
 		}

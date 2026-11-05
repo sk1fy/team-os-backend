@@ -28,7 +28,9 @@ type AssignmentCommand struct {
 	ValidUntil              time.Time       `json:"validUntil"`
 }
 type AssignmentActor struct {
-	Kind string `json:"kind"`
+	Kind         string     `json:"kind"`
+	TeamOSUserID *uuid.UUID `json:"teamosUserId,omitempty"`
+	CRMUserID    *string    `json:"crmUserId,omitempty"`
 }
 type Assignment struct {
 	SchemaVersion    int               `json:"schemaVersion"`
@@ -73,7 +75,7 @@ func (c *Client) CancelAssignment(ctx context.Context, s Scope, id, key uuid.UUI
 		ExpectedResultVersion int64           `json:"expectedResultVersion"`
 		Actor                 AssignmentActor `json:"actor"`
 		Reason                string          `json:"reason"`
-	}{version, AssignmentActor{"system"}, "business_preconditions_changed"}, 200, &out)
+	}{version, AssignmentActor{Kind: "system"}, "business_preconditions_changed"}, 200, &out)
 	return out, e
 }
 func (c *Client) ReconcileAssignment(ctx context.Context, s Scope, id, key uuid.UUID, version int64) (Operation, error) {
@@ -82,7 +84,7 @@ func (c *Client) ReconcileAssignment(ctx context.Context, s Scope, id, key uuid.
 		ExpectedResultVersion int64           `json:"expectedResultVersion"`
 		Actor                 AssignmentActor `json:"actor"`
 		Reason                string          `json:"reason"`
-	}{version, AssignmentActor{"system"}, "business_reconciliation"}, 200, &out)
+	}{version, AssignmentActor{Kind: "system"}, "business_reconciliation"}, 200, &out)
 	return out, e
 }
 func (c *Client) ControlAssignment(ctx context.Context, s Scope, id, key uuid.UUID, action string, payload json.RawMessage) (Operation, error) {

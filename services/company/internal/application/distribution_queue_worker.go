@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"strconv"
 
 	"time"
 
@@ -31,7 +32,10 @@ func (s *Service) ProcessDistributionQueue(ctx context.Context) (bool, error) {
 	if _, e := q.AdmitDistributionEntries(ctx); e != nil {
 		return false, e
 	}
-	row, e := q.ClaimDistributionQueue(ctx, nullID(uuid.New()))
+	row, e := q.ClaimDistributionManualAssignment(ctx, nullID(uuid.New()))
+	if isNoRows(e) {
+		row, e = q.ClaimDistributionQueue(ctx, nullID(uuid.New()))
+	}
 	if isNoRows(e) {
 		return false, nil
 	}
@@ -103,6 +107,8 @@ func (s *Service) ProcessDistributionQueue(ctx context.Context) (bool, error) {
 		}
 		return true, tx.Commit(ctx)
 	}
+	manual := row.ManualObservationID.Valid
+	mode := distributionQueueMode(row)
 	reason := ""
 	state := "waiting"
 	switch {
@@ -112,20 +118,30 @@ func (s *Service) ProcessDistributionQueue(ctx context.Context) (bool, error) {
 	case entry.State == "needs_configuration":
 		reason = "ambiguous_reentry"
 		state = "requires_configuration"
-	case r.ExecutionMode != "live" || r.ExecutionEpoch != row.ExecutionEpoch:
+	case r.ExecutionMode != mode || r.ExecutionEpoch != row.ExecutionEpoch:
 		reason = "execution_mode_changed"
-	case distributionEntryBeforeLiveBoundary(r, entry):
+	case !manual && distributionEntryBeforeLiveBoundary(r, entry):
 		reason = "live_boundary_uncertain"
 		state = "requires_configuration"
 	case !r.Active || !g.Active:
 		reason = "group_paused"
 	case b.State != "active" || bindingScope(b) != observed.Scope:
 		reason = "binding_unavailable"
-	case g.Algorithm != "round_robin":
+	case !manual && g.Algorithm != "round_robin":
 		reason = "algorithm_unsupported"
 		state = "requires_configuration"
 	}
+	if manual && reason == "" && (entry.State != "checking" || observed.Deleted || observed.Absent ||
+		observed.LeadID != row.LeadID || !validSnapshot(observed.Snapshot, row.LeadID) ||
+		entry.BindingID != b.ID || entry.BindingRevision != b.Revision || r.GroupID != row.GroupID ||
+		observed.Snapshot.ResponsibleUserID != strconv.FormatInt(row.ManualExpectedResponsibleUserID.Int64, 10) ||
+		r.BindingRevision != b.Revision || b.MappingAckRevision != b.MappingRevision) {
+		reason = "source_changed"
+	}
 	if reason != "" {
+		if manual {
+			state = "cancelled"
+		}
 		if e = s.queueState(ctx, q, row, state, reason, s.now().Add(time.Minute), false); e != nil {
 			return true, e
 		}
@@ -155,7 +171,38 @@ func (s *Service) ProcessDistributionQueue(ctx context.Context) (bool, error) {
 		}
 		return true, tx.Commit(ctx)
 	}
-	plan := chooseDistributionPlan(observed.Snapshot.ResponsibleUserID, r.KeepCurrent, available, g.MemberIds, claim.CursorOrder, int(claim.CursorNext))
+	var plan distributionPlan
+	actor := corebridge.AssignmentActor{Kind: "system"}
+	if manual {
+		mappings, err := q.ListDistributionMappings(ctx, db.ListDistributionMappingsParams{CompanyID: row.CompanyID, BindingID: b.ID})
+		if err != nil {
+			return true, err
+		}
+		for _, mapping := range mappings {
+			if mapping.UserID == row.ManualActorID && mapping.State == "verified" && validCRMID(mapping.CrmUserID) {
+				actor = corebridge.AssignmentActor{Kind: "manual", TeamOSUserID: &row.ManualActorID.UUID, CRMUserID: &mapping.CrmUserID}
+				break
+			}
+		}
+		for _, candidate := range available {
+			if candidate.EmployeeID == row.ManualEmployeeID.UUID && candidate.Available && candidate.CRMUserID != nil {
+				plan = distributionPlan{Employee: candidate.EmployeeID, Kind: "assign"}
+				break
+			}
+		}
+		if actor.Kind != "manual" || plan.Employee == uuid.Nil {
+			reason := "recipient_unavailable"
+			if actor.Kind != "manual" {
+				reason = "actor_unavailable"
+			}
+			if e = s.queueState(ctx, q, row, "cancelled", reason, s.now(), false); e != nil {
+				return true, e
+			}
+			return true, tx.Commit(ctx)
+		}
+	} else {
+		plan = chooseDistributionPlan(observed.Snapshot.ResponsibleUserID, r.KeepCurrent, available, g.MemberIds, claim.CursorOrder, int(claim.CursorNext))
+	}
 	if e = q.SetDistributionQueueNextShift(ctx, db.SetDistributionQueueNextShiftParams{ID: row.ID, LeaseToken: row.LeaseToken, NextShiftAt: optionalDeliveryTime(plan.Next)}); e != nil {
 		return true, e
 	}
@@ -211,7 +258,7 @@ func (s *Service) ProcessDistributionQueue(ctx context.Context) (bool, error) {
 		}
 	}
 	now := s.now().UTC()
-	a := corebridge.Assignment{SchemaVersion: 1, MessageID: uuid.New(), Scope: bindingScope(b), EventID: entry.EntryEventID, SourceOccurredAt: entry.CreatedAt, ReceivedAt: row.CreatedAt, EmittedAt: now, CorrelationID: uuid.New(), CausationID: entry.EntryEventID, Command: corebridge.AssignmentCommand{OperationID: uuid.New(), EpisodeID: row.EntryID, DecisionID: uuid.New(), RuleID: r.ID, GroupID: g.ID, RuleRevision: r.Revision, AvailabilityRevision: v.Revision, ClaimRevision: claim.Revision, DecisionKind: kind, TargetResponsibleUserID: target, ExpectedSnapshot: *observed.Snapshot, Actor: corebridge.AssignmentActor{Kind: "system"}, ValidUntil: until}}
+	a := corebridge.Assignment{SchemaVersion: 1, MessageID: uuid.New(), Scope: bindingScope(b), EventID: entry.EntryEventID, SourceOccurredAt: entry.CreatedAt, ReceivedAt: row.CreatedAt, EmittedAt: now, CorrelationID: uuid.New(), CausationID: entry.EntryEventID, Command: corebridge.AssignmentCommand{OperationID: uuid.New(), EpisodeID: row.EntryID, DecisionID: uuid.New(), RuleID: r.ID, GroupID: g.ID, RuleRevision: r.Revision, AvailabilityRevision: v.Revision, ClaimRevision: claim.Revision, DecisionKind: kind, TargetResponsibleUserID: target, ExpectedSnapshot: *observed.Snapshot, Actor: actor, ValidUntil: until}}
 	raw, _ := json.Marshal(a)
 	e = q.SaveDistributionQueueDecision(ctx, db.SaveDistributionQueueDecisionParams{ID: row.ID, OperationID: nullID(a.Command.OperationID), DecisionID: nullID(a.Command.DecisionID), Command: raw, IdempotencyKey: nullID(uuid.New()), CancelKey: nullID(uuid.New()), ReconcileKey: nullID(uuid.New()), AvailabilityHash: hash, ClaimRevision: claim.Revision, PlannedEmployeeID: nullID(selected), SelectionOrder: g.MemberIds})
 	if e != nil {
@@ -262,7 +309,7 @@ func (s *Service) resumeDistributionAssignment(ctx context.Context, core Distrib
 	if !validOperation(op) || !operationMatchesAssignment(op, a) {
 		return errors.New("invalid Core operation")
 	}
-	deny, e := s.ValidateDistributionDecision(ctx, DistributionDecisionValidationInput{Scope: a.Scope, Actor: DistributionDecisionActor{Kind: "system"}, OperationID: a.Command.OperationID, DecisionID: a.Command.DecisionID, EpisodeID: a.Command.EpisodeID, RuleID: a.Command.RuleID, GroupID: a.Command.GroupID, RuleRevision: a.Command.RuleRevision, AvailabilityRevision: a.Command.AvailabilityRevision, ClaimRevision: a.Command.ClaimRevision, WorkerFence: 1, TargetEmployeeID: row.PlannedEmployeeID.UUID, TargetResponsibleUserID: a.Command.TargetResponsibleUserID, LeadID: row.LeadID, DecisionKind: a.Command.DecisionKind, ValidUntil: a.Command.ValidUntil})
+	deny, e := s.ValidateDistributionDecision(ctx, DistributionDecisionValidationInput{Scope: a.Scope, Actor: DistributionDecisionActor{Kind: a.Command.Actor.Kind, TeamOSUserID: a.Command.Actor.TeamOSUserID, CRMUserID: a.Command.Actor.CRMUserID}, OperationID: a.Command.OperationID, DecisionID: a.Command.DecisionID, EpisodeID: a.Command.EpisodeID, RuleID: a.Command.RuleID, GroupID: a.Command.GroupID, RuleRevision: a.Command.RuleRevision, AvailabilityRevision: a.Command.AvailabilityRevision, ClaimRevision: a.Command.ClaimRevision, WorkerFence: 1, TargetEmployeeID: row.PlannedEmployeeID.UUID, TargetResponsibleUserID: a.Command.TargetResponsibleUserID, LeadID: row.LeadID, DecisionKind: a.Command.DecisionKind, ValidUntil: a.Command.ValidUntil})
 	if e != nil {
 		return e
 	}
@@ -341,7 +388,7 @@ func (s *Service) settleRuntimeOperation(ctx context.Context, q *db.Queries, row
 		return e
 	}
 	order, next := claim.CursorOrder, claim.CursorNext
-	if advance {
+	if advance && !row.ManualObservationID.Valid {
 		order = row.SelectionOrder
 		for i, id := range order {
 			if id == row.PlannedEmployeeID.UUID {
@@ -368,7 +415,7 @@ func (s *Service) settleRuntimeOperation(ctx context.Context, q *db.Queries, row
 		state, reason = "cancelled", "waiting_expired"
 		retry = false
 	}
-	retry = retry && row.WaitingDeadlineAt.After(s.now()) && !row.CancelRequested && op.ExternalEffectState == "no_attempt" && entry.State == "checking"
+	retry = retry && !row.ManualObservationID.Valid && row.WaitingDeadlineAt.After(s.now()) && !row.CancelRequested && op.ExternalEffectState == "no_attempt" && entry.State == "checking"
 	if retry {
 		state, reason = "waiting", "decision_recalculation"
 	}
@@ -448,7 +495,7 @@ func (s *Service) distributionAssignmentAdmissionGate(ctx context.Context, row d
 		reason = "waiting_expired"
 	case current.OperationID != row.OperationID || current.Settled:
 		reason = "decision_changed"
-	case r.ExecutionMode != "live" || r.ExecutionEpoch != current.ExecutionEpoch:
+	case r.ExecutionMode != distributionQueueMode(current) || r.ExecutionEpoch != current.ExecutionEpoch:
 		reason = "execution_mode_changed"
 	case !r.Active || !g.Active:
 		reason = "group_paused"
@@ -473,4 +520,11 @@ func (s *Service) distributionAssignmentAdmissionGate(ctx context.Context, row d
 func distributionEntryBeforeLiveBoundary(r db.DistributionRule, e db.DistributionObservedEntry) bool {
 	return !e.SourceOccurredAt.Valid || !r.LiveStartedAt.Valid || !r.FirstActivationAt.Valid ||
 		e.SourceOccurredAt.Time.Before(r.LiveStartedAt.Time) || e.SourceOccurredAt.Time.Before(r.FirstActivationAt.Time)
+}
+
+func distributionQueueMode(row db.DistributionQueue) string {
+	if row.ManualObservationID.Valid {
+		return "observe"
+	}
+	return "live"
 }

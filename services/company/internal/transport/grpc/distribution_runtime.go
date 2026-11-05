@@ -30,11 +30,11 @@ func (s *Server) ReadDistributionRuntime(ctx context.Context, r *v.ReadDistribut
 		return nil, invalidRequest()
 	}
 	switch r.Kind {
-	case "settings", "rules", "availability", "queue", "history", "detail", "summary", "observations":
+	case "settings", "rules", "availability", "queue", "history", "detail", "summary", "observations", "observation-assignment":
 	default:
 		return nil, invalidRequest()
 	}
-	id, e := runtimeID(r.Id, r.Kind == "availability" || r.Kind == "history" || r.Kind == "detail" || r.Kind == "observations")
+	id, e := runtimeID(r.Id, r.Kind == "availability" || r.Kind == "history" || r.Kind == "detail" || r.Kind == "observations" || r.Kind == "observation-assignment")
 	if e != nil {
 		return nil, e
 	}
@@ -71,6 +71,12 @@ func (s *Server) ReadDistributionRuntime(ctx context.Context, r *v.ReadDistribut
 			}
 			raw, e = s.application.DistributionQueuePage(ctx, a, f, limit, r.Offset)
 		}
+	case "observation-assignment":
+		observation, err := runtimeID(r.ObservationId, true)
+		if err != nil {
+			return nil, err
+		}
+		raw, e = s.application.DistributionManualAssignmentOptions(ctx, a, id, observation)
 	case "detail":
 		raw, e = s.application.DistributionQueueDetail(ctx, a, id)
 	default:
@@ -90,18 +96,23 @@ func (s *Server) WriteDistributionRuntime(ctx context.Context, r *v.WriteDistrib
 		return nil, invalidRequest()
 	}
 	switch r.Kind {
-	case "settings", "rules", "rule", "action", "group":
+	case "settings", "rules", "rule", "action", "group", "observation-assignment":
 	default:
 		return nil, invalidRequest()
 	}
-	id, e := runtimeID(r.Id, r.Kind == "rule" || r.Kind == "action" || r.Kind == "group")
+	id, e := runtimeID(r.Id, r.Kind == "rule" || r.Kind == "action" || r.Kind == "group" || r.Kind == "observation-assignment")
 	if e != nil {
 		return nil, e
 	}
 	if len(r.Payload) == 0 || len(r.Payload) > 65536 || !json.Valid(r.Payload) {
 		return nil, invalidRequest()
 	}
-	raw, e := s.application.DistributionRuntimeWrite(ctx, a, r.Kind, id, json.RawMessage(r.Payload))
+	var raw json.RawMessage
+	if r.Kind == "observation-assignment" {
+		raw, e = s.application.AssignDistributionObservation(ctx, a, id, r.Payload)
+	} else {
+		raw, e = s.application.DistributionRuntimeWrite(ctx, a, r.Kind, id, r.Payload)
+	}
 	if e != nil {
 		return nil, transportError(e)
 	}

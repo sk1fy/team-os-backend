@@ -31,6 +31,7 @@ type Querier interface {
 	CancelDistributionObservedEntry(ctx context.Context, arg CancelDistributionObservedEntryParams) error
 	CancelUndispatchedDistributionQueueUI(ctx context.Context, id uuid.UUID) error
 	ClaimDistributionDelivery(ctx context.Context, leaseToken uuid.NullUUID) (DistributionDeliveryInbox, error)
+	ClaimDistributionManualAssignment(ctx context.Context, leaseToken uuid.NullUUID) (DistributionQueue, error)
 	ClaimDistributionNonce(ctx context.Context, arg ClaimDistributionNonceParams) (int64, error)
 	ClaimDistributionObservation(ctx context.Context, leaseToken uuid.NullUUID) (DistributionObservationJob, error)
 	ClaimDistributionQueue(ctx context.Context, leaseToken uuid.NullUUID) (DistributionQueue, error)
@@ -70,6 +71,7 @@ type Querier interface {
 	CreateDistributionEvent(ctx context.Context, arg CreateDistributionEventParams) (DistributionEvent, error)
 	CreateDistributionEventReceipt(ctx context.Context, arg CreateDistributionEventReceiptParams) error
 	CreateDistributionGroup(ctx context.Context, arg CreateDistributionGroupParams) (DistributionGroup, error)
+	CreateDistributionManualAssignment(ctx context.Context, arg CreateDistributionManualAssignmentParams) (int64, error)
 	CreateDistributionMirrorVersion(ctx context.Context, arg CreateDistributionMirrorVersionParams) error
 	CreateDistributionObservedEntry(ctx context.Context, arg CreateDistributionObservedEntryParams) error
 	CreateDistributionRule(ctx context.Context, arg CreateDistributionRuleParams) (DistributionRule, error)
@@ -143,9 +145,12 @@ type Querier interface {
 	GetDistributionGroup(ctx context.Context, arg GetDistributionGroupParams) (DistributionGroup, error)
 	GetDistributionGroupForUpdate(ctx context.Context, arg GetDistributionGroupForUpdateParams) (DistributionGroup, error)
 	GetDistributionLeadClaim(ctx context.Context, arg GetDistributionLeadClaimParams) (DistributionLeadClaim, error)
+	GetDistributionManualAssignment(ctx context.Context, arg GetDistributionManualAssignmentParams) (DistributionQueue, error)
+	GetDistributionManualAssignmentRequest(ctx context.Context, arg GetDistributionManualAssignmentRequestParams) (DistributionQueue, error)
 	GetDistributionMappingByCRM(ctx context.Context, arg GetDistributionMappingByCRMParams) (GetDistributionMappingByCRMRow, error)
 	GetDistributionMappingSnapshot(ctx context.Context, arg GetDistributionMappingSnapshotParams) ([]byte, error)
 	GetDistributionMirrorVersion(ctx context.Context, arg GetDistributionMirrorVersionParams) (DistributionOperationMirrorVersion, error)
+	GetDistributionObservation(ctx context.Context, arg GetDistributionObservationParams) (DistributionObservation, error)
 	GetDistributionObservationCursor(ctx context.Context, arg GetDistributionObservationCursorParams) (GetDistributionObservationCursorRow, error)
 	GetDistributionObservedEntry(ctx context.Context, id uuid.UUID) (DistributionObservedEntry, error)
 	GetDistributionOperationMirror(ctx context.Context, operationID uuid.UUID) (DistributionOperationMirror, error)
