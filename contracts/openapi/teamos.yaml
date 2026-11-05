@@ -443,6 +443,50 @@ paths:
         '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         default: { $ref: '#/components/responses/Error' }
+  /api/v1/distribution/rules/{ruleId}/observations/{observationId}/assignment:
+    parameters:
+    - name: ruleId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/ID'
+    - name: observationId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/ID'
+    get:
+      tags: [Distribution]
+      operationId: getDistributionObservationAssignment
+      summary: Получить доступных сотрудников и статус назначения
+      responses:
+        '200':
+          description: Параметры ручного назначения
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DistributionObservationAssignmentOptions'
+        default:
+          $ref: '#/components/responses/Error'
+    post:
+      tags: [Distribution]
+      operationId: assignDistributionObservation
+      summary: Запустить ручное назначение из наблюдения
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DistributionObservationAssignmentInput'
+      responses:
+        '200':
+          description: Состояние операции назначения
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DistributionObservationAssignment'
+        default:
+          $ref: '#/components/responses/Error'
   /api/v1/distribution/rules/{ruleId}/observations:
     get:
       tags:
@@ -9594,6 +9638,53 @@ components:
         nextShiftAt:
           anyOf: [{type: string, format: date-time}, {type: "null"}]
           x-go-type: "*time.Time"
+    DistributionObservationAssignmentInput:
+      type: object
+      additionalProperties: false
+      required: [requestId, employeeId, expectedResponsibleUserId]
+      properties:
+        requestId:
+          $ref: '#/components/schemas/ID'
+        employeeId:
+          $ref: '#/components/schemas/ID'
+        expectedResponsibleUserId:
+          type: string
+          pattern: '^[1-9][0-9]{0,18}$'
+    DistributionObservationAssignment:
+      type: object
+      required: [requestId, employeeId, state, reason]
+      properties:
+        requestId:
+          $ref: '#/components/schemas/ID'
+        employeeId:
+          $ref: '#/components/schemas/ID'
+        state:
+          type: string
+          enum: [waiting, dispatching, uncertain, confirmed, failed, cancelled, requires_configuration]
+        reason:
+          type: string
+    DistributionObservationAssignmentCandidate:
+      type: object
+      required: [employeeId, crmUserId, name]
+      properties:
+        employeeId:
+          $ref: '#/components/schemas/ID'
+        crmUserId:
+          type: string
+        name:
+          type: string
+    DistributionObservationAssignmentOptions:
+      type: object
+      required: [currentResponsibleUserId, candidates]
+      properties:
+        currentResponsibleUserId:
+          type: string
+        candidates:
+          type: array
+          items:
+            $ref: '#/components/schemas/DistributionObservationAssignmentCandidate'
+        assignment:
+          $ref: '#/components/schemas/DistributionObservationAssignment'
     DistributionRuntimeObservations:
       type: object
       additionalProperties: false
