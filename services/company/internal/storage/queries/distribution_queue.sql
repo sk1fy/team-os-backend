@@ -27,6 +27,12 @@ ORDER BY e.id,r.active DESC,r.first_activation_at DESC,r.id
 ON CONFLICT(entry_id) WHERE manual_observation_id IS NULL OR NOT settled OR state NOT IN ('failed', 'cancelled') DO NOTHING;
 -- name: ClaimDistributionQueue :one
 UPDATE distribution_queue SET lease_token=$1,lease_until=clock_timestamp()+interval '30 seconds' WHERE id=(SELECT id FROM distribution_queue WHERE manual_observation_id IS NULL AND state NOT IN('confirmed','kept','cancelled','failed') AND (next_attempt_at<=clock_timestamp() OR EXISTS(SELECT 1 FROM distribution_observed_entries e WHERE e.id=entry_id AND e.state='cancelled')) AND (lease_until IS NULL OR lease_until<clock_timestamp()) AND NOT EXISTS(SELECT 1 FROM distribution_queue older WHERE older.manual_observation_id IS NULL AND older.company_id=distribution_queue.company_id AND older.group_id=distribution_queue.group_id AND older.state NOT IN('confirmed','kept','cancelled','failed') AND (older.next_attempt_at<=clock_timestamp() OR older.lease_until>clock_timestamp()) AND (older.created_at,older.id)<(distribution_queue.created_at,distribution_queue.id)) ORDER BY created_at,id FOR UPDATE SKIP LOCKED LIMIT 1) RETURNING *;
+-- name: ClaimDistributionManualAssignment :one
+UPDATE distribution_queue SET lease_token=$1,lease_until=clock_timestamp()+interval '30 seconds'
+WHERE id=(SELECT id FROM distribution_queue
+ WHERE manual_observation_id IS NOT NULL AND NOT settled AND state NOT IN ('confirmed','kept','cancelled','failed')
+ AND next_attempt_at<=clock_timestamp() AND (lease_until IS NULL OR lease_until<clock_timestamp())
+ ORDER BY next_attempt_at,created_at,id FOR UPDATE SKIP LOCKED LIMIT 1) RETURNING *;
 -- name: LockDistributionQueue :one
 SELECT * FROM distribution_queue WHERE id=$1 FOR UPDATE;
 -- name: LockDistributionQueueLease :one

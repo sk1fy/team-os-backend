@@ -165,3 +165,42 @@ func TestRuntimeDigitalPipelineCreateForwardsNoManualPoint(t *testing.T) {
 		t.Fatal(w.Code, calls, w.Body.String())
 	}
 }
+
+func TestObservationAssignmentRoutesForwardIdentityAndConflict(t *testing.T) {
+	rule, observation, employee, request := uuid.New(), uuid.New(), uuid.New(), uuid.New()
+	h := &Handler{company: runtimeClient{
+		read: func(r *v.ReadDistributionRuntimeRequest) (*v.ReadDistributionRuntimeResponse, error) {
+			if r.Kind != "observation-assignment" || r.Id != rule.String() || r.ObservationId != observation.String() {
+				t.Fatal(r)
+			}
+			return &v.ReadDistributionRuntimeResponse{Payload: []byte(`{"currentResponsibleUserId":"42","candidates":[]}`)}, nil
+		},
+		write: func(r *v.WriteDistributionRuntimeRequest) (*v.WriteDistributionRuntimeResponse, error) {
+			var in struct {
+				api.DistributionObservationAssignmentInput
+				ObservationID uuid.UUID `json:"observationId"`
+			}
+			if json.Unmarshal(r.Payload, &in) != nil || r.Kind != "observation-assignment" || r.Id != rule.String() ||
+				in.ObservationID != observation || in.EmployeeId != employee || in.RequestId != request || in.ExpectedResponsibleUserId != "42" {
+				t.Fatal(r)
+			}
+			return nil, status.Error(codes.AlreadyExists, "Ответственный сделки изменился")
+		},
+	}}
+	w := httptest.NewRecorder()
+	h.GetDistributionObservationAssignment(w, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil), rule, observation)
+	if w.Code != http.StatusOK || w.Header().Get("Cache-Control") != "private, no-store" {
+		t.Fatal(w.Code, w.Body.String())
+	}
+	body, err := json.Marshal(api.DistributionObservationAssignmentInput{
+		EmployeeId: employee, RequestId: request, ExpectedResponsibleUserId: "42",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	w = httptest.NewRecorder()
+	h.AssignDistributionObservation(w, httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/", strings.NewReader(string(body))), rule, observation)
+	if w.Code != http.StatusConflict {
+		t.Fatal(w.Code, w.Body.String())
+	}
+}

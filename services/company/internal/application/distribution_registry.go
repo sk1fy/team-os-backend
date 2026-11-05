@@ -50,7 +50,15 @@ func (s *Service) validateRegisteredDistributionDecision(ctx context.Context, in
 		return deny, nil
 	}
 	c := a.Command
-	if row.Settled || row.CancelRequested || a.Scope != in.Scope || in.Actor.Kind != "system" || c.OperationID != in.OperationID || c.DecisionID != in.DecisionID || c.EpisodeID != in.EpisodeID || c.RuleID != in.RuleID || c.GroupID != in.GroupID || c.RuleRevision != in.RuleRevision || c.AvailabilityRevision != in.AvailabilityRevision || c.ClaimRevision != in.ClaimRevision || row.PlannedEmployeeID.UUID != in.TargetEmployeeID || c.TargetResponsibleUserID != in.TargetResponsibleUserID || c.ExpectedSnapshot.LeadID != in.LeadID || c.DecisionKind != in.DecisionKind || !c.ValidUntil.Equal(in.ValidUntil) {
+	actorMatches := in.Actor.Kind == "system" && c.Actor.Kind == "system"
+	if row.ManualObservationID.Valid {
+		actorMatches = in.Actor.Kind == "manual" && c.Actor.Kind == "manual" &&
+			c.Actor.TeamOSUserID != nil && in.Actor.TeamOSUserID != nil &&
+			*c.Actor.TeamOSUserID == *in.Actor.TeamOSUserID && row.ManualActorID.UUID == *in.Actor.TeamOSUserID &&
+			c.Actor.CRMUserID != nil && in.Actor.CRMUserID != nil && *c.Actor.CRMUserID == *in.Actor.CRMUserID &&
+			row.ManualEmployeeID.UUID == in.TargetEmployeeID
+	}
+	if row.Settled || row.CancelRequested || a.Scope != in.Scope || !actorMatches || c.OperationID != in.OperationID || c.DecisionID != in.DecisionID || c.EpisodeID != in.EpisodeID || c.RuleID != in.RuleID || c.GroupID != in.GroupID || c.RuleRevision != in.RuleRevision || c.AvailabilityRevision != in.AvailabilityRevision || c.ClaimRevision != in.ClaimRevision || row.PlannedEmployeeID.UUID != in.TargetEmployeeID || c.TargetResponsibleUserID != in.TargetResponsibleUserID || c.ExpectedSnapshot.LeadID != in.LeadID || c.DecisionKind != in.DecisionKind || !c.ValidUntil.Equal(in.ValidUntil) {
 		deny.Reason = "decision_mismatch"
 		return deny, nil
 	}
@@ -75,7 +83,7 @@ func (s *Service) validateRegisteredDistributionDecision(ctx context.Context, in
 		deny.Reason = "company_unavailable"
 		return deny, nil
 	}
-	if r.ExecutionMode != "live" || r.ExecutionEpoch != row.ExecutionEpoch {
+	if r.ExecutionMode != distributionQueueMode(row) || r.ExecutionEpoch != row.ExecutionEpoch {
 		deny.Reason = "execution_mode_changed"
 		return deny, nil
 	}

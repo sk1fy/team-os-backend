@@ -31,6 +31,7 @@ type Querier interface {
 	CancelDistributionObservedEntry(ctx context.Context, arg CancelDistributionObservedEntryParams) error
 	CancelUndispatchedDistributionQueueUI(ctx context.Context, id uuid.UUID) error
 	ClaimDistributionDelivery(ctx context.Context, leaseToken uuid.NullUUID) (DistributionDeliveryInbox, error)
+	ClaimDistributionManualAssignment(ctx context.Context, leaseToken uuid.NullUUID) (DistributionQueue, error)
 	ClaimDistributionNonce(ctx context.Context, arg ClaimDistributionNonceParams) (int64, error)
 	ClaimDistributionObservation(ctx context.Context, leaseToken uuid.NullUUID) (DistributionObservationJob, error)
 	ClaimDistributionQueue(ctx context.Context, leaseToken uuid.NullUUID) (DistributionQueue, error)

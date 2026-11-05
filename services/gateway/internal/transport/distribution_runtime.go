@@ -194,3 +194,25 @@ func (h *Handler) GetDistributionObservations(w http.ResponseWriter, r *http.Req
 	}
 	h.readRuntime(w, r, "observations", id, l, o, &api.DistributionRuntimeObservations{})
 }
+
+func (h *Handler) GetDistributionObservationAssignment(w http.ResponseWriter, r *http.Request, ruleID, observationID api.ID) {
+	out, err := h.company.ReadDistributionRuntime(outgoingContext(r), &v.ReadDistributionRuntimeRequest{
+		Kind: "observation-assignment", Id: ruleID.String(), ObservationId: observationID.String(),
+	})
+	if err != nil {
+		h.writeRPCError(w, r, err)
+		return
+	}
+	runtimeOutput(w, out, &api.DistributionObservationAssignmentOptions{})
+}
+
+func (h *Handler) AssignDistributionObservation(w http.ResponseWriter, r *http.Request, ruleID, observationID api.ID) {
+	var in api.DistributionObservationAssignmentInput
+	if !runtimeDecode(w, r, &in, "requestId", "employeeId", "expectedResponsibleUserId") {
+		return
+	}
+	h.writeRuntime(w, r, "observation-assignment", ruleID, struct {
+		api.DistributionObservationAssignmentInput
+		ObservationID uuid.UUID `json:"observationId"`
+	}{in, observationID}, &api.DistributionObservationAssignment{})
+}

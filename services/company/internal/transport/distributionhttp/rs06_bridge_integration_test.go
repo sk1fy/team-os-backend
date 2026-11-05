@@ -5,6 +5,8 @@ package distributionhttp
 import (
 	"bytes"
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
 	"encoding/pem"
 	"errors"
@@ -77,6 +79,18 @@ func TestRS06ActualCoreTeamSignedBridge(t *testing.T) {
 	for _, capability := range []string{"decision-validation", "event-delivery", "result-delivery", "widget-access", "widget-runtime"} {
 		exec(`INSERT INTO distribution_service_grants(key_id,company_id,installation_id,capability) VALUES($1,$2,$3,$4)`, core.KeyID, company, core.Scope.InstallationID, capability)
 	}
+	roots := x509.NewCertPool()
+	if !roots.AppendCertsFromPEM([]byte(core.Certificate)) {
+		t.Fatal("invalid Core bridge certificate")
+	}
+	defaultTransport := http.DefaultTransport
+	transport := defaultTransport.(*http.Transport).Clone()
+	transport.TLSClientConfig = &tls.Config{RootCAs: roots, MinVersion: tls.VersionTLS12}
+	http.DefaultTransport = transport
+	t.Cleanup(func() {
+		http.DefaultTransport = defaultTransport
+		transport.CloseIdleConnections()
+	})
 	client, err := corebridge.New(core.URL, core.KeyID, core.Secret)
 	if err != nil {
 		t.Fatal(err)
@@ -553,6 +567,70 @@ func TestRS06ActualCoreTeamSignedBridge(t *testing.T) {
 		if e = json.Unmarshal(wire, &card); e != nil || card.Latest == nil || card.Latest.ID != page.Items[0].ID || len(card.Items) != 0 {
 			t.Fatal("widget/Team observation disagree", string(wire), e)
 		}
+		observationID := page.Items[0].ID
+		exec(`UPDATE distribution_groups SET member_ids=ARRAY[$2,$3]::uuid[] WHERE id=$1`, observeGroup.ID, core.Employee, core.Employee3)
+		exec(`UPDATE user_schedules SET template='{"type":"week","days":[],"start":"00:00","end":"23:59"}' WHERE company_id=$1 AND user_id=$2`, company, core.Employee3)
+		raw, e = svc.DistributionManualAssignmentOptions(ctx, owner, observedRule.ID, observationID)
+		if e != nil {
+			t.Fatal(e)
+		}
+		var options struct {
+			CurrentOwner string `json:"currentResponsibleUserId"`
+			Candidates   []struct {
+				EmployeeID uuid.UUID `json:"employeeId"`
+			}
+			Assignment *struct {
+				State      string
+				EmployeeID uuid.UUID
+			}
+		}
+		if e = json.Unmarshal(raw, &options); e != nil || options.CurrentOwner != "1" ||
+			len(options.Candidates) != 1 || options.Candidates[0].EmployeeID != core.Employee {
+			t.Fatalf("expected only the employee on shift: %s (%v)", raw, e)
+		}
+		requestID := uuid.New()
+		assign := func(requestID, employee uuid.UUID, expected string) ([]byte, error) {
+			payload, err := json.Marshal(map[string]any{"observationId": observationID, "requestId": requestID, "employeeId": employee, "expectedResponsibleUserId": expected})
+			if err != nil {
+				t.Fatal(err)
+			}
+			return svc.AssignDistributionObservation(ctx, owner, observedRule.ID, payload)
+		}
+		assertConflict := func(err error) {
+			t.Helper()
+			var failure *application.Error
+			if !errors.As(err, &failure) || failure.Kind != application.ErrorConflict {
+				t.Fatalf("expected assignment conflict, got %v", err)
+			}
+		}
+		_, e = assign(requestID, core.Employee, "3")
+		assertConflict(e)
+		_, e = assign(requestID, core.Employee3, "1")
+		assertConflict(e)
+		first, e := assign(requestID, core.Employee, "1")
+		if e != nil {
+			t.Fatal(e)
+		}
+		replay, e := assign(requestID, core.Employee, "1")
+		if e != nil || !bytes.Equal(first, replay) {
+			t.Fatalf("assignment replay changed response: %s, %s (%v)", first, replay, e)
+		}
+		_, e = assign(uuid.New(), core.Employee, "1")
+		assertConflict(e)
+		control(map[string]any{"action": "resume"})
+		process()
+		tick(t, "succeeded", baseline.PatchCalls+1)
+		exec(`UPDATE distribution_queue SET next_attempt_at=clock_timestamp() WHERE manual_observation_id=$1`, observationID)
+		process()
+		raw, e = svc.DistributionManualAssignmentOptions(ctx, owner, observedRule.ID, observationID)
+		if e != nil || json.Unmarshal(raw, &options) != nil || options.Assignment == nil ||
+			options.Assignment.State != "confirmed" || options.Assignment.EmployeeID != core.Employee {
+			t.Fatalf("manual assignment did not settle as confirmed: %s (%v)", raw, e)
+		}
+		baseline.PatchCalls++
+		exec(`UPDATE distribution_groups SET member_ids=ARRAY[$2]::uuid[] WHERE id=$1`, observeGroup.ID, core.Employee)
+		exec(`UPDATE user_schedules SET template='{"type":"week","days":[0,1,2,3,4,5,6],"start":"00:00","end":"23:59"}' WHERE company_id=$1 AND user_id=$2`, company, core.Employee3)
+
 		// Offline operator coordinator fixture: actual legacy deployment remains
 		// unobserved. The wrapper may call the real owner API only after stop/drain.
 		writers := &rs10WriterFixture{legacyRunning: true}
