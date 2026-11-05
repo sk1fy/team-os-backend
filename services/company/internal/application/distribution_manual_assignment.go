@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/sk1fy/team-os-backend/services/company/internal/corebridge"
 	"github.com/sk1fy/team-os-backend/services/company/internal/storage/db"
 )
 
@@ -63,6 +64,16 @@ func (s *Service) manualObservation(ctx context.Context, actor Actor, ruleID, ob
 	return row, nil
 }
 
+// Manual assignments use the current CRM snapshot and explicit operator
+// confirmation. Unproven transition history still blocks automatic admission.
+func manualEntryMatches(entry db.DistributionObservedEntry, head db.DistributionLeadHead, snapshot *corebridge.LeadSnapshot) bool {
+	return (entry.State == "checking" || (entry.State == "needs_configuration" && entry.Evidence == "ambiguous_reentry")) &&
+		head.CurrentEntryID.Valid && head.CurrentEntryID.UUID == entry.ID &&
+		head.BindingID == entry.BindingID && head.BindingRevision == entry.BindingRevision &&
+		!head.Deleted && !head.Absent && snapshot != nil &&
+		snapshot.PipelineID == entry.PipelineID && snapshot.StatusID == entry.StatusID
+}
+
 func (s *Service) manualCandidates(ctx context.Context, q *db.Queries, observation db.DistributionObservation) (manualAssignmentOptions, error) {
 	out := manualAssignmentOptions{Candidates: []manualAssignmentCandidate{}}
 	rule, err := q.GetDistributionRule(ctx, db.GetDistributionRuleParams{CompanyID: observation.CompanyID, ID: observation.RuleID})
@@ -94,8 +105,12 @@ func (s *Service) manualCandidates(ctx context.Context, q *db.Queries, observati
 	if err != nil {
 		return out, err
 	}
+	head, err := q.LockDistributionLeadHead(ctx, db.LockDistributionLeadHeadParams{AccountID: observation.AccountID, LeadID: observation.LeadID})
+	if err != nil {
+		return out, err
+	}
 	if lead.Scope != bindingScope(binding) || lead.LeadID != observation.LeadID || lead.Deleted || lead.Absent ||
-		!validSnapshot(lead.Snapshot, observation.LeadID) || entry.State != "checking" ||
+		!validSnapshot(lead.Snapshot, observation.LeadID) || !manualEntryMatches(entry, head, lead.Snapshot) ||
 		!ruleEntrySnapshotMatches(rule, entry, lead.Snapshot) {
 		return out, conflict("Сделка изменилась")
 	}

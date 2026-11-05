@@ -115,7 +115,7 @@ func (s *Service) ProcessDistributionQueue(ctx context.Context) (bool, error) {
 	case entry.State == "cancelled" || !head.CurrentEntryID.Valid || head.CurrentEntryID.UUID != row.EntryID || observed.Snapshot == nil || !ruleEntrySnapshotMatches(r, entry, observed.Snapshot) || !ruleSourceAcceptsEntry(r, entry):
 		reason = "observed_stage_exit"
 		state = "cancelled"
-	case entry.State == "needs_configuration":
+	case !manual && entry.State == "needs_configuration":
 		reason = "ambiguous_reentry"
 		state = "requires_configuration"
 	case r.ExecutionMode != mode || r.ExecutionEpoch != row.ExecutionEpoch:
@@ -131,7 +131,7 @@ func (s *Service) ProcessDistributionQueue(ctx context.Context) (bool, error) {
 		reason = "algorithm_unsupported"
 		state = "requires_configuration"
 	}
-	if manual && reason == "" && (entry.State != "checking" || observed.Deleted || observed.Absent ||
+	if manual && reason == "" && (!manualEntryMatches(entry, head, observed.Snapshot) || observed.Deleted || observed.Absent ||
 		observed.LeadID != row.LeadID || !validSnapshot(observed.Snapshot, row.LeadID) ||
 		entry.BindingID != b.ID || entry.BindingRevision != b.Revision || r.GroupID != row.GroupID ||
 		observed.Snapshot.ResponsibleUserID != strconv.FormatInt(row.ManualExpectedResponsibleUserID.Int64, 10) ||

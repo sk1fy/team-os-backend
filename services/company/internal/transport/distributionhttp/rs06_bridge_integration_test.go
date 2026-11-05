@@ -568,6 +568,11 @@ func TestRS06ActualCoreTeamSignedBridge(t *testing.T) {
 			t.Fatal("widget/Team observation disagree", string(wire), e)
 		}
 		observationID := page.Items[0].ID
+		// A late status webhook can leave the current entry ambiguous for
+		// automation even though CRM still confirms the exact stage.
+		if e = db.New(pool).PauseDistributionObservedEntry(ctx, page.Items[0].EntryID); e != nil {
+			t.Fatal(e)
+		}
 		exec(`UPDATE distribution_groups SET member_ids=ARRAY[$2,$3]::uuid[] WHERE id=$1`, observeGroup.ID, core.Employee, core.Employee3)
 		exec(`UPDATE user_schedules SET template='{"type":"week","days":[],"start":"00:00","end":"23:59"}' WHERE company_id=$1 AND user_id=$2`, company, core.Employee3)
 		raw, e = svc.DistributionManualAssignmentOptions(ctx, owner, observedRule.ID, observationID)
