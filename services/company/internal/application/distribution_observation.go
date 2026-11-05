@@ -47,6 +47,7 @@ func chooseDistributionPlan(owner string, keep bool, available []DistributionAva
 }
 
 type DistributionObservation struct {
+	Completed                bool       `json:"completed,omitempty"`
 	BindingRevision          int64      `json:"bindingRevision"`
 	SourceOccurredAt         *time.Time `json:"sourceOccurredAt"`
 	SourceReceivedAt         *time.Time `json:"sourceReceivedAt"`
@@ -248,6 +249,10 @@ func (s *Service) observationProjection(ctx context.Context, actor Actor, row db
 	return &out, nil
 }
 func (s *Service) DistributionObservations(ctx context.Context, actor Actor, id uuid.UUID, limit, offset int32) (json.RawMessage, error) {
+	return s.DistributionObservationPage(ctx, actor, id, limit, offset, false)
+}
+
+func (s *Service) DistributionObservationPage(ctx context.Context, actor Actor, id uuid.UUID, limit, offset int32, hideCompleted bool) (json.RawMessage, error) {
 	if _, e := s.distributionActor(ctx, actor, false); e != nil {
 		return nil, e
 	}
@@ -264,7 +269,7 @@ func (s *Service) DistributionObservations(ctx context.Context, actor Actor, id 
 		}
 		return nil, upstream("Источник правил недоступен", e)
 	}
-	rows, e := q.ListDistributionObservations(ctx, db.ListDistributionObservationsParams{CompanyID: actor.CompanyID, RuleID: id, Limit: limit + 1, Offset: offset})
+	rows, e := q.ListDistributionObservations(ctx, db.ListDistributionObservationsParams{CompanyID: actor.CompanyID, RuleID: id, Limit: limit + 1, Offset: offset, HideCompleted: hideCompleted})
 	if e != nil {
 		return nil, e
 	}
@@ -275,7 +280,8 @@ func (s *Service) DistributionObservations(ctx context.Context, actor Actor, id 
 	permissionCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 	targets := make([]distributionPermissionTarget, len(rows))
-	for i, row := range rows {
+	for i, result := range rows {
+		row := result.DistributionObservation
 		targets[i] = distributionPermissionTarget{row.BindingID, row.BindingRevision, row.AccountID, row.LeadID}
 	}
 	checked := s.distributionBindingPermissions(permissionCtx, actor, targets)
@@ -287,10 +293,11 @@ func (s *Service) DistributionObservations(ctx context.Context, actor Actor, id 
 		if !checked[i].visible {
 			continue
 		}
-		out, err := s.observationProjection(permissionCtx, actor, row)
+		out, err := s.observationProjection(permissionCtx, actor, row.DistributionObservation)
 		if err != nil {
 			return nil, err
 		}
+		out.Completed = row.Completed
 		items = append(items, *out)
 	}
 	return json.Marshal(map[string]any{"items": items, "limit": limit, "offset": offset, "hasMore": hasMore, "checkedAt": s.now().UTC()})

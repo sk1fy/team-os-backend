@@ -71,6 +71,12 @@ func (s *Server) ReadDistributionRuntime(ctx context.Context, r *v.ReadDistribut
 			}
 			raw, e = s.application.DistributionQueuePage(ctx, a, f, limit, r.Offset)
 		}
+	case "observations":
+		limit := r.Limit
+		if limit == 0 {
+			limit = 50
+		}
+		raw, e = s.application.DistributionObservationPage(ctx, a, id, limit, r.Offset, r.HideCompleted)
 	case "observation-assignment":
 		observation, err := runtimeID(r.ObservationId, true)
 		if err != nil {

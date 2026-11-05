@@ -321,44 +321,60 @@ func (q *Queries) LatestDistributionLeadObservation(ctx context.Context, arg Lat
 }
 
 const listDistributionObservations = `-- name: ListDistributionObservations :many
-SELECT id, company_id, rule_id, group_id, execution_epoch, entry_id, event_id, binding_id, binding_revision, account_id, lead_id, payload, created_at FROM distribution_observations WHERE company_id=$1 AND rule_id=$2 ORDER BY created_at DESC,id DESC LIMIT $3 OFFSET $4
+SELECT o.id, o.company_id, o.rule_id, o.group_id, o.execution_epoch, o.entry_id, o.event_id, o.binding_id, o.binding_revision, o.account_id, o.lead_id, o.payload, o.created_at, (q.id IS NOT NULL)::boolean AS completed
+FROM distribution_observations o
+LEFT JOIN distribution_queue q
+ ON q.company_id = o.company_id AND q.entry_id = o.entry_id
+ AND q.manual_observation_id IS NOT NULL AND q.state = 'confirmed' AND q.settled
+WHERE o.company_id = $1 AND o.rule_id = $2
+ AND (NOT $3::boolean OR q.id IS NULL)
+ORDER BY o.created_at DESC, o.id DESC
+LIMIT $5 OFFSET $4
 `
 
 type ListDistributionObservationsParams struct {
-	CompanyID uuid.UUID `json:"company_id"`
-	RuleID    uuid.UUID `json:"rule_id"`
-	Limit     int32     `json:"limit"`
-	Offset    int32     `json:"offset"`
+	CompanyID     uuid.UUID `json:"company_id"`
+	RuleID        uuid.UUID `json:"rule_id"`
+	HideCompleted bool      `json:"hide_completed"`
+	Offset        int32     `json:"offset"`
+	Limit         int32     `json:"limit"`
 }
 
-func (q *Queries) ListDistributionObservations(ctx context.Context, arg ListDistributionObservationsParams) ([]DistributionObservation, error) {
+type ListDistributionObservationsRow struct {
+	DistributionObservation DistributionObservation `json:"distribution_observation"`
+	Completed               bool                    `json:"completed"`
+}
+
+func (q *Queries) ListDistributionObservations(ctx context.Context, arg ListDistributionObservationsParams) ([]ListDistributionObservationsRow, error) {
 	rows, err := q.db.Query(ctx, listDistributionObservations,
 		arg.CompanyID,
 		arg.RuleID,
-		arg.Limit,
+		arg.HideCompleted,
 		arg.Offset,
+		arg.Limit,
 	)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []DistributionObservation{}
+	items := []ListDistributionObservationsRow{}
 	for rows.Next() {
-		var i DistributionObservation
+		var i ListDistributionObservationsRow
 		if err := rows.Scan(
-			&i.ID,
-			&i.CompanyID,
-			&i.RuleID,
-			&i.GroupID,
-			&i.ExecutionEpoch,
-			&i.EntryID,
-			&i.EventID,
-			&i.BindingID,
-			&i.BindingRevision,
-			&i.AccountID,
-			&i.LeadID,
-			&i.Payload,
-			&i.CreatedAt,
+			&i.DistributionObservation.ID,
+			&i.DistributionObservation.CompanyID,
+			&i.DistributionObservation.RuleID,
+			&i.DistributionObservation.GroupID,
+			&i.DistributionObservation.ExecutionEpoch,
+			&i.DistributionObservation.EntryID,
+			&i.DistributionObservation.EventID,
+			&i.DistributionObservation.BindingID,
+			&i.DistributionObservation.BindingRevision,
+			&i.DistributionObservation.AccountID,
+			&i.DistributionObservation.LeadID,
+			&i.DistributionObservation.Payload,
+			&i.DistributionObservation.CreatedAt,
+			&i.Completed,
 		); err != nil {
 			return nil, err
 		}

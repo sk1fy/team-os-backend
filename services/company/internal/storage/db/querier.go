@@ -221,7 +221,7 @@ type Querier interface {
 	ListDistributionGroupsContainingUserForUpdate(ctx context.Context, arg ListDistributionGroupsContainingUserForUpdateParams) ([]DistributionGroup, error)
 	ListDistributionIdentityCandidates(ctx context.Context, arg ListDistributionIdentityCandidatesParams) ([]ListDistributionIdentityCandidatesRow, error)
 	ListDistributionMappings(ctx context.Context, arg ListDistributionMappingsParams) ([]DistributionEmployeeMapping, error)
-	ListDistributionObservations(ctx context.Context, arg ListDistributionObservationsParams) ([]DistributionObservation, error)
+	ListDistributionObservations(ctx context.Context, arg ListDistributionObservationsParams) ([]ListDistributionObservationsRow, error)
 	ListDistributionQueue(ctx context.Context, arg ListDistributionQueueParams) ([]DistributionQueue, error)
 	ListDistributionQueueFiltered(ctx context.Context, arg ListDistributionQueueFilteredParams) ([]DistributionQueue, error)
 	ListDistributionQueueHistory(ctx context.Context, arg ListDistributionQueueHistoryParams) ([]DistributionQueueHistory, error)

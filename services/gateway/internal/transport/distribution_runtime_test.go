@@ -204,3 +204,24 @@ func TestObservationAssignmentRoutesForwardIdentityAndConflict(t *testing.T) {
 		t.Fatal(w.Code, w.Body.String())
 	}
 }
+
+func TestRuntimeObservationsForwardsCompletionFilter(t *testing.T) {
+	id := uuid.New()
+	for _, tc := range []struct {
+		query string
+		hide  bool
+	}{{"", false}, {"?hideCompleted=true", true}} {
+		h := &Handler{company: runtimeClient{read: func(r *v.ReadDistributionRuntimeRequest) (*v.ReadDistributionRuntimeResponse, error) {
+			if r.Kind != "observations" || r.Id != id.String() || r.HideCompleted != tc.hide || r.Limit != 50 {
+				t.Fatalf("unexpected observation request: %s", r)
+			}
+			return &v.ReadDistributionRuntimeResponse{Payload: []byte(`{"items":[{"completed":true}]}`)}, nil
+		}}}
+		w := httptest.NewRecorder()
+		api.Handler(h).ServeHTTP(w, httptest.NewRequestWithContext(t.Context(), http.MethodGet,
+			"/api/v1/distribution/rules/"+id.String()+"/observations"+tc.query, nil))
+		if w.Code != http.StatusOK || !strings.Contains(w.Body.String(), `"completed":true`) || w.Header().Get("Cache-Control") != "private, no-store" {
+			t.Fatalf("unexpected observation response: %d %s", w.Code, w.Body.String())
+		}
+	}
+}

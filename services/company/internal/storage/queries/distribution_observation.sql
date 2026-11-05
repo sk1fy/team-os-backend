@@ -19,7 +19,15 @@ UPDATE distribution_observation_jobs SET state='completed',lease_token=NULL,leas
 -- name: SaveDistributionObservation :exec
 INSERT INTO distribution_observations(id,company_id,rule_id,group_id,execution_epoch,entry_id,event_id,binding_id,binding_revision,account_id,lead_id,payload) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) ON CONFLICT DO NOTHING;
 -- name: ListDistributionObservations :many
-SELECT * FROM distribution_observations WHERE company_id=$1 AND rule_id=$2 ORDER BY created_at DESC,id DESC LIMIT $3 OFFSET $4;
+SELECT sqlc.embed(o), (q.id IS NOT NULL)::boolean AS completed
+FROM distribution_observations o
+LEFT JOIN distribution_queue q
+ ON q.company_id = o.company_id AND q.entry_id = o.entry_id
+ AND q.manual_observation_id IS NOT NULL AND q.state = 'confirmed' AND q.settled
+WHERE o.company_id = sqlc.arg(company_id) AND o.rule_id = sqlc.arg(rule_id)
+ AND (NOT sqlc.arg(hide_completed)::boolean OR q.id IS NULL)
+ORDER BY o.created_at DESC, o.id DESC
+LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
 -- name: GetDistributionObservationCursor :one
 SELECT cursor_order,cursor_next FROM distribution_group_claims WHERE company_id=$1 AND group_id=$2;
 -- name: LatestDistributionLeadObservation :one
