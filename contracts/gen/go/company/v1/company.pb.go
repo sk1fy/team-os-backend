@@ -11852,6 +11852,7 @@ type ReadDistributionRuntimeRequest struct {
 	From          string                 `protobuf:"bytes,7,opt,name=from,proto3" json:"from,omitempty"`
 	To            string                 `protobuf:"bytes,8,opt,name=to,proto3" json:"to,omitempty"`
 	ObservationId string                 `protobuf:"bytes,9,opt,name=observation_id,json=observationId,proto3" json:"observation_id,omitempty"`
+	HideCompleted bool                   `protobuf:"varint,10,opt,name=hide_completed,json=hideCompleted,proto3" json:"hide_completed,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -11947,6 +11948,13 @@ func (x *ReadDistributionRuntimeRequest) GetObservationId() string {
 		return x.ObservationId
 	}
 	return ""
+}
+
+func (x *ReadDistributionRuntimeRequest) GetHideCompleted() bool {
+	if x != nil {
+		return x.HideCompleted
+	}
+	return false
 }
 
 type WriteDistributionRuntimeRequest struct {
@@ -13238,7 +13246,7 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\rcan_view_lead\x18\x02 \x01(\bR\vcanViewLead\x12\x16\n" +
 	"\x06reason\x18\x03 \x01(\tR\x06reason\x129\n" +
 	"\n" +
-	"checked_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tcheckedAt\"\xea\x01\n" +
+	"checked_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tcheckedAt\"\x91\x02\n" +
 	"\x1eReadDistributionRuntimeRequest\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\x12\x14\n" +
@@ -13248,7 +13256,9 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\bgroup_id\x18\x06 \x01(\tR\agroupId\x12\x12\n" +
 	"\x04from\x18\a \x01(\tR\x04from\x12\x0e\n" +
 	"\x02to\x18\b \x01(\tR\x02to\x12%\n" +
-	"\x0eobservation_id\x18\t \x01(\tR\robservationId\"_\n" +
+	"\x0eobservation_id\x18\t \x01(\tR\robservationId\x12%\n" +
+	"\x0ehide_completed\x18\n" +
+	" \x01(\bR\rhideCompleted\"_\n" +
 	"\x1fWriteDistributionRuntimeRequest\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\x12\x18\n" +

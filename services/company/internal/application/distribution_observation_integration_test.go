@@ -88,6 +88,7 @@ func TestDistributionObservationIsolationDedupPrivacyAndEnableBoundary(t *testin
 	if e = json.Unmarshal(raw, &page); e != nil || len(page.Items) != 1 || page.Items[0].DecisionKind != "assign" || page.Items[0].PlannedEmployeeID == nil || *page.Items[0].PlannedEmployeeID != employee {
 		t.Fatal(string(raw), e)
 	}
+	initialObservationID := page.Items[0].ID
 	if _, e = pool.Exec(ctx, `UPDATE distribution_observations SET payload='{}'`); e == nil {
 		t.Fatal("observation mutable")
 	}
@@ -228,6 +229,69 @@ func TestDistributionObservationIsolationDedupPrivacyAndEnableBoundary(t *testin
 		t.Fatal("expiry evidence was not persisted", mirror, e)
 	}
 
+	t.Run("completed entries are filtered before pagination", func(t *testing.T) {
+		service.now = time.Now
+		originalID := initialObservationID
+		addObservation := func(entryID uuid.UUID) uuid.UUID {
+			t.Helper()
+			observationID, eventID := uuid.New(), uuid.New()
+			exec(`INSERT INTO distribution_observation_jobs
+				(id,company_id,rule_id,execution_epoch,entry_id,event_id,binding_id,binding_revision,account_id,lead_id,state)
+				SELECT $1,company_id,rule_id,execution_epoch,$2,$3,binding_id,binding_revision,account_id,lead_id,'completed'
+				FROM distribution_observations WHERE id=$4`, observationID, entryID, eventID, originalID)
+			exec(`INSERT INTO distribution_observations
+				(id,company_id,rule_id,group_id,execution_epoch,entry_id,event_id,binding_id,binding_revision,account_id,lead_id,payload)
+				SELECT $1,company_id,rule_id,group_id,execution_epoch,$2,$3,binding_id,binding_revision,account_id,lead_id,
+					payload || jsonb_build_object('id',$1::uuid,'entryId',$2::uuid,'eventId',$3::uuid)
+				FROM distribution_observations WHERE id=$4`, observationID, entryID, eventID, originalID)
+			return observationID
+		}
+		addAssignment := func(observationID uuid.UUID, state string, settled bool) uuid.UUID {
+			t.Helper()
+			queueID := uuid.New()
+			exec(`INSERT INTO distribution_queue
+				(id,company_id,entry_id,rule_id,group_id,account_id,lead_id,execution_epoch,state,settled,
+					manual_observation_id,manual_request_id,manual_employee_id,manual_actor_id,manual_expected_responsible_user_id)
+				SELECT $1,company_id,entry_id,rule_id,group_id,account_id,lead_id,execution_epoch,$2,$3,id,$4,$5,$6,42
+				FROM distribution_observations WHERE id=$7`, queueID, state, settled, uuid.New(), employee, ownerID, observationID)
+			return queueID
+		}
+		assertPage := func(hideCompleted bool, limit int32, hasMore bool, ids ...uuid.UUID) []DistributionObservation {
+			t.Helper()
+			raw, err := service.DistributionObservationPage(ctx, owner, rule.ID, limit, 0, hideCompleted)
+			var got struct {
+				Items   []DistributionObservation
+				HasMore bool
+			}
+			if err != nil || json.Unmarshal(raw, &got) != nil || got.HasMore != hasMore || len(got.Items) != len(ids) {
+				t.Fatalf("unexpected observation page: %s (%v)", raw, err)
+			}
+			for i, id := range ids {
+				if got.Items[i].ID != id {
+					t.Fatalf("unexpected observation order: %s", raw)
+				}
+			}
+			return got.Items
+		}
+		queueID := addAssignment(originalID, "waiting", false)
+		assertPage(true, 1, false, originalID)
+		exec(`UPDATE distribution_queue SET state='confirmed', settled=true WHERE id=$1`, queueID)
+		assertPage(true, 1, false)
+
+		reentry := uuid.New()
+		exec(`INSERT INTO distribution_observed_entries
+			(id,company_id,account_id,lead_id,binding_id,binding_revision,sequence,pipeline_id,status_id,entry_event_id,evidence,state)
+			VALUES($1,$2,'123','10',$3,1,2,'20','30',$4,'created_in_stage','checking')`, reentry, company, binding.BindingID, uuid.New())
+		activeID := addObservation(reentry)
+		addAssignment(activeID, "failed", true)
+		laterSiblingID := addObservation(entry)
+
+		assertPage(true, 1, false, activeID)
+		all := assertPage(false, 3, false, laterSiblingID, activeID, originalID)
+		if !all[0].Completed || all[1].Completed || !all[2].Completed {
+			t.Fatalf("unexpected completion markers: %+v", all)
+		}
+	})
 }
 
 func TestDistributionModeChangeSerializesAdmissionAndPendingObservationPoint(t *testing.T) {

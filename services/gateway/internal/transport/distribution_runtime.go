@@ -192,7 +192,14 @@ func (h *Handler) GetDistributionObservations(w http.ResponseWriter, r *http.Req
 	if !ok {
 		return
 	}
-	h.readRuntime(w, r, "observations", id, l, o, &api.DistributionRuntimeObservations{})
+	out, err := h.company.ReadDistributionRuntime(outgoingContext(r), &v.ReadDistributionRuntimeRequest{
+		Kind: "observations", Id: id.String(), Limit: l, Offset: o, HideCompleted: p.HideCompleted != nil && *p.HideCompleted,
+	})
+	if err != nil {
+		h.writeRPCError(w, r, err)
+		return
+	}
+	runtimeOutput(w, out, &api.DistributionRuntimeObservations{})
 }
 
 func (h *Handler) GetDistributionObservationAssignment(w http.ResponseWriter, r *http.Request, ruleID, observationID api.ID) {

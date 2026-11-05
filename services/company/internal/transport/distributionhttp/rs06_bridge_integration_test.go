@@ -632,6 +632,16 @@ func TestRS06ActualCoreTeamSignedBridge(t *testing.T) {
 			options.Assignment.State != "confirmed" || options.Assignment.EmployeeID != core.Employee {
 			t.Fatalf("manual assignment did not settle as confirmed: %s (%v)", raw, e)
 		}
+		page.Items = nil
+		raw, e = svc.DistributionObservationPage(ctx, owner, observedRule.ID, 25, 0, true)
+		if e != nil || json.Unmarshal(raw, &page) != nil || len(page.Items) != 0 {
+			t.Fatalf("confirmed assignment remained in active observations: %s (%v)", raw, e)
+		}
+		raw, e = svc.DistributionObservations(ctx, owner, observedRule.ID, 25, 0)
+		if e != nil || json.Unmarshal(raw, &page) != nil || len(page.Items) != 1 ||
+			page.Items[0].ID != observationID || !page.Items[0].Completed {
+			t.Fatalf("confirmed assignment missing from completed observations: %s (%v)", raw, e)
+		}
 		baseline.PatchCalls++
 		exec(`UPDATE distribution_groups SET member_ids=ARRAY[$2]::uuid[] WHERE id=$1`, observeGroup.ID, core.Employee)
 		exec(`UPDATE user_schedules SET template='{"type":"week","days":[0,1,2,3,4,5,6],"start":"00:00","end":"23:59"}' WHERE company_id=$1 AND user_id=$2`, company, core.Employee3)
