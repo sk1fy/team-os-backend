@@ -70,7 +70,8 @@ elif args.phase == "postgres":
 elif args.phase == "artifacts":
     import zipfile
     runtime_version = json.loads((widget / "manifest.json").read_text())["widget"]["version"]
-    for mode in ["standalone", "managed"]:
+    modes = ["managed"] if tuple(map(int, runtime_version.split("."))) >= (1, 2, 5) else ["standalone", "managed"]
+    for mode in modes:
         archive = out / f"task-control-{runtime_version}-{mode}-synthetic.zip"
         run(mode, widget, ["sh", "scripts/build.sh"], {
             "TASK_CONTROL_OUTPUT": str(archive), "TASK_CONTROL_STANDALONE_BUILD": "1" if mode == "standalone" else "0",

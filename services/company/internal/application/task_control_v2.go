@@ -130,7 +130,7 @@ func (s *Service) GetTaskControlDraftV2(ctx context.Context, a Actor, id uuid.UU
 	}
 	return intentDraftDTO(c, d)
 }
-func (s *Service) UpdateTaskControlDraftV2(ctx context.Context, a Actor, id uuid.UUID, in TaskControlDraftInputV2) (TaskControlDraftV2, error) {
+func (s *Service) UpdateTaskControlDraftV2(ctx context.Context, a Actor, id uuid.UUID, in TaskControlDraftInputV2, apply ...*uuid.UUID) (TaskControlDraftV2, error) {
 	sum, e := tc.IntentChecksum(in.IntentRules)
 	if e != nil {
 		return TaskControlDraftV2{}, coded(ErrorValidation, "invalid_selection", e.Error())
@@ -144,6 +144,14 @@ func (s *Service) UpdateTaskControlDraftV2(ctx context.Context, a Actor, id uuid
 		return TaskControlDraftV2{}, e
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
+	var out TaskControlDraftV2
+	request, e := taskControlApplyRequest(c, a, in, apply)
+	if e != nil {
+		return out, e
+	}
+	if replayed, err := request.replay(ctx, q, &out); replayed || err != nil {
+		return out, err
+	}
 	if e = tcFence(c, in.ExpectedBindingRevision, in.ExpectedModeEpoch); e != nil {
 		return TaskControlDraftV2{}, e
 	}
@@ -157,8 +165,24 @@ func (s *Service) UpdateTaskControlDraftV2(ctx context.Context, a Actor, id uuid
 	if e != nil {
 		return TaskControlDraftV2{}, e
 	}
-	out, e := intentDraftDTO(c, d)
+	if request != nil {
+		if e = s.taskControlV2DescriptorTx(ctx, q, c); e != nil {
+			return out, e
+		}
+		c, e = activateTaskControlRules(ctx, q, c)
+		if e != nil {
+			return out, e
+		}
+		publish := TaskControlPublishInputV2{RequestID: request.id, Reason: taskControlSaveReason}
+		if _, e = s.publishTaskControlIntentV2(ctx, q, c, a, publish, in.IntentRules, d.Revision, request.hash, nil); e != nil {
+			return out, taskControlRuleSaveError(e)
+		}
+	}
+	out, e = intentDraftDTO(c, d)
 	if e != nil {
+		return out, e
+	}
+	if e = request.record(ctx, q, out); e != nil {
 		return out, e
 	}
 	return out, tx.Commit(ctx)

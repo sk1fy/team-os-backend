@@ -193,6 +193,9 @@ func (s *Service) SetTaskControlModeV2(ctx context.Context, a Actor, id uuid.UUI
 	if e = tcFence(c, in.ExpectedBindingRevision, in.ExpectedModeEpoch); e != nil {
 		return nil, e
 	}
+	if e = checkTaskControlModeTransition(ctx, q, c, in.TargetMode); e != nil {
+		return nil, e
+	}
 	if c.Mode == in.TargetMode {
 		return nil, conflict("Уже выбран этот режим")
 	}

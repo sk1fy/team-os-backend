@@ -3,6 +3,7 @@ package transport
 import (
 	"context"
 	"encoding/json"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -10,20 +11,27 @@ import (
 
 	v "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v1"
 	"github.com/sk1fy/team-os-backend/services/gateway/internal/api"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 )
 
 type dynamicControlClient struct {
 	v.CompanyServiceClient
 	calls   []*v.TaskControlConnectionRequest
 	runtime []bool
+	err     error
 }
 
 func (c *dynamicControlClient) TaskControlConnection(ctx context.Context, in *v.TaskControlConnectionRequest, _ ...grpc.CallOption) (*v.TaskControlConnectionResponse, error) {
 	c.calls = append(c.calls, in)
 	md, _ := metadata.FromOutgoingContext(ctx)
 	c.runtime = append(c.runtime, len(md.Get("x-teamos-service-token")) == 1)
+	if c.err != nil {
+		return nil, c.err
+	}
 	return &v.TaskControlConnectionResponse{JsonBody: []byte(`{"ok":true}`)}, nil
 }
 func TestTaskControlV2RoutesPreserveIntentAndSeparateRuntimeAuth(t *testing.T) {
@@ -88,5 +96,39 @@ func TestTaskControlV2RoutesPreserveIntentAndSeparateRuntimeAuth(t *testing.T) {
 	}
 	if len(c.calls) != before {
 		t.Fatal("invalid bearer reached company")
+	}
+}
+
+func TestTaskControlApplyRulesRoutesPreserveRequestAndReferenceError(t *testing.T) {
+	sourceError, err := status.New(codes.Unavailable, "Требуется свежий справочник CRM").WithDetails(&errdetails.ErrorInfo{
+		Domain: "teamos.company", Reason: "references_unavailable",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	client := &dynamicControlClient{err: sourceError.Err()}
+	router := api.Handler(&Handler{company: client, logger: slog.Default()})
+	const bindingID = "a0000000-0000-4000-8000-000000000001"
+	const requestID = "b0000000-0000-4000-8000-000000000001"
+	for _, tc := range []struct {
+		version, rulesField string
+		action              v.TaskControlConnectionRequest_Action
+	}{
+		{"v1", "rules", v.TaskControlConnectionRequest_ACTION_UPDATE_DRAFT},
+		{"v2", "intentRules", v.TaskControlConnectionRequest_ACTION_UPDATE_DRAFT_V2},
+	} {
+		t.Run(tc.version, func(t *testing.T) {
+			body := `{"expectedRevision":1,"expectedBindingRevision":1,"expectedModeEpoch":1,"applyRequestId":"` + requestID + `","` + tc.rulesField + `":[]}`
+			r := httptest.NewRequestWithContext(t.Context(), http.MethodPut, "/api/"+tc.version+"/task-control/connections/"+bindingID+"/draft", strings.NewReader(body))
+			w := httptest.NewRecorder()
+			router.ServeHTTP(w, r)
+			if w.Code != http.StatusServiceUnavailable || !strings.Contains(w.Body.String(), `"code":"references_unavailable"`) {
+				t.Fatalf("save response: %d %s", w.Code, w.Body.String())
+			}
+			got := client.calls[len(client.calls)-1]
+			if got.Action != tc.action || got.Id != bindingID || string(got.JsonBody) != body || client.runtime[len(client.runtime)-1] {
+				t.Fatalf("wrong rule save forwarded: %v", got)
+			}
+		})
 	}
 }

@@ -163,11 +163,14 @@ func (s *Server) TaskControlConnection(ctx context.Context, r *v.TaskControlConn
 		case v.TaskControlConnectionRequest_ACTION_DRAFT:
 			out, err = s.application.GetTaskControlDraft(ctx, a, id)
 		case v.TaskControlConnectionRequest_ACTION_UPDATE_DRAFT:
-			var input application.TaskControlDraftInput
+			var input struct {
+				application.TaskControlDraftInput
+				ApplyRequestID *uuid.UUID `json:"applyRequestId"`
+			}
 			if e = taskControlDecode(r.JsonBody, &input); e != nil {
 				return nil, e
 			}
-			out, err = s.application.UpdateTaskControlDraft(ctx, a, id, input)
+			out, err = s.application.UpdateTaskControlDraft(ctx, a, id, input.TaskControlDraftInput, input.ApplyRequestID)
 		case v.TaskControlConnectionRequest_ACTION_VALIDATE:
 			out, err = s.application.ValidateTaskControlDraft(ctx, a, id)
 		case v.TaskControlConnectionRequest_ACTION_PUBLISH:
@@ -281,11 +284,14 @@ func (s *Server) taskControlV2(ctx context.Context, a application.Actor, id uuid
 	case v.TaskControlConnectionRequest_ACTION_DRAFT_V2:
 		return s.application.GetTaskControlDraftV2(ctx, a, id)
 	case v.TaskControlConnectionRequest_ACTION_UPDATE_DRAFT_V2:
-		var in application.TaskControlDraftInputV2
+		var in struct {
+			application.TaskControlDraftInputV2
+			ApplyRequestID *uuid.UUID `json:"applyRequestId"`
+		}
 		if e := taskControlDecode(r.JsonBody, &in); e != nil {
 			return nil, e
 		}
-		return s.application.UpdateTaskControlDraftV2(ctx, a, id, in)
+		return s.application.UpdateTaskControlDraftV2(ctx, a, id, in.TaskControlDraftInputV2, in.ApplyRequestID)
 	case v.TaskControlConnectionRequest_ACTION_VALIDATE_V2:
 		var in application.TaskControlValidateInputV2
 		if e := taskControlDecode(r.JsonBody, &in); e != nil {

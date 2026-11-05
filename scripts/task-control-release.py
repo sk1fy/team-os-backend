@@ -35,11 +35,13 @@ out = args.output.resolve()
 out.mkdir(parents=True, exist_ok=False)
 os.chmod(out, 0o700)
 runtime_version = json.loads((args.widgets / "rkrs_lead_notasks/manifest.json").read_text())["widget"]["version"]
+managed_only = tuple(map(int, runtime_version.split("."))) >= (1, 2, 5)
+core_schema, company_schema = (36, 42) if managed_only else (31, 40)
 manifest = {"kind": "local-release-candidate", "runtimeVersion": runtime_version, "releaseApproved": False,
             "candidateId": uuid.uuid4().hex,
             "createdAt": datetime.now(timezone.utc).isoformat(), "repositories": {}, "images": {}, "archives": {},
             "publicConfiguration": {"coreOrigin": args.core_origin, "backendOrigin": args.backend_origin, "oauthClientUUID": args.oauth_client_uuid},
-            "schema": {"core": 31, "company": 40, "runtime": [1, 2]},
+            "schema": {"core": core_schema, "company": company_schema, "runtime": [1, 2]},
             "toolchain": {"python": sys.version.split()[0], "zlib": zlib.ZLIB_VERSION},
             "remainingGates": ["R09 live acceptance deferred", "browser acceptance deferred", "CI on final R10 commits", "registry image digests after publishing", "full-stack rollout and binary rollback on approved environment", "verify deployment architecture", "operator verifies current installation/generation and OAuth UUID"]}
 
@@ -82,7 +84,8 @@ for name, directory in [("core", args.core), ("backend", backend), ("widgets", a
     manifest["repositories"][name] = {"sha": git(directory, "rev-parse", "HEAD"), "path": str(directory.resolve())}
 widget = args.widgets / "rkrs_lead_notasks"
 epoch = git(args.widgets, "show", "-s", "--format=%ct", "HEAD")
-for mode in ["standalone", "managed"]:
+modes = ["managed"] if managed_only else ["standalone", "managed"]
+for mode in modes:
     paths = [out / f"task-control-{runtime_version}-{mode}{suffix}.zip" for suffix in ["", "-repeat"]]
     for index, archive in enumerate(paths):
         run(f"zip-{mode}-{index}", widget, ["sh", "scripts/build.sh"], {

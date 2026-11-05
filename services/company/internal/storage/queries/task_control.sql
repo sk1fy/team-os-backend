@@ -34,6 +34,11 @@ SELECT * FROM task_control_runtime_sessions WHERE token_hash=$1 AND expires_at>$
 DELETE FROM task_control_runtime_sessions WHERE company_id=$1 AND binding_id=$2;
 -- name: GetTaskControlConnectionRequest :one
 SELECT * FROM task_control_connection_requests WHERE company_id=$1 AND request_id=$2;
+-- name: HasAppliedTaskControlRules :one
+SELECT EXISTS (
+    SELECT 1 FROM task_control_connection_requests
+    WHERE company_id=$1 AND binding_id=$2 AND action='applyRules'
+);
 -- name: SaveTaskControlConnectionRequest :exec
 INSERT INTO task_control_connection_requests(company_id,request_id,binding_id,actor_id,action,body_hash,response) VALUES($1,$2,$3,$4,$5,$6,$7);
 
