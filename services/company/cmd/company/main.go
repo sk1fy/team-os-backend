@@ -188,12 +188,13 @@ func run(logger *slog.Logger) error {
 		return fmt.Errorf("listen gRPC: %w", err)
 	}
 	grpcServer := grpc.NewServer(
+		grpc.ChainUnaryInterceptor(httpx.LogRPCErrors(logger)),
 		grpc.MaxRecvMsgSize(2<<20),
 		grpc.MaxSendMsgSize(8<<20),
 	)
 	companyv1.RegisterCompanyServiceServer(
 		grpcServer,
-		companygrpc.NewServer(service, verifier, configuration.GatewayServiceToken),
+		companygrpc.NewServer(service, verifier, configuration.GatewayServiceToken).WithTasksServiceToken(configuration.TasksServiceToken),
 	)
 	healthServer := health.NewServer()
 	healthServer.SetServingStatus("", grpc_health_v1.HealthCheckResponse_SERVING)

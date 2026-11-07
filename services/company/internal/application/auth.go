@@ -3,6 +3,7 @@ package application
 import (
 	"context"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -202,12 +203,7 @@ func (s *Service) Login(ctx context.Context, input LoginInput, meta SessionMeta)
 		releasePasswordSlot()
 		return AuthResult{}, unauthenticated()
 	}
-	tx, err := s.pool.Begin(ctx)
-	if err != nil {
-		return AuthResult{}, internal("Не удалось выполнить вход", err)
-	}
-	defer func() { _ = tx.Rollback(ctx) }()
-	queries := db.New(tx)
+	queries := db.New(s.pool)
 	row, err := queries.GetUserForLogin(ctx, login)
 	if err != nil {
 		releasePasswordSlot, slotErr := s.acquirePasswordSlot(ctx)
@@ -231,6 +227,24 @@ func (s *Service) Login(ctx context.Context, input LoginInput, meta SessionMeta)
 		return AuthResult{}, unauthenticated()
 	}
 
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return AuthResult{}, internal("Не удалось выполнить вход", err)
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+	queries = db.New(tx)
+	authoritative, err := queries.GetUserForLoginLocked(ctx, login)
+	if isNoRows(err) {
+		return AuthResult{}, unauthenticated()
+	}
+	if err != nil {
+		return AuthResult{}, internal("Не удалось проверить доступ", err)
+	}
+	if authoritative.User.ID != row.User.ID || authoritative.User.Status != "active" || authoritative.PasswordHash != row.PasswordHash {
+		return AuthResult{}, unauthenticated()
+	}
+	row.User = authoritative.User
+
 	result, err := s.createSession(ctx, queries, row.User, meta, uuid.NullUUID{})
 	if err != nil {
 		return AuthResult{}, err
@@ -252,109 +266,6 @@ func normalizeLoginIdentifier(value string) (string, bool) {
 		}
 	}
 	return value, true
-}
-
-func (s *Service) Refresh(ctx context.Context, refreshToken string, meta SessionMeta) (AuthResult, error) {
-	if strings.TrimSpace(refreshToken) == "" {
-		return AuthResult{}, invalidSession()
-	}
-	tx, err := s.pool.Begin(ctx)
-	if err != nil {
-		return AuthResult{}, internal("Не удалось обновить сессию", err)
-	}
-	defer func() { _ = tx.Rollback(ctx) }()
-	queries := db.New(tx)
-	now := s.now().UTC()
-	session, err := queries.GetSessionByHashForUpdate(ctx, domainauth.HashRefreshToken(refreshToken))
-	if isNoRows(err) {
-		return AuthResult{}, invalidSession()
-	}
-	if err != nil {
-		return AuthResult{}, internal("Не удалось проверить сессию", err)
-	}
-	if session.RevokedAt.Valid {
-		// A revoked token with a replacement was already rotated. Seeing it
-		// again is reuse and invalidates the whole account session set. A token
-		// revoked by an explicit logout has no replacement and must not let an
-		// old cookie become a denial-of-service primitive.
-		if session.ReplacedBy.Valid {
-			if err = queries.RevokeAllUserSessions(ctx, db.RevokeAllUserSessionsParams{
-				UserID: session.UserID, RevokedAt: pgtype.Timestamptz{Time: now, Valid: true},
-			}); err != nil {
-				return AuthResult{}, internal("Не удалось отозвать сессии", err)
-			}
-			if err = tx.Commit(ctx); err != nil {
-				return AuthResult{}, internal("Не удалось отозвать сессии", err)
-			}
-		}
-		return AuthResult{}, invalidSession()
-	}
-	if !session.ExpiresAt.After(now) {
-		_, err = queries.RevokeSessionByHash(ctx, db.RevokeSessionByHashParams{
-			RefreshHash: session.RefreshHash,
-			LastUsedAt:  pgtype.Timestamptz{Time: now, Valid: true},
-		})
-		if err != nil {
-			return AuthResult{}, internal("Не удалось закрыть истёкшую сессию", err)
-		}
-		if err = tx.Commit(ctx); err != nil {
-			return AuthResult{}, internal("Не удалось закрыть истёкшую сессию", err)
-		}
-		return AuthResult{}, invalidSession()
-	}
-	user, err := queries.GetUser(ctx, db.GetUserParams{CompanyID: session.CompanyID, ID: session.UserID})
-	if err != nil || user.Status != "active" {
-		return AuthResult{}, invalidSession()
-	}
-	newSessionID := uuid.New()
-	result, err := s.createSessionWithID(
-		ctx, queries, user, meta, newSessionID,
-		uuid.NullUUID{UUID: session.ID, Valid: true},
-	)
-	if err != nil {
-		return AuthResult{}, err
-	}
-	rows, err := queries.RotateSession(ctx, db.RotateSessionParams{
-		ID:         session.ID,
-		RevokedAt:  pgtype.Timestamptz{Time: now, Valid: true},
-		ReplacedBy: uuid.NullUUID{UUID: newSessionID, Valid: true},
-	})
-	if err != nil || rows != 1 {
-		return AuthResult{}, invalidSession()
-	}
-	if err = tx.Commit(ctx); err != nil {
-		return AuthResult{}, internal("Не удалось обновить сессию", err)
-	}
-	return result, nil
-}
-
-func (s *Service) Logout(ctx context.Context, refreshToken string) error {
-	if strings.TrimSpace(refreshToken) == "" {
-		return nil
-	}
-	tx, err := s.pool.Begin(ctx)
-	if err != nil {
-		return internal("Не удалось завершить сессию", err)
-	}
-	defer func() { _ = tx.Rollback(ctx) }()
-	queries := db.New(tx)
-	session, err := queries.GetSessionByHashForUpdate(ctx, domainauth.HashRefreshToken(refreshToken))
-	if isNoRows(err) {
-		return nil
-	}
-	if err != nil {
-		return internal("Не удалось завершить сессию", err)
-	}
-	if err = queries.RevokeAllUserSessions(ctx, db.RevokeAllUserSessionsParams{
-		UserID:    session.UserID,
-		RevokedAt: pgtype.Timestamptz{Time: s.now().UTC(), Valid: true},
-	}); err != nil {
-		return internal("Не удалось завершить сессию", err)
-	}
-	if err = tx.Commit(ctx); err != nil {
-		return internal("Не удалось завершить сессию", err)
-	}
-	return nil
 }
 
 func (s *Service) GetInviteByToken(ctx context.Context, token string) (Invite, error) {
@@ -526,6 +437,40 @@ func (s *Service) createSessionWithID(
 	sessionID uuid.UUID,
 	rotatedFrom uuid.NullUUID,
 ) (AuthResult, error) {
+
+	current, err := queries.GetUserForSession(ctx, db.GetUserForSessionParams{CompanyID: user.CompanyID, ID: user.ID})
+	if isNoRows(err) {
+		return AuthResult{}, invalidSession()
+	}
+	if err != nil {
+		return AuthResult{}, internal("Не удалось проверить доступ", err)
+	}
+	if current.Status != "active" {
+		return AuthResult{}, invalidSession()
+	}
+	user = current
+	familyID := uuid.New()
+	if err = queries.CreateSessionFamily(ctx, db.CreateSessionFamilyParams{ID: familyID, CompanyID: user.CompanyID, UserID: user.ID}); err != nil {
+		return AuthResult{}, internal("Не удалось создать сессию", err)
+	}
+	refreshToken, refreshHash, err := domainauth.NewRefreshToken()
+	if err != nil {
+		return AuthResult{}, internal("Не удалось выпустить refresh token", err)
+	}
+	expiresAt := s.now().UTC().Add(s.refreshTTL)
+	if _, err = queries.CreateSession(ctx, db.CreateSessionParams{
+		ID: sessionID, CompanyID: user.CompanyID, UserID: user.ID,
+		FamilyID:    uuid.NullUUID{UUID: familyID, Valid: true},
+		RefreshHash: refreshHash, ExpiresAt: expiresAt, RotatedFrom: rotatedFrom,
+		UserAgent: pgtype.Text{String: meta.UserAgent, Valid: meta.UserAgent != ""},
+		IpAddress: parseIPAddress(meta.IPAddress),
+	}); err != nil {
+		return AuthResult{}, internal("Не удалось сохранить сессию", err)
+	}
+	return s.authResultForToken(ctx, queries, user, familyID, refreshToken, expiresAt)
+}
+
+func (s *Service) authResultForToken(ctx context.Context, queries *db.Queries, user db.User, familyID uuid.UUID, refreshToken string, refreshExpiresAt time.Time) (AuthResult, error) {
 	positionIDs, err := queries.GetUserPositionIDs(ctx, db.GetUserPositionIDsParams{
 		CompanyID: user.CompanyID, UserID: user.ID,
 	})
@@ -561,20 +506,6 @@ func (s *Service) createSessionWithID(
 	if err != nil {
 		return AuthResult{}, internal("Не удалось выпустить access token", err)
 	}
-	refreshToken, refreshHash, err := domainauth.NewRefreshToken()
-	if err != nil {
-		return AuthResult{}, internal("Не удалось выпустить refresh token", err)
-	}
-	refreshExpiresAt := s.now().UTC().Add(s.refreshTTL)
-	_, err = queries.CreateSession(ctx, db.CreateSessionParams{
-		ID: sessionID, CompanyID: user.CompanyID, UserID: user.ID,
-		RefreshHash: refreshHash, ExpiresAt: refreshExpiresAt, RotatedFrom: rotatedFrom,
-		UserAgent: pgtype.Text{String: meta.UserAgent, Valid: meta.UserAgent != ""},
-		IpAddress: parseIPAddress(meta.IPAddress),
-	})
-	if err != nil {
-		return AuthResult{}, internal("Не удалось сохранить сессию", err)
-	}
 	accessMode, err := queries.GetUserAccessMode(ctx, db.GetUserAccessModeParams{
 		CompanyID: user.CompanyID,
 		UserID:    user.ID,
@@ -598,6 +529,6 @@ func (s *Service) createSessionWithID(
 	return AuthResult{
 		AccessToken: accessToken, AccessExpiresAt: accessExpiresAt,
 		RefreshToken: refreshToken, RefreshExpiresAt: refreshExpiresAt,
-		User: resultUser,
+		User: resultUser, FamilyID: familyID,
 	}, nil
 }

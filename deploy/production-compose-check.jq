@@ -1,5 +1,13 @@
+(.services.tasks.environment.TASKS_COMPANY_GRPC_ADDR | length > 0) and
+(.services.tasks.environment.TASKS_COMPANY_SERVICE_TOKEN != "development-tasks-company-token") and
+(.services.tasks.environment.TASKS_COMPANY_SERVICE_TOKEN | length >= 32) and
+(.services.company.environment.COMPANY_TASKS_SERVICE_TOKEN == .services.tasks.environment.TASKS_COMPANY_SERVICE_TOKEN) and
 (.services.files.environment.FILES_S3_SECURE == "false") and
 (.services.files.environment.FILES_S3_PUBLIC_SECURE == "true") and
+(.services.files.environment.FILES_TRUSTED_METADATA != "true") and
+((.services.files.environment.FILES_ACADEMY_SERVICE_TOKEN | length) >= 32) and
+(.services.files.environment.FILES_ACADEMY_SERVICE_TOKEN != "development-academy-files-credential-change-me") and
+(.services.files.environment.FILES_ACADEMY_SERVICE_TOKEN == .services.academy.environment.ACADEMY_FILES_SERVICE_TOKEN) and
 (.services.gateway.environment.GATEWAY_COOKIE_SECURE == "true") and
 (.services.gateway.environment.GATEWAY_CORS_ORIGINS | contains("https://*.amocrm.ru")) and
 (.services.gateway.environment.GATEWAY_CORS_ORIGINS | contains("https://*.amocrm.com")) and

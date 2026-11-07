@@ -6,6 +6,9 @@ import (
 	"github.com/google/uuid"
 	companyv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v1"
 	"github.com/sk1fy/team-os-backend/services/company/internal/application"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 )
 
 func (s *Server) GetDepartments(ctx context.Context, request *companyv1.GetDepartmentsRequest) (*companyv1.GetDepartmentsResponse, error) {
@@ -601,7 +604,7 @@ func (s *Server) GetReportUserProfiles(
 }
 
 func (s *Server) ResolvePositionUsers(ctx context.Context, request *companyv1.ResolvePositionUsersRequest) (*companyv1.ResolvePositionUsersResponse, error) {
-	actor, err := s.actor(ctx)
+	actor, err := s.positionResolverActor(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -636,4 +639,24 @@ func (s *Server) ResolveDepartmentUsers(ctx context.Context, request *companyv1.
 		return nil, transportError(err)
 	}
 	return &companyv1.ResolveDepartmentUsersResponse{UserIds: uuidStrings(userIDs)}, nil
+}
+
+func (s *Server) positionResolverActor(ctx context.Context) (application.Actor, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	credentials := md.Get("x-tasks-service-token")
+	if len(credentials) == 0 {
+		return s.actor(ctx)
+	}
+	if len(credentials) != 1 || !secureServiceTokenEqual(credentials[0], s.tasksServiceToken) {
+		return application.Actor{}, status.Error(codes.Unauthenticated, "Требуется авторизация")
+	}
+	tenants := md.Get("x-company-id")
+	if len(tenants) != 1 {
+		return application.Actor{}, status.Error(codes.Unauthenticated, "Не задана компания")
+	}
+	companyID, err := uuid.Parse(tenants[0])
+	if err != nil || companyID == uuid.Nil {
+		return application.Actor{}, status.Error(codes.Unauthenticated, "Некорректная компания")
+	}
+	return application.Actor{CompanyID: companyID, Role: "admin"}, nil
 }

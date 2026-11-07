@@ -45,8 +45,19 @@ JOIN credentials c ON c.user_id = u.id
 JOIN user_logins user_login
   ON user_login.company_id = u.company_id AND user_login.user_id = u.id
 WHERE user_login.login = sqlc.arg('login')
-  AND u.external_deleted_at IS NULL
-FOR SHARE OF u;
+  AND u.external_deleted_at IS NULL;
+
+-- name: GetUserForLoginLocked :one
+SELECT sqlc.embed(u), c.password_hash
+FROM users u
+JOIN credentials c ON c.user_id = u.id
+JOIN user_logins l ON l.company_id = u.company_id AND l.user_id = u.id
+WHERE l.login = $1 AND u.external_deleted_at IS NULL
+FOR SHARE OF u, c, l;
+
+-- name: GetUserForSession :one
+SELECT * FROM users WHERE company_id = $1 AND id = $2 AND external_deleted_at IS NULL
+FOR SHARE;
 
 -- name: GetUserByEmailForUpdate :one
 SELECT * FROM users
@@ -107,7 +118,8 @@ FROM users u
 JOIN access_links access ON access.user_id = u.id AND access.company_id = u.company_id
 WHERE access.token = $1 AND u.status = 'active'
   AND u.external_deleted_at IS NULL
-FOR SHARE OF u;
+FOR SHARE OF u
+FOR UPDATE OF access;
 
 -- name: GetUserAccessMode :one
 SELECT CASE
@@ -180,9 +192,9 @@ RETURNING *;
 
 -- name: CreateSession :one
 INSERT INTO sessions (
-    id, company_id, user_id, refresh_hash, expires_at, rotated_from, user_agent, ip_address, last_used_at
+    id, company_id, user_id, refresh_hash, expires_at, rotated_from, user_agent, ip_address, last_used_at, family_id, rotation_not_before
 )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, now())
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, now(), $9, $10)
 RETURNING *;
 
 -- name: GetSessionByHashForUpdate :one
@@ -192,7 +204,7 @@ FOR UPDATE;
 
 -- name: RotateSession :execrows
 UPDATE sessions
-SET revoked_at = $2, last_used_at = $2, replaced_by = $3
+SET revoked_at = $2, last_used_at = $2, replay_until = $3, replay_nonce = $4
 WHERE id = $1 AND revoked_at IS NULL;
 
 -- name: RevokeSessionByHash :execrows
@@ -206,7 +218,7 @@ SET revoked_at = COALESCE(revoked_at, $2)
 WHERE user_id = $1;
 
 -- name: DeleteExpiredSessions :execrows
-DELETE FROM sessions WHERE expires_at < $1;
+DELETE FROM sessions WHERE expires_at < $1 AND (replay_until IS NULL OR replay_until <= $1);
 
 -- name: GetInviteByToken :one
 SELECT * FROM invites WHERE token = $1;
@@ -234,3 +246,53 @@ RETURNING *;
 INSERT INTO outbox (id, company_id, subject, payload, headers, occurred_at)
 VALUES ($1, $2, $3, $4, $5, $6)
 RETURNING *;
+
+-- name: GetSessionByHash :one
+SELECT * FROM sessions WHERE refresh_hash = $1;
+
+-- name: GetSessionFamilyForUpdate :one
+SELECT * FROM session_families WHERE id = $1 FOR UPDATE;
+
+-- name: CreateSessionFamily :exec
+INSERT INTO session_families (id, company_id, user_id) VALUES ($1, $2, $3)
+ON CONFLICT (id) DO NOTHING;
+
+-- name: GetCurrentFamilySession :one
+SELECT * FROM sessions WHERE family_id = $1 AND revoked_at IS NULL;
+
+-- name: SetSessionReplacement :exec
+UPDATE sessions SET replaced_by = $2 WHERE id = $1;
+
+-- name: RevokeSessionFamily :exec
+WITH revoked AS (
+    UPDATE session_families f SET revoked_at = COALESCE(f.revoked_at, $2) WHERE f.id = $1 RETURNING f.id
+)
+UPDATE sessions SET revoked_at = COALESCE(revoked_at, $2)
+WHERE family_id IN (SELECT id FROM revoked);
+
+-- name: RevokeUserSessionFamilies :exec
+WITH locked AS MATERIALIZED (
+    SELECT f.id FROM session_families f WHERE f.user_id = $1 ORDER BY f.id FOR UPDATE
+)
+UPDATE session_families f SET revoked_at = COALESCE(f.revoked_at, $2)
+WHERE f.id IN (SELECT locked.id FROM locked);
+
+-- name: GetLegacySessionRoot :one
+WITH RECURSIVE chain AS (
+    SELECT s.id, s.rotated_from, s.company_id, s.user_id FROM sessions s WHERE s.id = $1
+    UNION
+    SELECT s.id, s.rotated_from, s.company_id, s.user_id
+    FROM sessions s JOIN chain c ON s.id = c.rotated_from
+    WHERE s.company_id = c.company_id AND s.user_id = c.user_id
+)
+SELECT chain.id FROM chain WHERE chain.rotated_from IS NULL;
+
+-- name: AssignLegacySessionFamily :exec
+WITH RECURSIVE chain AS (
+    SELECT id, company_id, user_id FROM sessions WHERE id = sqlc.arg('family_id')
+    UNION
+    SELECT s.id, s.company_id, s.user_id FROM sessions s JOIN chain c ON s.rotated_from = c.id
+    WHERE s.company_id = c.company_id AND s.user_id = c.user_id
+)
+UPDATE sessions SET family_id = sqlc.arg('family_id')
+WHERE id IN (SELECT id FROM chain) AND family_id IS NULL;

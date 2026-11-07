@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"crypto/ed25519"
 	"io"
 	"net"
 	"testing"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/google/uuid"
 	filesv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/files/v1"
+	sharedauth "github.com/sk1fy/team-os-backend/pkg/auth"
 	"github.com/sk1fy/team-os-backend/services/files/internal/application"
 	"github.com/sk1fy/team-os-backend/services/files/internal/domain"
 	grpcgo "google.golang.org/grpc"
@@ -62,7 +64,7 @@ func (*testObjects) DownloadURL(context.Context, string, time.Duration) (string,
 func TestUploadFileChecksActualSize(t *testing.T) {
 	client, cleanup := newTestClient(t)
 	defer cleanup()
-	ctx := metadata.NewOutgoingContext(context.Background(), metadata.Pairs("x-user-id", uuid.NewString(), "x-company-id", uuid.NewString()))
+	ctx := testAuthContext(t, "admin")
 	stream, err := client.UploadFile(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -82,7 +84,7 @@ func TestUploadFileChecksActualSize(t *testing.T) {
 func TestUploadFileAcceptsPNG(t *testing.T) {
 	client, cleanup := newTestClient(t)
 	defer cleanup()
-	ctx := metadata.NewOutgoingContext(context.Background(), metadata.Pairs("x-user-id", uuid.NewString(), "x-company-id", uuid.NewString()))
+	ctx := testAuthContext(t, "admin")
 	stream, err := client.UploadFile(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -102,11 +104,7 @@ func TestUploadFileAcceptsPNG(t *testing.T) {
 func TestEmployeeCannotUploadFile(t *testing.T) {
 	client, cleanup := newTestClient(t)
 	defer cleanup()
-	ctx := metadata.NewOutgoingContext(context.Background(), metadata.Pairs(
-		"x-user-id", uuid.NewString(),
-		"x-company-id", uuid.NewString(),
-		"x-user-role", "employee",
-	))
+	ctx := testAuthContext(t, "employee")
 	stream, err := client.UploadFile(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -127,11 +125,24 @@ func newTestClient(t *testing.T) (filesv1.FilesServiceClient, func()) {
 	listener := bufconn.Listen(1 << 20)
 	server := grpcgo.NewServer()
 	service := application.New(&testRepo{}, &testObjects{}, 1024, map[string]struct{}{"text/plain": {}, "image/png": {}}, time.Minute)
-	filesv1.RegisterFilesServiceServer(server, New(service, nil, true, t.TempDir()))
+	private := ed25519.NewKeyFromSeed(make([]byte, ed25519.SeedSize))
+	verifier := sharedauth.NewTokenVerifier(private.Public().(ed25519.PublicKey), "test", "files")
+	filesv1.RegisterFilesServiceServer(server, New(service, verifier, "", t.TempDir()))
 	go func() { _ = server.Serve(listener) }()
 	conn, err := grpcgo.NewClient("passthrough:///bufnet", grpcgo.WithContextDialer(func(context.Context, string) (net.Conn, error) { return listener.Dial() }), grpcgo.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		t.Fatal(err)
 	}
 	return filesv1.NewFilesServiceClient(conn), func() { _ = conn.Close(); server.Stop(); _ = listener.Close() }
+}
+
+func testAuthContext(t *testing.T, role string) context.Context {
+	t.Helper()
+	private := ed25519.NewKeyFromSeed(make([]byte, ed25519.SeedSize))
+	issuer := sharedauth.NewTokenIssuer(private, "test", "files", time.Minute)
+	token, _, err := issuer.Issue(uuid.NewString(), uuid.NewString(), role, nil, nil, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return metadata.NewOutgoingContext(context.Background(), metadata.Pairs("authorization", "Bearer "+token))
 }

@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/pashagolub/pgxmock/v4"
 	sharedauth "github.com/sk1fy/team-os-backend/pkg/auth"
@@ -108,6 +109,22 @@ func TestImpersonateUserCreatesSessionWithoutChangingLoginMode(t *testing.T) {
 			"partner", "active", nil, nil, nil, now, now, "local", nil, nil, nil, nil,
 			nil, true,
 		))
+	mock.ExpectQuery("FROM users WHERE company_id.+FOR SHARE").WithArgs(companyID, targetID).
+		WillReturnRows(pgxmock.NewRows(accessUserColumns).AddRow(targetID, companyID, "partner@example.com", "QA", "Partner", nil, nil,
+			"partner", "active", nil, nil, nil, now, now, "local", nil, nil, nil, nil, nil, true))
+	mock.ExpectExec("INSERT INTO session_families").WithArgs(pgxmock.AnyArg(), companyID, targetID).WillReturnResult(pgconn.NewCommandTag("INSERT 0 1"))
+	mock.ExpectQuery("INSERT INTO sessions").
+		WithArgs(
+			pgxmock.AnyArg(), companyID, targetID, pgxmock.AnyArg(), pgxmock.AnyArg(),
+			uuid.NullUUID{}, pgtype.Text{}, pgxmock.AnyArg(), pgxmock.AnyArg(), pgtype.Timestamptz{},
+		).
+		WillReturnRows(pgxmock.NewRows([]string{
+			"id", "company_id", "user_id", "refresh_hash", "expires_at", "created_at",
+			"last_used_at", "revoked_at", "rotated_from", "replaced_by", "user_agent", "ip_address", "family_id", "replay_until", "replay_nonce", "rotation_not_before",
+		}).AddRow(
+			uuid.New(), companyID, targetID, []byte("refresh-hash"),
+			now.Add(30*24*time.Hour), now, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
+		))
 	mock.ExpectQuery("SELECT position_id").
 		WithArgs(companyID, targetID).
 		WillReturnRows(pgxmock.NewRows([]string{"position_id"}))
@@ -117,18 +134,7 @@ func TestImpersonateUserCreatesSessionWithoutChangingLoginMode(t *testing.T) {
 	mock.ExpectQuery("SELECT section").
 		WithArgs(companyID, targetID).
 		WillReturnRows(pgxmock.NewRows([]string{"section"}))
-	mock.ExpectQuery("INSERT INTO sessions").
-		WithArgs(
-			pgxmock.AnyArg(), companyID, targetID, pgxmock.AnyArg(), pgxmock.AnyArg(),
-			uuid.NullUUID{}, pgtype.Text{}, pgxmock.AnyArg(),
-		).
-		WillReturnRows(pgxmock.NewRows([]string{
-			"id", "company_id", "user_id", "refresh_hash", "expires_at", "created_at",
-			"last_used_at", "revoked_at", "rotated_from", "replaced_by", "user_agent", "ip_address",
-		}).AddRow(
-			uuid.New(), companyID, targetID, []byte("refresh-hash"),
-			now.Add(30*24*time.Hour), now, nil, nil, nil, nil, nil, nil,
-		))
+
 	expectAccessMode(mock, companyID, targetID, "password")
 	expectAccessLogin(mock, companyID, targetID, "tm7415540")
 	mock.ExpectQuery("SELECT department_id").

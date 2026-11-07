@@ -13,16 +13,19 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	companyv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v1"
 	tasksv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/tasks/v1"
 	sharedauth "github.com/sk1fy/team-os-backend/pkg/auth"
 	"github.com/sk1fy/team-os-backend/pkg/eventbus"
 	"github.com/sk1fy/team-os-backend/pkg/httpx"
 	"github.com/sk1fy/team-os-backend/services/tasks/internal/application"
+	"github.com/sk1fy/team-os-backend/services/tasks/internal/clients"
 	"github.com/sk1fy/team-os-backend/services/tasks/internal/config"
 	"github.com/sk1fy/team-os-backend/services/tasks/internal/outbox"
 	tasksgrpc "github.com/sk1fy/team-os-backend/services/tasks/internal/transport/grpc"
 	"github.com/sk1fy/team-os-backend/services/tasks/internal/workers"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/health"
 	grpc_health_v1 "google.golang.org/grpc/health/grpc_health_v1"
 )
@@ -88,10 +91,18 @@ func run(logger *slog.Logger) error {
 			logger.Error("NATS drain failed", "error", drainErr)
 		}
 	}()
+	companyConnection, err := grpc.NewClient(configuration.CompanyGRPCAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return fmt.Errorf("connect to company: %w", err)
+	}
+	defer func() { _ = companyConnection.Close() }()
+
 	service, err := application.NewService(pool)
 	if err != nil {
 		return fmt.Errorf("initialize tasks application: %w", err)
 	}
+
+	service.SetCompanyClient(clients.NewCompany(companyv1.NewCompanyServiceClient(companyConnection), configuration.CompanyServiceToken))
 
 	rootContext, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -117,6 +128,7 @@ func run(logger *slog.Logger) error {
 		return fmt.Errorf("listen gRPC: %w", err)
 	}
 	grpcServer := grpc.NewServer(
+		grpc.ChainUnaryInterceptor(httpx.LogRPCErrors(logger)),
 		grpc.MaxRecvMsgSize(4<<20),
 		grpc.MaxSendMsgSize(4<<20),
 	)

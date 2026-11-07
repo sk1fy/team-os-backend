@@ -206,6 +206,18 @@ func (s *Service) UpdateTask(ctx context.Context, actor Actor, input UpdateTaskI
 		}
 	}
 
+	var positionUsers []uuid.UUID
+	if input.AssigneePositionID != nil && !input.ClearAssigneePositionID {
+		if _, err := s.GetTask(ctx, actor, input.ID); err != nil {
+			return Task{}, err
+		}
+		var err error
+		positionUsers, err = s.resolvePositionAssignees(ctx, actor, input.AssigneePositionID)
+		if err != nil {
+			return Task{}, err
+		}
+	}
+
 	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return Task{}, internal("Не удалось начать транзакцию", err)
@@ -307,6 +319,9 @@ func (s *Service) UpdateTask(ctx context.Context, actor Actor, input UpdateTaskI
 	if task.AssigneePositionID != nil &&
 		(current.AssigneePositionID == nil || *current.AssigneePositionID != *task.AssigneePositionID) {
 		addedPosition = task.AssigneePositionID
+	}
+	if addedPosition != nil {
+		addedAssignees = append(cloneUUIDs(task.AssigneeIDs), positionUsers...)
 	}
 	if len(addedAssignees) > 0 || addedPosition != nil {
 		if err = s.emitTaskAssignedTo(ctx, queries, actor, task, addedAssignees, addedPosition); err != nil {
@@ -456,6 +471,28 @@ func (s *Service) MoveTask(ctx context.Context, actor Actor, input MoveTaskInput
 }
 
 func (s *Service) ProcessRecurrence(ctx context.Context, companyID, taskID uuid.UUID) error {
+	initialTask, err := s.GetTask(ctx, Actor{CompanyID: companyID, Role: "admin"}, taskID)
+	if err != nil {
+		return err
+	}
+	if initialTask.CompletedAt == nil || initialTask.Recurrence == nil {
+		return nil
+	}
+	alreadyGenerated, err := db.New(s.pool).IsRecurrenceGenerated(ctx, db.IsRecurrenceGeneratedParams{CompanyID: companyID, ID: taskID})
+	if err != nil {
+		return internal("Не удалось проверить повтор задачи", err)
+	}
+	if alreadyGenerated {
+		return nil
+	}
+	var positionUsers []uuid.UUID
+	if initialTask.AssigneePositionID != nil {
+		positionUsers, err = s.resolvePositionAssignees(ctx, Actor{CompanyID: companyID}, initialTask.AssigneePositionID)
+		if err != nil {
+			return err
+		}
+	}
+
 	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return internal("Не удалось начать транзакцию", err)
@@ -488,6 +525,11 @@ func (s *Service) ProcessRecurrence(ctx context.Context, companyID, taskID uuid.
 	if err != nil {
 		return err
 	}
+	if (task.AssigneePositionID == nil) != (initialTask.AssigneePositionID == nil) ||
+		(task.AssigneePositionID != nil && *task.AssigneePositionID != *initialTask.AssigneePositionID) {
+		return internal("Назначение задачи изменилось, повторите обработку", nil)
+	}
+
 	if task.CompletedAt == nil || task.Recurrence == nil {
 		return nil
 	}
@@ -558,7 +600,7 @@ func (s *Service) ProcessRecurrence(ctx context.Context, companyID, taskID uuid.
 		return err
 	}
 	actor := Actor{CompanyID: companyID, UserID: task.AuthorID, Role: "employee"}
-	if err = s.emitTaskAssigned(ctx, queries, actor, created); err != nil {
+	if err = s.emitTaskAssignedTo(ctx, queries, actor, created, append(cloneUUIDs(created.AssigneeIDs), positionUsers...), created.AssigneePositionID); err != nil {
 		return err
 	}
 	if err = queries.MarkRecurrenceGenerated(ctx, db.MarkRecurrenceGeneratedParams{

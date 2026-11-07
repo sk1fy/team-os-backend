@@ -15,7 +15,8 @@ type Config struct {
 	HTTPAddr, GRPCAddr, DatabaseURL                                            string
 	JWTPublicKey, JWTIssuer, JWTAudience                                       string
 	S3Endpoint, S3PublicEndpoint, S3AccessKey, S3SecretKey, S3Bucket, S3Region string
-	S3Secure, S3PublicSecure, S3CreateBucket, TrustedMetadata                  bool
+	S3Secure, S3PublicSecure, S3CreateBucket                                   bool
+	AcademyServiceToken                                                        string
 	MaxFileSize                                                                int64
 	AllowedTypes                                                               map[string]struct{}
 	DownloadURLTTL, ShutdownTimeout                                            time.Duration
@@ -28,8 +29,9 @@ func Load() (Config, error) {
 		DatabaseURL:  strings.TrimSpace(os.Getenv("FILES_DB_URL")),
 		JWTPublicKey: strings.TrimSpace(os.Getenv("FILES_JWT_PUBLIC_KEY")), JWTIssuer: env("FILES_JWT_ISSUER", "teamos-company"), JWTAudience: env("FILES_JWT_AUDIENCE", "teamos-api"),
 		S3Endpoint: env("FILES_S3_ENDPOINT", "localhost:9000"), S3AccessKey: strings.TrimSpace(os.Getenv("FILES_S3_ACCESS_KEY")), S3SecretKey: strings.TrimSpace(os.Getenv("FILES_S3_SECRET_KEY")), S3Bucket: env("FILES_S3_BUCKET", "teamos-files"), S3Region: env("FILES_S3_REGION", "us-east-1"),
-		S3Secure: envBool("FILES_S3_SECURE", false), S3CreateBucket: envBool("FILES_S3_CREATE_BUCKET", false), TrustedMetadata: envBool("FILES_TRUSTED_METADATA", false),
-		MaxFileSize: 25 << 20, DownloadURLTTL: 15 * time.Minute, ShutdownTimeout: 30 * time.Second,
+		S3Secure: envBool("FILES_S3_SECURE", false), S3CreateBucket: envBool("FILES_S3_CREATE_BUCKET", false),
+		AcademyServiceToken: strings.TrimSpace(os.Getenv("FILES_ACADEMY_SERVICE_TOKEN")),
+		MaxFileSize:         25 << 20, DownloadURLTTL: 15 * time.Minute, ShutdownTimeout: 30 * time.Second,
 		AllowedTypes: parseTypes(env("FILES_ALLOWED_CONTENT_TYPES", defaultAllowedTypes)), TempDir: strings.TrimSpace(os.Getenv("FILES_TEMP_DIR")),
 	}
 	c.S3PublicEndpoint = env("FILES_S3_PUBLIC_ENDPOINT", c.S3Endpoint)
@@ -55,8 +57,11 @@ func Load() (Config, error) {
 			missing = append(missing, name)
 		}
 	}
-	if c.JWTPublicKey == "" && !c.TrustedMetadata {
+	if c.JWTPublicKey == "" {
 		missing = append(missing, "FILES_JWT_PUBLIC_KEY")
+	}
+	if c.AcademyServiceToken != "" && len(c.AcademyServiceToken) < 32 {
+		return Config{}, errors.New("FILES_ACADEMY_SERVICE_TOKEN должен содержать минимум 32 символа")
 	}
 	if len(missing) > 0 {
 		return Config{}, fmt.Errorf("не заданы обязательные переменные: %s", strings.Join(missing, ", "))

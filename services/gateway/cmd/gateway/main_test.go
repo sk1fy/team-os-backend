@@ -11,7 +11,7 @@ import (
 
 func TestActivityCORSPreflight(t *testing.T) {
 	const allowedOrigin = "http://localhost:5173"
-	requestedHeaders := []string{"authorization", "content-type", "idempotency-key", "x-activity-binding-id"}
+	requestedHeaders := []string{"authorization", "content-type", "idempotency-key", "x-activity-binding-id", "x-teamos-session"}
 	for _, test := range []struct {
 		name   string
 		origin string

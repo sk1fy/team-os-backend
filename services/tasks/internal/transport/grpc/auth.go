@@ -53,7 +53,7 @@ func (s *Server) actor(ctx context.Context) (application.Actor, error) {
 		return application.Actor{}, status.Error(codes.Unauthenticated, "Токен недействителен или истёк")
 	}
 	return application.Actor{
-		UserID: userID, CompanyID: companyID, Role: claims.Role,
+		UserID: userID, CompanyID: companyID, Role: claims.Role, Token: parts[1],
 		PositionIDs: positionIDs, DepartmentIDs: departmentIDs,
 	}, nil
 }

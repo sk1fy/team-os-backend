@@ -13,6 +13,7 @@ import (
 type payload struct {
 	UserID                              string   `json:"userId"`
 	MentionedUserID                     string   `json:"mentionedUserId"`
+	AssigneePositionID                  string   `json:"assigneePositionId"`
 	AssigneeUserIDs                     []string `json:"assigneeUserIds"`
 	RecipientUserIDs                    []string `json:"recipientUserIds"`
 	Title, TaskTitle, CourseTitle, Link string
@@ -52,6 +53,9 @@ func (s *Service) Handle(subject string) eventbus.HandlerFunc {
 		typ, title, body := eventNotification(subject, p)
 		recipients := append([]string{}, p.RecipientUserIDs...)
 		if subject == "teamos.tasks.task.assigned.v1" {
+			if p.AssigneePositionID != "" && len(p.AssigneeUserIDs) == 0 {
+				return false, fmt.Errorf("task assignment position has no recipient snapshot")
+			}
 			recipients = p.AssigneeUserIDs
 		}
 		if subject == "teamos.academy.course.assigned.v1" {

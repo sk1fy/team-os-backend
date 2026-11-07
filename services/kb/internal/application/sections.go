@@ -214,8 +214,12 @@ func (s *Service) DeleteSection(ctx context.Context, actor Actor, id uuid.UUID) 
 	if articleCount > 0 {
 		return validation("Нельзя удалить раздел со статьями.")
 	}
-	if err = queries.DeleteSection(ctx, db.DeleteSectionParams{CompanyID: actor.CompanyID, ID: id}); err != nil {
+	deleted, err := queries.DeleteSection(ctx, db.DeleteSectionParams{CompanyID: actor.CompanyID, ID: id})
+	if err != nil {
 		return internal("Не удалось удалить раздел", err)
+	}
+	if deleted == 0 {
+		return notFound("Раздел")
 	}
 	return nil
 }

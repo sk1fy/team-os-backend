@@ -43,6 +43,7 @@ compose-config: ensure-env ## Validate and render the Compose configuration.
 check-production-compose: ## Verify production ports and security overrides, including legacy .env values.
 	@command -v jq >/dev/null || { echo "jq is required" >&2; exit 1; }
 	@FILES_S3_SECURE=true FILES_S3_PUBLIC_SECURE=false GATEWAY_COOKIE_SECURE=false \
+		TASKS_COMPANY_SERVICE_TOKEN=production-compose-check-tasks-token-0001 \
 		COMPANY_GATEWAY_SERVICE_TOKEN=production-compose-check-company-token-0001 \
 		GATEWAY_COMPANY_SERVICE_TOKEN=production-compose-check-company-token-0001 \
 		AMO_BROWSER_ADMIN_ASSERTION_ENABLED=true \
@@ -50,6 +51,7 @@ check-production-compose: ## Verify production ports and security overrides, inc
 		GATEWAY_PROVISIONING_SERVICE_TOKEN=production-compose-check-provisioning-token-0001 \
 		GATEWAY_PROVISIONING_SERVICE_PROVIDER=rakurs \
 		ACADEMY_EXTERNAL_TOKEN_SECRET=production-compose-check-token-secret-0001 \
+		ACADEMY_FILES_SERVICE_TOKEN=production-compose-check-files-token-0001 \
 		ACADEMY_EXTERNAL_EMAIL_KEY=MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlBQkNERUY= \
 		NOTIFICATIONS_SMTP_HOST=smtp.example.invalid NOTIFICATIONS_SMTP_FROM=noreply@example.invalid \
 		$(COMPOSE_BIN) --file deploy/docker-compose.yaml --file deploy/docker-compose.prod.yaml config --format json | \

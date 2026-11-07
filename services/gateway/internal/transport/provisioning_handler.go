@@ -229,6 +229,7 @@ func (h *Handler) ValidateAmoWidgetContinuation(w http.ResponseWriter, r *http.R
 }
 
 func (h *Handler) CompleteAmoWidgetContinuation(w http.ResponseWriter, r *http.Request) {
+	setPrivateNoStore(w)
 	var input api.CompleteAmoWidgetContinuationInput
 	if !decode(w, r, &input) {
 		return

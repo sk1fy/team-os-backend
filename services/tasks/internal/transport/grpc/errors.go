@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 
+	"github.com/sk1fy/team-os-backend/pkg/httpx"
+
 	"github.com/sk1fy/team-os-backend/services/tasks/internal/application"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -22,7 +24,7 @@ func transportError(err error) error {
 
 	var applicationError *application.Error
 	if !errors.As(err, &applicationError) {
-		return status.Error(codes.Internal, "Внутренняя ошибка сервиса")
+		return httpx.InternalRPCError(err)
 	}
 
 	var code codes.Code
@@ -39,9 +41,9 @@ func transportError(err error) error {
 	case application.ErrorConflict:
 		code = codes.Aborted
 	case application.ErrorInternal:
-		return status.Error(codes.Internal, "Внутренняя ошибка сервиса")
+		return httpx.InternalRPCError(err)
 	default:
-		return status.Error(codes.Internal, "Внутренняя ошибка сервиса")
+		return httpx.InternalRPCError(err)
 	}
 	if message == "" {
 		message = "Не удалось выполнить запрос"

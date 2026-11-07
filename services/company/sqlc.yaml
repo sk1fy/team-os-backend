@@ -39,6 +39,9 @@ sql:
       - migrations/000039_task_control_audit.up.sql
       - migrations/000040_task_control_runtime_diagnostics.up.sql
       - migrations/000041_distribution_manual_assignment.up.sql
+      - migrations/000042_task_control_apply_rules.up.sql
+      - migrations/000043_session_families.up.sql
+      - migrations/000044_outbox_order.up.sql
     queries: internal/storage/queries
     gen:
       go:

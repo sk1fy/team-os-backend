@@ -9,6 +9,7 @@ import (
 )
 
 type Actor struct {
+	Token         string
 	UserID        uuid.UUID
 	CompanyID     uuid.UUID
 	Role          string

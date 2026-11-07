@@ -14,12 +14,17 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+type CompanyClient interface {
+	ResolvePositionUsers(ctx context.Context, companyID uuid.UUID, token string, positionID uuid.UUID) ([]uuid.UUID, error)
+}
+
 type RecurrenceEnqueuer interface {
 	EnqueueRecurrenceTx(ctx context.Context, tx pgx.Tx, companyID, taskID uuid.UUID) error
 }
 
 type Service struct {
 	pool               *pgxpool.Pool
+	companyClient      CompanyClient
 	now                func() time.Time
 	recurrenceEnqueuer RecurrenceEnqueuer
 }
@@ -73,3 +78,21 @@ func (s *Service) emit(
 }
 
 func isNoRows(err error) bool { return errors.Is(err, pgx.ErrNoRows) }
+
+func (s *Service) SetCompanyClient(client CompanyClient) { s.companyClient = client }
+
+func (s *Service) resolvePositionAssignees(ctx context.Context, actor Actor, positionID *uuid.UUID) ([]uuid.UUID, error) {
+	if positionID == nil {
+		return nil, nil
+	}
+	if s.companyClient == nil {
+		return nil, internal("Сервис компании недоступен", errors.New("company client is not configured"))
+	}
+	callContext, cancel := context.WithTimeout(ctx, 2*time.Second)
+	defer cancel()
+	users, err := s.companyClient.ResolvePositionUsers(callContext, actor.CompanyID, actor.Token, *positionID)
+	if err != nil {
+		return nil, internal("Не удалось определить исполнителей должности", err)
+	}
+	return users, nil
+}

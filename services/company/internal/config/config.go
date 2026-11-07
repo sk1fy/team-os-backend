@@ -29,6 +29,7 @@ type Config struct {
 	NATSURL                  string
 	JWTPrivateKey            string
 	GatewayServiceToken      string
+	TasksServiceToken        string
 	JWTIssuer                string
 	JWTAudience              string
 	AccessTTL                time.Duration
@@ -65,6 +66,7 @@ func Load() (Config, error) {
 		AmoSyncInterval:         5 * time.Minute,
 		RegistrationTokenTTL:    time.Hour,
 		AmoWidgetSessionTTL:     10 * time.Minute,
+		TasksServiceToken:       strings.TrimSpace(os.Getenv("COMPANY_TASKS_SERVICE_TOKEN")),
 	}
 	if value := strings.TrimSpace(os.Getenv("COMPANY_AMO_IMPORT_ENABLED")); value != "" {
 		config.AmoImportEnabled, err = strconv.ParseBool(value)

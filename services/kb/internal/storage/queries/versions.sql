@@ -9,7 +9,7 @@ SELECT id, company_id, article_id, version, title, content, author_id, created_a
 FROM article_versions
 WHERE company_id = $1 AND id = $2;
 
--- name: CreateArticleVersion :one
+-- name: CreateArticleVersion :exec
 INSERT INTO article_versions (id, company_id, article_id, version, title, content, author_id, created_at)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-RETURNING id, company_id, article_id, version, title, content, author_id, created_at;
+ON CONFLICT (article_id, version) DO NOTHING;

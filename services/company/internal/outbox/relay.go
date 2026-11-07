@@ -65,11 +65,17 @@ func (r *Relay) publishBatch(ctx context.Context) (int, error) {
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
 	rows, err := tx.Query(ctx, `
-		SELECT id, subject, payload, headers
-		FROM outbox
-		WHERE published_at IS NULL AND next_attempt_at <= now()
-		ORDER BY occurred_at
-		FOR UPDATE SKIP LOCKED
+		SELECT candidate.id, candidate.subject, candidate.payload, candidate.headers
+		FROM outbox AS candidate
+		WHERE candidate.published_at IS NULL AND candidate.next_attempt_at <= now()
+		  AND NOT EXISTS (
+		      SELECT 1 FROM outbox AS earlier
+		      WHERE earlier.company_id = candidate.company_id
+		        AND earlier.published_at IS NULL
+		        AND earlier.event_order < candidate.event_order
+		  )
+		ORDER BY candidate.event_order
+		FOR UPDATE OF candidate SKIP LOCKED
 		LIMIT 50`)
 	if err != nil {
 		return 0, fmt.Errorf("select outbox: %w", err)

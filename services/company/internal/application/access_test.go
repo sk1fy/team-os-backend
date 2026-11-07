@@ -256,21 +256,17 @@ func TestLoginWithAccessLinkDoesNotConsumeEntryContextWhenSessionCreationFails(t
 			"owner", "active", nil, nil, nil, now, now, "amocrm", "101", nil, nil, nil,
 			nil, true,
 		))
-	mock.ExpectQuery("SELECT position_id").
-		WithArgs(companyID, userID).
-		WillReturnRows(pgxmock.NewRows([]string{"position_id"}))
-	mock.ExpectQuery("WITH RECURSIVE direct_departments").
-		WithArgs(companyID, userID).
-		WillReturnRows(pgxmock.NewRows([]string{"id"}))
-	mock.ExpectQuery("SELECT section").
-		WithArgs(companyID, userID).
-		WillReturnRows(pgxmock.NewRows([]string{"section"}))
+	mock.ExpectQuery("FROM users WHERE company_id.+FOR SHARE").WithArgs(companyID, userID).
+		WillReturnRows(pgxmock.NewRows(accessUserColumns).AddRow(userID, companyID, "owner@example.com", "Иван", "Иванов", nil, nil,
+			"owner", "active", nil, nil, nil, now, now, "local", nil, nil, nil, nil, nil, true))
+	mock.ExpectExec("INSERT INTO session_families").WithArgs(pgxmock.AnyArg(), companyID, userID).WillReturnResult(pgconn.NewCommandTag("INSERT 0 1"))
 	mock.ExpectQuery("INSERT INTO sessions").
 		WithArgs(
 			pgxmock.AnyArg(), companyID, userID, pgxmock.AnyArg(), pgxmock.AnyArg(),
-			uuid.NullUUID{}, pgtype.Text{}, pgxmock.AnyArg(),
+			uuid.NullUUID{}, pgtype.Text{}, pgxmock.AnyArg(), pgxmock.AnyArg(), pgtype.Timestamptz{},
 		).
 		WillReturnError(errors.New("session insert failed"))
+
 	mock.ExpectRollback()
 
 	_, privateKey, err := ed25519.GenerateKey(rand.Reader)
@@ -345,6 +341,22 @@ func expectSuccessfulAccessLinkLogin(
 			"owner", "active", nil, nil, nil, now, now, "amocrm", "101", nil, nil, nil,
 			nil, true,
 		))
+	mock.ExpectQuery("FROM users WHERE company_id.+FOR SHARE").WithArgs(companyID, userID).
+		WillReturnRows(pgxmock.NewRows(accessUserColumns).AddRow(userID, companyID, "owner@example.com", "Иван", "Иванов", nil, nil,
+			"owner", "active", nil, nil, nil, now, now, "local", nil, nil, nil, nil, nil, true))
+	mock.ExpectExec("INSERT INTO session_families").WithArgs(pgxmock.AnyArg(), companyID, userID).WillReturnResult(pgconn.NewCommandTag("INSERT 0 1"))
+	mock.ExpectQuery("INSERT INTO sessions").
+		WithArgs(
+			pgxmock.AnyArg(), companyID, userID, pgxmock.AnyArg(), pgxmock.AnyArg(),
+			uuid.NullUUID{}, pgtype.Text{}, pgxmock.AnyArg(), pgxmock.AnyArg(), pgtype.Timestamptz{},
+		).
+		WillReturnRows(pgxmock.NewRows([]string{
+			"id", "company_id", "user_id", "refresh_hash", "expires_at", "created_at",
+			"last_used_at", "revoked_at", "rotated_from", "replaced_by", "user_agent", "ip_address", "family_id", "replay_until", "replay_nonce", "rotation_not_before",
+		}).AddRow(
+			uuid.New(), companyID, userID, []byte("refresh-hash"),
+			now.Add(24*time.Hour), now, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
+		))
 	mock.ExpectQuery("SELECT position_id").
 		WithArgs(companyID, userID).
 		WillReturnRows(pgxmock.NewRows([]string{"position_id"}))
@@ -354,18 +366,7 @@ func expectSuccessfulAccessLinkLogin(
 	mock.ExpectQuery("SELECT section").
 		WithArgs(companyID, userID).
 		WillReturnRows(pgxmock.NewRows([]string{"section"}))
-	mock.ExpectQuery("INSERT INTO sessions").
-		WithArgs(
-			pgxmock.AnyArg(), companyID, userID, pgxmock.AnyArg(), pgxmock.AnyArg(),
-			uuid.NullUUID{}, pgtype.Text{}, pgxmock.AnyArg(),
-		).
-		WillReturnRows(pgxmock.NewRows([]string{
-			"id", "company_id", "user_id", "refresh_hash", "expires_at", "created_at",
-			"last_used_at", "revoked_at", "rotated_from", "replaced_by", "user_agent", "ip_address",
-		}).AddRow(
-			uuid.New(), companyID, userID, []byte("refresh-hash"),
-			now.Add(24*time.Hour), now, nil, nil, nil, nil, nil, nil,
-		))
+
 	expectAccessMode(mock, companyID, userID, "link")
 	expectAccessLogin(mock, companyID, userID, "tm1234567")
 	mock.ExpectQuery("SELECT department_id").
@@ -463,6 +464,7 @@ func expectAccessAudit(mock pgxmock.PgxPoolIface, actor Actor, userID uuid.UUID,
 }
 
 func expectSessionRevocation(mock pgxmock.PgxPoolIface, userID uuid.UUID, now time.Time) {
+	mock.ExpectExec("WITH locked AS MATERIALIZED").WithArgs(userID, pgtype.Timestamptz{Time: now, Valid: true}).WillReturnResult(pgconn.NewCommandTag("UPDATE 2"))
 	mock.ExpectExec("UPDATE sessions SET revoked_at").
 		WithArgs(userID, pgtype.Timestamptz{Time: now, Valid: true}).
 		WillReturnResult(pgconn.NewCommandTag("UPDATE 2"))

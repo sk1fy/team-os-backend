@@ -311,7 +311,7 @@ func corsMiddleware(allowedOrigins []string) func(http.Handler) http.Handler {
 	return cors.Handler(cors.Options{
 		AllowedOrigins:   allowedOrigins,
 		AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete, http.MethodOptions},
-		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-Auth-Token", httpx.RequestIDHeader, "If-Match", "Idempotency-Key", "X-Activity-Binding-Id"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-Auth-Token", httpx.RequestIDHeader, "If-Match", "Idempotency-Key", "X-Activity-Binding-Id", "X-Teamos-Session"},
 		ExposedHeaders:   []string{httpx.RequestIDHeader},
 		AllowCredentials: true,
 		MaxAge:           300,

@@ -107,7 +107,7 @@ func (q *Queries) CreateSection(ctx context.Context, arg CreateSectionParams) (S
 	return i, err
 }
 
-const deleteSection = `-- name: DeleteSection :exec
+const deleteSection = `-- name: DeleteSection :execrows
 DELETE FROM sections
 WHERE company_id = $1 AND id = $2
 `
@@ -117,9 +117,12 @@ type DeleteSectionParams struct {
 	ID        uuid.UUID `json:"id"`
 }
 
-func (q *Queries) DeleteSection(ctx context.Context, arg DeleteSectionParams) error {
-	_, err := q.db.Exec(ctx, deleteSection, arg.CompanyID, arg.ID)
-	return err
+func (q *Queries) DeleteSection(ctx context.Context, arg DeleteSectionParams) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteSection, arg.CompanyID, arg.ID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const getSection = `-- name: GetSection :one

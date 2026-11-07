@@ -254,7 +254,7 @@ func TestAmoWidgetContinuationValidationAndCompletion(t *testing.T) {
 	if completed.Code != http.StatusOK || !strings.Contains(completed.Body.String(), `"accessToken":"amo-access"`) {
 		t.Fatalf("complete status=%d body=%s", completed.Code, completed.Body.String())
 	}
-	if got := responseCookie(t, completed, refreshCookieName).Value; got != "amo-refresh" {
+	if got := responseCookie(t, completed, refreshCookieName+"_"+testFamilyID).Value; got != "amo-refresh" {
 		t.Fatalf("refresh cookie=%q", got)
 	}
 }

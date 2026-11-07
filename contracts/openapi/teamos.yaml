@@ -866,6 +866,8 @@ paths:
       summary: Ротировать refresh-сессию и выдать новый access-токен
       security:
         - refreshCookie: []
+      parameters:
+        - $ref: '#/components/parameters/AuthSessionRouting'
       responses:
         '200':
           $ref: '#/components/responses/AuthSession'
@@ -881,6 +883,8 @@ paths:
       summary: Отозвать refresh-сессию
       security:
         - refreshCookie: []
+      parameters:
+        - $ref: '#/components/parameters/AuthSessionRouting'
       responses:
         '204':
           description: Сессия отозвана, refresh-cookie удалена
@@ -7128,6 +7132,7 @@ components:
       type: apiKey
       in: cookie
       name: teamos_refresh
+      description: Legacy cookie mode only. Selected sessions use teamos_session and the matching teamos_refresh_UUID HttpOnly cookie. Selector presence disables default legacy fallback.
     externalSessionCookie:
       type: apiKey
       in: cookie
@@ -7136,8 +7141,11 @@ components:
   headers:
     RefreshCookie:
       description: |
-        HttpOnly refresh-cookie. На login/register/accept/refresh содержит ротированный
-        токен; на logout истекает немедленно. В production добавляется `Secure`.
+        HttpOnly refresh-cookie. Explicit session creation writes teamos_session and
+        teamos_refresh_UUID. Refresh writes only its captured family cookie, or
+        teamos_refresh in legacy mode, and never writes the selector. Successful
+        logout expires only that operation's cookie. Failed logout and refresh never
+        delete cookies. The selector is never cleared by logout. Secure in production.
       schema:
         type: string
         example: teamos_refresh=opaque-token; Path=/api/v1/auth; HttpOnly; SameSite=Lax
@@ -7153,6 +7161,14 @@ components:
         example: teamos_academy_visitor=opaque-random-256-bit; Path=/api/v1/public/academy; HttpOnly; Secure; SameSite=Lax
 
   parameters:
+    AuthSessionRouting:
+      name: X-Teamos-Session
+      in: header
+      required: false
+      description: Captured nonsecret session family UUID or legacy. Routes only the matching HttpOnly cookie and never grants authority.
+      schema:
+        type: string
+        maxLength: 36
     Id:
       name: id
       in: path
@@ -10546,6 +10562,9 @@ components:
       additionalProperties: false
       required: [accessToken, user]
       properties:
+        sessionId:
+          type: string
+          description: Nonsecret refresh routing context, a session family UUID or legacy.
         accessToken:
           type: string
           minLength: 1
@@ -10565,6 +10584,9 @@ components:
       additionalProperties: false
       required: [accessToken, user, onboarding]
       properties:
+        sessionId:
+          type: string
+          description: Nonsecret session family UUID.
         accessToken:
           type: string
           minLength: 1

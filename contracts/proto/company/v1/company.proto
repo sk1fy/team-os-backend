@@ -251,6 +251,7 @@ message AuthSession {
   string refresh_token = 2;
   google.protobuf.Timestamp refresh_expires_at = 3;
   User user = 4;
+  string family_id = 5;
 }
 
 message RegisterRequest {
@@ -354,6 +355,7 @@ message ImpersonateUserResponse {
 
 message RefreshRequest {
   string refresh_token = 1;
+  optional string family_id = 2;
 }
 
 message RefreshResponse {
@@ -362,6 +364,7 @@ message RefreshResponse {
 
 message LogoutRequest {
   string refresh_token = 1;
+  optional string family_id = 2;
 }
 
 message LogoutResponse {}
