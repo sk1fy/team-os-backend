@@ -621,7 +621,7 @@ func TestGatewayLoginBridgesJSONToGRPCAndSetsRefreshCookie(t *testing.T) {
 		t.Fatal("refresh token leaked into the JSON response")
 	}
 
-	cookie := responseCookie(t, recorder, refreshCookieName)
+	cookie := responseCookie(t, recorder, refreshCookieName+"_"+testFamilyID)
 	if cookie.Value != "refresh-login" {
 		t.Fatalf("refresh cookie value = %q, want %q", cookie.Value, "refresh-login")
 	}
@@ -742,7 +742,7 @@ func TestGatewayLoginWithAccessLinkSetsRefreshCookie(t *testing.T) {
 	if request := <-requests; request.GetToken() != "link-token" {
 		t.Fatalf("token = %q", request.GetToken())
 	}
-	if got := responseCookie(t, recorder, refreshCookieName).Value; got != "refresh-link" {
+	if got := responseCookie(t, recorder, refreshCookieName+"_"+testFamilyID).Value; got != "refresh-link" {
 		t.Fatalf("refresh cookie = %q", got)
 	}
 	body := decodeObject(t, recorder)
@@ -797,7 +797,7 @@ func TestGatewayImpersonateUserBridgesJSONAndReplacesRefreshCookie(t *testing.T)
 	if request := <-requests; request.GetUserId() != testUserID {
 		t.Fatalf("user id = %q", request.GetUserId())
 	}
-	if got := responseCookie(t, recorder, refreshCookieName).Value; got != "impersonated-refresh" {
+	if got := responseCookie(t, recorder, refreshCookieName+"_"+testFamilyID).Value; got != "impersonated-refresh" {
 		t.Fatalf("refresh cookie = %q", got)
 	}
 	body := decodeObject(t, recorder)
@@ -990,7 +990,7 @@ func TestGatewayRegisterReturnsCreated(t *testing.T) {
 		request.GetLoginReservationToken() != "login-reservation-token-abcdefghijklmnopqrstuvwxyz" {
 		t.Fatalf("Register RPC request = %#v", request)
 	}
-	if got := responseCookie(t, recorder, refreshCookieName).Value; got != "refresh-register" {
+	if got := responseCookie(t, recorder, refreshCookieName+"_"+testFamilyID).Value; got != "refresh-register" {
 		t.Fatalf("refresh cookie value = %q, want %q", got, "refresh-register")
 	}
 }
@@ -1269,8 +1269,11 @@ func performRequest(handler http.Handler, method, path, body string, cookies []*
 	return recorder
 }
 
+const testFamilyID = "b3930f4e-6f27-43f6-9c7f-fb947ed91561"
+
 func testAuthSession(accessToken, refreshToken string) *companyv1.AuthSession {
 	return &companyv1.AuthSession{
+		FamilyId:         testFamilyID,
 		AccessToken:      accessToken,
 		RefreshToken:     refreshToken,
 		RefreshExpiresAt: timestamppb.New(time.Now().Add(2 * time.Hour)),

@@ -141,6 +141,7 @@ type Invite struct {
 }
 
 type AuthResult struct {
+	FamilyID         uuid.UUID
 	AccessToken      string
 	AccessExpiresAt  time.Time
 	RefreshToken     string

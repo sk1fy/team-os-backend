@@ -27,6 +27,7 @@ services:
     ports: !override []
     restart: unless-stopped
     environment:
+      COMPANY_TASKS_SERVICE_TOKEN: ${TASKS_COMPANY_SERVICE_TOKEN:?TASKS_COMPANY_SERVICE_TOKEN is required}
       COMPANY_GATEWAY_SERVICE_TOKEN: ${GATEWAY_COMPANY_SERVICE_TOKEN:?GATEWAY_COMPANY_SERVICE_TOKEN is required}
       COMPANY_AMO_IMPORT_ENABLED: "true"
 
@@ -37,6 +38,8 @@ services:
   tasks:
     ports: !override []
     restart: unless-stopped
+    environment:
+      TASKS_COMPANY_SERVICE_TOKEN: ${TASKS_COMPANY_SERVICE_TOKEN:?TASKS_COMPANY_SERVICE_TOKEN is required}
 
   academy:
     ports: !override []
@@ -46,6 +49,7 @@ services:
       # defaults from the base Compose file.
       ACADEMY_EXTERNAL_TOKEN_SECRET: ${ACADEMY_EXTERNAL_TOKEN_SECRET:?ACADEMY_EXTERNAL_TOKEN_SECRET is required}
       ACADEMY_EXTERNAL_EMAIL_KEY: ${ACADEMY_EXTERNAL_EMAIL_KEY:?ACADEMY_EXTERNAL_EMAIL_KEY is required}
+      ACADEMY_FILES_SERVICE_TOKEN: ${ACADEMY_FILES_SERVICE_TOKEN:?ACADEMY_FILES_SERVICE_TOKEN is required}
 
   notifications:
     ports: !override []
@@ -67,6 +71,7 @@ services:
       # Значения намеренно не читаются из .env: старые production-конфигурации
       # могли содержать FILES_S3_SECURE=true, что ломает соединение с minio:9000.
       FILES_S3_SECURE: "false"
+      FILES_ACADEMY_SERVICE_TOKEN: ${ACADEMY_FILES_SERVICE_TOKEN:?ACADEMY_FILES_SERVICE_TOKEN is required}
       FILES_S3_PUBLIC_SECURE: "true"
 
   gateway:

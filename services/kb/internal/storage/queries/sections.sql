@@ -39,6 +39,6 @@ SET
 WHERE company_id = $1 AND id = $2
 RETURNING id, company_id, name, parent_id, "order", access, created_at, updated_at, visibility;
 
--- name: DeleteSection :exec
+-- name: DeleteSection :execrows
 DELETE FROM sections
 WHERE company_id = $1 AND id = $2;

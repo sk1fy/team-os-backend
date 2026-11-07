@@ -98,6 +98,7 @@ func run(logger *slog.Logger) error {
 		return fmt.Errorf("listen gRPC: %w", err)
 	}
 	grpcServer := grpc.NewServer(
+		grpc.ChainUnaryInterceptor(httpx.LogRPCErrors(logger)),
 		grpc.MaxRecvMsgSize(4<<20),
 		grpc.MaxSendMsgSize(4<<20),
 	)

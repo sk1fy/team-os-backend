@@ -7,7 +7,6 @@ import (
 	"crypto/ed25519"
 	"crypto/rand"
 	"errors"
-	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -17,8 +16,6 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	sharedauth "github.com/sk1fy/team-os-backend/pkg/auth"
-	"github.com/testcontainers/testcontainers-go"
-	"github.com/testcontainers/testcontainers-go/modules/postgres"
 )
 
 func TestCompanyRegistrationTokenLifecycle(t *testing.T) {
@@ -222,62 +219,5 @@ func assertCompanyRegistrationCode(t *testing.T, err error, code string) {
 
 func companyRegistrationTestPool(t *testing.T, ctx context.Context) *pgxpool.Pool {
 	t.Helper()
-	_, filename, _, ok := runtime.Caller(0)
-	if !ok {
-		t.Fatal("не удалось определить путь к миграциям")
-	}
-	migrationsDir := filepath.Join(filepath.Dir(filename), "..", "..", "migrations")
-	migrations := []struct {
-		version int
-		name    string
-	}{
-		{1, "init"}, {2, "phase6_schedule_distribution"}, {3, "amo_users"},
-		{4, "remove_amo_from_user_names"}, {5, "validate_phone"}, {6, "employee_access"},
-		{7, "user_profiles_access_audit"}, {8, "employee_sections_lifecycle"}, {9, "provisioning"},
-		{10, "company_registration_tokens"},
-		// Миграцию 11 тест применяет после вставки legacy-компании, чтобы проверить backfill.
-		{12, "user_schedule_visibility"}, {13, "amo_group_organization"},
-		{14, "department_root"}, {15, "position_levels"}, {16, "user_logins"},
-		{17, "company_scoped_emails_and_login_reservations"},
-		{18, "default_users_inactive"}, {19, "amo_admin_self_login_audit"}, {20, "amo_company_bootstrap_audit"}, {21, "access_link_entry_context"}, {22, "distribution_connections"}, {23, "distribution_decision_validation"}, {24, "distribution_delivery"},
-		{32, "task_control_connections"}, {33, "task_control_rules"}, {34, "task_control_runtime_limits"}, {35, "task_control_references"}, {36, "task_control_shared_mappings"},
-	}
-	initScripts := make([]string, 0, len(migrations))
-
-	temporary := t.TempDir()
-	for _, migration := range migrations {
-		name := fmt.Sprintf("%06d_%s.up.sql", migration.version, migration.name)
-		source, err := os.ReadFile(filepath.Join(migrationsDir, name))
-		if err != nil {
-			t.Fatal(err)
-		}
-		target := filepath.Join(temporary, name)
-		if err = os.WriteFile(target, append(append([]byte("BEGIN;\n"), source...), []byte("\nCOMMIT;\n")...), 0600); err != nil {
-			t.Fatal(err)
-		}
-		initScripts = append(initScripts, target)
-	}
-
-	container, err := postgres.Run(ctx, "postgres:16-alpine",
-		postgres.WithDatabase("company"), postgres.WithUsername("company"), postgres.WithPassword("company"),
-		postgres.WithInitScripts(initScripts...), postgres.BasicWaitStrategies(),
-	)
-	if err != nil {
-		t.Fatalf("запуск PostgreSQL: %v", err)
-	}
-	t.Cleanup(func() {
-		if terminateErr := testcontainers.TerminateContainer(container); terminateErr != nil {
-			t.Errorf("остановка PostgreSQL: %v", terminateErr)
-		}
-	})
-	connectionString, err := container.ConnectionString(ctx, "sslmode=disable")
-	if err != nil {
-		t.Fatal(err)
-	}
-	pool, err := pgxpool.New(ctx, connectionString)
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Cleanup(pool.Close)
-	return pool
+	return companyAccessTestPool(t, ctx, "000011_legacy_amo_integrations.up.sql")
 }

@@ -92,7 +92,7 @@ func (s *Service) emitTaskAssignedTo(
 	assigneePositionID *uuid.UUID,
 ) error {
 	recipients := assigneeRecipients(assigneeIDs, task.AuthorID)
-	if len(recipients) == 0 && assigneePositionID == nil {
+	if len(recipients) == 0 {
 		return nil
 	}
 	payload := &eventsv1.TasksTaskAssignedPayload{

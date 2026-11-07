@@ -3,10 +3,12 @@ package application
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"strings"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgtype"
 	eventsv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/events/v1"
 	"github.com/sk1fy/team-os-backend/pkg/richtext"
@@ -377,7 +379,7 @@ func (s *Service) UpdateArticle(ctx context.Context, actor Actor, input UpdateAr
 		!jsonEqual(nextContent, current.Content)
 	nextVersion := current.Version
 	if contentChanged {
-		_, err = queries.CreateArticleVersion(ctx, db.CreateArticleVersionParams{
+		err = queries.CreateArticleVersion(ctx, db.CreateArticleVersionParams{
 			ID: uuid.New(), CompanyID: actor.CompanyID, ArticleID: current.ID,
 			Version: current.Version, Title: current.Title, Content: current.Content,
 			AuthorID: actor.UserID, CreatedAt: s.now().UTC(),
@@ -446,7 +448,7 @@ func (s *Service) UpdateArticle(ctx context.Context, actor Actor, input UpdateAr
 			return Article{}, err
 		}
 	}
-	if contentChanged {
+	if contentChanged && article.Status == "published" {
 		var contentMap map[string]any
 		if err = json.Unmarshal(article.Content, &contentMap); err != nil {
 			return Article{}, internal("Не удалось сформировать содержимое события", err)
@@ -491,6 +493,10 @@ func (s *Service) DeleteArticle(ctx context.Context, actor Actor, id uuid.UUID) 
 		ID:        id,
 	})
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23503" && pgErr.ConstraintName == "article_snapshot_reuse_grants_version_fk" {
+			return &Error{Kind: ErrorConflict, Message: "Нельзя удалить статью, использованную в курсе. Снимите её с публикации", Cause: err}
+		}
 		return internal("Не удалось удалить статью", err)
 	}
 	if deleted == 0 {
@@ -548,7 +554,7 @@ func (s *Service) RollbackArticle(ctx context.Context, actor Actor, input Rollba
 		return Article{}, notFound("Версия")
 	}
 
-	_, err = queries.CreateArticleVersion(ctx, db.CreateArticleVersionParams{
+	err = queries.CreateArticleVersion(ctx, db.CreateArticleVersionParams{
 		ID: uuid.New(), CompanyID: actor.CompanyID, ArticleID: current.ID,
 		Version: current.Version, Title: current.Title, Content: current.Content,
 		AuthorID: actor.UserID, CreatedAt: s.now().UTC(),
@@ -570,19 +576,21 @@ func (s *Service) RollbackArticle(ctx context.Context, actor Actor, input Rollba
 	}
 	article := articleFromUpdateRow(updated)
 
-	var contentMap map[string]any
-	if err = json.Unmarshal(article.Content, &contentMap); err != nil {
-		return Article{}, internal("Не удалось сформировать содержимое события", err)
-	}
-	content, structErr := structpb.NewStruct(contentMap)
-	if structErr != nil {
-		return Article{}, internal("Не удалось сформировать содержимое события", structErr)
-	}
-	if err = s.emit(ctx, queries, actor.CompanyID, article.ID, actor.UserID, "teamos.kb.article.updated.v1", &eventsv1.KbArticleUpdatedPayload{
-		ArticleId: article.ID.String(), Version: uint32(article.Version),
-		Title: article.Title, Content: content,
-	}); err != nil {
-		return Article{}, err
+	if article.Status == "published" {
+		var contentMap map[string]any
+		if err = json.Unmarshal(article.Content, &contentMap); err != nil {
+			return Article{}, internal("Не удалось сформировать содержимое события", err)
+		}
+		content, structErr := structpb.NewStruct(contentMap)
+		if structErr != nil {
+			return Article{}, internal("Не удалось сформировать содержимое события", structErr)
+		}
+		if err = s.emit(ctx, queries, actor.CompanyID, article.ID, actor.UserID, "teamos.kb.article.updated.v1", &eventsv1.KbArticleUpdatedPayload{
+			ArticleId: article.ID.String(), Version: uint32(article.Version),
+			Title: article.Title, Content: content,
+		}); err != nil {
+			return Article{}, err
+		}
 	}
 	if err = tx.Commit(ctx); err != nil {
 		return Article{}, internal("Не удалось сохранить статью", err)
@@ -675,9 +683,13 @@ func (s *Service) AcknowledgeArticle(ctx context.Context, actor Actor, articleID
 			CompanyID: actor.CompanyID, ID: articleID, PartnerID: actor.UserID,
 		})
 		if accessErr != nil {
-			return forbidden("Недостаточно прав для ознакомления со статьёй")
+			if isNoRows(accessErr) {
+				return forbidden("Недостаточно прав для ознакомления со статьёй")
+			}
+			return internal("Не удалось проверить доступ к статье", accessErr)
 		}
 		article = articleFromPartnerRow(partnerArticle)
+		article.PartnerAccess.PartnerIDs = []uuid.UUID{actor.UserID}
 	}
 	_, sections, err := s.loadSectionsInTx(ctx, queries, actor.CompanyID)
 	if err != nil {

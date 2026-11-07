@@ -66,6 +66,9 @@ func (l *Limiter) Middleware(next http.Handler) http.Handler {
 			return
 		}
 		key, limit := l.clientIP(r), l.limit
+		if r.Method == http.MethodPost && (r.URL.Path == "/api/v1/auth/refresh" || r.URL.Path == "/api/v2/auth/refresh") {
+			key, limit = "refresh:"+key, 600
+		}
 		if isProvisioningPath(r.Method, r.URL.Path) && l.matchesProvisioningPrincipal(r.Header.Get("Authorization")) {
 			key, limit = "service:provisioning", l.provisioningLimit
 		}
@@ -80,6 +83,9 @@ func (l *Limiter) Middleware(next http.Handler) http.Handler {
 }
 
 func rateLimitedPath(method, path string) bool {
+	if path == "/api/v1/auth/me" || path == "/api/v2/auth/me" {
+		return false
+	}
 	return strings.HasPrefix(path, "/api/v1/auth/") ||
 		strings.HasPrefix(path, "/api/v2/auth/") ||
 		isProvisioningPath(method, path) ||

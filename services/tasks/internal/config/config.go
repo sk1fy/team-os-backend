@@ -9,26 +9,30 @@ import (
 )
 
 type Config struct {
-	HTTPAddr        string
-	GRPCAddr        string
-	DatabaseURL     string
-	NATSURL         string
-	JWTPublicKey    string
-	JWTIssuer       string
-	JWTAudience     string
-	ShutdownTimeout time.Duration
+	HTTPAddr            string
+	CompanyGRPCAddr     string
+	CompanyServiceToken string
+	GRPCAddr            string
+	DatabaseURL         string
+	NATSURL             string
+	JWTPublicKey        string
+	JWTIssuer           string
+	JWTAudience         string
+	ShutdownTimeout     time.Duration
 }
 
 func Load() (Config, error) {
 	config := Config{
-		HTTPAddr:        envOr("TASKS_HTTP_ADDR", ":8083"),
-		GRPCAddr:        envOr("TASKS_GRPC_ADDR", ":9083"),
-		DatabaseURL:     strings.TrimSpace(os.Getenv("TASKS_DB_URL")),
-		NATSURL:         envOr("TASKS_NATS_URL", "nats://localhost:4222"),
-		JWTPublicKey:    strings.TrimSpace(os.Getenv("TASKS_JWT_PUBLIC_KEY")),
-		JWTIssuer:       envOr("TASKS_JWT_ISSUER", "teamos-company"),
-		JWTAudience:     envOr("TASKS_JWT_AUDIENCE", "teamos-api"),
-		ShutdownTimeout: 30 * time.Second,
+		CompanyGRPCAddr:     strings.TrimSpace(os.Getenv("TASKS_COMPANY_GRPC_ADDR")),
+		CompanyServiceToken: strings.TrimSpace(os.Getenv("TASKS_COMPANY_SERVICE_TOKEN")),
+		HTTPAddr:            envOr("TASKS_HTTP_ADDR", ":8083"),
+		GRPCAddr:            envOr("TASKS_GRPC_ADDR", ":9083"),
+		DatabaseURL:         strings.TrimSpace(os.Getenv("TASKS_DB_URL")),
+		NATSURL:             envOr("TASKS_NATS_URL", "nats://localhost:4222"),
+		JWTPublicKey:        strings.TrimSpace(os.Getenv("TASKS_JWT_PUBLIC_KEY")),
+		JWTIssuer:           envOr("TASKS_JWT_ISSUER", "teamos-company"),
+		JWTAudience:         envOr("TASKS_JWT_AUDIENCE", "teamos-api"),
+		ShutdownTimeout:     30 * time.Second,
 	}
 	var err error
 	if value := strings.TrimSpace(os.Getenv("TASKS_SHUTDOWN_TIMEOUT")); value != "" {
@@ -38,6 +42,12 @@ func Load() (Config, error) {
 		}
 	}
 	missing := make([]string, 0, 2)
+	if config.CompanyGRPCAddr == "" {
+		missing = append(missing, "TASKS_COMPANY_GRPC_ADDR")
+	}
+	if config.CompanyServiceToken == "" {
+		missing = append(missing, "TASKS_COMPANY_SERVICE_TOKEN")
+	}
 	if config.DatabaseURL == "" {
 		missing = append(missing, "TASKS_DB_URL")
 	}

@@ -141,7 +141,7 @@ func run(logger *slog.Logger) error {
 	if err != nil {
 		return fmt.Errorf("initialize academy application: %w", err)
 	}
-	service.SetFilesClient(clients.NewFiles(filesv1.NewFilesServiceClient(filesConnection)))
+	service.SetFilesClient(clients.NewFiles(filesv1.NewFilesServiceClient(filesConnection), configuration.FilesServiceToken))
 	service.SetExternalSecret(configuration.ExternalSecret)
 	service.SetExternalEmailKey(configuration.ExternalEmailKey)
 	service.SetExternalEmailKeyID(configuration.ExternalEmailKeyID)

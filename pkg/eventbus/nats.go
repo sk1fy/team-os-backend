@@ -16,6 +16,7 @@ import (
 const (
 	messageIDHeader       = "Nats-Msg-Id"
 	originalSubjectHeader = "Teamos-Original-Subject"
+	defaultPublishTimeout = 5 * time.Second
 )
 
 // Publisher is implemented by Bus and can be replaced by a test double in
@@ -109,6 +110,8 @@ func (b *Bus) Publish(ctx context.Context, subject string, event Event, options 
 	if err := ValidateSubject(subject); err != nil {
 		return err
 	}
+	ctx, cancel := context.WithTimeout(ctx, defaultPublishTimeout)
+	defer cancel()
 	data, err := EncodeEvent(event)
 	if err != nil {
 		return err
@@ -318,6 +321,8 @@ func (b *Bus) shouldMoveToDLQ(config ConsumerConfig, message *nats.Msg) bool {
 }
 
 func (b *Bus) moveToDLQ(ctx context.Context, subject string, original *nats.Msg) error {
+	ctx, cancel := context.WithTimeout(ctx, defaultPublishTimeout)
+	defer cancel()
 	header := make(nats.Header, len(original.Header)+1)
 	for name, values := range original.Header {
 		header[name] = append([]string(nil), values...)

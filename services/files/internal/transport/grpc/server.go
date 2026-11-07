@@ -26,8 +26,8 @@ type Server struct {
 	tempDir string
 }
 
-func New(service *application.Service, verifier *sharedauth.TokenVerifier, trustedMetadata bool, tempDir string) *Server {
-	return &Server{service: service, auth: actorResolver{verifier: verifier, trustedMetadata: trustedMetadata}, tempDir: tempDir}
+func New(service *application.Service, verifier *sharedauth.TokenVerifier, academyServiceToken, tempDir string) *Server {
+	return &Server{service: service, auth: actorResolver{verifier: verifier, academyServiceToken: academyServiceToken}, tempDir: tempDir}
 }
 
 func (s *Server) UploadFile(stream filesv1.FilesService_UploadFileServer) error {
@@ -130,7 +130,7 @@ func (s *Server) DeleteFile(ctx context.Context, req *filesv1.DeleteFileRequest)
 }
 
 func (s *Server) CloneFilesForOwner(ctx context.Context, req *filesv1.CloneFilesForOwnerRequest) (*filesv1.CloneFilesForOwnerResponse, error) {
-	actor, err := s.auth.actor(ctx)
+	actor, err := s.auth.cloneActor(ctx)
 	if err != nil {
 		return nil, err
 	}

@@ -187,6 +187,7 @@ services:
       COMPANY_JWT_PRIVATE_KEY: ${COMPANY_JWT_PRIVATE_KEY:-development-key-not-generated}
       COMPANY_JWT_ISSUER: ${COMPANY_JWT_ISSUER:-teamos-company}
       COMPANY_JWT_AUDIENCE: ${COMPANY_JWT_AUDIENCE:-teamos-api}
+      COMPANY_TASKS_SERVICE_TOKEN: ${TASKS_COMPANY_SERVICE_TOKEN:-development-tasks-company-token}
       COMPANY_GATEWAY_SERVICE_TOKEN: ${GATEWAY_COMPANY_SERVICE_TOKEN:-development-gateway-company-service-token-change-me}
       COMPANY_ACCESS_TTL: ${COMPANY_ACCESS_TTL:-15m}
       COMPANY_SHUTDOWN_TIMEOUT: ${COMPANY_SHUTDOWN_TIMEOUT:-30s}
@@ -230,6 +231,8 @@ services:
     environment:
       TASKS_HTTP_ADDR: :8083
       TASKS_GRPC_ADDR: :9083
+      TASKS_COMPANY_GRPC_ADDR: company:9081
+      TASKS_COMPANY_SERVICE_TOKEN: ${TASKS_COMPANY_SERVICE_TOKEN:-development-tasks-company-token}
       TASKS_DB_URL: postgres://${POSTGRES_USER:-teamos}:${POSTGRES_PASSWORD:-teamos}@postgres:5432/teamos_tasks?sslmode=disable
       TASKS_NATS_URL: nats://nats:4222
       TASKS_JWT_PUBLIC_KEY: ${GATEWAY_JWT_PUBLIC_KEY:-development-key-not-generated}
@@ -240,6 +243,8 @@ services:
       - "8083:8083"
       - "127.0.0.1:9083:9083"
     depends_on:
+      company:
+        condition: service_healthy
       tasks-migrate:
         condition: service_completed_successfully
       nats-init:
@@ -264,6 +269,7 @@ services:
       ACADEMY_KB_GRPC_ADDR: kb:9082
       ACADEMY_COMPANY_GRPC_ADDR: company:9081
       ACADEMY_FILES_GRPC_ADDR: files:9086
+      ACADEMY_FILES_SERVICE_TOKEN: ${ACADEMY_FILES_SERVICE_TOKEN:-development-academy-files-credential-change-me}
       ACADEMY_EXTERNAL_TOKEN_SECRET: ${ACADEMY_EXTERNAL_TOKEN_SECRET:-development-academy-external-secret-change-me}
       ACADEMY_EXTERNAL_EMAIL_KEY: ${ACADEMY_EXTERNAL_EMAIL_KEY:-MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=}
       ACADEMY_EXTERNAL_EMAIL_KEY_ID: ${ACADEMY_EXTERNAL_EMAIL_KEY_ID:-v1}
@@ -324,7 +330,7 @@ services:
     environment:
       FILES_HTTP_ADDR: :8086
       FILES_GRPC_ADDR: :9086
-      FILES_TRUSTED_METADATA: "true"
+      FILES_ACADEMY_SERVICE_TOKEN: ${ACADEMY_FILES_SERVICE_TOKEN:-development-academy-files-credential-change-me}
       FILES_DB_URL: postgres://${POSTGRES_USER:-teamos}:${POSTGRES_PASSWORD:-teamos}@postgres:5432/teamos_files?sslmode=disable
       FILES_JWT_PUBLIC_KEY: ${GATEWAY_JWT_PUBLIC_KEY:-development-key-not-generated}
       FILES_JWT_ISSUER: ${COMPANY_JWT_ISSUER:-teamos-company}

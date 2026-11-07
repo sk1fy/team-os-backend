@@ -43,6 +43,10 @@ type amoSyncState struct {
 	lastAttempt time.Time
 }
 
+type accessTokenIssuer interface {
+	Issue(subject, companyID, role string, positions, departments []string, sectionAccess ...[]string) (string, time.Time, error)
+}
+
 type Service struct {
 	activityCore           ActivityCore
 	activityBindings       map[uuid.UUID]dto.ActivityScope
@@ -51,7 +55,7 @@ type Service struct {
 	deliveryCore           DistributionDeliveryCore
 	distributionCore       DistributionCore
 	pool                   databasePool
-	issuer                 *sharedauth.TokenIssuer
+	issuer                 accessTokenIssuer
 	refreshTTL             time.Duration
 	inviteTTL              time.Duration
 	now                    func() time.Time

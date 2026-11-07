@@ -4,8 +4,11 @@ package application
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 	"path/filepath"
 	"runtime"
+	"slices"
 	"sync"
 	"testing"
 	"time"
@@ -167,6 +170,104 @@ func TestConcurrentTaskOrderingAndRecurrence(t *testing.T) {
 		}
 	})
 
+	t.Run("position snapshot and rollback", func(t *testing.T) {
+		boardID, columnID := seedBoardAndColumn(t, ctx, pool, companyID, userID)
+		taskID, positionID, memberID, explicitID := uuid.New(), uuid.New(), uuid.New(), uuid.New()
+		seedTask(t, ctx, pool, companyID, boardID, columnID, taskID, userID, 0, nil, nil)
+		actor.Token = "user-token"
+		resolver := &fakeCompany{users: []uuid.UUID{memberID, explicitID, memberID, userID}}
+		service.SetCompanyClient(resolver)
+		updated, err := service.UpdateTask(ctx, actor, UpdateTaskInput{ID: taskID, AssigneeIDsSet: true, AssigneeIDs: []uuid.UUID{explicitID}, AssigneePositionID: &positionID})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !slices.Equal(updated.AssigneeIDs, []uuid.UUID{explicitID}) || updated.AssigneePositionID == nil || *updated.AssigneePositionID != positionID {
+			t.Fatalf("task assignment changed shape: %+v", updated)
+		}
+		resolver.users = []uuid.UUID{uuid.New()}
+		var raw []byte
+		if err := pool.QueryRow(ctx, `SELECT payload FROM outbox WHERE aggregate_id=$1`, taskID).Scan(&raw); err != nil {
+			t.Fatal(err)
+		}
+		var envelope struct {
+			Payload struct {
+				Users []string `json:"assigneeUserIds"`
+			} `json:"payload"`
+		}
+		if err := json.Unmarshal(raw, &envelope); err != nil {
+			t.Fatal(err)
+		}
+		if len(envelope.Payload.Users) != 2 || !slices.Contains(envelope.Payload.Users, memberID.String()) || !slices.Contains(envelope.Payload.Users, explicitID.String()) {
+			t.Fatalf("wrong snapshot: %s", raw)
+		}
+		if resolver.companyID != companyID || resolver.token != "user-token" || resolver.positionID != positionID {
+			t.Fatalf("wrong resolver identity: %+v", resolver)
+		}
+		resolver.err = errors.New("company unavailable")
+		otherPosition := uuid.New()
+		title := "Не сохранять"
+		_, err = service.UpdateTask(ctx, actor, UpdateTaskInput{ID: taskID, Title: &title, AssigneePositionID: &otherPosition})
+		if err == nil {
+			t.Fatal("dependency failure must fail task update")
+		}
+		unchanged, err := service.GetTask(ctx, actor, taskID)
+		if err != nil || unchanged.Title != "Задача" || *unchanged.AssigneePositionID != positionID {
+			t.Fatalf("partial update: %+v %v", unchanged, err)
+		}
+		var events int
+		if err := pool.QueryRow(ctx, `SELECT count(*) FROM outbox WHERE aggregate_id=$1`, taskID).Scan(&events); err != nil || events != 1 {
+			t.Fatalf("events=%d err=%v", events, err)
+		}
+		resolver.err = nil
+		resolver.users = nil
+		emptyTask := uuid.New()
+		seedTask(t, ctx, pool, companyID, boardID, columnID, emptyTask, userID, 1, nil, nil)
+		if _, err := service.UpdateTask(ctx, actor, UpdateTaskInput{ID: emptyTask, AssigneePositionID: &positionID}); err != nil {
+			t.Fatal(err)
+		}
+		if err := pool.QueryRow(ctx, `SELECT count(*) FROM outbox WHERE aggregate_id=$1`, emptyTask).Scan(&events); err != nil || events != 0 {
+			t.Fatalf("empty membership events=%d err=%v", events, err)
+		}
+	})
+	t.Run("recurrence position snapshot and dependency failure", func(t *testing.T) {
+		boardID, columnID := seedBoardAndColumn(t, ctx, pool, companyID, userID)
+		taskID, positionID, memberID := uuid.New(), uuid.New(), uuid.New()
+		completed := time.Now().UTC()
+		seedTask(t, ctx, pool, companyID, boardID, columnID, taskID, userID, 0, []byte(`{"frequency":"daily","interval":1,"weekdays":[]}`), &completed)
+		if _, err := pool.Exec(ctx, `UPDATE tasks SET assignee_position_id=$1 WHERE id=$2`, positionID, taskID); err != nil {
+			t.Fatal(err)
+		}
+		resolver := &fakeCompany{err: errors.New("company unavailable")}
+		service.SetCompanyClient(resolver)
+		if err := service.ProcessRecurrence(ctx, companyID, taskID); err == nil {
+			t.Fatal("expected resolution error")
+		}
+		var count int
+		var generated bool
+		if err := pool.QueryRow(ctx, `SELECT count(*) FROM tasks WHERE board_id=$1`, boardID).Scan(&count); err != nil || count != 1 {
+			t.Fatalf("tasks=%d err=%v", count, err)
+		}
+		if err := pool.QueryRow(ctx, `SELECT recurrence_generated_at IS NOT NULL FROM tasks WHERE id=$1`, taskID).Scan(&generated); err != nil || generated {
+			t.Fatalf("generated=%v err=%v", generated, err)
+		}
+		resolver.err = nil
+		resolver.users = []uuid.UUID{memberID}
+		if err := service.ProcessRecurrence(ctx, companyID, taskID); err != nil {
+			t.Fatal(err)
+		}
+		if resolver.token != "" || resolver.companyID != companyID {
+			t.Fatalf("recurrence resolver identity: %+v", resolver)
+		}
+		var recipients []string
+		if err := pool.QueryRow(ctx, `SELECT ARRAY(SELECT jsonb_array_elements_text(payload->'payload'->'assigneeUserIds')) FROM outbox WHERE aggregate_id IN (SELECT id FROM tasks WHERE board_id=$1)`, boardID).Scan(&recipients); err != nil || !slices.Equal(recipients, []string{memberID.String()}) {
+			t.Fatalf("recipients=%v err=%v", recipients, err)
+		}
+		resolver.err = errors.New("company unavailable after completion")
+		if err := service.ProcessRecurrence(ctx, companyID, taskID); err != nil {
+			t.Fatalf("completed retry should not resolve again: %v", err)
+		}
+	})
+
 	t.Run("повтор создаётся и публикует назначение ровно один раз", func(t *testing.T) {
 		boardID, columnID := seedBoardAndColumn(t, ctx, pool, companyID, userID)
 		parentID := uuid.New()
@@ -243,4 +344,21 @@ func seedTask(
 		taskID, companyID, boardID, columnID, order, authorID, assignees, recurrence, completedAt); err != nil {
 		t.Fatalf("подготовка задачи: %v", err)
 	}
+}
+
+type fakeCompany struct {
+	users                 []uuid.UUID
+	err                   error
+	companyID, positionID uuid.UUID
+	token                 string
+}
+
+func (f *fakeCompany) ResolvePositionUsers(ctx context.Context, companyID uuid.UUID, token string, positionID uuid.UUID) ([]uuid.UUID, error) {
+	f.companyID = companyID
+	f.positionID = positionID
+	f.token = token
+	if _, ok := ctx.Deadline(); !ok {
+		return nil, errors.New("missing resolver deadline")
+	}
+	return f.users, f.err
 }

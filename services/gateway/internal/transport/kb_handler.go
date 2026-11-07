@@ -45,7 +45,7 @@ func (h *Handler) CreateSection(w http.ResponseWriter, r *http.Request) {
 	if input.Access != nil {
 		access, err := accessToProto(*input.Access)
 		if err != nil {
-			h.writeConversionError(w, r, err)
+			apierror.Write(w, apierror.BadRequest("Некорректные настройки доступа раздела"))
 			return
 		}
 		request.Access = access
@@ -80,7 +80,7 @@ func (h *Handler) UpdateSection(w http.ResponseWriter, r *http.Request, id api.I
 	if input.Access != nil {
 		access, err := accessToProto(*input.Access)
 		if err != nil {
-			h.writeConversionError(w, r, err)
+			apierror.Write(w, apierror.BadRequest("Некорректные настройки доступа раздела"))
 			return
 		}
 		request.Access = access
@@ -174,7 +174,7 @@ func (h *Handler) CreateArticle(w http.ResponseWriter, r *http.Request) {
 	}
 	status, err := articleStatusToProto(input.Status)
 	if err != nil {
-		h.writeConversionError(w, r, err)
+		apierror.Write(w, apierror.BadRequest("Некорректный статус статьи"))
 		return
 	}
 	request := &kbv1.CreateArticleRequest{
@@ -184,14 +184,14 @@ func (h *Handler) CreateArticle(w http.ResponseWriter, r *http.Request) {
 	if input.PartnerAccess != nil {
 		request.PartnerAccess, err = partnerAccessToProto(*input.PartnerAccess)
 		if err != nil {
-			h.writeConversionError(w, r, err)
+			apierror.Write(w, apierror.BadRequest("Некорректный режим доступа партнёров"))
 			return
 		}
 	}
 	if input.PartnerReusePolicy != nil {
 		policy, mapErr := partnerReusePolicyToProto(*input.PartnerReusePolicy)
 		if mapErr != nil {
-			h.writeConversionError(w, r, mapErr)
+			apierror.Write(w, apierror.BadRequest("Некорректная политика повторного использования статьи"))
 			return
 		}
 		request.PartnerReusePolicy = &policy
@@ -233,7 +233,7 @@ func (h *Handler) UpdateArticle(w http.ResponseWriter, r *http.Request, id api.I
 	if input.Status != nil {
 		status, err := articleStatusToProto(*input.Status)
 		if err != nil {
-			h.writeConversionError(w, r, err)
+			apierror.Write(w, apierror.BadRequest("Некорректный статус статьи"))
 			return
 		}
 		request.Status = &status
@@ -252,7 +252,7 @@ func (h *Handler) UpdateArticle(w http.ResponseWriter, r *http.Request, id api.I
 	if input.PartnerAccess != nil {
 		partnerAccess, err := partnerAccessToProto(*input.PartnerAccess)
 		if err != nil {
-			h.writeConversionError(w, r, err)
+			apierror.Write(w, apierror.BadRequest("Некорректный режим доступа партнёров"))
 			return
 		}
 		request.PartnerAccess = partnerAccess
@@ -260,7 +260,7 @@ func (h *Handler) UpdateArticle(w http.ResponseWriter, r *http.Request, id api.I
 	if input.PartnerReusePolicy != nil {
 		policy, err := partnerReusePolicyToProto(*input.PartnerReusePolicy)
 		if err != nil {
-			h.writeConversionError(w, r, err)
+			apierror.Write(w, apierror.BadRequest("Некорректная политика повторного использования статьи"))
 			return
 		}
 		request.PartnerReusePolicy = &policy
@@ -313,12 +313,12 @@ func (h *Handler) UpdateArticlePartnerPolicy(w http.ResponseWriter, r *http.Requ
 	}
 	access, err := partnerAccessToProto(input.Access)
 	if err != nil {
-		h.writeConversionError(w, r, err)
+		apierror.Write(w, apierror.BadRequest("Некорректный режим доступа партнёров"))
 		return
 	}
 	reusePolicy, err := partnerReusePolicyToProto(input.ReusePolicy)
 	if err != nil {
-		h.writeConversionError(w, r, err)
+		apierror.Write(w, apierror.BadRequest("Некорректная политика повторного использования статьи"))
 		return
 	}
 	response, err := h.kb.UpdateArticlePartnerPolicy(outgoingContext(r), &kbv1.UpdateArticlePartnerPolicyRequest{

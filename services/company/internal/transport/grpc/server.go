@@ -15,6 +15,7 @@ type Server struct {
 	application         *application.Service
 	verifier            tokenVerifier
 	gatewayServiceToken string
+	tasksServiceToken   string
 }
 
 // NewServer constructs a company gRPC server. The verifier is mandatory for
@@ -31,3 +32,5 @@ func NewServer(
 }
 
 var _ companyv1.CompanyServiceServer = (*Server)(nil)
+
+func (s *Server) WithTasksServiceToken(token string) *Server { s.tasksServiceToken = token; return s }

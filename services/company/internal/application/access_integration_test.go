@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"slices"
 	"testing"
 	"time"
 
@@ -254,7 +255,7 @@ type accessTestUser struct {
 	status string
 }
 
-func companyAccessTestPool(t *testing.T, ctx context.Context) *pgxpool.Pool {
+func companyAccessTestPool(t *testing.T, ctx context.Context, skipped ...string) *pgxpool.Pool {
 	t.Helper()
 	_, filename, _, ok := runtime.Caller(0)
 	if !ok {
@@ -264,9 +265,16 @@ func companyAccessTestPool(t *testing.T, ctx context.Context) *pgxpool.Pool {
 	initScripts := make([]string, 0, 24)
 
 	temporary := t.TempDir()
-	for migration := 1; migration <= 42; migration++ {
-		name := fmt.Sprintf("%06d_%s.up.sql", migration, accessMigrationName(migration))
-		source, err := os.ReadFile(filepath.Join(migrationsDir, name))
+	migrations, err := filepath.Glob(filepath.Join(migrationsDir, "*.up.sql"))
+	if err != nil || len(migrations) == 0 {
+		t.Fatalf("migration discovery: %v", err)
+	}
+	for _, migration := range migrations {
+		name := filepath.Base(migration)
+		if slices.Contains(skipped, name) {
+			continue
+		}
+		source, err := os.ReadFile(migration)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -304,50 +312,6 @@ func companyAccessTestPool(t *testing.T, ctx context.Context) *pgxpool.Pool {
 	}
 	t.Cleanup(pool.Close)
 	return pool
-}
-
-func accessMigrationName(migration int) string {
-	return map[int]string{
-		1:  "init",
-		2:  "phase6_schedule_distribution",
-		3:  "amo_users",
-		4:  "remove_amo_from_user_names",
-		5:  "validate_phone",
-		6:  "employee_access",
-		7:  "user_profiles_access_audit",
-		8:  "employee_sections_lifecycle",
-		9:  "provisioning",
-		10: "company_registration_tokens",
-		11: "legacy_amo_integrations",
-		12: "user_schedule_visibility",
-		13: "amo_group_organization",
-		14: "department_root",
-		15: "position_levels",
-		16: "user_logins",
-		17: "company_scoped_emails_and_login_reservations",
-		18: "default_users_inactive",
-		19: "amo_admin_self_login_audit",
-		20: "amo_company_bootstrap_audit",
-		21: "access_link_entry_context",
-		22: "distribution_connections",
-		23: "distribution_decision_validation",
-		24: "distribution_delivery",
-		25: "distribution_queue",
-		26: "distribution_interface",
-		27: "distribution_widget_requests",
-		28: "distribution_observation",
-		29: "distribution_launch_source",
-		30: "distribution_queue_ux",
-		31: "distribution_source_history_index",
-		32: "task_control_connections",
-		33: "task_control_rules",
-		34: "task_control_runtime_limits",
-		35: "task_control_references",
-		36: "task_control_shared_mappings",
-		37: "task_control_dynamic_runtime", 38: "task_control_import", 39: "task_control_audit", 40: "task_control_runtime_diagnostics",
-		41: "distribution_manual_assignment",
-		42: "task_control_apply_rules",
-	}[migration]
 }
 
 func seedAccessCompany(

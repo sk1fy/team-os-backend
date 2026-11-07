@@ -17,6 +17,7 @@ type Config struct {
 	KbGRPCAddr         string
 	CompanyGRPCAddr    string
 	FilesGRPCAddr      string
+	FilesServiceToken  string
 	ExternalSecret     string
 	ExternalEmailKey   []byte
 	ExternalEmailKeyID string
@@ -36,6 +37,7 @@ func Load() (Config, error) {
 		KbGRPCAddr:         strings.TrimSpace(os.Getenv("ACADEMY_KB_GRPC_ADDR")),
 		CompanyGRPCAddr:    strings.TrimSpace(os.Getenv("ACADEMY_COMPANY_GRPC_ADDR")),
 		FilesGRPCAddr:      strings.TrimSpace(os.Getenv("ACADEMY_FILES_GRPC_ADDR")),
+		FilesServiceToken:  strings.TrimSpace(os.Getenv("ACADEMY_FILES_SERVICE_TOKEN")),
 		ExternalSecret:     strings.TrimSpace(os.Getenv("ACADEMY_EXTERNAL_TOKEN_SECRET")),
 		ExternalEmailKeyID: envOr("ACADEMY_EXTERNAL_EMAIL_KEY_ID", "v1"),
 		JWTPublicKey:       strings.TrimSpace(os.Getenv("ACADEMY_JWT_PUBLIC_KEY")),
@@ -68,6 +70,9 @@ func Load() (Config, error) {
 	}
 	if config.FilesGRPCAddr == "" {
 		missing = append(missing, "ACADEMY_FILES_GRPC_ADDR")
+	}
+	if len(config.FilesServiceToken) < 32 {
+		missing = append(missing, "ACADEMY_FILES_SERVICE_TOKEN (минимум 32 символа)")
 	}
 	if len(config.ExternalSecret) < 32 {
 		missing = append(missing, "ACADEMY_EXTERNAL_TOKEN_SECRET (минимум 32 символа)")

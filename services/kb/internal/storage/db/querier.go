@@ -18,12 +18,12 @@ type Querier interface {
 	CreateArticle(ctx context.Context, arg CreateArticleParams) (CreateArticleRow, error)
 	CreateArticlePartnerAccessGrants(ctx context.Context, arg CreateArticlePartnerAccessGrantsParams) ([]ArticlePartnerAccessGrant, error)
 	CreateArticleSnapshotReuseGrant(ctx context.Context, arg CreateArticleSnapshotReuseGrantParams) (ArticleSnapshotReuseGrant, error)
-	CreateArticleVersion(ctx context.Context, arg CreateArticleVersionParams) (ArticleVersion, error)
+	CreateArticleVersion(ctx context.Context, arg CreateArticleVersionParams) error
 	CreateOutboxEvent(ctx context.Context, arg CreateOutboxEventParams) (Outbox, error)
 	CreateSection(ctx context.Context, arg CreateSectionParams) (Section, error)
 	DeleteArticle(ctx context.Context, arg DeleteArticleParams) (int64, error)
 	DeleteArticlePartnerAccessGrants(ctx context.Context, arg DeleteArticlePartnerAccessGrantsParams) (int64, error)
-	DeleteSection(ctx context.Context, arg DeleteSectionParams) error
+	DeleteSection(ctx context.Context, arg DeleteSectionParams) (int64, error)
 	EnsureCurrentArticleVersion(ctx context.Context, arg EnsureCurrentArticleVersionParams) error
 	GetArticle(ctx context.Context, arg GetArticleParams) (GetArticleRow, error)
 	GetArticleForUpdate(ctx context.Context, arg GetArticleForUpdateParams) (GetArticleForUpdateRow, error)

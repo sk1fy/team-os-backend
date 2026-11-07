@@ -3,6 +3,7 @@ package clients
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 	filesv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/files/v1"
@@ -11,10 +12,13 @@ import (
 )
 
 type Files struct {
-	client filesv1.FilesServiceClient
+	client       filesv1.FilesServiceClient
+	serviceToken string
 }
 
-func NewFiles(client filesv1.FilesServiceClient) *Files { return &Files{client: client} }
+func NewFiles(client filesv1.FilesServiceClient, serviceToken string) *Files {
+	return &Files{client: client, serviceToken: serviceToken}
+}
 
 var _ application.FilesClient = (*Files)(nil)
 
@@ -26,6 +30,11 @@ func (f *Files) CloneFilesForOwner(
 	targetOwnerID uuid.UUID,
 	sourceFileIDs []uuid.UUID,
 ) (application.FileCloneResult, error) {
+	if f.serviceToken == "" {
+		return application.FileCloneResult{}, fmt.Errorf("служебный доступ Academy к Files не настроен")
+	}
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
 	var ownerType filesv1.FileOwnerType
 	switch targetOwnerType {
 	case "course_version":
@@ -41,6 +50,7 @@ func (f *Files) CloneFilesForOwner(
 	}
 	callContext := metadata.AppendToOutgoingContext(
 		ctx,
+		"x-academy-service-token", f.serviceToken,
 		"x-company-id", companyID.String(),
 		"x-user-id", userID.String(),
 		"x-user-role", role,

@@ -27,6 +27,45 @@ func TestLimiterRejectsExcessAuthRequests(t *testing.T) {
 	}
 }
 
+func TestSessionTrafficDoesNotConsumeLoginBudget(t *testing.T) {
+	limiter := New(1, time.Minute)
+	handler := limiter.Middleware(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	}))
+	for _, path := range []string{"/api/v1/auth/me", "/api/v1/auth/me", "/api/v1/auth/refresh", "/api/v1/auth/refresh", "/api/v2/auth/login"} {
+		response := httptest.NewRecorder()
+		request := httptest.NewRequestWithContext(context.Background(), http.MethodPost, path, nil)
+		request.RemoteAddr = "192.0.2.90:1234"
+		if path == "/api/v1/auth/me" {
+			request.Method = http.MethodGet
+		}
+		handler.ServeHTTP(response, request)
+		if response.Code != http.StatusNoContent {
+			t.Fatalf("session traffic exhausted login quota at %s, status=%d", path, response.Code)
+		}
+	}
+}
+
+func TestRefreshHasSeparateBoundedBudget(t *testing.T) {
+	limiter := New(1, time.Minute)
+	handler := limiter.Middleware(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	}))
+	for i := range 601 {
+		response := httptest.NewRecorder()
+		request := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/api/v1/auth/refresh", nil)
+		request.RemoteAddr = "192.0.2.90:1234"
+		handler.ServeHTTP(response, request)
+		want := http.StatusNoContent
+		if i == 600 {
+			want = http.StatusTooManyRequests
+		}
+		if response.Code != want {
+			t.Fatalf("refresh %d status=%d want=%d", i, response.Code, want)
+		}
+	}
+}
+
 func TestLimiterUsesForwardedIPOnlyFromTrustedProxy(t *testing.T) {
 	trusted := netip.MustParsePrefix("10.0.0.0/8")
 	limiter := New(1, time.Minute, trusted)

@@ -232,6 +232,7 @@ func invitesToProto(values []application.Invite) []*companyv1.Invite {
 func authSessionToProto(value application.AuthResult) *companyv1.AuthSession {
 	return &companyv1.AuthSession{
 		AccessToken:      value.AccessToken,
+		FamilyId:         value.FamilyID.String(),
 		RefreshToken:     value.RefreshToken,
 		RefreshExpiresAt: timestamppb.New(value.RefreshExpiresAt.UTC()),
 		User:             userToProto(value.User),

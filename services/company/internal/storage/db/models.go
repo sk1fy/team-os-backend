@@ -523,6 +523,7 @@ type Outbox struct {
 	PublishedAt   pgtype.Timestamptz `json:"published_at"`
 	Attempts      int32              `json:"attempts"`
 	LastError     pgtype.Text        `json:"last_error"`
+	EventOrder    int64              `json:"event_order"`
 }
 
 type Position struct {
@@ -566,18 +567,30 @@ type RegistrationLoginReservation struct {
 }
 
 type Session struct {
-	ID          uuid.UUID          `json:"id"`
-	CompanyID   uuid.UUID          `json:"company_id"`
-	UserID      uuid.UUID          `json:"user_id"`
-	RefreshHash []byte             `json:"refresh_hash"`
-	ExpiresAt   time.Time          `json:"expires_at"`
-	CreatedAt   time.Time          `json:"created_at"`
-	LastUsedAt  pgtype.Timestamptz `json:"last_used_at"`
-	RevokedAt   pgtype.Timestamptz `json:"revoked_at"`
-	RotatedFrom uuid.NullUUID      `json:"rotated_from"`
-	ReplacedBy  uuid.NullUUID      `json:"replaced_by"`
-	UserAgent   pgtype.Text        `json:"user_agent"`
-	IpAddress   *netip.Addr        `json:"ip_address"`
+	ID                uuid.UUID          `json:"id"`
+	CompanyID         uuid.UUID          `json:"company_id"`
+	UserID            uuid.UUID          `json:"user_id"`
+	RefreshHash       []byte             `json:"refresh_hash"`
+	ExpiresAt         time.Time          `json:"expires_at"`
+	CreatedAt         time.Time          `json:"created_at"`
+	LastUsedAt        pgtype.Timestamptz `json:"last_used_at"`
+	RevokedAt         pgtype.Timestamptz `json:"revoked_at"`
+	RotatedFrom       uuid.NullUUID      `json:"rotated_from"`
+	ReplacedBy        uuid.NullUUID      `json:"replaced_by"`
+	UserAgent         pgtype.Text        `json:"user_agent"`
+	IpAddress         *netip.Addr        `json:"ip_address"`
+	FamilyID          uuid.NullUUID      `json:"family_id"`
+	ReplayUntil       pgtype.Timestamptz `json:"replay_until"`
+	ReplayNonce       []byte             `json:"replay_nonce"`
+	RotationNotBefore pgtype.Timestamptz `json:"rotation_not_before"`
+}
+
+type SessionFamily struct {
+	ID        uuid.UUID          `json:"id"`
+	CompanyID uuid.UUID          `json:"company_id"`
+	UserID    uuid.UUID          `json:"user_id"`
+	CreatedAt time.Time          `json:"created_at"`
+	RevokedAt pgtype.Timestamptz `json:"revoked_at"`
 }
 
 type ShiftException struct {

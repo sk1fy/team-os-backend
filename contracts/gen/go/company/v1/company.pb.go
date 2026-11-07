@@ -1616,6 +1616,7 @@ type AuthSession struct {
 	RefreshToken     string                 `protobuf:"bytes,2,opt,name=refresh_token,json=refreshToken,proto3" json:"refresh_token,omitempty"`
 	RefreshExpiresAt *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=refresh_expires_at,json=refreshExpiresAt,proto3" json:"refresh_expires_at,omitempty"`
 	User             *User                  `protobuf:"bytes,4,opt,name=user,proto3" json:"user,omitempty"`
+	FamilyId         string                 `protobuf:"bytes,5,opt,name=family_id,json=familyId,proto3" json:"family_id,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -1676,6 +1677,13 @@ func (x *AuthSession) GetUser() *User {
 		return x.User
 	}
 	return nil
+}
+
+func (x *AuthSession) GetFamilyId() string {
+	if x != nil {
+		return x.FamilyId
+	}
+	return ""
 }
 
 type RegisterRequest struct {
@@ -2621,6 +2629,7 @@ func (x *ImpersonateUserResponse) GetSession() *AuthSession {
 type RefreshRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	RefreshToken  string                 `protobuf:"bytes,1,opt,name=refresh_token,json=refreshToken,proto3" json:"refresh_token,omitempty"`
+	FamilyId      *string                `protobuf:"bytes,2,opt,name=family_id,json=familyId,proto3,oneof" json:"family_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2658,6 +2667,13 @@ func (*RefreshRequest) Descriptor() ([]byte, []int) {
 func (x *RefreshRequest) GetRefreshToken() string {
 	if x != nil {
 		return x.RefreshToken
+	}
+	return ""
+}
+
+func (x *RefreshRequest) GetFamilyId() string {
+	if x != nil && x.FamilyId != nil {
+		return *x.FamilyId
 	}
 	return ""
 }
@@ -2709,6 +2725,7 @@ func (x *RefreshResponse) GetSession() *AuthSession {
 type LogoutRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	RefreshToken  string                 `protobuf:"bytes,1,opt,name=refresh_token,json=refreshToken,proto3" json:"refresh_token,omitempty"`
+	FamilyId      *string                `protobuf:"bytes,2,opt,name=family_id,json=familyId,proto3,oneof" json:"family_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2746,6 +2763,13 @@ func (*LogoutRequest) Descriptor() ([]byte, []int) {
 func (x *LogoutRequest) GetRefreshToken() string {
 	if x != nil {
 		return x.RefreshToken
+	}
+	return ""
+}
+
+func (x *LogoutRequest) GetFamilyId() string {
+	if x != nil && x.FamilyId != nil {
+		return *x.FamilyId
 	}
 	return ""
 }
@@ -12446,12 +12470,13 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"created_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAtB\b\n" +
 	"\x06_emailB\x0e\n" +
 	"\f_position_idB\x10\n" +
-	"\x0e_department_id\"\xcc\x01\n" +
+	"\x0e_department_id\"\xe9\x01\n" +
 	"\vAuthSession\x12!\n" +
 	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12#\n" +
 	"\rrefresh_token\x18\x02 \x01(\tR\frefreshToken\x12H\n" +
 	"\x12refresh_expires_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\x10refreshExpiresAt\x12+\n" +
-	"\x04user\x18\x04 \x01(\v2\x17.teamos.company.v1.UserR\x04user\"\xc6\x02\n" +
+	"\x04user\x18\x04 \x01(\v2\x17.teamos.company.v1.UserR\x04user\x12\x1b\n" +
+	"\tfamily_id\x18\x05 \x01(\tR\bfamilyId\"\xc6\x02\n" +
 	"\x0fRegisterRequest\x12!\n" +
 	"\fcompany_name\x18\x01 \x01(\tR\vcompanyName\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x12\x1a\n" +
@@ -12515,13 +12540,19 @@ const file_proto_company_v1_company_proto_rawDesc = "" +
 	"\x16ImpersonateUserRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\"S\n" +
 	"\x17ImpersonateUserResponse\x128\n" +
-	"\asession\x18\x01 \x01(\v2\x1e.teamos.company.v1.AuthSessionR\asession\"5\n" +
+	"\asession\x18\x01 \x01(\v2\x1e.teamos.company.v1.AuthSessionR\asession\"e\n" +
 	"\x0eRefreshRequest\x12#\n" +
-	"\rrefresh_token\x18\x01 \x01(\tR\frefreshToken\"K\n" +
+	"\rrefresh_token\x18\x01 \x01(\tR\frefreshToken\x12 \n" +
+	"\tfamily_id\x18\x02 \x01(\tH\x00R\bfamilyId\x88\x01\x01B\f\n" +
+	"\n" +
+	"_family_id\"K\n" +
 	"\x0fRefreshResponse\x128\n" +
-	"\asession\x18\x01 \x01(\v2\x1e.teamos.company.v1.AuthSessionR\asession\"4\n" +
+	"\asession\x18\x01 \x01(\v2\x1e.teamos.company.v1.AuthSessionR\asession\"d\n" +
 	"\rLogoutRequest\x12#\n" +
-	"\rrefresh_token\x18\x01 \x01(\tR\frefreshToken\"\x10\n" +
+	"\rrefresh_token\x18\x01 \x01(\tR\frefreshToken\x12 \n" +
+	"\tfamily_id\x18\x02 \x01(\tH\x00R\bfamilyId\x88\x01\x01B\f\n" +
+	"\n" +
+	"_family_id\"\x10\n" +
 	"\x0eLogoutResponse\"/\n" +
 	"\x17GetInviteByTokenRequest\x12\x14\n" +
 	"\x05token\x18\x01 \x01(\tR\x05token\"M\n" +
@@ -14088,6 +14119,8 @@ func file_proto_company_v1_company_proto_init() {
 	file_proto_company_v1_company_proto_msgTypes[15].OneofWrappers = []any{}
 	file_proto_company_v1_company_proto_msgTypes[16].OneofWrappers = []any{}
 	file_proto_company_v1_company_proto_msgTypes[21].OneofWrappers = []any{}
+	file_proto_company_v1_company_proto_msgTypes[24].OneofWrappers = []any{}
+	file_proto_company_v1_company_proto_msgTypes[26].OneofWrappers = []any{}
 	file_proto_company_v1_company_proto_msgTypes[30].OneofWrappers = []any{}
 	file_proto_company_v1_company_proto_msgTypes[40].OneofWrappers = []any{}
 	file_proto_company_v1_company_proto_msgTypes[52].OneofWrappers = []any{}

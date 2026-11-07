@@ -104,7 +104,7 @@ func run(logger *slog.Logger) error {
 		return fmt.Errorf("слушать gRPC: %w", err)
 	}
 	g := grpc.NewServer(grpc.MaxRecvMsgSize((1<<20)+(64<<10)), grpc.MaxSendMsgSize(1<<20))
-	filesv1.RegisterFilesServiceServer(g, transport.New(service, verifier, c.TrustedMetadata, c.TempDir))
+	filesv1.RegisterFilesServiceServer(g, transport.New(service, verifier, c.AcademyServiceToken, c.TempDir))
 	healthServer := health.NewServer()
 	healthServer.SetServingStatus("", healthv1.HealthCheckResponse_SERVING)
 	healthv1.RegisterHealthServer(g, healthServer)

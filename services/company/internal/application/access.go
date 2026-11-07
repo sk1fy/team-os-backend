@@ -337,6 +337,9 @@ func (s *Service) LoginWithAccessLink(ctx context.Context, token string, meta Se
 }
 
 func revokeUserSessions(ctx context.Context, queries *db.Queries, userID uuid.UUID, revokedAt time.Time) error {
+	if err := queries.RevokeUserSessionFamilies(ctx, db.RevokeUserSessionFamiliesParams{UserID: userID, RevokedAt: pgTimestamp(revokedAt)}); err != nil {
+		return internal("Не удалось отозвать сессии пользователя", err)
+	}
 	if err := queries.RevokeAllUserSessions(ctx, db.RevokeAllUserSessionsParams{
 		UserID: userID, RevokedAt: pgtype.Timestamptz{Time: revokedAt, Valid: true},
 	}); err != nil {

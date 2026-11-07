@@ -12,10 +12,10 @@ import (
 	"github.com/google/uuid"
 )
 
-const createArticleVersion = `-- name: CreateArticleVersion :one
+const createArticleVersion = `-- name: CreateArticleVersion :exec
 INSERT INTO article_versions (id, company_id, article_id, version, title, content, author_id, created_at)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-RETURNING id, company_id, article_id, version, title, content, author_id, created_at
+ON CONFLICT (article_id, version) DO NOTHING
 `
 
 type CreateArticleVersionParams struct {
@@ -29,8 +29,8 @@ type CreateArticleVersionParams struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
-func (q *Queries) CreateArticleVersion(ctx context.Context, arg CreateArticleVersionParams) (ArticleVersion, error) {
-	row := q.db.QueryRow(ctx, createArticleVersion,
+func (q *Queries) CreateArticleVersion(ctx context.Context, arg CreateArticleVersionParams) error {
+	_, err := q.db.Exec(ctx, createArticleVersion,
 		arg.ID,
 		arg.CompanyID,
 		arg.ArticleID,
@@ -40,18 +40,7 @@ func (q *Queries) CreateArticleVersion(ctx context.Context, arg CreateArticleVer
 		arg.AuthorID,
 		arg.CreatedAt,
 	)
-	var i ArticleVersion
-	err := row.Scan(
-		&i.ID,
-		&i.CompanyID,
-		&i.ArticleID,
-		&i.Version,
-		&i.Title,
-		&i.Content,
-		&i.AuthorID,
-		&i.CreatedAt,
-	)
-	return i, err
+	return err
 }
 
 const getArticleVersion = `-- name: GetArticleVersion :one

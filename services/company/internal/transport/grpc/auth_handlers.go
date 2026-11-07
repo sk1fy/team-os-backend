@@ -3,6 +3,8 @@ package grpc
 import (
 	"context"
 
+	"github.com/google/uuid"
+
 	companyv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v1"
 	"github.com/sk1fy/team-os-backend/services/company/internal/application"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -111,7 +113,11 @@ func (s *Server) Refresh(ctx context.Context, request *companyv1.RefreshRequest)
 	if request == nil {
 		return nil, invalidRequest()
 	}
-	result, err := s.application.Refresh(ctx, request.RefreshToken, sessionMeta(ctx))
+	family, err := authRequestFamily(request.FamilyId)
+	if err != nil {
+		return nil, err
+	}
+	result, err := s.application.Refresh(ctx, request.RefreshToken, sessionMeta(ctx), family...)
 	if err != nil {
 		return nil, transportError(err)
 	}
@@ -122,7 +128,11 @@ func (s *Server) Logout(ctx context.Context, request *companyv1.LogoutRequest) (
 	if request == nil {
 		return nil, invalidRequest()
 	}
-	if err := s.application.Logout(ctx, request.RefreshToken); err != nil {
+	family, err := authRequestFamily(request.FamilyId)
+	if err != nil {
+		return nil, err
+	}
+	if err := s.application.Logout(ctx, request.RefreshToken, family...); err != nil {
 		return nil, transportError(err)
 	}
 	return &companyv1.LogoutResponse{}, nil
@@ -158,4 +168,15 @@ func (s *Server) AcceptInvite(ctx context.Context, request *companyv1.AcceptInvi
 		return nil, transportError(err)
 	}
 	return &companyv1.AcceptInviteResponse{Session: authSessionToProto(result)}, nil
+}
+
+func authRequestFamily(raw *string) ([]uuid.UUID, error) {
+	if raw == nil {
+		return nil, nil
+	}
+	id, err := uuid.Parse(*raw)
+	if err != nil || id == uuid.Nil {
+		return nil, invalidRequest()
+	}
+	return []uuid.UUID{id}, nil
 }

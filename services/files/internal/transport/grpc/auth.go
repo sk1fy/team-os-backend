@@ -2,6 +2,8 @@ package grpc
 
 import (
 	"context"
+	"crypto/sha256"
+	"crypto/subtle"
 	"strings"
 
 	"github.com/google/uuid"
@@ -12,8 +14,8 @@ import (
 )
 
 type actorResolver struct {
-	verifier        *sharedauth.TokenVerifier
-	trustedMetadata bool
+	verifier            *sharedauth.TokenVerifier
+	academyServiceToken string
 }
 
 type actor struct {
@@ -42,17 +44,35 @@ func (a actorResolver) actor(ctx context.Context) (actor, error) {
 		}
 		return actor{userID: userID, companyID: companyID, role: claims.Role}, nil
 	}
-	if a.trustedMetadata {
+	return actor{}, unauthenticated()
+}
+
+func (a actorResolver) cloneActor(ctx context.Context) (actor, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return actor{}, unauthenticated()
+	}
+	if len(md.Get("authorization")) != 0 {
+		return a.actor(ctx)
+	}
+	credentials := md.Get("x-academy-service-token")
+	if a.academyServiceToken != "" && len(credentials) == 1 {
+		provided, expected := sha256.Sum256([]byte(credentials[0])), sha256.Sum256([]byte(a.academyServiceToken))
+		if subtle.ConstantTimeCompare(provided[:], expected[:]) != 1 {
+			return actor{}, unauthenticated()
+		}
 		users, companies := md.Get("x-user-id"), md.Get("x-company-id")
 		if len(users) == 1 && len(companies) == 1 {
 			userID, uerr := uuid.Parse(users[0])
 			companyID, cerr := uuid.Parse(companies[0])
-			if uerr == nil && cerr == nil {
+			if uerr == nil && cerr == nil && userID != uuid.Nil && companyID != uuid.Nil {
 				role := ""
 				if roles := md.Get("x-user-role"); len(roles) == 1 {
 					role = roles[0]
 				}
-				return actor{userID: userID, companyID: companyID, role: role}, nil
+				if role == "admin" || role == "partner" {
+					return actor{userID: userID, companyID: companyID, role: role}, nil
+				}
 			}
 		}
 	}
