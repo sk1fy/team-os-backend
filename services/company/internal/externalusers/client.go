@@ -94,9 +94,15 @@ func (c *Client) FetchAll(ctx context.Context, amoAccountID string) ([]applicati
 		return nil, fmt.Errorf("внешний API вернул статус %d", response.StatusCode)
 	}
 
+	data, err := io.ReadAll(io.LimitReader(response.Body, maxResponseBytes+1))
+	if err != nil {
+		return nil, fmt.Errorf("прочитать ответ со списком сотрудников: %w", err)
+	}
+	if len(data) > maxResponseBytes {
+		return nil, errors.New("ответ со списком сотрудников превышает допустимый размер")
+	}
 	var envelope apiResponse
-	decoder := json.NewDecoder(io.LimitReader(response.Body, maxResponseBytes))
-	if err = decoder.Decode(&envelope); err != nil {
+	if err = json.Unmarshal(data, &envelope); err != nil {
 		return nil, fmt.Errorf("прочитать ответ со списком сотрудников: %w", err)
 	}
 	if !envelope.Result {
