@@ -65,7 +65,7 @@ func TestAmoCompanyEntryServiceAuthentication(t *testing.T) {
 				t.Fatalf("unauthorized boundary status %d calls %d", response.Code, server.calls.Load()-before)
 			}
 		}
-		duplicate := httptest.NewRequest(http.MethodPost, path, strings.NewReader(body))
+		duplicate := httptest.NewRequestWithContext(t.Context(), http.MethodPost, path, strings.NewReader(body))
 		duplicate.Header.Add("Authorization", "Service "+testProvisioningServiceToken)
 		duplicate.Header.Add("Authorization", "Service wrong")
 		denied := httptest.NewRecorder()
