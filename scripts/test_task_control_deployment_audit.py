@@ -76,6 +76,18 @@ class DeploymentAuditTest(unittest.TestCase):
         self.candidate["imagesComplete"] = False
         self.assertFalse(self.compare()["artifactMatch"])
 
+    def test_company_entry_destinations_must_match_and_be_real_origins(self):
+        entry = {"coreOrigin": "https://core.example.com", "frontendOrigin": "https://teamos.example.com"}
+        with zipfile.ZipFile(self.archive, "a") as package:
+            package.writestr("lib/company-entry-deployment.js", 'define([], function () { return ' + json.dumps(entry) + '; });\n')
+        self.candidate["archives"]["managed"]["sha256"] = hashlib.sha256(self.archive.read_bytes()).hexdigest()
+        self.candidate["publicConfiguration"]["companyEntryFrontendOrigin"] = entry["frontendOrigin"]
+        self.assertTrue(self.compare()["artifactMatch"])
+        self.candidate["publicConfiguration"]["companyEntryFrontendOrigin"] = "https://other.example.com"
+        self.assertFalse(self.compare()["artifactMatch"])
+        self.candidate["publicConfiguration"]["companyEntryFrontendOrigin"] = "https://teamos.example.invalid"
+        self.assertIn("companyEntryFrontendOrigin: нет пригодного HTTPS origin", self.compare()["errors"])
+
 
 if __name__ == "__main__":
     unittest.main()

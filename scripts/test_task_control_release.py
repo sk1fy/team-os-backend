@@ -6,6 +6,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 import unittest
+import zipfile
 
 
 class ReleaseTest(unittest.TestCase):
@@ -27,6 +28,7 @@ import json, os, zipfile
 with zipfile.ZipFile(os.environ['TASK_CONTROL_OUTPUT'], 'w') as z:
     z.writestr(zipfile.ZipInfo('manifest.json'), open('manifest.json').read())
     z.writestr(zipfile.ZipInfo('lib/deployment.js'), 'define([], function () { return ' + json.dumps({k:os.environ.get(v,'') for k,v in [('coreOrigin','TASK_CONTROL_CORE_ORIGIN'),('backendOrigin','TASK_CONTROL_BACKEND_ORIGIN')]}) + '; });')
+    z.writestr(zipfile.ZipInfo('lib/company-entry-deployment.js'), 'define([], function () { return ' + json.dumps({'coreOrigin':os.environ['COMPANY_ENTRY_CORE_ORIGIN'],'frontendOrigin':os.environ['COMPANY_ENTRY_FRONTEND_ORIGIN']}) + '; });')
 PY
 ''')
             for repo in [backend, core, widgets]:
@@ -65,7 +67,7 @@ else:
                     (widget / "manifest.json").write_text(json.dumps({"widget": {"version": version}}))
                     subprocess.run(["git", "-c", "user.name=Test", "-c", "user.email=test@example.invalid", "commit", "-qam", "managed-only package"], cwd=widgets, check=True, capture_output=True)
                 output = root / f"candidate-{index}"
-                subprocess.run(["python3", str(builder), "--core", str(core), "--widgets", str(widgets), "--output", str(output), "--build-images"], env=env, check=True, capture_output=True)
+                subprocess.run(["python3", str(builder), "--core", str(core), "--widgets", str(widgets), "--output", str(output), "--company-entry-frontend-origin", "https://teamos.example.com", "--build-images"], env=env, check=True, capture_output=True)
                 candidate = json.loads((output / "candidate.json").read_text())
                 self.assertEqual(candidate["runtimeVersion"], version)
                 expected_modes = {"managed"} if index else {"standalone", "managed"}
@@ -74,6 +76,11 @@ else:
                 self.assertEqual((candidate["schema"]["core"], candidate["schema"]["company"]), expected_schemas)
                 self.assertTrue(candidate["imagesComplete"])
                 self.assertFalse(candidate["releaseApproved"])
+                self.assertEqual(candidate["publicConfiguration"]["companyEntryFrontendOrigin"], "https://teamos.example.com")
+                with zipfile.ZipFile(candidate["archives"]["managed"]["path"]) as bundle:
+                    deployment = bundle.read("lib/company-entry-deployment.js").decode()
+                    self.assertIn(candidate["publicConfiguration"]["coreOrigin"], deployment)
+                    self.assertIn(candidate["publicConfiguration"]["companyEntryFrontendOrigin"], deployment)
                 self.assertEqual(len(candidate["images"]), 8)
                 for image in candidate["images"].values():
                     data = Path(image["archive"]["path"]).read_bytes()
