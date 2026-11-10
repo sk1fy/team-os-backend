@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run the registration/access acceptance matrix without contacting deployed services."""
+"""Run registration, access and employee-import acceptance using isolated fixtures."""
 import argparse
 from collections import deque
 import json
@@ -9,6 +9,12 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
+SOURCE_TESTS = (
+    "TestClientFetchAll",
+    "TestClientFetchAllRejectsBusinessErrorAndMissingData",
+    "TestClientFetchAllResponseBoundary",
+    "TestClientFetchAllCancellationAndReadFailure",
+)
 INTEGRATION_TESTS = (
     "TestAccountAccessRegistrationRejectionsAreAtomic",
     "TestAccountAccessRegistrationTokenHasOneWinner",
@@ -21,6 +27,11 @@ INTEGRATION_TESTS = (
     "TestEmployeeSectionsAndLifecycle",
     "TestLoginPasswordQueueDoesNotHoldDatabaseAndRechecksAccess",
     "TestBrowserEntryCannotCreateCompanyOrPromoteEmployee",
+    "TestAmoImportHTTPToPostgres",
+    "TestAmoImportHTTPFailuresPreservePostgres",
+    "TestAmoImportCreatesDepartmentsAndAssignsEmployees",
+    "TestAmoImportAllowsSameEmployeeInDifferentCompanies",
+    "TestTaskControlSharedMappingPreservesAccountProvenance",
 )
 
 
@@ -74,6 +85,8 @@ def main():
     if args.log_dir:
         args.log_dir.mkdir(parents=True, exist_ok=True)
     jobs = []
+    source_selection = "^(" + "|".join(SOURCE_TESTS) + ")$"
+    jobs.append(("employee-source", "services/company", ["./internal/externalusers", "-run", source_selection], SOURCE_TESTS))
     if not args.integration_only:
         jobs.extend([
             ("gateway", "services/gateway", ["./internal/transport", "./internal/authmw", "./internal/config"], ["TestGatewayLoginBridgesJSONToGRPCAndSetsRefreshCookie", "TestGatewayRefreshReadsAndRotatesCookie", "TestBrowserEntryDeniedBeforeReadingIdentityOrCallingCompany", "TestProvisioningCannotTrustBrowserWithoutServiceCredential"]),
