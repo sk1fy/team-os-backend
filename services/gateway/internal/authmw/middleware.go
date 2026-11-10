@@ -90,6 +90,8 @@ func isPublic(method, path string) bool {
 		// external-session cookie inside the Academy service, never with the
 		// internal TeamOS JWT.
 		return true
+	case method == http.MethodPost && path == "/api/v1/auth/amocrm/entry-exchange":
+		return true
 	case method == http.MethodPost && path == "/api/v1/auth/login":
 		return true
 	case method == http.MethodPost && path == "/api/v2/auth/login":
@@ -150,7 +152,9 @@ func isProvisioning(method, path string) bool {
 	return (method == http.MethodPost &&
 		(path == "/api/v1/provisioning/companies" || path == "/api/v1/provisioning/sessions" ||
 			path == "/api/v1/provisioning/amocrm/registration-tokens" ||
-			path == "/api/v1/provisioning/amocrm/admin-sessions")) ||
+			path == "/api/v1/provisioning/amocrm/admin-sessions" ||
+			path == "/api/v1/provisioning/amocrm/company-status" ||
+			path == "/api/v1/provisioning/amocrm/widget-entries")) ||
 		(method == http.MethodGet && path == "/api/v1/provisioning/companies/status")
 }
 

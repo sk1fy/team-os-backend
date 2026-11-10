@@ -10,63 +10,68 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode"
 )
 
 type Config struct {
-	ActivityCoreURL          string
-	ActivityManagementToken  string
-	ActivityBindings         string
-	TaskControlCoreURL       string
-	TaskControlKeyID         string
-	TaskControlSecret        string
-	TaskControlAssertionKeys map[string]string
-	DistributionCoreURL      string
-	DistributionKeyID        string
-	DistributionKeys         map[string]string
-	HTTPAddr                 string
-	GRPCAddr                 string
-	DatabaseURL              string
-	NATSURL                  string
-	JWTPrivateKey            string
-	GatewayServiceToken      string
-	TasksServiceToken        string
-	JWTIssuer                string
-	JWTAudience              string
-	AccessTTL                time.Duration
-	ShutdownTimeout          time.Duration
-	ExternalAPIURL           string
-	AmoAppName               string
-	AmoImportEnabled         bool
-	ExternalTimeout          time.Duration
-	AmoSyncInterval          time.Duration
-	RegistrationTokenTTL     time.Duration
-	AmoWidgetSessionTTL      time.Duration
+	CompanyEntrySubjectCheckURL string
+	CompanyEntrySubjectCheckKey string
+	ActivityCoreURL             string
+	ActivityManagementToken     string
+	ActivityBindings            string
+	TaskControlCoreURL          string
+	TaskControlKeyID            string
+	TaskControlSecret           string
+	TaskControlAssertionKeys    map[string]string
+	DistributionCoreURL         string
+	DistributionKeyID           string
+	DistributionKeys            map[string]string
+	HTTPAddr                    string
+	GRPCAddr                    string
+	DatabaseURL                 string
+	NATSURL                     string
+	JWTPrivateKey               string
+	GatewayServiceToken         string
+	TasksServiceToken           string
+	JWTIssuer                   string
+	JWTAudience                 string
+	AccessTTL                   time.Duration
+	ShutdownTimeout             time.Duration
+	ExternalAPIURL              string
+	AmoAppName                  string
+	AmoImportEnabled            bool
+	ExternalTimeout             time.Duration
+	AmoSyncInterval             time.Duration
+	RegistrationTokenTTL        time.Duration
+	AmoWidgetSessionTTL         time.Duration
 }
 
 func Load() (Config, error) {
 	var err error
 	config := Config{
-		ActivityCoreURL:         strings.TrimSpace(os.Getenv("COMPANY_ACTIVITY_CORE_URL")),
-		ActivityManagementToken: os.Getenv("COMPANY_ACTIVITY_MANAGEMENT_TOKEN"),
-		ActivityBindings:        os.Getenv("COMPANY_ACTIVITY_BINDINGS"),
-		HTTPAddr:                envOr("COMPANY_HTTP_ADDR", ":8081"),
-		GRPCAddr:                envOr("COMPANY_GRPC_ADDR", ":9081"),
-		DatabaseURL:             strings.TrimSpace(os.Getenv("COMPANY_DB_URL")),
-		NATSURL:                 envOr("COMPANY_NATS_URL", "nats://localhost:4222"),
-		JWTPrivateKey:           strings.TrimSpace(os.Getenv("COMPANY_JWT_PRIVATE_KEY")),
-		GatewayServiceToken:     strings.TrimSpace(os.Getenv("COMPANY_GATEWAY_SERVICE_TOKEN")),
-		JWTIssuer:               envOr("COMPANY_JWT_ISSUER", "teamos-company"),
-		JWTAudience:             envOr("COMPANY_JWT_AUDIENCE", "teamos-api"),
-		AccessTTL:               15 * time.Minute,
-		ShutdownTimeout:         30 * time.Second,
-		ExternalAPIURL:          envOr("EXTERNAL_API_URL", "https://ssd.rkrs.ru/api/v1/rkrs_activity/getEmployee"),
-		AmoAppName:              envOr("APP_NAME", "rkrs_activity"),
-		AmoImportEnabled:        false,
-		ExternalTimeout:         10 * time.Second,
-		AmoSyncInterval:         5 * time.Minute,
-		RegistrationTokenTTL:    time.Hour,
-		AmoWidgetSessionTTL:     10 * time.Minute,
-		TasksServiceToken:       strings.TrimSpace(os.Getenv("COMPANY_TASKS_SERVICE_TOKEN")),
+		CompanyEntrySubjectCheckURL: strings.TrimSpace(os.Getenv("COMPANY_ENTRY_SUBJECT_CHECK_URL")),
+		CompanyEntrySubjectCheckKey: os.Getenv("COMPANY_ENTRY_SUBJECT_CHECK_KEY"),
+		ActivityCoreURL:             strings.TrimSpace(os.Getenv("COMPANY_ACTIVITY_CORE_URL")),
+		ActivityManagementToken:     os.Getenv("COMPANY_ACTIVITY_MANAGEMENT_TOKEN"),
+		ActivityBindings:            os.Getenv("COMPANY_ACTIVITY_BINDINGS"),
+		HTTPAddr:                    envOr("COMPANY_HTTP_ADDR", ":8081"),
+		GRPCAddr:                    envOr("COMPANY_GRPC_ADDR", ":9081"),
+		DatabaseURL:                 strings.TrimSpace(os.Getenv("COMPANY_DB_URL")),
+		NATSURL:                     envOr("COMPANY_NATS_URL", "nats://localhost:4222"),
+		JWTPrivateKey:               strings.TrimSpace(os.Getenv("COMPANY_JWT_PRIVATE_KEY")),
+		GatewayServiceToken:         strings.TrimSpace(os.Getenv("COMPANY_GATEWAY_SERVICE_TOKEN")),
+		JWTIssuer:                   envOr("COMPANY_JWT_ISSUER", "teamos-company"),
+		JWTAudience:                 envOr("COMPANY_JWT_AUDIENCE", "teamos-api"),
+		AccessTTL:                   15 * time.Minute,
+		ShutdownTimeout:             30 * time.Second,
+		ExternalAPIURL:              envOr("EXTERNAL_API_URL", "https://ssd.rkrs.ru/api/v1/rkrs_activity/getEmployee"),
+		AmoAppName:                  envOr("APP_NAME", "rkrs_activity"),
+		AmoImportEnabled:            false,
+		ExternalTimeout:             10 * time.Second,
+		AmoSyncInterval:             5 * time.Minute,
+		RegistrationTokenTTL:        time.Hour,
+		AmoWidgetSessionTTL:         10 * time.Minute,
+		TasksServiceToken:           strings.TrimSpace(os.Getenv("COMPANY_TASKS_SERVICE_TOKEN")),
 	}
 	if value := strings.TrimSpace(os.Getenv("COMPANY_AMO_IMPORT_ENABLED")); value != "" {
 		config.AmoImportEnabled, err = strconv.ParseBool(value)
@@ -146,6 +151,12 @@ func Load() (Config, error) {
 		u, e := url.Parse(config.DistributionCoreURL)
 		if e != nil || u.Scheme != "https" || u.Host == "" || u.User != nil || u.RawQuery != "" || u.Fragment != "" || len(config.DistributionKeys[config.DistributionKeyID]) < 32 {
 			return Config{}, errors.New("COMPANY_DISTRIBUTION_CORE_URL/KEY_ID: требуется HTTPS и настроенный серверный ключ")
+		}
+	}
+	if config.CompanyEntrySubjectCheckURL != "" || config.CompanyEntrySubjectCheckKey != "" {
+		u, e := url.Parse(config.CompanyEntrySubjectCheckURL)
+		if e != nil || u.Scheme != "https" || u.Host == "" || u.User != nil || u.RawQuery != "" || u.Fragment != "" || u.Path != "/internal/v1/company-entry/subject-check" || len(config.CompanyEntrySubjectCheckKey) < 32 || strings.IndexFunc(config.CompanyEntrySubjectCheckKey, unicode.IsSpace) >= 0 || config.CompanyEntrySubjectCheckKey == config.GatewayServiceToken || config.CompanyEntrySubjectCheckKey == os.Getenv("GATEWAY_PROVISIONING_SERVICE_TOKEN") {
+			return Config{}, errors.New("COMPANY_ENTRY_SUBJECT_CHECK_URL/KEY: требуется HTTPS URL проверки и отдельный серверный ключ не короче 32 символов")
 		}
 	}
 	missing := make([]string, 0, 2)

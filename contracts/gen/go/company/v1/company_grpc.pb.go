@@ -32,6 +32,9 @@ const (
 	CompanyService_GetDistributionEmployeeMappings_FullMethodName       = "/teamos.company.v1.CompanyService/GetDistributionEmployeeMappings"
 	CompanyService_SetDistributionEmployeeMapping_FullMethodName        = "/teamos.company.v1.CompanyService/SetDistributionEmployeeMapping"
 	CompanyService_CheckDistributionLeadPermission_FullMethodName       = "/teamos.company.v1.CompanyService/CheckDistributionLeadPermission"
+	CompanyService_GetAmoEntryCompanyStatus_FullMethodName              = "/teamos.company.v1.CompanyService/GetAmoEntryCompanyStatus"
+	CompanyService_ProvisionAmoWidgetEntry_FullMethodName               = "/teamos.company.v1.CompanyService/ProvisionAmoWidgetEntry"
+	CompanyService_ExchangeAmoCompanyEntry_FullMethodName               = "/teamos.company.v1.CompanyService/ExchangeAmoCompanyEntry"
 	CompanyService_Register_FullMethodName                              = "/teamos.company.v1.CompanyService/Register"
 	CompanyService_ReserveRegistrationLogin_FullMethodName              = "/teamos.company.v1.CompanyService/ReserveRegistrationLogin"
 	CompanyService_CheckAmoAccount_FullMethodName                       = "/teamos.company.v1.CompanyService/CheckAmoAccount"
@@ -130,6 +133,9 @@ type CompanyServiceClient interface {
 	GetDistributionEmployeeMappings(ctx context.Context, in *GetDistributionEmployeeMappingsRequest, opts ...grpc.CallOption) (*GetDistributionEmployeeMappingsResponse, error)
 	SetDistributionEmployeeMapping(ctx context.Context, in *SetDistributionEmployeeMappingRequest, opts ...grpc.CallOption) (*SetDistributionEmployeeMappingResponse, error)
 	CheckDistributionLeadPermission(ctx context.Context, in *CheckDistributionLeadPermissionRequest, opts ...grpc.CallOption) (*CheckDistributionLeadPermissionResponse, error)
+	GetAmoEntryCompanyStatus(ctx context.Context, in *GetAmoEntryCompanyStatusRequest, opts ...grpc.CallOption) (*GetAmoEntryCompanyStatusResponse, error)
+	ProvisionAmoWidgetEntry(ctx context.Context, in *ProvisionAmoWidgetEntryRequest, opts ...grpc.CallOption) (*ProvisionAmoWidgetEntryResponse, error)
+	ExchangeAmoCompanyEntry(ctx context.Context, in *ExchangeAmoCompanyEntryRequest, opts ...grpc.CallOption) (*ExchangeAmoCompanyEntryResponse, error)
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
 	ReserveRegistrationLogin(ctx context.Context, in *ReserveRegistrationLoginRequest, opts ...grpc.CallOption) (*ReserveRegistrationLoginResponse, error)
 	CheckAmoAccount(ctx context.Context, in *CheckAmoAccountRequest, opts ...grpc.CallOption) (*CheckAmoAccountResponse, error)
@@ -339,6 +345,36 @@ func (c *companyServiceClient) CheckDistributionLeadPermission(ctx context.Conte
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CheckDistributionLeadPermissionResponse)
 	err := c.cc.Invoke(ctx, CompanyService_CheckDistributionLeadPermission_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) GetAmoEntryCompanyStatus(ctx context.Context, in *GetAmoEntryCompanyStatusRequest, opts ...grpc.CallOption) (*GetAmoEntryCompanyStatusResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetAmoEntryCompanyStatusResponse)
+	err := c.cc.Invoke(ctx, CompanyService_GetAmoEntryCompanyStatus_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) ProvisionAmoWidgetEntry(ctx context.Context, in *ProvisionAmoWidgetEntryRequest, opts ...grpc.CallOption) (*ProvisionAmoWidgetEntryResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ProvisionAmoWidgetEntryResponse)
+	err := c.cc.Invoke(ctx, CompanyService_ProvisionAmoWidgetEntry_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *companyServiceClient) ExchangeAmoCompanyEntry(ctx context.Context, in *ExchangeAmoCompanyEntryRequest, opts ...grpc.CallOption) (*ExchangeAmoCompanyEntryResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ExchangeAmoCompanyEntryResponse)
+	err := c.cc.Invoke(ctx, CompanyService_ExchangeAmoCompanyEntry_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1116,6 +1152,9 @@ type CompanyServiceServer interface {
 	GetDistributionEmployeeMappings(context.Context, *GetDistributionEmployeeMappingsRequest) (*GetDistributionEmployeeMappingsResponse, error)
 	SetDistributionEmployeeMapping(context.Context, *SetDistributionEmployeeMappingRequest) (*SetDistributionEmployeeMappingResponse, error)
 	CheckDistributionLeadPermission(context.Context, *CheckDistributionLeadPermissionRequest) (*CheckDistributionLeadPermissionResponse, error)
+	GetAmoEntryCompanyStatus(context.Context, *GetAmoEntryCompanyStatusRequest) (*GetAmoEntryCompanyStatusResponse, error)
+	ProvisionAmoWidgetEntry(context.Context, *ProvisionAmoWidgetEntryRequest) (*ProvisionAmoWidgetEntryResponse, error)
+	ExchangeAmoCompanyEntry(context.Context, *ExchangeAmoCompanyEntryRequest) (*ExchangeAmoCompanyEntryResponse, error)
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
 	ReserveRegistrationLogin(context.Context, *ReserveRegistrationLoginRequest) (*ReserveRegistrationLoginResponse, error)
 	CheckAmoAccount(context.Context, *CheckAmoAccountRequest) (*CheckAmoAccountResponse, error)
@@ -1239,6 +1278,15 @@ func (UnimplementedCompanyServiceServer) SetDistributionEmployeeMapping(context.
 }
 func (UnimplementedCompanyServiceServer) CheckDistributionLeadPermission(context.Context, *CheckDistributionLeadPermissionRequest) (*CheckDistributionLeadPermissionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CheckDistributionLeadPermission not implemented")
+}
+func (UnimplementedCompanyServiceServer) GetAmoEntryCompanyStatus(context.Context, *GetAmoEntryCompanyStatusRequest) (*GetAmoEntryCompanyStatusResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAmoEntryCompanyStatus not implemented")
+}
+func (UnimplementedCompanyServiceServer) ProvisionAmoWidgetEntry(context.Context, *ProvisionAmoWidgetEntryRequest) (*ProvisionAmoWidgetEntryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProvisionAmoWidgetEntry not implemented")
+}
+func (UnimplementedCompanyServiceServer) ExchangeAmoCompanyEntry(context.Context, *ExchangeAmoCompanyEntryRequest) (*ExchangeAmoCompanyEntryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExchangeAmoCompanyEntry not implemented")
 }
 func (UnimplementedCompanyServiceServer) Register(context.Context, *RegisterRequest) (*RegisterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
@@ -1716,6 +1764,60 @@ func _CompanyService_CheckDistributionLeadPermission_Handler(srv interface{}, ct
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CompanyServiceServer).CheckDistributionLeadPermission(ctx, req.(*CheckDistributionLeadPermissionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_GetAmoEntryCompanyStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAmoEntryCompanyStatusRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).GetAmoEntryCompanyStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_GetAmoEntryCompanyStatus_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).GetAmoEntryCompanyStatus(ctx, req.(*GetAmoEntryCompanyStatusRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_ProvisionAmoWidgetEntry_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ProvisionAmoWidgetEntryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).ProvisionAmoWidgetEntry(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_ProvisionAmoWidgetEntry_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).ProvisionAmoWidgetEntry(ctx, req.(*ProvisionAmoWidgetEntryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompanyService_ExchangeAmoCompanyEntry_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExchangeAmoCompanyEntryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).ExchangeAmoCompanyEntry(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompanyService_ExchangeAmoCompanyEntry_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).ExchangeAmoCompanyEntry(ctx, req.(*ExchangeAmoCompanyEntryRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -3128,6 +3230,18 @@ var CompanyService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CheckDistributionLeadPermission",
 			Handler:    _CompanyService_CheckDistributionLeadPermission_Handler,
+		},
+		{
+			MethodName: "GetAmoEntryCompanyStatus",
+			Handler:    _CompanyService_GetAmoEntryCompanyStatus_Handler,
+		},
+		{
+			MethodName: "ProvisionAmoWidgetEntry",
+			Handler:    _CompanyService_ProvisionAmoWidgetEntry_Handler,
+		},
+		{
+			MethodName: "ExchangeAmoCompanyEntry",
+			Handler:    _CompanyService_ExchangeAmoCompanyEntry_Handler,
 		},
 		{
 			MethodName: "Register",

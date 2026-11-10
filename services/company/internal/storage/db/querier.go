@@ -48,6 +48,7 @@ type Querier interface {
 	CompleteDistributionWidgetRequest(ctx context.Context, arg CompleteDistributionWidgetRequestParams) (int64, error)
 	CompleteTaskControlReferenceRefresh(ctx context.Context, arg CompleteTaskControlReferenceRefreshParams) error
 	ConsumeAccessLinkEntryContext(ctx context.Context, arg ConsumeAccessLinkEntryContextParams) (pgtype.Text, error)
+	ConsumeAmoCompanyEntry(ctx context.Context, arg ConsumeAmoCompanyEntryParams) (int64, error)
 	ConsumeAmoWidgetContinuation(ctx context.Context, arg ConsumeAmoWidgetContinuationParams) (SsoToken, error)
 	ConsumeCompanyRegistrationToken(ctx context.Context, arg ConsumeCompanyRegistrationTokenParams) (CompanyRegistrationToken, error)
 	ConsumeDistributionAvailabilityWake(ctx context.Context) (int64, error)
@@ -58,6 +59,7 @@ type Querier interface {
 	CountTaskControlRuntimeEvents(ctx context.Context, arg CountTaskControlRuntimeEventsParams) (int64, error)
 	CountTaskControlRuntimeInstances(ctx context.Context, arg CountTaskControlRuntimeInstancesParams) (int64, error)
 	CountTaskControlRuntimeSessions(ctx context.Context, arg CountTaskControlRuntimeSessionsParams) (int64, error)
+	CreateAmoCompanyEntry(ctx context.Context, arg CreateAmoCompanyEntryParams) (AmoCompanyEntry, error)
 	CreateAmoUser(ctx context.Context, arg CreateAmoUserParams) (User, error)
 	CreateAmoWidgetContinuation(ctx context.Context, arg CreateAmoWidgetContinuationParams) (SsoToken, error)
 	CreateAmoWidgetIdentity(ctx context.Context, arg CreateAmoWidgetIdentityParams) (UserExternalIdentity, error)
@@ -123,12 +125,16 @@ type Querier interface {
 	EnsureTaskControlDraft(ctx context.Context, arg EnsureTaskControlDraftParams) error
 	EnsureTaskControlV2ReferenceRevision(ctx context.Context, companyID uuid.UUID) error
 	ExpireUndispatchedDistributionQueue(ctx context.Context) (int64, error)
+	FindAmoEntryLegacyUserForUpdate(ctx context.Context, arg FindAmoEntryLegacyUserForUpdateParams) (User, error)
 	FindAmoWidgetUserForUpdate(ctx context.Context, arg FindAmoWidgetUserForUpdateParams) (User, error)
 	FindUserForAmoSync(ctx context.Context, arg FindUserForAmoSyncParams) (User, error)
 	FinishDistributionDelivery(ctx context.Context, arg FinishDistributionDeliveryParams) error
 	FinishDistributionObservation(ctx context.Context, arg FinishDistributionObservationParams) error
 	GetAccessLink(ctx context.Context, arg GetAccessLinkParams) (AccessLink, error)
 	GetActiveCompanyRegistrationTokenForAccount(ctx context.Context, arg GetActiveCompanyRegistrationTokenForAccountParams) (CompanyRegistrationToken, error)
+	GetAmoCompanyEntry(ctx context.Context, tokenHash []byte) (AmoCompanyEntry, error)
+	GetAmoCompanyEntryForUpdate(ctx context.Context, tokenHash []byte) (GetAmoCompanyEntryForUpdateRow, error)
+	GetAmoEntryCompanyStatus(ctx context.Context, accountID pgtype.Text) ([]GetAmoEntryCompanyStatusRow, error)
 	GetAmoWidgetContinuation(ctx context.Context, tokenHash []byte) (GetAmoWidgetContinuationRow, error)
 	GetAmoWidgetContinuationForUpdate(ctx context.Context, tokenHash []byte) (GetAmoWidgetContinuationForUpdateRow, error)
 	GetAmoWidgetIntegrationForUpdate(ctx context.Context, arg GetAmoWidgetIntegrationForUpdateParams) (GetAmoWidgetIntegrationForUpdateRow, error)
@@ -310,6 +316,7 @@ type Querier interface {
 	RetryDistributionQueueUI(ctx context.Context, id uuid.UUID) error
 	RevokeActiveAmoWidgetContinuations(ctx context.Context, arg RevokeActiveAmoWidgetContinuationsParams) (int64, error)
 	RevokeAllUserSessions(ctx context.Context, arg RevokeAllUserSessionsParams) error
+	RevokeAmoEntryIdentities(ctx context.Context, arg RevokeAmoEntryIdentitiesParams) error
 	RevokeCompanyRegistrationToken(ctx context.Context, arg RevokeCompanyRegistrationTokenParams) (CompanyRegistrationToken, error)
 	RevokeDistributionBinding(ctx context.Context, arg RevokeDistributionBindingParams) (DistributionBinding, error)
 	RevokeInvite(ctx context.Context, arg RevokeInviteParams) (Invite, error)
@@ -351,6 +358,7 @@ type Querier interface {
 	TaskControlReferenceDepartments(ctx context.Context, companyID uuid.UUID) ([]byte, error)
 	TaskControlReferenceEmployees(ctx context.Context, arg TaskControlReferenceEmployeesParams) ([]byte, error)
 	TaskControlReferenceOrganizationCounts(ctx context.Context, companyID uuid.UUID) (TaskControlReferenceOrganizationCountsRow, error)
+	TouchActiveAmoEntryIdentity(ctx context.Context, arg TouchActiveAmoEntryIdentityParams) (UserExternalIdentity, error)
 	UpdateAmoUserGroup(ctx context.Context, arg UpdateAmoUserGroupParams) (int64, error)
 	UpdateCompany(ctx context.Context, arg UpdateCompanyParams) (Company, error)
 	UpdateCurrentUser(ctx context.Context, arg UpdateCurrentUserParams) (User, error)
