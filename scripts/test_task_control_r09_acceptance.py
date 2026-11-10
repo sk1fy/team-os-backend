@@ -30,11 +30,13 @@ for index, name in enumerate(names):
     mode = os.environ['FAKE_GO_RESULT']
     if index == 0 and mode == 'missing':
         continue
-    action = 'skip' if index == 0 and mode == 'skip' else 'pass'
+    action = mode if index == 0 and mode in ('skip', 'fail') else 'pass'
+    if action == 'fail':
+        print(json.dumps({'Test':name, 'Action':'output', 'Output':'fixture failure detail'}))
     print(json.dumps({'Test':name, 'Action':action}))
 ''')
             go.chmod(0o700)
-            for result, exit_code in [("pass", 0), ("skip", 1), ("missing", 1)]:
+            for result, exit_code in [("pass", 0), ("skip", 1), ("missing", 1), ("fail", 1)]:
                 with self.subTest(result=result):
                     output = root / result
                     process = subprocess.run(["python3", str(script), "connection-backend", "--output", str(output)],
@@ -49,6 +51,8 @@ for index, name in enumerate(names):
                         self.assertNotEqual(evidence.get("result"), "passed")
                         check = evidence["checks"][0]
                         self.assertTrue(check["skippedTests"] or check["missingRequiredTests"])
+                        if result == "fail":
+                            self.assertIn("fixture failure detail", process.stderr)
 
 
 if __name__ == "__main__":
