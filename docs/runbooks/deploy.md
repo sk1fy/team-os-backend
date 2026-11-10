@@ -206,13 +206,11 @@ FILES_S3_BUCKET=teamos-files
 FILES_S3_REGION=us-east-1
 ```
 
-По умолчанию provisioning-запросы требуют
-`GATEWAY_PROVISIONING_SERVICE_TOKEN` длиной не менее 32 символов. Для временного запуска интеграции
-без внешнего credential можно явно установить
-`GATEWAY_PROVISIONING_ALLOW_UNAUTHENTICATED=true` и оставить
-`GATEWAY_PROVISIONING_SERVICE_TOKEN` пустым. В этом режиме публично доступный gateway принимает
-выпуск регистрационных токенов без `Authorization`; использовать режим только как кратковременное
-исключение и вернуть значение `false` после настройки общего секрета.
+Служебная авторизация provisioning обязательна. Прежний обход
+`GATEWAY_PROVISIONING_ALLOW_UNAUTHENTICATED=true` запрещён при запуске gateway;
+production Compose принудительно устанавливает `false`. Публичный proxy не должен
+добавлять служебный Authorization. Старые browser bootstrap/self-login отключены
+в приложении; [nginx include](../../deploy/nginx/README.md) блокирует их до upstream.
 
 `deploy/docker-compose.prod.yaml` принудительно выставляет `GATEWAY_COOKIE_SECURE=true`, поэтому
 dev-значение `false`, скопированное из `.env.example`, не может отключить secure-cookie в
