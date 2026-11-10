@@ -18,6 +18,8 @@ import (
 	tc "github.com/sk1fy/team-os-backend/services/company/internal/domain/taskcontrol"
 )
 
+const maxInstallationResponseBytes = 64 << 10
+
 type Client struct {
 	URL, KeyID, Secret string
 	HTTP               *http.Client
@@ -61,11 +63,17 @@ func (c *Client) Installation(ctx context.Context, company uuid.UUID, account st
 	if resp.StatusCode != 200 {
 		return out, errors.New("Core не подтвердил установку")
 	}
-	decoder := json.NewDecoder(io.LimitReader(resp.Body, 65537))
-	if e = decoder.Decode(&out); e != nil {
+	body, e := io.ReadAll(io.LimitReader(resp.Body, maxInstallationResponseBytes+1))
+	if e != nil {
 		return out, e
 	}
-	if decoder.Decode(new(any)) != io.EOF || !out.Valid(company, account, time.Now()) {
+	if len(body) > maxInstallationResponseBytes {
+		return out, errors.New("подтверждение установки превышает допустимый размер")
+	}
+	if e = json.Unmarshal(body, &out); e != nil {
+		return out, e
+	}
+	if !out.Valid(company, account, time.Now()) {
 		return out, errors.New("некорректное подтверждение установки")
 	}
 	return out, nil
