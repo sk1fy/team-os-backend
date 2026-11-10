@@ -71,7 +71,7 @@ func TestCompanyRegistrationTokenLifecycle(t *testing.T) {
 	}
 	service.externalUsers = staticExternalEmployees{}
 	availability, err = service.CheckAmoAccount(ctx, "rakurs", "31355990")
-	if err != nil || !availability.Exists || !availability.AdminSelfLoginEligible {
+	if err != nil || !availability.Exists || availability.AdminSelfLoginEligible {
 		t.Fatalf("active integration availability=%+v error=%v", availability, err)
 	}
 

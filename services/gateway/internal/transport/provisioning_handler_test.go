@@ -87,7 +87,8 @@ func TestCheckAmoAccountIsPublicAndForwardsConfiguredProvider(t *testing.T) {
 	}}
 	recorder := performRequest(newTestGateway(t, server), http.MethodGet, "/api/v1/public/amocrm/accounts/31355990/exists", "", nil)
 	if recorder.Code != http.StatusOK || !strings.Contains(recorder.Body.String(), `"exists":true`) ||
-		!strings.Contains(recorder.Body.String(), `"adminSelfLoginEligible":false`) {
+		!strings.Contains(recorder.Body.String(), `"adminSelfLoginEligible":false`) ||
+		strings.Contains(recorder.Body.String(), `"challengeToken"`) || strings.Contains(recorder.Body.String(), `"tokenType"`) || strings.Contains(recorder.Body.String(), `"expiresIn"`) {
 		t.Fatalf("status=%d body=%s", recorder.Code, recorder.Body.String())
 	}
 	if recorder.Header().Get("Cache-Control") != "private, no-store" {
@@ -119,25 +120,6 @@ func TestIssueCompanyRegistrationTokenRequiresServiceAuth(t *testing.T) {
 	authorized := performProvisioningRequest(handler, http.MethodPost, "/api/v1/provisioning/amocrm/registration-tokens", `{"amoAccountId":"31355990"}`, "Service "+testProvisioningServiceToken)
 	if authorized.Code != http.StatusCreated || calls.Load() != 1 || !strings.Contains(authorized.Body.String(), `"registrationToken"`) {
 		t.Fatalf("authorized status=%d calls=%d body=%s", authorized.Code, calls.Load(), authorized.Body.String())
-	}
-}
-
-func TestIssueCompanyRegistrationTokenAllowsMissingServiceAuthWhenEnabled(t *testing.T) {
-	var calls atomic.Int32
-	server := &provisioningCompanyServer{issueCompanyRegistrationTokenFn: func(_ context.Context, request *companyv1.IssueCompanyRegistrationTokenRequest) (*companyv1.IssueCompanyRegistrationTokenResponse, error) {
-		calls.Add(1)
-		if request.Provider != testProvisioningProvider || request.ExternalAccountId != "31355990" {
-			t.Fatalf("request = %#v", request)
-		}
-		return &companyv1.IssueCompanyRegistrationTokenResponse{
-			Token:     "registration-token-abcdefghijklmnopqrstuvwxyz",
-			ExpiresAt: timestamppb.New(time.Date(2026, time.August, 10, 12, 0, 0, 0, time.UTC)),
-		}, nil
-	}}
-	handler := newTestGateway(t, server, true)
-	recorder := performProvisioningRequest(handler, http.MethodPost, "/api/v1/provisioning/amocrm/registration-tokens", `{"amoAccountId":"31355990"}`, "")
-	if recorder.Code != http.StatusCreated || calls.Load() != 1 || !strings.Contains(recorder.Body.String(), `"registrationToken"`) {
-		t.Fatalf("status=%d calls=%d body=%s", recorder.Code, calls.Load(), recorder.Body.String())
 	}
 }
 

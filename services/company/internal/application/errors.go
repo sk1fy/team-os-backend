@@ -39,6 +39,7 @@ const (
 	ErrorCodeAmoSessionAccessMismatch      = "AMO_SESSION_ACCESS_ACCOUNT_MISMATCH"
 	ErrorCodeAmoSessionAccessLocked        = "AMO_SESSION_ACCESS_LOCKED"
 	ErrorCodeAmoSessionAccessForbidden     = "AMO_SESSION_ACCESS_FORBIDDEN"
+	ErrorCodeAmoBrowserEntryDisabled       = "AMO_BROWSER_ENTRY_DISABLED"
 	ErrorCodeAmoAdminAssertionInvalid      = "AMO_ADMIN_ASSERTION_INVALID"
 	ErrorCodeAmoAdminSelfLoginForbidden    = "AMO_ADMIN_SELF_LOGIN_FORBIDDEN"
 	ErrorCodeAmoAdminSelfLoginNotFound     = "AMO_ADMIN_SELF_LOGIN_NOT_FOUND"

@@ -27,18 +27,7 @@ func (s *Service) CheckAmoAccount(
 	if err != nil {
 		return AmoAccountAvailability{}, internal("Не удалось проверить аккаунт amoCRM", err)
 	}
-	availability := AmoAccountAvailability{Exists: exists}
-	if !exists || s.externalUsers == nil {
-		return availability, nil
-	}
-	availability.AdminSelfLoginEligible, err = queries.AmoAdminSelfLoginEligible(
-		ctx,
-		db.AmoAdminSelfLoginEligibleParams{Provider: provider, ExternalAccountID: externalAccountID},
-	)
-	if err != nil {
-		return AmoAccountAvailability{}, internal("Не удалось проверить готовность входа через amoCRM", err)
-	}
-	return availability, nil
+	return AmoAccountAvailability{Exists: exists, AdminSelfLoginEligible: false}, nil
 }
 
 func (s *Service) IssueCompanyRegistrationToken(
