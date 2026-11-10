@@ -162,3 +162,11 @@ load-move: ## Run the concurrent moveTask k6 profile.
 
 academy-load: ## Run the read-only public Academy campaign k6 profile when configured.
 	sh tests/k6/run-academy-public.sh
+
+.PHONY: test-account-access test-account-access-unit
+
+test-account-access: ## Run registration, widget entry and employee access acceptance with PostgreSQL/race.
+	python3 scripts/test-account-access.py
+
+test-account-access-unit: ## Run only unit/API fixtures; does not claim PostgreSQL acceptance.
+	python3 scripts/test-account-access.py --unit-only
