@@ -68,6 +68,18 @@ def run(name, directory, command, extra=None, required=()):
     save()
     if result.returncode or rejected:
         print(f"FAILED: {log}", file=sys.stderr)
+        if required:
+            print(json.dumps(check, ensure_ascii=False), file=sys.stderr)
+            details = []
+            for line in log.read_text().splitlines():
+                try:
+                    event = json.loads(line)
+                except ValueError:
+                    details.append(line)
+                    continue
+                if event.get("Action") == "output" and event.get("Test") in failed:
+                    details.append(event.get("Output", "").rstrip())
+            print("\n".join(details[-40:]), file=sys.stderr)
         sys.exit(result.returncode or 1)
 
 
