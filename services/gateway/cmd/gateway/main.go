@@ -22,7 +22,6 @@ import (
 	sharedauth "github.com/sk1fy/team-os-backend/pkg/auth"
 	"github.com/sk1fy/team-os-backend/pkg/buildinfo"
 	"github.com/sk1fy/team-os-backend/pkg/httpx"
-	"github.com/sk1fy/team-os-backend/services/gateway/internal/amochallenge"
 	"github.com/sk1fy/team-os-backend/services/gateway/internal/api"
 	"github.com/sk1fy/team-os-backend/services/gateway/internal/authmw"
 	"github.com/sk1fy/team-os-backend/services/gateway/internal/config"
@@ -56,9 +55,6 @@ func run(logger *slog.Logger) error {
 	configuration, err := config.Load()
 	if err != nil {
 		return err
-	}
-	if configuration.ProvisioningAllowUnauthenticated {
-		logger.Warn("служебная авторизация provisioning отключена")
 	}
 	shutdownTelemetry, err := httpx.SetupTelemetry("gateway")
 	if err != nil {
@@ -165,18 +161,8 @@ func run(logger *slog.Logger) error {
 	)
 	handler.SetFilesClient(filesClient)
 	handler.SetProvisioningServiceToken(configuration.ProvisioningServiceToken)
-	handler.SetProvisioningAllowUnauthenticated(configuration.ProvisioningAllowUnauthenticated)
 	handler.SetProvisioningServiceProvider(configuration.ProvisioningServiceProvider)
 	handler.SetCompanyServiceToken(configuration.CompanyServiceToken)
-	var challengeManager *amochallenge.Manager
-	if configuration.AmoBrowserAdminAssertionEnabled {
-		var challengeErr error
-		challengeManager, challengeErr = amochallenge.New(configuration.AmoBrowserChallengeSecret, 2*time.Minute)
-		if challengeErr != nil {
-			return challengeErr
-		}
-		handler.SetAmoChallengeManager(challengeManager)
-	}
 
 	router := chi.NewRouter()
 	router.Use(corsMiddleware(configuration.CORSOrigins))
@@ -266,7 +252,7 @@ func run(logger *slog.Logger) error {
 	router.Group(func(apiRouter chi.Router) {
 		limiter := ratelimit.New(30, time.Minute, configuration.TrustedProxyCIDRs...).
 			WithProvisioningPrincipal(configuration.ProvisioningServiceToken, 600)
-		apiRouter.Use(limiter.Middleware, authmw.Middleware(verifier), amochallenge.Middleware(challengeManager))
+		apiRouter.Use(limiter.Middleware, authmw.Middleware(verifier))
 		api.HandlerWithOptions(handler, api.ChiServerOptions{
 			BaseRouter: apiRouter,
 			ErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {

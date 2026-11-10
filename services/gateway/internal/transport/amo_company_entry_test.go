@@ -52,7 +52,7 @@ func (s *amoEntryCompanyServer) ExchangeAmoCompanyEntry(ctx context.Context, r *
 
 func TestAmoCompanyEntryServiceAuthentication(t *testing.T) {
 	server := &amoEntryCompanyServer{}
-	handler := newTestGateway(t, server, true)
+	handler := newTestGateway(t, server)
 	bodies := map[string]string{
 		"/api/v1/provisioning/amocrm/company-status": `{"accountId":"424242"}`,
 		"/api/v1/provisioning/amocrm/widget-entries": `{"accountId":"424242","actorId":"7","integrationId":"465c9141-f733-4e72-b557-6a35fc769bd5","installationId":"513555b7-50d3-4b7d-b8d6-d0529aed82ed","intent":"create","name":"Администратор","email":"admin@example.test"}`,

@@ -3,7 +3,6 @@ package transport
 import (
 	"errors"
 	"net/http"
-	"strings"
 
 	"github.com/google/uuid"
 	companyv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v1"
@@ -16,12 +15,11 @@ import (
 var errInvalidAmoEntryResponse = errors.New("Некорректный ответ входа amoCRM")
 
 func (h *Handler) requireAmoEntryService(w http.ResponseWriter, r *http.Request) bool {
-	parts := strings.Fields(r.Header.Get("Authorization"))
-	if len(r.Header.Values("Authorization")) != 1 || h.provisioningServiceProvider != "rakurs" || h.provisioningServiceToken == "" || len(parts) != 2 || !strings.EqualFold(parts[0], "Service") || !secureCredentialEqual(parts[1], h.provisioningServiceToken) {
+	if h.provisioningServiceProvider != "rakurs" {
 		apierror.Write(w, apierror.Unauthorized("Служебная авторизация недействительна").WithCode("SERVICE_AUTH_INVALID"))
 		return false
 	}
-	return true
+	return h.requireProvisioningService(w, r)
 }
 
 func (h *Handler) GetAmoEntryCompanyStatus(w http.ResponseWriter, r *http.Request) {

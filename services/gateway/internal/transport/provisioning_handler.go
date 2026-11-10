@@ -11,7 +11,6 @@ import (
 	"github.com/google/uuid"
 	companyv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v1"
 	"github.com/sk1fy/team-os-backend/pkg/apierror"
-	"github.com/sk1fy/team-os-backend/services/gateway/internal/amochallenge"
 	"github.com/sk1fy/team-os-backend/services/gateway/internal/api"
 	"google.golang.org/grpc/metadata"
 )
@@ -20,10 +19,6 @@ const provisioningServiceMarker = "provisioning"
 
 func (h *Handler) SetProvisioningServiceToken(token string) {
 	h.provisioningServiceToken = strings.TrimSpace(token)
-}
-
-func (h *Handler) SetProvisioningAllowUnauthenticated(allow bool) {
-	h.provisioningAllowUnauthenticated = allow
 }
 
 func (h *Handler) SetProvisioningServiceProvider(provider string) {
@@ -43,28 +38,8 @@ func (h *Handler) CheckAmoAccount(w http.ResponseWriter, r *http.Request, amoAcc
 		return
 	}
 	setPrivateNoStore(w)
-	eligible := response.GetExists() && response.GetAdminSelfLoginEligible() && h.amoChallenge != nil
 	result := api.AmoAccountAvailabilityResponse{
-		Exists: response.GetExists(), AdminSelfLoginEligible: eligible,
-	}
-	challengePurpose := ""
-	if eligible {
-		challengePurpose = amochallenge.PurposeAdminSelfLogin
-	} else if !response.GetExists() && h.amoChallenge != nil {
-		challengePurpose = amochallenge.PurposeCompanyBootstrap
-	}
-	if challengePurpose != "" {
-		token, issueErr := h.amoChallenge.IssueForPurpose(amoAccountID, challengePurpose)
-		if issueErr != nil {
-			h.logger.ErrorContext(r.Context(), "issue amoCRM browser challenge", "error", issueErr)
-			h.writeConversionError(w, r, issueErr)
-			return
-		}
-		tokenType := "Bearer"
-		expiresIn := h.amoChallenge.TTLSeconds()
-		result.ChallengeToken = &token
-		result.TokenType = &tokenType
-		result.ExpiresIn = &expiresIn
+		Exists: response.GetExists(), AdminSelfLoginEligible: false,
 	}
 	writeJSON(w, http.StatusOK, result)
 }
@@ -313,15 +288,12 @@ func writeRetiredRegistrationFlow(w http.ResponseWriter) {
 }
 
 func (h *Handler) requireProvisioningService(w http.ResponseWriter, r *http.Request) bool {
-	if h.provisioningAllowUnauthenticated {
-		return true
-	}
 	if r == nil {
 		apierror.Write(w, apierror.Unauthorized("Служебная авторизация недействительна").WithCode("SERVICE_AUTH_INVALID"))
 		return false
 	}
 	parts := strings.Fields(r.Header.Get("Authorization"))
-	if len(parts) != 2 || !strings.EqualFold(parts[0], "Service") ||
+	if len(h.provisioningServiceToken) < 32 || len(r.Header.Values("Authorization")) != 1 || len(parts) != 2 || !strings.EqualFold(parts[0], "Service") ||
 		!secureCredentialEqual(parts[1], h.provisioningServiceToken) {
 		apierror.Write(w, apierror.Unauthorized("Служебная авторизация недействительна").WithCode("SERVICE_AUTH_INVALID"))
 		return false

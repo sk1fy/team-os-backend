@@ -24,6 +24,8 @@ jobs:
         with:
           python-version: "3.12"
       - run: python3 -m unittest discover -s scripts -p "test_task_control*.py" -v
+      - name: Verify retired amoCRM ingress
+        run: python3 scripts/test-legacy-amo-nginx.py -v
 
   modules:
     name: Discover Go modules

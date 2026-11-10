@@ -18,7 +18,6 @@ import (
 	tasksv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/tasks/v1"
 	"github.com/sk1fy/team-os-backend/pkg/apierror"
 	"github.com/sk1fy/team-os-backend/pkg/httpx"
-	"github.com/sk1fy/team-os-backend/services/gateway/internal/amochallenge"
 	"github.com/sk1fy/team-os-backend/services/gateway/internal/api"
 	"github.com/sk1fy/team-os-backend/services/gateway/internal/authmw"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
@@ -36,22 +35,18 @@ type CookieConfig struct {
 
 type Handler struct {
 	api.Unimplemented
-	company                          companyv1.CompanyServiceClient
-	kb                               kbv1.KbServiceClient
-	tasks                            tasksv1.TasksServiceClient
-	academy                          academyv1.AcademyServiceClient
-	notifications                    notificationsv1.NotificationsServiceClient
-	files                            filesv1.FilesServiceClient
-	cookie                           CookieConfig
-	logger                           *slog.Logger
-	provisioningServiceToken         string
-	provisioningAllowUnauthenticated bool
-	provisioningServiceProvider      string
-	companyServiceToken              string
-	amoChallenge                     *amochallenge.Manager
+	company                     companyv1.CompanyServiceClient
+	kb                          kbv1.KbServiceClient
+	tasks                       tasksv1.TasksServiceClient
+	academy                     academyv1.AcademyServiceClient
+	notifications               notificationsv1.NotificationsServiceClient
+	files                       filesv1.FilesServiceClient
+	cookie                      CookieConfig
+	logger                      *slog.Logger
+	provisioningServiceToken    string
+	provisioningServiceProvider string
+	companyServiceToken         string
 }
-
-func (h *Handler) SetAmoChallengeManager(manager *amochallenge.Manager) { h.amoChallenge = manager }
 
 func (h *Handler) SetFilesClient(client filesv1.FilesServiceClient) { h.files = client }
 
