@@ -24,6 +24,10 @@ service CompanyService {
   rpc SetDistributionEmployeeMapping(SetDistributionEmployeeMappingRequest) returns (SetDistributionEmployeeMappingResponse);
   rpc CheckDistributionLeadPermission(CheckDistributionLeadPermissionRequest) returns (CheckDistributionLeadPermissionResponse);
 
+  rpc GetAmoEntryCompanyStatus(GetAmoEntryCompanyStatusRequest) returns (GetAmoEntryCompanyStatusResponse);
+  rpc ProvisionAmoWidgetEntry(ProvisionAmoWidgetEntryRequest) returns (ProvisionAmoWidgetEntryResponse);
+  rpc ExchangeAmoCompanyEntry(ExchangeAmoCompanyEntryRequest) returns (ExchangeAmoCompanyEntryResponse);
+
   rpc Register(RegisterRequest) returns (RegisterResponse);
   rpc ReserveRegistrationLogin(ReserveRegistrationLoginRequest) returns (ReserveRegistrationLoginResponse);
   rpc CheckAmoAccount(CheckAmoAccountRequest) returns (CheckAmoAccountResponse);
@@ -1218,3 +1222,23 @@ message ActivityControlRequest {
   string binding_id = 5;
 }
 message ActivityControlResponse { bytes json_body = 1; }
+
+message GetAmoEntryCompanyStatusRequest { string account_id = 1; }
+message GetAmoEntryCompanyStatusResponse { string state = 1; optional string company_id = 2; }
+message ProvisionAmoWidgetEntryRequest {
+  string account_id = 1;
+  string actor_id = 2;
+  string integration_id = 3;
+  string installation_id = 4;
+  string intent = 5;
+  string name = 6;
+  string email = 7;
+}
+message ProvisionAmoWidgetEntryResponse {
+  string company_id = 1;
+  string user_id = 2;
+  string code = 3;
+  google.protobuf.Timestamp expires_at = 4;
+}
+message ExchangeAmoCompanyEntryRequest { string code = 1; }
+message ExchangeAmoCompanyEntryResponse { AuthSession session = 1; }

@@ -42,6 +42,7 @@ sql:
       - migrations/000042_task_control_apply_rules.up.sql
       - migrations/000043_session_families.up.sql
       - migrations/000044_outbox_order.up.sql
+      - migrations/000045_amo_company_entries.up.sql
     queries: internal/storage/queries
     gen:
       go:

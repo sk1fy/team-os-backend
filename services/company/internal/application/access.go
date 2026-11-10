@@ -270,6 +270,9 @@ func (s *Service) RevokeAccess(ctx context.Context, actor Actor, userID uuid.UUI
 	if err = revokeUserSessions(ctx, queries, userID, revokedAt); err != nil {
 		return err
 	}
+	if err = queries.RevokeAmoEntryIdentities(ctx, db.RevokeAmoEntryIdentitiesParams{CompanyID: actor.CompanyID, UserID: userID, RevokedAt: revokedAt}); err != nil {
+		return internal("Не удалось отозвать вход через amoCRM", err)
+	}
 	audited := false
 	if previousAccess.PasswordEnabled {
 		if err = auditAccessChange(ctx, queries, actor, userID, "revoked", "password", revokedAt); err != nil {

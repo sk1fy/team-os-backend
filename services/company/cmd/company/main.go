@@ -24,6 +24,7 @@ import (
 	"github.com/sk1fy/team-os-backend/pkg/httpx"
 	"github.com/sk1fy/team-os-backend/services/company/internal/activitybridge"
 	"github.com/sk1fy/team-os-backend/services/company/internal/application"
+	"github.com/sk1fy/team-os-backend/services/company/internal/companyentrybridge"
 	"github.com/sk1fy/team-os-backend/services/company/internal/config"
 	"github.com/sk1fy/team-os-backend/services/company/internal/consumers"
 	"github.com/sk1fy/team-os-backend/services/company/internal/corebridge"
@@ -114,6 +115,13 @@ func run(logger *slog.Logger) error {
 		application.WithCompanyRegistrationTTL(configuration.RegistrationTokenTTL),
 		application.WithAmoWidgetSessionTTL(configuration.AmoWidgetSessionTTL),
 		application.WithLogger(logger),
+	}
+	if configuration.CompanyEntrySubjectCheckURL != "" {
+		checker, e := companyentrybridge.New(configuration.CompanyEntrySubjectCheckURL, configuration.CompanyEntrySubjectCheckKey)
+		if e != nil {
+			return e
+		}
+		serviceOptions = append(serviceOptions, application.WithAmoEntrySubjectChecker(checker))
 	}
 	if configuration.ActivityCoreURL != "" || configuration.ActivityManagementToken != "" || configuration.ActivityBindings != "" {
 		client, e := activitybridge.New(configuration.ActivityCoreURL, configuration.ActivityManagementToken)

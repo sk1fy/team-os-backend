@@ -22,6 +22,21 @@ type AccessLink struct {
 	EntryContextConsumedAt pgtype.Timestamptz `json:"entry_context_consumed_at"`
 }
 
+type AmoCompanyEntry struct {
+	ID                 uuid.UUID          `json:"id"`
+	CompanyID          uuid.UUID          `json:"company_id"`
+	UserID             uuid.UUID          `json:"user_id"`
+	ExternalIdentityID uuid.UUID          `json:"external_identity_id"`
+	AccountID          string             `json:"account_id"`
+	ActorID            string             `json:"actor_id"`
+	CoreIntegrationID  uuid.UUID          `json:"core_integration_id"`
+	CoreInstallationID uuid.UUID          `json:"core_installation_id"`
+	TokenHash          []byte             `json:"token_hash"`
+	CreatedAt          time.Time          `json:"created_at"`
+	ExpiresAt          time.Time          `json:"expires_at"`
+	ConsumedAt         pgtype.Timestamptz `json:"consumed_at"`
+}
+
 type BootstrapActivation struct {
 	ID               uuid.UUID          `json:"id"`
 	CompanyID        uuid.UUID          `json:"company_id"`

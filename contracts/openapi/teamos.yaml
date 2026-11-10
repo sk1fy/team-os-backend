@@ -42,6 +42,71 @@ security:
   - bearerAuth: []
 
 paths:
+  /api/v1/provisioning/amocrm/company-status:
+    post:
+      tags: [Provisioning]
+      operationId: getAmoEntryCompanyStatus
+      summary: Вход администратора через виджет amoCRM
+      security: [{serviceAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AmoEntryCompanyStatusInput'
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AmoEntryCompanyStatus'
+        default:
+          $ref: '#/components/responses/Error'
+  /api/v1/provisioning/amocrm/widget-entries:
+    post:
+      tags: [Provisioning]
+      operationId: provisionAmoWidgetEntry
+      summary: Вход администратора через виджет amoCRM
+      security: [{serviceAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AmoWidgetEntryInput'
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AmoWidgetEntry'
+        '422':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+  /api/v1/auth/amocrm/entry-exchange:
+    post:
+      tags: [Auth]
+      operationId: exchangeAmoCompanyEntry
+      summary: Вход администратора через виджет amoCRM
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AmoEntryExchangeInput'
+      responses:
+        '200':
+          description: Результат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        default:
+          $ref: '#/components/responses/Error'
   /api/v1/activity-control/connection:
     get:
       tags:
@@ -8221,6 +8286,44 @@ components:
             $ref: '#/components/schemas/FileDownload'
 
   schemas:
+    AmoEntryCompanyStatusInput:
+      type: object
+      additionalProperties: false
+      required: [accountId]
+      properties:
+        accountId: {type: string, pattern: '^[1-9][0-9]*$'}
+    AmoEntryCompanyStatus:
+      type: object
+      required: [state]
+      properties:
+        state: {type: string, enum: [absent, present, blocked]}
+        companyId: {type: string, format: uuid}
+    AmoWidgetEntryInput:
+      type: object
+      additionalProperties: false
+      required: [accountId, actorId, integrationId, installationId, intent, name, email]
+      properties:
+        accountId: {type: string, pattern: '^[1-9][0-9]*$'}
+        actorId: {type: string, pattern: '^[1-9][0-9]*$'}
+        integrationId: {type: string, format: uuid}
+        installationId: {type: string, format: uuid}
+        intent: {type: string, enum: [create, enter]}
+        name: {type: string, maxLength: 511}
+        email: {type: string, maxLength: 320}
+    AmoWidgetEntry:
+      type: object
+      required: [companyId, userId, code, expiresAt]
+      properties:
+        companyId: {type: string, format: uuid}
+        userId: {type: string, format: uuid}
+        code: {type: string}
+        expiresAt: {type: string, format: date-time}
+    AmoEntryExchangeInput:
+      type: object
+      additionalProperties: false
+      required: [code]
+      properties:
+        code: {type: string, minLength: 1, maxLength: 512}
     ActivityWindow:
       type: object
       additionalProperties: false
@@ -10130,6 +10233,7 @@ components:
     UserStatus:
       type: string
       enum: [active, invited, deactivated]
+      x-enum-varnames: [UserStatusActive, UserStatusInvited, UserStatusDeactivated]
     UserSource:
       type: string
       enum: [local, amo, external]

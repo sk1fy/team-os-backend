@@ -25,6 +25,7 @@
 ## Архитектура и контракты
 
 - [План архитектуры](architecture/teamos-go-microservices-plan.md).
+- [Вход администраторов из виджетов amoCRM](adr/ADR-012-amo-widget-company-entry.md).
 - [ADR](adr/) — границы сервисов, контракты и решения Academy/распределения.
 - [REST OpenAPI](../contracts/openapi/teamos.yaml).
 - [Правила работы](../AGENTS.md).

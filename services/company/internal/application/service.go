@@ -48,6 +48,7 @@ type accessTokenIssuer interface {
 }
 
 type Service struct {
+	amoEntrySubjectChecker AmoEntrySubjectChecker
 	activityCore           ActivityCore
 	activityBindings       map[uuid.UUID]dto.ActivityScope
 	taskControlCore        TaskControlCore
