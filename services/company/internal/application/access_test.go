@@ -212,6 +212,9 @@ func TestRevokeAccessDeletesBothModesAndRevokesSessions(t *testing.T) {
 		WithArgs(companyID, userID).
 		WillReturnResult(pgconn.NewCommandTag("DELETE 1"))
 	expectSessionRevocation(mock, userID, now)
+	mock.ExpectExec("UPDATE user_external_identities SET status = 'deactivated', updated_at = \\$1\\s+WHERE company_id = \\$2 AND user_id = \\$3 AND provider = 'rakurs'").
+		WithArgs(now, companyID, userID).
+		WillReturnResult(pgconn.NewCommandTag("UPDATE 1"))
 	expectAccessAudit(mock, actor, userID, "revoked", "password", now)
 	expectAccessAudit(mock, actor, userID, "revoked", "link", now)
 	mock.ExpectCommit()

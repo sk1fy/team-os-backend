@@ -10233,6 +10233,7 @@ components:
     UserStatus:
       type: string
       enum: [active, invited, deactivated]
+      x-enum-varnames: [UserStatusActive, UserStatusInvited, UserStatusDeactivated]
     UserSource:
       type: string
       enum: [local, amo, external]
