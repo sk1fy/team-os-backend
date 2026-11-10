@@ -82,7 +82,7 @@ func TestProvisioningCannotTrustBrowserWithoutServiceCredential(t *testing.T) {
 		router := api.Handler(h)
 		for _, path := range paths {
 			for _, credentials := range [][]string{nil, {"Bearer " + testProvisioningServiceToken}, {"Service "}, {"Service too-short"}, {"Service wrong"}, {"Service " + testProvisioningServiceToken, "Service wrong"}} {
-				req := httptest.NewRequest(http.MethodPost, path, strings.NewReader(`{"amoAccountId":"31355990","selfUserId":"101","isAdmin":true,"isActive":true}`))
+				req := httptest.NewRequestWithContext(t.Context(), http.MethodPost, path, strings.NewReader(`{"amoAccountId":"31355990","selfUserId":"101","isAdmin":true,"isActive":true}`))
 				for _, credential := range credentials {
 					req.Header.Add("Authorization", credential)
 				}

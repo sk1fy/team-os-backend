@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+
 	companyv1 "github.com/sk1fy/team-os-backend/contracts/gen/go/company/v1"
 	"github.com/sk1fy/team-os-backend/services/company/internal/application"
 	"google.golang.org/protobuf/types/known/timestamppb"
