@@ -139,6 +139,24 @@ jobs:
       - name: Verify registration, access lifecycle and employee import
         run: python3 scripts/test-account-access.py --integration-only
 
+  task-control-connection-integration:
+    name: Task Control connection acceptance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache-dependency-path: services/company/go.sum
+      - name: Verify scoped link, replay and rule application
+        run: python3 scripts/task-control-r09-acceptance.py connection-backend --output /tmp/task-control-connection
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: task-control-connection-evidence
+          path: /tmp/task-control-connection
+          retention-days: 7
+
   activity-company-integration:
     name: Activity company integration
     runs-on: ubuntu-latest

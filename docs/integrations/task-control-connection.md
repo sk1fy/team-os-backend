@@ -145,3 +145,6 @@ capability; browser admin bridge для них не используется. Р
 API, company org/mapping projection и fresh reference validation/publish. Точные формы,
 совместимость v1, TTL и ввод в эксплуатацию: [task-control-r03-references.md](task-control-r03-references.md).
 Импорт каталога и динамический resolver остаются в R04/R11.
+
+Актуальная [автоматическая проверка подключения](../runbooks/task-control-connection-acceptance.md)
+выделяет TLS/HMAC-проверки, обязательную PostgreSQL-матрицу и условия ручной приёмки.

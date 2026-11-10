@@ -3,10 +3,10 @@
 package application
 
 import (
+	"bytes"
 	"crypto/sha256"
 	"encoding/json"
 	"errors"
-	"reflect"
 	"testing"
 	"time"
 
@@ -63,7 +63,7 @@ func TestTaskControlSaveAppliesRules(t *testing.T) {
 	}
 
 	replayed, err := f.svc.UpdateTaskControlDraft(f.ctx, f.actor, f.binding, in, &requestID)
-	if err != nil || !reflect.DeepEqual(saved, replayed) {
+	if err != nil || !bytes.Equal(mustR05JSON(t, saved), mustR05JSON(t, replayed)) {
 		t.Fatalf("same request did not replay saved receipt: %+v, %v", replayed, err)
 	}
 	in.Rules[0].Name = "Другая настройка"
@@ -107,7 +107,7 @@ func TestTaskControlSaveAppliesRulesV2(t *testing.T) {
 		t.Fatalf("runtime after save: %+v, %v", wire, err)
 	}
 	replayed, err := f.svc.UpdateTaskControlDraftV2(f.ctx, f.actor, f.binding, in, &requestID)
-	if err != nil || !reflect.DeepEqual(saved, replayed) {
+	if err != nil || !bytes.Equal(mustR05JSON(t, saved), mustR05JSON(t, replayed)) {
 		t.Fatalf("same request did not replay saved receipt: %+v, %v", replayed, err)
 	}
 	_, err = f.svc.SetTaskControlModeV2(f.ctx, f.actor, f.binding, TaskControlModeInputV2{

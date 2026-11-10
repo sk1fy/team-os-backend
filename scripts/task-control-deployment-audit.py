@@ -64,11 +64,23 @@ def compare(candidate, observed, archive, mode):
                             for field in ["coreOrigin", "backendOrigin"]}
         if origins != expected_origins:
             errors.append("Origins внутри ZIP не совпадают с режимом и candidate.json")
+        entry_origins = None
+        if "lib/company-entry-deployment.js" in package.namelist():
+            entry_match = re.fullmatch(r"\s*define\(\[\], function \(\) \{ return (\{.*\}); \}\);\s*", package.read("lib/company-entry-deployment.js").decode("utf-8"))
+            if not entry_match:
+                raise ValueError("Unsupported company-entry-deployment.js format")
+            entry_origins = json.loads(entry_match.group(1))
+            config = candidate.get("publicConfiguration", {})
+            if entry_origins != {"coreOrigin": config.get("coreOrigin"), "frontendOrigin": config.get("companyEntryFrontendOrigin")}:
+                errors.append("Company entry origins внутри ZIP не совпадают с candidate.json")
     if version != candidate.get("runtimeVersion"):
         errors.append("Версия manifest.json не совпадает с кандидатом")
     if mode == "managed":
         config = candidate.get("publicConfiguration", {})
-        for field in ["coreOrigin", "backendOrigin"]:
+        fields = ["coreOrigin", "backendOrigin"]
+        if entry_origins is not None:
+            fields.append("companyEntryFrontendOrigin")
+        for field in fields:
             parsed = urlsplit(config.get(field, ""))
             hostname = parsed.hostname or ""
             if (parsed.scheme != "https" or not hostname or hostname.endswith(".invalid")

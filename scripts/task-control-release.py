@@ -20,10 +20,11 @@ parser.add_argument("--widgets", type=Path, default=backend.parent / "rakurs/rak
 parser.add_argument("--output", type=Path, required=True)
 parser.add_argument("--core-origin", default="https://core.example.invalid")
 parser.add_argument("--backend-origin", default="https://backend.example.invalid")
+parser.add_argument("--company-entry-frontend-origin", default="https://teamos.example.invalid")
 parser.add_argument("--oauth-client-uuid")
 parser.add_argument("--build-images", action="store_true")
 args = parser.parse_args()
-for origin in [args.core_origin, args.backend_origin]:
+for origin in [args.core_origin, args.backend_origin, args.company_entry_frontend_origin]:
     parsed_origin = urlsplit(origin)
     if parsed_origin.scheme != "https" or not parsed_origin.hostname or parsed_origin.username or parsed_origin.password or parsed_origin.path not in ["", "/"] or parsed_origin.query or parsed_origin.fragment:
         parser.error("Expected public HTTPS origins without paths, credentials, queries or fragments")
@@ -40,7 +41,7 @@ core_schema, company_schema = (36, 42) if managed_only else (31, 40)
 manifest = {"kind": "local-release-candidate", "runtimeVersion": runtime_version, "releaseApproved": False,
             "candidateId": uuid.uuid4().hex,
             "createdAt": datetime.now(timezone.utc).isoformat(), "repositories": {}, "images": {}, "archives": {},
-            "publicConfiguration": {"coreOrigin": args.core_origin, "backendOrigin": args.backend_origin, "oauthClientUUID": args.oauth_client_uuid},
+            "publicConfiguration": {"coreOrigin": args.core_origin, "backendOrigin": args.backend_origin, "companyEntryFrontendOrigin": args.company_entry_frontend_origin, "oauthClientUUID": args.oauth_client_uuid},
             "schema": {"core": core_schema, "company": company_schema, "runtime": [1, 2]},
             "toolchain": {"python": sys.version.split()[0], "zlib": zlib.ZLIB_VERSION},
             "remainingGates": ["R09 live acceptance deferred", "browser acceptance deferred", "CI on final R10 commits", "registry image digests after publishing", "full-stack rollout and binary rollback on approved environment", "verify deployment architecture", "operator verifies current installation/generation and OAuth UUID"]}
@@ -93,6 +94,8 @@ for mode in modes:
             "TASK_CONTROL_STANDALONE_BUILD": "1" if mode == "standalone" else "0",
             "TASK_CONTROL_CORE_ORIGIN": args.core_origin if mode == "managed" else "",
             "TASK_CONTROL_BACKEND_ORIGIN": args.backend_origin if mode == "managed" else "",
+            "COMPANY_ENTRY_CORE_ORIGIN": args.core_origin,
+            "COMPANY_ENTRY_FRONTEND_ORIGIN": args.company_entry_frontend_origin,
         })
     if paths[0].read_bytes() != paths[1].read_bytes():
         raise SystemExit("ZIP rebuild differs; do not release")

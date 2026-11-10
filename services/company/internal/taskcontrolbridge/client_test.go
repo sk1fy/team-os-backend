@@ -65,3 +65,38 @@ func TestSignedStatusScopeAndRedirects(t *testing.T) {
 		}
 	}
 }
+
+func TestInstallationResponseBoundary(t *testing.T) {
+	company, install, integration := uuid.New(), uuid.New(), uuid.New()
+	now := time.Now()
+	status := tc.Installation{CompanyID: company, AccountID: "123", InstallationID: &install, IntegrationID: &integration, Product: tc.Product, State: "installed", Revision: 1, Generation: 1, CheckedAt: now, FreshUntil: now.Add(5 * time.Minute)}
+	raw, err := json.Marshal(status)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, test := range []struct {
+		name   string
+		body   string
+		wantOK bool
+	}{
+		{name: "at limit", body: string(raw) + strings.Repeat(" ", 65536-len(raw)), wantOK: true},
+		{name: "above limit", body: string(raw) + strings.Repeat(" ", 65537-len(raw))},
+		{name: "beyond reader EOF", body: string(raw) + strings.Repeat(" ", 65538)},
+		{name: "extra JSON", body: string(raw) + `{}`},
+		{name: "trailing garbage", body: string(raw) + `broken`},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) { _, _ = w.Write([]byte(test.body)) }))
+			defer server.Close()
+			client, err := New(server.URL, "key", strings.Repeat("s", 32))
+			if err != nil {
+				t.Fatal(err)
+			}
+			client.HTTP = server.Client()
+			_, err = client.Installation(t.Context(), company, "123")
+			if (err == nil) != test.wantOK {
+				t.Fatalf("Installation error=%v, want success=%t", err, test.wantOK)
+			}
+		})
+	}
+}
