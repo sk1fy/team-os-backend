@@ -45,7 +45,7 @@ func (c *Client) Check(ctx context.Context, subject application.AmoEntrySubject)
 	if err != nil {
 		return false, errors.New("Проверка доступа amoCRM недоступна")
 	}
-	defer response.Body.Close()
+	defer func() { _ = response.Body.Close() }()
 	if response.StatusCode == http.StatusForbidden {
 		return false, nil
 	}
