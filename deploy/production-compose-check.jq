@@ -11,22 +11,15 @@
 (.services.gateway.environment.GATEWAY_COOKIE_SECURE == "true") and
 (.services.gateway.environment.GATEWAY_CORS_ORIGINS | contains("https://*.amocrm.ru")) and
 (.services.gateway.environment.GATEWAY_CORS_ORIGINS | contains("https://*.amocrm.com")) and
-(((.services.gateway.environment.GATEWAY_PROVISIONING_ALLOW_UNAUTHENTICATED == "true") and
-  ((.services.gateway.environment.GATEWAY_PROVISIONING_SERVICE_TOKEN | length) == 0)) or
- ((.services.gateway.environment.GATEWAY_PROVISIONING_ALLOW_UNAUTHENTICATED == "false") and
-  ((.services.gateway.environment.GATEWAY_PROVISIONING_SERVICE_TOKEN | length) >= 32) and
-  (.services.gateway.environment.GATEWAY_PROVISIONING_SERVICE_TOKEN != "development-provisioning-service-token-change-me"))) and
+(.services.gateway.environment.GATEWAY_PROVISIONING_ALLOW_UNAUTHENTICATED == "false") and
+((.services.gateway.environment.GATEWAY_PROVISIONING_SERVICE_TOKEN | length) >= 32) and
+(.services.gateway.environment.GATEWAY_PROVISIONING_SERVICE_TOKEN != "development-provisioning-service-token-change-me") and
 (.services.gateway.environment.GATEWAY_PROVISIONING_SERVICE_PROVIDER | test("^[a-z][a-z0-9_-]{1,31}$")) and
 (.services.gateway.environment.GATEWAY_COMPANY_SERVICE_TOKEN != "development-gateway-company-service-token-change-me") and
 ((.services.gateway.environment.GATEWAY_PROVISIONING_SERVICE_TOKEN | length) == 0 or
  (.services.gateway.environment.GATEWAY_PROVISIONING_SERVICE_TOKEN != .services.gateway.environment.GATEWAY_COMPANY_SERVICE_TOKEN)) and
 (.services.company.environment.COMPANY_GATEWAY_SERVICE_TOKEN == .services.gateway.environment.GATEWAY_COMPANY_SERVICE_TOKEN) and
-((.services.gateway.environment.AMO_BROWSER_ADMIN_ASSERTION_ENABLED == "false") or
- ((.services.gateway.environment.AMO_BROWSER_ADMIN_ASSERTION_ENABLED == "true") and
-  ((.services.gateway.environment.AMO_BROWSER_CHALLENGE_SECRET | length) >= 32) and
-  (.services.gateway.environment.AMO_BROWSER_CHALLENGE_SECRET != "development-browser-challenge-secret-change-me") and
-  (.services.gateway.environment.AMO_BROWSER_CHALLENGE_SECRET != .services.gateway.environment.GATEWAY_PROVISIONING_SERVICE_TOKEN) and
-  (.services.gateway.environment.AMO_BROWSER_CHALLENGE_SECRET != .services.gateway.environment.GATEWAY_COMPANY_SERVICE_TOKEN))) and
+(.services.gateway.environment.AMO_BROWSER_ADMIN_ASSERTION_ENABLED == "false") and
 (.services.notifications.environment.NOTIFICATIONS_EMAIL_PROVIDER == "smtp") and
 (.services.notifications.environment.NOTIFICATIONS_SMTP_HOST | length > 0) and
 (.services.notifications.environment.NOTIFICATIONS_SMTP_FROM | length > 0) and

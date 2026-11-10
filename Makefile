@@ -46,8 +46,7 @@ check-production-compose: ## Verify production ports and security overrides, inc
 		TASKS_COMPANY_SERVICE_TOKEN=production-compose-check-tasks-token-0001 \
 		COMPANY_GATEWAY_SERVICE_TOKEN=production-compose-check-company-token-0001 \
 		GATEWAY_COMPANY_SERVICE_TOKEN=production-compose-check-company-token-0001 \
-		AMO_BROWSER_ADMIN_ASSERTION_ENABLED=true \
-		AMO_BROWSER_CHALLENGE_SECRET=production-browser-challenge-secret-0001 \
+		AMO_BROWSER_ADMIN_ASSERTION_ENABLED=true GATEWAY_PROVISIONING_ALLOW_UNAUTHENTICATED=true \
 		GATEWAY_PROVISIONING_SERVICE_TOKEN=production-compose-check-provisioning-token-0001 \
 		GATEWAY_PROVISIONING_SERVICE_PROVIDER=rakurs \
 		ACADEMY_EXTERNAL_TOKEN_SECRET=production-compose-check-token-secret-0001 \
@@ -163,3 +162,11 @@ load-move: ## Run the concurrent moveTask k6 profile.
 
 academy-load: ## Run the read-only public Academy campaign k6 profile when configured.
 	sh tests/k6/run-academy-public.sh
+
+.PHONY: test-account-access test-account-access-unit
+
+test-account-access: ## Run registration, widget entry and employee access acceptance with PostgreSQL/race.
+	python3 scripts/test-account-access.py
+
+test-account-access-unit: ## Run only unit/API fixtures; does not claim PostgreSQL acceptance.
+	python3 scripts/test-account-access.py --unit-only
