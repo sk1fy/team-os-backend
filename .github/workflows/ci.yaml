@@ -150,7 +150,7 @@ jobs:
           cache-dependency-path: services/company/go.sum
       - name: Verify scoped link, replay and rule application
         run: python3 scripts/task-control-r09-acceptance.py connection-backend --output /tmp/task-control-connection
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: task-control-connection-evidence
